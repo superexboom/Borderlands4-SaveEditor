@@ -1,0 +1,389 @@
+#!/usr/bin/env python3
+"""
+资源加载工具模块
+用于解决PyInstaller打包后的资源路径问题
+"""
+
+import sys
+import json
+import ast
+from pathlib import Path
+from typing import Any, Dict, Optional, Union
+import importlib.resources
+import pkg_resources
+
+def get_resource_path(relative_path: Union[str, Path]) -> Path:
+    """
+    获取资源的绝对路径，支持PyInstaller打包环境
+    
+    Args:
+        relative_path: 相对路径
+        
+    Returns:
+        资源的绝对路径
+    """
+    if getattr(sys, 'frozen', False):
+        # PyInstaller打包环境
+        base_path = Path(sys._MEIPASS)
+    else:
+        # 开发环境
+        base_path = Path(__file__).parent
+    
+    return base_path / relative_path
+
+def load_json_resource(relative_path: Union[str, Path], 
+                      use_literal_eval: bool = False) -> Optional[Dict[str, Any]]:
+    """
+    加载JSON资源文件，支持PyInstaller打包环境
+    
+    Args:
+        relative_path: 相对路径
+        use_literal_eval: 是否使用ast.literal_eval解析（用于非标准JSON）
+        
+    Returns:
+        解析后的数据，失败时返回None
+    """
+    try:
+        resource_path = get_resource_path(relative_path)
+        if not resource_path.exists():
+            # print(f"资源文件不存在: {resource_path}")
+            return None
+        with open(resource_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        if use_literal_eval:
+            return ast.literal_eval(content)
+        else:
+            return json.loads(content)
+    except FileNotFoundError:
+        # print(f"资源文件不存在: {relative_path}")
+        return None
+    except json.JSONDecodeError as e:
+        # print(f"JSON解析错误 {relative_path}: {e}")
+        return None
+    except UnicodeDecodeError as e:
+        # print(f"文件编码错误 {relative_path}: {e}")
+        return None
+    except Exception as e:
+        # print(f"加载资源文件时发生未知错误 {relative_path}: {e}")
+        return None
+
+def load_text_resource(relative_path: Union[str, Path]) -> Optional[str]:
+    """
+    加载文本资源文件，支持PyInstaller打包环境
+    
+    Args:
+        relative_path: 相对路径
+        
+    Returns:
+        文本内容，失败时返回None
+    """
+    try:
+        resource_path = get_resource_path(relative_path)
+        if not resource_path.exists():
+            # print(f"文本资源文件不存在: {resource_path}")
+            return None
+        with open(resource_path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError:
+        # print(f"文本资源文件不存在: {relative_path}")
+        return None
+    except UnicodeDecodeError as e:
+        # print(f"文件编码错误 {relative_path}: {e}")
+        return None
+    except Exception as e:
+        # print(f"加载文本资源时发生未知错误 {relative_path}: {e}")
+        return None
+
+def get_image_resource_path(relative_path: Union[str, Path]) -> Optional[Path]:
+    """
+    获取图片资源的绝对路径，支持PyInstaller打包环境
+    
+    Args:
+        relative_path: 相对路径
+        
+    Returns:
+        图片资源的绝对路径，失败时返回None
+    """
+    try:
+        resource_path = get_resource_path(relative_path)
+        
+        if not resource_path.exists():
+            print(f"图片资源不存在: {resource_path}")
+            return None
+            
+        return resource_path
+        
+    except Exception as e:
+        print(f"获取图片资源路径失败 {relative_path}: {e}")
+        return None
+
+def get_class_mods_data_path(filename: str) -> Optional[Path]:
+    """
+    获取类模组数据文件的路径
+    
+    Args:
+        filename: 文件名
+        
+    Returns:
+        文件路径，失败时返回None
+    """
+    return get_resource_path(f"class_mods/{filename}")
+
+def load_class_mods_json(filename: str, use_literal_eval: bool = False) -> Optional[Dict[str, Any]]:
+    """
+    加载类模组JSON文件
+    
+    Args:
+        filename: 文件名
+        use_literal_eval: 是否使用ast.literal_eval解析
+        
+    Returns:
+        解析后的数据，失败时返回None
+    """
+    return load_json_resource(f"class_mods/{filename}", use_literal_eval)
+
+def get_class_mods_image_path(class_name: str, image_name: str) -> Optional[Path]:
+    """
+    获取类模组图片文件的路径
+    
+    Args:
+        class_name: 职业名称
+        image_name: 图片文件名
+        
+    Returns:
+        图片路径，失败时返回None
+    """
+    return get_image_resource_path(f"class_mods/{class_name}/{image_name}")
+
+def load_all_skill_descriptions() -> Dict[str, Dict[str, str]]:
+    """
+    加载所有职业的技能描述文件，并整合成一个字典
+
+    Returns:
+        一个以技能英文名为键，包含中英文描述的字典
+    """
+    all_skills = {}
+    characters = ['Amon', 'Vex', 'Harlowe', 'Rafa']
+    
+    # Load localization map for name matching
+    loc_map = load_class_mods_json("class_localization.json") or {}
+
+    for char in characters:
+        en_skills_list = load_class_mods_json(f"{char}_en.json")
+        zh_skills_list = load_class_mods_json(f"{char}_zh.json")
+
+        if not en_skills_list:
+            continue
+        
+        # Build ZH lookup map keyed by Chinese Name for robust matching
+        zh_lookup = {}
+        if zh_skills_list:
+            for item in zh_skills_list:
+                if 'name' in item:
+                    zh_lookup[item['name']] = item
+
+        for en_skill_data in en_skills_list:
+            skill_en_name = en_skill_data.get('name')
+            if not skill_en_name:
+                continue
+            
+            desc_en = en_skill_data.get('description', 'No English description.')
+            desc_zh = desc_en
+            
+            # Attempt to find Chinese description
+            # 1. Try matching via localization map (English Name -> Chinese Name -> ZH Data)
+            zh_name_candidate = loc_map.get(skill_en_name)
+            if zh_name_candidate and zh_name_candidate in zh_lookup:
+                desc_zh = zh_lookup[zh_name_candidate].get('description', desc_en)
+            # 2. Fallback: Try direct name match (if keys are identical) or just use EN
+            elif skill_en_name in zh_lookup:
+                desc_zh = zh_lookup[skill_en_name].get('description', desc_en)
+
+            all_skills[skill_en_name] = {
+                'en': desc_en,
+                'zh': desc_zh,
+                'type': en_skill_data.get('type', 'N/A')
+            }
+            
+            # Also add lower-case key to handle inconsistencies in class_code.json keys
+            if skill_en_name and skill_en_name.lower() != skill_en_name:
+                all_skills[skill_en_name.lower()] = all_skills[skill_en_name]
+
+    return all_skills
+
+def load_enhancement_json(filename: str, use_literal_eval: bool = False) -> Optional[Dict[str, Any]]:
+    """
+    加载增强功能JSON/文本文件
+    
+    Args:
+        filename: 文件名
+        use_literal_eval: 是否使用ast.literal_eval解析
+        
+    Returns:
+        解析后的数据，失败时返回None
+    """
+    return load_json_resource(f"enhancement/{filename}", use_literal_eval)
+
+def get_weapon_data_path(filename: str) -> Optional[Path]:
+    """
+    获取武器数据文件的路径
+    
+    Args:
+        filename: 文件名
+        
+    Returns:
+        文件路径，失败时返回None
+    """
+    return get_resource_path(f"weapon_edit/{filename}")
+
+def load_weapon_json(filename: str) -> Optional[Dict[str, Any]]:
+    """
+    加载武器编辑器JSON文件
+    
+    Args:
+        filename: 文件名
+        
+    Returns:
+        解析后的数据，失败时返回None
+    """
+    return load_json_resource(f"weapon_edit/{filename}")
+
+def get_grenade_data_path(filename: str) -> Optional[Path]:
+    """
+    获取手雷数据文件的路径
+    
+    Args:
+        filename: 文件名
+        
+    Returns:
+        文件路径，失败时返回None
+    """
+    return get_resource_path(f"grenade/{filename}")
+
+
+def load_grenade_json(filename: str) -> Optional[Dict[str, Any]]:
+    """
+    加载手雷编辑器JSON文件
+    
+    Args:
+        filename: 文件名
+        
+    Returns:
+        解析后的数据，失败时返回None
+    """
+    return load_json_resource(f"grenade/{filename}")
+
+
+def get_shield_data_path(filename: str) -> Optional[Path]:
+    """
+    获取护盾数据文件的路径
+    
+    Args:
+        filename: 文件名
+        
+    Returns:
+        文件路径，失败时返回None
+    """
+    return get_resource_path(f"shield/{filename}")
+
+
+def load_shield_json(filename: str) -> Optional[Dict[str, Any]]:
+    """
+    加载护盾编辑器JSON文件
+    
+    Args:
+        filename: 文件名
+        
+    Returns:
+        解析后的数据，失败时返回None
+    """
+    return load_json_resource(f"shield/{filename}")
+
+
+def get_repkit_data_path(filename: str) -> Optional[Path]:
+    """
+    获取修复套件数据文件的路径
+    
+    Args:
+        filename: 文件名
+        
+    Returns:
+        文件路径，失败时返回None
+    """
+    return get_resource_path(f"repkit/{filename}")
+
+
+def load_repkit_json(filename: str) -> Optional[Dict[str, Any]]:
+    """
+    加载修复套件编辑器JSON文件
+    
+    Args:
+        filename: 文件名
+        
+    Returns:
+        解析后的数据，失败时返回None
+    """
+    return load_json_resource(f"repkit/{filename}")
+
+
+def get_heavy_data_path(filename: str) -> Optional[Path]:
+    """
+    获取重武器数据文件的路径
+    
+    Args:
+        filename: 文件名
+        
+    Returns:
+        文件路径，失败时返回None
+    """
+    return get_resource_path(f"heavy/{filename}")
+
+
+def load_heavy_json(filename: str) -> Optional[Dict[str, Any]]:
+    """
+    加载重武器编辑器JSON文件
+    
+    Args:
+        filename: 文件名
+        
+    Returns:
+        解析后的数据，失败时返回None
+    """
+    return load_json_resource(f"heavy/{filename}")
+
+
+# 向后兼容的函数
+def get_builtin_localization() -> Dict[str, str]:
+    """
+    获取内置的本地化数据（作为后备）
+    
+    Returns:
+        本地化数据字典
+    """
+    return {
+        "Class Mod Editor": "职业模组编辑器",
+        "Class": "职业",
+        "Rarity": "稀有度",
+        "Name": "名称",
+        "Random Integer (1–9999)": "随机种子 (1–9999)",
+        "Legendary Additions": "传奇附加",
+        "Available": "可选",
+        "Selected": "已选",
+        "Clear": "清空",
+        "Full String (copy-ready)": "完整代码 (可复制)",
+        "Copy Full String": "复制完整代码",
+        "Skill Catalog": "技能目录",
+        "Icon": "图标",
+        "Skill": "技能",
+        "Codes (order)": "代码 (顺序)",
+        "+Points": "+点数",
+        "Universal Perks": "通用专长",
+        "Search perks...": "搜索专长...",
+        "Only add 1 Firmware": "仅添加1个固件",
+        # Rarity
+        "Common": "普通",
+        "Uncommon": "稀有",
+        "Rare": "特殊",
+        "Epic": "传奇",
+        "Legendary": "史诗",
+    }

@@ -1,0 +1,46 @@
+Elemental_ID,Part_ID,Stat
+1,5,switch between Shock and Radiation Elements
+1,6,switch between Shock and Incendiary Elements
+1,7,switch between Shock and Cryo Elements
+1,8,switch between Shock and Corrosive Elements
+1,9,switch between Radiation and Shock Elements
+1,10,Corrosive
+1,11,Cryo
+1,12,Fire
+1,13,Radiation
+1,14,Shock
+1,15,switch between Radiation and Incendiary Elements
+1,16,switch between Radiation and Cryo Elements
+1,17,switch between Radiation and CorrosiveElements
+1,18,switch between Incendiary and Radiation Elements
+1,19,switch between Incendiary and Cryo Elements
+1,20,switch between Incendiary and CorrosiveElements
+1,21,switch betweenCryo and Shock Elements
+1,22,switch between Cryo and RadiationElements
+1,23,switch between Cryo and Incendiary Elements
+1,24,switch between Cryo and Corrosive Elements
+1,25,switch between Corrosive and Shock Elements
+1,26,switch between Corrosive and Radiation Elements
+1,27,switch between Corrosive and Incendiary Elements
+1,28,switch between Corrosive and Cryo Elements
+1,29,Maliwan Underbarrel-switch between Shock and Radiation Elements
+1,30,Maliwan Underbarrel-switch between Incendiary and Radiation Elements
+1,31,Maliwan Underbarrel-switch between Cryo and Radiation Elements
+1,32,Maliwan Underbarrel-switch between Corrosive and Radiation Elements
+1,33,Maliwan Underbarrel-switch between Radiation and Corrosive Elements
+1,34,Maliwan Underbarrel-switch between Shock and Corrosive Elements
+1,35,Maliwan Underbarrel-switch between Incendiary and Corrosive Elements
+1,36,Maliwan Underbarrel-switch between Cryo and Corrosive Elements
+1,37,Maliwan Underbarrel-switch between Radiation and Cryo Elements
+1,38,Maliwan Underbarrel-switch between Shock and Cryo Elements
+1,39,Maliwan Underbarrel-switch between Incendiary and Cryo Elements
+1,40,Maliwan Underbarrel-switch between Corrosive and Cryo Elements
+1,41,Maliwan Underbarrel-switch between Radiation and Incendiary Elements
+1,42,Maliwan Underbarrel-switch between Cryo and Incendiary Elements
+1,43,Maliwan Underbarrel-switch between Shock and Incendiary Elements
+1,44,Maliwan Underbarrel-switch between Corrosive and Incendiary Elements
+1,45,Maliwan Underbarrel-switch between Radiation and Shock Elements
+1,46,Maliwan Underbarrel-switch between Cryo and Shock Elements
+1,47,Maliwan Underbarrel-switch between Corrosive and Shock Elements
+1,48,switch between Incendiary and Shock Elements
+1,49,Maliwan Underbarrel-switch between Incendiary and Shock Elements

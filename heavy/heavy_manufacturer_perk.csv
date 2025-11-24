@@ -1,0 +1,121 @@
+Manufacturer ID,Part_ID,Part_type,String,Stat,Description
+282,1,Rarity,,Legendary,迹象皮肤
+282,2,Barrel,Barrel_02_Splatoon,（机炮）迹象,发射反弹射弹，在反弹时留下元素喷溅
+282,3,Rarity,,Legendary,金皮肤
+282,6,Body,Body,/,
+282,7,Body Accessory,Body_A,+弹容,
+282,8,Body Accessory,Body_B,+射速,
+282,9,Body Accessory,Body_C,-冷却时间,
+282,10,Body Accessory,Body_D,无效果,
+282,12,Barrel,Barrel_02,机炮,
+282,13,Barrel Accessory,Barrel_01_A,附加枪管,增加1根额外枪管，提高+17%射速
+282,14,Barrel Accessory,Barrel_01_B,天使份额,每6次射击的最后一发不消耗弹药
+282,15,Barrel Accessory,Barrel_01_C,魔法子弹,每6次射击的最后一发将自动追踪
+282,16,Barrel Accessory,Barrel_01_A_D,恶魔份额,每6次射击的最后一发造成+100%伤害
+282,17,Barrel Accessory,Barrel_02_A,附加枪管,增加2根额外枪管，提升-65%射速
+282,18,Barrel Accessory,Barrel_02_B,爆炸弹,提升+125%伤害和+200%伤害半径
+282,19,Barrel Accessory,Barrel_02_C,双射,两根枪管同时开火
+282,20,Barrel Accessory,Barrel_02_D,穿透,射弹穿透敌人
+282,21,Rarity,,Common,
+282,22,Rarity,,Uncommon,
+282,23,Rarity,,Rare,
+282,24,Rarity,,Epic,
+282,25,Barrel,Barrel_01_Atlinggun,（加特林）吹哨人,持续射击时射速逐渐加速，且子弹自动追踪准心范围内的已攻击目标
+282,26,Rarity,,Legendary,阿特林机枪皮肤
+282,27,Barrel Accessory,Barrel_01_C,魔法子弹,每6次射击的最后一发将自动追踪
+282,28,Barrel Accessory,Barrel_01_A_D,恶魔份额,每6次射击的最后一发造成+100%伤害
+282,29,Barrel,Barrel_01,加特林,
+273,1,Barrel Accessory,Barrel_01_D,准星追踪,火箭会追踪准星目标
+273,2,Barrel Accessory,Barrel_01_D,准星追踪,火箭会追踪准星目标
+273,3,Barrel Accessory,Barrel_01_D,准星追踪,火箭会追踪准星目标
+273,25,Barrel Accessory,Barrel_01_D,准星追踪,火箭会追踪准星目标
+273,4,Barrel Accessory,Barrel_01_C,空中爆炸,火箭在靠近敌人时爆炸
+273,7,Barrel Accessory,Barrel_01_C,空中爆炸,火箭在靠近敌人时爆炸
+273,10,Barrel Accessory,Barrel_01_C,空中爆炸,火箭在靠近敌人时爆炸
+273,24,Barrel Accessory,Barrel_01_C,空中爆炸,火箭在靠近敌人时爆炸
+273,5,Barrel Accessory,Barrel_01_B,破片火箭,爆炸时弹片向前飞行
+273,8,Barrel Accessory,Barrel_01_B,破片火箭,爆炸时弹片向前飞行
+273,11,Barrel Accessory,Barrel_01_B,破片火箭,爆炸时弹片向前飞行
+273,23,Barrel Accessory,Barrel_01_B,破片火箭,爆炸时弹片向前飞行
+273,6,Barrel Accessory,Barrel_01_A,三管枪,发射旋转火箭，或通过充能进行三管齐射
+273,9,Barrel Accessory,Barrel_01_A,三管枪,发射旋转火箭，或通过充能进行三管齐射
+273,12,Barrel Accessory,Barrel_01_A,三管枪,发射旋转火箭，或通过充能进行三管齐射
+273,22,Barrel Accessory,Barrel_01_A,三管枪,发射旋转火箭，或通过充能进行三管齐射
+273,13,Rarity,,Legendary,金皮肤
+273,14,Body,Body,/,
+273,15,Body Accessory,Body_A,+伤害,
+273,16,Body Accessory,Body_B,+爆炸范围,
+273,17,Body Accessory,Body_C,-冷却时间,
+273,18,Body Accessory,Body_D,无效果,
+273,20,Barrel,Barrel_01,火箭筒,
+273,21,Barrel,Barrel_02,蜂巢火箭,
+273,26,Barrel Accessory,Barrel_02_A,双射-1次性发射2枚火箭,
+273,27,Barrel Accessory,Barrel_02_B,射速,射速提升+30%
+273,28,Barrel Accessory,Barrel_02_C,增大弹匣,弹匣容量增加+25%
+273,29,Barrel Accessory,Barrel_02_D,扫描,火箭自动追踪附近目标
+273,30,Rarity,,Common,
+273,31,Rarity,,Uncommon,
+273,32,Rarity,,Rare,
+273,33,Rarity,,Epic,
+273,34,Rarity,,Legendary,风流倜傥皮肤
+273,35,Barrel,Barrel_01_Javelin,（蜂巢）永恒之枪,子弹飞向空中后再像流星般直线攻击目标
+273,36,Rarity,,Legendary,渡鸦之火皮肤
+273,40,Barrel,Barrel_02_Ravenfire,（火箭筒）621,爆炸会从撞击点向外辐射扩散
+275,1,Barrel,Barrel_01_Streamer,（光束）委托模式,发射会向前射出光束的静止射弹
+275,2,Barrel Accessory,Barrel_01_A,爆炸,伤害溅射至目标附近的其他敌人
+275,18,Barrel Accessory,Barrel_01_A,爆炸,伤害溅射至目标附近的其他敌人
+275,3,Barrel Accessory,Barrel_01_D,分束器,光束会分裂并攻击附近最多2个额外目标
+275,21,Barrel Accessory,Barrel_01_D,分束器,光束会分裂并攻击附近最多2个额外目标
+275,4,Barrel Accessory,Barrel_02_C,复合,每次击中敌人后提升伤害
+275,9,Barrel Accessory,Barrel_02_C,复合,每次击中敌人后提升伤害
+275,24,Barrel Accessory,Barrel_02_C,复合,每次击中敌人后提升伤害
+275,5,Barrel Accessory,Barrel_02_D,跳弹,射弹在表面反弹
+275,7,Barrel Accessory,Barrel_02_D,跳弹,射弹在表面反弹
+275,25,Barrel Accessory,Barrel_02_D,跳弹,射弹在表面反弹
+275,6,Barrel Accessory,Barrel_02_A,宽大圆盘,增加射弹宽度
+275,8,Barrel Accessory,Barrel_02_A,宽大圆盘,增加射弹宽度
+275,22,Barrel Accessory,Barrel_02_A,宽大圆盘,增加射弹宽度
+275,10,Rarity,,Legendary,金皮肤
+275,11,Body,Body,/,
+275,12,Body Accessory,Body_A,+伤害,
+275,13,Body Accessory,Body_B,+弹容,
+275,14,Body Accessory,Body_C,-冷却时间,
+275,15,Body Accessory,Body_D,无效果,
+275,16,Barrel,Barrel_01,光束枪,
+275,17,Barrel,Barrel_02,飞盘发射器,
+275,19,Barrel Accessory,Barrel_01_B,热对流,光束发射时间越长，伤害越高
+275,20,Barrel Accessory,Barrel_01_C,散热器,弹匣容量增加+25%
+Examples,23,Barrel Accessory,Barrel_02_B,热交换,初次充能后以全自动模式开火
+275,26,Rarity,,Common,
+275,27,Rarity,,Uncommon,
+275,28,Rarity,,Rare,
+275,29,Rarity,,Epic,
+275,30,Barrel,Barrel_02_DiscJockey,反弹饼干,能量圆盘射弹最多反弹5次，每次反弹后获得+20%伤害
+275,31,Rarity,,Legendary,唱片骑师皮肤
+275,32,Rarity,,Legendary,直播网红皮肤
+289,1,Rarity,,Legendary,瓶装闪电皮肤
+289,2,Barrel Accessory,Barrel_02_C,分裂式,爆炸时生成3颗分裂式魔球
+289,16,Barrel Accessory,Barrel_02_C,分裂式,爆炸时生成3颗分裂式魔球
+289,3,Barrel Accessory,Barrel_02_D,感应追踪,在爆炸前自动追踪附近目标
+289,19,Barrel Accessory,Barrel_02_D,感应追踪,在爆炸前自动追踪附近目标
+289,4,Rarity,,Legendary,金皮肤
+289,5,Body,Body,/,
+289,6,Body Accessory,Body_A,+弹容,
+289,7,Body Accessory,Body_B,+伤害,
+289,8,Body Accessory,Body_C,--冷却时间,
+29,9,Body Accessory,Body_D,无效果,
+289,10,Barrel,Barrel_01,能量弹,
+289,11,Barrel,Barrel_02,能量魔球,
+289,12,Barrel Accessory,Barrel_01_A,跳弹,射弹在表面反弹
+289,13,Barrel Accessory,Barrel_01_B,穿透,射弹穿透敌人
+289,14,Barrel Accessory,Barrel_01_C,快速装填器,射速提升30%
+289,15,Barrel Accessory,Barrel_01_D,过载,被直接命中的敌人在延迟后爆炸，造成额外伤害
+289,17,Barrel Accessory,Barrel_02_A,双射,每次发射2颗射弹
+289,18,Barrel Accessory,Barrel_02_B,空气动力学,射弹速度提升+100%
+289,20,Rarity,,Common,
+289,21,Rarity,,Uncommon,
+289,22,Rarity,,Rare,
+289,23,Rarity,,Epic,
+289,24,Barrel,Barrel_01_GammaVoid,（能量魔球）辐射暴露,生成奇点并持续6秒，使敌人持续受到+50%辐射伤害
+289,25,Rarity,,Legendary,伽马虚空皮肤
+289,26,Barrel,Barrel_02_BottledLightning,（能量魔球）得手两次,蓄力后射出一个能量球，能量球朝前缓慢飞行，并对沿途周围释放闪电

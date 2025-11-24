@@ -1,0 +1,83 @@
+Manufacturer ID,Part_ID,Part_type,Stat,Description
+279,1,Legendary Perk,Nucleosynthesis,Triggers a Star Burst dealing 14872 Damage when Energy Shield breaks or fills
+279,2,Model,/,
+279,3,Rarity,Common,
+279,4,Rarity,Uncommon,
+279,5,Rarity,Rare,
+279,6,Rarity,Epic,
+279,7,Rarity,Legendary,Gold skin
+279,8,Legendary Perk,Psychosis,"When damaged, gain +15% Elemental Resistance and +50% Resistance to the last damage type received for 5s"
+279,9,Rarity,Legendary,Pandoran Memento skin
+279,10,Rarity,Legendary,Extra Medium skin
+283,1,Rarity,Common,
+283,2,Rarity,Uncommon,
+283,3,Rarity,Rare,
+283,4,Rarity,Epic,
+283,5,Rarity,Legendary,Gold skin
+283,6,Legendary Perk,Refreshments,"On kill, 50% chance to spawn an Ammo Booster and instantly refill Gun Ammo"
+283,7,Rarity,Legendary,Hoarder skin
+283,8,Legendary Perk,Bareknuckle,"On Melee Hit, consume an Armor Segment to gain +100% Melee Damage. When Armor Shield is 0, gain +50% Melee Damage"
+283,9,Rarity,Legendary,Heavyweight skin
+283,10,Model,/,
+287,1,Rarity,Common,
+287,2,Rarity,Uncommon,
+287,3,Rarity,Rare,
+287,4,Rarity,Epic,
+287,5,Rarity,Legendary,Gold skin
+287,6,Legendary Perk,Shield Boi,Spawns a Shield Boi when the last Armor Segment breaks
+287,7,Rarity,Legendary,Principal skin
+287,8,Rarity,Legendary,Timekeeper's New skin
+287,9,Legendary Perk,Bininu,"While equipped, gain +7436 Max Health, regenerate +372 Health/s, and reduce Damage Taken by 33%"
+287,10,Model,/,
+293,1,Legendary Perk,Glass,"When damaged, gain a stack of Determination. Each stack reduces Damage Taken by 2%, max 25 stacks. When Energy Shield breaks, release a Star Burst dealing 7436 Damage, increased by +20% per stack of Determination"
+293,2,Legendary Perk,Direct Current,"Toggle via Ground Slam. When active, continuously drains Shield to gain +40% Bonus Shock Damage, but incoming Damage bypasses Shield"
+293,3,Rarity,Legendary,Protean Cell skin
+293,4,Model,/,
+293,5,Rarity,Common,
+293,6,Rarity,Uncommon,
+293,7,Rarity,Rare,
+293,8,Rarity,Epic,
+293,9,Rarity,Legendary,Gold skin
+293,10,Rarity,Legendary,Cindershelly skin
+300,1,Rarity,Common,
+300,2,Rarity,Uncommon,
+300,3,Rarity,Rare,
+300,4,Rarity,Epic,
+300,5,Rarity,Legendary,Gold skin
+300,6,Legendary Perk,Short Circuit,Periodically shocks nearby enemies while Energy Shield is not full
+300,7,Rarity,Legendary,Sparky Shield skin
+300,8,Legendary Perk,Overshield Eater,"When Energy Shield is active, damaged enemies have a 12% chance to drop Overshield. While you have Overshield, gain +25% Shock Damage"
+300,9,Rarity,Legendary,Watts 4 Dinner skin
+300,10,Model,/,
+300,11,Legendary Perk,Backdoor,"When Energy Shield breaks, trigger a Star Burst on 3 enemies dealing 5577 Damage"
+300,12,Rarity,Legendary,Firebreak skin
+306,1,Rarity,Common,
+306,2,Rarity,Uncommon,
+306,3,Rarity,Rare,
+306,4,Rarity,Epic,
+306,5,Rarity,Legendary,Gold skin
+306,6,Rarity,Legendary,Aged Cask skin
+306,7,Legendary Perk,Vintage,Has only 1 Armor Segment
+306,8,Legendary Perk,Shallot Shell,Gain 2 seconds of Damage Immunity when an Armor Segment breaks
+306,9,Rarity,Legendary,Onion skin
+306,10,Model,/,
+312,1,Rarity,Common,
+312,2,Rarity,Uncommon,
+312,3,Rarity,Rare,
+312,4,Rarity,Epic,
+312,5,Rarity,Legendary,Gold skin
+312,6,Legendary Perk,Wings of Grace,"While equipped, revive faster in Fight For Your Life. Automatically gain a Second Wind when FFYL time expires (300s cooldown)"
+312,7,Rarity,Legendary,Guardian Angel skin
+312,8,Legendary Perk,Power Play,"Gain Overshield when Energy Shield fills. When Energy Shield is full, gain +25% Fire Rate, +25% Movement Speed, and regenerate 1 Ammo/s"
+312,9,Rarity,Legendary,Super Soldier skin
+312,10,Model,/,
+321,1,Rarity,Common,
+321,2,Rarity,Uncommon,
+321,3,Rarity,Rare,
+321,4,Rarity,Epic,
+321,5,Rarity,Legendary,Gold skin
+321,6,Legendary Perk,Bundled,"On kill, spawn Missiles that home in on nearby enemies, dealing 7436 Damage each"
+321,7,Rarity,Legendary,Firewerks skin
+321,8,Rarity,Legendary,Compleation skin
+321,9,Legendary Perk,Sisyphusian,Immediately lose an Armor Segment when Armor Shield becomes full
+321,10,Model,/,

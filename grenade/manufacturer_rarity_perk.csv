@@ -1,0 +1,92 @@
+Manufacturer ID,Part_ID,Part_type,Stat,Description
+263,1,Perk,碎片强化,向敌人发射第2颗生成的手雷
+263,2,Perk,分配器有效载荷,有效载荷-飞行途中生成第2颗手雷
+263,3,Perk,马里旺,手雷会粘在敌人身上，如掉落地面，则会自动飞向最近的来袭敌人
+263,4,Rarity,Common,
+263,5,Rarity,Uncommon,
+263,6,Rarity,Rare,
+263,7,Rarity,Epic,
+263,8,Rarity,Legendary,金皮肤
+263,9,Rarity,Legendary,毁灭迪斯科皮肤
+263,10,Legendary Perk,凹槽,一边播放迪斯科音乐一边向投掷方向飞行，并对范围内造成属性伤害，飞行一段时间后爆炸
+263,11,Rarity,Legendary,递归皮肤
+263,12,Legendary Perk,循环,触碰物体后停留在物体上，一段时间后爆炸；朝空中投掷一定距离时，可悬停在空中
+263,13,Perk,中继器强化,飞行途中向下生成额外手雷
+267,1,Perk,雅各布斯,手雷击中弱点时会造成暴击伤害
+267,2,Perk,分配器有效载荷,有效载荷-飞行途中生成第2颗手雷
+267,3,Perk,碎片强化,向敌人发射第2颗生成的手雷
+267,4,Rarity,Common,
+267,5,Rarity,Uncommon,
+267,6,Rarity,Rare,
+267,7,Rarity,Epic,
+267,8,Rarity,Legendary,金皮肤
+267,9,Legendary Perk,杂要演员,接住反弹的手雷，恢复1个手雷能量点
+267,10,Rarity,Legendary,旋转刀刃皮肤
+267,11,Legendary Perk,忍者速度,每次连续命中都会短时间内获得+10%移动速度，最多叠加7层
+267,12,Rarity,Legendary,翔苦无皮肤
+267,13,Perk,中继器强化,飞行途中生成额外手雷
+270,1,Rarity,Common,
+270,2,Rarity,Uncommon,
+270,3,Rarity,Rare,
+270,4,Rarity,Epic,
+270,5,Rarity,Legendary,金皮肤
+270,6,Legendary Perk,临时替代,无特殊效果，如词条说明般，只是个临时替代品
+270,7,Rarity,Legendary,震颤斧皮肤
+270,8,Legendary Perk,筑垒阵地,爆炸前会有随机语音：爆炸后，手雷在原地跳动，向外溅射伤害并散发气体，同时射出追踪弹，造成对应属性的伤害
+270,9,Rarity,Legendary,导火索皮肤
+270,10,Perk,代达洛斯,手雷在手持时会开始计时，并在固定时间后爆炸
+272,1,Perk,教团,手雷会自动追踪附近敌人
+272,2,Rarity,Common,
+272,3,Rarity,Uncommon,
+272,4,Rarity,Rare,
+272,5,Rarity,Epic,
+272,6,Rarity,Legendary,金皮肤
+272,7,Legendary Perk,空心入筐,必定带有分裂式有效载荷和教团词条：爆炸时分裂出三颗手雷，一共分裂两次，且手雷会自动追踪附近的敌人
+272,8,Rarity,Legendary,蜂群皮肤
+272,9,Legendary Perk,不间断,持续追踪目标
+272,10,Rarity,Legendary,乔穆尔基皮肤
+272,11,Legendary Perk,被诅咒的,扔出一个缓慢移动并追踪目标的骷髅头，骷髅头移动时会向目标发射子弹，碰到目标爆炸
+272,12,Rarity,Legendary,骷髅皮肤
+278,1,Perk,中继器强化,飞行途中向下生成额外手雷
+278,2,Perk,开颅者,手雷会传送至目的地
+278,3,Perk,分配器有效载荷,有效载荷-飞行途中生成第2颗手雷
+278,4,Rarity,Common,
+278,5,Rarity,Uncommon,
+278,6,Rarity,Rare,
+278,7,Rarity,Epic,
+278,8,Rarity,Legendary,金皮肤
+278,9,Rarity,Legendary,果冻皮肤
+278,10,Legendary Perk,自我复制,投掷后在触碰物体时会爆炸，同时在较短时间内会反弹并衍生出新的手雷
+278,11,Legendary Perk,浮力,若投掷出一定距离，手雷会在投掷方向空中悬浮
+278,12,Rarity,Legendary,浮标皮肤
+278,13,Perk,碎片强化,向敌人发射第2颗生成的手雷
+291,1,Rarity,Common,
+291,2,Rarity,Uncommon,
+291,3,Rarity,Rare,
+291,4,Rarity,Epic,
+291,5,Rarity,Legendary,金皮肤
+291,6,Legendary Perk,掩护你,投掷后，向四周大范围弹射4+8个衍生物，并在原地弹跳，造成对应属性伤害
+291,7,Rarity,Legendary,一鸣惊人皮肤
+291,8,Legendary Perk,瀑布,伤害目标时引起额外爆炸
+291,9,Rarity,Legendary,瀑布皮肤
+291,10,Perk,弗拉多夫,撞击时手雷爆炸
+298,1,Rarity,Common,
+298,2,Rarity,Uncommon,
+298,3,Rarity,Rare,
+298,4,Rarity,Epic,
+298,5,Rarity,Legendary,金皮肤
+298,6,Legendary Perk,超辣,持续生成追踪式托格粘性弹
+298,7,Rarity,Legendary,火锅皮肤
+298,8,Legendary Perk,剑鱼,引爆时造成近战伤害
+298,9,Rarity,Legendary,滑溜溜皮肤
+298,10,Perk,托格,撞击敌人时手雷爆炸
+311,1,Rarity,Common,
+311,2,Rarity,Uncommon,
+311,3,Rarity,Rare,
+311,4,Rarity,Epic,
+311,5,Rarity,Legendary,金皮肤
+311,6,Legendary Perk,粘性扳机,手雷引爆时会生成组合魔球
+311,7,Rarity,Legendary,雷管故障皮肤
+311,8,Legendary Perk,天降死神,在投掷位置发出信号，召唤无人机并在信号范围附近投下多枚爆炸物，并产生对应属性伤害
+311,9,Rarity,Legendary,无人机皮肤
+311,10,Perk,泰迪尔,轻按两次远程引爆投掷的手雷

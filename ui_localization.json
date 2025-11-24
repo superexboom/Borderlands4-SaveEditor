@@ -1,0 +1,618 @@
+{
+  "save_selector": {
+    "headers": {
+      "file": "文件",
+      "user_id": "平台 64位 ID",
+      "modified": "修改日期",
+      "size": "大小",
+      "path": "路径"
+    },
+    "buttons": {
+      "refresh": "刷新",
+      "open": "使用选中的存档和ID打开"
+    },
+    "labels": {
+      "user_id_input": "手动输入 User ID:",
+      "status_loading": "扫描存档目录...",
+      "status_no_saves": "未找到存档文件。",
+      "status_found_saves": "找到 {count} 个存档文件。"
+    },
+    "placeholders": {
+      "user_id_input": "如果自动检测的ID不正确，请在此处输入"
+    }
+  },
+  "main_window": {
+    "window_title": "无主之地4 存档编辑器 V3.3",
+    "subtitle": "By SuperExboom - 免费软件，如果你付费了那你就被骗了",
+    "header": {
+      "title": "无主之地4 存档编辑器",
+      "open": "打开",
+      "save": "保存",
+      "save_as": "另存为..."
+    },
+    "menu": {
+      "open_selector": "打开存档选择器",
+      "save": "保存",
+      "save_as": "另存为..."
+    },
+    "status": {
+      "welcome": "欢迎使用无主之地4存档编辑器"
+    },
+    "tabs": {
+      "select_save": "选择存档",
+      "character": "角色",
+      "items": "物品",
+      "converter": "转换器",
+      "yaml_editor": "YAML 编辑器",
+      "class_mod": "职业模组",
+      "enhancement": "强化模组",
+      "weapon_editor": "武器编辑器",
+      "weapon_generator": "武器生成器",
+      "grenade": "手雷",
+      "shield": "护盾",
+      "repkit": "修复套件",
+      "heavy_weapon": "重武器"
+    },
+    "dialogs": {
+      "success": "成功",
+      "error": "错误",
+      "warning": "警告",
+      "critical": "严重错误",
+      "cancel": "取消",
+      "decrypt_success": "存档文件解密成功！\n平台: {platform}\n备份已创建: {backup_name}",
+      "decrypt_failed": "解密失败",
+      "decrypt_failed_msg": "无法使用ID '{user_id}' 解密。\n({error})\n\n请输入正确的64位ID:",
+      "user_id_needed": "需要用户ID",
+      "enter_user_id": "请输入此存档对应的64位ID (Epic/Steam ID):",
+      "open_cancelled": "已取消打开存档。",
+      "no_save": "无存档",
+      "load_save_first": "请先加载一个存档文件。",
+      "decrypt_save_first": "请先解密一个存档文件。",
+      "encode_failed": "编码失败",
+      "encode_failed_msg": "无法从提供的代码进行编码: {error}",
+      "add_success": "新物品已成功加入背包。",
+      "add_fail": "无法将物品加入背包。可能是存档数据不兼容或已损坏。",
+      "add_error": "添加物品时发生严重错误: {error}",
+      "update_error": "更新物品时发生严重错误: {error}",
+      "char_applied": "角色数据已应用。",
+      "char_apply_error": "应用角色数据时出错。",
+      "confirm_sync": "确认同步所有背包物品等级？",
+      "sync_title": "同步完成",
+      "sync_partial": "同步部分失败",
+      "sync_msg": "同步完成。成功: {success}, 失败: {fail}。",
+      "sync_fail_details": "\n\n失败详情:\n{details}",
+      "preset_applied": "已应用预设: {name}",
+      "preset_fail": "应用预设失败: {name}",
+      "batch_complete": "批量添加完成",
+      "batch_success": "成功添加 {count} 个物品。",
+      "batch_fail": "批量添加失败",
+      "batch_fail_msg": "未能成功添加任何物品。失败 {count} 个。",
+      "iter_complete": "遍历添加完成",
+      "iter_success": "成功添加 {count} 个物品。",
+      "iter_fail": "遍历添加失败",
+      "iter_fail_msg": "未能成功添加任何物品。失败 {count} 个。",
+      "save_encrypted_title": "保存加密存档",
+      "save_saved": "存档已保存到:\n{path}",
+      "encrypt_failed": "加密失败"
+    },
+    "worker": {
+      "no_data": "未生成任何数据。",
+      "generating": "正在生成待处理列表...",
+      "base_empty": "基础数据不能为空。",
+      "combo_error_range": "组合集起始值不能大于结束值。",
+      "combo_error_size": "组合基础集数量必须大于或等于组合大小。",
+      "iter_error_range": "遍历起始值不能大于结束值。",
+      "special_base_needed": "请提供特殊格式的基础值。",
+      "generated_writing": "已生成 {count} 个物品，准备写入...",
+      "writing_progress": "正在写入 {current}/{total}...",
+      "generated_encoding": "已生成 {count} 条数据，开始编码...",
+      "encoding_progress": "正在编码 {current}/{total}...",
+      "error_prefix": "错误: "
+    }
+  },
+  "character_tab": {
+    "groups": {
+      "character_info": "角色",
+      "currency": "货币",
+      "world_presets": "世界 (World)",
+      "char_presets": "角色 (Character)"
+    },
+    "labels": {
+      "name": "名称:",
+      "difficulty": "难度:",
+      "level": "角色等级:",
+      "xp": "角色经验值:",
+      "spec_level": "专精等级:",
+      "spec_points": "专精点数:",
+      "money": "金钱:",
+      "eridium": "镒矿:"
+    },
+    "buttons": {
+      "apply_changes": "应用角色与货币更改",
+      "sync_levels": "同步背包所有物品等级至当前角色等级"
+    },
+    "warnings": {
+      "sync_warning": "警告：此操作可能导致已装备的物品被卸下，要从背包里重新装备。"
+    },
+    "presets": {
+      "clear_fog": "移除地图迷雾",
+      "discover_locs": "发现所有地点",
+      "unlock_safehouses": "解锁所有安全屋",
+      "unlock_collectibles": "解锁所有收集品",
+      "complete_challenges": "完成所有挑战",
+      "complete_achievements": "完成所有成就",
+      "skip_story": "跳过剧情任务",
+      "skip_all": "跳过所有任务",
+      "change_class": "更改角色职业",
+      "max_level": "满级 (50级)",
+      "max_sdu": "最大储物格代币",
+      "unlock_vault": "解锁所有密藏大门",
+      "unlock_vehicles": "解锁所有载具",
+      "unlock_specs": "解锁所有专精",
+      "unlock_uvhm": "解锁UVHM",
+      "unlock_max": "解锁/最大化所有内容"
+    },
+    "dialogs": {
+      "change_class_title": "更改角色职业",
+      "select_class": "选择要更改为的职业:"
+    }
+  },
+  "items_tab": {
+    "columns": {
+      "name": "物品名称",
+      "type": "类型",
+      "slot": "容器/格",
+      "level": "等级"
+    },
+    "search_placeholder": "搜索物品...",
+    "add_item": {
+      "label_serial": "物品序列号:",
+      "placeholder_serial": "输入 @U... 或已解码的代码",
+      "label_flag": "Flag:",
+      "button_add": "加入到背包",
+      "flags": {
+        "1": "1 (普通)",
+        "3": "3 (收藏)",
+        "5": "5 (垃圾)",
+        "17": "17 (编组1)",
+        "33": "33 (编组2)",
+        "65": "65 (编组3)",
+        "129": "129 (编组4)"
+      }
+    },
+    "details": {
+      "group_summary": "总结",
+      "group_fields": "字段",
+      "item": "物品",
+      "container": "容器",
+      "slot": "所在格",
+      "manufacturer": "厂商",
+      "type": "类型",
+      "level": "等级",
+      "serial": "序列",
+      "decoded_id": "解码ID",
+      "button_update": "更新选中物品"
+    },
+    "defaults": {
+      "unknown_container": "未知容器",
+      "unknown_type": "未知类型"
+    },
+    "dialogs": {
+      "input_error": "输入错误",
+      "enter_serial": "请输入物品序列号或已解码的代码。",
+      "no_selection": "无选择",
+      "select_item": "请先在列表中选择一个物品。",
+      "error": "错误",
+      "missing_path": "无法更新，物品缺少内部路径信息。"
+    }
+  },
+  "converter_tab": {
+    "groups": {
+      "single": "单个转换器",
+      "batch": "批量转换器",
+      "batch_add": "批量加入背包",
+      "iterator": "遍历生成器"
+    },
+    "labels": {
+      "base85": "Base85:",
+      "deserialize": "Deserialize:",
+      "status_ready": "状态: 就绪",
+      "input_batch": "输入 (每行一个):",
+      "output": "输出结果:",
+      "status_processing": "状态: 处理中...",
+      "status_error": "状态: 错误: {error}",
+      "status_success": "状态: 转换成功!",
+      "status_critical": "状态: 严重错误: {error}",
+      "status_empty": "状态: 输入为空。",
+      "status_progress": "状态: 正在处理 {current} / {total}...",
+      "status_complete": "状态: 处理完成!",
+      "input_batch_add": "输入 (每行一个，可以是Base85或解析后的字符串):",
+      "select_flag": "选择Flag:",
+      "status_prepare": "状态: 准备处理...",
+      "status_batch_add_progress": "状态: 正在处理 {current}/{total}... 成功: {success}, 失败: {fail}",
+      "status_batch_add_complete": "状态: 处理完成。成功: {success}, 失败: {fail}.",
+      "base_data": "基础数据 (Deserialize):",
+      "iter_start": "遍历起始值:",
+      "iter_end": "遍历结束值:",
+      "special_base": "特殊格式基础值:",
+      "combo_start": "组合集起始值:",
+      "combo_end": "组合集结束值:",
+      "combo_size": "组合大小:",
+      "generated_result": "生成结果:",
+      "special_combo_input": "组合输入:",
+      "status_generating": "状态: 正在生成...",
+      "status_gen_complete": "状态: 生成完成!"
+    },
+    "placeholders": {
+      "base85": "输入Base85编码，例如: @Ug#2fK2...",
+      "deserialize": "输入解析后的数据，例如: 255, 0, 1, 50|..."
+    },
+    "buttons": {
+      "clear": "清除",
+      "export_txt": "导出为 .txt",
+      "start_batch": "开始批量处理",
+      "batch_add": "批量加入背包",
+      "adding": "正在加入...",
+      "processing": "处理中...",
+      "start_iter": "开始遍历并生成",
+      "export_result": "导出结果",
+      "gen_write": "生成并写入背包 (YAML模式)",
+      "generating": "生成中...",
+      "gen_writing": "正在生成并写入..."
+    },
+    "checkboxes": {
+      "special_format": "启用特殊格式 {基础值:变量}",
+      "skin_mode": "启用武器皮肤模式",
+      "combo_mode": "启用排列组合模式",
+      "special_combo": "特殊组合 {AAA:B} -> {AAA:[... B]}",
+      "yaml_format": "启用YAML格式化输出 (通用)"
+    },
+    "flags": {
+      "1": "1 (普通)",
+      "3": "3 (收藏)",
+      "5": "5 (垃圾)",
+      "17": "17 (编组1)",
+      "33": "33 (编组2)",
+      "65": "65 (编组3)",
+      "129": "129 (编组4)"
+    },
+    "dialogs": {
+      "no_content": "无内容",
+      "no_export": "没有可导出的结果。",
+      "export_batch_title": "导出批量结果",
+      "success": "成功",
+      "export_success": "结果已成功导出到:\n{path}",
+      "export_fail": "导出失败",
+      "write_fail": "无法写入文件: {error}",
+      "no_input": "无输入",
+      "batch_add_empty": "批量加入背包的输入框中没有内容。",
+      "export_yaml": "导出为YAML",
+      "export_txt_title": "导出为TXT",
+      "export_opts": "导出选项",
+      "only_base85": "是否只导出Base85编码?"
+    }
+  },
+  "yaml_tab": {
+    "tree_headers": {
+      "key": "键",
+      "value": "值"
+    },
+    "buttons": {
+      "yaml_view": "YAML视图",
+      "tree_view": "树状视图"
+    },
+    "dialogs": {
+      "yaml_error": "YAML错误",
+      "parse_error": "无法解析YAML: {error}"
+    }
+  },
+  "class_mod_tab": {
+    "top_controls": {
+      "class": "职业",
+      "rarity": "稀有度",
+      "name": "名称",
+      "seed": "随机种子 (1–9999)"
+    },
+    "legendary": {
+      "title": "传奇附加",
+      "clear": "清空"
+    },
+    "output": {
+      "title": "Deserialize",
+      "base85": "Base85:",
+      "deserialize": "Deserialize:",
+      "add_to_backpack": "添加进背包"
+    },
+    "skills": {
+      "title": "技能目录",
+      "search_placeholder": "搜索技能...",
+      "header_icon": "图标",
+      "header_skill": "技能",
+      "header_codes": "代码 (顺序)",
+      "header_points": "+点数"
+    },
+    "perks": {
+      "title": "通用专长",
+      "search_placeholder": "搜索专长...",
+      "clear": "清空"
+    },
+    "skill_point_widget": {
+      "min": "最小",
+      "max": "最大"
+    },
+    "dialogs": {
+      "error": "错误",
+      "load_error_code": "无法加载 class_code.json: {error}",
+      "warning": "警告",
+      "load_error_loc": "无法加载 class_localization.json: {error}",
+      "no_data": "无数据",
+      "no_valid_base85": "没有可用的有效Base85编码。",
+      "coding_error": "编码错误: {error}",
+      "gen_error": "生成错误: {error}"
+    },
+    "tooltips": {
+      "type": "类型"
+    }
+  },
+  "enhancement_tab": {
+    "groups": {
+      "output": "Deserialize",
+      "base85": "Base85 编码",
+      "perks_mfg": "所选厂商专长",
+      "perk_stacking": "专长堆叠",
+      "builder_247": "次要属性构建器"
+    },
+    "labels": {
+      "selected_stacks": "已选堆叠",
+      "manufacturer": "厂商",
+      "rarity": "稀有度"
+    },
+    "buttons": {
+      "copy": "复制",
+      "add_to_backpack": "添加进背包",
+      "clear": "清空"
+    },
+    "flags": {
+      "1": "1 (普通)",
+      "3": "3 (收藏)",
+      "5": "5 (垃圾)",
+      "17": "17 (编组1)",
+      "33": "33 (编组2)",
+      "65": "65 (编组3)",
+      "129": "129 (编组4)"
+    },
+    "dialogs": {
+      "error_load": "错误: 无法加载 enhancement_data.txt。",
+      "copied": "已复制",
+      "copy_raw_msg": "输出代码已复制到剪贴板！",
+      "copy_b85_msg": "Base85 代码已复制到剪贴板！",
+      "no_valid_code": "无效代码",
+      "gen_valid_first": "请先生成有效的强化代码。"
+    }
+  },
+  "weapon_editor_tab": {
+    "labels": {
+      "load_from_backpack": "从背包读取",
+      "decrypt_save_to_show_weapons": "解密存档后将在此处显示武器...",
+      "serial_b85": "Base85:",
+      "serial_decoded": "Deserialize:",
+      "manufacturer": "厂商",
+      "weapon_type": "武器类型",
+      "rarity": "稀有度",
+      "level": "等级",
+      "seed": "种子",
+      "weapon_name_label": "武器名称: ",
+      "weapon_parts": "武器部件",
+      "parts_list": "部件列表",
+      "parse_serial_to_show_parts": "解析武器序列后将在此处显示部件...",
+      "level_label": "等级",
+      "slot_label": "所在格"
+    },
+    "buttons": {
+      "update_weapon": "更新武器",
+      "add_to_backpack": "添加到背包",
+      "add_part": "+ 添加部件",
+      "confirm_add": "确认添加"
+    },
+    "flags": {
+      "1": "1 (普通)",
+      "3": "3 (收藏)",
+      "5": "5 (垃圾)",
+      "17": "17 (编组1)",
+      "33": "33 (编组2)",
+      "65": "65 (编组3)",
+      "129": "129 (编组4)"
+    },
+    "dialogs": {
+      "error": "错误",
+      "no_weapons_in_backpack": "背包中没有符合条件的武器。",
+      "no_valid_decoded_data": "该物品没有有效的解码数据。",
+      "parse_error": "解析错误",
+      "parse_weapon_error": "解析武器时发生未知错误",
+      "parts_not_found": "未找到或无法解析部件。",
+      "no_selection": "无选择",
+      "select_weapon_first": "请先从背包中选择一件武器。",
+      "encoding_fail": "编码失败",
+      "cannot_reencode_serial": "无法重新编码序列",
+      "cannot_encode_serial": "无法编码序列",
+      "success": "成功",
+      "no_input": "无输入",
+      "serial_empty": "序列号为空。",
+      "no_weapon": "无武器",
+      "load_weapon_first": "请先加载一个武器。",
+      "add_part_title": "添加部件",
+      "select_parts_to_add": "选择要添加的部件",
+      "cannot_determine_mfg": "无法确定当前武器制造商。",
+      "select_skin_title": "选择皮肤",
+      "select_skin_msg": "选择要应用的皮肤"
+    },
+    "misc": {
+      "skin": "皮肤",
+      "elemental": "元素"
+    }
+  },
+  "weapon_gen_tab": {
+    "labels": {
+      "serial_decoded": "Deserialize:",
+      "serial_b85": "Base85:",
+      "manufacturer": "厂商",
+      "weapon_type": "武器类型",
+      "level": "等级",
+      "seed": "种子",
+      "select_flag": "选择Flag:"
+    },
+    "buttons": {
+      "add_to_backpack": "添加到背包"
+    },
+    "dialogs": {
+      "error_title": "错误",
+      "load_error": "加载数据时出错: {error}",
+      "file_not_found": "一个或多个武器CSV文件路径未能找到。",
+      "loc_file_error": "'weapon_localization_zh-CN.json' 文件加载失败。",
+      "no_serial_title": "无序列号",
+      "gen_first": "请先生成一个武器。"
+    }
+  },
+  "grenade_tab": {
+    "groups": {
+      "perks": "专长",
+      "mfg_perks": "制造商专属技能",
+      "element": "元素 (单选)",
+      "firmware": "固件 (单选)",
+      "legendary": "传奇技能",
+      "universal": "通用技能",
+      "output": "Deserialize",
+      "base_attrs": "基础属性"
+    },
+    "labels": {
+      "raw": "Deserialize:",
+      "base85": "Base85:",
+      "manufacturer": "制造商:",
+      "level": "等级:",
+      "rarity": "稀有度:"
+    },
+    "buttons": {
+      "copy": "复制",
+      "add_to_backpack": "加入背包",
+      "clear": "清空"
+    },
+    "misc": {
+      "none": "无"
+    },
+    "dialogs": {
+      "load_error": "错误: 手雷数据(grenade data)无法加载。",
+      "success": "成功",
+      "copied": "已复制到剪贴板。",
+      "no_valid_code": "无有效代码",
+      "gen_first": "请先生成一个有效的序列号。"
+    }
+  },
+  "shield_tab": {
+    "groups": {
+      "perks": "专长",
+      "element": "元素抗性 (单选)",
+      "firmware": "固件 (单选)",
+      "legendary": "传奇技能",
+      "energy": "能量护盾技能",
+      "armor": "护甲护盾技能",
+      "universal": "通用技能",
+      "output": "Deserialize",
+      "base_attrs": "基础属性"
+    },
+    "labels": {
+      "raw": "Deserialize:",
+      "base85": "Base85:",
+      "manufacturer": "制造商（注意护盾类型）:",
+      "level": "等级:",
+      "rarity": "稀有度:"
+    },
+    "buttons": {
+      "copy": "复制",
+      "add_to_backpack": "加入背包",
+      "clear": "清空"
+    },
+    "misc": {
+      "none": "无"
+    },
+    "dialogs": {
+      "load_error": "错误: 护盾数据(shield data)无法加载。",
+      "success": "成功",
+      "copied": "已复制到剪贴板。",
+      "no_valid_code": "无有效代码",
+      "gen_first": "请先生成一个有效的序列号。"
+    }
+  },
+  "repkit_tab": {
+    "groups": {
+      "perks": "技能",
+      "prefix": "前缀 (单选)",
+      "resistance": "元素抗性/免疫 (单选)",
+      "firmware": "固件 (单选)",
+      "legendary": "传奇技能",
+      "universal": "通用技能 (可多选/堆叠)",
+      "output": "Deserialize",
+      "base_attrs": "基础属性"
+    },
+    "labels": {
+      "raw": "Deserialize:",
+      "base85": "Base85:",
+      "manufacturer": "制造商:",
+      "level": "等级:",
+      "rarity": "稀有度:",
+      "model_plus": "模块插件:"
+    },
+    "buttons": {
+      "copy": "复制",
+      "add_to_backpack": "加入背包",
+      "clear": "清空",
+      "random": "随机"
+    },
+    "misc": {
+      "none": "无"
+    },
+    "dialogs": {
+      "load_error": "错误: 修复套件数据(repkit data)无法加载。",
+      "success": "成功",
+      "copied": "已复制到剪贴板。",
+      "no_valid_code": "无有效代码",
+      "gen_first": "请先生成一个有效的序列号。",
+      "load_fail_title": "加载数据失败",
+      "path_error": "无法找到修复套件CSV文件路径。",
+      "parse_error": "无法加载或解析修复套件数据文件: {error}"
+    }
+  },
+  "heavy_weapon_tab": {
+    "groups": {
+      "perks": "专长",
+      "barrel": "枪管 (单选)",
+      "element": "元素 (单选)",
+      "firmware": "固件 (单选)",
+      "barrel_acc": "枪管附件 (可多选/堆叠)",
+      "body_acc": "枪身附件 (可多选/堆叠)",
+      "output": "Deserialize",
+      "base_attrs": "基础属性"
+    },
+    "labels": {
+      "raw": "Deserialize:",
+      "base85": "Base85:",
+      "manufacturer": "制造商:",
+      "level": "等级:",
+      "rarity": "稀有度:"
+    },
+    "buttons": {
+      "copy": "复制",
+      "add_to_backpack": "加入背包",
+      "clear": "清空"
+    },
+    "misc": {
+      "none": "无"
+    },
+    "dialogs": {
+      "load_error": "错误: 重武器数据(heavy weapon data)无法加载。",
+      "success": "成功",
+      "copied": "已复制到剪贴板。",
+      "no_valid_code": "无有效代码",
+      "gen_first": "请先生成一个有效的序列号。"
+    }
+  }
+}

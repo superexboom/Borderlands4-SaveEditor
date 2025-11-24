@@ -1,0 +1,92 @@
+Manufacturer ID,Part_ID,Part_type,Stat,Description
+263,1,Perk,"Splinter Augment","Launches the second spawned Grenade toward an enemy"
+263,2,Perk,"Divider Payload","Payload - Spawns a second Grenade while midflight"
+263,3,Perk,"Maliwan","Grenades stick to enemies; if they hit the ground, they automatically fly towards the nearest incoming enemy"
+263,4,Rarity,Common,
+263,5,Rarity,Uncommon,
+263,6,Rarity,Rare,
+263,7,Rarity,Epic,
+263,8,Rarity,Legendary,"Gold skin"
+263,9,Rarity,Legendary,"Destructive Disco skin"
+263,10,Legendary Perk,"Groove","Flies in the throw direction playing disco music, dealing elemental damage in the area, and explodes after a duration"
+263,11,Rarity,Legendary,"Recursive skin"
+263,12,Legendary Perk,"Recursion","Stays on object upon contact and explodes after a duration; if thrown a certain distance into the air, it can hover"
+263,13,Perk,"Repeater Augment","Spawns additional Grenades downwards while midflight"
+267,1,Perk,"Jakobs","Grenades deal critical damage when hitting weak points"
+267,2,Perk,"Divider Payload","Payload - Spawns a second Grenade while midflight"
+267,3,Perk,"Splinter Augment","Launches the second spawned Grenade toward an enemy"
+267,4,Rarity,Common,
+267,5,Rarity,Uncommon,
+267,6,Rarity,Rare,
+267,7,Rarity,Epic,
+267,8,Rarity,Legendary,"Gold skin"
+267,9,Legendary Perk,"Acrobat","Catch a rebounded grenade to restore 1 grenade charge"
+267,10,Rarity,Legendary,"Spinning Blade skin"
+267,11,Legendary Perk,"Ninja Speed","Consecutive hits grant +10% movement speed for a short duration, stacks up to 7 times"
+267,12,Rarity,Legendary,"Sho Kunai skin"
+267,13,Perk,"Repeater Augment","Spawns additional Grenades while midflight"
+270,1,Rarity,Common,
+270,2,Rarity,Uncommon,
+270,3,Rarity,Rare,
+270,4,Rarity,Epic,
+270,5,Rarity,Legendary,"Gold skin"
+270,6,Legendary Perk,"Temporary Substitute","No special effect, just like the tooltip says, just a temporary substitute"
+270,7,Rarity,Legendary,"Buzz Axe skin"
+270,8,Legendary Perk,"Fortification","Random voice lines before explosion: After exploding, the grenade bounces in place dealing splash damage and releasing gas, while firing tracking shots dealing corresponding elemental damage"
+270,9,Rarity,Legendary,"Fuse skin"
+270,10,Perk,"Daedalus","Grenade timer starts when held and explodes after a fixed time"
+272,1,Perk,"Order","Grenades automatically track nearby enemies"
+272,2,Rarity,Common,
+272,3,Rarity,Uncommon,
+272,4,Rarity,Rare,
+272,5,Rarity,Epic,
+272,6,Rarity,Legendary,"Gold skin"
+272,7,Legendary Perk,"Swish","Always comes with Divider Payload and Order perk: Splits into three grenades upon explosion, splitting twice in total, and grenades automatically track nearby enemies"
+272,8,Rarity,Legendary,"Swarm skin"
+272,9,Legendary Perk,"Unceasing","Continuously tracks target"
+272,10,Rarity,Legendary,"Chaumurky skin"
+272,11,Legendary Perk,"Cursed","Throws a slowly moving skull that tracks the target; the skull fires bullets at the target while moving and explodes on contact"
+272,12,Rarity,Legendary,"Skully skin"
+278,1,Perk,"Repeater Augment","Spawns additional Grenades downwards while midflight"
+278,2,Perk,"Skullcracker","Grenade teleports to destination"
+278,3,Perk,"Divider Payload","Payload - Spawns a second Grenade while midflight"
+278,4,Rarity,Common,
+278,5,Rarity,Uncommon,
+278,6,Rarity,Rare,
+278,7,Rarity,Epic,
+278,8,Rarity,Legendary,"Gold skin"
+278,9,Rarity,Legendary,"Jelly skin"
+278,10,Legendary Perk,"Self-Replication","Explodes on contact with objects, then bounces and spawns new grenades within a short time"
+278,11,Legendary Perk,"Buoyancy","If thrown a certain distance, the grenade hovers in the air in the direction of the throw"
+278,12,Rarity,Legendary,"Buoy skin"
+278,13,Perk,"Splinter Augment","Launches the second spawned Grenade toward an enemy"
+291,1,Rarity,Common,
+291,2,Rarity,Uncommon,
+291,3,Rarity,Rare,
+291,4,Rarity,Epic,
+291,5,Rarity,Legendary,"Gold skin"
+291,6,Legendary Perk,"Covering Fire","After throwing, ejects 4+8 spawns in a large area around it, bouncing in place and dealing corresponding elemental damage"
+291,7,Rarity,Legendary,"Blockbuster skin"
+291,8,Legendary Perk,"Waterfall","Causes additional explosions when damaging targets"
+291,9,Rarity,Legendary,"Waterfall skin"
+291,10,Perk,"Vladof","Grenade explodes on impact"
+298,1,Rarity,Common,
+298,2,Rarity,Uncommon,
+298,3,Rarity,Rare,
+298,4,Rarity,Epic,
+298,5,Rarity,Legendary,"Gold skin"
+298,6,Legendary Perk,"Super Spicy","Continuously spawns tracking Torgue sticky bombs"
+298,7,Rarity,Legendary,"Firepot skin"
+298,8,Legendary Perk,"Swordfish","Deals melee damage on detonation"
+298,9,Rarity,Legendary,"Slippy skin"
+298,10,Perk,"Torgue","Grenade explodes on impacting enemy"
+311,1,Rarity,Common,
+311,2,Rarity,Uncommon,
+311,3,Rarity,Rare,
+311,4,Rarity,Epic,
+311,5,Rarity,Legendary,"Gold skin"
+311,6,Legendary Perk,"Sticky Trigger","Spawns a combo orb when the grenade detonates"
+311,7,Rarity,Legendary,"Faulty Detonator skin"
+311,8,Legendary Perk,"Death from Above","Emits a signal at the throw location, summoning a drone to drop multiple explosives near the signal, dealing corresponding elemental damage"
+311,9,Rarity,Legendary,"UAV skin"
+311,10,Perk,"Tediore","Double tap to remotely detonate thrown grenades"

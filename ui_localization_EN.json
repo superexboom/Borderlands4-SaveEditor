@@ -1,0 +1,618 @@
+{
+  "save_selector": {
+    "headers": {
+      "file": "File",
+      "user_id": "Platform 64-bit ID",
+      "modified": "Date Modified",
+      "size": "Size",
+      "path": "Path"
+    },
+    "buttons": {
+      "refresh": "Refresh",
+      "open": "Open with Selected Save and ID"
+    },
+    "labels": {
+      "user_id_input": "Manually Input User ID:",
+      "status_loading": "Scanning save directory...",
+      "status_no_saves": "No save files found.",
+      "status_found_saves": "Found {count} save file(s)."
+    },
+    "placeholders": {
+      "user_id_input": "Enter here if auto-detected ID is incorrect"
+    }
+  },
+  "main_window": {
+    "window_title": "Borderlands 4 Save Editor V3.3",
+    "subtitle": "By SuperExboom - Free software, if you paid for this you got scammed",
+    "header": {
+      "title": "Borderlands 4 Save Editor",
+      "open": "Open",
+      "save": "Save",
+      "save_as": "Save As..."
+    },
+    "menu": {
+      "open_selector": "Open Save Selector",
+      "save": "Save",
+      "save_as": "Save As..."
+    },
+    "status": {
+      "welcome": "Welcome to Borderlands 4 Save Editor"
+    },
+    "tabs": {
+      "select_save": "Select Save",
+      "character": "Character",
+      "items": "Items",
+      "converter": "Converter",
+      "yaml_editor": "YAML Editor",
+      "class_mod": "Class Mod",
+      "enhancement": "Enhancement",
+      "weapon_editor": "Weapon Editor",
+      "weapon_generator": "Weapon Generator",
+      "grenade": "Grenade",
+      "shield": "Shield",
+      "repkit": "Repkit",
+      "heavy_weapon": "Heavies"
+    },
+    "dialogs": {
+      "success": "Success",
+      "error": "Error",
+      "warning": "Warning",
+      "critical": "Critical Error",
+      "cancel": "Cancel",
+      "decrypt_success": "Save file decrypted successfully!\nPlatform: {platform}\nBackup created: {backup_name}",
+      "decrypt_failed": "Decryption Failed",
+      "decrypt_failed_msg": "Unable to decrypt using ID '{user_id}'.\n({error})\n\nPlease enter the correct 64-bit ID:",
+      "user_id_needed": "User ID Required",
+      "enter_user_id": "Please enter the 64-bit ID (Epic/Steam ID) for this save:",
+      "open_cancelled": "Open save cancelled.",
+      "no_save": "No Save",
+      "load_save_first": "Please load a save file first.",
+      "decrypt_save_first": "Please decrypt a save file first.",
+      "encode_failed": "Encoding Failed",
+      "encode_failed_msg": "Unable to encode from provided code: {error}",
+      "add_success": "New item successfully added to backpack.",
+      "add_fail": "Unable to add item to backpack. Save data might be incompatible or corrupted.",
+      "add_error": "Critical error while adding item: {error}",
+      "update_error": "Critical error while updating item: {error}",
+      "char_applied": "Character data applied.",
+      "char_apply_error": "Error applying character data.",
+      "confirm_sync": "Confirm syncing levels for all backpack items?",
+      "sync_title": "Sync Complete",
+      "sync_partial": "Sync Partially Failed",
+      "sync_msg": "Sync complete. Success: {success}, Failed: {fail}.",
+      "sync_fail_details": "\n\nFailure Details:\n{details}",
+      "preset_applied": "Preset applied: {name}",
+      "preset_fail": "Failed to apply preset: {name}",
+      "batch_complete": "Batch Add Complete",
+      "batch_success": "Successfully added {count} items.",
+      "batch_fail": "Batch Add Failed",
+      "batch_fail_msg": "Failed to add any items. Failed count: {count}.",
+      "iter_complete": "Iteration Add Complete",
+      "iter_success": "Successfully added {count} items.",
+      "iter_fail": "Iteration Add Failed",
+      "iter_fail_msg": "Failed to add any items. Failed count: {count}.",
+      "save_encrypted_title": "Save Encrypted File",
+      "save_saved": "Save file saved to:\n{path}",
+      "encrypt_failed": "Encryption Failed"
+    },
+    "worker": {
+      "no_data": "No data generated.",
+      "generating": "Generating processing list...",
+      "base_empty": "Base data cannot be empty.",
+      "combo_error_range": "Combination set start value cannot be greater than end value.",
+      "combo_error_size": "Combination base set size must be greater than or equal to combination size.",
+      "iter_error_range": "Iteration start value cannot be greater than end value.",
+      "special_base_needed": "Please provide base value in special format.",
+      "generated_writing": "Generated {count} items, preparing to write...",
+      "writing_progress": "Writing {current}/{total}...",
+      "generated_encoding": "Generated {count} entries, starting encoding...",
+      "encoding_progress": "Encoding {current}/{total}...",
+      "error_prefix": "Error: "
+    }
+  },
+  "character_tab": {
+    "groups": {
+      "character_info": "Character",
+      "currency": "Currency",
+      "world_presets": "World",
+      "char_presets": "Character"
+    },
+    "labels": {
+      "name": "Name:",
+      "difficulty": "Difficulty:",
+      "level": "Character Level:",
+      "xp": "Character XP:",
+      "spec_level": "Spec Level:",
+      "spec_points": "Spec Points:",
+      "money": "Money:",
+      "eridium": "Eridium:"
+    },
+    "buttons": {
+      "apply_changes": "Apply Character & Currency Changes",
+      "sync_levels": "Sync All Backpack Item Levels to Character Level"
+    },
+    "warnings": {
+      "sync_warning": "Warning: This may cause equipped items to be unequipped. You may need to re-equip them from the backpack."
+    },
+    "presets": {
+      "clear_fog": "Remove Map Fog",
+      "discover_locs": "Discover All Locations",
+      "unlock_safehouses": "Unlock All Safehouses",
+      "unlock_collectibles": "Unlock All Collectibles",
+      "complete_challenges": "Complete All Challenges",
+      "complete_achievements": "Complete All Achievements",
+      "skip_story": "Skip Story Missions",
+      "skip_all": "Skip All Missions",
+      "change_class": "Change Character Class",
+      "max_level": "Max Level (Level 50)",
+      "max_sdu": "Max SDU",
+      "unlock_vault": "Unlock All Vault Gates",
+      "unlock_vehicles": "Unlock All Hover Drives",
+      "unlock_specs": "Unlock All Specs",
+      "unlock_uvhm": "Unlock UVHM",
+      "unlock_max": "Unlock/Maximize Everything"
+    },
+    "dialogs": {
+      "change_class_title": "Change Character Class",
+      "select_class": "Select class to change to:"
+    }
+  },
+  "items_tab": {
+    "columns": {
+      "name": "Item Name",
+      "type": "Type",
+      "slot": "Container/Slot",
+      "level": "Level"
+    },
+    "search_placeholder": "Search items...",
+    "add_item": {
+      "label_serial": "Item Serial:",
+      "placeholder_serial": "Enter @U... or decoded code",
+      "label_flag": "Flag:",
+      "button_add": "Add to Backpack",
+      "flags": {
+        "1": "1 (Normal)",
+        "3": "3 (Favorite)",
+        "5": "5 (Junk)",
+        "17": "17 (Group 1)",
+        "33": "33 (Group 2)",
+        "65": "65 (Group 3)",
+        "129": "129 (Group 4)"
+      }
+    },
+    "details": {
+      "group_summary": "Summary",
+      "group_fields": "Fields",
+      "item": "Item",
+      "container": "Container",
+      "slot": "Slot",
+      "manufacturer": "Manufacturer",
+      "type": "Type",
+      "level": "Level",
+      "serial": "Serial",
+      "decoded_id": "Decoded ID",
+      "button_update": "Update Selected Item"
+    },
+    "defaults": {
+      "unknown_container": "Unknown Container",
+      "unknown_type": "Unknown Type"
+    },
+    "dialogs": {
+      "input_error": "Input Error",
+      "enter_serial": "Please enter an item serial number or decoded code.",
+      "no_selection": "No Selection",
+      "select_item": "Please select an item from the list first.",
+      "error": "Error",
+      "missing_path": "Unable to update; item lacks internal path information."
+    }
+  },
+  "converter_tab": {
+    "groups": {
+      "single": "Single Converter",
+      "batch": "Batch Converter",
+      "batch_add": "Batch Add to Backpack",
+      "iterator": "Iterator Generator"
+    },
+    "labels": {
+      "base85": "Base85:",
+      "deserialize": "Deserialize:",
+      "status_ready": "Status: Ready",
+      "input_batch": "Input (One per line):",
+      "output": "Output Result:",
+      "status_processing": "Status: Processing...",
+      "status_error": "Status: Error: {error}",
+      "status_success": "Status: Conversion successful!",
+      "status_critical": "Status: Critical Error: {error}",
+      "status_empty": "Status: Input is empty.",
+      "status_progress": "Status: Processing {current} / {total}...",
+      "status_complete": "Status: Processing complete!",
+      "input_batch_add": "Input (One per line, Base85 or parsed string):",
+      "select_flag": "Select Flag:",
+      "status_prepare": "Status: Preparing...",
+      "status_batch_add_progress": "Status: Processing {current}/{total}... Success: {success}, Fail: {fail}",
+      "status_batch_add_complete": "Status: Processing complete. Success: {success}, Fail: {fail}.",
+      "base_data": "Base Data (Deserialize):",
+      "iter_start": "Iteration Start:",
+      "iter_end": "Iteration End:",
+      "special_base": "Special Format Base Value:",
+      "combo_start": "Combo Set Start:",
+      "combo_end": "Combo Set End:",
+      "combo_size": "Combo Size:",
+      "generated_result": "Generated Result:",
+      "special_combo_input": "Combo Input:",
+      "status_generating": "Status: Generating...",
+      "status_gen_complete": "Status: Generation complete!"
+    },
+    "placeholders": {
+      "base85": "Enter Base85 code, e.g.: @Ug#2fK2...",
+      "deserialize": "Enter parsed data, e.g.: 255, 0, 1, 50|..."
+    },
+    "buttons": {
+      "clear": "Clear",
+      "export_txt": "Export as .txt",
+      "start_batch": "Start Batch Processing",
+      "batch_add": "Batch Add to Backpack",
+      "adding": "Adding...",
+      "processing": "Processing...",
+      "start_iter": "Start Iteration & Generate",
+      "export_result": "Export Result",
+      "gen_write": "Generate & Write to Backpack (YAML Mode)",
+      "generating": "Generating...",
+      "gen_writing": "Generating & Writing..."
+    },
+    "checkboxes": {
+      "special_format": "Enable Special Format {base:var}",
+      "skin_mode": "Enable Weapon Skin Mode",
+      "combo_mode": "Enable Combination Mode",
+      "special_combo": "Special Combo {AAA:B} -> {AAA:[... B]}",
+      "yaml_format": "Enable YAML Formatted Output (Universal)"
+    },
+    "flags": {
+      "1": "1 (Normal)",
+      "3": "3 (Favorite)",
+      "5": "5 (Junk)",
+      "17": "17 (Group 1)",
+      "33": "33 (Group 2)",
+      "65": "65 (Group 3)",
+      "129": "129 (Group 4)"
+    },
+    "dialogs": {
+      "no_content": "No Content",
+      "no_export": "No results to export.",
+      "export_batch_title": "Export Batch Results",
+      "success": "Success",
+      "export_success": "Results successfully exported to:\n{path}",
+      "export_fail": "Export Failed",
+      "write_fail": "Unable to write file: {error}",
+      "no_input": "No Input",
+      "batch_add_empty": "No content in the batch add input box.",
+      "export_yaml": "Export as YAML",
+      "export_txt_title": "Export as TXT",
+      "export_opts": "Export Options",
+      "only_base85": "Export only Base85 codes?"
+    }
+  },
+  "yaml_tab": {
+    "tree_headers": {
+      "key": "Key",
+      "value": "Value"
+    },
+    "buttons": {
+      "yaml_view": "YAML View",
+      "tree_view": "Tree View"
+    },
+    "dialogs": {
+      "yaml_error": "YAML Error",
+      "parse_error": "Unable to parse YAML: {error}"
+    }
+  },
+  "class_mod_tab": {
+    "top_controls": {
+      "class": "Class",
+      "rarity": "Rarity",
+      "name": "Name",
+      "seed": "Random Seed (1–9999)"
+    },
+    "legendary": {
+      "title": "Legendary Addition",
+      "clear": "Clear"
+    },
+    "output": {
+      "title": "Deserialize",
+      "base85": "Base85:",
+      "deserialize": "Deserialize:",
+      "add_to_backpack": "Add to Backpack"
+    },
+    "skills": {
+      "title": "Skill List",
+      "search_placeholder": "Search skills...",
+      "header_icon": "Icon",
+      "header_skill": "Skill",
+      "header_codes": "Code (Order)",
+      "header_points": "+Points"
+    },
+    "perks": {
+      "title": "General Perks",
+      "search_placeholder": "Search perks...",
+      "clear": "Clear"
+    },
+    "skill_point_widget": {
+      "min": "Min",
+      "max": "Max"
+    },
+    "dialogs": {
+      "error": "Error",
+      "load_error_code": "Unable to load class_code.json: {error}",
+      "warning": "Warning",
+      "load_error_loc": "Unable to load class_localization.json: {error}",
+      "no_data": "No Data",
+      "no_valid_base85": "No valid Base85 code available.",
+      "coding_error": "Encoding Error: {error}",
+      "gen_error": "Generation Error: {error}"
+    },
+    "tooltips": {
+      "type": "Type"
+    }
+  },
+  "enhancement_tab": {
+    "groups": {
+      "output": "Deserialize",
+      "base85": "Base85 Code",
+      "perks_mfg": "Selected Manufacturer Perks",
+      "perk_stacking": "Perk Stacking",
+      "builder_247": "Secondary Stat Builder"
+    },
+    "labels": {
+      "selected_stacks": "Selected Stacks",
+      "manufacturer": "Manufacturer",
+      "rarity": "Rarity"
+    },
+    "buttons": {
+      "copy": "Copy",
+      "add_to_backpack": "Add to Backpack",
+      "clear": "Clear"
+    },
+    "flags": {
+      "1": "1 (Normal)",
+      "3": "3 (Favorite)",
+      "5": "5 (Junk)",
+      "17": "17 (Group 1)",
+      "33": "33 (Group 2)",
+      "65": "65 (Group 3)",
+      "129": "129 (Group 4)"
+    },
+    "dialogs": {
+      "error_load": "Error: Unable to load enhancement_data.txt.",
+      "copied": "Copied",
+      "copy_raw_msg": "Output code copied to clipboard!",
+      "copy_b85_msg": "Base85 code copied to clipboard!",
+      "no_valid_code": "Invalid Code",
+      "gen_valid_first": "Please generate a valid enhancement code first."
+    }
+  },
+  "weapon_editor_tab": {
+    "labels": {
+      "load_from_backpack": "Load from Backpack",
+      "decrypt_save_to_show_weapons": "Weapons will appear here after decrypting save...",
+      "serial_b85": "Base85:",
+      "serial_decoded": "Deserialize:",
+      "manufacturer": "Manufacturer",
+      "weapon_type": "Weapon Type",
+      "rarity": "Rarity",
+      "level": "Level",
+      "seed": "Seed",
+      "weapon_name_label": "Weapon Name: ",
+      "weapon_parts": "Weapon Parts",
+      "parts_list": "Parts List",
+      "parse_serial_to_show_parts": "Parts will appear here after parsing weapon serial...",
+      "level_label": "Level",
+      "slot_label": "Slot"
+    },
+    "buttons": {
+      "update_weapon": "Update Weapon",
+      "add_to_backpack": "Add to Backpack",
+      "add_part": "+ Add Part",
+      "confirm_add": "Confirm Add"
+    },
+    "flags": {
+      "1": "1 (Normal)",
+      "3": "3 (Favorite)",
+      "5": "5 (Junk)",
+      "17": "17 (Group 1)",
+      "33": "33 (Group 2)",
+      "65": "65 (Group 3)",
+      "129": "129 (Group 4)"
+    },
+    "dialogs": {
+      "error": "Error",
+      "no_weapons_in_backpack": "No matching weapons found in backpack.",
+      "no_valid_decoded_data": "No valid decoded data for this item.",
+      "parse_error": "Parse Error",
+      "parse_weapon_error": "Unknown error occurred while parsing weapon",
+      "parts_not_found": "Parts not found or unable to parse.",
+      "no_selection": "No Selection",
+      "select_weapon_first": "Please select a weapon from the backpack first.",
+      "encoding_fail": "Encoding Failed",
+      "cannot_reencode_serial": "Unable to re-encode serial",
+      "cannot_encode_serial": "Unable to encode serial",
+      "success": "Success",
+      "no_input": "No Input",
+      "serial_empty": "Serial number is empty.",
+      "no_weapon": "No Weapon",
+      "load_weapon_first": "Please load a weapon first.",
+      "add_part_title": "Add Part",
+      "select_parts_to_add": "Select parts to add",
+      "cannot_determine_mfg": "Unable to determine current weapon manufacturer.",
+      "select_skin_title": "Select Skin",
+      "select_skin_msg": "Select skin to apply"
+    },
+    "misc": {
+      "skin": "Skin",
+      "elemental": "Elemental"
+    }
+  },
+  "weapon_gen_tab": {
+    "labels": {
+      "serial_decoded": "Deserialize:",
+      "serial_b85": "Base85:",
+      "manufacturer": "Manufacturer",
+      "weapon_type": "Weapon Type",
+      "level": "Level",
+      "seed": "Seed",
+      "select_flag": "Select Flag:"
+    },
+    "buttons": {
+      "add_to_backpack": "Add to Backpack"
+    },
+    "dialogs": {
+      "error_title": "Error",
+      "load_error": "Error loading data: {error}",
+      "file_not_found": "One or more weapon CSV file paths not found.",
+      "loc_file_error": "'weapon_localization_zh-CN.json' failed to load.",
+      "no_serial_title": "No Serial",
+      "gen_first": "Please generate a weapon first."
+    }
+  },
+  "grenade_tab": {
+    "groups": {
+      "perks": "Perks",
+      "mfg_perks": "Manufacturer Perks",
+      "element": "Element (Single)",
+      "firmware": "Firmware (Single)",
+      "legendary": "Legendary Perks",
+      "universal": "Universal Perks",
+      "output": "Deserialize",
+      "base_attrs": "Base Attributes"
+    },
+    "labels": {
+      "raw": "Deserialize:",
+      "base85": "Base85:",
+      "manufacturer": "Manufacturer:",
+      "level": "Level:",
+      "rarity": "Rarity:"
+    },
+    "buttons": {
+      "copy": "Copy",
+      "add_to_backpack": "Add to Backpack",
+      "clear": "Clear"
+    },
+    "misc": {
+      "none": "None"
+    },
+    "dialogs": {
+      "load_error": "Error: Grenade data unable to load.",
+      "success": "Success",
+      "copied": "Copied to clipboard.",
+      "no_valid_code": "No valid code",
+      "gen_first": "Please generate a valid serial first."
+    }
+  },
+  "shield_tab": {
+    "groups": {
+      "perks": "Perks",
+      "element": "Elemental Resistance (Single)",
+      "firmware": "Firmware (Single)",
+      "legendary": "Legendary Perks",
+      "energy": "Energy Shield Perks",
+      "armor": "Armor Shield Perks",
+      "universal": "Universal Perks",
+      "output": "Deserialize",
+      "base_attrs": "Base Attributes"
+    },
+    "labels": {
+      "raw": "Deserialize:",
+      "base85": "Base85:",
+      "manufacturer": "Manufacturer (Note Shield Type):",
+      "level": "Level:",
+      "rarity": "Rarity:"
+    },
+    "buttons": {
+      "copy": "Copy",
+      "add_to_backpack": "Add to Backpack",
+      "clear": "Clear"
+    },
+    "misc": {
+      "none": "None"
+    },
+    "dialogs": {
+      "load_error": "Error: Shield data unable to load.",
+      "success": "Success",
+      "copied": "Copied to clipboard.",
+      "no_valid_code": "No valid code",
+      "gen_first": "Please generate a valid serial first."
+    }
+  },
+  "repkit_tab": {
+    "groups": {
+      "perks": "Skills/Perks",
+      "prefix": "Prefix (Single)",
+      "resistance": "Elemental Resistance/Immunity (Single)",
+      "firmware": "Firmware (Single)",
+      "legendary": "Legendary Perks",
+      "universal": "Universal Perks (Multi-select/Stacking)",
+      "output": "Deserialize",
+      "base_attrs": "Base Attributes"
+    },
+    "labels": {
+      "raw": "Deserialize:",
+      "base85": "Base85:",
+      "manufacturer": "Manufacturer:",
+      "level": "Level:",
+      "rarity": "Rarity:",
+      "model_plus": "Module Plugin:"
+    },
+    "buttons": {
+      "copy": "Copy",
+      "add_to_backpack": "Add to Backpack",
+      "clear": "Clear",
+      "random": "Randomize"
+    },
+    "misc": {
+      "none": "None"
+    },
+    "dialogs": {
+      "load_error": "Error: Repkit data unable to load.",
+      "success": "Success",
+      "copied": "Copied to clipboard.",
+      "no_valid_code": "No valid code",
+      "gen_first": "Please generate a valid serial first.",
+      "load_fail_title": "Data Load Failed",
+      "path_error": "Unable to find Repkit CSV file path.",
+      "parse_error": "Unable to load or parse Repkit data file: {error}"
+    }
+  },
+  "heavy_weapon_tab": {
+    "groups": {
+      "perks": "Perks",
+      "barrel": "Barrel (Single)",
+      "element": "Element (Single)",
+      "firmware": "Firmware (Single)",
+      "barrel_acc": "Barrel Accessory (Multi-select/Stacking)",
+      "body_acc": "Body Accessory (Multi-select/Stacking)",
+      "output": "Deserialize",
+      "base_attrs": "Base Attributes"
+    },
+    "labels": {
+      "raw": "Deserialize:",
+      "base85": "Base85:",
+      "manufacturer": "Manufacturer:",
+      "level": "Level:",
+      "rarity": "Rarity:"
+    },
+    "buttons": {
+      "copy": "Copy",
+      "add_to_backpack": "Add to Backpack",
+      "clear": "Clear"
+    },
+    "misc": {
+      "none": "None"
+    },
+    "dialogs": {
+      "load_error": "Error: Heavy weapon data unable to load.",
+      "success": "Success",
+      "copied": "Copied to clipboard.",
+      "no_valid_code": "No valid code",
+      "gen_first": "Please generate a valid serial first."
+    }
+  }
+}

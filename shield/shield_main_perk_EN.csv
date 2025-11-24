@@ -1,0 +1,107 @@
+Shield_perk_main_ID,Part_ID,Part_type,Stat,Description
+246,1,Firmware,God Killer,
+246,2,Firmware,Reel Big Fist,
+246,3,Firmware,Lifeblood,
+246,4,Firmware,Airstrike,
+246,5,Firmware,High Caliber,
+246,6,Firmware,Gadget Ahoy,
+246,7,Firmware,Baker,
+246,8,Firmware,Oscar Mike,
+246,9,Firmware,Rubberband Man,
+246,10,Firmware,Deadeye,
+246,11,Firmware,Action Fist,
+246,12,Firmware,GooJFC,
+246,13,Firmware,Atlas E.X.,
+246,14,Firmware,Atlas Infinum,
+246,15,Firmware,Trickshot,
+246,16,Firmware,Jacked,
+246,17,Firmware,Get Throwin',
+246,18,Firmware,Heating Up,
+246,19,Firmware,Bullets to Spare,
+246,20,Firmware,Daed-dy O',
+246,22,Elemental Resistance,Corrosive,15% Resist
+246,23,Elemental Resistance,Cryo,15% Resist
+246,24,Elemental Resistance,Fire,15% Resist
+246,25,Elemental Resistance,Radiation,15% Resist
+246,26,Elemental Resistance,Shock,15% Resist
+246,27,Perk,Utility,"+20% Gun Handling, +10% Movement Speed when shield is empty"
+246,28,Perk,Utility,"+28% Gun Handling, +15% Movement Speed when shield is empty"
+246,29,Perk,Turtle,"+40% Shield Capacity, -10% Maximum Health"
+246,30,Perk,Turtle,"+65% Shield Capacity, -15% Maximum Health"
+246,31,Perk,Sturdy,5% Chance to grant +20% Damage Reduction for 5s when damaging enemies
+246,32,Perk,Sturdy,8% Chance to grant +28% Damage Reduction for 5s when damaging enemies
+246,33,Perk,Spike,2974 Damage is reflected back to enemies when receiving Melle Damage and Shield is active
+246,34,Perk,Spike,4461 Damage is reflected back to enemies when receiving Melle Damage and Shield is active
+246,35,Perk,Resistant,+17% Resistance to Elemental Damage when Shield is active
+246,36,Perk,Resistant,+22% Resistance to Elemental Damage when Shield is active
+246,37,Perk,Reflect,15% Chance to reflect Projectiles when Shield is active
+246,38,Perk,Reflect,30% Chance to reflect Projectiles when Shield is active
+246,39,Perk,Power Booster,"20% Chance for Power Booster that grants +10% Gun Damage for 5s when damaged"
+246,40,Perk,Power Booster,"30% Chance for Power Booster that grants +20% Gun Damage for 5s when damaged"
+246,41,Perk,Pinpoint,"+20% Accuracy, +20% Gun Handling, +25% Projectile Speed when Shield is empty"
+246,42,Perk,Pinpoint,"+28% Accuracy, +28% Gun Handling, +35% Projectile Speed when Shield is empty"
+246,43,Perk,Overshield Booster,10% Chance for Overshield Booster that grants 1398 Overshield on kill
+246,44,Perk,Overshield Booster,15% Chance for Overshield Booster that grants 2098 Overshield on kill
+246,45,Perk,Magazine Booster,10% Chance for Magazine Booster tha refills your Gun on kill
+246,46,Perk,Magazine Booster,15% Chance for Magazine Booster tha refills your Gun on kill
+246,47,Perk,Health Booster,20% Chance for Health Booster that restores up to 15% Health on kill
+246,48,Perk,Health Booster,30% Chance for Health Booster that restores up to 25% Health on kill
+246,49,Perk,Healthy,+10% Maximum Health
+246,50,Perk,Healthy,+25% Maximum Health
+246,51,Perk,Evasive,5% Chance for +10% Movement Speed for 5s when damaging enemies
+246,52,Perk,Evasive,8% Chance for +15% Movement Speed for 5s when damaging enemies
+246,53,Perk,Capacity,+25% Shield Capacity
+246,54,Perk,Capacity,+50% Shield Capacity
+246,55,Perk,Adaptive,"+8% Maximum Health. +20% Resistance to last damage type received for 3s when shield is active"
+246,56,Perk,Adaptive,"+16% Maximum Health. +40% Resistance to last damage type received for 4s when shield is active"
+246,57,Perk,Absorb,"+15% Chance to absorb bullets, adding the to your Ammo count"
+246,58,Perk,Absorb,"+30% Chance to absorb bullets, adding the to your Ammo count"
+246,64,Firmware,Risky Boots,
+248,1,Perk,Vagabond,+28% Movement Speed when Energy Shields are full
+248,2,Perk,Shield Booster,10% Chance for Shield Booster that refills up to 13% of Shield Capacity when damaged
+248,3,Perk,Shield Booster,15% Chance for Shield Booster that refills up to 18% of Shield Capacity when damaged
+248,4,Perk,Berserker,+20% Melee Damage when Energy Shields are empty
+248,5,Perk,Berserker,+30% Melee Damage when Energy Shields are empty
+248,6,Perk,Siphon,5% Chance for 716 Overshield when dealing Damage
+248,7,Perk,Siphon,10% Chance for 1431 Overshield when dealing Damage
+248,8,Perk,Trigger Happy,"+20% Fire Rate, +20% Reload Speed when Energy Shields are empty"
+248,9,Perk,Trigger Happy,"+28% Fire Rate, +28% Reload Speed when Energy Shields are empty"
+248,10,Perk,Nova,Triggers a Nova that deals 7436 Damage when Energy Shield breaks
+248,11,Perk,Nova,Triggers a Nova that deals 11154 Damage when Energy Shield breaks
+248,12,Perk,Fleeting,+20% Movement Speed when Energy Shields are empty
+248,13,Perk,Fleeting,+28% Movement Speed when Energy Shields are empty
+248,14,Perk,Brimming,Regenerates 149 Health/s when Energy Shields are full
+248,15,Perk,Brimming,Regenerates 260 Health/s when Energy Shields are full
+248,16,Perk,Amp,Shots drain 20% of Shields for +50% Gun Damage when Energy Shields are full
+248,17,Perk,Amp,Shots drain 28% of Shields for +100% Gun Damage when Energy Shields are full
+248,18,Perk,Recharge Rate,+20% Shield Recharge Rate
+248,19,Perk,Recharge Rate,+30% Shield Recharge Rate
+248,20,Perk,Recharge Delay,-10% Shield Recharge Delay
+248,21,Perk,Recharge Delay,-20% Shield Recharge Delay
+248,27,Perk,Vagabond,+20% Movement Speed when Energy Shields are full
+237,1,Perk,Scavenger,Refill up to 20% of current Gun's Magazine on Armor Segment filled
+237,2,Perk,Reinforced,Grants +Overshield on Armor Segment filled
+237,3,Perk,Reinforced,Grants ++Overshield on Armor Segment filled
+237,4,Perk,Positive Reinforcement,15% Chance for Armor Shard on kill
+237,5,Perk,Positive Reinforcement,25% Chance for Armor Shard on kill
+237,6,Perk,Mini Nova,Triggers a Nova that deals 1859 Damage on Armor Segment break
+237,7,Perk,Mini Nova,Triggers a Nova that deals 2788 Damage on Armor Segment break
+237,8,Perk,Missile Swarm,"Launches 2 Missles, each dealing 744 Damage on Armor Segment break"
+237,9,Perk,Missile Swarm,"Launches 3 Missles, each dealing 1487 Damage on Armor Segment break"
+237,10,Perk,Knockback,Knocks back enemies and grants +30% Movement Speed for 5s on Armor Segment break
+237,11,Perk,Knockback,Knocks back enemies and grants +40% Movement Speed for 5s on Armor Segment break
+237,12,Perk,Heavy Plating,"Up to +20% Damage Reduction, scaling with broken Armor Segments"
+237,13,Perk,Heavy Plating,"Up to +35% Damage Reduction, scaling with broken Armor Segments"
+237,14,Perk,Spunky,"Up to +10% Damage Dealt, scaling with broken Armor Segments"
+237,15,Perk,Spunky,"Up to +20% Damage Dealt, scaling with broken Armor Segments"
+237,16,Perk,Bladed,+13% Gun Damage for 5s on Armor Segment filled
+237,17,Perk,Bladed,+20% Gun Damage for 5s on Armor Segment filled
+237,18,Perk,Armor Strength,+10% Damage Reduction when Armor Shield is active
+237,19,Perk,Armor Strength,+20% Damage Reduction when Armor Shield is active
+237,20,Perk,Armor Segment,+1 Armor Segment(s)
+237,21,Perk,Armor Segment,+1 Armor Segment(s)
+237,22,Perk,Flanking,"Up to +10% Movement Speed, scaling with broken Armor Segments"
+237,23,Perk,Flanking,"Up to +18% Movement Speed, scaling with broken Armor Segments"
+237,24,Perk,Boxer,Consume an Armor Segment on Melee Hit to increase Damage Dealt by +20%
+237,25,Perk,Boxer,Consume an Armor Segment on Melee Hit to increase Damage Dealt by +30%
+237,31,Perk,Scavenger,Refill up to 10% of current Gun's Magazine on Armor Segment filled

@@ -1,0 +1,472 @@
+[
+  {
+    "name": "Rinse",
+    "type": "Passive",
+    "description": "Rafa gains increased Reload Speed."
+  },
+  {
+    "name": "Las Jaras",
+    "type": "Passive",
+    "description": "Overdrive Skill. Rafa Regenerates Ammo while Overdrive is active."
+  },
+  {
+    "name": "The Thrill",
+    "type": "Passive",
+    "description": "Overdrive Skill. Rafa gains increased Fire Rate, which is increased even further while Overdrive is active."
+  },
+  {
+    "name": "Preparado",
+    "type": "Passive",
+    "description": "Whenever Rafa Reloads his current Gun, he gains increased Action Skill Cooldown Rate. This effect can stack."
+  },
+  {
+    "name": "Pa' Dentro",
+    "type": "Passive",
+    "description": "Activating an Action Skill grants Rafa Health Regeneration."
+  },
+  {
+    "name": "Arriba",
+    "type": "Passive",
+    "description": "Kill Skill. Whenever Rafa kills an enemy, he gains increased Ordnance Cooldown Rate."
+  },
+  {
+    "name": "First Impression",
+    "type": "Passive",
+    "description": "The first shot fired from a fully-loaded Magazine gains increased Damage."
+  },
+  {
+    "name": "Al Centro",
+    "type": "Passive",
+    "description": "Overdrive Skill. Rafa gains increased Gun Handling and Action Skill Handling while Overdrive is active. The longer Overdrive has been active, the greater the bonus."
+  },
+  {
+    "name": "Metal Management",
+    "type": "Passive",
+    "description": "Whenever Rafa activates or retriggers an Action Skill, his gun consumes no Ammo."
+  },
+  {
+    "name": "Abajo",
+    "type": "Passive",
+    "description": "Whenever Rafa throws a Grenade, he gains increased Action Skill Cooldown Rate."
+  },
+  {
+    "name": "Brain Dump",
+    "type": "Passive",
+    "description": "Overdrive Skill. Rafa gains Critical Hit Chance with his Guns while Overdrive is active."
+  },
+  {
+    "name": "Conductivo",
+    "type": "Passive",
+    "description": "Rafa gains increased Status Effect Chance, and also gains further increased Shock Chance."
+  },
+  {
+    "name": "El Catrin",
+    "type": "Passive",
+    "description": "Whenever Rafa Slides, his Action Skill deals Bonus Shock Damage, and he also deals increased Critical Hit Damage."
+  },
+  {
+    "name": "Awe",
+    "type": "Passive",
+    "description": "Whenever Rafa Shocks an enemy, all shots fired at that enemy are Critical Hits."
+  },
+  {
+    "name": "Fiesta",
+    "type": "Passive",
+    "description": "Whenever Rafa applies a Status Effect, his Action Skills consume no Duration, and APOPHIS Lance consumes no Charges."
+  },
+  {
+    "name": "Drone Defense",
+    "type": "Passive",
+    "description": "Whenever Rafa activates an Ordnance, spawn STRM Gliders that hover near him. As he takes Damage, transfer some of it to his STRM Gliders. Once a STRM Glider receives too much Damage, it explodes, dealing Corrosive Splash Damage to nearby enemies."
+  },
+  {
+    "name": "El Soldado",
+    "type": "Passive",
+    "description": "Overdrive Skill. Rafa gains increased Gun Damage while Overdrive is active. This bonus is doubled while Rafa is charging APOPHIS Lance."
+  },
+  {
+    "name": "The Right Tools",
+    "type": "Passive",
+    "description": "Rafa gains increased Ordnance Damage after Reloading his Gun. This bonus stacks."
+  },
+  {
+    "name": "Debtonation",
+    "type": "Passive",
+    "description": "Whenever Rafa damages an enemy with an Action Skill, place a Remote Detonator on that enemy. Remote Detonators gain increased Damage and increased Splash Radius for every Remote Detonator on an enemy. Remote Detonators automatically explode after a delay or whenever the enemy they're attached to dies. Ordnance Override. Detonate all Remote Detonators."
+  },
+  {
+    "name": "Drone Assault",
+    "type": "Passive",
+    "description": "Whenever Rafa triggers or retriggers an Action Skill, send one of his STRM Gliders at an enemy in his view. Once it arrives, it explodes in a Corrosive Explosion equal to its remaining health."
+  },
+  {
+    "name": "Jaque",
+    "type": "Passive",
+    "description": "Whenever Rafa damages an enemy with a Skill, he gains a Stack of Jaque. For every Stack of Jaque, he gains increased Overdrive Bonuses. Whenever Overdrive ends, he loses all Stacks."
+  },
+  {
+    "name": "La Garza",
+    "type": "Passive",
+    "description": "Overdrive Skill. Rafa gains increased Gun Handling and Action Skill Handling while Overdrive is active."
+  },
+  {
+    "name": "Mate",
+    "type": "Passive",
+    "description": "When Overdrive ends, convert all Jaque Stacks into Mate Stacks. Gain increased Action Skill Cooldown Rate for every Stack of Mate. Once Rafa's Action Skill is readied, lose all Stacks of Mate."
+  },
+  {
+    "name": "Deadline",
+    "type": "Passive",
+    "description": "Overdrive Skill. Rafa gains increased Fire Rate and increased Reload Speed while Overdrive is active."
+  },
+  {
+    "name": "Per My Last",
+    "type": "Passive",
+    "description": "Whenever Rafa deals Damage with an Action Skill to an enemy, he gains a chance to deal that Damage again."
+  },
+  {
+    "name": "PROJECT: Gorgon",
+    "type": "Capstone",
+    "description": "APOPHIS Lance is now a Laser that passes through enemies, dealing Incendiary Damage. Pressing and holding Action Skill causes the Laser to deal increased Damage and Chain to more Enemies as it consumes Charges."
+  },
+  {
+    "name": "Sitiar",
+    "type": "Passive",
+    "description": "Rafa gains increased Gun Damage."
+  },
+  {
+    "name": "Deft Hands",
+    "type": "Passive",
+    "description": "Rafa and his Peacebreaker Cannons gain increased Fire Rate."
+  },
+  {
+    "name": "Shield Barriest",
+    "type": "Passive",
+    "description": "Overdrive Skill. Rafa gains increased Shield Recharge Rate and improved Shield Regen Delay while Overdrive is active."
+  },
+  {
+    "name": "Juerga",
+    "type": "Passive",
+    "description": "Whenever Rafa Critically Hits an enemy, Action Skill Duration is restored."
+  },
+  {
+    "name": "Field Repairs",
+    "type": "Passive",
+    "description": "Whenever Rafa activates an Action Skill, he restores a portion of his Maximum Shield Capacity. If his Shields are already full, he gains Overshield instead."
+  },
+  {
+    "name": "CYA",
+    "type": "Passive",
+    "description": "Kill Skill. Killing an enemy restores Shields based on Rafa's Maximum Health Capacity."
+  },
+  {
+    "name": "Resiliencia",
+    "type": "Passive",
+    "description": "Overdrive Skill. Rafa gains increased Damage Reduction while Overdrive is active."
+  },
+  {
+    "name": "Maestro",
+    "type": "Passive",
+    "description": "Rafa gains increased Skill Damage."
+  },
+  {
+    "name": "Venganza",
+    "type": "Passive",
+    "description": "Whenever Rafa's Shields break after being fully recharged, spawn a free Grenade. If he has a Grenade equipped, use that Grenade instead."
+  },
+  {
+    "name": "El Valiente",
+    "type": "Passive",
+    "description": "Rafa deals increased damage from all sources. The fuller Rafa's Shields are, the greater the bonus. While Rafa's Shields are at Maximum Capacity, double the bonus."
+  },
+  {
+    "name": "Hell in a Shell",
+    "type": "Augment",
+    "description": "Pressing Action Skill while Peacebreaker Cannons are active causes them to fire two Firebombs that deal Incendiary Damage in a large area. Killing enemies partially restores this Skill's Cooldown."
+  },
+  {
+    "name": "Asymmetric Warfare",
+    "type": "Passive",
+    "description": "Indirect Projectiles gain increased Damage. Indirect Projectiles include all Action Skill Weapons, Thrown Guns, and Projectiles not fired from your Gun."
+  },
+  {
+    "name": "Errant Spark",
+    "type": "Passive",
+    "description": "All Indirect Projectiles deal Bonus Incendiary Damage. If the Indirect Projectile already deals Incendiary Damage, double the Bonus Damage."
+  },
+  {
+    "name": "Hostile Acquisition",
+    "type": "Passive",
+    "description": "Rafa's Indirect Projectiles gain Lifesteal."
+  },
+  {
+    "name": "Rolling Stone",
+    "type": "Passive",
+    "description": "While moving, shots have a chance to Ricochet off of Rafa. This chance is doubled while Sliding."
+  },
+  {
+    "name": "Proprietary Incendiary",
+    "type": "Passive",
+    "description": "Melee Override. Press ability to lob a STRM Glider at an enemy. Once it reaches its targets, it explodes and deals Incendiary Damage in an area based on the amount of Ammo in Rafa's Gun when he threw the STRM Glider."
+  },
+  {
+    "name": "Double-Ought Autoshot",
+    "type": "Capstone",
+    "description": "Rafa's Peacebreaker Cannons are replaced with Shotguns that deal increased Damage and have an increased Pellet Count. Additionally, Rafa's Turrets gain a chance to Ricochet off of targets. Ricochets deal Reduced Damage, and Critical Hits always Ricochet."
+  },
+  {
+    "name": "Lateral Plinking",
+    "type": "Passive",
+    "description": "Rafa's Indirect Projectiles gain a chance to Ricochet."
+  },
+  {
+    "name": "Confeti",
+    "type": "Passive",
+    "description": "Rafa's Ordnances deal Bonus Damage in his current Gun's Element."
+  },
+  {
+    "name": "Insta-Fort Battle System",
+    "type": "Augment",
+    "description": "Rafa's Peacebreaker Cannons also deal Ordnance Damage, and he deals increased Ordnance Damage while Peacebreaker Cannons are active. Pressing Action Skill while Peacebreaker Cannons are active causes them to disconnect from Rafa and become a Turret Companion that begins firing at enemies in place. Additionally, it will occasionally fire Grenades at its targets. If Rafa has a Grenade equipped, it copies that Grenade. Pressing Action Skill again returns the Turret Companion to Rafa's back."
+  },
+  {
+    "name": "Vitriol",
+    "type": "Passive",
+    "description": "The first shot fired from Rafa's fully-loaded Magazine deals Bonus Corrosive Damage."
+  },
+  {
+    "name": "Pain Reaction",
+    "type": "Passive",
+    "description": "Rafa's Guns gain a chance to Ricochet off of enemies with Status Effects. Ricochet Damage is based on the Damage Dealt."
+  },
+  {
+    "name": "Concentrated Build Up",
+    "type": "Passive",
+    "description": "While Aiming with a Gun, Rafa deals Bonus Shock Damage. Each time Rafa hits an enemy this way, deal increased Bonus Damage until he zooms out. This effect can stack."
+  },
+  {
+    "name": "El Alacran",
+    "type": "Passive",
+    "description": "Enemies damaged by Rafa's Peacebreaker Cannons have increased Status Effect Chance."
+  },
+  {
+    "name": "Beam Team",
+    "type": "Capstone",
+    "description": "Rafa's Peacebreaker Cannons are replaced with a Shock Beam and a Corrosive Beam. Each beam automatically locks onto enemies in your view, and may lock onto different enemies. Whenever Rafa applies a Status Effect, gain increased Action Skill Damage."
+  },
+  {
+    "name": "Inspirado",
+    "type": "Passive",
+    "description": "Whenever Rafa inflicts a Status Effect on an enemy, he gains increased Action Skill Cooldown Rate and improved Action Skill Duration Rate. This effect can stack."
+  },
+  {
+    "name": "Barrage",
+    "type": "Passive",
+    "description": "Overdrive Skill. Rafa gains increased Splash Damage while Overdrive is active."
+  },
+  {
+    "name": "Unmissable Missiles",
+    "type": "Augment",
+    "description": "Pressing Action Skill while Peacebreaker Cannons are active causes them to fire a volley of Homing Missiles at enemies in view, at the cost of Action Skill Duration."
+  },
+  {
+    "name": "Everdrive",
+    "type": "Passive",
+    "description": "Overdrive gains increased Duration."
+  },
+  {
+    "name": "Devil-May-Care",
+    "type": "Passive",
+    "description": "Overdrive Skill. While Overdrive is active, Rafa gains increased Movement Speed, and gains Health Regeneration. While Overdrive is not active, Rafa takes increased Damage, and gains increased Action Skill Cooldown Rate."
+  },
+  {
+    "name": "Temerario",
+    "type": "Passive",
+    "description": "Overdrive Skill. Rafa gains increased Gun Damage, but decreased Gun Handling. These Effects are based on how long Overdrive has been active."
+  },
+  {
+    "name": "Soltado",
+    "type": "Passive",
+    "description": "Kill Skill. Double all Overdrive bonuses."
+  },
+  {
+    "name": "Volatile Hollowpoints",
+    "type": "Capstone",
+    "description": "Rafa's Peacebreaker Cannons are replaced with Rockets that deal Splash Damage."
+  },
+  {
+    "name": "Per My Last",
+    "type": "Passive",
+    "description": "Whenever Rafa deals Damage with an Action Skill to an enemy, he gains a chance to deal that Damage again."
+  },
+  {
+    "name": "Handshake Deal",
+    "type": "Passive",
+    "description": "Rafa gains increased Gun Damage and Melee Damage"
+  },
+  {
+    "name": "Midnight Oil",
+    "type": "Passive",
+    "description": "Rafa's Action Skills deal Bonus Corrosive Damage. The longer the Skill has been active, the greater the Bonus Damage."
+  },
+  {
+    "name": "Expedite",
+    "type": "Passive",
+    "description": "Overdrive Skill. Overdrive grants Rafa increased Movement Speed."
+  },
+  {
+    "name": "Dial In",
+    "type": "Passive",
+    "description": "Whenever Rafa damages an enemy with a Melee Attack, his Melee Attacks gain Critical Hit Chance. This chance stacks, and all Stacks are removed whenever Rafa Critically Hits an enemy."
+  },
+  {
+    "name": "Altered Cabron",
+    "type": "Augment",
+    "description": "Whenever Rafa kills an enemy while Arc-Knives are active, restore a portion of his Health. Whenever Rafa gains Health, deal Bonus Corrosive Damage with all attacks, and gain increased Movement Speed. This effect can stack."
+  },
+  {
+    "name": "El Corazon",
+    "type": "Passive",
+    "description": "A portion of Rafa's Maximum Health Capacity is converted into Maximum Shield Capacity."
+  },
+  {
+    "name": "Dead Man Walking",
+    "type": "Augment",
+    "description": "Arc-Knives do not end when their Duration runs out. Instead they only end if Rafa enters Fight For Your Life or activates Blade Fury. While Arc-Knives' duration is depleted, Rafa loses Health instead. Whenever Rafa damages an enemy, he gains Overshield."
+  },
+  {
+    "name": "Diamond Hands",
+    "type": "Passive",
+    "description": "Dealing Melee Damage grants Rafa a Stack of Diamond Hands. Gain increased Gun Damage for every Stack of Diamond Hands. Once Rafa deals Gun Damage, Stacks begin to decay quickly until they run out."
+  },
+  {
+    "name": "Saldar",
+    "type": "Passive",
+    "description": "Rafa's Melee Critical Hits gain Lifesteal."
+  },
+  {
+    "name": "In the Zone",
+    "type": "Passive",
+    "description": "Kill Skill. Killing an enemy freezes Overdrive's Duration."
+  },
+  {
+    "name": "To the Last",
+    "type": "Passive",
+    "description": "Rafa gains increased Gun Damage and Skill Damage. The lower his Health, the greater the bonuses."
+  },
+  {
+    "name": "Hard Sell",
+    "type": "Passive",
+    "description": "Whenever Rafa's Shields break, he instantly gains a portion of his Shield Maximum Capacity as Overshield. This Skill cannot be used again until Rafa next activates his Action Skill."
+  },
+  {
+    "name": "Blowout",
+    "type": "Passive",
+    "description": "Whenever Rafa applies a Mark or Critically Hits an enemy with his Action Skill, they explode in Corrosive Lobbed Projectiles. The longer Rafa's Action Skill has been active, the more Corrosive Projectiles are spawned."
+  },
+  {
+    "name": "Thundercutter",
+    "type": "Augment",
+    "description": "Attacks made with Arc-Knives deal Shock Melee Splash Damage. Rafa gains increased Splash Damage."
+  },
+  {
+    "name": "El Paraguas",
+    "type": "Passive",
+    "description": "Rafa gains increased Splash Damage and Critical Hit Chance."
+  },
+  {
+    "name": "Protecto-Pulse",
+    "type": "Passive",
+    "description": "Pressing ability while Arc-Knives are active or Rafa retriggers his Action Skill drains a portion of Rafa's Shields, and deals that much Shock Damage to nearby enemies."
+  },
+  {
+    "name": "Shock Market",
+    "type": "Passive",
+    "description": "Whenever Rafa deals Splash Damage, deal Bonus Shock Damage based on the Damage Dealt."
+  },
+  {
+    "name": "Liquidation",
+    "type": "Passive",
+    "description": "Marked enemies killed by Rafa leave behind a Corrosive Hazard."
+  },
+  {
+    "name": "Huracán Especial",
+    "type": "Capstone",
+    "description": "Activating Blade Fury causes Rafa to spin his blades, creating a Singularity that draws in all Marked enemies and other nearby enemies while dealing continuous Shock Damage. Whenever this attack kills an enemy, Overdrive grants increased Action Skill Cooldown Rate."
+  },
+  {
+    "name": "Artilleria",
+    "type": "Passive",
+    "description": "Rafa gains increased Ordnance Cooldown Rate."
+  },
+  {
+    "name": "Parting Gift",
+    "type": "Augment",
+    "description": "Whenever Rafa activates his Dash Attack, he leaves behind a Grenade. If he has a Grenade equipped, use that Grenade instead. Enemies damaged by these Grenades become Marked. Whenever Rafa applies a Mark to an enemy, apply an additional Mark."
+  },
+  {
+    "name": "Collaborative Ignition",
+    "type": "Passive",
+    "description": "Overdrive Skill. Rafa deals Bonus Damage with Skills and Ordnances in the Element of his current Gun while Overdrive is active."
+  },
+  {
+    "name": "Booming Business",
+    "type": "Passive",
+    "description": "Whenever Rafa Critically Hits an enemy, he gains a chance to spawn a Free Grenade. If Rafa has a Grenade equipped, spawn a Grenade based on that."
+  },
+  {
+    "name": "Sinergia",
+    "type": "Passive",
+    "description": "Whenever Rafa deals Ordnance Damage, he also deals increased Gun Damage and Melee Damage. This effect can stack."
+  },
+  {
+    "name": "Hemolitions",
+    "type": "Passive",
+    "description": "Overdrive Skill. While Overdrive is active, Rafa may use Grenades during Ordnance Cooldown at the cost of Health. Every time a Grenade is used this way, it costs more Health until Rafa's Grenade fully cools down."
+  },
+  {
+    "name": "Inferno Protocol",
+    "type": "Capstone",
+    "description": "While Arc-Knives are active, Rafa's Exo-Suit stores all Damage Dealt to him. The Exo-Suit then heats up and constantly deals a small amount of Incendiary Damage to him. Additionally, Rafa's Melee Attacks deal Bonus Incendiary Damage. A portion of all Damage Dealt to Rafa is also dealt to enemies he has Marked. Using Blade Fury causes Rafa to consume all Stored Damage, and deals Bonus Incendiary Damage based on Stored Damage. A portion of all Damage dealt this way is returned to Rafa as Health."
+  },
+  {
+    "name": "El Diablito",
+    "type": "Passive",
+    "description": "A portion of all Incendiary Damage Rafa deals also deals Bonus Incendiary Ordnance Damage."
+  },
+  {
+    "name": "El Borracho",
+    "type": "Passive",
+    "description": "Rafa deals increased Corrosive Damage while his Action Skill is active. The longer it has been active, the greater the bonus. This effect can stack."
+  },
+  {
+    "name": "Acid Drop",
+    "type": "Augment",
+    "description": "Arc-Knives' Dash Attack is replaced by Caustic Leap. Pressing Action Skill causes Rafa to leap forward and create a Caustic Hazard wherever he lands. Whenever a Mark is removed from an enemy, it explodes into a Corrosive Nova."
+  },
+  {
+    "name": "Empuje",
+    "type": "Passive",
+    "description": "Rafa gains increased Action Skill Duration."
+  },
+  {
+    "name": "Sustainable Energy",
+    "type": "Passive",
+    "description": "Overdrive Skill. Rafa gains Health Regeneration based on how much Overdrive time is remaining."
+  },
+  {
+    "name": "Motivar",
+    "type": "Passive",
+    "description": "Pressing Action Skill during Arc-Knives grants increased Overdrive Duration. This bonus is reset whenever Rafa activates an Action Skill."
+  },
+  {
+    "name": "Galvanic Panic",
+    "type": "Capstone",
+    "description": "Whenever Rafa performs a Melee Attack while Arc-Knives are active, fire an Acid STRM Glider at an enemy in his view. Acid STRM Gliders deal Corrosive Splash Damage based on the number of total Marked enemies. Additionally, killing an enemy while Arc-Knives are active restores Action Skill Duration. Activating Blade Fury causes Rafa to fire a volley of Acid STRM Gliders in front of him and end Arc-Knives."
+  },
+  {
+    "name": "Cruel Accrual",
+    "type": "Passive",
+    "description": "Rafa gains increased Skill Damage with all Skills. The longer his Action Skill has been active, the greater the bonus. This effect can stack."
+  }
+]

@@ -1,0 +1,59 @@
+Manufacturer ID,Part_ID,Part_type,Stat,Description
+277,1,Legendary Perk,Pulseometer,"Continuously passively regenerates Health, rate increases when Health is low"
+277,2,Model,Stim,
+277,3,Rarity,Common,
+277,4,Rarity,Uncommon,
+277,5,Rarity,Rare,
+277,6,Rarity,Epic,
+277,7,Rarity,Legendary,"Pacemaker Skin"
+277,8,Legendary Perk,Soothing,"Spawns Health Boosters when Repkit starts and ends"
+277,9,Rarity,Legendary,"Healthraiser Skin"
+265,1,Rarity,Common,
+265,2,Rarity,Uncommon,
+265,3,Rarity,Rare,
+265,4,Rarity,Epic,
+265,5,Rarity,Legendary,"Defibrillator Skin"
+265,6,Legendary Perk,"Cardiac Shot","When Health is below 20%, has a 50% chance to refill 1 Repkit Charge"
+265,7,Model,Tonic,
+266,1,Rarity,Common,
+266,2,Rarity,Uncommon,
+266,3,Rarity,Rare,
+266,4,Rarity,Epic,
+266,5,Rarity,Legendary,"Blood Analyzer Skin"
+266,6,Legendary Perk,Immunity Shot,"On use, grants immunity to the last received Elemental Damage type for 7 seconds"
+266,7,Model,Refresher,
+285,1,Legendary Perk,Heart Pump,"This Repkit has 3 Charges, and a 30% chance to refill 1 Charge on enemy kill"
+285,2,Model,Recorporator,
+285,3,Rarity,Common,
+285,4,Rarity,Uncommon,
+285,5,Rarity,Rare,
+285,6,Rarity,Epic,
+285,7,Rarity,Legendary,"Triple Bypass Skin"
+274,1,Legendary Perk,Time Dialation,"Repkit Duration increased by +100%, and Cooldown reduced by -50%"
+274,2,Model,Scabber,
+274,3,Rarity,Common,
+274,4,Rarity,Uncommon,
+274,5,Rarity,Rare,
+274,6,Rarity,Epic,
+274,7,Rarity,Legendary,"AF1000 Skin"
+290,1,Legendary Perk,Blood Siphon,"On kill, converts 100% of overkill damage into a healing orb that seeks nearby allies"
+290,2,Model,Pocket Doc,
+290,3,Rarity,Common,
+290,4,Rarity,Uncommon,
+290,5,Rarity,Rare,
+290,6,Rarity,Epic,
+290,7,Rarity,Legendary,"Kill Spring Skin"
+261,1,Rarity,Common,
+261,2,Rarity,Uncommon,
+261,3,Rarity,Rare,
+261,4,Rarity,Epic,
+261,5,Rarity,Legendary,"War Paint Skin"
+261,6,Legendary Perk,Chrome,"On use, gain +30% Fire Rate and +30% Movement Speed for 15s. Taking damage reduces Repkit Cooldown by 2s"
+261,7,Model,Juicer,
+269,1,Rarity,Common,
+269,2,Rarity,Uncommon,
+269,3,Rarity,Rare,
+269,4,Rarity,Epic,
+269,5,Rarity,Legendary,"Adrenaline Pump Skin"
+269,6,Legendary Perk,Blood Rush,"Automatically regenerates Health during Fight For Your Life"
+269,7,Model,Sobirat,

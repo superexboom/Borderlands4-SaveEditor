@@ -1,0 +1,182 @@
+Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,Stat,Description
+13,Daedalus,Assault Rifle,95,Rarity,Common,
+13,Daedalus,Assault Rifle,96,Rarity,Uncommon,
+13,Daedalus,Assault Rifle,97,Rarity,Rare,
+13,Daedalus,Assault Rifle,98,Rarity,Epic,
+13,Daedalus,Assault Rifle,72,Rarity,Legendary,Bloody Lumberjack
+13,Daedalus,Assault Rifle,73,Rarity,Legendary,Star Helix
+13,Daedalus,Assault Rifle,85,Rarity,Legendary,First Impression
+13,Daedalus,Assault Rifle,100,Rarity,Legendary,Oscar Mike
+2,Daedalus,Pistol,95,Rarity,Common,
+2,Daedalus,Pistol,96,Rarity,Uncommon,
+2,Daedalus,Pistol,97,Rarity,Rare,
+2,Daedalus,Pistol,98,Rarity,Epic,
+2,Daedalus,Pistol,54,Rarity,Legendary,Zipper
+2,Daedalus,Pistol,59,Rarity,Legendary,Rangefinder
+8,Daedalus,Shotgun,95,Rarity,Common,
+8,Daedalus,Shotgun,96,Rarity,Uncommon,
+8,Daedalus,Shotgun,97,Rarity,Rare,
+8,Daedalus,Shotgun,98,Rarity,Epic,
+8,Daedalus,Shotgun,53,Rarity,Legendary,Bod
+8,Daedalus,Shotgun,55,Rarity,Legendary,Acey May
+8,Daedalus,Shotgun,58,Rarity,Legendary,Missilaser
+20,Daedalus,SMG,95,Rarity,Common,
+20,Daedalus,SMG,96,Rarity,Uncommon,
+20,Daedalus,SMG,97,Rarity,Rare,
+20,Daedalus,SMG,98,Rarity,Epic,
+20,Daedalus,SMG,63,Rarity,Legendary,Darkbeast
+27,Jakobs,Assault Rifle,95,Rarity,Common,
+27,Jakobs,Assault Rifle,96,Rarity,Uncommon,
+27,Jakobs,Assault Rifle,97,Rarity,Rare,
+27,Jakobs,Assault Rifle,98,Rarity,Epic,
+27,Jakobs,Assault Rifle,1,Rarity,Legendary,Bonnie and Clyde
+27,Jakobs,Assault Rifle,74,Rarity,Legendary,Rowan's Charge
+27,Jakobs,Assault Rifle,79,Rarity,Legendary,Rowdy Rider
+3,Jakobs,Pistol,95,Rarity,Common,
+3,Jakobs,Pistol,96,Rarity,Uncommon,
+3,Jakobs,Pistol,97,Rarity,Rare,
+3,Jakobs,Pistol,98,Rarity,Epic,
+3,Jakobs,Pistol,76,Rarity,Legendary,King's Gambit
+3,Jakobs,Pistol,78,Rarity,Legendary,Phantom Flame
+3,Jakobs,Pistol,79,Rarity,Legendary,San Saba Songbird
+3,Jakobs,Pistol,81,Rarity,Legendary,Seventh Sense
+9,Jakobs,Shotgun,95,Rarity,Common,
+9,Jakobs,Shotgun,96,Rarity,Uncommon,
+9,Jakobs,Shotgun,97,Rarity,Rare,
+9,Jakobs,Shotgun,98,Rarity,Epic,
+9,Jakobs,Shotgun,80,Rarity,Legendary,Hot Slugger
+9,Jakobs,Shotgun,83,Rarity,Legendary,Hellwalker
+9,Jakobs,Shotgun,85,Rarity,Legendary,Rainbow Vomit
+9,Jakobs,Shotgun,91,Rarity,Legendary,T.K's Wave
+24,Jakobs,Sniper,95,Rarity,Common,
+24,Jakobs,Sniper,96,Rarity,Uncommon,
+24,Jakobs,Sniper,97,Rarity,Rare,
+24,Jakobs,Sniper,98,Rarity,Epic,
+24,Jakobs,Sniper,1,Rarity,Legendary,Boomslang
+24,Jakobs,Sniper,73,Rarity,Legendary,Borstel Ballista
+24,Jakobs,Sniper,76,Rarity,Legendary,Truck
+10,Maliwan,Shotgun,95,Rarity,Common,
+10,Maliwan,Shotgun,96,Rarity,Uncommon,
+10,Maliwan,Shotgun,97,Rarity,Rare,
+10,Maliwan,Shotgun,98,Rarity,Epic,
+10,Maliwan,Shotgun,1,Rarity,Legendary,Kaleidosplode
+10,Maliwan,Shotgun,57,Rarity,Legendary,Sweet Embrace
+10,Maliwan,Shotgun,100,Rarity,Legendary,Kickballer
+21,Maliwan,SMG,58,Rarity,Common,
+21,Maliwan,SMG,96,Rarity,Uncommon,
+21,Maliwan,SMG,97,Rarity,Rare,
+21,Maliwan,SMG,98,Rarity,Epic,
+21,Maliwan,SMG,60,Rarity,Legendary,Ohm I Got
+21,Maliwan,SMG,63,Rarity,Legendary,Plasma Coil
+21,Maliwan,SMG,83,Rarity,Legendary,Matador's Match
+25,Maliwan,Sniper,95,Rarity,Common,
+25,Maliwan,Sniper,96,Rarity,Uncommon,
+25,Maliwan,Sniper,97,Rarity,Rare,
+25,Maliwan,Sniper,98,Rarity,Epic,
+25,Maliwan,Sniper,59,Rarity,Legendary,Complex Root
+25,Maliwan,Sniper,61,Rarity,Legendary,Katagawa's Revenge
+25,Maliwan,Sniper,80,Rarity,Legendary,Asher's Rise
+15,Order,Assault Rifle,95,Rarity,Common,
+15,Order,Assault Rifle,96,Rarity,Uncommon,
+15,Order,Assault Rifle,97,Rarity,Rare,
+15,Order,Assault Rifle,98,Rarity,Epic,
+15,Order,Assault Rifle,75,Rarity,Legendary,G.M.R.
+15,Order,Assault Rifle,76,Rarity,Legendary,Goalkeeper
+4,Order,Pistol,95,Rarity,Common,
+4,Order,Pistol,96,Rarity,Uncommon,
+4,Order,Pistol,97,Rarity,Rare,
+4,Order,Pistol,98,Rarity,Epic,
+4,Order,Pistol,53,Rarity,Legendary,Lucky Clover
+4,Order,Pistol,76,Rarity,Legendary,Bully
+4,Order,Pistol,80,Rarity,Legendary,Noisy Cricket
+26,Order,Sniper,95,Rarity,Common,
+26,Order,Sniper,96,Rarity,Uncommon,
+26,Order,Sniper,97,Rarity,Rare,
+26,Order,Sniper,98,Rarity,Epic,
+26,Order,Sniper,1,Rarity,Legendary,Fisheye
+26,Order,Sniper,76,Rarity,Legendary,Symmetry
+26,Order,Sniper,79,Rarity,Legendary,Rooker
+7,Ripper,Shotgun,95,Rarity,Common,
+7,Ripper,Shotgun,96,Rarity,Uncommon,
+7,Ripper,Shotgun,97,Rarity,Rare,
+7,Ripper,Shotgun,98,Rarity,Epic,
+7,Ripper,Shotgun,19,Rarity,Legendary,Golden God
+7,Ripper,Shotgun,20,Rarity,Legendary,Goremaster
+7,Ripper,Shotgun,100,Rarity,Legendary,Convergence
+19,Ripper,SMG,95,Rarity,Common,
+19,Ripper,SMG,96,Rarity,Uncommon,
+19,Ripper,SMG,97,Rarity,Rare,
+19,Ripper,SMG,98,Rarity,Epic,
+19,Ripper,SMG,1,Rarity,Legendary,Prince Harming
+19,Ripper,SMG,19,Rarity,Legendary,Hellfire
+19,Ripper,SMG,56,Rarity,Legendary,Roil
+23,Ripper,Sniper,95,Rarity,Common,
+23,Ripper,Sniper,96,Rarity,Uncommon,
+23,Ripper,Sniper,97,Rarity,Rare,
+23,Ripper,Sniper,98,Rarity,Epic,
+23,Ripper,Sniper,19,Rarity,Legendary,Stray
+23,Ripper,Sniper,1,Rarity,Legendary,Vamoose
+14,Tediore,Assault Rifle,89,Rarity,Common,
+14,Tediore,Assault Rifle,90,Rarity,Uncommon,
+14,Tediore,Assault Rifle,91,Rarity,Rare,
+14,Tediore,Assault Rifle,92,Rarity,Epic,
+14,Tediore,Assault Rifle,35,Rarity,Legendary,Chuck
+14,Tediore,Assault Rifle,36,Rarity,Legendary,Divided Focus
+14,Tediore,Assault Rifle,77,Rarity,Legendary,Murmur
+5,Tediore,Pistol,95,Rarity,Common,
+5,Tediore,Pistol,96,Rarity,Uncommon,
+5,Tediore,Pistol,97,Rarity,Rare,
+5,Tediore,Pistol,98,Rarity,Epic,
+5,Tediore,Pistol,1,Rarity,Legendary,Sideshow
+5,Tediore,Pistol,60,Rarity,Legendary,Budget Deity
+5,Tediore,Pistol,66,Rarity,Legendary,Ruby's Grasp
+5,Tediore,Pistol,86,Rarity,Legendary,Inscriber
+11,Tediore,Shotgun,95,Rarity,Common,
+11,Tediore,Shotgun,96,Rarity,Uncommon,
+11,Tediore,Shotgun,97,Rarity,Rare,
+11,Tediore,Shotgun,98,Rarity,Epic,
+11,Tediore,Shotgun,76,Rarity,Legendary,Anarchy
+11,Tediore,Shotgun,78,Rarity,Legendary,Forsaken Chaos
+11,Tediore,Shotgun,80,Rarity,Legendary,Husky Friend
+17,Torgue,Assault Rifle,95,Rarity,Common,
+17,Torgue,Assault Rifle,96,Rarity,Uncommon,
+17,Torgue,Assault Rifle,97,Rarity,Rare,
+17,Torgue,Assault Rifle,98,Rarity,Epic,
+17,Torgue,Assault Rifle,1,Rarity,Legendary,Bugbear
+17,Torgue,Assault Rifle,56,Rarity,Legendary,Cold Shoulder
+17,Torgue,Assault Rifle,78,Rarity,Legendary,Potato Thrower IV
+6,Torgue,Pistol,95,Rarity,Common,
+6,Torgue,Pistol,96,Rarity,Uncommon,
+6,Torgue,Pistol,97,Rarity,Rare,
+6,Torgue,Pistol,98,Rarity,Epic,
+6,Torgue,Pistol,1,Rarity,Legendary,Roach
+6,Torgue,Pistol,53,Rarity,Legendary,Queen's Rest
+6,Torgue,Pistol,59,Rarity,Legendary,Hardpoint
+12,Torgue,Shotgun,95,Rarity,Common,
+12,Torgue,Shotgun,96,Rarity,Uncommon,
+12,Torgue,Shotgun,97,Rarity,Rare,
+12,Torgue,Shotgun,98,Rarity,Epic,
+12,Torgue,Shotgun,1,Rarity,Legendary,Linebacker
+12,Torgue,Shotgun,57,Rarity,Legendary,Lead Balloon
+18,Vladof,Assault Rifle,95,Rarity,Common,
+18,Vladof,Assault Rifle,96,Rarity,Uncommon,
+18,Vladof,Assault Rifle,97,Rarity,Rare,
+18,Vladof,Assault Rifle,98,Rarity,Epic,
+18,Vladof,Assault Rifle,63,Rarity,Legendary,Lucian's Flank
+18,Vladof,Assault Rifle,65,Rarity,Legendary,Wombo Combo
+18,Vladof,Assault Rifle,88,Rarity,Legendary,Aegon's Dream
+18,Vladof,Assault Rifle,93,Rarity,Legendary,Whiskey Foxtrot
+22,Vladof,SMG,95,Rarity,Common,
+22,Vladof,SMG,96,Rarity,Uncommon,
+22,Vladof,SMG,97,Rarity,Rare,
+22,Vladof,SMG,98,Rarity,Epic,
+22,Vladof,SMG,1,Rarity,Legendary,Onslaught
+22,Vladof,SMG,67,Rarity,Legendary,Kaoson
+22,Vladof,SMG,88,Rarity,Legendary,Birt's Bees
+16,Vladof,Sniper,95,Rarity,Common,
+16,Vladof,Sniper,96,Rarity,Uncommon,
+16,Vladof,Sniper,97,Rarity,Rare,
+16,Vladof,Sniper,98,Rarity,Epic,
+16,Vladof,Sniper,66,Rarity,Legendary,Finnity XXX-L
+16,Vladof,Sniper,67,Rarity,Legendary,Stop Gap
+16,Vladof,Sniper,69,Rarity,Legendary,Midnight Defiance

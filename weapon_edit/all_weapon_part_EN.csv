@@ -1,0 +1,1977 @@
+Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,Stat
+13,Daedalus,Assault Rifle,1,Body,DAD_AR.part_body,"No stat changes, always present"
+13,Daedalus,Assault Rifle,2,Body Accessory,DAD_AR.part_body_a,-Reload Speed
+13,Daedalus,Assault Rifle,3,Body Accessory,DAD_AR.part_body_b,-Reload Speed
+13,Daedalus,Assault Rifle,4,Body Accessory,DAD_AR.part_body_c,+Accuracy
+13,Daedalus,Assault Rifle,5,Body Accessory,DAD_AR.part_body_d,No Stat Changes
+13,Daedalus,Assault Rifle,6,Barrel,DAD_AR.part_barrel_01,"Spec-Tec Barrel, 571 Damage, 78% Acc, 6.8/s Fire Rate"
+13,Daedalus,Assault Rifle,7,Barrel,DAD_AR.part_barrel_02,"F.A.N.G. Barrel, 669 Damage, 84% Acc, 5.5/s Fire Rate"
+13,Daedalus,Assault Rifle,8,Barrel,DAD_AR.part_barrel_unique_om,"Oscar Mike Barrel, 509 Damage, 76% Acc, 6.8/s Fire Rate"
+13,Daedalus,Assault Rifle,9,Barrel Accessory,DAD_AR.part_barrel_01_a,+Damage
+13,Daedalus,Assault Rifle,10,Barrel Accessory,DAD_AR.part_barrel_01_b,+Crit Damage
+13,Daedalus,Assault Rifle,11,Barrel Accessory,DAD_AR.part_barrel_01_c,+Accuracy
+13,Daedalus,Assault Rifle,12,Barrel Accessory,DAD_AR.part_barrel_01_d,+Accuracy
+13,Daedalus,Assault Rifle,13,Barrel Accessory,DAD_AR.part_barrel_02_a,+Damage
+13,Daedalus,Assault Rifle,14,Barrel Accessory,DAD_AR.part_barrel_02_b,+Accuracy
+13,Daedalus,Assault Rifle,15,Barrel Accessory,DAD_AR.part_barrel_02_c,+Fire Rate
+13,Daedalus,Assault Rifle,16,Barrel Accessory,DAD_AR.part_barrel_02_d,+Fire Rate
+13,Daedalus,Assault Rifle,17,Manufacturer Part,DAD_AR.part_barrel_licensed_jak,+Crit Damage
+13,Daedalus,Assault Rifle,18,Manufacturer Part,DAD_AR.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+13,Daedalus,Assault Rifle,20,Manufacturer Part,DAD_AR.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+13,Daedalus,Assault Rifle,21,Manufacturer Part,DAD_AR.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+13,Daedalus,Assault Rifle,22,Manufacturer Part,DAD_AR.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+13,Daedalus,Assault Rifle,23,Manufacturer Part,DAD_AR.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+13,Daedalus,Assault Rifle,24,Magazine,DAD_AR.part_mag_01,"2.1s Reload, 28 shots"
+13,Daedalus,Assault Rifle,25,Magazine,DAD_AR.part_mag_02,"2.6s Reload, 36 shots"
+13,Daedalus,Assault Rifle,26,Magazine,DAD_AR.part_mag_03_tor,"2.0s Reload, +Damage, -Fire Rate, 20 shots, Torgue Mag"
+13,Daedalus,Assault Rifle,27,Magazine,DAD_AR.part_mag_04_cov,"4.3s Reload, +Damage, -Acc, 50 shots to overheat, CoV Mag"
+13,Daedalus,Assault Rifle,28,Magazine,DAD_AR.part_mag_05_borg,"3.0s Reload, +Damage, +Acc, +Fire Rate, 44 shots, Ripper Mag"
+13,Daedalus,Assault Rifle,29,Manufacturer Part,DAD_AR.part_mag_torgue_normal,Torgue Impact Gyrojets
+13,Daedalus,Assault Rifle,30,Stat Modifier,DAD_AR.part_mag_ted_thrown_01,2.0s Reload
+13,Daedalus,Assault Rifle,31,Stat Modifier,DAD_AR.part_mag_ted_thrown_02,2.0s Reload
+13,Daedalus,Assault Rifle,32,Manufacturer Part,DAD_AR.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+13,Daedalus,Assault Rifle,33,Stat Modifier,DAD_AR.part_mag_ted_thrown_03_tor,2.0s Reload
+13,Daedalus,Assault Rifle,34,Stat Modifier,DAD_AR.part_mag_ted_thrown_04_cov,3.0s Reload
+13,Daedalus,Assault Rifle,35,Stat Modifier,DAD_AR.part_mag_ted_thrown_05_bor,3.0s Reload
+13,Daedalus,Assault Rifle,36,Body,DAD_AR.part_body_bolt,"No stat changes, always present"
+13,Daedalus,Assault Rifle,37,Scope,DAD_AR.part_scope_02_lens_02,ADS ++++Zoom
+13,Daedalus,Assault Rifle,38,Scope,DAD_AR.part_scope_02_lens_01,ADS +++Zoom
+13,Daedalus,Assault Rifle,39,Scope,DAD_AR.part_scope_01_lens_02,ADS ++Zoom
+13,Daedalus,Assault Rifle,40,Scope,DAD_AR.part_scope_01_lens_01,ADS +Zoom
+13,Daedalus,Assault Rifle,41,Scope,DAD_AR.part_scope_ironsight,ADS
+13,Daedalus,Assault Rifle,42,Scope Accessory,DAD_AR.part_scope_acc_s01_l01_a,+Fire Rate
+13,Daedalus,Assault Rifle,43,Scope Accessory,DAD_AR.part_scope_acc_s01_l01_b,+Damage
+13,Daedalus,Assault Rifle,44,Scope Accessory,DAD_AR.part_scope_acc_s01_l02_a,+Fire Rate
+13,Daedalus,Assault Rifle,45,Scope Accessory,DAD_AR.part_scope_acc_s01_l02_b,+Damage
+13,Daedalus,Assault Rifle,46,Scope Accessory,DAD_AR.part_scope_acc_s02_l01_a,No Stat Changes
+13,Daedalus,Assault Rifle,47,Scope Accessory,DAD_AR.part_scope_acc_s02_l01_b,+Crit Damage
+13,Daedalus,Assault Rifle,48,Scope Accessory,DAD_AR.part_scope_acc_s02_l02_a,No Stat Changes
+13,Daedalus,Assault Rifle,49,Scope Accessory,DAD_AR.part_scope_acc_s02_l02_b,+Crit Damage
+13,Daedalus,Assault Rifle,50,Grip,DAD_AR.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+13,Daedalus,Assault Rifle,51,Grip,DAD_AR.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+13,Daedalus,Assault Rifle,52,Grip,DAD_AR.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+13,Daedalus,Assault Rifle,53,Grip,DAD_AR.part_grip_01,+Damage
+13,Daedalus,Assault Rifle,54,Grip,DAD_AR.part_grip_02,+Fire Rate
+13,Daedalus,Assault Rifle,55,Grip,DAD_AR.part_grip_03,-Reload Speed
+13,Daedalus,Assault Rifle,56,Grip,DAD_AR.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+13,Daedalus,Assault Rifle,57,Barrel,DAD_AR.part_barrel_02_lumberjack,"Bloody Lumberjack, 1227 Damage, 82% Acc, 4.0/s FR, 2 Shot"
+13,Daedalus,Assault Rifle,58,Underbarrel,DAD_AR.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+13,Daedalus,Assault Rifle,59,Underbarrel,DAD_AR.part_underbarrel_04_atlas,Atlas Tracker Darts
+13,Daedalus,Assault Rifle,60,Underbarrel,DAD_AR.part_underbarrel_06_malswitch,"Underbarrel switch, no effects"
+13,Daedalus,Assault Rifle,61,Underbarrel,DAD_AR.part_underbarrel_02_shotgun,Alt Fire - Shotgun
+13,Daedalus,Assault Rifle,62,Underbarrel,DAD_AR.part_underbarrel_03_microrocket,Alt Fire - Micro-Rocket POD
+13,Daedalus,Assault Rifle,63,Underbarrel,DAD_AR.part_underbarrel_01_grenade,Alt Fire - Grenade Launcher
+13,Daedalus,Assault Rifle,64,Foregrip,DAD_AR.part_foregrip_01,+Damage
+13,Daedalus,Assault Rifle,65,Foregrip,DAD_AR.part_foregrip_02,+Fire Rate
+13,Daedalus,Assault Rifle,66,Foregrip,DAD_AR.part_foregrip_03,+Accuracy
+13,Daedalus,Assault Rifle,67,Underbarrel,DAD_AR.part_underbarrel_01_grenade_om,Fragcendiary Grenades
+13,Daedalus,Assault Rifle,68,Manufacturer Part,DAD_AR.part_body_mag_ps,Daedalus Pistol Ammo
+13,Daedalus,Assault Rifle,69,Manufacturer Part,DAD_AR.part_body_mag_smg,Daedalus SMG Ammo
+13,Daedalus,Assault Rifle,70,Manufacturer Part,DAD_AR.part_body_mag_sg,Daedalus Shotgun Ammo
+13,Daedalus,Assault Rifle,71,Manufacturer Part,DAD_AR.part_body_mag_sr,Daedalus SR Ammo
+13,Daedalus,Assault Rifle,75,Underbarrel,DAD_AR.part_underbarrel_om_spacelaser,Space Laser
+13,Daedalus,Assault Rifle,76,Underbarrel,DAD_AR.part_underbarrel_06_star_helix,Star Helix Underbarrel
+13,Daedalus,Assault Rifle,77,Barrel,DAD_AR.part_barrel_02_star_helix,"Star Helix Barrel, 669 x 3 Damage, 78% Acc, 4.7/s Fire Rate"
+13,Daedalus,Assault Rifle,78,Manufacturer Part,DAD_AR.part_shield_default,Hyperion Shield
+13,Daedalus,Assault Rifle,79,Manufacturer Part,DAD_AR.part_shield_ricochet,Hyperion Ricochet Shield
+13,Daedalus,Assault Rifle,80,Manufacturer Part,DAD_AR.part_shield_ammo,Hyperion Absorb Shield
+13,Daedalus,Assault Rifle,81,Manufacturer Part,DAD_AR.part_shield_amp,Hyperion Amp Shield
+2,Daedalus,Pistol,1,Barrel,DAD_PS.part_barrel_01_zipgun,"Zipper, 692 Damage, 75% Acc, 6.2/s FR"
+2,Daedalus,Pistol,2,Body,DAD_PS.part_body,"No stat changes, always present"
+2,Daedalus,Pistol,3,Body Accessory,DAD_PS.part_body_a,-Reload Speed
+2,Daedalus,Pistol,4,Body Accessory,DAD_PS.part_body_b,-Reload Speed
+2,Daedalus,Pistol,5,Body Accessory,DAD_PS.part_body_c,+Accuracy
+2,Daedalus,Pistol,6,Body Accessory,DAD_PS.part_body_d,No Stat Changes
+2,Daedalus,Pistol,7,Barrel,DAD_PS.part_barrel_01,"S23, 692 Damage, 75% Acc, 6.0/s FR"
+2,Daedalus,Pistol,8,Barrel,DAD_PS.part_barrel_02,"Bonn-91, 714 Damage, 76% Acc, 5.8/s FR"
+2,Daedalus,Pistol,9,Manufacturer Part,DAD_PS.part_shield_default,Hyperion Shield
+2,Daedalus,Pistol,10,Manufacturer Part,DAD_PS.part_shield_ricochet,Hyperion Ricochet Shield
+2,Daedalus,Pistol,11,Manufacturer Part,DAD_PS.part_shield_ammo,Hyperion Absorb Shield
+2,Daedalus,Pistol,12,Manufacturer Part,DAD_PS.part_shield_amp,Hyperion Amp Shield
+2,Daedalus,Pistol,13,Magazine,DAD_PS.part_mag_01,"2.0s Reload, +Damage, 16 Shots"
+2,Daedalus,Pistol,14,Magazine,DAD_PS.part_mag_02,"2.7s Reload, +Damage, 20 Shots"
+2,Daedalus,Pistol,15,Magazine,DAD_PS.part_mag_03_tor,"2.4s Reload, +Damage, +Acc, -Fire Rate, 12 Shots, Torgue"
+2,Daedalus,Pistol,16,Magazine,DAD_PS.part_mag_04_cov,"3.5s Reload, +Damage, -Acc, 25 Shots, CoV Mag"
+2,Daedalus,Pistol,17,Magazine,DAD_PS.part_mag_05_borg,"2.1s Reload, ++Fire Rate, 28 Shots, Ripper Mag"
+2,Daedalus,Pistol,18,Manufacturer Part,DAD_PS.part_mag_torgue_normal,Torgue Impact Gyrojets
+2,Daedalus,Pistol,19,Manufacturer Part,DAD_PS.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+2,Daedalus,Pistol,20,Stat Modifier,DAD_PS.part_mag_ted_thrown_01,2.0s Reload
+2,Daedalus,Pistol,21,Stat Modifier,DAD_PS.part_mag_ted_thrown_02,2.0s Reload
+2,Daedalus,Pistol,22,Stat Modifier,DAD_PS.part_mag_ted_thrown_03_tor,2.0s Reload
+2,Daedalus,Pistol,23,Stat Modifier,DAD_PS.part_mag_ted_thrown_04_cov,3.0s Reload
+2,Daedalus,Pistol,24,Stat Modifier,DAD_PS.part_mag_ted_thrown_05_bor,3.0s Reload
+2,Daedalus,Pistol,25,Scope,DAD_PS.part_scope_ironsight,ADS
+2,Daedalus,Pistol,26,Scope,DAD_PS.part_scope_01_lens_01,ADS
+2,Daedalus,Pistol,27,Scope,DAD_PS.part_scope_01_lens_02,ADS +Zoom
+2,Daedalus,Pistol,28,Scope,DAD_PS.part_scope_02_lens_01,ADS ++Zoom
+2,Daedalus,Pistol,29,Scope,DAD_PS.part_scope_02_lens_02,ADS ++Zoom
+2,Daedalus,Pistol,30,Scope Accessory,DAD_PS.part_scope_acc_s01_l01_a,+Damage
+2,Daedalus,Pistol,31,Scope Accessory,DAD_PS.part_scope_acc_s01_l01_b,-Reload Speed
+2,Daedalus,Pistol,32,Scope Accessory,DAD_PS.part_scope_acc_s02_l01_a,No Stat Changes
+2,Daedalus,Pistol,33,Scope Accessory,DAD_PS.part_scope_acc_s02_l01_b,+Crit Damage
+2,Daedalus,Pistol,34,Scope Accessory,DAD_PS.part_scope_acc_s01_l02_a,+Damage
+2,Daedalus,Pistol,35,Scope Accessory,DAD_PS.part_scope_acc_s01_l02_b,-Reload Speed
+2,Daedalus,Pistol,36,Scope Accessory,DAD_PS.part_scope_acc_s02_l02_a,No Stat Changes
+2,Daedalus,Pistol,37,Scope Accessory,DAD_PS.part_scope_acc_s02_l02_b,+Crit Damage
+2,Daedalus,Pistol,38,Grip,DAD_PS.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+2,Daedalus,Pistol,39,Grip,DAD_PS.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+2,Daedalus,Pistol,40,Grip,DAD_PS.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+2,Daedalus,Pistol,41,Grip,DAD_PS.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+2,Daedalus,Pistol,42,Grip,DAD_PS.part_grip_01,+Damage
+2,Daedalus,Pistol,43,Grip,DAD_PS.part_grip_02,+Fire Rate
+2,Daedalus,Pistol,44,Grip,DAD_PS.part_grip_03,-Reload Speed
+2,Daedalus,Pistol,45,Underbarrel,DAD_PS.part_underbarrel_06_malswitch,"Underbarrel switch, no effects"
+2,Daedalus,Pistol,46,Underbarrel,DAD_PS.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+2,Daedalus,Pistol,47,Underbarrel,DAD_PS.part_underbarrel_02_knifelauncher,Alt Fire - Tactical Knife Launcher
+2,Daedalus,Pistol,48,Underbarrel,DAD_PS.part_underbarrel_01_taser,Alt Fire - Taser
+2,Daedalus,Pistol,49,Foregrip,DAD_PS.part_foregrip_02,+Fire Rate
+2,Daedalus,Pistol,50,Foregrip,DAD_PS.part_foregrip_03,+Accuracy
+2,Daedalus,Pistol,51,Manufacturer Part,DAD_PS.part_body_mag_smg,Daedalus SMG Ammo
+2,Daedalus,Pistol,52,Manufacturer Part,DAD_PS.part_body_mag_ar,Daedalus AR Ammo
+2,Daedalus,Pistol,53,Manufacturer Part,DAD_PS.part_body_mag_sr,Daedalus SR Ammo
+2,Daedalus,Pistol,57,Stat Modifier,DAD_PS.part_mag_05_borg_barrel_02,"1.8s Reload, -Damage, -Fire Rate"
+2,Daedalus,Pistol,58,Stat Modifier,DAD_PS.part_mag_05_borg_barrel_01,"1.8s Reload, -Damage, -Fire Rate"
+2,Daedalus,Pistol,60,Barrel Accessory,DAD_PS.part_barrel_01_a,+Damage
+2,Daedalus,Pistol,61,Barrel Accessory,DAD_PS.part_barrel_01_b,+Accuracy
+2,Daedalus,Pistol,62,Barrel Accessory,DAD_PS.part_barrel_01_c,+Fire Rate
+2,Daedalus,Pistol,63,Barrel Accessory,DAD_PS.part_barrel_01_d,+Fire Rate
+2,Daedalus,Pistol,64,Barrel Accessory,DAD_PS.part_barrel_02_a,+Damage
+2,Daedalus,Pistol,65,Barrel Accessory,DAD_PS.part_barrel_02_b,+Crit Damage
+2,Daedalus,Pistol,66,Barrel Accessory,DAD_PS.part_barrel_02_c,+Accuracy
+2,Daedalus,Pistol,67,Barrel Accessory,DAD_PS.part_barrel_02_d,+Accuracy
+2,Daedalus,Pistol,68,Manufacturer Part,DAD_PS.part_barrel_licensed_jak,Jakobs Ricochet
+2,Daedalus,Pistol,69,Manufacturer Part,DAD_PS.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+2,Daedalus,Pistol,70,Manufacturer Part,DAD_PS.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+2,Daedalus,Pistol,71,Manufacturer Part,DAD_PS.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+2,Daedalus,Pistol,72,Manufacturer Part,DAD_PS.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+2,Daedalus,Pistol,73,Manufacturer Part,DAD_PS.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+2,Daedalus,Pistol,74,Underbarrel,DAD_PS.part_underbarrel_04_atlas,Atlas Tracker Darts
+2,Daedalus,Pistol,75,Underbarrel,DAD_PS.part_underbarrel_03_semtex,Alt Fire - Demolition Charge
+2,Daedalus,Pistol,76,Foregrip,DAD_PS.part_foregrip_01,+Damage
+2,Daedalus,Pistol,77,Manufacturer Part,DAD_PS.part_body_mag_sg,Daedalus Shotgun Ammo
+2,Daedalus,Pistol,78,Barrel,DAD_PS.part_barrel_02_rangefinder,"Rangefinder, 812 Damage, 85% Acc, 5.5/s FR"
+8,Daedalus,Shotgun,2,Body,DAD_SG.part_body,"No stat changes, always present"
+8,Daedalus,Shotgun,3,Body Accessory,DAD_SG.part_body_a,-Reload Speed
+8,Daedalus,Shotgun,4,Body Accessory,DAD_SG.part_body_b,-Reload Speed
+8,Daedalus,Shotgun,5,Body Accessory,DAD_SG.part_body_c,+Accuracy
+8,Daedalus,Shotgun,6,Body Accessory,DAD_SG.part_body_d,No Stat Changes
+8,Daedalus,Shotgun,7,Barrel,DAD_SG.part_barrel_01,"Caliburn, 265 x 6 Damage, 55% Acc, 4.2/s FR"
+8,Daedalus,Shotgun,8,Barrel,DAD_SG.part_barrel_02,"Durendal, 432 x 4 Damage, 65% Acc, 3.5/s FR"
+8,Daedalus,Shotgun,9,Manufacturer Part,DAD_SG.part_shield_default,Hyperion Shield
+8,Daedalus,Shotgun,10,Manufacturer Part,DAD_SG.part_shield_ricochet,Hyperion Ricochet Shield
+8,Daedalus,Shotgun,11,Manufacturer Part,DAD_SG.part_shield_ammo,Hyperion Absorb Shield
+8,Daedalus,Shotgun,12,Manufacturer Part,DAD_SG.part_shield_amp,Hyperion Amp Shield
+8,Daedalus,Shotgun,13,Magazine,DAD_SG.part_mag_05_borg,"2.1s Reload, -Damage, +Fire Rate, 12 Shots, Ripper Mag"
+8,Daedalus,Shotgun,14,Magazine,DAD_SG.part_mag_04_cov,"3.5s Reload, +Damage, -Acc, -Reload, 10 Shots, CoV Mag"
+8,Daedalus,Shotgun,15,Magazine,DAD_SG.part_mag_03_tor,"2.2s Reload, +Damage, -Reload, -Fire Rate, 6 Shots, Torgue"
+8,Daedalus,Shotgun,16,Magazine,DAD_SG.part_mag_01,"2.0s Reload, -Reload, 8 Shots"
+8,Daedalus,Shotgun,17,Magazine,DAD_SG.part_mag_02,"2.4s Reload, -Damage, +Reload, 10 Shots"
+8,Daedalus,Shotgun,18,Stat Modifier,DAD_SG.part_mag_ted_thrown_01,2.0s Reload
+8,Daedalus,Shotgun,19,Stat Modifier,DAD_SG.part_mag_ted_thrown_02,2.0s Reload
+8,Daedalus,Shotgun,20,Stat Modifier,DAD_SG.part_mag_ted_thrown_03_tor,2.0s Reload
+8,Daedalus,Shotgun,21,Stat Modifier,DAD_SG.part_mag_ted_thrown_04_cov,3.0s Reload
+8,Daedalus,Shotgun,22,Stat Modifier,DAD_SG.part_mag_ted_thrown_05_bor,3.0s Reload
+8,Daedalus,Shotgun,23,Scope,DAD_SG.part_scope_ironsight,ADS
+8,Daedalus,Shotgun,24,Scope,DAD_SG.part_scope_01_lens_01,ADS +Zoom
+8,Daedalus,Shotgun,25,Scope,DAD_SG.part_scope_01_lens_02,ADS +Zoom
+8,Daedalus,Shotgun,26,Scope,DAD_SG.part_scope_02_lens_01,ADS ++Zoom
+8,Daedalus,Shotgun,27,Scope,DAD_SG.part_scope_02_lens_02,ADS +++Zoom
+8,Daedalus,Shotgun,28,Scope Accessory,DAD_SG.part_scope_acc_s01_l01_a,+Damage
+8,Daedalus,Shotgun,29,Scope Accessory,DAD_SG.part_scope_acc_s01_l01_b,-Reload Speed
+8,Daedalus,Shotgun,30,Scope Accessory,DAD_SG.part_scope_acc_s02_l01_a,No Stat Changes
+8,Daedalus,Shotgun,31,Scope Accessory,DAD_SG.part_scope_acc_s02_l01_b,+Crit Damage
+8,Daedalus,Shotgun,32,Scope Accessory,DAD_SG.part_scope_acc_s01_l02_a,+Damage
+8,Daedalus,Shotgun,33,Scope Accessory,DAD_SG.part_scope_acc_s01_l02_b,-Reload Speed
+8,Daedalus,Shotgun,34,Scope Accessory,DAD_SG.part_scope_acc_s02_l02_a,No Stat Changes
+8,Daedalus,Shotgun,35,Scope Accessory,DAD_SG.part_scope_acc_s02_l02_b,+Crit Damage
+8,Daedalus,Shotgun,36,Grip,DAD_SG.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+8,Daedalus,Shotgun,37,Grip,DAD_SG.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+8,Daedalus,Shotgun,38,Grip,DAD_SG.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+8,Daedalus,Shotgun,39,Grip,DAD_SG.part_grip_01,+Damage
+8,Daedalus,Shotgun,40,Grip,DAD_SG.part_grip_02,+Fire Rate
+8,Daedalus,Shotgun,41,Grip,DAD_SG.part_grip_03,-Reload Speed
+8,Daedalus,Shotgun,42,Grip,DAD_SG.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+8,Daedalus,Shotgun,43,Underbarrel,DAD_SG.part_underbarrel_02_singularity,Alt Fire - Gravity Harpoon
+8,Daedalus,Shotgun,44,Underbarrel,DAD_SG.part_underbarrel_06_malswitch,"Underbarrel switch, no effects"
+8,Daedalus,Shotgun,45,Underbarrel,DAD_SG.part_underbarrel_01_microrocket,Alt Fire - Micro-Rocket POD
+8,Daedalus,Shotgun,46,Underbarrel,DAD_SG.part_underbarrel_04_atlas,Atlas Tracker Darts
+8,Daedalus,Shotgun,47,Foregrip,DAD_SG.part_foregrip_01,+Damage
+8,Daedalus,Shotgun,48,Foregrip,DAD_SG.part_foregrip_03,+Accuracy
+8,Daedalus,Shotgun,49,Foregrip,DAD_SG.part_foregrip_02,+Fire Rate
+8,Daedalus,Shotgun,50,Underbarrel,DAD_SG.part_underbarrel_03_mine,Alt Fire - Proxy Mine Launcher
+8,Daedalus,Shotgun,51,Underbarrel,DAD_SG.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+8,Daedalus,Shotgun,52,Barrel,DAD_SG.part_barrel_01_bod,"Bod, 265 x 5 Damage, 67% Acc, 4.2/s FR"
+8,Daedalus,Shotgun,54,Barrel,DAD_SG.part_barrel_heartgun,"Acey May, 279 x 14 Damage, 65% Acc, 2.0/s FR"
+8,Daedalus,Shotgun,56,Underbarrel,DAD_SG.part_underbarrel_01_misslaser,Missilaser Alt Fire
+8,Daedalus,Shotgun,57,Barrel,DAD_SG.part_barrel_misslaser,"Missilaser, 1673 Damage, 100%Acc,3/s FR"
+8,Daedalus,Shotgun,61,Barrel Accessory,DAD_SG.part_barrel_01_a,+Damage
+8,Daedalus,Shotgun,62,Barrel Accessory,DAD_SG.part_barrel_01_b,+Accuracy
+8,Daedalus,Shotgun,63,Barrel Accessory,DAD_SG.part_barrel_01_c,+Fire Rate
+8,Daedalus,Shotgun,64,Barrel Accessory,DAD_SG.part_barrel_01_d,+Fire Rate
+8,Daedalus,Shotgun,65,Barrel Accessory,DAD_SG.part_barrel_02_a,+Damage
+8,Daedalus,Shotgun,66,Barrel Accessory,DAD_SG.part_barrel_02_b,-Reload Speed
+8,Daedalus,Shotgun,67,Barrel Accessory,DAD_SG.part_barrel_02_c,+Accuracy
+8,Daedalus,Shotgun,68,Barrel Accessory,DAD_SG.part_barrel_02_d,+Accuracy
+8,Daedalus,Shotgun,69,Manufacturer Part,DAD_SG.part_barrel_licensed_jak,Jakobs Ricochet
+8,Daedalus,Shotgun,70,Manufacturer Part,DAD_SG.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+8,Daedalus,Shotgun,71,Manufacturer Part,DAD_SG.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+8,Daedalus,Shotgun,72,Manufacturer Part,DAD_SG.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+8,Daedalus,Shotgun,73,Manufacturer Part,DAD_SG.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+8,Daedalus,Shotgun,74,Manufacturer Part,DAD_SG.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+8,Daedalus,Shotgun,75,Manufacturer Part,DAD_SG.part_mag_torgue_normal,Torgue Impact Gyrojets
+8,Daedalus,Shotgun,76,Manufacturer Part,DAD_SG.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+8,Daedalus,Shotgun,77,Manufacturer Part,DAD_SG.part_body_mag_ps,Daedalus Pistol Ammo
+8,Daedalus,Shotgun,78,Manufacturer Part,DAD_SG.part_body_mag_smg,Daedalus SMG Ammo
+8,Daedalus,Shotgun,79,Manufacturer Part,DAD_SG.part_body_mag_ar,Daedalus AR Ammo
+8,Daedalus,Shotgun,80,Manufacturer Part,DAD_SG.part_body_mag_sr,Daedalus SR Ammo
+20,Daedalus,SMG,3,Body Accessory,DAD_SM.part_body_a,-Reload Speed
+20,Daedalus,SMG,4,Body Accessory,DAD_SM.part_body_b,-Reload Speed
+20,Daedalus,SMG,5,Body Accessory,DAD_SM.part_body_c,+Accuracy
+20,Daedalus,SMG,6,Body Accessory,DAD_SM.part_body_d,No Stat Changes
+20,Daedalus,SMG,7,Barrel,DAD_SM.part_barrel_01,"GCX, 658 Damage, 73% Acc, 6.7/s FR"
+20,Daedalus,SMG,8,Barrel,DAD_SM.part_barrel_02,"Painter, 714 Damage, 74% Acc, 6.0/s FR"
+20,Daedalus,SMG,9,Manufacturer Part,DAD_SM.part_shield_default,Hyperion Shield
+20,Daedalus,SMG,10,Manufacturer Part,DAD_SM.part_shield_ricochet,Hyperion Ricochet Shield
+20,Daedalus,SMG,11,Manufacturer Part,DAD_SM.part_shield_ammo,Hyperion Absorb Shield
+20,Daedalus,SMG,12,Manufacturer Part,DAD_SM.part_shield_amp,Hyperion Amp Shield
+20,Daedalus,SMG,13,Magazine,DAD_SM.part_mag_01,"2.3s Reload, 22 Shots"
+20,Daedalus,SMG,14,Magazine,DAD_SM.part_mag_02,"2.6s Reload, -Damage, 28 Shots"
+20,Daedalus,SMG,15,Magazine,DAD_SM.part_mag_03_tor,"2.8s Reload, +Damage, -Fire Rate, 18 Shots, Torgue"
+20,Daedalus,SMG,16,Magazine,DAD_SM.part_mag_04_cov,"4.0s Reload, +Damage, -Acc, 34 Shots, CoV Mag"
+20,Daedalus,SMG,17,Magazine,DAD_SM.part_mag_05_borg,"2.1s Reload, +Fire Rate, 32 Shots, Ripper Mag"
+20,Daedalus,SMG,18,Manufacturer Part,DAD_SM.part_mag_torgue_normal,Torgue Impact Gyrojets
+20,Daedalus,SMG,19,Manufacturer Part,DAD_SM.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+20,Daedalus,SMG,20,Stat Modifier,DAD_SM.part_mag_ted_thrown_01,1.6s Reload
+20,Daedalus,SMG,21,Stat Modifier,DAD_SM.part_mag_ted_thrown_02,1.6s Reload
+20,Daedalus,SMG,22,Stat Modifier,DAD_SM.part_mag_ted_thrown_03_tor,1.6s Reload
+20,Daedalus,SMG,23,Stat Modifier,DAD_SM.part_mag_ted_thrown_04_cov,3.0s Reload
+20,Daedalus,SMG,24,Stat Modifier,DAD_SM.part_mag_ted_thrown_05_bor,3.0s Reload
+20,Daedalus,SMG,25,Scope,DAD_SM.part_scope_02_lens_02,ADS ++Zoom
+20,Daedalus,SMG,26,Scope,DAD_SM.part_scope_02_lens_01,ADS ++Zoom
+20,Daedalus,SMG,27,Scope,DAD_SM.part_scope_01_lens_02,ADS +Zoom
+20,Daedalus,SMG,28,Scope,DAD_SM.part_scope_01_lens_01,ADS +Zoom
+20,Daedalus,SMG,29,Scope,DAD_SM.part_scope_ironsight,ADS
+20,Daedalus,SMG,30,Scope Accessory,DAD_SM.part_scope_acc_s02_lb_b,+Damage
+20,Daedalus,SMG,31,Scope Accessory,DAD_SM.part_scope_acc_s02_lb_a,+Damage
+20,Daedalus,SMG,32,Scope Accessory,DAD_SM.part_scope_acc_s01_l01_a,+Damage
+20,Daedalus,SMG,33,Scope Accessory,DAD_SM.part_scope_acc_s01_l01_b,-Reload Speed
+20,Daedalus,SMG,34,Scope Accessory,DAD_SM.part_scope_acc_s01_l02_a,+Damage
+20,Daedalus,SMG,35,Scope Accessory,DAD_SM.part_scope_acc_s01_l02_b,-Reload Speed
+20,Daedalus,SMG,36,Scope Accessory,DAD_SM.part_scope_acc_s02_l01_a,No Stat Changes
+20,Daedalus,SMG,37,Scope Accessory,DAD_SM.part_scope_acc_s02_l01_b,+Crit Damage
+20,Daedalus,SMG,38,Scope Accessory,DAD_SM.part_scope_acc_s02_l02_a,No Stat Changes
+20,Daedalus,SMG,39,Scope Accessory,DAD_SM.part_scope_acc_s02_l02_b,+Crit Damage
+20,Daedalus,SMG,40,Grip,DAD_SM.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+20,Daedalus,SMG,41,Grip,DAD_SM.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+20,Daedalus,SMG,42,Grip,DAD_SM.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+20,Daedalus,SMG,43,Grip,DAD_SM.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+20,Daedalus,SMG,44,Grip,DAD_SM.part_grip_01,+Damage
+20,Daedalus,SMG,45,Grip,DAD_SM.part_grip_02,+Fire Rate
+20,Daedalus,SMG,46,Grip,DAD_SM.part_grip_03,-Reload Speed
+20,Daedalus,SMG,47,Underbarrel,DAD_SM.part_underbarrel_06_malswitch,"Underbarrel switch, no effects"
+20,Daedalus,SMG,48,Underbarrel,DAD_SM.part_underbarrel_02_shotgun,Alt Fire - Shotgun
+20,Daedalus,SMG,49,Underbarrel,DAD_SM.part_underbarrel_03_overcharge,Alt Fire - Overcharge
+20,Daedalus,SMG,50,Underbarrel,DAD_SM.part_underbarrel_04_atlas,Atlas Tracker Darts
+20,Daedalus,SMG,51,Foregrip,DAD_SM.part_foregrip_02,+Fire Rate
+20,Daedalus,SMG,52,Foregrip,DAD_SM.part_foregrip_01,+Damage
+20,Daedalus,SMG,53,Foregrip,DAD_SM.part_foregrip_03,+Accuracy
+20,Daedalus,SMG,54,Underbarrel,DAD_SM.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+20,Daedalus,SMG,55,Manufacturer Part,DAD_SM.part_body_mag_ps,Daedalus Pistol Ammo
+20,Daedalus,SMG,56,Manufacturer Part,DAD_SM.part_body_mag_ar,Daedalus AR Ammo
+20,Daedalus,SMG,57,Manufacturer Part,DAD_SM.part_body_mag_sr,Daedalus SR Ammo
+20,Daedalus,SMG,58,Manufacturer Part,DAD_SM.part_body_mag_sg,Daedalus Shotgun Ammo
+20,Daedalus,SMG,60,Barrel,DAD_SM.part_barrel_01_luty,"Luty Madlad, 446 Damage, 78% Acc, 22.0/s FR"
+20,Daedalus,SMG,62,Body,DAD_SM.part_body,"No stat changes, always present"
+20,Daedalus,SMG,64,Barrel,DAD_SM.part_barrel_01_bloodstarved,"Darkbeast, 658 x 2 Damage, 71% Acc, 6.7/s FR, 2 Shot"
+20,Daedalus,SMG,66,Stat Modifier,DAD_SM.part_mag_borg_barrel_02,3.3s Reload
+20,Daedalus,SMG,67,Stat Modifier,DAD_SM.part_mag_borg_barrel_01,3.3s Reload
+20,Daedalus,SMG,69,Barrel,DAD_SM.part_barrel_01_loarmaster,"Daedalus SMG, 658x6 Damage, 71% Acc, 6.7/s FR, 2 Shot"
+20,Daedalus,SMG,79,Underbarrel,DAD_SM.part_underbarrel_01_stungrenade,Alt Fire - Grenade Launcher
+20,Daedalus,SMG,80,Barrel Accessory,DAD_SM.part_barrel_01_a,+Damage
+20,Daedalus,SMG,81,Barrel Accessory,DAD_SM.part_barrel_01_b,+Crit Damage
+20,Daedalus,SMG,82,Barrel Accessory,DAD_SM.part_barrel_01_c,+Accuracy
+20,Daedalus,SMG,83,Barrel Accessory,DAD_SM.part_barrel_01_d,+Accuracy
+20,Daedalus,SMG,84,Barrel Accessory,DAD_SM.part_barrel_02_a,+Damage
+20,Daedalus,SMG,85,Barrel Accessory,DAD_SM.part_barrel_02_b,+Accuracy
+20,Daedalus,SMG,86,Barrel Accessory,DAD_SM.part_barrel_02_c,+Fire Rate
+20,Daedalus,SMG,87,Barrel Accessory,DAD_SM.part_barrel_02_d,+Fire Rate
+20,Daedalus,SMG,88,Manufacturer Part,DAD_SM.part_barrel_licensed_jak,Jakobs Ricochet
+20,Daedalus,SMG,89,Manufacturer Part,DAD_SM.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+20,Daedalus,SMG,90,Manufacturer Part,DAD_SM.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+20,Daedalus,SMG,91,Manufacturer Part,DAD_SM.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+20,Daedalus,SMG,92,Manufacturer Part,DAD_SM.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+20,Daedalus,SMG,93,Manufacturer Part,DAD_SM.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+27,Jakobs,Assault Rifle,2,Body,JAK_AR.part_body,"No stat changes, always present"
+27,Jakobs,Assault Rifle,3,Body Accessory,JAK_AR.part_body_a,-Reload Speed
+27,Jakobs,Assault Rifle,4,Body Accessory,JAK_AR.part_body_b,+Fire Rate
+27,Jakobs,Assault Rifle,5,Body Accessory,JAK_AR.part_body_c,+Accuracy
+27,Jakobs,Assault Rifle,6,Body Accessory,JAK_AR.part_body_d,+Crit Damage
+27,Jakobs,Assault Rifle,7,Barrel,JAK_AR.part_barrel_01,"Karkadann, 1294 Damage, 77% Acc, 6.5/s FR"
+27,Jakobs,Assault Rifle,8,Barrel,JAK_AR.part_barrel_02,"Rougarou, 1517 Damage, 76% Acc, 4.8/s FR"
+27,Jakobs,Assault Rifle,9,Barrel Accessory,JAK_AR.part_barrel_01_a,+Damage
+27,Jakobs,Assault Rifle,10,Barrel Accessory,JAK_AR.part_barrel_01_b,+Crit Damage
+27,Jakobs,Assault Rifle,11,Barrel Accessory,JAK_AR.part_barrel_01_c,+Accuracy
+27,Jakobs,Assault Rifle,12,Barrel Accessory,JAK_AR.part_barrel_01_d,+Accuracy
+27,Jakobs,Assault Rifle,13,Barrel Accessory,JAK_AR.part_barrel_02_a,+Damage
+27,Jakobs,Assault Rifle,14,Barrel Accessory,JAK_AR.part_barrel_02_b,+Accuracy
+27,Jakobs,Assault Rifle,15,Barrel Accessory,JAK_AR.part_barrel_02_c,+Fire Rate
+27,Jakobs,Assault Rifle,16,Barrel Accessory,JAK_AR.part_barrel_02_d,+Fire Rate
+27,Jakobs,Assault Rifle,17,Manufacturer Part,JAK_AR.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+27,Jakobs,Assault Rifle,18,Manufacturer Part,JAK_AR.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+27,Jakobs,Assault Rifle,19,Manufacturer Part,JAK_AR.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+27,Jakobs,Assault Rifle,20,Manufacturer Part,JAK_AR.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+27,Jakobs,Assault Rifle,21,Manufacturer Part,JAK_AR.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+27,Jakobs,Assault Rifle,22,Manufacturer Part,JAK_AR.part_shield_default,Hyperion Shield
+27,Jakobs,Assault Rifle,23,Manufacturer Part,JAK_AR.part_shield_ricochet,Hyperion Ricochet Shield
+27,Jakobs,Assault Rifle,24,Manufacturer Part,JAK_AR.part_shield_amp,Hyperion Amp Shield
+27,Jakobs,Assault Rifle,25,Magazine,JAK_AR.part_mag_01,"2.5s Reload, -Damage, 14 Shots"
+27,Jakobs,Assault Rifle,26,Magazine,JAK_AR.part_mag_02,"2.7s Reload, -Damage, +Fire Rate, 18 Shots"
+27,Jakobs,Assault Rifle,27,Magazine,JAK_AR.part_mag_03_tor,"2.6s Reload, -Damage, -Acc, -Fire Rate, 16 Shots, Torgue"
+27,Jakobs,Assault Rifle,28,Magazine,JAK_AR.part_mag_04_cov,"4.0s Reload, -Damage, -Acc, 17 Shots, CoV Mag"
+27,Jakobs,Assault Rifle,29,Magazine,JAK_AR.part_mag_05_borg,"2.0s Reload, -Damage, +Fire Rate, 24 Shots, Ripper Mag"
+27,Jakobs,Assault Rifle,30,Manufacturer Part,JAK_AR.part_mag_torgue_normal,Torgue Impact Gyrojets
+27,Jakobs,Assault Rifle,31,Manufacturer Part,JAK_AR.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+27,Jakobs,Assault Rifle,32,Stat Modifier,JAK_AR.part_mag_ted_thrown_01,2.0s Reload
+27,Jakobs,Assault Rifle,33,Stat Modifier,JAK_AR.part_mag_ted_thrown_02,2.0s Reload
+27,Jakobs,Assault Rifle,34,Stat Modifier,JAK_AR.part_mag_ted_thrown_03_tor,2.0s Reload
+27,Jakobs,Assault Rifle,35,Stat Modifier,JAK_AR.part_mag_ted_thrown_04_cov,3.0s Reload
+27,Jakobs,Assault Rifle,36,Stat Modifier,JAK_AR.part_mag_ted_thrown_05_bor,3.0s Reload
+27,Jakobs,Assault Rifle,37,Scope,JAK_AR.part_scope_ironsight,ADS
+27,Jakobs,Assault Rifle,38,Scope,JAK_AR.part_scope_01_lens_01,ADS +Zoom
+27,Jakobs,Assault Rifle,39,Scope,JAK_AR.part_scope_01_lens_02,ADS +Zoom
+27,Jakobs,Assault Rifle,40,Scope,JAK_AR.part_scope_02_lens_01,ADS ++Zoom
+27,Jakobs,Assault Rifle,41,Scope,JAK_AR.part_scope_02_lens_02,ADS ++Zoom
+27,Jakobs,Assault Rifle,42,Scope Accessory,JAK_AR.part_scope_acc_s01_l01_a,+Damage
+27,Jakobs,Assault Rifle,43,Scope Accessory,JAK_AR.part_scope_acc_s01_l01_b,-Reload Speed
+27,Jakobs,Assault Rifle,44,Scope Accessory,JAK_AR.part_scope_acc_s02_l01_a,No Stat Changes
+27,Jakobs,Assault Rifle,45,Scope Accessory,JAK_AR.part_scope_acc_s02_l01_b,+Crit Damage
+27,Jakobs,Assault Rifle,46,Scope Accessory,JAK_AR.part_scope_acc_s01_l02_a,+Damage
+27,Jakobs,Assault Rifle,47,Scope Accessory,JAK_AR.part_scope_acc_s01_l02_b,-Reload Speed
+27,Jakobs,Assault Rifle,48,Grip,JAK_AR.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+27,Jakobs,Assault Rifle,49,Grip,JAK_AR.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+27,Jakobs,Assault Rifle,50,Grip,JAK_AR.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+27,Jakobs,Assault Rifle,51,Grip,JAK_AR.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+27,Jakobs,Assault Rifle,52,Grip,JAK_AR.part_grip_01,+Damage
+27,Jakobs,Assault Rifle,53,Grip,JAK_AR.part_grip_02,+Crit Damage
+27,Jakobs,Assault Rifle,54,Grip,JAK_AR.part_grip_03,-Reload Speed
+27,Jakobs,Assault Rifle,55,Underbarrel,JAK_AR.part_underbarrel_03_shotgun,Alt Fire - Shotgun
+27,Jakobs,Assault Rifle,56,Underbarrel,JAK_AR.part_underbarrel_01_flintlock,Alt Fire - Double Flintlocks
+27,Jakobs,Assault Rifle,57,Underbarrel,JAK_AR.part_underbarrel_02_crank,Alt Fire - Hand Crank
+27,Jakobs,Assault Rifle,58,Underbarrel,JAK_AR.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+27,Jakobs,Assault Rifle,59,Underbarrel,JAK_AR.part_underbarrel_04_atlas,Atlas Tracker Darts
+27,Jakobs,Assault Rifle,60,Underbarrel,JAK_AR.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+27,Jakobs,Assault Rifle,61,Foregrip,JAK_AR.part_foregrip_01,+Damage
+27,Jakobs,Assault Rifle,62,Foregrip,JAK_AR.part_foregrip_02,+Fire Rate
+27,Jakobs,Assault Rifle,63,Foregrip,JAK_AR.part_foregrip_03,+Accuracy
+27,Jakobs,Assault Rifle,64,Manufacturer Part,JAK_AR.part_secondary_ammo_smg,Daedalus SMG Ammo
+27,Jakobs,Assault Rifle,65,Manufacturer Part,JAK_AR.part_secondary_ammo_sg,Daedalus Shotgun Ammo
+27,Jakobs,Assault Rifle,66,Manufacturer Part,JAK_AR.part_secondary_ammo_sr,Daedalus SR Ammo
+27,Jakobs,Assault Rifle,67,Manufacturer Part,JAK_AR.part_secondary_ammo_ps,Daedalus Pistol Ammo
+27,Jakobs,Assault Rifle,68,Scope Accessory,JAK_AR.part_scope_acc_s02_l02_a,No Stat Changes
+27,Jakobs,Assault Rifle,69,Scope Accessory,JAK_AR.part_scope_acc_s02_l02_b,+Crit Damage
+27,Jakobs,Assault Rifle,71,Scope,JAK_AR.part_scope_02_lens_02_b02,ADS ++Zoom
+27,Jakobs,Assault Rifle,73,Barrel,JAK_AR.part_barrel_01_bonnieclyde,"Bonnie and Clyde, 2249 Damage, 76% Acc, 6.3/s FR"
+27,Jakobs,Assault Rifle,75,Barrel,JAK_AR.part_barrel_02_rowan,"Rowan's Charge, 1517 Damage, 75% Acc, 6.0/s FR"
+27,Jakobs,Assault Rifle,76,Barrel,JAK_AR.part_barrel_02_screenwriter,NOT IMPLEMENTED
+27,Jakobs,Assault Rifle,78,Barrel,JAK_AR.part_barrel_02_rowdy,"Rowdy Rider,2008 Damage, 64%Acc,3.2/s FR, -55% CritDMG"
+27,Jakobs,Assault Rifle,85,Manufacturer Part,JAK_AR.part_shield_ammo,Hyperion Absorb Shield
+3,Jakobs,Pistol,2,Body,JAK_PS.part_body,"No stat changes, always present"
+3,Jakobs,Pistol,3,Body Accessory,JAK_PS.part_body_a,-Reload Speed
+3,Jakobs,Pistol,4,Body Accessory,JAK_PS.part_body_b,-Reload Speed
+3,Jakobs,Pistol,5,Body Accessory,JAK_PS.part_body_c,+Accuracy
+3,Jakobs,Pistol,6,Body Accessory,JAK_PS.part_body_d,+Crit Damage
+3,Jakobs,Pistol,7,Barrel,JAK_PS.part_barrel_01,"Cuca, 1785 Damage, 69% Acc, 9.0/s FR"
+3,Jakobs,Pistol,8,Barrel,JAK_PS.part_barrel_02,"Muki, 1874 Damage, 78% Acc, 7.5/s FR"
+3,Jakobs,Pistol,9,Manufacturer Part,JAK_PS.part_shield_default,Hyperion Shield
+3,Jakobs,Pistol,10,Manufacturer Part,JAK_PS.part_shield_ricochet,Hyperion Ricochet Shield
+3,Jakobs,Pistol,11,Manufacturer Part,JAK_PS.part_shield_ammo,Hyperion Absorb Shield
+3,Jakobs,Pistol,12,Manufacturer Part,JAK_PS.part_shield_amp,Hyperion Amp Shield
+3,Jakobs,Pistol,13,Magazine,JAK_PS.part_mag_01,"2.4s Reload, 4 Shots"
+3,Jakobs,Pistol,14,Magazine,JAK_PS.part_mag_02,"2.3s Reload, -Damage, 6 Shots"
+3,Jakobs,Pistol,15,Magazine,JAK_PS.part_mag_03_tor,"2.9s Reload, -Damage, -Acc, -Fire Rate, 8 Shots, Torgue"
+3,Jakobs,Pistol,16,Magazine,JAK_PS.part_mag_04_cov,"3.2s Reload, -Damage, -Acc, 5 Shots, CoV Mag"
+3,Jakobs,Pistol,17,Magazine,JAK_PS.part_mag_05_borg,"2.3s Reload, -Damage, -Fire Rate, 8 Shots, Ripper Mag"
+3,Jakobs,Pistol,18,Manufacturer Part,JAK_PS.part_mag_torgue_normal,Torgue Impact Gyrojets
+3,Jakobs,Pistol,19,Manufacturer Part,JAK_PS.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+3,Jakobs,Pistol,20,Stat Modifier,JAK_PS.part_mag_ted_thrown_01,2.0s Reload
+3,Jakobs,Pistol,21,Stat Modifier,JAK_PS.part_mag_ted_thrown_02,2.0s Reload
+3,Jakobs,Pistol,22,Stat Modifier,JAK_PS.part_mag_ted_thrown_03_tor,2.0s Reload
+3,Jakobs,Pistol,23,Stat Modifier,JAK_PS.part_mag_ted_thrown_04_cov,3.0s Reload
+3,Jakobs,Pistol,24,Stat Modifier,JAK_PS.part_mag_ted_thrown_05_bor,2.0s Reload
+3,Jakobs,Pistol,25,Scope,JAK_PS.part_scope_ironsight,ADS
+3,Jakobs,Pistol,26,Scope,JAK_PS.part_scope_01_lens_01,ADS +Zoom
+3,Jakobs,Pistol,27,Scope,JAK_PS.part_scope_01_lens_02,ADS +Zoom
+3,Jakobs,Pistol,28,Scope,JAK_PS.part_scope_02_lens_01,ADS ++Zoom
+3,Jakobs,Pistol,29,Scope,JAK_PS.part_scope_02_lens_02,ADS +++Zoom
+3,Jakobs,Pistol,30,Scope Accessory,JAK_PS.part_scope_acc_s01_l01_a,+Damage
+3,Jakobs,Pistol,31,Scope Accessory,JAK_PS.part_scope_acc_s01_l01_b,-Reload Speed
+3,Jakobs,Pistol,32,Scope Accessory,JAK_PS.part_scope_acc_s02_l01_a,No Stat Changes
+3,Jakobs,Pistol,33,Scope Accessory,JAK_PS.part_scope_acc_s02_l01_b,+Crit Damage
+3,Jakobs,Pistol,34,Scope Accessory,JAK_PS.part_scope_acc_s01_l02_a,+Damage
+3,Jakobs,Pistol,35,Scope Accessory,JAK_PS.part_scope_acc_s01_l02_b,-Reload Speed
+3,Jakobs,Pistol,36,Scope Accessory,JAK_PS.part_scope_acc_s02_l02_a,No Stat Changes
+3,Jakobs,Pistol,37,Scope Accessory,JAK_PS.part_scope_acc_s02_l02_b,+Crit Damage
+3,Jakobs,Pistol,38,Grip,JAK_PS.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+3,Jakobs,Pistol,39,Grip,JAK_PS.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+3,Jakobs,Pistol,40,Grip,JAK_PS.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+3,Jakobs,Pistol,41,Grip,JAK_PS.part_grip_01,+Damage
+3,Jakobs,Pistol,42,Grip,JAK_PS.part_grip_02,+Crit Damage
+3,Jakobs,Pistol,43,Grip,JAK_PS.part_grip_03,-Reload Speed
+3,Jakobs,Pistol,44,Grip,JAK_PS.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+3,Jakobs,Pistol,45,Underbarrel,JAK_PS.part_underbarrel_02_knifelauncher,Alt Fire - Knife Launcher
+3,Jakobs,Pistol,46,Underbarrel,JAK_PS.part_underbarrel_01_microrocket,Alt Fire - Zip Rockets
+3,Jakobs,Pistol,47,Underbarrel,JAK_PS.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+3,Jakobs,Pistol,48,Underbarrel,JAK_PS.part_underbarrel_04_atlas,Atlas Tracker Darts
+3,Jakobs,Pistol,49,Foregrip,JAK_PS.part_foregrip_02,+Fire Rate
+3,Jakobs,Pistol,50,Foregrip,JAK_PS.part_foregrip_03,+Accuracy
+3,Jakobs,Pistol,51,Barrel Accessory,JAK_PS.part_barrel_01_a,+Damage
+3,Jakobs,Pistol,52,Barrel Accessory,JAK_PS.part_barrel_01_b,+Crit Damage
+3,Jakobs,Pistol,53,Barrel Accessory,JAK_PS.part_barrel_01_c,+Accuracy
+3,Jakobs,Pistol,54,Barrel Accessory,JAK_PS.part_barrel_01_d,+Accuracy
+3,Jakobs,Pistol,55,Barrel Accessory,JAK_PS.part_barrel_02_a,+Damage
+3,Jakobs,Pistol,56,Barrel Accessory,JAK_PS.part_barrel_02_b,+Accuracy
+3,Jakobs,Pistol,57,Barrel Accessory,JAK_PS.part_barrel_02_c,+Fire Rate
+3,Jakobs,Pistol,58,Barrel Accessory,JAK_PS.part_barrel_02_d,+Damage
+3,Jakobs,Pistol,59,Manufacturer Part,JAK_PS.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+3,Jakobs,Pistol,60,Manufacturer Part,JAK_PS.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+3,Jakobs,Pistol,61,Manufacturer Part,JAK_PS.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+3,Jakobs,Pistol,62,Manufacturer Part,JAK_PS.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+3,Jakobs,Pistol,63,Manufacturer Part,JAK_PS.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+3,Jakobs,Pistol,64,Manufacturer Part,JAK_PS.part_secondary_ammo_smg,Daedalus SMG Ammo
+3,Jakobs,Pistol,65,Manufacturer Part,JAK_PS.part_secondary_ammo_sg,Daedalus Shotgun Ammo
+3,Jakobs,Pistol,66,Manufacturer Part,JAK_PS.part_secondary_ammo_ar,Daedalus AR Ammo
+3,Jakobs,Pistol,67,Manufacturer Part,JAK_PS.part_secondary_ammo_sr,Daedalus SR Ammo
+3,Jakobs,Pistol,68,Underbarrel,JAK_PS.part_underbarrel_03_vial,Alt Fire - Vial Launcher
+3,Jakobs,Pistol,69,Underbarrel,JAK_PS.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+3,Jakobs,Pistol,70,Foregrip,JAK_PS.part_foregrip_01,+Damage
+3,Jakobs,Pistol,72,Barrel,JAK_PS.part_barrel_quickdraw,"Saba Songbird, 1874 Damage, 61% Acc, 7.5/s FR"
+3,Jakobs,Pistol,75,Barrel,JAK_PS.part_barrel_02_kingsgambit,"King's Gambit, 1874 Damage, 69% Acc, 7.5/s FR"
+3,Jakobs,Pistol,77,Barrel,JAK_PS.part_barrel_01_phantom_flame,"Phantom Flame, 1785 Damage, 43% Acc, 9.0/s FR"
+3,Jakobs,Pistol,80,Barrel,JAK_PS.part_barrel_01_seventh_sense,"Seventh Sense, 1785 Damage, 67% Acc, 9.0/s FR"
+9,Jakobs,Shotgun,1,Stat Modifier,JAK_SG.part_body_ele_rainbowvomit_cryo_fire_shock,"Color Spray - Cryo, Fire, Shock"
+9,Jakobs,Shotgun,2,Body,JAK_SG.part_body,"No stat changes, always present"
+9,Jakobs,Shotgun,3,Body Accessory,JAK_SG.part_body_a,-Reload Speed
+9,Jakobs,Shotgun,4,Body Accessory,JAK_SG.part_body_b,-Reload Speed
+9,Jakobs,Shotgun,5,Body Accessory,JAK_SG.part_body_c,+Accuracy
+9,Jakobs,Shotgun,6,Body Accessory,JAK_SG.part_body_d,+Crit Damage
+9,Jakobs,Shotgun,7,Barrel,JAK_SG.part_barrel_01,"Dullahan, 823 x 6 Damage, 73% Acc, 1.5/s FR"
+9,Jakobs,Shotgun,8,Barrel,JAK_SG.part_barrel_02,"Balor, 837 x 10 Damage, 51% Acc, 1.3/s FR"
+9,Jakobs,Shotgun,9,Manufacturer Part,JAK_SG.part_shield_default,Hyperion Shield
+9,Jakobs,Shotgun,10,Manufacturer Part,JAK_SG.part_shield_ricochet,Hyperion Ricochet Shield
+9,Jakobs,Shotgun,11,Manufacturer Part,JAK_SG.part_shield_ammo,Hyperion Absorb Shield
+9,Jakobs,Shotgun,12,Manufacturer Part,JAK_SG.part_shield_amp,Hyperion Amp Shield
+9,Jakobs,Shotgun,13,Magazine,JAK_SG.part_mag_05_borg,"2.5s Reload, -Damage, +Fire Rate, 8 Shots, Ripper Mag"
+9,Jakobs,Shotgun,14,Magazine,JAK_SG.part_mag_04_cov,"3.0s Reload, -Damage, -Acc, 6 Shots, CoV Mag"
+9,Jakobs,Shotgun,15,Magazine,JAK_SG.part_mag_03_tor,"2.3s Reload, -Damage, +Acc, -Fire Rate, 12 Shots, 2 Shot, Torgue"
+9,Jakobs,Shotgun,16,Stat Modifier,JAK_SG.part_body_ele_rainbowvomit_cryo_fire_rad,"Color Spray - Cryo, Fire, Radiation"
+9,Jakobs,Shotgun,17,Magazine,JAK_SG.part_mag_02,"4.8s Reload, -Damage, 6 Shots"
+9,Jakobs,Shotgun,18,Stat Modifier,JAK_SG.part_mag_ted_thrown_01,2.0s Reload
+9,Jakobs,Shotgun,19,Stat Modifier,JAK_SG.part_mag_ted_thrown_02,2.0s Reload
+9,Jakobs,Shotgun,20,Stat Modifier,JAK_SG.part_mag_ted_thrown_03_tor,2.0s Reload
+9,Jakobs,Shotgun,21,Stat Modifier,JAK_SG.part_mag_ted_thrown_04_cov,3.0s Reload
+9,Jakobs,Shotgun,22,Stat Modifier,JAK_SG.part_mag_ted_thrown_05_bor,3.0s Reload
+9,Jakobs,Shotgun,23,Scope,JAK_SG.part_scope_ironsight,ADS
+9,Jakobs,Shotgun,24,Scope,JAK_SG.part_scope_01_lens_01,ADS +Zoom
+9,Jakobs,Shotgun,25,Scope,JAK_SG.part_scope_01_lens_02,ADS +Zoom
+9,Jakobs,Shotgun,26,Scope,JAK_SG.part_scope_02_lens_01,ADS ++Zoom
+9,Jakobs,Shotgun,27,Scope,JAK_SG.part_scope_02_lens_02,ADS ++Zoom
+9,Jakobs,Shotgun,28,Scope Accessory,JAK_SG.part_scope_acc_s01_l01_a,+Damage
+9,Jakobs,Shotgun,29,Scope Accessory,JAK_SG.part_scope_acc_s01_l01_b,-Reload Speed
+9,Jakobs,Shotgun,30,Scope Accessory,JAK_SG.part_scope_acc_s02_l01_a,No Stat Changes
+9,Jakobs,Shotgun,31,Scope Accessory,JAK_SG.part_scope_acc_s02_l01_b,+Crit Damage
+9,Jakobs,Shotgun,32,Scope Accessory,JAK_SG.part_scope_acc_s01_l02_a,+Damage
+9,Jakobs,Shotgun,33,Scope Accessory,JAK_SG.part_scope_acc_s01_l02_b,-Reload Speed
+9,Jakobs,Shotgun,34,Scope Accessory,JAK_SG.part_scope_acc_s02_l02_a,No Stat Changes
+9,Jakobs,Shotgun,35,Scope Accessory,JAK_SG.part_scope_acc_s02_l02_b,+Crit Damage
+9,Jakobs,Shotgun,36,Grip,JAK_SG.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+9,Jakobs,Shotgun,37,Grip,JAK_SG.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+9,Jakobs,Shotgun,38,Grip,JAK_SG.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+9,Jakobs,Shotgun,39,Grip,JAK_SG.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+9,Jakobs,Shotgun,40,Grip,JAK_SG.part_grip_01,+Damage
+9,Jakobs,Shotgun,41,Grip,JAK_SG.part_grip_02,+Crit Damage
+9,Jakobs,Shotgun,42,Grip,JAK_SG.part_grip_03,-Reload Speed
+9,Jakobs,Shotgun,43,Underbarrel,JAK_SG.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+9,Jakobs,Shotgun,44,Underbarrel,JAK_SG.part_underbarrel_04_atlas,Atlas Tracker Darts
+9,Jakobs,Shotgun,45,Underbarrel,JAK_SG.part_underbarrel_03_grenade,Alt Fire - Spread Launcher
+9,Jakobs,Shotgun,46,Underbarrel,JAK_SG.part_underbarrel_02_meathook,Alt Fire - Gravity Harpoon
+9,Jakobs,Shotgun,47,Foregrip,JAK_SG.part_foregrip_02,+Fire Rate
+9,Jakobs,Shotgun,48,Foregrip,JAK_SG.part_foregrip_03,+Accuracy
+9,Jakobs,Shotgun,49,Underbarrel,JAK_SG.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+9,Jakobs,Shotgun,50,Underbarrel,JAK_SG.part_underbarrel_01_knifelauncher,Alt Fire - Knife Launcher
+9,Jakobs,Shotgun,51,Manufacturer Part,JAK_SG.part_secondary_ammo_smg,Daedalus SMG Ammo
+9,Jakobs,Shotgun,52,Manufacturer Part,JAK_SG.part_secondary_ammo_ps,Daedalus Pistol Ammo
+9,Jakobs,Shotgun,53,Manufacturer Part,JAK_SG.part_secondary_ammo_assaultrifle,Daedalus AR Ammo
+9,Jakobs,Shotgun,54,Manufacturer Part,JAK_SG.part_secondary_ammo_sr,Daedalus SR Ammo
+9,Jakobs,Shotgun,55,Barrel Accessory,JAK_SG.part_barrel_01_a,+Damage
+9,Jakobs,Shotgun,56,Barrel Accessory,JAK_SG.part_barrel_01_b,+Crit Damage
+9,Jakobs,Shotgun,57,Barrel Accessory,JAK_SG.part_barrel_01_c,+Accuracy
+9,Jakobs,Shotgun,58,Barrel Accessory,JAK_SG.part_barrel_01_d,+Accuracy
+9,Jakobs,Shotgun,59,Barrel Accessory,JAK_SG.part_barrel_02_a,+Damage
+9,Jakobs,Shotgun,60,Barrel Accessory,JAK_SG.part_barrel_02_b,+Accuracy
+9,Jakobs,Shotgun,61,Barrel Accessory,JAK_SG.part_barrel_02_c,-Reload Speed
+9,Jakobs,Shotgun,62,Barrel Accessory,JAK_SG.part_barrel_02_d,+Damage
+9,Jakobs,Shotgun,63,Manufacturer Part,JAK_SG.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+9,Jakobs,Shotgun,64,Manufacturer Part,JAK_SG.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+9,Jakobs,Shotgun,65,Manufacturer Part,JAK_SG.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+9,Jakobs,Shotgun,66,Manufacturer Part,JAK_SG.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+9,Jakobs,Shotgun,67,Manufacturer Part,JAK_SG.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+9,Jakobs,Shotgun,68,Foregrip,JAK_SG.part_foregrip_01,+Damage
+9,Jakobs,Shotgun,69,Manufacturer Part,JAK_SG.part_mag_torgue_normal,Torgue Impact Gyrojets
+9,Jakobs,Shotgun,70,Manufacturer Part,JAK_SG.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+9,Jakobs,Shotgun,71,Stat Modifier,JAK_SG.part_body_ele_rainbowvomit_cor_rad_shock,"Color Spray - Corrosive, Radiaion, Shock"
+9,Jakobs,Shotgun,72,Stat Modifier,JAK_SG.part_body_ele_rainbowvomit_cor_fire_shock,"Color Spray - Corrosive, Fire, Shock"
+9,Jakobs,Shotgun,73,Stat Modifier,JAK_SG.part_body_ele_rainbowvomit_cor_fire_rad,"Color Spray - Corrosive, Fire, Radiation"
+9,Jakobs,Shotgun,74,Stat Modifier,JAK_SG.part_body_ele_rainbowvomit_cor_cryo_shock,"Color Spray - Corrosive, Cryo Shock"
+9,Jakobs,Shotgun,75,Stat Modifier,JAK_SG.part_body_ele_rainbowvomit_cor_cryo_rad,"Color Spray - Corrosive, Cryo, Radiation"
+9,Jakobs,Shotgun,76,Stat Modifier,JAK_SG.part_body_ele_rainbowvomit_cor_cryo_fire,"Color Spray - Corrosive, Cryo, Fire"
+9,Jakobs,Shotgun,77,Stat Modifier,JAK_SG.part_body_ele_rainbowvomit_fire_rad_shock,"Color Spray - Fire, Radiation, Shock"
+9,Jakobs,Shotgun,78,Magazine,JAK_SG.part_mag_01_slugger,"0.9s Reload, +Damage, 1 Shot"
+9,Jakobs,Shotgun,79,Barrel,JAK_SG.part_barrel_01_slugger,"Hot Slugger, 5019 Damage, 82% Acc, 1.0/s FR, 1 AMMO"
+9,Jakobs,Shotgun,82,Barrel,JAK_SG.part_barrel_01_hellwalker,"Hellwalker, 1071 x 10 Damage, 45% Acc, 2.0/s FR, 2 Shot"
+9,Jakobs,Shotgun,84,Stat Modifier,JAK_SG.part_body_ele_rainbowvomit_cryo_rad_shock,"Color Spray - Cryo, Radiation, Shock"
+9,Jakobs,Shotgun,86,Barrel,JAK_SG.part_barrel_rainbowvomit,"Rainbow Vomit, 823 x 6 Damage, 73% Acc, 1.5/s FR"
+9,Jakobs,Shotgun,87,Magazine,JAK_SG.part_mag_rainbowvomit,"2.2s Reload, 6 Shots"
+9,Jakobs,Shotgun,88,Manufacturer Part,JAK_SG.part_mag_torgue_sticky_tkswave,Torgue Sticky Gyrojets
+9,Jakobs,Shotgun,89,Manufacturer Part,JAK_SG.part_mag_torgue_normal_tkswave,Torgue Impact Gyrojets
+9,Jakobs,Shotgun,90,Barrel,JAK_SG.part_barrel_tkswave,"T.K's Wave, 1673 x 10 Damage, 51% Acc, 1.3/s FR, 2 Shot"
+9,Jakobs,Shotgun,92,Magazine,JAK_SG.part_mag_02_b02,"5.5s Reload, -Damage, 6 Shots, 2 Shot"
+9,Jakobs,Shotgun,93,Magazine,JAK_SG.part_mag_01_b01,"1.7s Reload, +Damage, 1 Shot"
+9,Jakobs,Shotgun,94,Magazine,JAK_SG.part_mag_01_b02,"1.7s Reload, 2 Shots, 2 Shot"
+24,Jakobs,Sniper,2,Body,JAK_SR.part_body,"No stat changes, always present"
+24,Jakobs,Sniper,3,Body Accessory,JAK_SR.part_body_a,-Reload Speed
+24,Jakobs,Sniper,4,Body Accessory,JAK_SR.part_body_b,-Reload Speed
+24,Jakobs,Sniper,5,Body Accessory,JAK_SR.part_body_c,No Stat Changes
+24,Jakobs,Sniper,6,Body Accessory,JAK_SR.part_body_d,+Crit Damage
+24,Jakobs,Sniper,7,Barrel,JAK_SR.part_barrel_01,"Inkanyamba, 4544 Damage, 89% Acc, 1.1/s FR"
+24,Jakobs,Sniper,8,Barrel,JAK_SR.part_barrel_02,"Xiuhcoatl, 5481 Damage, 91% Acc, 0.8/s FR"
+24,Jakobs,Sniper,9,Manufacturer Part,JAK_SR.part_shield_default,Hyperion Shield
+24,Jakobs,Sniper,10,Manufacturer Part,JAK_SR.part_shield_ricochet,Hyperion Ricochet Shield
+24,Jakobs,Sniper,11,Manufacturer Part,JAK_SR.part_shield_ammo,Hyperion Absorb Shield
+24,Jakobs,Sniper,12,Manufacturer Part,JAK_SR.part_shield_amp,Hyperion Amp Shield
+24,Jakobs,Sniper,13,Magazine,JAK_SR.part_mag_01,"3.5s Reload, -Damage, 6 Shots"
+24,Jakobs,Sniper,14,Magazine,JAK_SR.part_mag_02,"2.8s Reload, 4 Shots"
+24,Jakobs,Sniper,15,Magazine,JAK_SR.part_mag_03_tor,"3.0s reload, -Damage, -Fire Rate, 10 Shots, Torgue"
+24,Jakobs,Sniper,16,Magazine,JAK_SR.part_mag_04_cov,"4.0s Reload, -Damage, -Acc, 10 Shots, CoV Mag"
+24,Jakobs,Sniper,17,Magazine,JAK_SR.part_mag_05_borg,"3.1s Reload, -Damage, +Fire Rate, 8 Shots, Ripper Mag"
+24,Jakobs,Sniper,18,Manufacturer Part,JAK_SR.part_mag_torgue_normal,Torgue Impact Gyrojets
+24,Jakobs,Sniper,19,Manufacturer Part,JAK_SR.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+24,Jakobs,Sniper,20,Stat Modifier,JAK_SR.part_mag_ted_thrown_01,2.0s Reload
+24,Jakobs,Sniper,21,Stat Modifier,JAK_SR.part_mag_ted_thrown_02,2.0s Reload
+24,Jakobs,Sniper,22,Stat Modifier,JAK_SR.part_mag_ted_thrown_03_tor,2.0s Reload
+24,Jakobs,Sniper,23,Stat Modifier,JAK_SR.part_mag_ted_thrown_04_cov,3.0s Reload
+24,Jakobs,Sniper,24,Stat Modifier,JAK_SR.part_mag_ted_thrown_05_bor,3.0s Reload
+24,Jakobs,Sniper,25,Scope,JAK_SR.part_scope_ironsight,ADS
+24,Jakobs,Sniper,26,Scope,JAK_SR.part_scope_01_lens_01,ADS +++Zoom
+24,Jakobs,Sniper,27,Scope,JAK_SR.part_scope_01_lens_02,ADS ++Zoom
+24,Jakobs,Sniper,28,Scope,JAK_SR.part_scope_02_lens_01,ADS ++Zoom
+24,Jakobs,Sniper,29,Scope,JAK_SR.part_scope_02_lens_02,ADS +++Zoom
+24,Jakobs,Sniper,30,Scope Accessory,JAK_SR.part_scope_acc_s01_l01_a,+Damage
+24,Jakobs,Sniper,31,Scope Accessory,JAK_SR.part_scope_acc_s01_l01_b,-Reload Speed
+24,Jakobs,Sniper,32,Scope Accessory,JAK_SR.part_scope_acc_s02_l01_a,No Stat Changes
+24,Jakobs,Sniper,33,Scope Accessory,JAK_SR.part_scope_acc_s02_l01_b,+Crit Damage
+24,Jakobs,Sniper,34,Scope Accessory,JAK_SR.part_scope_acc_s01_l02_a,+Damage
+24,Jakobs,Sniper,35,Scope Accessory,JAK_SR.part_scope_acc_s01_l02_b,-Reload Speed
+24,Jakobs,Sniper,36,Scope Accessory,JAK_SR.part_scope_acc_s02_l02_a,No Stat Changes
+24,Jakobs,Sniper,37,Scope Accessory,JAK_SR.part_scope_acc_s02_l02_b,+Crit Damage
+24,Jakobs,Sniper,38,Grip,JAK_SR.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+24,Jakobs,Sniper,39,Grip,JAK_SR.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+24,Jakobs,Sniper,40,Grip,JAK_SR.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+24,Jakobs,Sniper,41,Grip,JAK_SR.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+24,Jakobs,Sniper,42,Grip,JAK_SR.part_grip_01,+Damage
+24,Jakobs,Sniper,43,Grip,JAK_SR.part_grip_02,+Crit Damage
+24,Jakobs,Sniper,44,Grip,JAK_SR.part_grip_03,-Reload Speed
+24,Jakobs,Sniper,45,Underbarrel,JAK_SR.part_underbarrel_01_shotgun,Alt Fire - Shotgun
+24,Jakobs,Sniper,46,Underbarrel,JAK_SR.part_underbarrel_02_rocket,Alt Fire - Big Rocket
+24,Jakobs,Sniper,47,Underbarrel,JAK_SR.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+24,Jakobs,Sniper,48,Underbarrel,JAK_SR.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+24,Jakobs,Sniper,49,Foregrip,JAK_SR.part_foregrip_02,-Reload Speed
+24,Jakobs,Sniper,50,Foregrip,JAK_SR.part_foregrip_03,No Stat Changes
+24,Jakobs,Sniper,51,Foregrip,JAK_SR.part_foregrip_01,+Damage
+24,Jakobs,Sniper,52,Underbarrel,JAK_SR.part_underbarrel_04_atlas,Atlas Tracker Darts
+24,Jakobs,Sniper,53,Underbarrel,JAK_SR.part_underbarrel_03_crank,Alt Fire - Crank SMG
+24,Jakobs,Sniper,54,Manufacturer Part,JAK_SR.part_secondary_ammo_smg,Daedalus SMG Ammo
+24,Jakobs,Sniper,55,Manufacturer Part,JAK_SR.part_secondary_ammo_ar,Daedalus AR Ammo
+24,Jakobs,Sniper,56,Manufacturer Part,JAK_SR.part_secondary_ammo_ps,Daedalus Pistol Ammo
+24,Jakobs,Sniper,57,Barrel Accessory,JAK_SR.part_barrel_01_a,+Damage
+24,Jakobs,Sniper,58,Barrel Accessory,JAK_SR.part_barrel_01_b,+Crit Damage
+24,Jakobs,Sniper,59,Barrel Accessory,JAK_SR.part_barrel_01_c,No Stat Changes
+24,Jakobs,Sniper,60,Barrel Accessory,JAK_SR.part_barrel_01_d,No Stat Changes
+24,Jakobs,Sniper,61,Barrel Accessory,JAK_SR.part_barrel_02_a,+Damage
+24,Jakobs,Sniper,62,Barrel Accessory,JAK_SR.part_barrel_02_b,No Stat Changes
+24,Jakobs,Sniper,63,Barrel Accessory,JAK_SR.part_barrel_02_c,+Fire Rate
+24,Jakobs,Sniper,64,Barrel Accessory,JAK_SR.part_barrel_02_d,+Damage
+24,Jakobs,Sniper,65,Manufacturer Part,JAK_SR.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+24,Jakobs,Sniper,66,Manufacturer Part,JAK_SR.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+24,Jakobs,Sniper,67,Manufacturer Part,JAK_SR.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+24,Jakobs,Sniper,68,Manufacturer Part,JAK_SR.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+24,Jakobs,Sniper,69,Manufacturer Part,JAK_SR.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+24,Jakobs,Sniper,70,Manufacturer Part,JAK_SR.part_secondary_ammo_sg,Daedalus Shotgun Ammo
+24,Jakobs,Sniper,72,Barrel,JAK_SR.part_barrel_ballista,"Borstel ballista, 7027 Damage, 86% Acc, 0.8/s FR"
+24,Jakobs,Sniper,74,Barrel,JAK_SR.part_barrel_02_boomslang,"Boomslang, 6090 Damage, 95% Acc, 0.8/2 FR"
+24,Jakobs,Sniper,75,Barrel,JAK_SR.part_barrel_truck,"Truck, 7027 Damage, 87% Acc, 1.0/s FR"
+10,Maliwan,Shotgun,2,Body,MAL_SG.part_body,"No stat changes, always present"
+10,Maliwan,Shotgun,3,Body Accessory,MAL_SG.part_body_a,-Reload Speed
+10,Maliwan,Shotgun,4,Body Accessory,MAL_SG.part_body_b,+Ammo
+10,Maliwan,Shotgun,5,Body Accessory,MAL_SG.part_body_c,+Accuracy
+10,Maliwan,Shotgun,6,Body Accessory,MAL_SG.part_body_d,No Stat Changes
+10,Maliwan,Shotgun,7,Barrel,MAL_SG.part_barrel_01_kickballer,"Kickballer, 5131 Damage, 77% Acc, 0.8/s FR"
+10,Maliwan,Shotgun,8,Barrel,MAL_SG.part_barrel_01,"Stellium, 5131 Damage, 77% Acc, 0.8/s FR"
+10,Maliwan,Shotgun,9,Barrel,MAL_SG.part_barrel_02,"Vertex, 2677 x 2 Damage, 75% Acc, 1.1/s FR, 2 Shot"
+10,Maliwan,Shotgun,10,Manufacturer Part,MAL_SG.part_shield_default,Hyperion Shield
+10,Maliwan,Shotgun,11,Manufacturer Part,MAL_SG.part_shield_ricochet,Hyperion Ricochet Shield
+10,Maliwan,Shotgun,12,Manufacturer Part,MAL_SG.part_shield_ammo,Hyperion Absorb Shield
+10,Maliwan,Shotgun,13,Manufacturer Part,MAL_SG.part_shield_amp,Hyperion Amp Shield
+10,Maliwan,Shotgun,14,Magazine,MAL_SG.part_mag_05_borg,"2.8s Reload, -Damage, +Fire Rate, 10 Shots, Ripper Mag"
+10,Maliwan,Shotgun,15,Magazine,MAL_SG.part_mag_04_cov,"3.5s Reload, +Damage, -Acc, 8 Shots, CoV Mag"
+10,Maliwan,Shotgun,16,Magazine,MAL_SG.part_mag_01,"2.4s Reload, +Damage, 6 Shots"
+10,Maliwan,Shotgun,17,Magazine,MAL_SG.part_mag_02,"2.0s Reload, -Acc, 8 Shots"
+10,Maliwan,Shotgun,18,Stat Modifier,MAL_SG.part_mag_ted_thrown_01,1.7s Reload
+10,Maliwan,Shotgun,19,Stat Modifier,MAL_SG.part_mag_ted_thrown_02,1.7s Reload
+10,Maliwan,Shotgun,20,Stat Modifier,MAL_SG.part_mag_ted_thrown_03_tor,1.7s Reload
+10,Maliwan,Shotgun,21,Stat Modifier,MAL_SG.part_mag_ted_thrown_04_cov,3.0s Reload
+10,Maliwan,Shotgun,22,Stat Modifier,MAL_SG.part_mag_ted_thrown_05_bor,2.5s Reload
+10,Maliwan,Shotgun,23,Scope,MAL_SG.part_scope_ironsight,ADS
+10,Maliwan,Shotgun,24,Scope,MAL_SG.part_scope_01_lens_01,ADS +Zoom
+10,Maliwan,Shotgun,25,Scope,MAL_SG.part_scope_01_lens_02,ADS +Zoom
+10,Maliwan,Shotgun,26,Scope,MAL_SG.part_scope_02_lens_01,ADS ++Zoom
+10,Maliwan,Shotgun,27,Scope,MAL_SG.part_scope_02_lens_02,ADS +++Zoom
+10,Maliwan,Shotgun,28,Scope Accessory,MAL_SG.part_scope_acc_s01_l01_a,+Damage
+10,Maliwan,Shotgun,29,Scope Accessory,MAL_SG.part_scope_acc_s01_l01_b,-Reload Speed
+10,Maliwan,Shotgun,30,Scope Accessory,MAL_SG.part_scope_acc_s02_l01_a,No Stat Changes
+10,Maliwan,Shotgun,31,Scope Accessory,MAL_SG.part_scope_acc_s02_l01_b,No Stat Changes
+10,Maliwan,Shotgun,32,Scope Accessory,MAL_SG.part_scope_acc_s01_l02_a,+Damage
+10,Maliwan,Shotgun,33,Scope Accessory,MAL_SG.part_scope_acc_s01_l02_b,-Reload Speed
+10,Maliwan,Shotgun,34,Scope Accessory,MAL_SG.part_scope_acc_s02_l02_a,No Stat Changes
+10,Maliwan,Shotgun,35,Scope Accessory,MAL_SG.part_scope_acc_s02_l02_b,No Stat Changes
+10,Maliwan,Shotgun,36,Grip,MAL_SG.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+10,Maliwan,Shotgun,37,Grip,MAL_SG.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+10,Maliwan,Shotgun,38,Grip,MAL_SG.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+10,Maliwan,Shotgun,39,Grip,MAL_SG.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+10,Maliwan,Shotgun,40,Grip,MAL_SG.part_grip_01,+Damage
+10,Maliwan,Shotgun,41,Grip,MAL_SG.part_grip_02,+Fire Rate
+10,Maliwan,Shotgun,42,Grip,MAL_SG.part_grip_03,-Reload Speed
+10,Maliwan,Shotgun,43,Underbarrel,MAL_SG.part_underbarrel_03_beam_tosser,Alt Fire - Beam Tosser
+10,Maliwan,Shotgun,44,Underbarrel,MAL_SG.part_underbarrel_02_energydisc,Alt Fire - Energy Disc
+10,Maliwan,Shotgun,45,Underbarrel,MAL_SG.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+10,Maliwan,Shotgun,46,Underbarrel,MAL_SG.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+10,Maliwan,Shotgun,47,Foregrip,MAL_SG.part_foregrip_02,+Fire Rate
+10,Maliwan,Shotgun,48,Foregrip,MAL_SG.part_foregrip_03,+Accuracy
+10,Maliwan,Shotgun,49,Underbarrel,MAL_SG.part_underbarrel_01_blowback,Alt Fire - Energy Blast
+10,Maliwan,Shotgun,50,Underbarrel,MAL_SG.part_underbarrel_04_atlas,Atlas Tracker Darts
+10,Maliwan,Shotgun,51,Foregrip,MAL_SG.part_foregrip_01,+Damage
+10,Maliwan,Shotgun,52,Manufacturer Part,MAL_SG.part_secondary_ammo_smg,Daedalus SMG Ammo
+10,Maliwan,Shotgun,53,Manufacturer Part,MAL_SG.part_secondary_ammo_ar,Daedalus AR Ammo
+10,Maliwan,Shotgun,54,Manufacturer Part,MAL_SG.part_secondary_ammo_ps,Daedalus Pistol Ammo
+10,Maliwan,Shotgun,55,Manufacturer Part,MAL_SG.part_secondary_ammo_sr,Daedalus SR Ammo
+10,Maliwan,Shotgun,56,Barrel,MAL_SG.part_barrel_01_kaleidosplode,"Kaleidosplode, 1171 Damage, 77% Acc, 1.0/s FR"
+10,Maliwan,Shotgun,58,Barrel,MAL_SG.part_barrel_02_sweet_embrace,"Sweet Embrace, 2510 x 4 Damage, 72% Acc, 1.0/s FR, 2 Shot"
+10,Maliwan,Shotgun,59,Foregrip,MAL_SG.part_foregrip_04,No Stat Changes
+10,Maliwan,Shotgun,63,Barrel Accessory,MAL_SG.part_barrel_01_a,+Damage
+10,Maliwan,Shotgun,64,Barrel Accessory,MAL_SG.part_barrel_01_b,No Stat Changes
+10,Maliwan,Shotgun,65,Barrel Accessory,MAL_SG.part_barrel_01_c,No Stat Changes
+10,Maliwan,Shotgun,66,Barrel Accessory,MAL_SG.part_barrel_01_d,+Accuracy
+10,Maliwan,Shotgun,67,Barrel Accessory,MAL_SG.part_barrel_02_a,+Damage
+10,Maliwan,Shotgun,68,Barrel Accessory,MAL_SG.part_barrel_02_b,+Accuracy
+10,Maliwan,Shotgun,69,Barrel Accessory,MAL_SG.part_barrel_02_c,+Fire Rate
+10,Maliwan,Shotgun,70,Barrel Accessory,MAL_SG.part_barrel_02_d,+Fire Rate
+10,Maliwan,Shotgun,71,Manufacturer Part,MAL_SG.part_barrel_licensed_jak,Jakobs Ricochet
+10,Maliwan,Shotgun,72,Manufacturer Part,MAL_SG.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+10,Maliwan,Shotgun,73,Manufacturer Part,MAL_SG.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+10,Maliwan,Shotgun,74,Manufacturer Part,MAL_SG.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+10,Maliwan,Shotgun,75,Manufacturer Part,MAL_SG.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+10,Maliwan,Shotgun,76,Manufacturer Part,MAL_SG.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+10,Maliwan,Shotgun,77,Manufacturer Part,MAL_SG.part_mag_torgue_normal,Torgue Impact Gyrojets
+10,Maliwan,Shotgun,78,Manufacturer Part,MAL_SG.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+10,Maliwan,Shotgun,79,Magazine,MAL_SG.part_mag_03_tor,"2.2s Reload, +Damage, -Fire Rate, 4 Shots, Torgue"
+21,Maliwan,SMG,2,Body,MAL_SM.part_body,"No stat changes, always present"
+21,Maliwan,SMG,3,Body Accessory,MAL_SM.part_body_a,-Reload Speed
+21,Maliwan,SMG,4,Body Accessory,MAL_SM.part_body_b,+Ammo
+21,Maliwan,SMG,5,Body Accessory,MAL_SM.part_body_c,+Accuracy
+21,Maliwan,SMG,6,Body Accessory,MAL_SM.part_body_d,No Stat Changes
+21,Maliwan,SMG,7,Barrel,MAL_SM.part_barrel_01,"Ephemeris, 580 Damage, 80% Acc, 7.3/s FR"
+21,Maliwan,SMG,8,Barrel,MAL_SM.part_barrel_02,"Synastry, 714 Damage, 81% Acc, 5.3/s FR"
+21,Maliwan,SMG,9,Manufacturer Part,MAL_SM.part_shield_default,Hyperion Shield
+21,Maliwan,SMG,10,Manufacturer Part,MAL_SM.part_shield_ricochet,Hyperion Ricochet Shield
+21,Maliwan,SMG,11,Manufacturer Part,MAL_SM.part_shield_ammo,Hyperion Absorb Shield
+21,Maliwan,SMG,12,Manufacturer Part,MAL_SM.part_shield_amp,Hyperion Amp Shield
+21,Maliwan,SMG,13,Magazine,MAL_SM.part_mag_01,"2.2s Reload, 28 Shots"
+21,Maliwan,SMG,14,Magazine,MAL_SM.part_mag_02,"2.7s Reload, -Damage, 36 Shots"
+21,Maliwan,SMG,15,Magazine,MAL_SM.part_mag_03_tor,"2.4s Reload, +Damage, -Fire Rate, 24 Shots, Torgue"
+21,Maliwan,SMG,16,Magazine,MAL_SM.part_mag_04_cov,"3.4s Reload, +Damage, -Acc, 37 Shots, CoV Mag"
+21,Maliwan,SMG,17,Magazine,MAL_SM.part_mag_05_borg,"2.0s Reload, -Damage, -Acc, +Fire Rate, 40 Shots, Ripper Mag"
+21,Maliwan,SMG,18,Manufacturer Part,MAL_SM.part_mag_torgue_normal,Torgue Impact Gyrojets
+21,Maliwan,SMG,19,Manufacturer Part,MAL_SM.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+21,Maliwan,SMG,20,Stat Modifier,MAL_SM.part_mag_ted_thrown_01,2.0s Reload
+21,Maliwan,SMG,21,Stat Modifier,MAL_SM.part_mag_ted_thrown_02,2.0s Reload
+21,Maliwan,SMG,22,Stat Modifier,MAL_SM.part_mag_ted_thrown_03_tor,2.0s Reload
+21,Maliwan,SMG,23,Stat Modifier,MAL_SM.part_mag_ted_thrown_04_cov,3.0s Reload
+21,Maliwan,SMG,24,Stat Modifier,MAL_SM.part_mag_ted_thrown_05_bor,3.0s Reload
+21,Maliwan,SMG,25,Scope,MAL_SM.part_scope_ironsight,ADS
+21,Maliwan,SMG,26,Scope,MAL_SM.part_scope_01_lens_01,ADS +Zoom
+21,Maliwan,SMG,27,Scope,MAL_SM.part_scope_01_lens_02,ADS +Zoom
+21,Maliwan,SMG,28,Scope,MAL_SM.part_scope_02_lens_01,ADS ++Zoom
+21,Maliwan,SMG,29,Scope,MAL_SM.part_scope_02_lens_02,ADS ++Zoom
+21,Maliwan,SMG,30,Scope Accessory,MAL_SM.part_scope_acc_S01_L01_a,+Damage
+21,Maliwan,SMG,31,Scope Accessory,MAL_SM.part_scope_acc_S01_L01_b,-Reload Speed
+21,Maliwan,SMG,32,Scope Accessory,MAL_SM.part_scope_acc_S02_L01_a,No Stat Changes
+21,Maliwan,SMG,33,Scope Accessory,MAL_SM.part_scope_acc_S02_L01_b,No Stat Changes
+21,Maliwan,SMG,34,Scope Accessory,MAL_SM.part_scope_acc_S01_L02_a,+Damage
+21,Maliwan,SMG,35,Scope Accessory,MAL_SM.part_scope_acc_S01_L02_b,-Reload Speed
+21,Maliwan,SMG,36,Scope Accessory,MAL_SM.part_scope_acc_S02_L02_a,No Stat Changes
+21,Maliwan,SMG,37,Scope Accessory,MAL_SM.part_scope_acc_S02_L02_b,No Stat Changes
+21,Maliwan,SMG,38,Grip,MAL_SM.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+21,Maliwan,SMG,39,Grip,MAL_SM.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+21,Maliwan,SMG,40,Grip,MAL_SM.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+21,Maliwan,SMG,41,Grip,MAL_SM.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+21,Maliwan,SMG,42,Grip,MAL_SM.part_grip_01,+Damage
+21,Maliwan,SMG,43,Grip,MAL_SM.part_grip_02,+Fire Rate
+21,Maliwan,SMG,44,Grip,MAL_SM.part_grip_03,-Reload Speed
+21,Maliwan,SMG,45,Underbarrel,MAL_SM.part_underbarrel_03_railgun,Alt Fire - Railgun
+21,Maliwan,SMG,46,Underbarrel,MAL_SM.part_underbarrel_02_overcharge,Alt Fire - Energy Discharge
+21,Maliwan,SMG,47,Underbarrel,MAL_SM.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+21,Maliwan,SMG,48,Underbarrel,MAL_SM.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+21,Maliwan,SMG,49,Foregrip,MAL_SM.part_foregrip_02,+Fire Rate
+21,Maliwan,SMG,50,Foregrip,MAL_SM.part_foregrip_03,+Accuracy
+21,Maliwan,SMG,51,Foregrip,MAL_SM.part_foregrip_01,+Damage
+21,Maliwan,SMG,52,Underbarrel,MAL_SM.part_underbarrel_04_atlas,Atlas Tracker Darts
+21,Maliwan,SMG,53,Underbarrel,MAL_SM.part_underbarrel_01_laserwire,Alt Fire - Laser Wire
+21,Maliwan,SMG,54,Manufacturer Part,MAL_SM.part_secondary_ammo_sg,Daedalus Shotgun Ammo
+21,Maliwan,SMG,55,Manufacturer Part,MAL_SM.part_secondary_ammo_ar,Daedalus AR Ammo
+21,Maliwan,SMG,56,Manufacturer Part,MAL_SM.part_secondary_ammo_ps,Daedalus Pistol Ammo
+21,Maliwan,SMG,57,Manufacturer Part,MAL_SM.part_secondary_ammo_sr,Daedalus SR Ammo
+21,Maliwan,SMG,59,Barrel,MAL_SM.part_barrel_01_OhmIGot,"Ohm I Got, 803 Damage, 100% Acc, 8.0/s FR, 2 Shot"
+21,Maliwan,SMG,61,Barrel Accessory,MAL_SM.part_barrel_02_d_PlasmaCoil,"+Damage, +Fire Rate, +Ammo"
+21,Maliwan,SMG,62,Barrel,MAL_SM.part_barrel_02_PlasmaCoil,"Plasma Coil, 937 Damage, 84% Acc, 7.7/s FR"
+21,Maliwan,SMG,65,Barrel Accessory,MAL_SM.part_barrel_01_a,+Damage
+21,Maliwan,SMG,66,Barrel Accessory,MAL_SM.part_barrel_01_b,No Stat Changes
+21,Maliwan,SMG,67,Barrel Accessory,MAL_SM.part_barrel_01_c,No Stat Changes
+21,Maliwan,SMG,68,Barrel Accessory,MAL_SM.part_barrel_01_d,+Accuracy
+21,Maliwan,SMG,69,Barrel Accessory,MAL_SM.part_barrel_02_a,+Damage
+21,Maliwan,SMG,70,Barrel Accessory,MAL_SM.part_barrel_02_b,+Accuracy
+21,Maliwan,SMG,71,Barrel Accessory,MAL_SM.part_barrel_02_c,+Fire Rate
+21,Maliwan,SMG,72,Barrel Accessory,MAL_SM.part_barrel_02_d,+Fire Rate
+21,Maliwan,SMG,73,Manufacturer Part,MAL_SM.part_barrel_licensed_jak,Jakobs Ricochet
+21,Maliwan,SMG,74,Manufacturer Part,MAL_SM.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+21,Maliwan,SMG,75,Manufacturer Part,MAL_SM.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+21,Maliwan,SMG,76,Manufacturer Part,MAL_SM.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+21,Maliwan,SMG,77,Manufacturer Part,MAL_SM.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+21,Maliwan,SMG,78,Manufacturer Part,MAL_SM.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+25,Maliwan,Sniper,2,Body,MAL_SR.part_body,"No stat changes, always present"
+25,Maliwan,Sniper,3,Body Accessory,MAL_SR.part_body_a,-Reload Speed
+25,Maliwan,Sniper,4,Body Accessory,MAL_SR.part_body_b,+Ammo
+25,Maliwan,Sniper,5,Body Accessory,MAL_SR.part_body_c,+Accuracy
+25,Maliwan,Sniper,6,Body Accessory,MAL_SR.part_body_d,No Stat Changes
+25,Maliwan,Sniper,7,Barrel,MAL_SR.part_barrel_01,"Midheaven, 2483 Damage, 89% Acc, 1.9/s FR"
+25,Maliwan,Sniper,8,Barrel,MAL_SR.part_barrel_02,"Transit, 2483 Damage, 92% Acc, 3.0/s FR"
+25,Maliwan,Sniper,9,Manufacturer Part,MAL_SR.part_shield_default,Hyperion Shield
+25,Maliwan,Sniper,10,Manufacturer Part,MAL_SR.part_shield_ricochet,Hyperion Ricochet Shield
+25,Maliwan,Sniper,11,Manufacturer Part,MAL_SR.part_shield_ammo,Hyperion Absorb Shield
+25,Maliwan,Sniper,12,Manufacturer Part,MAL_SR.part_shield_amp,Hyperion Amp Shield
+25,Maliwan,Sniper,13,Magazine,MAL_SR.part_mag_01,"2.7s Reload, 8 Shots"
+25,Maliwan,Sniper,14,Magazine,MAL_SR.part_mag_02,"3.2s Reload, 10 Shots"
+25,Maliwan,Sniper,15,Magazine,MAL_SR.part_mag_03_tor,"2.2s Reload, +Damage, -Fire Rate, 6 Shots, Torgue"
+25,Maliwan,Sniper,16,Magazine,MAL_SR.part_mag_04_cov,"3.8s Reload, -Damage, -Acc, 10 Shots, CoV Mag"
+25,Maliwan,Sniper,17,Magazine,MAL_SR.part_mag_05_borg,"2.1s Reload, +Fire Rate, 12 Shots, Ripper Mag"
+25,Maliwan,Sniper,18,Manufacturer Part,MAL_SR.part_mag_torgue_normal,Torgue Impact Gyrojets
+25,Maliwan,Sniper,19,Manufacturer Part,MAL_SR.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+25,Maliwan,Sniper,20,Barrel,MAL_SR.part_barrel_01_complex_root,"Complex Root, 2342 Damage, 85% Acc, 1.2/s FR"
+25,Maliwan,Sniper,21,Stat Modifier,MAL_SR.part_mag_ted_thrown_01,2.0s Reload
+25,Maliwan,Sniper,22,Stat Modifier,MAL_SR.part_mag_ted_thrown_02,2.0s Reload
+25,Maliwan,Sniper,23,Stat Modifier,MAL_SR.part_mag_ted_thrown_03_tor,2.0s Reload
+25,Maliwan,Sniper,24,Stat Modifier,MAL_SR.part_mag_ted_thrown_04_cov,3.0s Reload
+25,Maliwan,Sniper,25,Stat Modifier,MAL_SR.part_mag_ted_thrown_05_bor,3.0s Reload
+25,Maliwan,Sniper,26,Scope,MAL_SR.part_scope_ironsight,ADS
+25,Maliwan,Sniper,27,Scope,MAL_SR.part_scope_01_lens_01,ADS +Zoom
+25,Maliwan,Sniper,28,Scope,MAL_SR.part_scope_01_lens_02,ADS ++Zoom
+25,Maliwan,Sniper,29,Scope,MAL_SR.part_scope_02_lens_01,ADS +++Zoom
+25,Maliwan,Sniper,30,Scope,MAL_SR.part_scope_02_lens_02,ADS ++Zoom
+25,Maliwan,Sniper,31,Scope Accessory,MAL_SR.part_scope_acc_s01_l01_a,+Damage
+25,Maliwan,Sniper,32,Scope Accessory,MAL_SR.part_scope_acc_s01_l01_b,-Reload Speed
+25,Maliwan,Sniper,33,Scope Accessory,MAL_SR.part_scope_acc_s02_l01_a,No Stat Changes
+25,Maliwan,Sniper,34,Scope Accessory,MAL_SR.part_scope_acc_s02_l01_b,No Stat Changes
+25,Maliwan,Sniper,35,Scope Accessory,MAL_SR.part_scope_acc_s01_l02_a,+Damage
+25,Maliwan,Sniper,36,Scope Accessory,MAL_SR.part_scope_acc_s01_l02_b,-Reload Speed
+25,Maliwan,Sniper,37,Scope Accessory,MAL_SR.part_scope_acc_s02_l02_a,No Stat Changes
+25,Maliwan,Sniper,38,Scope Accessory,MAL_SR.part_scope_acc_s02_l02_b,No Stat Changes
+25,Maliwan,Sniper,39,Grip,MAL_SR.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+25,Maliwan,Sniper,40,Grip,MAL_SR.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+25,Maliwan,Sniper,41,Grip,MAL_SR.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+25,Maliwan,Sniper,42,Grip,MAL_SR.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+25,Maliwan,Sniper,43,Grip,MAL_SR.part_grip_01,+Damage
+25,Maliwan,Sniper,44,Grip,MAL_SR.part_grip_02,+Fire Rate
+25,Maliwan,Sniper,45,Grip,MAL_SR.part_grip_03,-Reload Speed
+25,Maliwan,Sniper,46,Underbarrel,MAL_SR.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+25,Maliwan,Sniper,47,Underbarrel,MAL_SR.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+25,Maliwan,Sniper,48,Underbarrel,MAL_SR.part_underbarrel_02_multitaser,Alt Fire - Shock Field
+25,Maliwan,Sniper,49,Underbarrel,MAL_SR.part_underbarrel_01_singularity,Alt Fire - Singularity Grenade Launcher
+25,Maliwan,Sniper,50,Foregrip,MAL_SR.part_foregrip_02,+Fire Rate
+25,Maliwan,Sniper,51,Foregrip,MAL_SR.part_foregrip_03,+Accuracy
+25,Maliwan,Sniper,52,Foregrip,MAL_SR.part_foregrip_01,+Damage
+25,Maliwan,Sniper,53,Underbarrel,MAL_SR.part_underbarrel_03_rocketpod,Alt Fire - Rocket Pod
+25,Maliwan,Sniper,54,Underbarrel,MAL_SR.part_underbarrel_04_atlas,Atlas Tracker Darts
+25,Maliwan,Sniper,55,Manufacturer Part,MAL_SR.part_secondary_ammo_smg,Daedalus SMG Ammo
+25,Maliwan,Sniper,56,Manufacturer Part,MAL_SR.part_secondary_ammo_sg,Daedalus Shotgun Ammo
+25,Maliwan,Sniper,57,Manufacturer Part,MAL_SR.part_secondary_ammo_ar,Daedalus AR Ammo
+25,Maliwan,Sniper,58,Manufacturer Part,MAL_SR.part_secondary_ammo_ps,Daedalus Pistol Ammo
+25,Maliwan,Sniper,60,Barrel,MAL_SR.part_barrel_02_katagawa,"Katagawa's Revenge, 1522 Damage, 89% Acc, 1.5/s FR"
+25,Maliwan,Sniper,62,Foregrip,MAL_SR.part_foregrip_04,No Stat Changes
+25,Maliwan,Sniper,63,Stat Modifier,MAL_SR.part_mag_05_borg_barrel_02,2.4s Reload
+25,Maliwan,Sniper,64,Stat Modifier,MAL_SR.part_mag_05_borg_barrel_01,2.4s Reload
+25,Maliwan,Sniper,65,Barrel Accessory,MAL_SR.part_barrel_01_a,+Damage
+25,Maliwan,Sniper,66,Barrel Accessory,MAL_SR.part_barrel_01_b,No Stat Changes
+25,Maliwan,Sniper,67,Barrel Accessory,MAL_SR.part_barrel_01_c,No Stat Changes
+25,Maliwan,Sniper,68,Barrel Accessory,MAL_SR.part_barrel_01_d,+Accuracy
+25,Maliwan,Sniper,69,Barrel Accessory,MAL_SR.part_barrel_02_a,+Damage
+25,Maliwan,Sniper,70,Barrel Accessory,MAL_SR.part_barrel_02_b,No Stat Changes
+25,Maliwan,Sniper,71,Barrel Accessory,MAL_SR.part_barrel_02_c,+Fire Rate
+25,Maliwan,Sniper,72,Barrel Accessory,MAL_SR.part_barrel_02_d,+Fire Rate
+25,Maliwan,Sniper,73,Manufacturer Part,MAL_SR.part_barrel_licensed_jak,+Crit Damage
+25,Maliwan,Sniper,74,Manufacturer Part,MAL_SR.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+25,Maliwan,Sniper,75,Manufacturer Part,MAL_SR.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+25,Maliwan,Sniper,76,Manufacturer Part,MAL_SR.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+25,Maliwan,Sniper,77,Manufacturer Part,MAL_SR.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+25,Maliwan,Sniper,78,Manufacturer Part,MAL_SR.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+25,Maliwan,Sniper,79,Barrel,MAL_SR.part_barrel_01_asher,"Asher's Rise, 1522 Damage, 89% Acc, 6.6/s FR"
+15,Order,Assault Rifle,1,Scope,ORD_AR.part_scope_02_lens_02_gmr,ADS +++Zoom
+15,Order,Assault Rifle,2,Barrel,ORD_AR.part_barrel_02_gmr,"G.M.R., 1785 Damage, 65% Acc, 4.0/s FR"
+15,Order,Assault Rifle,3,Body Accessory,ORD_AR.part_body_a,-Reload Speed
+15,Order,Assault Rifle,4,Body Accessory,ORD_AR.part_body_b,+Damage
+15,Order,Assault Rifle,5,Body Accessory,ORD_AR.part_body_c,+Accuracy
+15,Order,Assault Rifle,6,Body Accessory,ORD_AR.part_body_d,+Crit Damage
+15,Order,Assault Rifle,7,Barrel,ORD_AR.part_barrel_01,"Indiction, 1115 Damage, 89% Acc, 5.5/s FR"
+15,Order,Assault Rifle,8,Barrel,ORD_AR.part_barrel_02,"Schema, 982 Damage, 88% Acc, 6.5/s FR"
+15,Order,Assault Rifle,9,Manufacturer Part,ORD_AR.part_shield_default,Hyperion Shield
+15,Order,Assault Rifle,10,Manufacturer Part,ORD_AR.part_shield_ricochet,Hyperion Ricochet Shield
+15,Order,Assault Rifle,11,Manufacturer Part,ORD_AR.part_shield_ammo,Hyperion Absorb Shield
+15,Order,Assault Rifle,12,Manufacturer Part,ORD_AR.part_shield_amp,Hyperion Amp Shield
+15,Order,Assault Rifle,13,Magazine,ORD_AR.part_mag_01,"1.9s Reload, 18 Shots"
+15,Order,Assault Rifle,14,Magazine,ORD_AR.part_mag_02,"2.3s Reload, -Damage, 24 Shots"
+15,Order,Assault Rifle,15,Magazine,ORD_AR.part_mag_04_cov,"3.7s Reload, +Damage, -Acc, 34 Shots, CoV Mag"
+15,Order,Assault Rifle,16,Magazine,ORD_AR.part_mag_05_borg,"2.3s Reload, -Damage, +Fire Rate, 30 Shots, RIpper Mag"
+15,Order,Assault Rifle,17,Stat Modifier,ORD_AR.part_mag_ted_thrown_01,2.0s Reload
+15,Order,Assault Rifle,18,Stat Modifier,ORD_AR.part_mag_ted_thrown_02,2.0s Reload
+15,Order,Assault Rifle,19,Stat Modifier,ORD_AR.part_mag_ted_thrown_03_tor,2.0s Reload
+15,Order,Assault Rifle,20,Stat Modifier,ORD_AR.part_mag_ted_thrown_04_cov,3.0s Reload
+15,Order,Assault Rifle,21,Stat Modifier,ORD_AR.part_mag_ted_thrown_05_bor,3.0s Reload
+15,Order,Assault Rifle,22,Scope,ORD_AR.part_scope_02_lens_02,ADS +++Zoom
+15,Order,Assault Rifle,23,Scope,ORD_AR.part_scope_02_lens_01,ADS +++Zoom
+15,Order,Assault Rifle,24,Scope,ORD_AR.part_scope_01_lens_02,ADS ++Zoom
+15,Order,Assault Rifle,25,Scope,ORD_AR.part_scope_01_lens_01,ADS +Zoom
+15,Order,Assault Rifle,26,Scope,ORD_AR.part_scope_ironsight,ADS
+15,Order,Assault Rifle,27,Scope Accessory,ORD_AR.part_scope_acc_s01_l01_a,+Damage
+15,Order,Assault Rifle,28,Scope Accessory,ORD_AR.part_scope_acc_s01_l01_b,-Reload Speed
+15,Order,Assault Rifle,29,Scope Accessory,ORD_AR.part_scope_acc_s02_l01_a,No Stat Changes
+15,Order,Assault Rifle,30,Scope Accessory,ORD_AR.part_scope_acc_s02_l01_b,+Crit Damage
+15,Order,Assault Rifle,31,Scope Accessory,ORD_AR.part_scope_acc_s01_l02_a,+Damage
+15,Order,Assault Rifle,32,Scope Accessory,ORD_AR.part_scope_acc_s01_l02_b,-Reload Speed
+15,Order,Assault Rifle,33,Scope Accessory,ORD_AR.part_scope_acc_s02_l02_a,No Stat Changes
+15,Order,Assault Rifle,34,Scope Accessory,ORD_AR.part_scope_acc_s02_l02_b,+Crit Damage
+15,Order,Assault Rifle,35,Grip,ORD_AR.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+15,Order,Assault Rifle,36,Grip,ORD_AR.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+15,Order,Assault Rifle,37,Grip,ORD_AR.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+15,Order,Assault Rifle,38,Grip,ORD_AR.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+15,Order,Assault Rifle,39,Grip,ORD_AR.part_grip_01,+Damage
+15,Order,Assault Rifle,40,Grip,ORD_AR.part_grip_02,+Fire Rate
+15,Order,Assault Rifle,41,Grip,ORD_AR.part_grip_03,-Reload Speed
+15,Order,Assault Rifle,42,Underbarrel,ORD_AR.part_underbarrel_01_seeker,Alt Fire - Seeker Missles
+15,Order,Assault Rifle,43,Underbarrel,ORD_AR.part_underbarrel_03_killdrone,Alt Fire - Kill Drone
+15,Order,Assault Rifle,44,Underbarrel,ORD_AR.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+15,Order,Assault Rifle,45,Underbarrel,ORD_AR.part_underbarrel_04_atlas,Atlas Tracker Darts
+15,Order,Assault Rifle,46,Foregrip,ORD_AR.part_foregrip_02,+Crit Damage
+15,Order,Assault Rifle,47,Foregrip,ORD_AR.part_foregrip_03,+Accuracy
+15,Order,Assault Rifle,48,Manufacturer Part,ORD_AR.part_secondary_ammo_sm,Daedalus SMG Ammo
+15,Order,Assault Rifle,49,Manufacturer Part,ORD_AR.part_secondary_ammo_sg,Daedalus Shotgun Ammo
+15,Order,Assault Rifle,50,Manufacturer Part,ORD_AR.part_secondary_ammo_ps,Daedalus Pistol Ammo
+15,Order,Assault Rifle,51,Manufacturer Part,ORD_AR.part_secondary_ammo_sr,Daedalus SR Ammo
+15,Order,Assault Rifle,52,Barrel Accessory,ORD_AR.part_barrel_01_a,+Damage
+15,Order,Assault Rifle,53,Barrel Accessory,ORD_AR.part_barrel_01_b,+Crit Damage
+15,Order,Assault Rifle,54,Barrel Accessory,ORD_AR.part_barrel_01_c,+Accuracy
+15,Order,Assault Rifle,55,Barrel Accessory,ORD_AR.part_barrel_01_d,+Accuracy
+15,Order,Assault Rifle,56,Barrel Accessory,ORD_AR.part_barrel_02_a,+Damage
+15,Order,Assault Rifle,57,Barrel Accessory,ORD_AR.part_barrel_02_b,+Accuracy
+15,Order,Assault Rifle,58,Barrel Accessory,ORD_AR.part_barrel_02_c,+Fire Rate
+15,Order,Assault Rifle,59,Barrel Accessory,ORD_AR.part_barrel_02_d,+Fire Rate
+15,Order,Assault Rifle,60,Manufacturer Part,ORD_AR.part_barrel_licensed_jak,Jakobs Ricochet
+15,Order,Assault Rifle,61,Manufacturer Part,ORD_AR.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+15,Order,Assault Rifle,62,Manufacturer Part,ORD_AR.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+15,Order,Assault Rifle,63,Manufacturer Part,ORD_AR.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+15,Order,Assault Rifle,64,Manufacturer Part,ORD_AR.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+15,Order,Assault Rifle,65,Manufacturer Part,ORD_AR.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+15,Order,Assault Rifle,66,Manufacturer Part,ORD_AR.part_mag_torgue_normal,Torgue Impact Gyrojets
+15,Order,Assault Rifle,67,Manufacturer Part,ORD_AR.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+15,Order,Assault Rifle,68,Underbarrel,ORD_AR.part_underbarrel_02_deathsphere,Alt Fire - Death Sphere
+15,Order,Assault Rifle,69,Underbarrel,ORD_AR.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+15,Order,Assault Rifle,70,Foregrip,ORD_AR.part_foregrip_01,+Damage
+15,Order,Assault Rifle,71,Magazine,ORD_AR.part_mag_03_tor,"2.1s Reload, +Damage, -Fire Rate, 15 Shots, Torgue"
+15,Order,Assault Rifle,72,Barrel,ORD_AR.part_barrel_02_goalkeeper,"Goalkeeper, 1785 Damage, 84% Acc, 7.0/s FR"
+15,Order,Assault Rifle,74,Body,ORD_AR.part_body,"No stat changes, always present"
+4,Order,Pistol,1,Magazine,ORD_PS.part_mag_03_rocketreload,"1.9s Reload, 6 Shots"
+4,Order,Pistol,2,Body,ORD_PS.part_body,"No stat changes, always present"
+4,Order,Pistol,3,Body Accessory,ORD_PS.part_body_a,-Reload Speed
+4,Order,Pistol,4,Body Accessory,ORD_PS.part_body_b,+Damage
+4,Order,Pistol,5,Body Accessory,ORD_PS.part_body_c,+Accuracy
+4,Order,Pistol,6,Body Accessory,ORD_PS.part_body_d,+Crit Damage
+4,Order,Pistol,7,Barrel,ORD_PS.part_barrel_01,"Punct, 825 Damage, 76% Acc, 8.0/s FR"
+4,Order,Pistol,8,Barrel,ORD_PS.part_barrel_02,"Lemma, 892 Damage, 76% Acc, 6.5/s FR"
+4,Order,Pistol,9,Manufacturer Part,ORD_PS.part_shield_default,Hyperion Shield
+4,Order,Pistol,10,Manufacturer Part,ORD_PS.part_shield_ricochet,Hyperion Ricochet Shield
+4,Order,Pistol,11,Manufacturer Part,ORD_PS.part_shield_ammo,Hyperion Absorb Shield
+4,Order,Pistol,12,Manufacturer Part,ORD_PS.part_shield_amp,Hyperion Amp Shield
+4,Order,Pistol,13,Magazine,ORD_PS.part_mag_01,"1.9s Reload, 15 Shots"
+4,Order,Pistol,14,Magazine,ORD_PS.part_mag_02,"2.8s Reload, -Damage, 18 Shots"
+4,Order,Pistol,15,Magazine,ORD_PS.part_mag_04_cov,"2.9s Reload, -Damage, -Acc, 20 Shots, CoV Mag"
+4,Order,Pistol,16,Magazine,ORD_PS.part_mag_05_borg,"2.3s Reload, +Fire Rate, 24 Shots, Ripper Mag"
+4,Order,Pistol,17,Stat Modifier,ORD_PS.part_mag_ted_thrown_01,2.0s Reload
+4,Order,Pistol,18,Stat Modifier,ORD_PS.part_mag_ted_thrown_02,2.0s Reload
+4,Order,Pistol,19,Stat Modifier,ORD_PS.part_mag_ted_thrown_03_tor,2.0s Reload
+4,Order,Pistol,20,Stat Modifier,ORD_PS.part_mag_ted_thrown_04_cov,3.0s Reload
+4,Order,Pistol,21,Stat Modifier,ORD_PS.part_mag_ted_thrown_05_bor,3.0s Reload
+4,Order,Pistol,22,Scope,ORD_PS.part_scope_ironsight,ADS
+4,Order,Pistol,23,Scope,ORD_PS.part_scope_01_lens_01,ADS +Zoom
+4,Order,Pistol,24,Scope,ORD_PS.part_scope_01_lens_02,ADS ++Zoom
+4,Order,Pistol,25,Scope,ORD_PS.part_scope_02_lens_01,ADS ++Zoom
+4,Order,Pistol,26,Scope,ORD_PS.part_scope_02_lens_02,ADS +++Zoom
+4,Order,Pistol,27,Scope Accessory,ORD_PS.part_scope_acc_s01_l01_a,+Damage
+4,Order,Pistol,28,Scope Accessory,ORD_PS.part_scope_acc_s01_l01_b,-Reload Speed
+4,Order,Pistol,29,Scope Accessory,ORD_PS.part_scope_acc_s02_l01_a,No Stat Changes
+4,Order,Pistol,30,Scope Accessory,ORD_PS.part_scope_acc_s02_l01_b,+Crit Damage
+4,Order,Pistol,31,Scope Accessory,ORD_PS.part_scope_acc_s01_l02_a,+Damage
+4,Order,Pistol,32,Scope Accessory,ORD_PS.part_scope_acc_s01_l02_b,-Reload Speed
+4,Order,Pistol,33,Scope Accessory,ORD_PS.part_scope_acc_s02_l02_a,No Stat Changes
+4,Order,Pistol,34,Scope Accessory,ORD_PS.part_scope_acc_s02_l02_b,+Crit Damage
+4,Order,Pistol,35,Grip,ORD_PS.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+4,Order,Pistol,36,Grip,ORD_PS.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+4,Order,Pistol,37,Grip,ORD_PS.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+4,Order,Pistol,38,Grip,ORD_PS.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+4,Order,Pistol,39,Grip,ORD_PS.part_grip_01,+Damage
+4,Order,Pistol,40,Grip,ORD_PS.part_grip_02,+Fire Rate
+4,Order,Pistol,41,Grip,ORD_PS.part_grip_03,-Reload Speed
+4,Order,Pistol,42,Underbarrel,ORD_PS.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+4,Order,Pistol,43,Underbarrel,ORD_PS.part_underbarrel_03_rockets,Alt Fire - Micro-Rockets
+4,Order,Pistol,44,Underbarrel,ORD_PS.part_underbarrel_01_energyburst,Alt Fire - Energy Burst
+4,Order,Pistol,45,Underbarrel,ORD_PS.part_underbarrel_04_atlas,Atlas Tracker Darts
+4,Order,Pistol,46,Underbarrel,ORD_PS.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+4,Order,Pistol,47,Foregrip,ORD_PS.part_foregrip_02,+Crit Damage
+4,Order,Pistol,48,Foregrip,ORD_PS.part_foregrip_03,+Accuracy
+4,Order,Pistol,49,Manufacturer Part,ORD_PS.part_secondary_ammo_sm,Daedalus SMG Ammo
+4,Order,Pistol,50,Manufacturer Part,ORD_PS.part_secondary_ammo_sg,Daedalus Shotgun Ammo
+4,Order,Pistol,51,Manufacturer Part,ORD_PS.part_secondary_ammo_ar,Daedalus AR Ammo
+4,Order,Pistol,52,Manufacturer Part,ORD_PS.part_secondary_ammo_sr,Daedalus SR Ammo
+4,Order,Pistol,54,Barrel Accessory,ORD_PS.part_barrel_01_a,+Damage
+4,Order,Pistol,55,Barrel Accessory,ORD_PS.part_barrel_01_b,+Crit Damage
+4,Order,Pistol,56,Barrel Accessory,ORD_PS.part_barrel_01_c,+Accuracy
+4,Order,Pistol,57,Barrel Accessory,ORD_PS.part_barrel_01_d,+Accuracy
+4,Order,Pistol,58,Barrel Accessory,ORD_PS.part_barrel_02_a,+Damage
+4,Order,Pistol,59,Barrel Accessory,ORD_PS.part_barrel_02_b,+Accuracy
+4,Order,Pistol,60,Barrel Accessory,ORD_PS.part_barrel_02_c,+Fire Rate
+4,Order,Pistol,61,Barrel Accessory,ORD_PS.part_barrel_02_d,+Fire Rate
+4,Order,Pistol,62,Manufacturer Part,ORD_PS.part_barrel_licensed_jak,Jakobs Ricochet
+4,Order,Pistol,63,Manufacturer Part,ORD_PS.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+4,Order,Pistol,64,Manufacturer Part,ORD_PS.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+4,Order,Pistol,65,Manufacturer Part,ORD_PS.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+4,Order,Pistol,66,Manufacturer Part,ORD_PS.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+4,Order,Pistol,67,Manufacturer Part,ORD_PS.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+4,Order,Pistol,68,Foregrip,ORD_PS.part_foregrip_01,+Damage
+4,Order,Pistol,69,Manufacturer Part,ORD_PS.part_mag_torgue_normal,Torgue Impact Gyrojets
+4,Order,Pistol,70,Manufacturer Part,ORD_PS.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+4,Order,Pistol,71,Magazine,ORD_PS.part_mag_03_tor,"2.0s Reload, +Damage, +Acc, -Fire Rate, 12 Shots, Torgue"
+4,Order,Pistol,72,Underbarrel,ORD_PS.part_underbarrel_02_gravitywell,Alt Fire - Gravity Well
+4,Order,Pistol,75,Barrel,ORD_PS.part_barrel_02_bully,"Bully, 1338 Damage, 80% Acc, 7.0/s FR"
+4,Order,Pistol,78,Magazine,ORD_PS.part_mag_noisycricket,"1.5s Reload, 2 Shots, 2 Shot"
+4,Order,Pistol,79,Barrel,ORD_PS.part_barrel_noisycricket,"Noisy Cricket, 4461 Damage, 57% Acc, 3.0/s FR, 2 Shot"
+4,Order,Pistol,81,Barrel,ORD_PS.part_barrel_02_rocketreload,"Lucky Clover, 892 Damage, 75% Acc, 8.0/s FR"
+26,Order,Sniper,2,Body,ORD_SR.part_body,"No stat changes, always present"
+26,Order,Sniper,3,Body Accessory,ORD_SR.part_body_a,-Reload Speed
+26,Order,Sniper,4,Body Accessory,ORD_SR.part_body_b,+Damage
+26,Order,Sniper,5,Body Accessory,ORD_SR.part_body_c,No Stat Changes
+26,Order,Sniper,6,Body Accessory,ORD_SR.part_body_d,+Crit Damage
+26,Order,Sniper,7,Barrel,ORD_SR.part_barrel_01,"Yuga, 2530 Damage, 90% Acc, 1.9/s FR"
+26,Order,Sniper,8,Barrel,ORD_SR.part_barrel_02,"Piktun, 3045 Damage, 92% Acc, 1.5/s FR"
+26,Order,Sniper,9,Barrel Accessory,ORD_SR.part_barrel_01_a,+Damage
+26,Order,Sniper,10,Barrel Accessory,ORD_SR.part_barrel_01_c,No Stat Changes
+26,Order,Sniper,11,Barrel Accessory,ORD_SR.part_barrel_01_d,No Stat Changes
+26,Order,Sniper,12,Barrel Accessory,ORD_SR.part_barrel_02_a,+Damage
+26,Order,Sniper,13,Barrel Accessory,ORD_SR.part_barrel_02_b,+Accuracy
+26,Order,Sniper,14,Barrel Accessory,ORD_SR.part_barrel_02_c,+Fire Rate
+26,Order,Sniper,15,Barrel Accessory,ORD_SR.part_barrel_02_d,+Fire Rate
+26,Order,Sniper,16,Manufacturer Part,ORD_SR.part_barrel_licensed_jak,Jakobs Ricochet
+26,Order,Sniper,17,Manufacturer Part,ORD_SR.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+26,Order,Sniper,18,Manufacturer Part,ORD_SR.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+26,Order,Sniper,19,Manufacturer Part,ORD_SR.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+26,Order,Sniper,20,Manufacturer Part,ORD_SR.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+26,Order,Sniper,21,Manufacturer Part,ORD_SR.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+26,Order,Sniper,22,Barrel Accessory,ORD_SR.part_barrel_01_b,+Crit Damage
+26,Order,Sniper,23,Manufacturer Part,ORD_SR.part_shield_default,Hyperion Shield
+26,Order,Sniper,24,Manufacturer Part,ORD_SR.part_shield_ricochet,Hyperion Ricochet Shield
+26,Order,Sniper,25,Manufacturer Part,ORD_SR.part_shield_ammo,Hyperion Absorb Shield
+26,Order,Sniper,26,Manufacturer Part,ORD_SR.part_shield_amp,Hyperion Amp Shield
+26,Order,Sniper,27,Magazine,ORD_SR.part_mag_01,"2.3s Reload, 12 Shots"
+26,Order,Sniper,28,Magazine,ORD_SR.part_mag_02,"2.7s Reload, -Damage, 15 Shots"
+26,Order,Sniper,29,Magazine,ORD_SR.part_mag_04_cov,"3.7s Reload, 20 Shots, CoV Mag"
+26,Order,Sniper,30,Magazine,ORD_SR.part_mag_05_borg,"2.1s Reload, -Damage, +Fire Rate, 18 Shots, Ripper Mag"
+26,Order,Sniper,31,Stat Modifier,ORD_SR.part_mag_ted_thrown_01,1.6s Reload
+26,Order,Sniper,32,Stat Modifier,ORD_SR.part_mag_ted_thrown_02,1.6s Reload
+26,Order,Sniper,33,Stat Modifier,ORD_SR.part_mag_ted_thrown_03_tor,1.6s Reload
+26,Order,Sniper,34,Stat Modifier,ORD_SR.part_mag_ted_thrown_04_cov,3.0s Reload
+26,Order,Sniper,35,Stat Modifier,ORD_SR.part_mag_ted_thrown_05_bor,3.0s Reload
+26,Order,Sniper,36,Scope,ORD_SR.part_scope_ironsight,ADS
+26,Order,Sniper,37,Scope,ORD_SR.part_scope_01_lens_01,ADS +Zoom
+26,Order,Sniper,38,Scope,ORD_SR.part_scope_01_lens_02,ADS ++Zoom
+26,Order,Sniper,39,Scope,ORD_SR.part_scope_02_lens_01,ADS +++Zoom
+26,Order,Sniper,40,Scope,ORD_SR.part_scope_02_lens_02,ADS ++++Zoom
+26,Order,Sniper,41,Scope Accessory,ORD_SR.part_scope_acc_s01_l01_a,+Damage
+26,Order,Sniper,42,Scope Accessory,ORD_SR.part_scope_acc_s01_l01_b,-Reload Speed
+26,Order,Sniper,43,Scope Accessory,ORD_SR.part_scope_acc_s02_l01_a,No Stat Changes
+26,Order,Sniper,44,Scope Accessory,ORD_SR.part_scope_acc_s02_l01_b,+Crit Damage
+26,Order,Sniper,45,Scope Accessory,ORD_SR.part_scope_acc_s01_l02_a,+Damage
+26,Order,Sniper,46,Scope Accessory,ORD_SR.part_scope_acc_s01_l02_b,-Reload Speed
+26,Order,Sniper,47,Scope Accessory,ORD_SR.part_scope_acc_s02_l02_a,No Stat Changes
+26,Order,Sniper,48,Scope Accessory,ORD_SR.part_scope_acc_s02_l02_b,+Crit Damage
+26,Order,Sniper,49,Grip,ORD_SR.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+26,Order,Sniper,50,Grip,ORD_SR.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+26,Order,Sniper,51,Grip,ORD_SR.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+26,Order,Sniper,52,Grip,ORD_SR.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+26,Order,Sniper,53,Grip,ORD_SR.part_grip_01,+Damage
+26,Order,Sniper,54,Grip,ORD_SR.part_grip_02,+Fire Rate
+26,Order,Sniper,55,Grip,ORD_SR.part_grip_03,-Reload Speed
+26,Order,Sniper,56,Underbarrel,ORD_SR.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+26,Order,Sniper,57,Underbarrel,ORD_SR.part_underbarrel_02_tether_snare,Alt Fire - Tether Snare
+26,Order,Sniper,58,Underbarrel,ORD_SR.part_underbarrel_03_railgun,Alt Fire - Railgun
+26,Order,Sniper,59,Underbarrel,ORD_SR.part_underbarrel_04_atlas,Atlas Tracker Darts
+26,Order,Sniper,60,Foregrip,ORD_SR.part_foregrip_02,+Crit Damage
+26,Order,Sniper,61,Foregrip,ORD_SR.part_foregrip_03,No Stat Changes
+26,Order,Sniper,62,Underbarrel,ORD_SR.part_underbarrel_01_spear,Alt Fire - Ordonite Spike
+26,Order,Sniper,63,Underbarrel,ORD_SR.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+26,Order,Sniper,64,Foregrip,ORD_SR.part_foregrip_01,+Damage
+26,Order,Sniper,65,Manufacturer Part,ORD_SR.part_secondary_ammo_sm,Daedalus SMG Ammo
+26,Order,Sniper,66,Manufacturer Part,ORD_SR.part_secondary_ammo_sg,Daedalus Shotgun Ammo
+26,Order,Sniper,67,Manufacturer Part,ORD_SR.part_secondary_ammo_ar,Daedalus AR Ammo
+26,Order,Sniper,68,Manufacturer Part,ORD_SR.part_secondary_ammo_ps,Daedalus Pistol Ammo
+26,Order,Sniper,69,Manufacturer Part,ORD_SR.part_mag_torgue_normal,Torgue Impact Gyrojets
+26,Order,Sniper,70,Manufacturer Part,ORD_SR.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+26,Order,Sniper,71,Magazine,ORD_SR.part_mag_03_tor,"2.1s Reload, +Damage, -Fire Rate, 9 Shots, Torgue"
+26,Order,Sniper,72,Barrel,ORD_SR.part_barrel_02_symmetry,"Symmetry, 3045 Damage, 92% Acc, 1.5/s FR"
+26,Order,Sniper,74,Magazine,ORD_SR.part_mag_01_fisheye,"2.3s Reload, 3 Shots"
+26,Order,Sniper,75,Barrel,ORD_SR.part_barrel_01_fisheye,"Fisheye, 4919 Damage, 83% Acc, 1.2/s FR, +40% Crit Damage"
+26,Order,Sniper,77,Underbarrel,ORD_SR.part_underbarrel_03_seamstress,Rooker Alt Fire
+26,Order,Sniper,78,Barrel,ORD_SR.part_barrel_01_seamstress,"Rooker, 2342 Damage, 83%Acc, 2/s FR, +55% Crit Damage"
+7,Ripper,Shotgun,1,Barrel,BOR_SG.part_barrel_02_goremaster,"Goremaster, 349 x 6 Damage, 70% Acc, 3.0/s FR"
+7,Ripper,Shotgun,2,Body,BOR_SG.part_body,"No stat changes, always present"
+7,Ripper,Shotgun,3,Body Accessory,BOR_SG.part_body_a,-Reload Speed
+7,Ripper,Shotgun,4,Body Accessory,BOR_SG.part_body_b,+Ammo
+7,Ripper,Shotgun,5,Body Accessory,BOR_SG.part_body_c,+Accuracy
+7,Ripper,Shotgun,6,Body Accessory,BOR_SG.part_body_d,No Stat Changes
+7,Ripper,Shotgun,7,Barrel,BOR_SG.part_barrel_01,"Weldwyrm, 376 x 4 Damage, 63% Acc, 4.5/s FR"
+7,Ripper,Shotgun,8,Barrel,BOR_SG.part_barrel_02,"Hellhound, 314 x 6 Damage, 70% Acc, 3.0/s FR"
+7,Ripper,Shotgun,9,Manufacturer Part,BOR_SG.part_shield_default,Hyperion Shield
+7,Ripper,Shotgun,10,Manufacturer Part,BOR_SG.part_shield_ricochet,Hyperion Ricochet Shield
+7,Ripper,Shotgun,11,Manufacturer Part,BOR_SG.part_shield_ammo,Hyperion Absorb Shield
+7,Ripper,Shotgun,12,Manufacturer Part,BOR_SG.part_shield_amp,Hyperion Amp Shield
+7,Ripper,Shotgun,13,Magazine,BOR_SG.part_mag_04_cov,"3.2s Reload, -Damage, -Acc, 20 Shots, CoV Mag"
+7,Ripper,Shotgun,14,Magazine,BOR_SG.part_mag_03_tor,"2.6s Reload, +Damage, -Fire Rate, 10 Shots, Torgue"
+7,Ripper,Shotgun,15,Magazine,BOR_SG.part_mag_01,"2.4s Reload, 15 Shots"
+7,Ripper,Shotgun,16,Magazine,BOR_SG.part_mag_02,"2.6s Reload, -Damage, 20 Shots"
+7,Ripper,Shotgun,17,Magazine,BOR_SG.part_mag_goldengod,"3.2s Reload, -Damage, -Acc, 20 Shots, CoV Mag"
+7,Ripper,Shotgun,18,Barrel,BOR_SG.part_barrel_goldengod,"Golden God, 376 x 4 Damage, 63% Acc, 4.5/s FR"
+7,Ripper,Shotgun,22,Stat Modifier,BOR_SG.part_mag_ted_thrown_01,2.0s Reload
+7,Ripper,Shotgun,23,Stat Modifier,BOR_SG.part_mag_ted_thrown_02,2.0s Reload
+7,Ripper,Shotgun,24,Stat Modifier,BOR_SG.part_mag_ted_thrown_03_tor,2.0s Reload
+7,Ripper,Shotgun,25,Stat Modifier,BOR_SG.part_mag_ted_thrown_04_cov,3.0s Reload
+7,Ripper,Shotgun,26,Scope,BOR_SG.part_scope_02_lens_02,ADS +++Zoom
+7,Ripper,Shotgun,27,Scope,BOR_SG.part_scope_02_lens_01,ADS +++Zoom
+7,Ripper,Shotgun,28,Scope,BOR_SG.part_scope_01_lens_02,ADS ++Zoom
+7,Ripper,Shotgun,29,Scope,BOR_SG.part_scope_01_lens_01,ADS +Zoom
+7,Ripper,Shotgun,30,Scope,BOR_SG.part_scope_ironsight,ADS
+7,Ripper,Shotgun,31,Scope Accessory,BOR_SG.part_scope_acc_s01_l01_a,+Damage
+7,Ripper,Shotgun,32,Scope Accessory,BOR_SG.part_scope_acc_s01_l01_b,-Reload Speed
+7,Ripper,Shotgun,33,Scope Accessory,BOR_SG.part_scope_acc_s02_l01_a,No Stat Changes
+7,Ripper,Shotgun,34,Scope Accessory,BOR_SG.part_scope_acc_s02_l01_b,+Crit Damage
+7,Ripper,Shotgun,35,Scope Accessory,BOR_SG.part_scope_acc_s01_l02_a,+Damage
+7,Ripper,Shotgun,36,Scope Accessory,BOR_SG.part_scope_acc_s01_l02_b,-Reload Speed
+7,Ripper,Shotgun,37,Scope Accessory,BOR_SG.part_scope_acc_s02_l02_a,No Stat Changes
+7,Ripper,Shotgun,38,Scope Accessory,BOR_SG.part_scope_acc_s02_l02_b,+Crit Damage
+7,Ripper,Shotgun,39,Grip,BOR_SG.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+7,Ripper,Shotgun,40,Grip,BOR_SG.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+7,Ripper,Shotgun,41,Grip,BOR_SG.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+7,Ripper,Shotgun,42,Grip,BOR_SG.part_grip_01,+Damage
+7,Ripper,Shotgun,43,Grip,BOR_SG.part_grip_02,+Fire Rate
+7,Ripper,Shotgun,44,Grip,BOR_SG.part_grip_03,-Reload Speed
+7,Ripper,Shotgun,45,Grip,BOR_SG.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+7,Ripper,Shotgun,46,Underbarrel,BOR_SG.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+7,Ripper,Shotgun,47,Underbarrel,BOR_SG.part_underbarrel_04_atlas,Atlas Tracker Darts
+7,Ripper,Shotgun,48,Underbarrel,BOR_SG.part_underbarrel_01_beam,Alt Fire - Lightning Beam
+7,Ripper,Shotgun,49,Underbarrel,BOR_SG.part_underbarrel_02_gauss,Alt Fire - Gauss Gun
+7,Ripper,Shotgun,50,Foregrip,BOR_SG.part_foregrip_01,+Damage
+7,Ripper,Shotgun,51,Foregrip,BOR_SG.part_foregrip_03,+Accuracy
+7,Ripper,Shotgun,52,Underbarrel,BOR_SG.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+7,Ripper,Shotgun,53,Underbarrel,BOR_SG.part_underbarrel_06_malswitch,"Underbarrel switch, no effects"
+7,Ripper,Shotgun,60,Manufacturer Part,BOR_SG.part_secondary_ammo_smg,Daedalus SMG Ammo
+7,Ripper,Shotgun,61,Manufacturer Part,BOR_SG.part_secondary_ammo_ar,Daedalus AR Ammo
+7,Ripper,Shotgun,62,Manufacturer Part,BOR_SG.part_secondary_ammo_ps,Daedalus Pistol Ammo
+7,Ripper,Shotgun,63,Manufacturer Part,BOR_SG.part_secondary_ammo_sr,Daedalus SR Ammo
+7,Ripper,Shotgun,64,Barrel,BOR_SG.part_unique_barrel_02_convergence,"Convergence, 390 x 3 Damage, 70% Acc, 3.0/s RL"
+7,Ripper,Shotgun,66,Barrel Accessory,BOR_SG.part_barrel_01_a,+Damage
+7,Ripper,Shotgun,67,Barrel Accessory,BOR_SG.part_barrel_01_b,-Reload Speed
+7,Ripper,Shotgun,68,Barrel Accessory,BOR_SG.part_barrel_01_c,+Damage
+7,Ripper,Shotgun,69,Barrel Accessory,BOR_SG.part_barrel_01_d,+Accuracy
+7,Ripper,Shotgun,70,Barrel Accessory,BOR_SG.part_barrel_02_a,+Damage
+7,Ripper,Shotgun,71,Barrel Accessory,BOR_SG.part_barrel_02_b,+Accuracy
+7,Ripper,Shotgun,72,Barrel Accessory,BOR_SG.part_barrel_02_c,+Fire Rate
+7,Ripper,Shotgun,73,Barrel Accessory,BOR_SG.part_barrel_02_d,+Fire Rate
+7,Ripper,Shotgun,74,Manufacturer Part,BOR_SG.part_barrel_licensed_jak,Jakobs Ricochet
+7,Ripper,Shotgun,75,Manufacturer Part,BOR_SG.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+7,Ripper,Shotgun,76,Manufacturer Part,BOR_SG.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+7,Ripper,Shotgun,77,Manufacturer Part,BOR_SG.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+7,Ripper,Shotgun,78,Manufacturer Part,BOR_SG.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+7,Ripper,Shotgun,79,Manufacturer Part,BOR_SG.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+7,Ripper,Shotgun,80,Underbarrel,BOR_SG.part_underbarrel_03_discharge,Alt Fire - Fuel Rod Discharge
+7,Ripper,Shotgun,81,Foregrip,BOR_SG.part_foregrip_02,+Fire Rate
+7,Ripper,Shotgun,82,Manufacturer Part,BOR_SG.part_mag_torgue_normal,Torgue Impact Gyrojets
+7,Ripper,Shotgun,83,Manufacturer Part,BOR_SG.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+19,Ripper,SMG,2,Body,BOR_SM.part_body,"No stat changes, always present"
+19,Ripper,SMG,3,Body Accessory,BOR_SM.part_body_a,-Reload Speed
+19,Ripper,SMG,4,Body Accessory,BOR_SM.part_body_b,+Ammo
+19,Ripper,SMG,5,Body Accessory,BOR_SM.part_body_c,+Accuracy
+19,Ripper,SMG,6,Body Accessory,BOR_SM.part_body_d,No Stat Changes
+19,Ripper,SMG,7,Barrel,BOR_SM.part_barrel_01,"Phage, 758 Damage, 72% Acc, 6.8/s FR"
+19,Ripper,SMG,8,Barrel,BOR_SM.part_barrel_02,"Infestation, 848 Damage, 79% Acc, 5.5/s FR"
+19,Ripper,SMG,9,Manufacturer Part,BOR_SM.part_shield_default,Hyperion Shield
+19,Ripper,SMG,10,Manufacturer Part,BOR_SM.part_shield_ricochet,Hyperion Ricochet Shield
+19,Ripper,SMG,11,Manufacturer Part,BOR_SM.part_shield_ammo,Hyperion Absorb Shield
+19,Ripper,SMG,12,Manufacturer Part,BOR_SM.part_shield_amp,Hyperion Amp Shield
+19,Ripper,SMG,13,Magazine,BOR_SM.part_mag_01,"2.1s Reload, 25 Shots"
+19,Ripper,SMG,14,Magazine,BOR_SM.part_mag_02,"2.7s Reload, 30 Shots"
+19,Ripper,SMG,15,Magazine,BOR_SM.part_mag_03_tor,"2.4s Reload, +Damage, -Fire Rate, 20 Shots, Torgue"
+19,Ripper,SMG,16,Magazine,BOR_SM.part_mag_04_cov,"3.1s Reload, +Damage, -Acc, 25 Shots, CoV Mag"
+19,Ripper,SMG,17,Barrel,BOR_SM.part_barrel_02_prince,"Prince Harming, 848 Damage, 79% Acc, 5.5/s FR"
+19,Ripper,SMG,20,Barrel,BOR_SM.part_barrel_01_hellfire,"Hellfire, 758 Damage, 70% Acc, 6.8/s FR"
+19,Ripper,SMG,21,Underbarrel,BOR_SM.part_underbarrel_05_Roil,Roil Underbarrel
+19,Ripper,SMG,22,Stat Modifier,BOR_SM.part_mag_ted_thrown_01,2.0s Reload
+19,Ripper,SMG,23,Stat Modifier,BOR_SM.part_mag_ted_thrown_02,2.0s Reload
+19,Ripper,SMG,24,Stat Modifier,BOR_SM.part_mag_ted_thrown_03_tor,2.0s Reload
+19,Ripper,SMG,25,Stat Modifier,BOR_SM.part_mag_ted_thrown_04_cov,3.0s Reload
+19,Ripper,SMG,26,Scope,BOR_SM.part_scope_ironsight,ADS
+19,Ripper,SMG,27,Scope,BOR_SM.part_scope_01_lens_01,ADS +Zoom
+19,Ripper,SMG,28,Scope,BOR_SM.part_scope_01_lens_02,ADS ++Zoom
+19,Ripper,SMG,29,Scope,BOR_SM.part_scope_02_lens_01,ADS +++Zoom
+19,Ripper,SMG,30,Scope,BOR_SM.part_scope_02_lens_02,ADS ++++Zoom
+19,Ripper,SMG,31,Scope Accessory,BOR_SM.part_scope_acc_s01_l01_a,+Damage
+19,Ripper,SMG,32,Scope Accessory,BOR_SM.part_scope_acc_s01_l01_b,-Reload Speed
+19,Ripper,SMG,33,Scope Accessory,BOR_SM.part_scope_acc_s02_l01_a,No Stat Changes
+19,Ripper,SMG,34,Scope Accessory,BOR_SM.part_scope_acc_s02_l01_b,+Crit Damage
+19,Ripper,SMG,35,Scope Accessory,BOR_SM.part_scope_acc_s01_l02_a,+Damage
+19,Ripper,SMG,36,Scope Accessory,BOR_SM.part_scope_acc_s01_l02_b,-Reload Speed
+19,Ripper,SMG,37,Scope Accessory,BOR_SM.part_scope_acc_s02_l02_a,No Stat Changes
+19,Ripper,SMG,38,Scope Accessory,BOR_SM.part_scope_acc_s02_l02_b,+Crit Damage
+19,Ripper,SMG,39,Grip,BOR_SM.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+19,Ripper,SMG,40,Grip,BOR_SM.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+19,Ripper,SMG,41,Grip,BOR_SM.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+19,Ripper,SMG,42,Grip,BOR_SM.part_grip_01,+Damage
+19,Ripper,SMG,43,Grip,BOR_SM.part_grip_02,+Fire Rate
+19,Ripper,SMG,44,Grip,BOR_SM.part_grip_03,-Reload Speed
+19,Ripper,SMG,45,Grip,BOR_SM.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+19,Ripper,SMG,46,Underbarrel,BOR_SM.part_underbarrel_03_gastrap,Alt Fire - Gas Trap
+19,Ripper,SMG,47,Underbarrel,BOR_SM.part_underbarrel_02_drunkrocket,Alt Fire - Ripper Rocket Launcher
+19,Ripper,SMG,48,Underbarrel,BOR_SM.part_underbarrel_06_malswitch,"Underbarrel switch, no effects"
+19,Ripper,SMG,49,Underbarrel,BOR_SM.part_underbarrel_04_atlas,Atlas Tracker Darts
+19,Ripper,SMG,50,Foregrip,BOR_SM.part_foregrip_01,+Damage
+19,Ripper,SMG,51,Foregrip,BOR_SM.part_foregrip_03,+Accuracy
+19,Ripper,SMG,52,Underbarrel,BOR_SM.part_underbarrel_01_shrapnel,Alt Fire - Shrapnel Cannon
+19,Ripper,SMG,53,Underbarrel,BOR_SM.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+19,Ripper,SMG,54,Underbarrel,BOR_SM.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+19,Ripper,SMG,55,Foregrip,BOR_SM.part_foregrip_02,+Fire Rate
+19,Ripper,SMG,57,Barrel,BOR_SM.part_barrel_01_Roil,"Roil, 937 Damage, 70% Acc, 6.8/s FR"
+19,Ripper,SMG,62,Manufacturer Part,BOR_SM.part_secondary_ammo_sg,Daedalus Shotgun Ammo
+19,Ripper,SMG,63,Manufacturer Part,BOR_SM.part_secondary_ammo_ar,Daedalus AR Ammo
+19,Ripper,SMG,64,Manufacturer Part,BOR_SM.part_secondary_ammo_ps,Daedalus Pistol Ammo
+19,Ripper,SMG,65,Manufacturer Part,BOR_SM.part_secondary_ammo_sr,Daedalus SR Ammo
+19,Ripper,SMG,66,Barrel Accessory,BOR_SM.part_barrel_01_a,+Damage
+19,Ripper,SMG,67,Barrel Accessory,BOR_SM.part_barrel_01_b,-Reload Speed
+19,Ripper,SMG,68,Barrel Accessory,BOR_SM.part_barrel_01_c,+Damage
+19,Ripper,SMG,69,Barrel Accessory,BOR_SM.part_barrel_01_d,+Accuracy
+19,Ripper,SMG,70,Barrel Accessory,BOR_SM.part_barrel_02_a,+Damage
+19,Ripper,SMG,71,Barrel Accessory,BOR_SM.part_barrel_02_b,+Accuracy
+19,Ripper,SMG,72,Barrel Accessory,BOR_SM.part_barrel_02_c,+Fire Rate
+19,Ripper,SMG,73,Barrel Accessory,BOR_SM.part_barrel_02_d,+Fire Rate
+19,Ripper,SMG,74,Manufacturer Part,BOR_SM.part_barrel_licensed_jak,Jakobs Ricochet
+19,Ripper,SMG,75,Manufacturer Part,BOR_SM.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+19,Ripper,SMG,76,Manufacturer Part,BOR_SM.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+19,Ripper,SMG,77,Manufacturer Part,BOR_SM.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+19,Ripper,SMG,78,Manufacturer Part,BOR_SM.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+19,Ripper,SMG,79,Manufacturer Part,BOR_SM.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+19,Ripper,SMG,80,Manufacturer Part,BOR_SM.part_mag_torgue_normal,Torgue Impact Gyrojets
+19,Ripper,SMG,81,Manufacturer Part,BOR_SM.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+23,Ripper,Sniper,2,Body,BOR_SR.part_body,"No stat changes, always present"
+23,Ripper,Sniper,3,Body Accessory,BOR_SR.part_body_a,-Reload Speed
+23,Ripper,Sniper,4,Body Accessory,BOR_SR.part_body_b,+Ammo
+23,Ripper,Sniper,5,Body Accessory,BOR_SR.part_body_c,No Stat Changes
+23,Ripper,Sniper,6,Body Accessory,BOR_SR.part_body_d,No Stat Changes
+23,Ripper,Sniper,7,Barrel,BOR_SR.part_barrel_01,"Nullsaint, 2249 Damage, 90% Acc, 2.3/s FR"
+23,Ripper,Sniper,8,Barrel,BOR_SR.part_barrel_02,"Daemon, 2647 Damage, 88% Acc, 1.5/s FR"
+23,Ripper,Sniper,9,Manufacturer Part,BOR_SR.part_shield_default,Hyperion Shield
+23,Ripper,Sniper,10,Manufacturer Part,BOR_SR.part_shield_ricochet,Hyperion Ricochet Shield
+23,Ripper,Sniper,11,Manufacturer Part,BOR_SR.part_shield_ammo,Hyperion Absorb Shield
+23,Ripper,Sniper,12,Manufacturer Part,BOR_SR.part_shield_amp,Hyperion Amp Shield
+23,Ripper,Sniper,13,Magazine,BOR_SR.part_mag_01,"2.9s Reload, 10 Shots"
+23,Ripper,Sniper,14,Magazine,BOR_SR.part_mag_02,"3.1s Reload, -Damage, 16 Shots"
+23,Ripper,Sniper,15,Magazine,BOR_SR.part_mag_04_cov,"4.0s Reload, -Damage, 15 Shots, CoV Mag"
+23,Ripper,Sniper,16,Manufacturer Part,BOR_SR.part_mag_torgue_normal,Torgue Impact Gyrojets
+23,Ripper,Sniper,17,Manufacturer Part,BOR_SR.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+23,Ripper,Sniper,20,Barrel,BOR_SR.part_barrel_01_stray,"Stray, 1405 x 3 Damage, 90% Acc, 2.3/s FR"
+23,Ripper,Sniper,21,Barrel,BOR_SR.part_barrel_02_vamoose,"Vamoose, 2342 Damage, 93% Acc, 9.0/s FR"
+23,Ripper,Sniper,23,Stat Modifier,BOR_SR.part_mag_ted_thrown_01,1.6s Reload
+23,Ripper,Sniper,24,Stat Modifier,BOR_SR.part_mag_ted_thrown_02,1.6s Reload
+23,Ripper,Sniper,25,Stat Modifier,BOR_SR.part_mag_ted_thrown_03_tor,1..6s Reload
+23,Ripper,Sniper,26,Scope,BOR_SR.part_scope_ironsight,ADS
+23,Ripper,Sniper,27,Scope,BOR_SR.part_scope_01_lens_01,ADS ++Zoom
+23,Ripper,Sniper,28,Scope,BOR_SR.part_scope_01_lens_02,ADS ++Zoom
+23,Ripper,Sniper,29,Scope,BOR_SR.part_scope_02_lens_01,ADS +++Zoom
+23,Ripper,Sniper,30,Scope,BOR_SR.part_scope_02_lens_02,ADS +++Zoom
+23,Ripper,Sniper,31,Scope Accessory,BOR_SR.part_scope_acc_s01_l01_a,+Damage
+23,Ripper,Sniper,32,Scope Accessory,BOR_SR.part_scope_acc_s01_l01_b,-Reload Speed
+23,Ripper,Sniper,33,Scope Accessory,BOR_SR.part_scope_acc_s02_l01_a,No Stat Changes
+23,Ripper,Sniper,34,Scope Accessory,BOR_SR.part_scope_acc_s02_l01_b,+Crit Damage
+23,Ripper,Sniper,35,Scope Accessory,BOR_SR.part_scope_acc_s01_l02_a,+Damage
+23,Ripper,Sniper,36,Scope Accessory,BOR_SR.part_scope_acc_s01_l02_b,-Reload Speed
+23,Ripper,Sniper,37,Scope Accessory,BOR_SR.part_scope_acc_s02_l02_a,No Stat Changes
+23,Ripper,Sniper,38,Scope Accessory,BOR_SR.part_scope_acc_s02_l02_b,+Crit Damage
+23,Ripper,Sniper,39,Grip,BOR_SR.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+23,Ripper,Sniper,40,Grip,BOR_SR.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+23,Ripper,Sniper,41,Grip,BOR_SR.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+23,Ripper,Sniper,42,Grip,BOR_SR.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+23,Ripper,Sniper,43,Grip,BOR_SR.part_grip_01,+Damage
+23,Ripper,Sniper,44,Grip,BOR_SR.part_grip_02,+Fire Rate
+23,Ripper,Sniper,45,Grip,BOR_SR.part_grip_03,-Reload Speed
+23,Ripper,Sniper,46,Underbarrel,BOR_SR.part_underbarrel_06_malswitch,"Underbarrel switch, no effects"
+23,Ripper,Sniper,47,Underbarrel,BOR_SR.part_underbarrel_02_seeker,Alt Fire - Seeker Missles
+23,Ripper,Sniper,48,Underbarrel,BOR_SR.part_underbarrel_01_gravtrap,Alt Fire - Gravity Trap
+23,Ripper,Sniper,49,Underbarrel,BOR_SR.part_underbarrel_04_atlas,Atlas Tracker Darts
+23,Ripper,Sniper,50,Foregrip,BOR_SR.part_foregrip_01,+Damage
+23,Ripper,Sniper,51,Foregrip,BOR_SR.part_foregrip_03,No Stat Changes
+23,Ripper,Sniper,52,Foregrip,BOR_SR.part_foregrip_02,+Fire Rate
+23,Ripper,Sniper,53,Underbarrel,BOR_SR.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+23,Ripper,Sniper,54,Underbarrel,BOR_SR.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+23,Ripper,Sniper,55,Underbarrel,BOR_SR.part_underbarrel_03_marked,Alt Fire - Target Marker
+23,Ripper,Sniper,62,Manufacturer Part,BOR_SR.part_secondary_ammo_smg,Daedalus SMG Ammo
+23,Ripper,Sniper,63,Manufacturer Part,BOR_SR.part_secondary_ammo_sg,Daedalus Shotgun Ammo
+23,Ripper,Sniper,64,Manufacturer Part,BOR_SR.part_secondary_ammo_ar,Daedalus AR Ammo
+23,Ripper,Sniper,65,Manufacturer Part,BOR_SR.part_secondary_ammo_ps,Daedalus Pistol Ammo
+23,Ripper,Sniper,66,Barrel Accessory,BOR_SR.part_barrel_01_a,+Damage
+23,Ripper,Sniper,67,Barrel Accessory,BOR_SR.part_barrel_01_b,-Reload Speed
+23,Ripper,Sniper,68,Barrel Accessory,BOR_SR.part_barrel_01_c,+Damage
+23,Ripper,Sniper,69,Barrel Accessory,BOR_SR.part_barrel_01_d,No Stat Changes
+23,Ripper,Sniper,70,Barrel Accessory,BOR_SR.part_barrel_02_a,+Damage
+23,Ripper,Sniper,71,Barrel Accessory,BOR_SR.part_barrel_02_b,+Accuracy
+23,Ripper,Sniper,72,Barrel Accessory,BOR_SR.part_barrel_02_c,+Fire Rate
+23,Ripper,Sniper,73,Barrel Accessory,BOR_SR.part_barrel_02_d,+Fire Rate
+23,Ripper,Sniper,74,Manufacturer Part,BOR_SR.part_barrel_licensed_jak,Jakobs Ricochet
+23,Ripper,Sniper,75,Manufacturer Part,BOR_SR.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+23,Ripper,Sniper,76,Manufacturer Part,BOR_SR.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+23,Ripper,Sniper,77,Manufacturer Part,BOR_SR.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+23,Ripper,Sniper,78,Manufacturer Part,BOR_SR.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+23,Ripper,Sniper,79,Manufacturer Part,BOR_SR.part_barrel_licensed_hyp,Hyperion Shield
+23,Ripper,Sniper,80,Stat Modifier,BOR_SR.part_mag_ted_thrown_04_cov,3.0s Reload
+23,Ripper,Sniper,81,Magazine,BOR_SR.part_mag_03_tor,"2.3s Reload, +Damage, -Fire Rate, 8 Shots"
+14,Tediore,Assault Rifle,1,Magazine,TED_AR.part_mag_01_ï¿½ï¿½ï¿½ï¿½,"0.7s Reload, +Fire Rate, 10 Shots"
+14,Tediore,Assault Rifle,2,Body,TED_AR.part_body,"No stat changes, always present"
+14,Tediore,Assault Rifle,3,Body Accessory,TED_AR.part_body_a,No Stat Changes
+14,Tediore,Assault Rifle,4,Body Accessory,TED_AR.part_body_b,+Ammo
+14,Tediore,Assault Rifle,5,Body Accessory,TED_AR.part_body_c,+Accuracy
+14,Tediore,Assault Rifle,6,Body Accessory,TED_AR.part_body_d,No Stat Changes
+14,Tediore,Assault Rifle,7,Barrel,TED_AR.part_barrel_01,"Assaultomatic, 982 Damage, 71% Acc, 4.5/s FR"
+14,Tediore,Assault Rifle,8,Barrel,TED_AR.part_barrel_02,"Perforator, 1153 Damage, 78% Acc, 3.7/s FR"
+14,Tediore,Assault Rifle,9,Manufacturer Part,TED_AR.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+14,Tediore,Assault Rifle,10,Manufacturer Part,TED_AR.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+14,Tediore,Assault Rifle,11,Manufacturer Part,TED_AR.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+14,Tediore,Assault Rifle,12,Manufacturer Part,TED_AR.part_barrel_licensed_ted_replicator,"Tediore Replicator, no stat changes"
+14,Tediore,Assault Rifle,13,Manufacturer Part,TED_AR.part_multi_ted_shooting,No Stat Changes
+14,Tediore,Assault Rifle,14,Manufacturer Part,TED_AR.part_multi_ted_mirv,No Stat Changes
+14,Tediore,Assault Rifle,15,Manufacturer Part,TED_AR.part_multi_ted_combo,No Stat Changes
+14,Tediore,Assault Rifle,16,Manufacturer Part,TED_AR.part_multi_ted_replicator,No Stat Changes
+14,Tediore,Assault Rifle,17,Manufacturer Part,TED_AR.part_shield_default,Hyperion Shield
+14,Tediore,Assault Rifle,18,Manufacturer Part,TED_AR.part_shield_ricochet,Hyperion Ricochet Shield
+14,Tediore,Assault Rifle,19,Manufacturer Part,TED_AR.part_shield_ammo,Hyperion Absorb Shield
+14,Tediore,Assault Rifle,20,Manufacturer Part,TED_AR.part_shield_amp,Hyperion Amp Shield
+14,Tediore,Assault Rifle,21,Scope,TED_AR.part_scope_02_lens_02,ADS +++Zoom
+14,Tediore,Assault Rifle,22,Scope,TED_AR.part_scope_02_lens_01,ADS ++Zoom
+14,Tediore,Assault Rifle,23,Scope,TED_AR.part_scope_01_lens_02,ADS
+14,Tediore,Assault Rifle,24,Scope,TED_AR.part_scope_01_lens_01,ADS +Zoom
+14,Tediore,Assault Rifle,25,Scope,TED_AR.part_scope_ironsight,ADS
+14,Tediore,Assault Rifle,26,Scope Accessory,TED_AR.part_scope_acc_S01_L01_a,+Damage
+14,Tediore,Assault Rifle,27,Scope Accessory,TED_AR.part_scope_acc_S01_L01_b,-Reload Speed
+14,Tediore,Assault Rifle,28,Scope Accessory,TED_AR.part_scope_acc_S02_L01_a,No Stat Changes
+14,Tediore,Assault Rifle,29,Scope Accessory,TED_AR.part_scope_acc_S02_L01_b,+Crit Damage
+14,Tediore,Assault Rifle,30,Scope Accessory,TED_AR.part_scope_acc_S01_L02_a,+Damage
+14,Tediore,Assault Rifle,31,Scope Accessory,TED_AR.part_scope_acc_S01_L02_b,-Reload Speed
+14,Tediore,Assault Rifle,32,Scope Accessory,TED_AR.part_scope_acc_S02_L02_a,No Stat Changes
+14,Tediore,Assault Rifle,33,Scope Accessory,TED_AR.part_scope_acc_S02_L02_b,+Crit Damage
+14,Tediore,Assault Rifle,34,Barrel,TED_AR.part_barrel_02_Chuck,"Chuck, 982 Damage, 77% Acc, 3.4/s Reload"
+14,Tediore,Assault Rifle,39,Barrel,TED_AR.part_barrel_01_DividedFocus,"Divided Focus, 1227 Damage, 72% Acc, 4.0/s FR"
+14,Tediore,Assault Rifle,40,Manufacturer Part,TED_AR.part_barrel_licensed_ted_replicator_multi,"Tediore Replicator, no stat changes"
+14,Tediore,Assault Rifle,41,Grip,TED_AR.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+14,Tediore,Assault Rifle,42,Grip,TED_AR.part_grip_05b_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+14,Tediore,Assault Rifle,43,Grip,TED_AR.part_grip_05c_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+14,Tediore,Assault Rifle,44,Grip,TED_AR.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+14,Tediore,Assault Rifle,45,Grip,TED_AR.part_grip_01,+Damage
+14,Tediore,Assault Rifle,46,Grip,TED_AR.part_grip_02,+Fire Rate
+14,Tediore,Assault Rifle,47,Grip,TED_AR.part_grip_03,+Ammo
+14,Tediore,Assault Rifle,48,Grip,TED_AR.part_grip_05a_ted_legs_mirv,"Tediore reload modifier: Legs, no stat changes"
+14,Tediore,Assault Rifle,49,Manufacturer Part,TED_AR.part_mag_torgue_sticky_murder,Torgue Sticky Gyrojets - Murmur
+14,Tediore,Assault Rifle,50,Manufacturer Part,TED_AR.part_mag_torgue_normal_murder,Torgue Impact Gyrojets - Murmur
+14,Tediore,Assault Rifle,51,Barrel Accessory,TED_AR.part_barrel_01_a,+Damage
+14,Tediore,Assault Rifle,52,Barrel Accessory,TED_AR.part_barrel_01_b,+Ammo
+14,Tediore,Assault Rifle,53,Barrel Accessory,TED_AR.part_barrel_01_c,+Ammo
+14,Tediore,Assault Rifle,54,Barrel Accessory,TED_AR.part_barrel_01_d,+Accuracy
+14,Tediore,Assault Rifle,55,Barrel Accessory,TED_AR.part_barrel_02_a,+Damage
+14,Tediore,Assault Rifle,56,Barrel Accessory,TED_AR.part_barrel_02_b,+Accuracy
+14,Tediore,Assault Rifle,57,Barrel Accessory,TED_AR.part_barrel_02_c,+Fire Rate
+14,Tediore,Assault Rifle,58,Barrel Accessory,TED_AR.part_barrel_02_d,+Fire Rate
+14,Tediore,Assault Rifle,59,Manufacturer Part,TED_AR.part_barrel_licensed_jak,Jakobs Ricochet
+14,Tediore,Assault Rifle,60,Manufacturer Part,TED_AR.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+14,Tediore,Assault Rifle,61,Manufacturer Part,TED_AR.part_barrel_licensed_multi,No Stat Changes
+14,Tediore,Assault Rifle,62,Underbarrel,TED_AR.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+14,Tediore,Assault Rifle,63,Underbarrel,TED_AR.part_underbarrel_04_atlas,Atlas Tracker Darts
+14,Tediore,Assault Rifle,64,Underbarrel,TED_AR.part_underbarrel_02_comboorb,Alt Fire - COMBO
+14,Tediore,Assault Rifle,65,Underbarrel,TED_AR.part_underbarrel_03_shotgun,Alt Fire - Shotgun
+14,Tediore,Assault Rifle,66,Foregrip,TED_AR.part_foregrip_01,+Damage
+14,Tediore,Assault Rifle,67,Foregrip,TED_AR.part_foregrip_03,+Accuracy
+14,Tediore,Assault Rifle,68,Underbarrel,TED_AR.part_underbarrel_01_buffdrone,Alt Fire - Support Drone
+14,Tediore,Assault Rifle,69,Underbarrel,TED_AR.part_underbarrel_06_malswitch,"Underbarrel switch, no effects"
+14,Tediore,Assault Rifle,70,Underbarrel,TED_AR.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+14,Tediore,Assault Rifle,71,Foregrip,TED_AR.part_foregrip_02,+Fire Rate
+14,Tediore,Assault Rifle,72,Manufacturer Part,TED_AR.part_secondary_ammo_sm,Daedalus SMG Ammo
+14,Tediore,Assault Rifle,73,Manufacturer Part,TED_AR.part_secondary_ammo_sg,Daedalus Shotgun Ammo
+14,Tediore,Assault Rifle,74,Manufacturer Part,TED_AR.part_secondary_ammo_ps,Daedalus Pistol Ammo
+14,Tediore,Assault Rifle,75,Manufacturer Part,TED_AR.part_secondary_ammo_sr,Daedalus SR Ammo
+14,Tediore,Assault Rifle,76,Barrel,TED_AR.part_barrel_01_murder,"Murmur, 1338 Damage, 72% Acc, 3.0/s FR"
+14,Tediore,Assault Rifle,82,Magazine,TED_AR.part_mag_01,"2.2 Reload, 22 Shots"
+14,Tediore,Assault Rifle,83,Magazine,TED_AR.part_mag_02,"2.6s Reload, 26 Shots"
+14,Tediore,Assault Rifle,84,Magazine,TED_AR.part_mag_03_tor,"2.8s Reload, +Damage, -Fire Rate, 18 Shots, Torgue"
+14,Tediore,Assault Rifle,85,Magazine,TED_AR.part_mag_04_cov,"3.6s Reload, +Damage, -Acc, 31 Shots, CoV Mag"
+14,Tediore,Assault Rifle,86,Magazine,TED_AR.part_mag_05_borg,"2.8s Reload, +Damage, +Fire Rate, 32 Shots, Ripper Mag"
+14,Tediore,Assault Rifle,87,Manufacturer Part,TED_AR.part_mag_torgue_normal,Torgue Impact Gyrojets
+14,Tediore,Assault Rifle,88,Manufacturer Part,TED_AR.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+5,Tediore,Pistol,2,Body,TED_PS.part_body,"No stat changes, always present"
+5,Tediore,Pistol,3,Body Accessory,TED_PS.part_body_a,No Stat Changes
+5,Tediore,Pistol,4,Body Accessory,TED_PS.part_body_b,+Ammo
+5,Tediore,Pistol,5,Body Accessory,TED_PS.part_body_c,+Accuracy
+5,Tediore,Pistol,6,Body Accessory,TED_PS.part_body_d,No Stat Changes
+5,Tediore,Pistol,7,Barrel,TED_PS.part_barrel_01,"Pocketshot, 758 Damage, 52% Acc, 6.0/s FR"
+5,Tediore,Pistol,8,Barrel,TED_PS.part_barrel_02,"Widget, 892 Damage, 67% Acc, 4.8/s FR"
+5,Tediore,Pistol,9,Manufacturer Part,TED_PS.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+5,Tediore,Pistol,10,Manufacturer Part,TED_PS.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+5,Tediore,Pistol,11,Manufacturer Part,TED_PS.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+5,Tediore,Pistol,12,Manufacturer Part,TED_PS.part_barrel_licensed_ted_replicator,"Tediore Replicator, no stat changes"
+5,Tediore,Pistol,14,Manufacturer Part,TED_PS.part_multi_ted_shooting,No Stat Changes
+5,Tediore,Pistol,15,Manufacturer Part,TED_PS.part_multi_ted_mirv,No Stat Changes
+5,Tediore,Pistol,16,Manufacturer Part,TED_PS.part_multi_ted_combo,No Stat Changes
+5,Tediore,Pistol,17,Manufacturer Part,TED_PS.part_multi_ted_replicator,No Stat Changes
+5,Tediore,Pistol,18,Manufacturer Part,TED_PS.part_shield_default,Hyperion Shield
+5,Tediore,Pistol,19,Manufacturer Part,TED_PS.part_shield_ricochet,Hyperion Ricochet Shield
+5,Tediore,Pistol,20,Manufacturer Part,TED_PS.part_shield_ammo,Hyperion Absorb Shield
+5,Tediore,Pistol,21,Manufacturer Part,TED_PS.part_shield_amp,Hyperion Amp Shield
+5,Tediore,Pistol,22,Magazine,TED_PS.part_mag_01,"1.4s Reload, 15 Shots"
+5,Tediore,Pistol,23,Magazine,TED_PS.part_mag_02,"1.8s Reload, 20 Shots"
+5,Tediore,Pistol,24,Magazine,TED_PS.part_mag_03_tor,"1.6s Reload, +Damage, +Acc, -Fire Rate, 13 Shots, Torgue"
+5,Tediore,Pistol,25,Magazine,TED_PS.part_mag_04_cov,"3.0s Reload, +Damage, -Acc, 27 Shots, CoV Mag"
+5,Tediore,Pistol,26,Magazine,TED_PS.part_mag_05_borg,"2.5s Reload, +Damage, +Fire Rate, 26 Shots, Ripper Mag"
+5,Tediore,Pistol,27,Manufacturer Part,TED_PS.part_mag_torgue_normal,Torgue Impact Gyrojets
+5,Tediore,Pistol,28,Manufacturer Part,TED_PS.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+5,Tediore,Pistol,29,Scope,TED_PS.part_scope_ironsight,ADS
+5,Tediore,Pistol,30,Scope,TED_PS.part_scope_01_lens_01,ADS ++Zoom
+5,Tediore,Pistol,31,Scope,TED_PS.part_scope_01_lens_02,ADS +++Zoom
+5,Tediore,Pistol,32,Scope,TED_PS.part_scope_02_lens_01,ADS +Zoom
+5,Tediore,Pistol,33,Scope,TED_PS.part_scope_02_lens_02,ADS +Zoom
+5,Tediore,Pistol,34,Scope Accessory,TED_PS.part_scope_acc_s01_l01_a,+Damage
+5,Tediore,Pistol,35,Scope Accessory,TED_PS.part_scope_acc_s01_l01_b,-Reload Speed
+5,Tediore,Pistol,36,Scope Accessory,TED_PS.part_scope_acc_s02_l01_a,No Stat Changes
+5,Tediore,Pistol,37,Scope Accessory,TED_PS.part_scope_acc_s02_l01_b,+Crit Damage
+5,Tediore,Pistol,38,Scope Accessory,TED_PS.part_scope_acc_s01_l02_a,+Damage
+5,Tediore,Pistol,39,Scope Accessory,TED_PS.part_scope_acc_s01_l02_b,-Reload Speed
+5,Tediore,Pistol,40,Scope Accessory,TED_PS.part_scope_acc_s02_l02_a,No Stat Changes
+5,Tediore,Pistol,41,Scope Accessory,TED_PS.part_scope_acc_s02_l02_b,+Crit Damage
+5,Tediore,Pistol,42,Grip,TED_PS.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+5,Tediore,Pistol,43,Grip,TED_PS.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+5,Tediore,Pistol,44,Grip,TED_PS.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+5,Tediore,Pistol,45,Grip,TED_PS.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+5,Tediore,Pistol,46,Grip,TED_PS.part_grip_01,+Damage
+5,Tediore,Pistol,47,Grip,TED_PS.part_grip_02,+Fire Rate
+5,Tediore,Pistol,48,Grip,TED_PS.part_grip_03,+Ammo
+5,Tediore,Pistol,49,Underbarrel,TED_PS.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+5,Tediore,Pistol,50,Underbarrel,TED_PS.part_underbarrel_03_shotgun,Alt Fire - Micro Shotgun
+5,Tediore,Pistol,51,Underbarrel,TED_PS.part_underbarrel_06_malswitch,"Underbarrel switch, no effects"
+5,Tediore,Pistol,52,Underbarrel,TED_PS.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+5,Tediore,Pistol,53,Foregrip,TED_PS.part_foregrip_01,+Damage
+5,Tediore,Pistol,54,Foregrip,TED_PS.part_foregrip_03,+Accuracy
+5,Tediore,Pistol,55,Manufacturer Part,TED_PS.part_barrel_licensed_ted_replicator_multi,"Tediore Replicator, no stat changes"
+5,Tediore,Pistol,56,Grip,TED_PS.part_grip_05c_ted_jav_atlien,Budget Deity
+5,Tediore,Pistol,57,Grip,TED_PS.part_grip_05b_ted_homing_atlien,Budget Deity
+5,Tediore,Pistol,58,Manufacturer Part,TED_PS.part_multi_ted_combo_atlien,Budget Deity
+5,Tediore,Pistol,59,Barrel,TED_PS.part_barrel_02_atlien,"Budget Deity, 892 Damage, 67% Acc, 4.8/s FR"
+5,Tediore,Pistol,61,Manufacturer Part,TED_PS.part_secondary_ammo_sm,Daedalus SMG Ammo
+5,Tediore,Pistol,62,Manufacturer Part,TED_PS.part_secondary_ammo_sg,Daedalus Shotgun Ammo
+5,Tediore,Pistol,63,Manufacturer Part,TED_PS.part_secondary_ammo_ar,Daedalus AR Ammo
+5,Tediore,Pistol,64,Manufacturer Part,TED_PS.part_secondary_ammo_sr,Daedalus SR Ammo
+5,Tediore,Pistol,65,Barrel,TED_PS.part_barrel_02_rubysgrasp,"Ruby's Grasp, 736 Damage, 73% Acc, 7.2/s FR"
+5,Tediore,Pistol,67,Barrel,TED_PS.part_barrel_01_sideshow,"Sideshow, 758 Damage, 88% Acc, 3.0/s FR"
+5,Tediore,Pistol,68,Barrel Accessory,TED_PS.part_barrel_01_a,+Damage
+5,Tediore,Pistol,69,Barrel Accessory,TED_PS.part_barrel_01_b,+Ammo
+5,Tediore,Pistol,70,Barrel Accessory,TED_PS.part_barrel_01_c,+Ammo
+5,Tediore,Pistol,71,Barrel Accessory,TED_PS.part_barrel_01_d,+Accuracy
+5,Tediore,Pistol,72,Barrel Accessory,TED_PS.part_barrel_02_a,+Damage
+5,Tediore,Pistol,73,Barrel Accessory,TED_PS.part_barrel_02_b,+Accuracy
+5,Tediore,Pistol,74,Barrel Accessory,TED_PS.part_barrel_02_c,+Fire Rate
+5,Tediore,Pistol,75,Barrel Accessory,TED_PS.part_barrel_02_d,+Fire Rate
+5,Tediore,Pistol,76,Manufacturer Part,TED_PS.part_barrel_licensed_jak,Jakobs Ricochet
+5,Tediore,Pistol,77,Manufacturer Part,TED_PS.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+5,Tediore,Pistol,78,Manufacturer Part,TED_PS.part_barrel_licensed_multi,No Stat Changes
+5,Tediore,Pistol,79,Underbarrel,TED_PS.part_underbarrel_02_rockets,Alt Fire - Zip Rockets
+5,Tediore,Pistol,80,Underbarrel,TED_PS.part_underbarrel_01_drone,Alt Fire - Attack Drone
+5,Tediore,Pistol,81,Underbarrel,TED_PS.part_underbarrel_04_atlas,Atlas Tracker Darts
+5,Tediore,Pistol,82,Foregrip,TED_PS.part_foregrip_02,+Fire Rate
+5,Tediore,Pistol,83,Grip,TED_PS.part_grip_05a_ted_legs_mirv,"Tediore reload modifier: Legs, no stat changes"
+5,Tediore,Pistol,84,Manufacturer Part,TED_PS.part_mag_torgue_normal_Inscriber,Inscriber-Torgue Impact Gyrojets
+5,Tediore,Pistol,85,Barrel,TED_PS.part_barrel_02_Inscriber,"Inscriber, 2342 Damage, 73% Acc, 2.5/s FR"
+11,Tediore,Shotgun,2,Body,TED_SG.part_body,"No stat changes, always present"
+11,Tediore,Shotgun,3,Body Accessory,TED_SG.part_body_a,No Stat Changes
+11,Tediore,Shotgun,4,Body Accessory,TED_SG.part_body_b,+Ammo
+11,Tediore,Shotgun,5,Body Accessory,TED_SG.part_body_c,+Accuracy
+11,Tediore,Shotgun,6,Body Accessory,TED_SG.part_body_d,No Stat Changes
+11,Tediore,Shotgun,7,Barrel,TED_SG.part_barrel_01,"EZ-Blast, 460 x 8 Damage, 61% Acc, 1.3/s FR"
+11,Tediore,Shotgun,8,Barrel,TED_SG.part_barrel_02,"Omnibore, 322 x 10 Damage, 56% Acc, 1.5/s FR"
+11,Tediore,Shotgun,9,Manufacturer Part,TED_SG.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+11,Tediore,Shotgun,10,Manufacturer Part,TED_SG.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+11,Tediore,Shotgun,11,Manufacturer Part,TED_SG.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+11,Tediore,Shotgun,12,Manufacturer Part,TED_SG.part_barrel_licensed_ted_replicator,"Tediore Replicator, no stat changes"
+11,Tediore,Shotgun,13,Manufacturer Part,TED_SG.part_multi_ted_shooting,No Stat Changes
+11,Tediore,Shotgun,14,Manufacturer Part,TED_SG.part_multi_ted_mirv,No Stat Changes
+11,Tediore,Shotgun,15,Manufacturer Part,TED_SG.part_multi_ted_combo,No Stat Changes
+11,Tediore,Shotgun,16,Manufacturer Part,TED_SG.part_multi_ted_replicator,No Stat Changes
+11,Tediore,Shotgun,17,Manufacturer Part,TED_SG.part_shield_default,Hyperion Shield
+11,Tediore,Shotgun,18,Manufacturer Part,TED_SG.part_shield_ricochet,Hyperion Ricochet Shield
+11,Tediore,Shotgun,19,Manufacturer Part,TED_SG.part_shield_ammo,Hyperion Absorb Shield
+11,Tediore,Shotgun,20,Manufacturer Part,TED_SG.part_shield_amp,Hyperion Amp Shield
+11,Tediore,Shotgun,21,Magazine,TED_SG.part_mag_05_borg,"2.6s Reload, +Fire Rate, 13 Shots, Ripper Mag"
+11,Tediore,Shotgun,22,Magazine,TED_SG.part_mag_04_cov,"3.0s Reload, +Damage, -Acc, 9 Shots, CoV Mag"
+11,Tediore,Shotgun,23,Magazine,TED_SG.part_mag_01,"2.0s Reload, +Damage, 9 Shots"
+11,Tediore,Shotgun,24,Magazine,TED_SG.part_mag_02,"2.0s Reload, -Damage, 11 Shots"
+11,Tediore,Shotgun,25,Magazine,TED_SG.part_mag_03_tor,"2.0s Reload, +Damage, -Fire Rate, 7 Shots, Torgue"
+11,Tediore,Shotgun,26,Manufacturer Part,TED_SG.part_mag_torgue_normal,Torgue Impact Gyrojets
+11,Tediore,Shotgun,27,Manufacturer Part,TED_SG.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+11,Tediore,Shotgun,28,Scope,TED_SG.part_scope_ironsight,ADS
+11,Tediore,Shotgun,29,Scope,TED_SG.part_scope_01_lens_01,ADS +++Zoom
+11,Tediore,Shotgun,30,Scope,TED_SG.part_scope_01_lens_02,ADS ++Zoom
+11,Tediore,Shotgun,31,Scope,TED_SG.part_scope_02_lens_01,ADS +Zoom
+11,Tediore,Shotgun,32,Scope,TED_SG.part_scope_02_lens_02,ADS ++Zoom
+11,Tediore,Shotgun,33,Scope Accessory,TED_SG.part_scope_acc_s01_l01_a,+Damage
+11,Tediore,Shotgun,34,Scope Accessory,TED_SG.part_scope_acc_s01_l01_b,-Reload Speed
+11,Tediore,Shotgun,35,Scope Accessory,TED_SG.part_scope_acc_s02_l01_a,No Stat Changes
+11,Tediore,Shotgun,36,Scope Accessory,TED_SG.part_scope_acc_s02_l01_b,+Crit Damage
+11,Tediore,Shotgun,37,Scope Accessory,TED_SG.part_scope_acc_s01_l02_a,+Damage
+11,Tediore,Shotgun,38,Scope Accessory,TED_SG.part_scope_acc_s01_l02_b,-Reload Speed
+11,Tediore,Shotgun,39,Scope Accessory,TED_SG.part_scope_acc_s02_l02_a,No Stat Changes
+11,Tediore,Shotgun,40,Scope Accessory,TED_SG.part_scope_acc_s02_l02_b,+Crit Damage
+11,Tediore,Shotgun,41,Grip,TED_SG.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+11,Tediore,Shotgun,42,Grip,TED_SG.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+11,Tediore,Shotgun,43,Grip,TED_SG.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+11,Tediore,Shotgun,44,Grip,TED_SG.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+11,Tediore,Shotgun,45,Grip,TED_SG.part_grip_01,+Damage
+11,Tediore,Shotgun,46,Grip,TED_SG.part_grip_02,+Fire Rate
+11,Tediore,Shotgun,47,Grip,TED_SG.part_grip_03,+Ammo
+11,Tediore,Shotgun,48,Underbarrel,TED_SG.part_underbarrel_04_atlas,Atlas Tracker Darts
+11,Tediore,Shotgun,49,Underbarrel,TED_SG.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+11,Tediore,Shotgun,50,Underbarrel,TED_SG.part_underbarrel_03_deployable_shield,Alt Fire - Deployable Barrier
+11,Tediore,Shotgun,51,Underbarrel,TED_SG.part_underbarrel_02_stickymine,Alt Fire - Proximity Mines
+11,Tediore,Shotgun,52,Foregrip,TED_SG.part_foregrip_01,+Damage
+11,Tediore,Shotgun,53,Foregrip,TED_SG.part_foregrip_03,+Accuracy
+11,Tediore,Shotgun,54,Foregrip,TED_SG.part_foregrip_02,+Fire Rate
+11,Tediore,Shotgun,55,Underbarrel,TED_SG.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+11,Tediore,Shotgun,56,Underbarrel,TED_SG.part_underbarrel_06_malswitch,"Underbarrel switch, no effects"
+11,Tediore,Shotgun,57,Underbarrel,TED_SG.part_underbarrel_01_autoturret,Alt Fire - Digital Backup
+11,Tediore,Shotgun,58,Manufacturer Part,TED_SG.part_secondary_ammo_sm,Daedalus SMG Ammo
+11,Tediore,Shotgun,59,Manufacturer Part,TED_SG.part_secondary_ammo_ps,Daedalus Pistol Ammo
+11,Tediore,Shotgun,60,Manufacturer Part,TED_SG.part_secondary_ammo_ar,Daedalus AR Ammo
+11,Tediore,Shotgun,61,Manufacturer Part,TED_SG.part_secondary_ammo_sr,Daedalus SR Ammo
+11,Tediore,Shotgun,62,Barrel Accessory,TED_SG.part_barrel_01_a,+Damage
+11,Tediore,Shotgun,63,Barrel Accessory,TED_SG.part_barrel_01_b,+Ammo
+11,Tediore,Shotgun,64,Barrel Accessory,TED_SG.part_barrel_01_c,+Ammo
+11,Tediore,Shotgun,65,Barrel Accessory,TED_SG.part_barrel_01_d,+Accuracy
+11,Tediore,Shotgun,66,Barrel Accessory,TED_SG.part_barrel_02_a,+Damage
+11,Tediore,Shotgun,67,Barrel Accessory,TED_SG.part_barrel_02_b,+Accuracy
+11,Tediore,Shotgun,68,Barrel Accessory,TED_SG.part_barrel_02_c,+Fire Rate
+11,Tediore,Shotgun,69,Barrel Accessory,TED_SG.part_barrel_02_d,+Fire Rate
+11,Tediore,Shotgun,70,Manufacturer Part,TED_SG.part_barrel_licensed_jak,Jakobs Ricochet
+11,Tediore,Shotgun,71,Manufacturer Part,TED_SG.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+11,Tediore,Shotgun,72,Manufacturer Part,TED_SG.part_barrel_licensed_multi,No Stat Changes
+11,Tediore,Shotgun,73,Grip,TED_SG.part_grip_05a_ted_legs_mirv,"Tediore reload modifier: Legs, no stat changes"
+11,Tediore,Shotgun,74,Manufacturer Part,TED_SG.part_barrel_licensed_ted_replicator_multi,No Stat Changes
+11,Tediore,Shotgun,75,Barrel,TED_SG.part_barrel_01_anarchy,"Anarchy, 335 x 12 Damage, 61% Acc, 1.6/s FR, 2 Shot"
+11,Tediore,Shotgun,77,Barrel,TED_SG.part_barrel_01_commbd,"Forsaken Chaos, 480 x 8 Damage, 61% Acc, 1.3/s FR, 2 Shot"
+11,Tediore,Shotgun,79,Underbarrel,TED_SG.part_underbarrel_01_heavyturret,Husky Auto Turret
+17,Torgue,Assault Rifle,3,Body Accessory,TOR_AR.part_body_a,-Reload Speed
+17,Torgue,Assault Rifle,4,Body Accessory,TOR_AR.part_body_b,+Damage
+17,Torgue,Assault Rifle,5,Body Accessory,TOR_AR.part_body_c,+Accuracy
+17,Torgue,Assault Rifle,6,Body Accessory,TOR_AR.part_body_d,No Stat Changes
+17,Torgue,Assault Rifle,7,Barrel,TOR_AR.part_barrel_01,"Handle, 1160 Damage, 75% Acc, 3.5/s FR"
+17,Torgue,Assault Rifle,8,Barrel,TOR_AR.part_barrel_02,"Truncheon, 1517 Damage, 76% Acc, 2.5/s FR"
+17,Torgue,Assault Rifle,9,Manufacturer Part,TOR_AR.part_shield_default,Hyperion Shield
+17,Torgue,Assault Rifle,10,Manufacturer Part,TOR_AR.part_shield_ricochet,Hyperion Ricochet Shield
+17,Torgue,Assault Rifle,11,Manufacturer Part,TOR_AR.part_shield_ammo,Hyperion Absorb Shield
+17,Torgue,Assault Rifle,12,Manufacturer Part,TOR_AR.part_shield_amp,Hyperion Amp Shield
+17,Torgue,Assault Rifle,13,Magazine,TOR_AR.part_mag_01,"2.0s Reload, 14 Shots"
+17,Torgue,Assault Rifle,14,Magazine,TOR_AR.part_mag_02,"2.8s Reload, 20 Shots"
+17,Torgue,Assault Rifle,15,Magazine,TOR_AR.part_mag_04_cov,"4.0s Reload, +Damage, -Acc, 25 Shots, CoV Mag"
+17,Torgue,Assault Rifle,16,Magazine,TOR_AR.part_mag_05_borg,"2.4s Reload, -Damage, +Fire Rate, 24 Shots, Ripper Mag"
+17,Torgue,Assault Rifle,17,Stat Modifier,TOR_AR.part_mag_ted_thrown_01,2.0s Reload
+17,Torgue,Assault Rifle,18,Stat Modifier,TOR_AR.part_mag_ted_thrown_02,2.0s Reload
+17,Torgue,Assault Rifle,19,Stat Modifier,TOR_AR.part_mag_ted_thrown_04_cov,3.0s Reload
+17,Torgue,Assault Rifle,20,Stat Modifier,TOR_AR.part_mag_ted_thrown_05_bor,3.0s Reload
+17,Torgue,Assault Rifle,21,Scope,TOR_AR.part_scope_ironsight,ADS
+17,Torgue,Assault Rifle,22,Scope,TOR_AR.part_scope_01_lens_01,ADS
+17,Torgue,Assault Rifle,23,Scope,TOR_AR.part_scope_01_lens_02,ADS +Zoom
+17,Torgue,Assault Rifle,24,Scope,TOR_AR.part_scope_02_lens_01,ADS ++Zoom
+17,Torgue,Assault Rifle,25,Scope,TOR_AR.part_scope_02_lens_02,ADS ++Zoom
+17,Torgue,Assault Rifle,26,Scope Accessory,TOR_AR.part_scope_acc_s01_l01_a,+Damage
+17,Torgue,Assault Rifle,27,Scope Accessory,TOR_AR.part_scope_acc_s01_l01_b,-Reload Speed
+17,Torgue,Assault Rifle,28,Scope Accessory,TOR_AR.part_scope_acc_s02_l01_a,No Stat Changes
+17,Torgue,Assault Rifle,29,Scope Accessory,TOR_AR.part_scope_acc_s02_l01_b,+Blast Radius
+17,Torgue,Assault Rifle,30,Scope Accessory,TOR_AR.part_scope_acc_s01_l02_a,+Damage
+17,Torgue,Assault Rifle,31,Scope Accessory,TOR_AR.part_scope_acc_s01_l02_b,-Reload Speed
+17,Torgue,Assault Rifle,32,Scope Accessory,TOR_AR.part_scope_acc_s02_l02_a,No Stat Changes
+17,Torgue,Assault Rifle,33,Scope Accessory,TOR_AR.part_scope_acc_s02_l02_b,+Blast Radius
+17,Torgue,Assault Rifle,34,Grip,TOR_AR.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+17,Torgue,Assault Rifle,35,Grip,TOR_AR.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+17,Torgue,Assault Rifle,36,Grip,TOR_AR.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+17,Torgue,Assault Rifle,37,Grip,TOR_AR.part_grip_01,+Damage
+17,Torgue,Assault Rifle,38,Grip,TOR_AR.part_grip_02,+Fire Rate
+17,Torgue,Assault Rifle,39,Grip,TOR_AR.part_grip_03,-Reload Speed
+17,Torgue,Assault Rifle,40,Grip,TOR_AR.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+17,Torgue,Assault Rifle,41,Underbarrel,TOR_AR.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+17,Torgue,Assault Rifle,42,Underbarrel,TOR_AR.part_underbarrel_06_malswitch,"Underbarrel switch, no effects"
+17,Torgue,Assault Rifle,43,Underbarrel,TOR_AR.part_underbarrel_01_mirvgrenade,Alt Fire - MIRV Grenade Launcher
+17,Torgue,Assault Rifle,44,Underbarrel,TOR_AR.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+17,Torgue,Assault Rifle,45,Underbarrel,TOR_AR.part_underbarrel_03_airstrike,Alt Fire - Airstrike
+17,Torgue,Assault Rifle,46,Foregrip,TOR_AR.part_foregrip_02,+Fire Rate
+17,Torgue,Assault Rifle,47,Foregrip,TOR_AR.part_foregrip_03,+Blast Radius
+17,Torgue,Assault Rifle,48,Manufacturer Part,TOR_AR.part_secondary_ammo_smg,Daedalus SMG Ammo
+17,Torgue,Assault Rifle,49,Manufacturer Part,TOR_AR.part_secondary_ammo_sg,Daedalus Shotgun Ammo
+17,Torgue,Assault Rifle,50,Manufacturer Part,TOR_AR.part_secondary_ammo_ps,Daedalus Pistol Ammo
+17,Torgue,Assault Rifle,51,Manufacturer Part,TOR_AR.part_secondary_ammo_sr,Daedalus SR Ammo
+17,Torgue,Assault Rifle,52,Body,TOR_AR.part_body,"No stat changes, always present"
+17,Torgue,Assault Rifle,54,Barrel,TOR_AR.part_barrel_02_bugbear,"Bugbear, 1124 Damage, 78% Acc, 5.5/s FR"
+17,Torgue,Assault Rifle,55,Barrel,TOR_AR.part_barrel_coldshoulder,"Cold Shoulder, 1285 Damage, 78% Acc, 5.5/s FR"
+17,Torgue,Assault Rifle,57,Foregrip,TOR_AR.part_foregrip_01_pt,+Damage
+17,Torgue,Assault Rifle,58,Barrel Accessory,TOR_AR.part_barrel_01_a,+Damage
+17,Torgue,Assault Rifle,59,Barrel Accessory,TOR_AR.part_barrel_01_b,+Damage
+17,Torgue,Assault Rifle,60,Barrel Accessory,TOR_AR.part_barrel_01_c,+Blast Radius
+17,Torgue,Assault Rifle,61,Barrel Accessory,TOR_AR.part_barrel_01_d,+Accuracy
+17,Torgue,Assault Rifle,62,Barrel Accessory,TOR_AR.part_barrel_02_a,+Damage
+17,Torgue,Assault Rifle,63,Barrel Accessory,TOR_AR.part_barrel_02_b,+Accuracy
+17,Torgue,Assault Rifle,64,Barrel Accessory,TOR_AR.part_barrel_02_c,+Fire Rate
+17,Torgue,Assault Rifle,65,Barrel Accessory,TOR_AR.part_barrel_02_d,+Fire Rate
+17,Torgue,Assault Rifle,66,Manufacturer Part,TOR_AR.part_barrel_licensed_jak,Jakobs Ricochet
+17,Torgue,Assault Rifle,67,Manufacturer Part,TOR_AR.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+17,Torgue,Assault Rifle,68,Manufacturer Part,TOR_AR.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+17,Torgue,Assault Rifle,69,Manufacturer Part,TOR_AR.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+17,Torgue,Assault Rifle,70,Manufacturer Part,TOR_AR.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+17,Torgue,Assault Rifle,71,Manufacturer Part,TOR_AR.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+17,Torgue,Assault Rifle,72,Underbarrel,TOR_AR.part_underbarrel_02_shotgun,Alt Fire - Sticky Shotgun
+17,Torgue,Assault Rifle,73,Underbarrel,TOR_AR.part_underbarrel_04_atlas,Atlas Tracker Darts
+17,Torgue,Assault Rifle,74,Foregrip,TOR_AR.part_foregrip_01,+Damage
+17,Torgue,Assault Rifle,75,Foregrip,TOR_AR.part_foregrip_03_pt,+Blast Radius
+17,Torgue,Assault Rifle,76,Foregrip,TOR_AR.part_foregrip_02_pt,+Fire Rate
+17,Torgue,Assault Rifle,77,Barrel,TOR_AR.part_barrel_potatothrower,"Potato Thrower IV, 580 Damage, 75% Acc, 5.5/s FR"
+6,Torgue,Pistol,2,Body,TOR_PS.part_body,"No stat changes, always present"
+6,Torgue,Pistol,3,Body Accessory,TOR_PS.part_body_a,-Reload Speed
+6,Torgue,Pistol,4,Body Accessory,TOR_PS.part_body_b,+Damage
+6,Torgue,Pistol,5,Body Accessory,TOR_PS.part_body_c,+Accuracy
+6,Torgue,Pistol,6,Body Accessory,TOR_PS.part_body_d,No Stat Changes
+6,Torgue,Pistol,7,Barrel,TOR_PS.part_barrel_01,"Kitty, 1785 DMG, 64% Acc, 2.5/s FR"
+6,Torgue,Pistol,8,Barrel,TOR_PS.part_barrel_02,"Lotus, 2231 DMG, 65% Acc, 1.8/s FR"
+6,Torgue,Pistol,9,Manufacturer Part,TOR_PS.part_shield_default,Hyperion Shield
+6,Torgue,Pistol,10,Manufacturer Part,TOR_PS.part_shield_ricochet,Hyperion Ricochet Shield
+6,Torgue,Pistol,11,Manufacturer Part,TOR_PS.part_shield_ammo,Hyperion Absorb Shield
+6,Torgue,Pistol,12,Manufacturer Part,TOR_PS.part_shield_amp,Hyperion Amp Shield
+6,Torgue,Pistol,13,Magazine,TOR_PS.part_mag_01,"1.8s Reload, 6 Shots"
+6,Torgue,Pistol,14,Magazine,TOR_PS.part_mag_02,"2.3s Reload, 8 Shots"
+6,Torgue,Pistol,15,Magazine,TOR_PS.part_mag_04_cov,"3.5s Reload, +Damage, -Acc, 8 Shots, CoV Mag"
+6,Torgue,Pistol,16,Magazine,TOR_PS.part_mag_05_borg,"2.8s Reload, +Damage, -Acc, +Fire Rate, 10 Shots, Ripper Mag"
+6,Torgue,Pistol,17,Stat Modifier,TOR_PS.part_mag_ted_thrown_01,2.0s Reload
+6,Torgue,Pistol,18,Stat Modifier,TOR_PS.part_mag_ted_thrown_02,2.0s Reload
+6,Torgue,Pistol,19,Stat Modifier,TOR_PS.part_mag_ted_thrown_04_cov,3.0s Reload
+6,Torgue,Pistol,20,Stat Modifier,TOR_PS.part_mag_ted_thrown_05_bor,3.0s Reload
+6,Torgue,Pistol,21,Scope,TOR_PS.part_scope_ironsight,ADS
+6,Torgue,Pistol,22,Scope,TOR_PS.part_scope_01_lens_01,ADS
+6,Torgue,Pistol,23,Scope,TOR_PS.part_scope_01_lens_02,ADS +Zoom
+6,Torgue,Pistol,24,Scope,TOR_PS.part_scope_02_lens_01,ADS ++Zoom
+6,Torgue,Pistol,25,Scope,TOR_PS.part_scope_02_lens_02,ADS +++Zoom
+6,Torgue,Pistol,26,Scope Accessory,TOR_PS.part_scope_acc_s01_l01_a,+Damage
+6,Torgue,Pistol,27,Scope Accessory,TOR_PS.part_scope_acc_s01_l01_b,-Reload Speed
+6,Torgue,Pistol,28,Scope Accessory,TOR_PS.part_scope_acc_s02_l01_a,No Stat Changes
+6,Torgue,Pistol,29,Scope Accessory,TOR_PS.part_scope_acc_s02_l01_b,+Blast Radius
+6,Torgue,Pistol,30,Scope Accessory,TOR_PS.part_scope_acc_s01_l02_a,+Damage
+6,Torgue,Pistol,31,Scope Accessory,TOR_PS.part_scope_acc_s01_l02_b,-Reload Speed
+6,Torgue,Pistol,32,Scope Accessory,TOR_PS.part_scope_acc_s02_l02_a,No Stat Changes
+6,Torgue,Pistol,33,Scope Accessory,TOR_PS.part_scope_acc_s02_l02_b,+Blast Radius
+6,Torgue,Pistol,34,Grip,TOR_PS.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+6,Torgue,Pistol,35,Grip,TOR_PS.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+6,Torgue,Pistol,36,Grip,TOR_PS.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+6,Torgue,Pistol,37,Grip,TOR_PS.part_grip_01,+Damage
+6,Torgue,Pistol,38,Grip,TOR_PS.part_grip_02,+Fire Rate
+6,Torgue,Pistol,39,Grip,TOR_PS.part_grip_03,-Reload Speed
+6,Torgue,Pistol,40,Grip,TOR_PS.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+6,Torgue,Pistol,41,Underbarrel,TOR_PS.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+6,Torgue,Pistol,42,Underbarrel,TOR_PS.part_underbarrel_06_malswitch,"Underbarrel switch, no effects"
+6,Torgue,Pistol,43,Underbarrel,TOR_PS.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+6,Torgue,Pistol,44,Underbarrel,TOR_PS.part_underbarrel_01_rockets,Alt Fire - Magnum Rockets
+6,Torgue,Pistol,45,Underbarrel,TOR_PS.part_underbarrel_03_cleaver,Alt Fire - Turbine Cleaver
+6,Torgue,Pistol,46,Foregrip,TOR_PS.part_foregrip_02,+Fire Rate
+6,Torgue,Pistol,47,Foregrip,TOR_PS.part_foregrip_03,+Blast Radius
+6,Torgue,Pistol,48,Manufacturer Part,TOR_PS.part_secondary_ammo_smg,Daedalus SMG Ammo
+6,Torgue,Pistol,49,Manufacturer Part,TOR_PS.part_secondary_ammo_sg,Daedalus Shotgun Ammo
+6,Torgue,Pistol,50,Manufacturer Part,TOR_PS.part_secondary_ammo_ar,Daedalus AR Ammo
+6,Torgue,Pistol,51,Manufacturer Part,TOR_PS.part_secondary_ammo_sr,Daedalus SR Ammo
+6,Torgue,Pistol,52,Barrel,TOR_PS.part_barrel_02_queensrest,"Queen's Rest, 2231 DMG, 65% Acc, 2.6/s FR"
+6,Torgue,Pistol,54,Barrel,TOR_PS.part_barrel_01_roach,"Roach, 1338 DMG, 64% Acc, 2.2/s FR"
+6,Torgue,Pistol,58,Barrel,TOR_PS.part_barrel_02_breadth,"Hardpoint, 1115x5 Damage, 51% Acc, 1.5/s FR, 2/Shot"
+6,Torgue,Pistol,60,Barrel Accessory,TOR_PS.part_barrel_01_a,+Damage
+6,Torgue,Pistol,61,Barrel Accessory,TOR_PS.part_barrel_01_b,+Damage
+6,Torgue,Pistol,62,Barrel Accessory,TOR_PS.part_barrel_01_c,+Blast Radius
+6,Torgue,Pistol,63,Barrel Accessory,TOR_PS.part_barrel_01_d,+Accuracy
+6,Torgue,Pistol,64,Barrel Accessory,TOR_PS.part_barrel_02_a,+Damage
+6,Torgue,Pistol,65,Barrel Accessory,TOR_PS.part_barrel_02_b,+Accuracy
+6,Torgue,Pistol,66,Barrel Accessory,TOR_PS.part_barrel_02_c,+Fire Rate
+6,Torgue,Pistol,67,Barrel Accessory,TOR_PS.part_barrel_02_d,+Fire Rate
+6,Torgue,Pistol,68,Manufacturer Part,TOR_PS.part_barrel_licensed_jak,Jakobs Ricochet
+6,Torgue,Pistol,69,Manufacturer Part,TOR_PS.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+6,Torgue,Pistol,70,Manufacturer Part,TOR_PS.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+6,Torgue,Pistol,71,Manufacturer Part,TOR_PS.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+6,Torgue,Pistol,72,Manufacturer Part,TOR_PS.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+6,Torgue,Pistol,73,Manufacturer Part,TOR_PS.part_barrel_licensed_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+6,Torgue,Pistol,74,Underbarrel,TOR_PS.part_underbarrel_04_atlas,Atlas Tracker Darts
+6,Torgue,Pistol,75,Underbarrel,TOR_PS.part_underbarrel_02_blowback,Alt Fire - Exhaust Blast
+6,Torgue,Pistol,76,Foregrip,TOR_PS.part_foregrip_01,+Damage
+12,Torgue,Shotgun,2,Body,TOR_SG.part_body,"No stat changes, always present"
+12,Torgue,Shotgun,3,Body Accessory,TOR_SG.part_body_a,-Reload Speed
+12,Torgue,Shotgun,4,Body Accessory,TOR_SG.part_body_b,+Damage
+12,Torgue,Shotgun,5,Body Accessory,TOR_SG.part_body_c,+Accuracy
+12,Torgue,Shotgun,6,Body Accessory,TOR_SG.part_body_d,No Stat Changes
+12,Torgue,Shotgun,7,Barrel,TOR_SG.part_barrel_01,"Rider, 1485 x 4 DMG, 67% Acc, 1.2/s FR - 2 Shot"
+12,Torgue,Shotgun,8,Barrel,TOR_SG.part_barrel_02,"Crank, 1673 x 4 DMG, 70% Acc, 1.0/s FR - 2 Shot"
+12,Torgue,Shotgun,9,Manufacturer Part,TOR_SG.part_shield_default,Hyperion Shield
+12,Torgue,Shotgun,10,Manufacturer Part,TOR_SG.part_shield_ricochet,Hyperion Ricochet Shield
+12,Torgue,Shotgun,11,Manufacturer Part,TOR_SG.part_shield_ammo,Hyperion Absorb Shield
+12,Torgue,Shotgun,12,Manufacturer Part,TOR_SG.part_shield_amp,Hyperion Amp Shield
+12,Torgue,Shotgun,13,Magazine,TOR_SG.part_mag_05_borg,"2.4s Reload, -Damage, +Fire Rate, 10 Shots, Ripper Mag"
+12,Torgue,Shotgun,14,Magazine,TOR_SG.part_mag_04_cov,"3.3s Reload, -Damage, -Acc, 8 Shots, CoV Mag"
+12,Torgue,Shotgun,15,Magazine,TOR_SG.part_mag_01,"2.0s Reload, 8 Shots"
+12,Torgue,Shotgun,16,Magazine,TOR_SG.part_mag_02,"1.2s Reload, -Damage, 12 Shots"
+12,Torgue,Shotgun,17,Stat Modifier,TOR_SG.part_mag_ted_thrown_01,2.0s Reload
+12,Torgue,Shotgun,18,Stat Modifier,TOR_SG.part_mag_ted_thrown_02,2.0s Reload
+12,Torgue,Shotgun,19,Stat Modifier,TOR_SG.part_mag_ted_thrown_04_cov,3.0s Reload
+12,Torgue,Shotgun,20,Stat Modifier,TOR_SG.part_mag_ted_thrown_05_bor,3.0s Reload
+12,Torgue,Shotgun,21,Scope,TOR_SG.part_scope_ironsight,ADS
+12,Torgue,Shotgun,22,Scope,TOR_SG.part_scope_01_lens_01,ADS
+12,Torgue,Shotgun,23,Scope,TOR_SG.part_scope_01_lens_02,ADS +Zoom
+12,Torgue,Shotgun,24,Scope,TOR_SG.part_scope_02_lens_01,"ADS +Zoom"
+12,Torgue,Shotgun,25,Scope,TOR_SG.part_scope_02_lens_02,"ADS +Zoom"
+12,Torgue,Shotgun,26,Scope Accessory,TOR_SG.part_scope_acc_s01_l01_a,+Damage
+12,Torgue,Shotgun,27,Scope Accessory,TOR_SG.part_scope_acc_s01_l01_b,-Reload Speed
+12,Torgue,Shotgun,28,Scope Accessory,TOR_SG.part_scope_acc_s02_l01_a,No Stat Changes
+12,Torgue,Shotgun,29,Scope Accessory,TOR_SG.part_scope_acc_s02_l01_b,+Blast Radius
+12,Torgue,Shotgun,30,Scope Accessory,TOR_SG.part_scope_acc_s01_l02_a,+Damage
+12,Torgue,Shotgun,31,Scope Accessory,TOR_SG.part_scope_acc_s01_l02_b,-Reload Speed
+12,Torgue,Shotgun,32,Scope Accessory,TOR_SG.part_scope_acc_s02_l02_a,No Stat Changes
+12,Torgue,Shotgun,33,Scope Accessory,TOR_SG.part_scope_acc_s02_l02_b,+Blast Radius
+12,Torgue,Shotgun,34,Grip,TOR_SG.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+12,Torgue,Shotgun,35,Grip,TOR_SG.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+12,Torgue,Shotgun,36,Grip,TOR_SG.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+12,Torgue,Shotgun,37,Grip,TOR_SG.part_grip_01,+Damage
+12,Torgue,Shotgun,38,Grip,TOR_SG.part_grip_02,+Fire Rate
+12,Torgue,Shotgun,39,Grip,TOR_SG.part_grip_03,-Reload Speed
+12,Torgue,Shotgun,40,Grip,TOR_SG.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+12,Torgue,Shotgun,41,Underbarrel,TOR_SG.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+12,Torgue,Shotgun,42,Underbarrel,TOR_SG.part_underbarrel_06_malswitch,"Underbarrel switch, no effects"
+12,Torgue,Shotgun,43,Underbarrel,TOR_SG.part_underbarrel_01_seeker_missiles,Alt Fire - Seeker Missles
+12,Torgue,Shotgun,44,Underbarrel,TOR_SG.part_underbarrel_03_bounce_grenade,Alt Fire - Rolling Thunder Grenades
+12,Torgue,Shotgun,45,Underbarrel,TOR_SG.part_underbarrel_04_atlas,Atlas Tracker Darts
+12,Torgue,Shotgun,46,Foregrip,TOR_SG.part_foregrip_02,+Fire Rate
+12,Torgue,Shotgun,47,Foregrip,TOR_SG.part_foregrip_03,+Blast Radius
+12,Torgue,Shotgun,48,Foregrip,TOR_SG.part_foregrip_01,+Damage
+12,Torgue,Shotgun,49,Underbarrel,TOR_SG.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+12,Torgue,Shotgun,50,Underbarrel,TOR_SG.part_underbarrel_02_flameblast,Alt Fire - Flame Blast
+12,Torgue,Shotgun,51,Manufacturer Part,TOR_SG.part_secondary_ammo_smg,Daedalus SMG Ammo
+12,Torgue,Shotgun,52,Manufacturer Part,TOR_SG.part_secondary_ammo_ps,Daedalus Pistol Ammo
+12,Torgue,Shotgun,53,Manufacturer Part,TOR_SG.part_secondary_ammo_ar,Daedalus AR Ammo
+12,Torgue,Shotgun,54,Manufacturer Part,TOR_SG.part_secondary_ammo_sr,Daedalus SR Ammo
+12,Torgue,Shotgun,56,Barrel,TOR_SG.part_barrel_02_leadballoon,"Lead Balloon, 1255 x 3 DMG, 70% Acc, 1.8/s FR - 2 Shot"
+12,Torgue,Shotgun,58,Barrel,TOR_SG.part_barrel_01_linebacker,"Linebacker, 781 x 4 DMG, 67% Acc, 1.0/s FR"
+12,Torgue,Shotgun,61,Barrel Accessory,TOR_SG.part_barrel_01_a,+Damage
+12,Torgue,Shotgun,62,Barrel Accessory,TOR_SG.part_barrel_01_b,+Damage
+12,Torgue,Shotgun,63,Barrel Accessory,TOR_SG.part_barrel_01_c,+Blast Radius
+12,Torgue,Shotgun,64,Barrel Accessory,TOR_SG.part_barrel_01_d,+Accuracy
+12,Torgue,Shotgun,65,Barrel Accessory,TOR_SG.part_barrel_02_a,+Damage
+12,Torgue,Shotgun,66,Barrel Accessory,TOR_SG.part_barrel_02_b,+Accuracy
+12,Torgue,Shotgun,67,Barrel Accessory,TOR_SG.part_barrel_02_c,+Fire Rate
+12,Torgue,Shotgun,68,Barrel Accessory,TOR_SG.part_barrel_02_d,+Fire Rate
+12,Torgue,Shotgun,69,Manufacturer Part,TOR_SG.part_barrel_licensed_jak,Jakobs Ricochet
+12,Torgue,Shotgun,70,Manufacturer Part,TOR_SG.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+12,Torgue,Shotgun,71,Manufacturer Part,TOR_SG.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+12,Torgue,Shotgun,72,Manufacturer Part,TOR_SG.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+12,Torgue,Shotgun,73,Manufacturer Part,TOR_SG.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+12,Torgue,Shotgun,74,Manufacturer Part,TOR_SG.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+18,Vladof,Assault Rifle,1,Barrel,VLA_AR.part_barrel_01_lucian,"Lucian's Flank, 647 DMG, 76% Acc, 11.5/s FR"
+18,Vladof,Assault Rifle,2,Body,VLA_AR.part_body,"No stat changes, always present"
+18,Vladof,Assault Rifle,3,Body Accessory,VLA_AR.part_body_a,-Reload Speed
+18,Vladof,Assault Rifle,4,Body Accessory,VLA_AR.part_body_b,+Ammo
+18,Vladof,Assault Rifle,5,Body Accessory,VLA_AR.part_body_c,+Accuracy
+18,Vladof,Assault Rifle,6,Body Accessory,VLA_AR.part_body_d,No Stat Changes
+18,Vladof,Assault Rifle,7,Barrel,VLA_AR.part_barrel_01,"Buzzymuzz, 435 DMG, 78% Acc, 11.5/s FR"
+18,Vladof,Assault Rifle,8,Barrel,VLA_AR.part_barrel_02,"Gruppagrak, 468 DMG, 82% Acc, 9.9/s FR"
+18,Vladof,Assault Rifle,9,Manufacturer Part,VLA_AR.part_shield_default,Hyperion Shield
+18,Vladof,Assault Rifle,10,Manufacturer Part,VLA_AR.part_shield_ricochet,Hyperion Ricochet Shield
+18,Vladof,Assault Rifle,11,Manufacturer Part,VLA_AR.part_shield_ammo,Hyperion Absorb Shield
+18,Vladof,Assault Rifle,12,Manufacturer Part,VLA_AR.part_shield_amp,Hyperion Amp Shield
+18,Vladof,Assault Rifle,13,Magazine,VLA_AR.part_mag_01,"2.9s Reload, 40 Shots"
+18,Vladof,Assault Rifle,14,Magazine,VLA_AR.part_mag_02,"3.4s Reload, 50 Shots"
+18,Vladof,Assault Rifle,15,Magazine,VLA_AR.part_mag_03_tor,"2.8s Reload, +Damage, +Acc, -Fire Rate, 30 Shots, Torgue"
+18,Vladof,Assault Rifle,16,Magazine,VLA_AR.part_mag_04_cov,"5.5s Reload, -Damage, -Acc, 61 Shots, CoV Mag"
+18,Vladof,Assault Rifle,17,Magazine,VLA_AR.part_mag_05_borg,"3.7s Reload, -Damage, +Fire Rate, 60 Shots, RIpper Mag"
+18,Vladof,Assault Rifle,18,Manufacturer Part,VLA_AR.part_mag_torgue_normal,Torgue Impact Gyrojets
+18,Vladof,Assault Rifle,19,Manufacturer Part,VLA_AR.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+18,Vladof,Assault Rifle,20,Stat Modifier,VLA_AR.part_mag_ted_thrown_01,2.0s Reload
+18,Vladof,Assault Rifle,21,Stat Modifier,VLA_AR.part_mag_ted_thrown_02,2.0s Reload
+18,Vladof,Assault Rifle,22,Stat Modifier,VLA_AR.part_mag_ted_thrown_03_tor,2.0s Reload
+18,Vladof,Assault Rifle,23,Stat Modifier,VLA_AR.part_mag_ted_thrown_04_cov,3.0s Reload
+18,Vladof,Assault Rifle,24,Stat Modifier,VLA_AR.part_mag_ted_thrown_05_bor,3.0s Reload
+18,Vladof,Assault Rifle,25,Scope,VLA_AR.part_scope_ironsight,ADS
+18,Vladof,Assault Rifle,26,Scope,VLA_AR.part_scope_01_lens_01,"ADS +Zoom"
+18,Vladof,Assault Rifle,27,Scope,VLA_AR.part_scope_01_lens_02,"ADS +Zoom"
+18,Vladof,Assault Rifle,28,Scope,VLA_AR.part_scope_02_lens_01,ADS +++Zoom
+18,Vladof,Assault Rifle,29,Scope,VLA_AR.part_scope_02_lens_02,ADS ++Zoom
+18,Vladof,Assault Rifle,30,Scope Accessory,VLA_AR.part_scope_acc_s01_l01_a,+Damage
+18,Vladof,Assault Rifle,31,Scope Accessory,VLA_AR.part_scope_acc_s01_l01_b,-Reload Speed
+18,Vladof,Assault Rifle,32,Scope Accessory,VLA_AR.part_scope_acc_s02_l01_a,No Stat Changes
+18,Vladof,Assault Rifle,33,Scope Accessory,VLA_AR.part_scope_acc_s02_l01_b,+Ammo
+18,Vladof,Assault Rifle,34,Scope Accessory,VLA_AR.part_scope_acc_s01_l02_a,+Damage
+18,Vladof,Assault Rifle,35,Scope Accessory,VLA_AR.part_scope_acc_s01_l02_b,-Reload Speed
+18,Vladof,Assault Rifle,36,Scope Accessory,VLA_AR.part_scope_acc_s02_l02_a,No Stat Changes
+18,Vladof,Assault Rifle,37,Scope Accessory,VLA_AR.part_scope_acc_s02_l02_b,+Ammo
+18,Vladof,Assault Rifle,38,Grip,VLA_AR.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+18,Vladof,Assault Rifle,39,Grip,VLA_AR.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+18,Vladof,Assault Rifle,40,Grip,VLA_AR.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+18,Vladof,Assault Rifle,41,Grip,VLA_AR.part_grip_01,+Damage
+18,Vladof,Assault Rifle,42,Grip,VLA_AR.part_grip_02,+Fire Rate
+18,Vladof,Assault Rifle,43,Grip,VLA_AR.part_grip_03,-Reload Speed
+18,Vladof,Assault Rifle,44,Grip,VLA_AR.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+18,Vladof,Assault Rifle,45,Underbarrel,VLA_AR.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+18,Vladof,Assault Rifle,46,Underbarrel,VLA_AR.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+18,Vladof,Assault Rifle,47,Underbarrel,VLA_AR.part_underbarrel_04_atlas,Atlas Tracker Darts
+18,Vladof,Assault Rifle,48,Underbarrel,VLA_AR.part_underbarrel_03_bipod,Alt Fire - Bipod
+18,Vladof,Assault Rifle,49,Underbarrel,VLA_AR.part_underbarrel_01_grenadelauncher,Alt Fire - Grenade Launcher
+18,Vladof,Assault Rifle,50,Underbarrel Accessory,VLA_AR.part_underbarrel_grenade_acc,No Stat Changes
+18,Vladof,Assault Rifle,51,Underbarrel Accessory,VLA_AR.part_underbarrel_shotgun_acc,Increases Shotgun DMG
+18,Vladof,Assault Rifle,52,Underbarrel Accessory,VLA_AR.part_underbarrel_bipod_acc,Alt Fire - Motile Bipod
+18,Vladof,Assault Rifle,53,Underbarrel Accessory,VLA_AR.part_underbarrel_secondbarrel_acc_a,No Stat Changes
+18,Vladof,Assault Rifle,54,Underbarrel Accessory,VLA_AR.part_underbarrel_secondbarrel_acc_b,+Ammo
+18,Vladof,Assault Rifle,55,Underbarrel Accessory,VLA_AR.part_underbarrel_secondbarrel_acc_c,No Stat Changes
+18,Vladof,Assault Rifle,56,Foregrip,VLA_AR.part_foregrip_01,+Damage
+18,Vladof,Assault Rifle,57,Foregrip,VLA_AR.part_foregrip_02,+Fire Rate
+18,Vladof,Assault Rifle,58,Foregrip,VLA_AR.part_foregrip_03,+Accuracy
+18,Vladof,Assault Rifle,59,Manufacturer Part,VLA_AR.part_secondary_ammo_ps,Daedalus Pistol Ammo
+18,Vladof,Assault Rifle,60,Manufacturer Part,VLA_AR.part_secondary_ammo_sg,Daedalus Shotgun Ammo
+18,Vladof,Assault Rifle,61,Manufacturer Part,VLA_AR.part_secondary_ammo_sm,Daedalus SMG Ammo
+18,Vladof,Assault Rifle,62,Manufacturer Part,VLA_AR.part_secondary_ammo_sr,Daedalus SR Ammo
+18,Vladof,Assault Rifle,64,Barrel,VLA_AR.part_barrel_01_wombocombo,"Wombo Combo, 580 DMG, 78% Acc, 12.0/s FR"
+18,Vladof,Assault Rifle,66,Underbarrel Accessory,VLA_AR.part_underbarrel_07_acc_vis,No Stat Changes
+18,Vladof,Assault Rifle,67,Underbarrel Accessory,VLA_AR.part_underbarrel_07_b,No Stat Changes
+18,Vladof,Assault Rifle,69,Underbarrel,VLA_AR.part_underbarrel_07_dualdamage,Aegon's Dream Alt Fire - Extra Barrel
+18,Vladof,Assault Rifle,70,Barrel,VLA_AR.part_barrel_01_dualdamage,"Aegon's Dream, 482 DMG, 76% Acc, 12.5/s FR"
+18,Vladof,Assault Rifle,71,Manufacturer Part,VLA_AR.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+18,Vladof,Assault Rifle,72,Barrel Accessory,VLA_AR.part_barrel_01_a,+Damage
+18,Vladof,Assault Rifle,73,Barrel Accessory,VLA_AR.part_barrel_01_b,+Crit Damage
+18,Vladof,Assault Rifle,74,Barrel Accessory,VLA_AR.part_barrel_01_c,+Ammo
+18,Vladof,Assault Rifle,75,Barrel Accessory,VLA_AR.part_barrel_01_d,+Accuracy
+18,Vladof,Assault Rifle,76,Barrel Accessory,VLA_AR.part_barrel_02_a,+Damage
+18,Vladof,Assault Rifle,77,Barrel Accessory,VLA_AR.part_barrel_02_b,+Accuracy
+18,Vladof,Assault Rifle,78,Barrel Accessory,VLA_AR.part_barrel_02_c,+Fire Rate
+18,Vladof,Assault Rifle,79,Barrel Accessory,VLA_AR.part_barrel_02_d,+Fire Rate
+18,Vladof,Assault Rifle,80,Manufacturer Part,VLA_AR.part_barrel_licensed_jak,Jakobs Ricochet
+18,Vladof,Assault Rifle,81,Manufacturer Part,VLA_AR.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+18,Vladof,Assault Rifle,82,Manufacturer Part,VLA_AR.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+18,Vladof,Assault Rifle,83,Manufacturer Part,VLA_AR.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+18,Vladof,Assault Rifle,84,Manufacturer Part,VLA_AR.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+18,Vladof,Assault Rifle,85,Underbarrel,VLA_AR.part_underbarrel_06_malswitch,"Underbarrel switch, no effects"
+18,Vladof,Assault Rifle,86,Underbarrel,VLA_AR.part_underbarrel_07_secondbarrel,Alt Fire - Extra Barrel
+18,Vladof,Assault Rifle,87,Underbarrel,VLA_AR.part_underbarrel_02_shotgun,Alt Fire - Shotgun
+18,Vladof,Assault Rifle,89,Underbarrel Accessory,VLA_AR.part_underbarrel_overdrive_acc,No Stat Changes
+18,Vladof,Assault Rifle,90,Underbarrel,VLA_AR.part_underbarrel_wf_overdrive,Overdrive - Switches to a secondary Magazine that can be fired on Full Auto
+18,Vladof,Assault Rifle,91,Underbarrel Accessory,VLA_AR.part_underbarrel_scrap_acc,Increases Scrap Cannon Damage
+18,Vladof,Assault Rifle,92,Underbarrel,VLA_AR.part_underbarrel_02_wf_scrapcannon,Scrap Cannon - Fires a spread of shrapnel from teh Underbarrel
+18,Vladof,Assault Rifle,94,Barrel,VLA_AR.part_barrel_wf,"Whiskey Foxtrot, 848 DMG, 84% Acc, 6.1/s FR"
+22,Vladof,SMG,2,Body,VLA_SM.part_body,"No stat changes, always present"
+22,Vladof,SMG,3,Body Accessory,VLA_SM.part_body_a,-Reload Speed
+22,Vladof,SMG,4,Body Accessory,VLA_SM.part_body_b,+Ammo
+22,Vladof,SMG,5,Body Accessory,VLA_SM.part_body_c,+Accuracy
+22,Vladof,SMG,6,Body Accessory,VLA_SM.part_body_d,No Stat Changes
+22,Vladof,SMG,7,Barrel,VLA_SM.part_barrel_01,"Boory, 424 DMG, 66% Acc, 12.3/s Fire Rate"
+22,Vladof,SMG,8,Barrel,VLA_SM.part_barrel_02,"Flewdy, 491 DMG, 73% Acc, 9.2/s Fire Rate"
+22,Vladof,SMG,9,Manufacturer Part,VLA_SM.part_shield_default,Hyperion Shield
+22,Vladof,SMG,10,Manufacturer Part,VLA_SM.part_shield_ricochet,Hyperion Ricochet Shield
+22,Vladof,SMG,11,Manufacturer Part,VLA_SM.part_shield_ammo,Hyperion Absorb Shield
+22,Vladof,SMG,12,Manufacturer Part,VLA_SM.part_shield_amp,Hyperion Amp Shield
+22,Vladof,SMG,13,Magazine,VLA_SM.part_mag_01,"2.4s Reload, 30 Shots"
+22,Vladof,SMG,14,Magazine,VLA_SM.part_mag_02,"3.5s Reload, +Damage, 35 Shots"
+22,Vladof,SMG,15,Magazine,VLA_SM.part_mag_03_tor,"2.2s Reload, -Damage, +Acc, -Fire Rate, 25 Shots, Torgue"
+22,Vladof,SMG,16,Magazine,VLA_SM.part_mag_04_cov,"4.4s Reload, +Damage, -Acc, 40 Shots, CoV Mag"
+22,Vladof,SMG,17,Magazine,VLA_SM.part_mag_05_borg,"2.3s Reload, +Fire Rate, 40 Shots, Ripper Mag"
+22,Vladof,SMG,18,Manufacturer Part,VLA_SM.part_mag_torgue_normal,Torgue Impact Gyrojets
+22,Vladof,SMG,19,Manufacturer Part,VLA_SM.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+22,Vladof,SMG,20,Stat Modifier,VLA_SM.part_mag_ted_thrown_01,1.6s Reload
+22,Vladof,SMG,21,Stat Modifier,VLA_SM.part_mag_ted_thrown_02,1.6s Reload
+22,Vladof,SMG,22,Stat Modifier,VLA_SM.part_mag_ted_thrown_03_tor,1.6s Reload
+22,Vladof,SMG,23,Stat Modifier,VLA_SM.part_mag_ted_thrown_04_cov,3.0s Reload
+22,Vladof,SMG,24,Stat Modifier,VLA_SM.part_mag_ted_thrown_05_bor,2.5s Reload
+22,Vladof,SMG,25,Body Accessory,VLA_SM.part_body_flap,No Stat Changes
+22,Vladof,SMG,26,Scope,VLA_SM.part_scope_ironsight,ADS
+22,Vladof,SMG,27,Scope,VLA_SM.part_scope_01_lens_01,"ADS +Zoom"
+22,Vladof,SMG,28,Scope,VLA_SM.part_scope_01_lens_02,ADS
+22,Vladof,SMG,29,Scope,VLA_SM.part_scope_02_lens_01,ADS ++Zoom
+22,Vladof,SMG,30,Scope,VLA_SM.part_scope_02_lens_02,ADS ++Zoom
+22,Vladof,SMG,31,Scope Accessory,VLA_SM.part_scope_acc_s01_l01_a,+Damage
+22,Vladof,SMG,32,Scope Accessory,VLA_SM.part_scope_acc_s01_l01_b,-Reload Speed
+22,Vladof,SMG,33,Scope Accessory,VLA_SM.part_scope_acc_s02_l01_a,No Stat Changes
+22,Vladof,SMG,34,Scope Accessory,VLA_SM.part_scope_acc_s02_l01_b,+Ammo
+22,Vladof,SMG,35,Scope Accessory,VLA_SM.part_scope_acc_s01_l02_a,+Damage
+22,Vladof,SMG,36,Scope Accessory,VLA_SM.part_scope_acc_s01_l02_b,-Reload Speed
+22,Vladof,SMG,37,Scope Accessory,VLA_SM.part_scope_acc_s02_l02_a,No Stat Changes
+22,Vladof,SMG,38,Scope Accessory,VLA_SM.part_scope_acc_s02_l02_b,+Ammo
+22,Vladof,SMG,40,Grip,VLA_SM.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
+22,Vladof,SMG,41,Grip,VLA_SM.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+22,Vladof,SMG,42,Grip,VLA_SM.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+22,Vladof,SMG,43,Grip,VLA_SM.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+22,Vladof,SMG,44,Grip,VLA_SM.part_grip_01,+Damage
+22,Vladof,SMG,45,Grip,VLA_SM.part_grip_02,+Fire Rate
+22,Vladof,SMG,46,Grip,VLA_SM.part_grip_03,-Reload Speed
+22,Vladof,SMG,47,Underbarrel,VLA_SM.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+22,Vladof,SMG,48,Underbarrel,VLA_SM.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+22,Vladof,SMG,49,Underbarrel,VLA_SM.part_underbarrel_06_malswitch,"Underbarrel switch, no effects"
+22,Vladof,SMG,50,Underbarrel,VLA_SM.part_underbarrel_01_microrockets,Alt Fire - Zip Rockets
+22,Vladof,SMG,51,Underbarrel,VLA_SM.part_underbarrel_02_taser,Alt Fire - Taser
+22,Vladof,SMG,52,Underbarrel,VLA_SM.part_underbarrel_03_flamethrower,Alt Fire - Flamethrower
+22,Vladof,SMG,53,Underbarrel,VLA_SM.part_underbarrel_07_secondbarrel,Alt Fire - Extra Barrel
+22,Vladof,SMG,54,Underbarrel,VLA_SM.part_underbarrel_04_atlas,Atlas Tracker Darts
+22,Vladof,SMG,55,Underbarrel Accessory,VLA_SM.part_underbarrel_microrockets_acc,"Visual Change, No Stat Changes"
+22,Vladof,SMG,56,Underbarrel Accessory,VLA_SM.part_underbarrel_taser_acc,Increase Taser Damage
+22,Vladof,SMG,57,Underbarrel Accessory,VLA_SM.part_underbarrel_flamethrower_acc,Increase Flamethrower Damage
+22,Vladof,SMG,58,Underbarrel Accessory,VLA_SM.part_underbarrel_secondbarrel_acc,"Visual Change, No Stat Changes"
+22,Vladof,SMG,59,Foregrip,VLA_SM.part_foregrip_01,+Damage
+22,Vladof,SMG,60,Foregrip,VLA_SM.part_foregrip_02,+Fire Rate
+22,Vladof,SMG,61,Foregrip,VLA_SM.part_foregrip_03,+Accuracy
+22,Vladof,SMG,62,Manufacturer Part,VLA_SM.part_secondary_ammo_ps,Daedalus Pistol Ammo
+22,Vladof,SMG,63,Manufacturer Part,VLA_SM.part_secondary_ammo_sg,Daedalus Shotgun Ammo
+22,Vladof,SMG,64,Manufacturer Part,VLA_SM.part_secondary_ammo_ar,Daedalus AR Ammo
+22,Vladof,SMG,65,Manufacturer Part,VLA_SM.part_secondary_ammo_sr,Daedalus SR Ammo
+22,Vladof,SMG,66,Barrel,VLA_SM.part_barrel_01_kaoson,"Kaoson, 402 x 2 DMG, 83% Acc, 10.5/s Fire Rate"
+22,Vladof,SMG,68,Barrel,VLA_SM.part_barrel_01_onslaught,"Onslaught, 357 DMG, 76% Acc, 16.0/s Fire Rate"
+22,Vladof,SMG,69,Barrel Accessory,VLA_SM.part_barrel_02_d_c,+Fire Rate
+22,Vladof,SMG,70,Barrel Accessory,VLA_SM.part_barrel_02_c_d,+Fire Rate
+22,Vladof,SMG,71,Manufacturer Part,VLA_SM.part_mag_torgue_sticky_beegun,"Torgue Sticky Gyrojets, For Birt's Bees"
+22,Vladof,SMG,72,Barrel Accessory,VLA_SM.part_barrel_01_a,+Damage
+22,Vladof,SMG,73,Barrel Accessory,VLA_SM.part_barrel_01_b,No Stat Changes
+22,Vladof,SMG,74,Barrel Accessory,VLA_SM.part_barrel_01_c,+Ammo
+22,Vladof,SMG,75,Barrel Accessory,VLA_SM.part_barrel_01_d,+Ammo
+22,Vladof,SMG,76,Barrel Accessory,VLA_SM.part_barrel_02_a,+Damage
+22,Vladof,SMG,77,Barrel Accessory,VLA_SM.part_barrel_02_b,+Accuracy
+22,Vladof,SMG,78,Barrel Accessory,VLA_SM.part_barrel_02_c,+Fire Rate
+22,Vladof,SMG,79,Barrel Accessory,VLA_SM.part_barrel_02_d,+Fire Rate
+22,Vladof,SMG,80,Manufacturer Part,VLA_SM.part_barrel_licensed_jak,Jakobs Ricochet
+22,Vladof,SMG,81,Manufacturer Part,VLA_SM.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+22,Vladof,SMG,82,Manufacturer Part,VLA_SM.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+22,Vladof,SMG,83,Manufacturer Part,VLA_SM.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+22,Vladof,SMG,84,Manufacturer Part,VLA_SM.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+22,Vladof,SMG,85,Manufacturer Part,VLA_SM.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+22,Vladof,SMG,86,Manufacturer Part,VLA_SM.part_mag_torgue_normal_beegun,"Torgue Impact Gyrojets, For Birt's Bees"
+22,Vladof,SMG,87,Barrel,VLA_SM.part_barrel_beegun,"Birt's Bees, 528 DMG, 73% Acc, 12.4/s Fire Rate"
+16,Vladof,Sniper,1,Barrel,VLA_SR.part_barrel_02_finnty,"Finnity XXX-L, 937 DMG, 94% Acc, 13.0/s FR, 50% Crit DMG"
+16,Vladof,Sniper,2,Body,VLA_SR.part_body,"No stat changes, always present"
+16,Vladof,Sniper,3,Body Accessory,VLA_SR.part_body_d,No Stat Changes
+16,Vladof,Sniper,4,Body Accessory,VLA_SR.part_body_a,-Reload Speed
+16,Vladof,Sniper,5,Body Accessory,VLA_SR.part_body_b,+Ammo
+16,Vladof,Sniper,6,Body Accessory,VLA_SR.part_body_c,+Accuracy
+16,Vladof,Sniper,7,Barrel,VLA_SR.part_barrel_01,"Ragoon Barrel, 1359 DMG, 87% ACC, 4.0/s FR, 50% Crit DMG"
+16,Vladof,Sniper,8,Barrel,VLA_SR.part_barrel_02,"Vyudazy Barrel, 1780 DMG, 87% ACC, 2.5/s FR, 50% Crit DMG"
+16,Vladof,Sniper,9,Manufacturer Part,VLA_SR.part_shield_default,Hyperion Shield
+16,Vladof,Sniper,10,Manufacturer Part,VLA_SR.part_shield_ricochet,Hyperion Ricochet Shield
+16,Vladof,Sniper,11,Manufacturer Part,VLA_SR.part_shield_ammo,Hyperion Absorb Shield
+16,Vladof,Sniper,12,Manufacturer Part,VLA_SR.part_shield_amp,Hyperion Amp Shield
+16,Vladof,Sniper,13,Magazine,VLA_SR.part_mag_01,"3.0s Reload, 12 Shots"
+16,Vladof,Sniper,14,Magazine,VLA_SR.part_mag_02,"3.6s Reload, 15 Shots"
+16,Vladof,Sniper,15,Magazine,VLA_SR.part_mag_03_tor,"2.9s Reload, +Damage, -Fire Rate, 9 Shots, Torgue"
+16,Vladof,Sniper,16,Magazine,VLA_SR.part_mag_04_cov,"4.3s Reload, -Acc, 14 Shots, CoV Mag"
+16,Vladof,Sniper,17,Magazine,VLA_SR.part_mag_05_borg,"3.6s Reload, -Damage, +Fire Rate, 18 Shots, Ripper Mag"
+16,Vladof,Sniper,18,Manufacturer Part,VLA_SR.part_mag_torgue_normal,Torgue Impact Gyrojets
+16,Vladof,Sniper,19,Manufacturer Part,VLA_SR.part_mag_torgue_sticky,Torgue Sticky Gyrojets
+16,Vladof,Sniper,20,Stat Modifier,VLA_SR.part_mag_ted_thrown_01,2.0s Reload
+16,Vladof,Sniper,21,Stat Modifier,VLA_SR.part_mag_ted_thrown_02,2.0s Reload
+16,Vladof,Sniper,22,Stat Modifier,VLA_SR.part_mag_ted_thrown_03_tor,2.0s Reload
+16,Vladof,Sniper,23,Stat Modifier,VLA_SR.part_mag_ted_thrown_04_cov,3.0s Reload
+16,Vladof,Sniper,24,Stat Modifier,VLA_SR.part_mag_ted_thrown_05_bor,3.0s Reload
+16,Vladof,Sniper,25,Manufacturer Part,VLA_SR.part_barrel_licensed_jak,Jakobs Ricochet
+16,Vladof,Sniper,26,Scope,VLA_SR.part_scope_ironsight,"ADS +Zoom"
+16,Vladof,Sniper,27,Scope,VLA_SR.part_scope_01_lens_01,ADS ++Zoom
+16,Vladof,Sniper,28,Scope,VLA_SR.part_scope_01_lens_02,ADS ++Zoom
+16,Vladof,Sniper,29,Scope,VLA_SR.part_scope_02_lens_01,ADS +++Zoom
+16,Vladof,Sniper,30,Scope,VLA_SR.part_scope_02_lens_02,ADS +++Zoom
+16,Vladof,Sniper,31,Scope Accessory,VLA_SR.part_scope_acc_s01_l01_a,+Damage
+16,Vladof,Sniper,32,Scope Accessory,VLA_SR.part_scope_acc_s01_l01_b,-Reload Speed
+16,Vladof,Sniper,33,Scope Accessory,VLA_SR.part_scope_acc_s02_l01_a,No Stat Changes
+16,Vladof,Sniper,34,Scope Accessory,VLA_SR.part_scope_acc_s02_l01_b,+Ammo
+16,Vladof,Sniper,35,Scope Accessory,VLA_SR.part_scope_acc_s01_l02_a,+Damage
+16,Vladof,Sniper,36,Scope Accessory,VLA_SR.part_scope_acc_s01_l02_b,-Reload Speed
+16,Vladof,Sniper,37,Scope Accessory,VLA_SR.part_scope_acc_s02_l02_a,No Stat Changes
+16,Vladof,Sniper,38,Scope Accessory,VLA_SR.part_scope_acc_s02_l02_b,+Ammo
+16,Vladof,Sniper,39,Grip,VLA_SR.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
+16,Vladof,Sniper,40,Grip,VLA_SR.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
+16,Vladof,Sniper,41,Grip,VLA_SR.part_grip_04_hyp,"Hyperion Grip, -Acc, Acc increases with continuous fire"
+16,Vladof,Sniper,42,Grip,VLA_SR.part_grip_01,+Damage
+16,Vladof,Sniper,43,Grip,VLA_SR.part_grip_02,+Fire Rate
+16,Vladof,Sniper,44,Grip,VLA_SR.part_grip_03,-Reload Speed
+16,Vladof,Sniper,45,Underbarrel,VLA_SR.part_underbarrel_06_malswitch,"Underbarrel switch, no effects"
+16,Vladof,Sniper,46,Underbarrel,VLA_SR.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
+16,Vladof,Sniper,47,Underbarrel,VLA_SR.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
+16,Vladof,Sniper,48,Underbarrel,VLA_SR.part_underbarrel_02_rocket,Alt Fire - Big Rocket
+16,Vladof,Sniper,49,Underbarrel,VLA_SR.part_underbarrel_07_secondbarrel,Alt Fire - Extra Barrel
+16,Vladof,Sniper,50,Underbarrel,VLA_SR.part_underbarrel_03_bipod,Alt Fire - Bipod
+16,Vladof,Sniper,51,Underbarrel,VLA_SR.part_underbarrel_04_atlas,Atlas Tracker Darts
+16,Vladof,Sniper,52,Underbarrel,VLA_SR.part_underbarrel_01_shotgun,Alt Fire - Shotgun
+16,Vladof,Sniper,53,Underbarrel Accessory,VLA_SR.part_underbarrel_shotgun_acc,Increases Shotgun DMG
+16,Vladof,Sniper,54,Underbarrel Accessory,VLA_SR.part_underbarrel_rocket_acc,Increases Big Rocket DMG
+16,Vladof,Sniper,55,Underbarrel Accessory,VLA_SR.part_underbarrel_bipod_acc,Alt Fire - Motile Bipod
+16,Vladof,Sniper,56,Underbarrel Accessory,VLA_SR.part_underbarrel_secondbarrel_acc_a,No Stat Changes
+16,Vladof,Sniper,57,Underbarrel Accessory,VLA_SR.part_underbarrel_secondbarrel_acc_b,+Ammo
+16,Vladof,Sniper,58,Underbarrel Accessory,VLA_SR.part_underbarrel_secondbarrel_acc_c,No Stat Changes
+16,Vladof,Sniper,59,Foregrip,VLA_SR.part_foregrip_01,+Damage
+16,Vladof,Sniper,60,Foregrip,VLA_SR.part_foregrip_02,+Fire Rate
+16,Vladof,Sniper,61,Foregrip,VLA_SR.part_foregrip_03,+Accuracy
+16,Vladof,Sniper,62,Manufacturer Part,VLA_SR.part_secondary_ammo_smg,Daedalus SMG Ammo
+16,Vladof,Sniper,63,Manufacturer Part,VLA_SR.part_secondary_ammo_sg,Daedalus Shotgun Ammo
+16,Vladof,Sniper,64,Manufacturer Part,VLA_SR.part_secondary_ammo_ar,Daedalus AR Ammo
+16,Vladof,Sniper,65,Manufacturer Part,VLA_SR.part_secondary_ammo_ps,Daedalus Pistol Ammo
+16,Vladof,Sniper,68,Barrel,VLA_SR.part_barrel_crowdsourced,"Midnight Defiance, 1359 DMG, 87% Acc, 4.0/s Reload, 50% Crit DMG"
+16,Vladof,Sniper,71,Grip,VLA_SR.part_grip_04_hyp_finnty,Changed to Upgraded Finnity XXX-L
+16,Vladof,Sniper,72,Barrel,VLA_SR.part_barrel_01_stopgap,"Stop Gap, 1265 DMG, 87% Acc, 4.4/s Reload, 50% Crit DMG"
+16,Vladof,Sniper,73,Barrel Accessory,VLA_SR.part_barrel_01_a,+Damage
+16,Vladof,Sniper,74,Barrel Accessory,VLA_SR.part_barrel_01_b,+Crit Damage
+16,Vladof,Sniper,75,Barrel Accessory,VLA_SR.part_barrel_01_c,+Ammo
+16,Vladof,Sniper,76,Barrel Accessory,VLA_SR.part_barrel_01_d,+Ammo
+16,Vladof,Sniper,77,Barrel Accessory,VLA_SR.part_barrel_02_a,+Damage
+16,Vladof,Sniper,78,Barrel Accessory,VLA_SR.part_barrel_02_b,No Stat Changes
+16,Vladof,Sniper,79,Barrel Accessory,VLA_SR.part_barrel_02_c,+Fire Rate
+16,Vladof,Sniper,80,Barrel Accessory,VLA_SR.part_barrel_02_d,+Fire Rate
+16,Vladof,Sniper,81,Manufacturer Part,VLA_SR.part_barrel_licensed_ted,"Tediore Reload, no stat changes"
+16,Vladof,Sniper,82,Manufacturer Part,VLA_SR.part_barrel_licensed_ted_shooting,"Tediore Shooting, no stat changes"
+16,Vladof,Sniper,83,Manufacturer Part,VLA_SR.part_barrel_licensed_ted_combo,"Tediore Combo, no stat changes"
+16,Vladof,Sniper,84,Manufacturer Part,VLA_SR.part_barrel_licensed_ted_mirv,"Tediore MIRV, no stat changes"
+16,Vladof,Sniper,85,Manufacturer Part,VLA_SR.part_barrel_licensed_hyp,"Hyperion Shield visual accessory, no stat changes"
+16,Vladof,Sniper,86,Grip,VLA_SR.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"

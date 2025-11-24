@@ -1,0 +1,10 @@
+{
+    "Common": "普通",
+    "Epic": "史诗",
+    "Legendary": "传奇",
+    "Rare": "特殊",
+    "Uncommon": "稀有",
+	"Rarity": "稀有度",
+	"Legendary Perk": "传奇技能",
+	"Perk": "技能"
+}

@@ -1,0 +1,121 @@
+Manufacturer ID,Part_ID,Part_type,String,Stat,Description
+282,1,Rarity,,Legendary,Inkling Skin
+282,2,Barrel,Barrel_02_Splatoon,Inklink - Fires bouncing Projectiles that leave an Elemental Splat on Bounce,"Inkling, 50s CD, 2454 Damage, 76% Acc, 4.0/s FR, 12 Shots"
+282,3,Rarity,,Legendary,Gold Skin
+282,6,Body,Body,,No Stat Changes
+282,7,Body Accessory,Body_A,Mad,+Ammo
+282,8,Body Accessory,Body_B,Wide,+Fire Rate
+282,9,Body Accessory,Body_C,Thorough,-Cooldown
+282,10,Body Accessory,Body_D,Tinged,No Stat Changes
+282,12,Barrel,Barrel_02,Cannon Barrel,"Golub, 50s CD, 2454 Damage, 76% Acc, 4.0/s FR, 12 Shots"
+282,13,Barrel Accessory,Barrel_01_A,"Additional Barrel - Adds 1 additional barrel, increasing Fire Rate by +17%","-Cooldown, +Damage, +Fire Rate"
+282,14,Barrel Accessory,Barrel_01_B,Angel's Share - Every 6th shot doesn't cost Ammo,-Cooldown
+282,15,Barrel Accessory,Barrel_01_C,Magic Bullet - Every 6th shot is homing,"+Cooldown, +Damage"
+282,16,Barrel Accessory,Barrel_01_A_D,Devil's Share - Every 6th shot deals +100% Damage,+Damage
+282,17,Barrel Accessory,Barrel_02_A,"Additional Barrels - Adds 2 additional barrels, increasing Fire Rate by -65%","-Cooldown, +Fire Rate"
+282,18,Barrel Accessory,Barrel_02_B,"Explosive Rounds - Explosive Rounds - Increases Damage by +125% and Damage Radius by +200%",+Splash Radius
+282,19,Barrel Accessory,Barrel_02_C,Two Shot - Two-Shot - 2 barrels fire simultaneously,+Damage
+282,20,Barrel Accessory,Barrel_02_D,Penetration - Penetration - Projectiles pierce through enemies,"-Cooldown, +Damage"
+282,21,Rarity,,Common,
+282,22,Rarity,,Uncommon,
+282,23,Rarity,,Rare,
+282,24,Rarity,,Epic,
+282,25,Barrel,Barrel_01_Atlinggun,Whistler,"Atling Gun, 90s CD, 446 Damage, 41% Acc, 40.0/s FR, 90 Shots"
+282,26,Rarity,,Legendary,Atling Gun Skin
+282,27,Barrel Accessory,Barrel_01_C,Magic Bullet - Every 6th shot is homing,"-Cooldown, -Damage"
+282,28,Barrel Accessory,Barrel_01_A_D,Devil's Share - Every 6th shot deals +100% Damage,+Damage
+282,29,Barrel,Barrel_01,Minigun Barrel,"Steelburner, 80s CD, 357 Damage, 71% Acc, 30.0/s FR, 120 Shots"
+273,1,Barrel Accessory,Barrel_01_D,Reticle Homing - Rocket homes in on the Reticle's target,No Stat Changes
+273,2,Barrel Accessory,Barrel_01_D,Reticle Homing - Rocket homes in on the Reticle's target,No Stat Changes
+273,3,Barrel Accessory,Barrel_01_D,Reticle Homing - Rocket homes in on the Reticle's target,No Stat Changes
+273,25,Barrel Accessory,Barrel_01_D,Reticle Homing - Rocket homes in on the Reticle's target,No Stat Changes
+273,4,Barrel Accessory,Barrel_01_C,Air Burst - Rockets explode when in proximity of an enemy,"-Cooldown, -Damage"
+273,7,Barrel Accessory,Barrel_01_C,Air Burst - Rockets explode when in proximity of an enemy,"-Cooldown, -Damage"
+273,10,Barrel Accessory,Barrel_01_C,Air Burst - Rockets explode when in proximity of an enemy,"-Cooldown, -Damage"
+273,24,Barrel Accessory,Barrel_01_C,Air Burst - Rockets explode when in proximity of an enemy,"-Cooldown, -Damage"
+273,5,Barrel Accessory,Barrel_01_B,"Shrapnel Rockets - On exploding, propels shrapnel forward","-Cooldown, +Damage"
+273,8,Barrel Accessory,Barrel_01_B,"Shrapnel Rockets - On exploding, propels shrapnel forward","-Cooldown, +Damage"
+273,11,Barrel Accessory,Barrel_01_B,"Shrapnel Rockets - On exploding, propels shrapnel forward","-Cooldown, +Damage"
+273,23,Barrel Accessory,Barrel_01_B,"Shrapnel Rockets - On exploding, propels shrapnel forward","-Cooldown, +Damage"
+273,6,Barrel Accessory,Barrel_01_A,"Triple Barrel - Fires swirling Rockets, or charge up to fire all of them at once",-Damage
+273,9,Barrel Accessory,Barrel_01_A,"Triple Barrel - Fires swirling Rockets, or charge up to fire all of them at once",-Damage
+273,12,Barrel Accessory,Barrel_01_A,"Triple Barrel - Fires swirling Rockets, or charge up to fire all of them at once",-Damage
+273,22,Barrel Accessory,Barrel_01_A,"Triple Barrel - Fires swirling Rockets, or charge up to fire all of them at once",-Damage
+273,13,Rarity,,Legendary,Gold Skin
+273,14,Body,Body,,No Stat Changes
+273,15,Body Accessory,Body_A,Blasting,"-Cooldown, +Damage"
+273,16,Body Accessory,Body_B,Covering,+Splash Radius
+273,17,Body Accessory,Body_C,Eager,-Cooldown
+273,18,Body Accessory,Body_D,Itchy,No Stat Changes
+273,20,Barrel,Barrel_01,Rocket Launcher,"Shoot Chute, 50s CD, 8254 Damage, 64% Acc, 1.0/s FR, 6 Shots"
+273,21,Barrel,Barrel_02,Micro Missile Launcher,"Rainmaker, 70s CD, 1896 Damage, 61% Acc, 6.3/s FR, 25 Shots"
+273,26,Barrel Accessory,Barrel_02_A,Two Shot - Fires 2 Rockets at a time,+Damage
+273,27,Barrel Accessory,Barrel_02_B,Fire Rate - Fire Rate is increased by +30%,"-Cooldown, +Fire Rate"
+273,28,Barrel Accessory,Barrel_02_C,Extended Magazine - Magazine Size is increased by +25%,+Ammo
+273,29,Barrel Accessory,Barrel_02_D,Scanning - Rockets home toward nearby targets,-Damage
+273,30,Rarity,,Common,
+273,31,Rarity,,Uncommon,
+273,32,Rarity,,Rare,
+273,33,Rarity,,Epic,
+273,34,Rarity,,Legendary,Sprezzatura Skin
+273,35,Barrel,Barrel_01_Javelin,Gungnir,"Sprezzatura, 50s CD, 17846 Damage, 64% Acc, 0.6/s FR, 2 Shots"
+273,36,Rarity,,Legendary,Ravenfire Skin
+273,40,Barrel,Barrel_02_Ravenfire,621 - Explosions radiate outward from the point of impact,"Ravenfire, 70s CD, 2231 Damage, 61% Acc, 2.0/s FR, 4 Shots"
+275,1,Barrel,Barrel_01_Streamer,"Delegation - Launches stationary Projectiles that each fire a Beam forward","Streamer, 120s CD, 3346 Damage, 81% Acc, 2.0/s FR, 8 Shots"
+275,2,Barrel Accessory,Barrel_01_A,Explosive - Damage splashes to other enemies near the target,-Damage
+275,18,Barrel Accessory,Barrel_01_A,Explosive - Damage splashes to other enemies near the target,-Damage
+275,3,Barrel Accessory,Barrel_01_D,Beam Splitter - The beam splits up to 2 other nearby targets,-Damage
+275,21,Barrel Accessory,Barrel_01_D,Beam Splitter - The beam splits up to 2 other nearby targets,-Damage
+275,4,Barrel Accessory,Barrel_02_C,Compound - Deals increased Damage per enemy hit,-Damage
+275,9,Barrel Accessory,Barrel_02_C,Compound - Deals increased Damage per enemy hit,-Damage
+275,24,Barrel Accessory,Barrel_02_C,Compound - Deals increased Damage per enemy hit,-Damage
+275,5,Barrel Accessory,Barrel_02_D,Ricochet - Projectiles bounce off of surfaces,"-Cooldown, +Damage"
+275,7,Barrel Accessory,Barrel_02_D,Ricochet - Projectiles bounce off of surfaces,"-Cooldown, +Damage"
+275,25,Barrel Accessory,Barrel_02_D,Ricochet - Projectiles bounce off of surfaces,"-Cooldown, +Damage"
+275,6,Barrel Accessory,Barrel_02_A,Wide Disk - Increases the Projectile width,+Damage
+275,8,Barrel Accessory,Barrel_02_A,Wide Disk - Increases the Projectile width,+Damage
+275,22,Barrel Accessory,Barrel_02_A,Wide Disk - Increases the Projectile width,+Damage
+275,10,Rarity,,Legendary,Gold Skin
+275,11,Body,Body,,No Stat Changes
+275,12,Body Accessory,Body_A,Chosen,+Damage
+275,13,Body Accessory,Body_B,Bestowed,+Ammo
+275,14,Body Accessory,Body_C,Ritualized,-Cooldown
+275,15,Body Accessory,Body_D,Strange,No Stat Changes
+275,16,Barrel,Barrel_01,Beam Rifle,"Auspex, 120s CD, 3123 Damage, 81% Acc, 4.0/s FR, 24 Shots"
+275,17,Barrel,Barrel_02,Disc Launcher,"Razor, 50s CD, 9815 Damage, 70% Acc, 1.4/s FR, 4 Shots"
+275,19,Barrel Accessory,Barrel_01_B,Thermal Convection - Damage increases the longer the beam is fired,-Damage
+275,20,Barrel Accessory,Barrel_01_C,Heat Sink - Magazine Size is increased by 25%,+Ammo
+275,23,Barrel Accessory,Barrel_02_B,Heat Exchange - Fires full auto after the initial charge,"-Cooldown, +Damage"
+275,26,Rarity,,Common,
+275,27,Rarity,,Uncommon,
+275,28,Rarity,,Rare,
+275,29,Rarity,,Epic,
+275,30,Barrel,Barrel_02_DiscJockey,"Bouncing Biscuits - Energy disc Projectiles bounce up to 5 times, and gain +20% Damage per bounce","Disc Jockey, 60s CD, 1115 Damage, 83% Acc, 3.0/s FR, 8 Shots"
+275,31,Rarity,,Legendary,Disc Jockey Skin
+275,32,Rarity,,Legendary,Streamer Skin
+289,1,Rarity,,Legendary,Bottled Lightning Skin
+289,2,Barrel Accessory,Barrel_02_C,MIRV - Spawns 3 MIRV Orbs on explosion,No Stat Changes
+289,16,Barrel Accessory,Barrel_02_C,MIRV - Spawns 3 MIRV Orbs on explosion,No Stat Changes
+289,3,Barrel Accessory,Barrel_02_D,Proxy Homing - Homes in on a nearby target before exploding,No Stat Changes
+289,19,Barrel Accessory,Barrel_02_D,Proxy Homing - Homes in on a nearby target before exploding,No Stat Changes
+289,4,Rarity,,Legendary,Gold Skin
+289,5,Body,Body,,No Stat Changes
+289,6,Body Accessory,Body_A,High-Capacity,+Ammo
+289,7,Body Accessory,Body_B,High-Energy,+Damage
+289,8,Body Accessory,Body_C,Shunted,--Cooldown
+289,9,Body Accessory,Body_D,Abnormal,No Stat Changes
+289,10,Barrel,Barrel_01,Energy Bolt,"C-Beam, 70s CD, 13831 Damage, 72% Acc, 0.8/s FR, 3 Shots"
+289,11,Barrel,Barrel_02,Energy Orb,"Supercell, 55s CD, 6692 Damage, 65% Acc, 1.6/s FR, 6 Shots"
+289,12,Barrel Accessory,Barrel_01_A,Ricochet - Projectiles bounce off of surfaces,No Stat Changes
+289,13,Barrel Accessory,Barrel_01_B,Penetration - Projectiles pierce through enemies,No Stat Changes
+289,14,Barrel Accessory,Barrel_01_C,"Speed Loader - Fire Rate is increased by 30%","-Cooldown, +Damage, +Fire Rate"
+289,15,Barrel Accessory,Barrel_01_D,Overload - Directly damaged enemies explode for additional Damage after a delay,No Stat Changes
+289,17,Barrel Accessory,Barrel_02_A,Two Shot - Fires 2 Projectiles at a time,+Damage
+289,18,Barrel Accessory,Barrel_02_B,Aerodynamics - Projectile Speed is increased by +100%,-Cooldown
+289,20,Rarity,,Common,
+289,21,Rarity,,Uncommon,
+289,22,Rarity,,Rare,
+289,23,Rarity,,Epic,
+289,24,Barrel,Barrel_01_GammaVoid,"Radiation Exposure - Creates a Singularity for 6s, in which enemies take +50% Radiation Damage over time","Gamma Void, 100s CD, 2008 Damage, 65% Acc, 5.0/s FR 1 Shot"
+289,25,Rarity,,Legendary,Gamma Void Skin
+289,26,Barrel,Barrel_02_BottledLightning,Strike Twice,"Bottled Lightning, 75s CD, 6692 Damage, 65% Acc, 1.6/s FR, 2 Shots"

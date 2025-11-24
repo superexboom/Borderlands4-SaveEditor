@@ -1,0 +1,557 @@
+[
+  {
+    "name": "Sanguine Fiends",
+    "type": "Kill Skill",
+    "description": "Vex and her Minion(s) restore Health."
+  },
+  {
+    "name": "Idle Hands",
+    "type": "Passive",
+    "description": "Vex and her Minion(s) gain Reload Speed based on the fullness of her Health."
+  },
+  {
+    "name": "Cold Iron",
+    "type": "Passive",
+    "description": "Vex and her Minion(s) gain increased Gun Damage."
+  },
+  {
+    "name": "Fell Inscriptions",
+    "type": "Passive",
+    "description": "Vex and her Minion(s) gain increased Melee Damage and Maximum Health Capacity."
+  },
+  {
+    "name": "Grave Assault",
+    "type": "Kill Skill",
+    "description": "Vex and her Minion(s) gain increased Fire Rate for a Duration. This effect can stack."
+  },
+  {
+    "name": "Ghast Blaster",
+    "type": "Minion Skill",
+    "description": "Specters gain the ability to use Ghast Blast, dealing Gun Damage to all nearby enemies on impact. Specters will use Ghast Blast on spawn, and after they Reload."
+  },
+  {
+    "name": "Portents of Suffering",
+    "type": "Passive",
+    "description": "Vex and her Minion(s) gain increased Status Effect Damage."
+  },
+  {
+    "name": "Coven",
+    "type": "Augment",
+    "description": "Spawning a Reaper grants Vex and her Minion(s) Health Regeneration for a Duration. Spawning a Specter grants Vex and her Minion(s) Critical Hit Chance for a Duration. Both effects can stack."
+  },
+  {
+    "name": "Cursed Blade",
+    "type": "Passive",
+    "description": "Vex's Melee Attacks apply Curse to hit enemies, making them take Kinetic Status Effect Damage any time they take Gun Damage."
+  },
+  {
+    "name": "Blood Sacrifice",
+    "type": "Passive",
+    "description": "Activate Kill Skills whenever Vex's Minion(s) die."
+  },
+  {
+    "name": "Grave Fiends",
+    "type": "Kill Skill",
+    "description": "Vex and her Minion(s) deal increased Damage. This effect can stack."
+  },
+  {
+    "name": "Grave Quickening",
+    "type": "Kill Skill",
+    "description": "Vex gains increased Action Skill Cooldown Rate. This effect can stack."
+  },
+  {
+    "name": "Extra Cursed",
+    "type": "Passive (requires a point in Cursed Blade)",
+    "description": "Curse Damage now triggers on Minion Melee Damage, and deals increased Damage when it's triggered by a Critical Hit."
+  },
+  {
+    "name": "Blight Attunement",
+    "type": "Attunement Kill Skill",
+    "description": "While Vex is Attuned to Corrosive, killing an enemy creates a Haunting Remnant Minion for a Duration that seeks our nearby enemies, dealing Corrosive Status Effect Damage over time. Kill Skill. Restore Haunting Remnant's Duration, if active."
+  },
+  {
+    "name": "Wither",
+    "type": "Minion Skill",
+    "description": "Specters cast Wither on an enemy when they Spawn, dealing Status Effect Damage over time, and increasing Damage Taken for a Duration. Can stack once per Elemental Type. Kill Skill. Killing a Withered enemy allows Specters to use Wither again."
+  },
+  {
+    "name": "Prismatic Ichor",
+    "type": "Passive",
+    "description": "When Vex or her Minion(s) apply a Status Effect, apply another random Elemental Status Effect."
+  },
+  {
+    "name": "Keen Suffering",
+    "type": "Passive",
+    "description": "Status Effect Damage gains a chance to Critically Hit."
+  },
+  {
+    "name": "Ghasterbait",
+    "type": "Passive",
+    "description": "Whenever Vex Dodges, she creates a Specter nearby and becomes Invisible for a Duration, or until her next Gun Shot."
+  },
+  {
+    "name": "Shot to Go!",
+    "type": "Passive",
+    "description": "When Vex swaps her current Gun, her new Gun has its Ammo partially Refilled."
+  },
+  {
+    "name": "Necrosis",
+    "type": "Passive",
+    "description": "Vex gains increased Corrosive Damage and Corrosive Status Effect Damage."
+  },
+  {
+    "name": "Heirloom",
+    "type": "Capstone",
+    "description": "Specters gain a copy of Vex's currently-equipped Gun for a Duration. Only one Specter can have a copied Gun at a time, and spawning a new Specter will remove the copied Gun from the previous Specter."
+  },
+  {
+    "name": "Burning Attunement",
+    "type": "Attunement Skill",
+    "description": "While Vex is Attuned to Incendiary, Vex and her Minion(s) gain increased Critical Hit Damage and Status Effect Application Chance. These effects persist for a Duration after Attunement is switched."
+  },
+  {
+    "name": "Hellish Harvest",
+    "type": "Minion Skill",
+    "description": "Reapers gain the ability to use Hellish Harvest, dealing Melee Damage 3 times in a large area around themselves and regenerate Health for each enemy hit. Reapers will use Hellish Harvest on spawn, and every third time they Melee Attack."
+  },
+  {
+    "name": "Recurrence",
+    "type": "Passive",
+    "description": "Whenever Vex deals Gun Damage or Melee Damage, gain a Stack of Recurrence, which increases her and her Minions' Gun Damage and Melee Damage. Stacks of Recurrence are lost if a new Stack has not been gained for a Duration. This effect can stack."
+  },
+  {
+    "name": "Reverburnations",
+    "type": "Passive",
+    "description": "Melee Damage dealt by Vex or her Minion(s) has a chance to deal Incendiary Melee Damage."
+  },
+  {
+    "name": "Haruspex",
+    "type": "Passive Skill",
+    "description": "Melee Override. Vex now throws a Phase Dagger from her offhand that deals Melee Damage to enemies hit. Phase Daggers can Critically Hit. Kill Skill. Haruspex's Cooldown is reset."
+  },
+  {
+    "name": "Burnt Offering",
+    "type": "Passive",
+    "description": "Vex gains increased Incendiary Damage and Incendiary Status Effect Damage."
+  },
+  {
+    "name": "Grim Reaper",
+    "type": "Capstone",
+    "description": "Press and hold ability to spawn a Grim Reader that drains nearby enemies, dealing Status Effect Damage over time, and regenerating Health for each drained enemy. When an enemy dies while being drained, there is a chance a new Reaper will be spawned."
+  },
+  {
+    "name": "Pincushion",
+    "type": "Passive Skill (requires a point in Haruspex)",
+    "description": "Haruspex now throws multiple Phase Daggers from both hands in a fan pattern. Killing an enemy now only refunds a portion of Haruspex's Cooldown."
+  },
+  {
+    "name": "Prismatic Weaponry",
+    "type": "Passive",
+    "description": "Vex and her Specters deal Bonus Damage with Gun Critical Hits. The Bonus Damage will be a random Elemental Type that changes on Reload, and that is increased for each active Attunement."
+  },
+  {
+    "name": "Banshee's Wail",
+    "type": "Augment",
+    "description": "Reapers can now use Banshee's Wail periodically, dealing Damage to nearby enemies and granting Overshield to nearby Allies. Damage increases apply to Overshield granted to Allies. Damaged enemies deal reduced Damage for a Duration"
+  },
+  {
+    "name": "Obedient Fiends",
+    "type": "Passive",
+    "description": "Vex gains increased Minion Damage. Minion Skills and Command Skills gain further increased Damage."
+  },
+  {
+    "name": "Spirit Bomb",
+    "type": "Passive",
+    "description": "Reapers gain Maximum Health Capacity and will release a Spirit Bomb Remnant when they die, dealing Damage of their Elemental Type to nearby enemies."
+  },
+  {
+    "name": "Ancient Rites",
+    "type": "Passive",
+    "description": "Vex gains a stack of Ancient Rites for each of her active Minion(s) every second, increasing Minion Damage. Stacks are lost after a Duration with no active Minion."
+  },
+  {
+    "name": "Death Follows Closer",
+    "type": "Passive",
+    "description": "Whenever Vex takes Damage while at Low Health, Spawn a Reaper nearby."
+  },
+  {
+    "name": "Diener",
+    "type": "Passive",
+    "description": "Dead Ringer gains an additional Charge."
+  },
+  {
+    "name": "Dark Pact",
+    "type": "Capstone",
+    "description": "Vex can now equip two Augments, and gains the ability to use Dark Pact. Dark Pact: Press and hold ability while a Minion is active to fully restore Health of all Phase Clones, as well as granting increased Movement Speed and Minion Attack Speed for a Duration. Phase Clones do not lose Health over time while Dark Pact is active, and Health loss is reset when Dark Pack ends."
+  },
+  {
+    "name": "Guns and Needles",
+    "type": "Passive",
+    "description": "Kill Skill. Restores Repkit Cooldown."
+  },
+  {
+    "name": "Volatile Essence",
+    "type": "Passive",
+    "description": "Vex gains increased Splash Damage. Double this effect when an Action Skill is active."
+  },
+  {
+    "name": "Leeching Attunement",
+    "type": "Attunement Skill",
+    "description": "While Vex is Attuned to Kinetic, she gains Lifesteal and increased Reload Speed. These effects persist for a Duration after Attunement is switched."
+  },
+  {
+    "name": "Grave Sights",
+    "type": "Kill Skill",
+    "description": "Vex gains increased Critical Hit Damage and Gun Handling. This effect can stack."
+  },
+  {
+    "name": "Fiendish Invigoration",
+    "type": "Passive",
+    "description": "When Vex uses a Repkit, she and her Minion(s) gain increased Movement Speed and Fire Rate for a Duration."
+  },
+  {
+    "name": "Geistwave",
+    "type": "Augment",
+    "description": "Instead of causing a Phase Explosion, Vex launches a Geistwave, dealing Ordnance Damage to enemies it passes through. Each affected enemy takes increased Damage for a Duration."
+  },
+  {
+    "name": "Bloodletter",
+    "type": "Passive",
+    "description": "Gun and Skill Critical Hits have a chance to apply Bleed, causing Kinetic Status Effect Damage over time for a Duration. Bleed is affected by Status Effect Application Chance, and is itself considered a Status Effect. This effect can stack."
+  },
+  {
+    "name": "Energy Vampire",
+    "type": "Augment",
+    "description": "Vex deals Status Effect Damage to nearby enemies over time and gains Overshield for each enemy affected. Kill Skill. Killing an enemy while Incarnate is active will grant a Stack of Energy Vampire, increasing Status Effect Damage. Stacks are lost when Incarnate ends. This effect can stack"
+  },
+  {
+    "name": "Grave Implements",
+    "type": "Kill Skill",
+    "description": "Vex and her Minion(s) gain increased Gun Damage for a Duration. This effect can stack."
+  },
+  {
+    "name": "Channeling",
+    "type": "Passive",
+    "description": "Vex gains increased Action Skill Duration and Attunement Duration."
+  },
+  {
+    "name": "Material Components",
+    "type": "Passive",
+    "description": "Vex gains increased Kinetic Damage and Kinetic Status Effect Damage."
+  },
+  {
+    "name": "Grave Power",
+    "type": "Passive",
+    "description": "Vex's Kill Skills gain increased Max Stacks."
+  },
+  {
+    "name": "Target Prescience",
+    "type": "Passive",
+    "description": "Vex's Gun Damage gains Critical Hit Chance against any part of enemies."
+  },
+  {
+    "name": "Radiant Attunement",
+    "type": "Attunement Skill",
+    "description": "While Vex is Attuned to Radiation, she gains increased Splash Damage and Maximum Shield Capacity. These effects persist for a Duration after Attunement is switched."
+  },
+  {
+    "name": "Iron Maiden",
+    "type": "Augment",
+    "description": "Phase Explosion and Eldritch Blast restore Shield for each enemy hit and deal increased Damage based on Vex's current Shield."
+  },
+  {
+    "name": "Conjunction",
+    "type": "Passive",
+    "description": "Vex gains increased Gun Damage the more full her Shield and gains Damage Reduction the less full her Health."
+  },
+  {
+    "name": "Dreadlight",
+    "type": "Passive",
+    "description": "When Vex deals Gun Damage, there is a chance to spawn a Radioactive Hazard, dealing Radiation Damage over time."
+  },
+  {
+    "name": "Restorative Tonic",
+    "type": "Passive",
+    "description": "When Vex uses a Repkit, she gains increased Shield Regeneration for a Duration."
+  },
+  {
+    "name": "Full Moon",
+    "type": "Passive",
+    "description": "Vex gains increased Action Skill Cooldown Rate and Ordnance Cooldown Rate based on the fullness of her Shield."
+  },
+  {
+    "name": "Havoc",
+    "type": "Passive",
+    "description": "Vex gains increased Radiation Damage and Radiation Status Effect Damage."
+  },
+  {
+    "name": "Desecration",
+    "type": "Capstone",
+    "description": "Phase Explosion and Eldritch Blast create Hazards, dealing Damage over time for a Duration. Eldritch Blast is now Homing. If it hits an airborne enemy, it bursts after a delay, dealing Damage to other nearby enemies."
+  },
+  {
+    "name": "Drink Full",
+    "type": "Passive",
+    "description": "Whenever Vex deals Gun Damage, she gains a Stack of Drink Full, increasing her Fire Rate. Stacks of Drink Full are lost if a new Stack has not been gained for a Duration. This effect can stack."
+  },
+  {
+    "name": "Witchy Trigger Finger",
+    "type": "Augment",
+    "description": "Dealing Damage with Eldritch Blast or Phase Explosion will fully Refill Ammo of Vex's current Gun, and grants a stack of Witchy Trigger Finger, increasing Gun Damage for a Duration. Stacks of Witchy Trigger Finger persist even after Incarnate ends. This effect can stack."
+  },
+  {
+    "name": "Keen Mind",
+    "type": "Passive",
+    "description": "Vex's Skill Damage gains Critical Hit Chance against any part of enemies."
+  },
+  {
+    "name": "Phase Pocket",
+    "type": "Passive",
+    "description": "Vex gains increased Magazine Size and Gun Switch Speed. Double this effect when an Action Skill is active."
+  },
+  {
+    "name": "Mortal Terror",
+    "type": "Passive",
+    "description": "Chance to Activate Kill Skills when Critically Hitting enemies."
+  },
+  {
+    "name": "Grave Elements",
+    "type": "Kill Skill",
+    "description": "Vex and Minion(s) gain Elemental Damage for a Duration. This effect can stack."
+  },
+  {
+    "name": "Vibe Check",
+    "type": "Capstone",
+    "description": "Eldritch Blast is now a Charge Skill (3). Activating Eldritch Blast consumes all Charges to Ricochet on hitting an enemy. Will Ricochet once for each Charge consumed. Eldritch Blast's Cooldown reduction from Gun Damage is doubled."
+  },
+  {
+    "name": "Strike Me Down",
+    "type": "Passive",
+    "description": "Whenever Vex would enter Fight For Your Life, she immediately gets a Second Wind, becomes Invisible for a Duration, and causes a Phase Explosion."
+  },
+  {
+    "name": "Grave Vitality",
+    "type": "Kill Skill",
+    "description": "Vex gains increased Maximum Health Capacity and Health Regeneration. This effect can stack."
+  },
+  {
+    "name": "Grave Harvest",
+    "type": "Augment",
+    "description": "Kill Skill. Killing an enemy while Incarnate is active will spawn a Soul Orb that deals Status Effect Damage over time to nearby enemies for a Duration. Use at range to detonate a Soul Orb, dealing Ordnance Damage to nearby enemies. Picking up a Soul Orb will restore Health and Action Skill Duration."
+  },
+  {
+    "name": "Ars Arcana",
+    "type": "Passive",
+    "description": "Vex gains increased Skill Damage."
+  },
+  {
+    "name": "A Deeper Grave",
+    "type": "Passive",
+    "description": "Vex's Kill Skills gain increased Duration."
+  },
+  {
+    "name": "Blood Shot",
+    "type": "Passive",
+    "description": "When Vex uses a Repkit, her next Gun Shot will become a Blood Shot, converting Damage Dealt into Kinetic Damage and dealing Bonus Damage based on her current Health."
+  },
+  {
+    "name": "Essence Leech",
+    "type": "Passive",
+    "description": "Vex gains Lifesteal. Double this effect when an Action Skill is active."
+  },
+  {
+    "name": "Heartpiercer",
+    "type": "Capstone",
+    "description": "Eldritch Blast now Sacrifices Health on use, but becomes a Piercing wave. Enemies hit take Damage, and Allies hit restore Health. Gain Bonus Damage and Healing based on Sacrificed Health. Eldritch Blast no longer has a Cooldown."
+  },
+  {
+    "name": "Blood Is Power",
+    "type": "Passive (requires 1 Point in Essence Leech)",
+    "description": "Vex gains Bonus Kinetic Damage with Guns based on her current Lifesteal when her Health is full."
+  },
+  {
+    "name": "Grave Sustenance",
+    "type": "Kill Skill",
+    "description": "Restore a percentage of Action Skill Duration."
+  },
+  {
+    "name": "Enchantment",
+    "type": "Passive",
+    "description": "Vex gains Bonus Kinetic Damage with Guns while her Action Skill is active."
+  },
+  {
+    "name": "Blood is Magic",
+    "type": "Passive",
+    "description": "Vex deals increased Action Skill Damage the higher her Health."
+  },
+  {
+    "name": "Hasty Fiends",
+    "type": "Passive",
+    "description": "Vex and her Minion(s) gain increased Movement Speed and Damage Reduction."
+  },
+  {
+    "name": "Grave Command",
+    "type": "Kill Skill",
+    "description": "Restore a percentage of Trouble's Command Skill Cooldown and Respawn Cooldown."
+  },
+  {
+    "name": "Violent Outburst",
+    "type": "Command Skill",
+    "description": "Press and hold Action Skill to Command Trouble to explode himself, dealing Ordnance Damage to all nearby enemies and restoring Health to Vex. While Phase Phamiliar is active, sacrifice a percentage of his Maximum Health Capacity instead."
+  },
+  {
+    "name": "Overprotective",
+    "type": "Kill Skill",
+    "description": "Vex and her Minion(s) gain Overshield."
+  },
+  {
+    "name": "Blink Strike",
+    "type": "Command Skill",
+    "description": "Press and hold Action Skill to Command Trouble to Blink Strike target enemy, dealing Damage. Blink Strike always Critically Strikes enemies who have less than 50% of their Health."
+  },
+  {
+    "name": "Yowl and Bay",
+    "type": "Passive",
+    "description": "Vex's Minion(s) gain increased Maximum Health Capacity. Vex gains increased Gun Damage for a Duration after Commanding Trouble."
+  },
+  {
+    "name": "Mourning",
+    "type": "Passive",
+    "description": "Vex's Kill Skills gain increased Effectiveness."
+  },
+  {
+    "name": "Claw and Bang",
+    "type": "Passive",
+    "description": "Vex and her Minion(s) gain increased Melee Damage and Ordnance Damage."
+  },
+  {
+    "name": "Overheal",
+    "type": "Passive",
+    "description": "While Vex has Overshield, she and her Minion(s) gain Health Regeneration."
+  },
+  {
+    "name": "Vorpal Fiends",
+    "type": "Passive",
+    "description": "Vex and her Minion(s) gain Critical Hit Damage."
+  },
+  {
+    "name": "Icy Attunement",
+    "type": "Attunement Kill Skill",
+    "description": "While Vex is Attuned to Cryo, killing an enemy restore Ammo and Ordnance Cooldown. Effects persist for a Duration after Attunement is switched."
+  },
+  {
+    "name": "Hexus Nexus",
+    "type": "Augment",
+    "description": "Trouble now Taunts enemies, making them more likely to target him. Command Skill. Press and hold Action Skill to Command Trouble to charge target enemy, dealing Melee Damage in a radius on impact, and creating a Singularity for a Duration."
+  },
+  {
+    "name": "Blast Rites",
+    "type": "Passive",
+    "description": "Whenever Vex uses an Ordnance, she gains Overshield, and also gains increased Fire Rate for a Duration."
+  },
+  {
+    "name": "Overspirited",
+    "type": "Kill Skill",
+    "description": "Killing an enemy with Ordnance Damage or an Action Skill will spawn an Explosive Remnant that deals Cryo Ordnance Damage to nearby enemies. Explosive Remnant gains increased Damage based on Overkill Damage."
+  },
+  {
+    "name": "Blasted Fiends",
+    "type": "Passive",
+    "description": "Vex gains increased Ordnance Damage. A perfect of Vex's Ordnance Damage increases Minion Damage."
+  },
+  {
+    "name": "Corporeal",
+    "type": "Passive",
+    "description": "Vex and her Minion(s) gain increased Maximum Overshield Capacity and Overshield Duration. While Vex has Overshield, she and her Minion(s) gain increased Damage Dealt."
+  },
+  {
+    "name": "Shiver",
+    "type": "Passive",
+    "description": "Vex gains increased Cryo Damage and Cryo Status Effect Damage."
+  },
+  {
+    "name": "Trouble Bubble",
+    "type": "Capstone",
+    "description": "Trouble now gains Overshield whenever he deals Damage. While Phase Phamiliar is active, Trouble gains an Elemental Aura, dealing Ordnance Damage over time to nearby enemies."
+  },
+  {
+    "name": "Elemental Essence",
+    "type": "Passive",
+    "description": "Vex gains increased Elemental Damage. Double this effect when an Action Skill is active."
+  },
+  {
+    "name": "Vorpal Fang",
+    "type": "Augment",
+    "description": "Trouble gains a chance to Critically Hit with all attacks. Command Skill. Press and hold Action Skill to Command Trouble to summon Phase Daggers overhead that fire at nearby enemies, dealing Melee Damage on impact."
+  },
+  {
+    "name": "Keen Fiends",
+    "type": "Passive",
+    "description": "Minion Damage gains Critical Hit Chance against any part of enemies."
+  },
+  {
+    "name": "Infernal Sum",
+    "type": "Passive",
+    "description": "Vex and her Minion(s) deal increased Critical Hit Damage to enemies who have less than a set percentage of their Health."
+  },
+  {
+    "name": "Sacrificial Essence",
+    "type": "Passive",
+    "description": "Kill Skill. Vex and her Minion(s) gain increased Damage Dealt, but Vex also gains increased Damage Taken for a Duration. Stacks are lost when Vex Dodges or enters Fight For Your Life. This effect can stack."
+  },
+  {
+    "name": "Reawakening",
+    "type": "Passive",
+    "description": "Whenever Vex or her Minion(s) Critically Hit, there is a chance to restore Action Skill Cooldown."
+  },
+  {
+    "name": "Shocking Attunement",
+    "type": "Attunement Skill",
+    "description": "While Vex is Attuned to Shock, she gains increased Movement Speed and Gun Damage while moving. Effects persist for a Duration after Attunement is switched."
+  },
+  {
+    "name": "Beast Mode",
+    "type": "Augment",
+    "description": "Command Skill. Press and hold Action Skill to Command Trouble to enter Beast Mode, becoming Immune to Damage and gaining increased Minion Attack Speed and Movement Speed for a Duration. Kill Skill. Extends Beast Mode's Duration."
+  },
+  {
+    "name": "Grave Current",
+    "type": "Kill Skill",
+    "description": "Vex's Minion(s) gain Bonus Shock Damage. This effect can stack."
+  },
+  {
+    "name": "Deadwire",
+    "type": "Passive",
+    "description": "When Vex deals Gun Damage, there is a Chance to spawn a Spark Remnant that will seek out a nearby enemy and explode, dealing Shock Minion Damage to other nearby enemies."
+  },
+  {
+    "name": "Grave Thirst",
+    "type": "Kill Skill",
+    "description": "Vex and her Minion(s) gain Lifesteal for a Duration. This effect can stack."
+  },
+  {
+    "name": "Infusion",
+    "type": "Passive",
+    "description": "When Vex uses a Repkit, she and her Minion(s) gain Bonus Damage with Guns and Melee Damage for a Duration. The Bonus Damage's Elemental Type is based on Vex's currently-equipped Attunement."
+  },
+  {
+    "name": "Stormblessed",
+    "type": "Passive",
+    "description": "Vex gains increased Shock Damage and Shock Status Effect Damage."
+  },
+  {
+    "name": "Unsealed",
+    "type": "Capstone",
+    "description": "Trouble will now Mark his current target, causing them to take increased Gun Damage from Vex. Kill Skill. When a Marked enemy is killed, Trouble gains a Stack of Unsealed for a Duration, granting Health Regeneration and increased Damage. While Phase Phamiliar is active, Unsealed effects are doubled. This effect can stack."
+  },
+  {
+    "name": "Tail Whip",
+    "type": "Passive",
+    "description": "Trouble gains the ability to Tail Whip, dealing damage in an area over 2 hits."
+  },
+  {
+    "name": "Double Trouble",
+    "type": "Capstone",
+    "description": "Trouble now gains a Chance to create an Illusion near the enemy when dealing Damage. Critical Hits have double that chance. Illusions become Badasses while Phase Phamiliar is active."
+  }
+]

@@ -1,0 +1,83 @@
+Manufacturer ID,Part_ID,Part_type,Stat,Description
+279,1,Legendary Perk,核合成,当能量护盾破裂或填充时会触发星爆，造成14872伤害
+279,2,Model,/,
+279,3,Rarity,Common,
+279,4,Rarity,Uncommon,
+279,5,Rarity,Rare,
+279,6,Rarity,Epic,
+279,7,Rarity,Legendary,金皮肤
+279,8,Legendary Perk,精神错乱,受到伤害时，获得+15%元素抗性和+50%抗性（针对最后所受伤害类型），持续5秒
+279,9,Rarity,Legendary,潘多拉纪念品皮肤
+279,10,Rarity,Legendary,超大中杯皮肤
+283,1,Rarity,Common,
+283,2,Rarity,Uncommon,
+283,3,Rarity,Rare,
+283,4,Rarity,Epic,
+283,5,Rarity,Legendary,金皮肤
+283,6,Legendary Perk,茶点,击杀时有50%几率生成弹药增强器，并立即补充枪械弹药
+283,7,Rarity,Legendary,囤积者皮肤
+283,8,Legendary Perk,裸拳格斗,近战击中时，消耗一个护甲段获得+100%近战伤害。当护甲护盾为0时，获得+50%近战伤害
+283,9,Rarity,Legendary,重量级皮肤
+283,10,Model,/,
+287,1,Rarity,Common,
+287,2,Rarity,Uncommon,
+287,3,Rarity,Rare,
+287,4,Rarity,Epic,
+287,5,Rarity,Legendary,金皮肤
+287,6,Legendary Perk,护盾小子,最后一个护甲段破裂时生成护盾小子
+287,7,Rarity,Legendary,首要皮肤
+287,8,Rarity,Legendary,时间尊者新护盾皮肤
+287,9,Legendary Perk,比尼努一装备后，获得+7436最大生命值，每秒恢复+372生命值，同时受到的伤害降低33%
+287,10,Model,/,
+293,1,Legendary Perk,玻璃,受到伤害时，获得一层决心，每有一层决心，所受伤害减少2%，最多叠加25层。能量护盾破裂时将释放星爆，造成7436伤害，每有一层决心，该伤害提升+20%
+293,2,Legendary Perk,直流电,通过落地猛击切换此效果开关。启用后，会持续消耗护盾并获得+40%加成电击伤害，但受到的伤害会直接穿透护盾
+293,3,Rarity,Legendary,变形细胞皮肤
+293,4,Model,/,
+293,5,Rarity,Common,
+293,6,Rarity,Uncommon,
+293,7,Rarity,Rare,
+293,8,Rarity,Epic,
+293,9,Rarity,Legendary,金皮肤
+293,10,Rarity,Legendary,灰烬壳皮肤
+300,1,Rarity,Common,
+300,2,Rarity,Uncommon,
+300,3,Rarity,Rare,
+300,4,Rarity,Epic,
+300,5,Rarity,Legendary,金皮肤
+300,6,Legendary Perk,短路,能量护盾未满时，会周期性电击附近敌人
+300,7,Rarity,Legendary,电光护盾皮肤
+300,8,Legendary Perk,超强护盾吞噬者一启用能量护盾时，被击中的敌人有12%几率掉落超强护盾。如拥有超强护盾，获得+25%电击伤害
+300,9,Rarity,Legendary,通电晚餐皮肤
+300,10,Model,/,
+300,11,Legendary Perk,后门一能量护盾破裂时，对3名敌人触发星爆并造成5577伤害
+300,12,Rarity,Legendary,防火线皮肤
+306,1,Rarity,Common,
+306,2,Rarity,Uncommon,
+306,3,Rarity,Rare,
+306,4,Rarity,Epic,
+306,5,Rarity,Legendary,金皮肤
+306,6,Rarity,Legendary,陈年橡木桶皮肤
+306,7,Legendary Perk,老式复古,仅有一格护甲
+306,8,Legendary Perk,葱皮,护甲段破裂时，获得2秒伤害免疫
+306,9,Rarity,Legendary,洋葱皮肤
+306,10,Model,/,
+312,1,Rarity,Common,
+312,2,Rarity,Uncommon,
+312,3,Rarity,Rare,
+312,4,Rarity,Epic,
+312,5,Rarity,Legendary,金皮肤
+312,6,Legendary Perk,恩典之翼,装备后，在殊死一搏状态下可更快复活。当殊死一搏时间耗尽时，每300秒免费获得1次卷土重来
+312,7,Rarity,Legendary,守护天使皮肤
+312,8,Legendary Perk,优势局面,当能量护盾填充时，获得超强护盾。当能量护盾全满时，获得25%射速、25%移动速度，同时每秒恢复1弹药
+312,9,Rarity,Legendary,超级士兵皮肤
+312,10,Model,/,
+321,1,Rarity,Common,
+321,2,Rarity,Uncommon,
+321,3,Rarity,Rare,
+321,4,Rarity,Epic,
+321,5,Rarity,Legendary,金皮肤
+321,6,Legendary Perk,捆绑,击杀时生成导弹，自动追踪附近敌人，每枚造成7436伤害
+321,7,Rarity,Legendary,烟火表演皮肤
+321,8,Rarity,Legendary,完成皮肤
+321,9,Legendary Perk,西西弗斯式,护甲护盾全满时，立刻失去一个护甲段
+321,10,Model,/,

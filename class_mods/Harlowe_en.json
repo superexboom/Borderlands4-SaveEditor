@@ -1,0 +1,547 @@
+[
+  {
+    "name": "Cyclotron",
+    "type": "Passive",
+    "description": "Harlowe gains increased Fire Rate."
+  },
+  {
+    "name": "PPE",
+    "type": "Passive",
+    "description": "Harlowe gains increased Maximum Shield Capacity and Shield Recharge Rate."
+  },
+  {
+    "name": "Field-Ready Prototype",
+    "type": "Passive",
+    "description": "Harlowe gains increased Action Skill Damage."
+  },
+  {
+    "name": "Bleeding Edge",
+    "type": "Passive",
+    "description": "Harlowe gains increased Reload Speed."
+  },
+  {
+    "name": "Voidstar",
+    "type": "Augment",
+    "description": "Whenever Harlowe's Unstable Energy Pocket passes by an enemy, it loses a portion of its current Total Health and becomes Frozen."
+  },
+  {
+    "name": "Neutron Capture",
+    "type": "Augment",
+    "description": "All Damage Harlowe's Unstable Energy Pocket deals to enemies is stored. Whenever it explodes, a portion of that Stored Damage is transferred to Harlowe's Gun, causing her to deal Bonus Radiation Damage."
+  },
+  {
+    "name": "Elementary",
+    "type": "Passive",
+    "description": "Harlowe gains increased Elemental Damage and Status Effect Damage."
+  },
+  {
+    "name": "Test Subjects",
+    "type": "Passive",
+    "description": "Whenever Harlowe applies a Status Effect to an enemy, she gains increased Action Skill Cooldown Rate."
+  },
+  {
+    "name": "Get Up and Go",
+    "type": "Passive",
+    "description": "Whenever Harlowe activates or retriggers an Action Skill, she gains increased Movement Speed."
+  },
+  {
+    "name": "Elephant's Foot",
+    "type": "Passive",
+    "description": "Whenever Harlowe's Shield breaks, she deals Radiation Damage to all Entangled enemies. Harlowe gains Overshield equal to the amount of Damage dealt this way."
+  },
+  {
+    "name": "Great Red DoT",
+    "type": "Passive",
+    "description": "Harlowe gains increased Status Effect Duration."
+  },
+  {
+    "name": "Enriched",
+    "type": "Passive",
+    "description": "Harlowe gains increased Radiation Damage."
+  },
+  {
+    "name": "Practical Applications",
+    "type": "Passive",
+    "description": "Harlowe gains increased Skill Damage."
+  },
+  {
+    "name": "Field Research",
+    "type": "Augment",
+    "description": "Whenever Harlowe kills an enemy with her Unstable Energy Pocket and when she kills an Entangled enemy while her Unstable Energy Pocket is active, refund a portion of her next Action Skill Cooldown."
+  },
+  {
+    "name": "Carry the One",
+    "type": "Passive",
+    "description": "Whenever Harlowe Entangles an enemy, she gains a chance to Entangle another nearby enemy."
+  },
+  {
+    "name": "Core Sample",
+    "type": "Passive",
+    "description": "Harlowe gains Lifesteal against Frozen enemies. If she's at full Health, she gains Overshield instead."
+  },
+  {
+    "name": "Break the Ice",
+    "type": "Passive",
+    "description": "Convert all CHROMA Accelerator Damage to Cryo Damage."
+  },
+  {
+    "name": "Opposing Force",
+    "type": "Passive",
+    "description": "Whenever Harlowe Freezes an enemy, she gains increased Action Skill Cooldown rate. This effect can stack."
+  },
+  {
+    "name": "Q-Ball",
+    "type": "Capstone",
+    "description": "Harlowe's Unstable Energy Pocket bounces as it travels and can no longer be manually detonated. Each time it bounces, it creates a Radiation Explosion. Whenever it strikes an enemy, it changes direction and bounces towards another enemy."
+  },
+  {
+    "name": "Cold Welding",
+    "type": "Passive",
+    "description": "Whenever Harlowe Freezes an Entangled enemy, it deals Cryo Damage to itself and all other Entangled enemies."
+  },
+  {
+    "name": "Poisoned Sun",
+    "type": "Passive",
+    "description": "Harlowe gains increased Radiation Damage and Irradiation Chance."
+  },
+  {
+    "name": "Special Purpose Magnets",
+    "type": "Augment",
+    "description": "Harlowe's Unstable Energy Pocket pulls enemies along as it passes by, and its detonation deals increased Damage for every enemy it has already hit."
+  },
+  {
+    "name": "Glow Up",
+    "type": "Passive",
+    "description": "Harlowe gains Critical Hit Chance with Guns against Irradiated enemies."
+  },
+  {
+    "name": "Fissile Launcher",
+    "type": "Passive",
+    "description": "Whenever Harlowe damages an Irradiated enemy or an Entangled enemy, shoot a Radiation Dart at another enemy."
+  },
+  {
+    "name": "Chain Reactor",
+    "type": "Passive",
+    "description": "Harlowe deals Bonus Radiation Damage to Entangled enemies."
+  },
+  {
+    "name": "Wasted",
+    "type": "Passive",
+    "description": "Kill Skill. Killing an Irradiated enemy or killing an enemy with Radiation Damage leaves behind a Radiation Hazard."
+  },
+  {
+    "name": "Demon Core",
+    "type": "Capstone",
+    "description": "As Harlowe's Unstable Energy Pocket travels, it shoots Radiation Darts at enemies. Whenever Harlowe Entangles an enemy while her Action Skill is active, automatically Irradiate that enemy."
+  },
+  {
+    "name": "Dirty Bomb",
+    "type": "Passive",
+    "description": "Whenever Harlowe Irradiates an enemy, create a Radiation Explosion on that enemy."
+  },
+  {
+    "name": "Highly Efficient",
+    "type": "Passive",
+    "description": "Kill Skill. Whenever Harlowe kills an enemy with a Skill, Restore a portion of her Shield Capacity."
+  },
+  {
+    "name": "Containment Breach",
+    "type": "Augment",
+    "description": "Whenever Harlowe's Unstable Energy Pocket detonates, it Splits into several smaller, fast moving Unstable Energy Pockets."
+  },
+  {
+    "name": "Mechanical Brilliance",
+    "type": "Passive",
+    "description": "Whenever Harlowe damages an enemy with a Skill, she gains increased Skill Damage. This effect can stack."
+  },
+  {
+    "name": "Eureka!",
+    "type": "Passive",
+    "description": "Whenever Harlowe enters Fight For Your Life, she throws a free Unstable Energy Pocket at a nearby enemy - if there are any."
+  },
+  {
+    "name": "Rounding Up",
+    "type": "Passive",
+    "description": "For every enemy her Action Skill damages, Harlowe gains increased Gun Damage when her Action Skill ends. This effect can stack."
+  },
+  {
+    "name": "Alternative Fuel Source",
+    "type": "Passive",
+    "description": "Whenever Harlowe activates CHROMA Accelerator, drain her Shield and Amp her next Unstable Energy Pocket."
+  },
+  {
+    "name": "The Shattering Light",
+    "type": "Capstone",
+    "description": "Charge Skill. CHROMA Accelerator gains Charges as Harlowe keeps it readied for the Duration of CHROMA Accelerator or until all Charges are used. Holding the Action Skill ends The Shattering Light early and refunds a portion of the Cooldown for every Charge remaining. Press Action Skill: Fire a fast-moving Unstable Energy Pocket, consuming a Charge."
+  },
+  {
+    "name": "QED",
+    "type": "Passive",
+    "description": "Melee Override. Harlowe attaches an Unstable Energy Pocket to her fist, and slams it into an enemy in front of her."
+  },
+  {
+    "name": "SEIZE THE DAY",
+    "type": "skill_tree",
+    "description": "Seize the Day skill tree for Harlowe"
+  },
+  {
+    "name": "Quantum Immortality",
+    "type": "Passive",
+    "description": "Whenever Harlowe Entangles an enemy, she gains Health Regeneration."
+  },
+  {
+    "name": "Parallel Circuit",
+    "type": "Passive",
+    "description": "After triggering or retriggering an Action Skill, Harlowe gains increased Gun Damage."
+  },
+  {
+    "name": "Pulse Drive",
+    "type": "Passive",
+    "description": "Harlowe gains increased Action Skill Cooldown Rate."
+  },
+  {
+    "name": "Make Extraordinary",
+    "type": "Passive",
+    "description": "Harlowe gains Critical Hit Chance with all Skills. This chance increases every time Harlowe Entangles an enemy. This effect can stack."
+  },
+  {
+    "name": "Bright Future",
+    "type": "Passive",
+    "description": "Whenever Harlowe triggers or retriggers an Action Skill, she gains increased Fire Rate."
+  },
+  {
+    "name": "Strange Attractor",
+    "type": "Augment",
+    "description": "Whenever Harlowe shoots an enemy with a Gun, bullets Ricochet off of that enemy onto all enemies in Stasis. If Harlowe Critically Hits an enemy, that enemy becomes Entangled."
+  },
+  {
+    "name": "Negative Entropy",
+    "type": "Passive",
+    "description": "Harlowe gains increased Gun Handling. This bonus is Doubled while an enemy is in Stasis."
+  },
+  {
+    "name": "Peer Review",
+    "type": "Augment",
+    "description": "Whenever an enemy enters Stasis, spawn a homing Rejuvenating Projectile that targets Harlowe or her Allies once the enemy is Slammed, killed, or Stasis ends. The Rejuvenating Projectile grants decreased Action Skill Duration Rate and increased Action Skill Cooldown Rate for a Duration. If the target is in Fight for Your Life, they immediately gain Second Wind as if they killed an enemy."
+  },
+  {
+    "name": "Periodic Table Flip",
+    "type": "Passive",
+    "description": "Harlowe gains increased Elemental Damage, Status Effect Application Chance, and Cryo Effectiveness."
+  },
+  {
+    "name": "Ripple Effect",
+    "type": "Passive",
+    "description": "Kill Skill. Whenever Harlowe kills an Entangled enemy, automatically Entangle another nearby enemy."
+  },
+  {
+    "name": "Too Coolant For Schoolant",
+    "type": "Passive",
+    "description": "Whenever Harlowe deals Cryo Damage, gain increased Action Skill Cooldown Rate."
+  },
+  {
+    "name": "Cryodynamics",
+    "type": "Passive",
+    "description": "Harlowe gains increased Cryo Damage."
+  },
+  {
+    "name": "Concurrence",
+    "type": "Passive",
+    "description": "Harlowe gains increased Action Skill Duration for every Entangled enemy."
+  },
+  {
+    "name": "Wildcat Destabilization",
+    "type": "Augment",
+    "description": "Entangled enemies take Bonus Radiation Damage from Entangle. Whenever Harlowe deals Radiation Gun Damage to an enemy, restore Action Skill Duration. Whenever Harlowe kills an enemy in Stasis, create a Radiation Nova. This Radiation Nova deals Damage based on remaining Action Skill Duration."
+  },
+  {
+    "name": "Force of Will",
+    "type": "Passive",
+    "description": "Whenever Harlowe Critically Hits an enemy, Daze that enemy. Dazed enemies have decreased Movement Speed and Attack Speed. Daze can stack."
+  },
+  {
+    "name": "Control Group",
+    "type": "Passive",
+    "description": "Kill Skill. Killing an Entangled enemy restores a portion of Harlowe's Action Skill Cooldown and Action Skill Duration."
+  },
+  {
+    "name": "Slingshot",
+    "type": "Passive",
+    "description": "Whenever Harlowe Dazes an enemy, she also Entangles them, and then she gains increased Movement Speed."
+  },
+  {
+    "name": "Freeze Frame",
+    "type": "Passive",
+    "description": "Harlowe's Guns deal Bonus Cryo Damage for every enemy she has in Stasis. This effect can stack."
+  },
+  {
+    "name": "Falling Bodies",
+    "type": "Capstone",
+    "description": "Pressing Action Skill places an additional enemy in Stasis at the cost of Action Skill Duration. When Stasis ends, automatically Slam all enemies straight down."
+  },
+  {
+    "name": "Stun Lock",
+    "type": "Passive",
+    "description": "Whenever Harlowe Critically Hits an enemy, she briefly puts that enemy into Stasis. This form of Stasis lasts for a short duration, or until the enemy is shot again."
+  },
+  {
+    "name": "Unstable Ice-otope",
+    "type": "Passive",
+    "description": "Kill Skill. Harlowe deals Bonus Cryo Damage with all sources."
+  },
+  {
+    "name": "Cold Storage",
+    "type": "Augment",
+    "description": "All Damage Dealt to enemies in Stasis is stored. Whenever an enemy is Slammed or Stasis ends, create a Cryo Explosion based on all Stored Damage and centered on that enemy, and also automatically Freeze other enemies nearby."
+  },
+  {
+    "name": "Keep Ice On That",
+    "type": "Passive",
+    "description": "All Cryo Damage Harlowe deals gains Lifesteal. If Harlowe's Health is full, she gains Overshield instead."
+  },
+  {
+    "name": "Endothermic Reaction",
+    "type": "Passive",
+    "description": "Whenever Harlowe Freezes an enemy, create an Endothermic Aura that deals constant Cryo Damage to enemies around it. Harlowe's Endothermic Aura deals increased Damage based on her Overshield. The more full, the greater the bonus"
+  },
+  {
+    "name": "Flash Freeze",
+    "type": "Passive",
+    "description": "Whenever Harlowe deals Cryo Damage with an Action Skill, she gains a chance to Freeze that enemy."
+  },
+  {
+    "name": "Heat Sink",
+    "type": "Passive",
+    "description": "Whenever Harlowe Freezes an enemy, she gains increased Action Skill Cooldown Rate."
+  },
+  {
+    "name": "Triple Point",
+    "type": "Passive",
+    "description": "Whenever Harlowe deals non-Cryo Damage to an Entangled enemy, she deals Bonus Cryo Damage to that enemy. If she deals Cryo Damage to an Entangled enemy, she deals increased bonus Damage."
+  },
+  {
+    "name": "Cold Plunge",
+    "type": "Capstone",
+    "description": "Whenever Harlowe Slams an enemy, create a Singularity on that enemy, followed by a Cryo Explosion."
+  },
+  {
+    "name": "Indiscrete Math",
+    "type": "Passive",
+    "description": "Harlowe gains increased Splash Damage."
+  },
+  {
+    "name": "Inertia",
+    "type": "Augment",
+    "description": "Whenever an enemy Harlowe has in Stasis dies, a new enemy is automatically added to Stasis. When this happens, Harlowe's Action Skill Duration resets, however it drains quicker."
+  },
+  {
+    "name": "Experimentation",
+    "type": "Passive",
+    "description": "Kill Skill. Killing an Entangled enemy causes an Elemental Explosion on all other Entangled enemies."
+  },
+  {
+    "name": "Domino Effect",
+    "type": "Passive",
+    "description": "Whenever Harlowe deals Splash Damage to an Entangled enemy, she gains a chance to trigger Entangled Damage Share again."
+  },
+  {
+    "name": "Sustained Reaction",
+    "type": "Passive",
+    "description": "Kill Skill. Killing an Entangled enemy restores a portion of Harlowe's Action Skill Duration."
+  },
+  {
+    "name": "Ground State",
+    "type": "Capstone",
+    "description": "Every time Harlowe Slams an enemy, gain increased Slam Damage and Slam Damage Radius. Enemies in Stasis take Decreased Damage. Press Action Skill to Slam all enemies in Stasis straight down."
+  },
+  {
+    "name": "Gordian Knot",
+    "type": "Passive",
+    "description": "Kill Skill. Whenever Harlowe kills an Entangled enemy, she gains a chance to instantly fully restore her Action Skill."
+  },
+  {
+    "name": "COSMIC BRILLIANCE",
+    "type": "skill_tree",
+    "description": "Cosmic Brilliance skill tree for Harlowe"
+  },
+  {
+    "name": "Mains Hum",
+    "type": "Passive",
+    "description": "Harlowe gains increased Maximum Shield Capacity and increased Maximum Overshield Capacity."
+  },
+  {
+    "name": "Personal Observation",
+    "type": "Passive",
+    "description": "Harlowe deals increased Melee Damage and her Melee Attacks gain a chance to Entangle enemies."
+  },
+  {
+    "name": "Action at a Distance",
+    "type": "Passive",
+    "description": "Whenever Harlowe applies a Status Effect to an enemy, she gains a chance to apply that Status Effect to each Entangled enemy."
+  },
+  {
+    "name": "Momentum",
+    "type": "Passive",
+    "description": "Whenever Harlowe Entangles an enemy, she and her allies deal increased Critical Hit Damage."
+  },
+  {
+    "name": "Mass Function",
+    "type": "Passive",
+    "description": "Harlowe and her allies gain increased Reload Speed for every Entangled enemy."
+  },
+  {
+    "name": "Coronal Mass Ejection",
+    "type": "Augment",
+    "description": "Enemies inside Harlowe's Flux Generator lose all Elemental Resistances. Harlowe and her allies inside her Flux Generator gain increased Status Effect Chance."
+  },
+  {
+    "name": "Neutron Decay",
+    "type": "Passive",
+    "description": "Whenever Harlowe Irradiates an enemy, she gains increased Gun Damage. This effect can stack."
+  },
+  {
+    "name": "Blue Giant",
+    "type": "Augment",
+    "description": "Harlowe's Flux Generator gains increased Radius. Additionally, whenever she retrieves Flux Generator, she creates a Cryo Hazard where her Flux Generator was located, and a Radiation Hazard wherever she next places her Flux Generator. Only one of each of these Hazards may be active at a time."
+  },
+  {
+    "name": "Heat Death",
+    "type": "Passive",
+    "description": "Harlowe gains increased Cryo Efficiency."
+  },
+  {
+    "name": "Creative Overflow",
+    "type": "Passive",
+    "description": "Harlowe deals increased Gun Damage based on her Overshield. The more Overshield she has, the bigger the bonus."
+  },
+  {
+    "name": "Resonance Cascade",
+    "type": "Passive",
+    "description": "Whenever Harlowe deals Radiation Damage to an enemy, she gains increased Action Skill Damage. This effect can stack."
+  },
+  {
+    "name": "Confirmative Reality",
+    "type": "Passive",
+    "description": "Whenever Harlowe shoots an Entangled enemy, she and all allies restore a portion of their Action Skill Cooldown."
+  },
+  {
+    "name": "Absolute Zero",
+    "type": "Passive",
+    "description": "Whenever Harlowe Freezes an enemy, she receives a Stack of Zero Point. For every Stack of Zero Point, her Action Skill Duration freezes enemies for a short time."
+  },
+  {
+    "name": "Blue Shift",
+    "type": "Passive",
+    "description": "While her Action Skill is Cooling Down, Harlowe deals Bonus Cryo Damage with her Melee Attacks. While her Action Skill is Active, Harlowe deals Bonus Radiation Damage with her Melee Attacks."
+  },
+  {
+    "name": "Unified Theory",
+    "type": "Augment",
+    "description": "Harlowe's Flux Generator gains increased Action Skill Damage. This effect is increased based on how many Allies and Enemies are inside of her Flux Generator."
+  },
+  {
+    "name": "Decoherence",
+    "type": "Passive",
+    "description": "Harlowe deals increased Damage with all sources to Entangled enemies. Enemies inside of her Flux Generator take further increased Damage."
+  },
+  {
+    "name": "Gamma Ray Burst",
+    "type": "Passive",
+    "description": "Whenever Harlowe retriggers her Action Skill, the next shot fired from her Gun drains her Shield and deals Bonus Radiation Damage based on the amount drained."
+  },
+  {
+    "name": "Nuclear Winter",
+    "type": "Augment",
+    "description": "Whenever Harlowe and her allies are inside the Flux Generator's Radius, they deal Bonus Cryo Damage. Whenever Harlowe and her allies leave the Flux Generator's Radius, they instead deal Bonus Radiation Damage for a Duration. Whenever Harlowe inflicts Cryo or Radiation Status Effects, that enemy becomes Entangled."
+  },
+  {
+    "name": "Harlowe's Certainty Principle",
+    "type": "Passive",
+    "description": "Harlowe gains increased Gun Handling, which is further increased with every enemy in her Flux Generator."
+  },
+  {
+    "name": "Latent Charge",
+    "type": "Passive",
+    "description": "Harlowe deals Bonus Damage with Guns, Melee Attacks, and Action Skills while she has Overshield. The more Overshield she has, the bigger the bonus."
+  },
+  {
+    "name": "Feedback Loop",
+    "type": "Passive",
+    "description": "Whenever Harlowe Entangles an enemy, she gains increased Action Skill Damage, Action Skill Duration, and Action Skill Cooldown Rate. This effect can stack."
+  },
+  {
+    "name": "Potential Transference",
+    "type": "Capstone",
+    "description": "Charge Skill. Whenever Harlowe relocates her Flux Generator, it Teleports to a location in her crosshairs, consuming a Charge and creating a Shock Burst that deals Shock Damage to enemies inside it, grants a free Second Wind to allies, and Heals allies within the Flux Generator."
+  },
+  {
+    "name": "Runaway Reaction",
+    "type": "Passive",
+    "description": "Harlowe gains increased Status Effect Chance. Whenever Harlowe applies a Status Effect to an enemy, it becomes Entangled."
+  },
+  {
+    "name": "Refraction",
+    "type": "Passive",
+    "description": "Harlowe and her allies gain Ricochet Chance against Entangled enemies. Critical Hits Double this chance. Ricochets have Reduced Damage."
+  },
+  {
+    "name": "Perpetual Engine",
+    "type": "Augment",
+    "description": "When Harlowe activates her Flux Generator, she gains Damage Reduction and increased Action Skill Duration for each Entangled enemy and each additional enemy she Entangles while her Action Skill is active."
+  },
+  {
+    "name": "Excited State",
+    "type": "Passive",
+    "description": "Harlowe gains increased Critical Hit Damage. Whenever an enemy is damaged by Harlowe's Action Skill, the next shot on that enemy will be an Automatic Critical Hit."
+  },
+  {
+    "name": "Jaunt",
+    "type": "Passive",
+    "description": "Press and hold Melee Attack to make Harlowe swap places with her Flux Generator."
+  },
+  {
+    "name": "Critical Funding",
+    "type": "Passive",
+    "description": "Whenever Harlowe Critically Hits an enemy, she gains a chance to Entangle it, and Refills a portion of her Gun's Magazine."
+  },
+  {
+    "name": "Accretion",
+    "type": "Passive",
+    "description": "Harlowe and her allies gain Lifesteal against Entangled enemies."
+  },
+  {
+    "name": "Distribution Function",
+    "type": "Passive",
+    "description": "Whenever Harlowe's Action Skill damages an enemy, restore a portion of her and all allies' Shield Capacity. If their Shields are full, gain Overshield instead."
+  },
+  {
+    "name": "Pencils Down",
+    "type": "Passive",
+    "description": "While Harlowe's Action Skill is Cooling Down, she grants herself and her allies increased Reload Speed and Fire Rate."
+  },
+  {
+    "name": "Group Study",
+    "type": "Capstone",
+    "description": "Harlowe spawns a HALO Sidekick for each ally instead of her Flux Generator. HALO Sidekicks automatically fly to each ally and hover near them, granting increased Gun Damage, Fire Rate, and Reload Speed. Action Skill Retrigger: Overload Harlowe's HALO Sidekicks to increase their effects. This effect stacks. While Overloaded, Harlowe's Action Skill Duration drains faster."
+  },
+  {
+    "name": "Annihilation",
+    "type": "Passive",
+    "description": "Harlowe's Flux Generator occasionally throws Grenades. If Harlowe or her Allies are inside the Flux Generator and have a Grenade equipped, it throws a copy of that Grenade."
+  },
+  {
+    "name": "Exposed Core",
+    "type": "Passive",
+    "description": "While her Shield is down, Harlowe gains increased Status Effect Chance."
+  },
+  {
+    "name": "Violent Horizon",
+    "type": "Capstone",
+    "description": "Harlowe's Flux Generator occasionally shoots Radiation Projectiles at nearby enemies outside of its radius. If these Projectiles Irradiate an enemy, the Flux Generator then drags them within its radius. Retrigger: Harlowe's Flux Generator creates a Singularity burst that drags in nearby enemies and increases Action Skill Power."
+  },
+  {
+    "name": "Meltdown",
+    "type": "Passive",
+    "description": "Harlowe's Critical Hits with Guns deal Bonus Radiation Damage."
+  }
+]

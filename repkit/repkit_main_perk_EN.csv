@@ -1,0 +1,101 @@
+Repkit_perk_main_ID,Part_ID,Part_type,Stat,Description
+243,1,Firmware,God Killer,
+243,2,Firmware,Reel Big Fist,
+243,3,Firmware,Lifeblood,
+243,4,Firmware,Airstrike,
+243,5,Firmware,High Caliber,
+243,6,Firmware,Gadget Ahoy,
+243,7,Firmware,Baker,
+243,8,Firmware,Oscar Mike,
+243,9,Firmware,Rubberband Man,
+243,10,Firmware,Deadeye,
+243,11,Firmware,Action Fist,
+243,12,Firmware,GooJFC,
+243,13,Firmware,Atlas E.X.,
+243,14,Firmware,Atlas Infinum,
+243,15,Firmware,Trickshot,
+243,16,Firmware,Jacked,
+243,17,Firmware,Get Throwin',
+243,18,Firmware,Heating Up,
+243,19,Firmware,Bullets to Spare,
+243,20,Firmware,Daed-dy O',
+243,21,Perk,Everlasting,+20% Capacity and Duration
+243,22,Resistance,Shock Resistance,+50% Shock Resistance for 10s
+243,23,Resistance,Radiation Resistance,+50% Radiation Resistance for 10s
+243,24,Resistance,Fire Resistance,+50% Fire Resistance for 10s
+243,25,Resistance,Cryo Resistance,+50% Cryo Resistance for 10s
+243,26,Resistance,Corrosive Resistance,+50% Corrosive Resistance for 10s
+243,27,Immunity,Shock Immunity,Shock Immunity for 3s
+243,28,Immunity,Radiation Immunity,Radiation Immunity for 3s
+243,29,Immunity,Fire Immunity,Fire Immunity for 3s
+243,30,Immunity,Cryo Immunity,Cryo Immunity for 3s
+243,31,Immunity,Corrosive Immunity,Corrosive Immunity for 3s
+243,32,Perk,Shock Splat,Spawns a Shock Splat
+243,33,Perk,Radiation Splat,Spawns a Radiation Splat
+243,34,Perk,Cryo Splat,Spawns a Cryo Splat
+243,35,Perk,Corrosive Splat,Spawns a Corrosive Splat
+243,36,Perk,Fire Splat,Spawns a Fire Splat
+243,37,Perk,Corrosive Nova,Releases a Corrosive Nova
+243,38,Perk,Cryo Nova,Releases a Cryo Nova
+243,39,Perk,Fire Nova,Releases a Fire Nova
+243,40,Perk,Radiation Nova,Releases a Radiation Nova
+243,41,Perk,Shock Nova,Releases a Shock Nova
+243,42,Immunity,Shock,Shock Immunity for 3s
+243,43,Immunity,Radiation,Radiation Immunity for 3s
+243,44,Immunity,Fire,Fire Immunity for 3s
+243,45,Immunity,Cryo,Cryo Immunity for 3s
+243,46,Immunity,Corrosive,Corrosive Immunity for 3s
+243,47,Resistance,Radiation,+50% Radiation Resistance for 10s
+243,48,Resistance,Cryo,+50% Cryo Resistance for 10s
+243,49,Resistance,Shock,+50% Shock Resistance for 10s
+243,50,Resistance,Fire,+50% Fire Resistance for 10s
+243,51,Resistance,Corrosive,+50% Corrosive Resistance for 10s
+243,52,Perk,Medic,Heals nearby allies for 50% of the healing amount
+243,54,Perk,Overshield,Overshield of initial heal amount instead of healing
+243,56,Perk,Health Burst,Additional burst of 50% of initial value after 8s
+243,57,Perk,Power Cycle,Instantly start recharging Energy Shield
+243,58,Perk,Leech,30% Lifesteal for 8s
+243,59,Perk,Tank,-50% Damage Taken for 8s
+243,60,Perk,Everlasting,+20% Capacity and Duration
+243,61,Perk,Enrage,"+30% Damage Dealt, +15% Damage Taken for 8s"
+243,62,Perk,Accelerator,+100% Action Skill Cooldown Rate for 8s
+243,63,Perk,Elemental Affinity,+25% Elemental Damage for 8s
+243,64,Perk,Splash Damage,+25% Splash Damage for 8s
+243,65,Perk,Reload Speed,+25% Reload speed for 8s
+243,66,Perk,Order,The Repkit have 2 Repkit Charge(Only in Order)
+243,67,Perk,Speed,+40% Movement Speed for 8s
+243,68,Perk,Go Go Gadget,+50% Ordnance Cooldown Rate for 8s
+243,69,Perk,Hard Hitter,+50% Melee Damage for 8s
+243,70,Perk,Overdose,+45% All Healing Recieved for 8s
+243,71,Perk,Fire Rate,+15% Fire Rate for 8s
+243,73,Perk,Amp,+200% Damage for next shot
+243,74,Perk,Repkit Cooling,-33% Repkit Cooldown Duration
+243,75,Perk,Medic,Heals nearby allies for 50% of the healing amount
+243,77,Perk,Overshield,Overshield of initial heal amount instead of healing
+243,79,Perk,Health Burst,Additional burst of 50% of initial value after 8s
+243,80,Perk,Power Cycle,Instantly start recharging Energy Shield
+243,81,Perk,Leech,30% Lifesteal for 8s
+243,82,Perk,Tank,-50% Damage Taken for 8s
+243,83,Perk,Everlasting,+20% Capacity and Duration
+243,84,Perk,Enrage,"+30% Damage Dealt, +15% Damage Taken for 8s"
+243,85,Perk,Accelerator,+100% Action Skill Cooldown Rate for 8s
+243,86,Perk,Elemental Affinity,+25% Elemental Damage for 8s
+243,87,Perk,Splash Damage,+25% Splash Damage for 8s
+243,88,Perk,Reload Speed,+25% Reload speed for 8s
+243,90,Perk,Speed,+40% Movement Speed for 8s
+243,91,Perk,Go Go Gadget,+50% Ordnance Cooldown Rate for 8s
+243,92,Perk,Hard Hitter,+50% Melee Damage for 8s
+243,93,Perk,Overdose,+45% All Healing Recieved for 8s
+243,94,Perk,Fire Rate,+15% Fire Rate for 8s
+243,96,Perk,Amp,+200% Damage for next shot
+243,97,Perk,Repkit Cooling,-33% Repkit Cooldown Duration
+243,98,Model Plus,Fire,No Stat Changes
+243,99,Model Plus,Radiation,No Stat Changes
+243,100,Model Plus,Corrosive,No Stat Changes
+243,101,Model Plus,Shock,No Stat Changes
+243,102,Model Plus,Cryo,No Stat Changes
+243,103,Perfix,Mini,Lower healing amount and cooldown
+243,104,Perfix,Standard,No Stat Changes
+243,105,Perfix,Large,"More healing, longer cooldown"
+243,106,Perfix,Mega,"Even more healing, even longer cooldown"
+243,112,Firmware,Risky Boots,
