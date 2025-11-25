@@ -160,7 +160,13 @@ class QtItemsTab(QWidget):
         items_by_container = {}
         for i, item in enumerate(items):
             self.item_lookup[i] = item
-            container_name = item.get('container', self.loc['defaults']['unknown_container'])
+            
+            container_raw = item.get('container')
+            if not container_raw:
+                container_name = self.loc['defaults']['unknown_container']
+            else:
+                container_name = self.loc.get('containers', {}).get(container_raw, container_raw)
+            
             item_type = item.get('type', self.loc['defaults']['unknown_type'])
             
             if container_name not in items_by_container:
@@ -184,7 +190,7 @@ class QtItemsTab(QWidget):
 
                 for item in sorted(item_list, key=lambda x: x.get('name', '')):
                     slot = item.get('slot', '—')
-                    container_slot_text = f"{item.get('container', '')}/{slot}" if slot != '—' else item.get('container', '')
+                    container_slot_text = f"{container_name}/{slot}" if slot != '—' else container_name
                     
                     name_item = QStandardItem(item.get("name", ""))
                     name_item.setData(item, Qt.ItemDataRole.UserRole) # 存储完整数据
@@ -230,7 +236,11 @@ class QtItemsTab(QWidget):
 
         self.current_selected_item = item_data
         self.summary_labels["物品"].setText(item_data.get("name", "N/A"))
-        self.summary_labels["容器"].setText(item_data.get("container", "N/A"))
+        
+        raw_container = item_data.get("container")
+        container_display = self.loc.get('containers', {}).get(raw_container, raw_container) if raw_container else "N/A"
+        self.summary_labels["容器"].setText(container_display)
+        
         self.summary_labels["所在格"].setText(str(item_data.get("slot", "—")))
         self.summary_labels["厂商"].setText(item_data.get("manufacturer", "N/A"))
         self.summary_labels["类型"].setText(item_data.get("type", "N/A"))
@@ -254,6 +264,7 @@ class QtItemsTab(QWidget):
             # Fallback (simplified)
             self.loc = {
                 "columns": {"name": "Name", "type": "Type", "slot": "Slot", "level": "Level"},
+                "containers": {"Backpack": "Backpack", "Bank": "Bank", "Lost Loot": "Lost Loot", "Equipped": "Equipped"},
                 "search_placeholder": "Search...",
                 "add_item": {
                     "label_serial": "Serial:", "placeholder_serial": "Enter code...", "label_flag": "Flag:", "button_add": "Add",

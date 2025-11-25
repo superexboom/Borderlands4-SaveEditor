@@ -171,6 +171,16 @@
       "slot": "Container/Slot",
       "level": "Level"
     },
+    "containers": {
+      "Backpack": "Backpack",
+      "背包": "Backpack",
+      "Bank": "Bank",
+      "银行": "Bank",
+      "Lost Loot": "Lost Loot",
+      "丢失物品": "Lost Loot",
+      "Equipped": "Equipped",
+      "装备中": "Equipped"
+    },
     "search_placeholder": "Search items...",
     "add_item": {
       "label_serial": "Item Serial:",
