@@ -66,8 +66,6 @@ class QtRepkitEditorTab(QWidget):
         self.firmware_map = {}
         self.resistance_map = {} 
         self.universal_perk_map = {}
-        self.model_plus_map = {}
-        
         self.prefix_widgets = []
         self.firmware_widgets = []
         self.resistance_widgets = []
@@ -110,8 +108,6 @@ class QtRepkitEditorTab(QWidget):
         self.mfg_label.setText(self.ui_loc.get('labels', {}).get('manufacturer', 'Mfg'))
         self.level_label.setText(self.ui_loc.get('labels', {}).get('level', 'Level'))
         self.rarity_label.setText(self.ui_loc.get('labels', {}).get('rarity', 'Rarity'))
-        self.model_plus_label.setText(self.ui_loc.get('labels', {}).get('model_plus', 'Model+'))
-        self.random_btn.setText(self.ui_loc.get('buttons', {}).get('random', 'Rnd'))
         
         self.perks_group.setTitle(self.ui_loc.get('groups', {}).get('perks', 'Perks'))
         self.prefix_group.setTitle(self.ui_loc.get('groups', {}).get('prefix', 'Prefix'))
@@ -126,12 +122,10 @@ class QtRepkitEditorTab(QWidget):
         # Refresh Data
         self._populate_flags()
         self.mfg_combo.blockSignals(True)
-        self.model_plus_sel.blockSignals(True)
         # We should also block signal for rarity during population to prevent issues
         self.rarity_combo.blockSignals(True)
         self.populate_initial_data()
         self.mfg_combo.blockSignals(False)
-        self.model_plus_sel.blockSignals(False)
         self.rarity_combo.blockSignals(False)
         self.on_mfg_change()
         print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
@@ -210,13 +204,10 @@ class QtRepkitEditorTab(QWidget):
         self.mfg_combo = QComboBox()
         self.level_edit = QLineEdit("50")
         self.rarity_combo = QComboBox()
-        self.model_plus_sel = QComboBox()
-        self.random_btn = QPushButton(self.ui_loc['buttons']['random'])
 
         self.mfg_label = QLabel(self.ui_loc['labels']['manufacturer'])
         self.level_label = QLabel(self.ui_loc['labels']['level'])
         self.rarity_label = QLabel(self.ui_loc['labels']['rarity'])
-        self.model_plus_label = QLabel(self.ui_loc['labels']['model_plus'])
 
         controls_layout.addWidget(self.mfg_label)
         controls_layout.addWidget(self.mfg_combo)
@@ -224,13 +215,8 @@ class QtRepkitEditorTab(QWidget):
         controls_layout.addWidget(self.level_edit)
         controls_layout.addWidget(self.rarity_label)
         controls_layout.addWidget(self.rarity_combo)
-        controls_layout.addWidget(self.model_plus_label)
-        controls_layout.addWidget(self.model_plus_sel)
-        controls_layout.addWidget(self.random_btn)
         controls_layout.addStretch()
         
-        self.random_btn.clicked.connect(self.randomize_model_plus)
-
         layout.addWidget(self.base_attrs_group)
     
     def _create_scrollable_radio_group(self, title):
@@ -287,7 +273,6 @@ class QtRepkitEditorTab(QWidget):
         self.mfg_combo.currentTextChanged.connect(self.on_mfg_change)
         self.level_edit.textChanged.connect(self.rebuild_output)
         self.rarity_combo.currentTextChanged.connect(self.rebuild_output)
-        self.model_plus_sel.currentTextChanged.connect(self.rebuild_output)
         self.add_to_pack_btn.clicked.connect(self._add_to_backpack)
         
         self.legendary_avail_list.model().rowsInserted.connect(self.rebuild_output)
@@ -303,7 +288,6 @@ class QtRepkitEditorTab(QWidget):
 
     def populate_initial_data(self):
         self.mfg_combo.clear()
-        self.model_plus_sel.clear()
         
         items = []
         for k in self.mfg_ids:
@@ -325,11 +309,6 @@ class QtRepkitEditorTab(QWidget):
         self._populate_radio_buttons(self.resistance_frame, self.resistance_map, self.resistance_widgets)
 
         self.universal_perk_map = self._populate_listbox(self.universal_avail_list, df_243, 'Perk')
-        
-        items_df = df_243[df_243['Part_type'] == 'Model Plus']
-        for _, row in items_df.iterrows():
-            part_id = row['Part_ID']
-            self.model_plus_sel.addItem(str(part_id), part_id)
 
     def on_mfg_change(self, *args):
         if not self.mfg_combo.currentText(): return
@@ -409,11 +388,26 @@ class QtRepkitEditorTab(QWidget):
         for widgets in [self.prefix_widgets, self.firmware_widgets, self.resistance_widgets]:
             for rb in widgets:
                 if rb.isChecked() and rb.property("part_id"):
-                    secondary_skill_parts.setdefault(243, []).append(rb.property("part_id"))
-        
-        model_plus_id = self.model_plus_sel.currentData()
-        if model_plus_id:
-            secondary_skill_parts.setdefault(243, []).append(model_plus_id)
+                    part_id = rb.property("part_id")
+                    secondary_skill_parts.setdefault(243, []).append(part_id)
+                    
+                    # Logic for Model Plus based on Resistance/Immunity
+                    combustion_ids = [24, 50, 29, 44]
+                    radiation_ids = [23, 47, 28, 43]
+                    corrosive_ids = [26, 51, 31, 46]
+                    shock_ids = [22, 49, 27, 42]
+                    cryo_ids = [25, 48, 30, 45]
+                    
+                    if part_id in combustion_ids:
+                        secondary_skill_parts.setdefault(243, []).append(98)
+                    elif part_id in radiation_ids:
+                        secondary_skill_parts.setdefault(243, []).append(99)
+                    elif part_id in corrosive_ids:
+                        secondary_skill_parts.setdefault(243, []).append(100)
+                    elif part_id in shock_ids:
+                        secondary_skill_parts.setdefault(243, []).append(101)
+                    elif part_id in cryo_ids:
+                        secondary_skill_parts.setdefault(243, []).append(102)
 
         for i in range(self.universal_sel_list.count()):
             item = self.universal_sel_list.item(i)
@@ -442,11 +436,6 @@ class QtRepkitEditorTab(QWidget):
         else:
             self.b85_output_edit.setText(encoded_serial)
 
-    def randomize_model_plus(self):
-        if self.model_plus_sel.count() > 0:
-            self.model_plus_sel.setCurrentIndex(random.randint(0, self.model_plus_sel.count() - 1))
-            self.rebuild_output()
-    
     def _populate_radio_buttons(self, frame, data_map, widget_list):
         while frame.count():
             child = frame.takeAt(0)
@@ -473,7 +462,7 @@ class QtRepkitEditorTab(QWidget):
         for _, row in items_df.iterrows():
             name = self._(row['Stat'])
             desc = row['Description'] if pd.notna(row['Description']) else ''
-            display_text = f"{name} - {desc}" if desc else f"{name}"
+            display_text = f"{name} - {desc} [{row['Part_ID']}]" if desc else f"{name} [{row['Part_ID']}]"
             item = QListWidgetItem(display_text)
             item.setData(Qt.ItemDataRole.UserRole, row['Part_ID'])
             listbox.addItem(item)

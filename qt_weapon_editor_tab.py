@@ -578,7 +578,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         if not (decoded_str := self.serial_decoded_entry.text()):
             QtWidgets.QMessageBox.warning(self, self.get_localized_string("no_input"), self.get_localized_string("serial_empty")); return
         self.main_app.log("Forcing parts list refresh..."); self.parse_and_display_weapon(decoded_str)
-        QtWidgets.QMessageBox.information(self, self.get_localized_string("success"), "部件列表已刷新。")
+        QtWidgets.QMessageBox.information(self, self.get_localized_string("success"), self.get_localized_string("parts_refresh_success"))
 
     def refresh_backpack_items(self):
         while self.backpack_items_layout.count():

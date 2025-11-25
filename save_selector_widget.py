@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit,
-    QTreeView, QAbstractItemView, QHeaderView, QFileDialog
+    QTreeView, QAbstractItemView, QHeaderView, QFileDialog, QMessageBox
 )
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 from PyQt6.QtCore import pyqtSignal, Qt
@@ -16,11 +16,16 @@ class SaveSelectorWidget(QWidget):
     """
     # 信号：存档路径，用户ID
     open_save_requested = pyqtSignal(str, str)
+    
+    CONFIG_FILE = "config.json"
 
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
         self.current_lang = 'zh-CN'
         self.current_save_files = [] # Store for language updates
+        self.custom_save_path = None
+        self.custom_backup_path = None
+        self._load_config()
         self._load_localization()
 
         # --- Main Layout ---
@@ -29,15 +34,29 @@ class SaveSelectorWidget(QWidget):
         # --- Top Toolbar ---
         toolbar_layout = QHBoxLayout()
         self.refresh_button = QPushButton(self.loc['buttons']['refresh'])
+        self.select_save_folder_btn = QPushButton(self.loc['buttons']['select_save_folder'])
+        self.select_backup_folder_btn = QPushButton(self.loc['buttons']['select_backup_folder'])
+        
         self.user_id_label = QLabel(self.loc['labels']['user_id_input'])
         self.user_id_input = QLineEdit()
         self.user_id_input.setPlaceholderText(self.loc['placeholders']['user_id_input'])
         
         toolbar_layout.addWidget(self.refresh_button)
+        toolbar_layout.addWidget(self.select_save_folder_btn)
+        toolbar_layout.addWidget(self.select_backup_folder_btn)
         toolbar_layout.addStretch()
         toolbar_layout.addWidget(self.user_id_label)
         toolbar_layout.addWidget(self.user_id_input)
         layout.addLayout(toolbar_layout)
+        
+        # --- Path Info Labels (Optional, but good for UX) ---
+        self.path_info_layout = QVBoxLayout()
+        self.save_path_label = QLabel()
+        self.backup_path_label = QLabel()
+        self._update_path_labels()
+        self.path_info_layout.addWidget(self.save_path_label)
+        self.path_info_layout.addWidget(self.backup_path_label)
+        layout.addLayout(self.path_info_layout)
 
         # --- Tree View for Saves ---
         self.tree_view = QTreeView()
@@ -62,8 +81,29 @@ class SaveSelectorWidget(QWidget):
         self.open_button.clicked.connect(self._on_open_button_clicked)
         self.tree_view.selectionModel().selectionChanged.connect(self._on_selection_changed)
         self.tree_view.doubleClicked.connect(self._on_tree_double_clicked)
+        self.select_save_folder_btn.clicked.connect(self._on_select_save_folder_clicked)
+        self.select_backup_folder_btn.clicked.connect(self._on_select_backup_folder_clicked)
 
-        # self._on_selection_changed() # No longer needed to disable open button
+    def _load_config(self):
+        if os.path.exists(self.CONFIG_FILE):
+            try:
+                with open(self.CONFIG_FILE, 'r', encoding='utf-8') as f:
+                    config = json.load(f)
+                    self.custom_save_path = config.get("custom_save_path")
+                    self.custom_backup_path = config.get("custom_backup_path")
+            except Exception as e:
+                print(f"Error loading config: {e}")
+
+    def _save_config(self):
+        config = {
+            "custom_save_path": self.custom_save_path,
+            "custom_backup_path": self.custom_backup_path
+        }
+        try:
+            with open(self.CONFIG_FILE, 'w', encoding='utf-8') as f:
+                json.dump(config, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            print(f"Error saving config: {e}")
 
     def _load_localization(self):
         filename = "ui_localization.json" if self.current_lang == 'zh-CN' else "ui_localization_EN.json"
@@ -74,8 +114,15 @@ class SaveSelectorWidget(QWidget):
             # Fallback to hardcoded English if localization file is missing or invalid
             self.loc = {
                 "headers": {"file": "File", "user_id": "Platform 64bit ID", "modified": "Modified", "size": "Size", "path": "Path"},
-                "buttons": {"refresh": "Refresh", "open": "Open Selected Save with ID"},
-                "labels": {"user_id_input": "Manual User ID:", "status_loading": "Scanning for saves...", "status_no_saves": "No save files found.", "status_found_saves": "Found {count} save files."},
+                "buttons": {"refresh": "Refresh", "open": "Open Selected Save with ID", "select_save_folder": "Select Save Folder", "select_backup_folder": "Select Backup Folder"},
+                "labels": {
+                    "user_id_input": "Manual User ID:", 
+                    "status_loading": "Scanning for saves...", 
+                    "status_no_saves": "No save files found.", 
+                    "status_found_saves": "Found {count} save files.",
+                    "current_save_path": "Current Save Path: {path}",
+                    "current_backup_path": "Current Backup Path: {path}"
+                },
                 "placeholders": {"user_id_input": "Enter User ID here if auto-detection is incorrect"}
             }
 
@@ -84,6 +131,13 @@ class SaveSelectorWidget(QWidget):
         header = self.tree_view.header()
         header.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         header.setStretchLastSection(True)
+    
+    def _update_path_labels(self):
+        save_path_display = self.custom_save_path if self.custom_save_path else "Default"
+        backup_path_display = self.custom_backup_path if self.custom_backup_path else "Default"
+        
+        self.save_path_label.setText(self.loc['labels'].get('current_save_path', "Current Save Path: {path}").format(path=save_path_display))
+        self.backup_path_label.setText(self.loc['labels'].get('current_backup_path', "Current Backup Path: {path}").format(path=backup_path_display))
 
     def update_view(self, save_files: List[Dict[str, Any]]):
         self.current_save_files = save_files
@@ -119,9 +173,12 @@ class SaveSelectorWidget(QWidget):
         
         # Update text
         self.refresh_button.setText(self.loc['buttons']['refresh'])
+        self.select_save_folder_btn.setText(self.loc['buttons']['select_save_folder'])
+        self.select_backup_folder_btn.setText(self.loc['buttons']['select_backup_folder'])
         self.user_id_label.setText(self.loc['labels']['user_id_input'])
         self.user_id_input.setPlaceholderText(self.loc['placeholders']['user_id_input'])
         self.open_button.setText(self.loc['buttons']['open'])
+        self._update_path_labels()
         
         # Re-render the list to update headers and status text
         self.update_view(self.current_save_files)
@@ -131,10 +188,8 @@ class SaveSelectorWidget(QWidget):
     def _on_selection_changed(self):
         selection_model = self.tree_view.selectionModel()
         if not selection_model.hasSelection():
-            # self.open_button.setEnabled(False) # Open button is now independent
             return
         
-        # self.open_button.setEnabled(True)
         selected_index = selection_model.selectedRows(0)[0]
         id_from_selection = self.model.itemFromIndex(selected_index).data(Qt.ItemDataRole.UserRole + 2)
         
@@ -142,21 +197,52 @@ class SaveSelectorWidget(QWidget):
         if not self.user_id_input.text().strip():
             self.user_id_input.setText(id_from_selection)
 
+    def _on_select_save_folder_clicked(self):
+        dir_path = QFileDialog.getExistingDirectory(self, self.loc['buttons']['select_save_folder'])
+        if dir_path:
+            path_obj = Path(dir_path)
+            if path_obj.name != "SaveGames":
+                msg = self.loc.get('dialogs', {}).get('folder_name_warning', "Selected folder must be named 'SaveGames'.")
+                QMessageBox.warning(self, self.loc['dialogs']['error'] if 'error' in self.loc.get('dialogs', {}) else "Warning", msg)
+                return
+            
+            self.custom_save_path = str(path_obj)
+            self._save_config()
+            self._update_path_labels()
+            self.refresh_button.click() # Trigger refresh
+
+    def _on_select_backup_folder_clicked(self):
+        dir_path = QFileDialog.getExistingDirectory(self, self.loc['buttons']['select_backup_folder'])
+        if dir_path:
+            self.custom_backup_path = dir_path
+            self._save_config()
+            self._update_path_labels()
+
+    def get_custom_save_path(self):
+        return self.custom_save_path
+
+    def get_custom_backup_path(self):
+        return self.custom_backup_path
+
     def _on_open_button_clicked(self):
         """
         打开文件选择对话框，让用户手动选择存档文件。
         """
         # 尝试定位到默认的存档路径作为起始目录
-        start_dir = os.path.expanduser('~/Documents')
-        possible_paths = [
-            os.path.join(start_dir, "My Games", "Borderlands 4", "Saved", "SaveGames"),
-            start_dir
-        ]
-        initial_path = start_dir
-        for p in possible_paths:
-            if os.path.exists(p):
-                initial_path = p
-                break
+        start_dir = self.custom_save_path if self.custom_save_path else os.path.expanduser('~/Documents')
+        
+        if not self.custom_save_path:
+            possible_paths = [
+                os.path.join(start_dir, "My Games", "Borderlands 4", "Saved", "SaveGames"),
+                start_dir
+            ]
+            initial_path = start_dir
+            for p in possible_paths:
+                if os.path.exists(p):
+                    initial_path = p
+                    break
+        else:
+            initial_path = start_dir
 
         file_path, _ = QFileDialog.getOpenFileName(
             self,

@@ -9,20 +9,27 @@
     },
     "buttons": {
       "refresh": "Refresh",
-      "open": "Open with Selected Save and ID"
+      "open": "Open with Selected Save and ID",
+      "select_save_folder": "Select Save Folder",
+      "select_backup_folder": "Select Backup Folder"
     },
     "labels": {
       "user_id_input": "Manually Input User ID:",
       "status_loading": "Scanning save directory...",
       "status_no_saves": "No save files found.",
-      "status_found_saves": "Found {count} save file(s)."
+      "status_found_saves": "Found {count} save file(s).",
+      "current_save_path": "Current Save Path: {path}",
+      "current_backup_path": "Current Backup Path: {path}"
+    },
+    "dialogs": {
+      "folder_name_warning": "Selected folder must be named 'SaveGames'."
     },
     "placeholders": {
       "user_id_input": "Enter here if auto-detected ID is incorrect"
     }
   },
   "main_window": {
-    "window_title": "Borderlands 4 Save Editor V3.3.1",
+    "window_title": "Borderlands 4 Save Editor V3.3.2",
     "subtitle": "By SuperExboom - Free software, if you paid for this you got scammed",
     "header": {
       "title": "Borderlands 4 Save Editor",
@@ -446,7 +453,8 @@
       "cannot_determine_mfg": "Unable to determine current weapon manufacturer.",
       "select_skin_title": "Select Skin",
       "select_skin_msg": "Select skin to apply",
-      "update_success": "Weapon updated successfully."
+      "update_success": "Weapon updated successfully.",
+      "parts_refresh_success": "Parts list refreshed."
     },
     "misc": {
       "skin": "Skin",

@@ -132,7 +132,7 @@ class SaveGameController:
             return True, "Valid Epic Games ID format"
         return False, "User ID contains invalid characters."
 
-    def decrypt_save(self, file_path: Path, user_id: str) -> Tuple[str, str, str]:
+    def decrypt_save(self, file_path: Path, user_id: str, custom_backup_dir: Optional[str] = None) -> Tuple[str, str, str]:
         self.user_id = user_id.strip()
         self.save_path = file_path
 
@@ -161,7 +161,13 @@ class SaveGameController:
         if plain_data is not None and platform_id:
             # 解密成功后创建备份
             ts = datetime.now().strftime("%Y-%m-%d-%H%M%S")
-            backup_path = self.save_path.with_suffix(f".{ts}.bak")
+            
+            if custom_backup_dir and os.path.exists(custom_backup_dir) and os.path.isdir(custom_backup_dir):
+                backup_name = f"{file_path.name}.{ts}.bak"
+                backup_path = Path(custom_backup_dir) / backup_name
+            else:
+                backup_path = self.save_path.with_suffix(f".{ts}.bak")
+            
             backup_path.write_bytes(enc_data)
 
             self.platform = platform_id
@@ -282,18 +288,21 @@ class SaveGameController:
         
         return bl4f.sync_inventory_item_levels(self.yaml_obj)
 
-    def scan_default_save_folders(self) -> List[Dict[str, Any]]:
-        """扫描默认的无主之地4存档文件夹并返回找到的存档文件列表。"""
+    def scan_save_folders(self, custom_path: Optional[str] = None) -> List[Dict[str, Any]]:
+        """扫描无主之地4存档文件夹并返回找到的存档文件列表。"""
         found_files = []
         try:
-            # documents_path = 'C:/Users/SuperExboom/Documents' # Hardcoded for this environment
-            documents_path = os.path.expanduser('~/Documents')
-            save_games_path = Path(documents_path) / "My Games" / "Borderlands 4" / "Saved" / "SaveGames"
+            target_path = None
+            if custom_path and os.path.exists(custom_path) and os.path.isdir(custom_path):
+                target_path = Path(custom_path)
+            else:
+                documents_path = os.path.expanduser('~/Documents')
+                target_path = Path(documents_path) / "My Games" / "Borderlands 4" / "Saved" / "SaveGames"
 
-            if not save_games_path.is_dir():
+            if not target_path or not target_path.is_dir():
                 return []
 
-            for id_dir in save_games_path.iterdir():
+            for id_dir in target_path.iterdir():
                 if id_dir.is_dir() and id_dir.name.isalnum(): # 文件夹名通常是ID
                     platform_id = id_dir.name
                     # 遍历ID文件夹内的所有.sav文件

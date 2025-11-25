@@ -9,20 +9,27 @@
     },
     "buttons": {
       "refresh": "刷新",
-      "open": "使用选中的存档和ID打开"
+      "open": "使用选中的存档和ID打开",
+      "select_save_folder": "选择存档所在文件夹",
+      "select_backup_folder": "选择备份文件夹"
     },
     "labels": {
       "user_id_input": "手动输入 User ID:",
       "status_loading": "扫描存档目录...",
       "status_no_saves": "未找到存档文件。",
-      "status_found_saves": "找到 {count} 个存档文件。"
+      "status_found_saves": "找到 {count} 个存档文件。",
+      "current_save_path": "当前存档路径: {path}",
+      "current_backup_path": "当前备份路径: {path}"
+    },
+    "dialogs": {
+      "folder_name_warning": "所选文件夹名称必须为 'SaveGames'。"
     },
     "placeholders": {
       "user_id_input": "如果自动检测的ID不正确，请在此处输入"
     }
   },
   "main_window": {
-    "window_title": "无主之地4 存档编辑器 V3.3.1",
+    "window_title": "无主之地4 存档编辑器 V3.3.2",
     "subtitle": "By SuperExboom - 免费软件，如果你付费了那你就被骗了",
     "header": {
       "title": "无主之地4 存档编辑器",
@@ -446,7 +453,8 @@
       "cannot_determine_mfg": "无法确定当前武器制造商。",
       "select_skin_title": "选择皮肤",
       "select_skin_msg": "选择要应用的皮肤",
-      "update_success": "武器更新成功。"
+      "update_success": "武器更新成功。",
+      "parts_refresh_success": "部件列表已刷新。"
     },
     "misc": {
       "skin": "皮肤",

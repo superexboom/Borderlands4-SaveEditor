@@ -492,16 +492,20 @@ class MainWindow(QMainWindow):
         打开文件选择对话框，让用户手动选择存档文件。
         """
         # 尝试定位到默认的存档路径作为起始目录
-        start_dir = os.path.expanduser('~/Documents')
-        possible_paths = [
-            os.path.join(start_dir, "My Games", "Borderlands 4", "Saved", "SaveGames"),
-            start_dir
-        ]
-        initial_path = start_dir
-        for p in possible_paths:
-            if os.path.exists(p):
-                initial_path = p
-                break
+        custom_save = self.selector_page.get_custom_save_path()
+        if custom_save and os.path.exists(custom_save):
+            initial_path = custom_save
+        else:
+            start_dir = os.path.expanduser('~/Documents')
+            possible_paths = [
+                os.path.join(start_dir, "My Games", "Borderlands 4", "Saved", "SaveGames"),
+                start_dir
+            ]
+            initial_path = start_dir
+            for p in possible_paths:
+                if os.path.exists(p):
+                    initial_path = p
+                    break
 
         file_path, _ = QFileDialog.getOpenFileName(
             self,
@@ -584,13 +588,15 @@ class MainWindow(QMainWindow):
         file_path = Path(file_path_str)
         current_user_id = user_id
         
+        custom_backup_path = self.selector_page.get_custom_backup_path()
+        
         # 标记是否是第一次尝试，用于控制错误信息的显示
         # 如果一开始就没有ID，不算是一次"失败"的尝试，直接提示输入
         first_attempt = True
 
         while True:
             try:
-                _, platform, backup_name = self.controller.decrypt_save(file_path, current_user_id)
+                _, platform, backup_name = self.controller.decrypt_save(file_path, current_user_id, custom_backup_path)
                 
                 # Success
                 QMessageBox.information(self, self.loc['dialogs']['success'], 
@@ -636,7 +642,8 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot()
     def scan_for_saves(self):
-        saves = self.controller.scan_default_save_folders()
+        custom_path = self.selector_page.get_custom_save_path()
+        saves = self.controller.scan_save_folders(custom_path)
         self.selector_page.update_view(saves)
 
     def refresh_all_tabs(self):
@@ -897,19 +904,23 @@ class MainWindow(QMainWindow):
         self.status_label.setText(self.loc['status']['welcome'])
         
         # Update tab titles
-        self.nav_button_group.button(0).setText(f" 📁   {self.loc['tabs']['select_save']}")
-        self.nav_button_group.button(1).setText(f" 👤   {self.loc['tabs']['character']}")
-        self.nav_button_group.button(2).setText(f" 🎒   {self.loc['tabs']['items']}")
-        self.nav_button_group.button(3).setText(f" 🔧   {self.loc['tabs']['converter']}")
-        self.nav_button_group.button(4).setText(f" 📄   {self.loc['tabs']['yaml_editor']}")
-        self.nav_button_group.button(5).setText(f" 🌟   {self.loc['tabs']['class_mod']}")
-        self.nav_button_group.button(6).setText(f" ✨   {self.loc['tabs']['enhancement']}")
-        self.nav_button_group.button(7).setText(f" 🔧   {self.loc['tabs']['weapon_editor']}")
-        self.nav_button_group.button(8).setText(f" 🔫   {self.loc['tabs']['weapon_generator']}")
-        self.nav_button_group.button(9).setText(f" 💣   {self.loc['tabs']['grenade']}")
-        self.nav_button_group.button(10).setText(f" 🛡️   {self.loc['tabs']['shield']}")
-        self.nav_button_group.button(11).setText(f" 🛠️   {self.loc['tabs']['repkit']}")
-        self.nav_button_group.button(12).setText(f" 🚀   {self.loc['tabs']['heavy_weapon']}")
+        tab_keys = [
+            'select_save', 'character', 'items', 'converter', 'yaml_editor',
+            'class_mod', 'enhancement', 'weapon_editor', 'weapon_generator',
+            'grenade', 'shield', 'repkit', 'heavy_weapon'
+        ]
+
+        for i, key in enumerate(tab_keys):
+            button = self.nav_button_group.button(i)
+            if button:
+                icon_char = button.property("iconChar")
+                new_full_text = f" {icon_char}   {self.loc['tabs'][key]}"
+                button.setProperty("fullText", new_full_text)
+                if self.is_nav_bar_expanded:
+                    button.setText(new_full_text)
+                else:
+                    # If collapsed, ensure we only show the icon (though it should already be correct)
+                    button.setText(icon_char)
 
 def main():
     app = QApplication(sys.argv)
