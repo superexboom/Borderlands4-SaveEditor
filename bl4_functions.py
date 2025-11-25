@@ -123,6 +123,24 @@ def set_language(lang: str):
     current_localization_lang = lang
     localization_cache = None
 
+def get_sync_localization() -> Dict[str, str]:
+    """加载并返回同步背包等级相关的错误信息本地化字典。"""
+    filename = "ui_localization.json" if current_localization_lang == 'zh-CN' else "ui_localization_EN.json"
+    data = load_json_resource(filename)
+    if data and "sync_errors" in data:
+        return data["sync_errors"]
+    # Fallback to English hardcoded defaults if file read fails
+    return {
+      "char_level_unknown": "Unable to determine character level.",
+      "char_data_missing": "Character XP/Level info not found in YAML data.",
+      "no_inventory_items": "No items found in backpack.",
+      "missing_serial": "Missing serial number",
+      "decode_fail": "Decode failed",
+      "update_level_fail": "Failed to update level in decoded string",
+      "reencode_fail": "Re-encoding failed",
+      "write_fail": "Failed to write back to YAML"
+    }
+
 def get_localized_string(key: str) -> str:
     """获取本地化字符串，如果未找到则返回原始键"""
     global localization_cache
@@ -418,6 +436,8 @@ def sync_inventory_item_levels(yaml_data: Dict[str, Any]) -> Tuple[int, int, Lis
     """
     Synchronizes the level of all items in the 'inventory' container to the character's level.
     """
+    loc = get_sync_localization()
+    
     success_count = 0
     fail_count = 0
     failed_items_info = []
@@ -431,9 +451,9 @@ def sync_inventory_item_levels(yaml_data: Dict[str, Any]) -> Tuple[int, int, Lis
         char_exp = next((item for item in exp_list if isinstance(item, dict) and item.get("type") == "Character"), {})
         character_level = char_exp.get("level")
         if character_level is None:
-            return 0, 0, ["无法确定角色等级。"]
+            return 0, 0, [loc.get("char_level_unknown", "Unknown character level")]
     except (AttributeError, StopIteration):
-        return 0, 0, ["在YAML数据中找不到角色经验值/等级信息。"]
+        return 0, 0, [loc.get("char_data_missing", "Character XP/Level not found in YAML")]
 
     # 2. Find all items in the inventory
     # We use the existing walker to find all items, then filter by container.
@@ -451,37 +471,37 @@ def sync_inventory_item_levels(yaml_data: Dict[str, Any]) -> Tuple[int, int, Lis
             inventory_items.append((path, item_data))
 
     if not inventory_items:
-        return 0, 0, ["在背包中未找到任何物品。"]
+        return 0, 0, [loc.get("no_inventory_items", "No items found in backpack")]
 
     # 3. Iterate, decode, update, re-encode
     for path, item_data in inventory_items:
         original_serial = item_data.get("serial")
-        slot_identifier = next((p for p in reversed(path) if p.startswith("slot_")), "未知格")
+        slot_identifier = next((p for p in reversed(path) if p.startswith("slot_")), "Slot-?")
 
         if not original_serial:
             fail_count += 1
-            failed_items_info.append(f"{slot_identifier}: 缺少序列号")
+            failed_items_info.append(f"{slot_identifier}: {loc.get('missing_serial', 'Missing serial')}")
             continue
 
         # Decode
         decoded_full, _, err = decoder_logic.decode_serial_to_string(original_serial)
         if err:
             fail_count += 1
-            failed_items_info.append(f"{slot_identifier}: 解码失败 ({err})")
+            failed_items_info.append(f"{slot_identifier}: {loc.get('decode_fail', 'Decode failed')} ({err})")
             continue
             
         # Update level
         updated_decoded_str = update_level_in_decoded_str(decoded_full, character_level)
         if not updated_decoded_str:
             fail_count += 1
-            failed_items_info.append(f"{slot_identifier}: 更新解码字符串中的等级失败")
+            failed_items_info.append(f"{slot_identifier}: {loc.get('update_level_fail', 'Level update failed')}")
             continue
 
         # Re-encode
         new_serial, err = b_encoder.encode_to_base85(updated_decoded_str)
         if err:
             fail_count += 1
-            failed_items_info.append(f"{slot_identifier}: 重新编码失败 ({err})")
+            failed_items_info.append(f"{slot_identifier}: {loc.get('reencode_fail', 'Re-encode failed')} ({err})")
             continue
             
         # Write back to YAML object
@@ -490,6 +510,6 @@ def sync_inventory_item_levels(yaml_data: Dict[str, Any]) -> Tuple[int, int, Lis
             success_count += 1
         except (KeyError, IndexError) as e:
             fail_count += 1
-            failed_items_info.append(f"{slot_identifier}: 回写YAML失败 ({e})")
+            failed_items_info.append(f"{slot_identifier}: {loc.get('write_fail', 'Write fail')} ({e})")
 
     return success_count, fail_count, failed_items_info

@@ -20,6 +20,7 @@ class SaveSelectorWidget(QWidget):
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
         self.current_lang = 'zh-CN'
+        self.current_save_files = [] # Store for language updates
         self._load_localization()
 
         # --- Main Layout ---
@@ -85,6 +86,7 @@ class SaveSelectorWidget(QWidget):
         header.setStretchLastSection(True)
 
     def update_view(self, save_files: List[Dict[str, Any]]):
+        self.current_save_files = save_files
         self.model.clear()
         headers = self.loc['headers']
         self.set_header_labels([headers['file'], headers['user_id'], headers['modified'], headers['size'], headers['path']])
@@ -121,20 +123,9 @@ class SaveSelectorWidget(QWidget):
         self.user_id_input.setPlaceholderText(self.loc['placeholders']['user_id_input'])
         self.open_button.setText(self.loc['buttons']['open'])
         
-        # Status label update requires knowing state. 
-        # Ideally we don't change it unless it's "Ready" or we store the state key.
-        # But for now let's just leave current status text or reset to "Ready" equivalent if empty.
-        # Actually, status usually displays results of last op. Translating it retroactively is hard.
-        # We can just update headers.
+        # Re-render the list to update headers and status text
+        self.update_view(self.current_save_files)
         
-        headers = self.loc['headers']
-        self.set_header_labels([headers['file'], headers['user_id'], headers['modified'], headers['size'], headers['path']])
-        
-        # We might need to refresh the list if we want to update localized "KB" etc? 
-        # But "KB" is hardcoded. 
-        # If we have "No save files found", we might want to update that.
-        # Checking current text content is flaky.
-        # Let's just update static UI elements.
         print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
 
     def _on_selection_changed(self):

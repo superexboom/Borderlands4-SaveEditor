@@ -267,7 +267,8 @@ class QtItemsTab(QWidget):
                 "defaults": {"unknown_container": "Unknown", "unknown_type": "Unknown"},
                 "dialogs": {
                     "input_error": "Error", "enter_serial": "Enter serial", "no_selection": "No selection", 
-                    "select_item": "Select item", "error": "Error", "missing_path": "Missing path"
+                    "select_item": "Select item", "error": "Error", "missing_path": "Missing path",
+                    "update_success": "Item updated successfully"
                 }
             }
 
@@ -339,7 +340,8 @@ class QtItemsTab(QWidget):
         payload = {
             "item_path": self.current_selected_item.get("original_path"),
             "original_item_data": self.current_selected_item,
-            "new_item_data": new_data
+            "new_item_data": new_data,
+            "success_msg": self.loc['dialogs'].get('update_success', 'Item updated successfully')
         }
 
         if not payload["item_path"]:

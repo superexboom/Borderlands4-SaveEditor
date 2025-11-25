@@ -702,7 +702,8 @@ class MainWindow(QMainWindow):
                 original_item_data=payload['original_item_data'],
                 new_item_data=payload['new_item_data']
             )
-            QMessageBox.information(self, self.loc['dialogs']['success'], msg)
+            final_msg = payload.get("success_msg", msg)
+            QMessageBox.information(self, self.loc['dialogs']['success'], final_msg)
             self.refresh_all_tabs()
         except Exception as e:
             # Catch potential crashes from C-extensions and show an error dialog

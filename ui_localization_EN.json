@@ -22,7 +22,7 @@
     }
   },
   "main_window": {
-    "window_title": "Borderlands 4 Save Editor V3.3",
+    "window_title": "Borderlands 4 Save Editor V3.3.1",
     "subtitle": "By SuperExboom - Free software, if you paid for this you got scammed",
     "header": {
       "title": "Borderlands 4 Save Editor",
@@ -203,7 +203,8 @@
       "no_selection": "No Selection",
       "select_item": "Please select an item from the list first.",
       "error": "Error",
-      "missing_path": "Unable to update; item lacks internal path information."
+      "missing_path": "Unable to update; item lacks internal path information.",
+      "update_success": "Item updated successfully."
     }
   },
   "converter_tab": {
@@ -444,7 +445,8 @@
       "select_parts_to_add": "Select parts to add",
       "cannot_determine_mfg": "Unable to determine current weapon manufacturer.",
       "select_skin_title": "Select Skin",
-      "select_skin_msg": "Select skin to apply"
+      "select_skin_msg": "Select skin to apply",
+      "update_success": "Weapon updated successfully."
     },
     "misc": {
       "skin": "Skin",
@@ -580,6 +582,16 @@
       "path_error": "Unable to find Repkit CSV file path.",
       "parse_error": "Unable to load or parse Repkit data file: {error}"
     }
+  },
+  "sync_errors": {
+    "char_level_unknown": "Unable to determine character level.",
+    "char_data_missing": "Character XP/Level info not found in YAML data.",
+    "no_inventory_items": "No items found in backpack.",
+    "missing_serial": "Missing serial number",
+    "decode_fail": "Decode failed",
+    "update_level_fail": "Failed to update level in decoded string",
+    "reencode_fail": "Re-encoding failed",
+    "write_fail": "Failed to write back to YAML"
   },
   "heavy_weapon_tab": {
     "groups": {

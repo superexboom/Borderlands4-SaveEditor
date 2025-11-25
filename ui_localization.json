@@ -22,7 +22,7 @@
     }
   },
   "main_window": {
-    "window_title": "无主之地4 存档编辑器 V3.3",
+    "window_title": "无主之地4 存档编辑器 V3.3.1",
     "subtitle": "By SuperExboom - 免费软件，如果你付费了那你就被骗了",
     "header": {
       "title": "无主之地4 存档编辑器",
@@ -203,7 +203,8 @@
       "no_selection": "无选择",
       "select_item": "请先在列表中选择一个物品。",
       "error": "错误",
-      "missing_path": "无法更新，物品缺少内部路径信息。"
+      "missing_path": "无法更新，物品缺少内部路径信息。",
+      "update_success": "物品更新成功。"
     }
   },
   "converter_tab": {
@@ -444,7 +445,8 @@
       "select_parts_to_add": "选择要添加的部件",
       "cannot_determine_mfg": "无法确定当前武器制造商。",
       "select_skin_title": "选择皮肤",
-      "select_skin_msg": "选择要应用的皮肤"
+      "select_skin_msg": "选择要应用的皮肤",
+      "update_success": "武器更新成功。"
     },
     "misc": {
       "skin": "皮肤",
@@ -580,6 +582,16 @@
       "path_error": "无法找到修复套件CSV文件路径。",
       "parse_error": "无法加载或解析修复套件数据文件: {error}"
     }
+  },
+  "sync_errors": {
+    "char_level_unknown": "无法确定角色等级。",
+    "char_data_missing": "在YAML数据中找不到角色经验值/等级信息。",
+    "no_inventory_items": "在背包中未找到任何物品。",
+    "missing_serial": "缺少序列号",
+    "decode_fail": "解码失败",
+    "update_level_fail": "更新解码字符串中的等级失败",
+    "reencode_fail": "重新编码失败",
+    "write_fail": "回写YAML失败"
   },
   "heavy_weapon_tab": {
     "groups": {

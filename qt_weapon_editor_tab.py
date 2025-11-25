@@ -105,10 +105,13 @@ class WeaponEditorTab(QtWidgets.QWidget):
 
     def create_widgets(self):
         # Clean up old content
-        if self.content_widget:
-            self.main_layout.removeWidget(self.content_widget)
-            self.content_widget.deleteLater()
-            self.content_widget = None
+        while self.main_layout.count():
+            item = self.main_layout.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.setParent(None)
+                widget.deleteLater()
+        self.content_widget = None
 
         # Create new content widget
         self.content_widget = QtWidgets.QWidget()
@@ -292,6 +295,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
             "cannot_determine_mfg": self.ui_localization.get('dialogs', {}).get('cannot_determine_mfg'),
             "Select Skin": self.ui_localization.get('dialogs', {}).get('select_skin_title'),
             "Select a skin to apply": self.ui_localization.get('dialogs', {}).get('select_skin_msg'),
+            "update_success": self.ui_localization.get('dialogs', {}).get('update_success'),
             
             # Misc
             "Skin": self.ui_localization.get('misc', {}).get('skin'),
@@ -639,7 +643,8 @@ class WeaponEditorTab(QtWidgets.QWidget):
         payload = {
             'item_path': self.selected_weapon_path,
             'original_item_data': {}, # 留空，让controller自行处理
-            'new_item_data': {'serial': new_serial} 
+            'new_item_data': {'serial': new_serial},
+            'success_msg': self.get_localized_string('update_success')
         }
         self.update_item_requested.emit(payload)
 
