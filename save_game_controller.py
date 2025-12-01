@@ -338,16 +338,32 @@ class SaveGameController:
         try:
             # 在YAML对象中定位到物品节点
             node = self.yaml_obj
+            # Handle path traversal including list indices which might be strings
             for key in item_path[:-1]:
-                node = node[key]
-            item_node = node[item_path[-1]]
+                if isinstance(node, list) and isinstance(key, str) and key.isdigit():
+                    node = node[int(key)]
+                else:
+                    node = node[key]
+            
+            last_key = item_path[-1]
+            if isinstance(node, list) and isinstance(last_key, str) and last_key.isdigit():
+                item_node = node[int(last_key)]
+            else:
+                item_node = node[last_key]
 
-            new_level_str = new_item_data.get("level")
+            new_level_val = new_item_data.get("level")
             decoded_id_str = new_item_data.get("decoded_parts", "").strip()
 
             # 优先级1: 等级改变，需要重编码
-            if new_level_str and new_level_str.isdigit() and new_level_str != str(original_item_data.get("level")):
-                new_level = int(new_level_str)
+            # Handle both int and string input for level
+            new_level_int = None
+            if isinstance(new_level_val, int):
+                new_level_int = new_level_val
+            elif isinstance(new_level_val, str) and new_level_val.isdigit():
+                new_level_int = int(new_level_val)
+
+            if new_level_int is not None and str(new_level_int) != str(original_item_data.get("level")):
+                new_level = new_level_int
                 full_decoded_str = original_item_data.get("decoded_full", "")
                 if not full_decoded_str:
                     raise ValueError("无法更新，原始物品缺少'decoded_full'信息。")

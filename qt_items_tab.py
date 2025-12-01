@@ -208,6 +208,18 @@ class QtItemsTab(QWidget):
                     type_node.appendRow([name_item, type_item, container_slot_item, level_item])
         
         self.tree_view.expandAll()
+
+        # 默认折叠 "Lost Loot" 和 "Equipped"
+        containers_loc = self.loc.get('containers', {})
+        collapsed_names = {containers_loc.get('Lost Loot', 'Lost Loot'), 
+                           containers_loc.get('Equipped', 'Equipped')}
+        
+        root = self.model.invisibleRootItem()
+        for i in range(root.rowCount()):
+            item = root.child(i)
+            if item.text() in collapsed_names:
+                self.tree_view.collapse(self.model.indexFromItem(item))
+
         for i in range(self.model.columnCount()):
             self.tree_view.resizeColumnToContents(i)
 
@@ -341,8 +353,13 @@ class QtItemsTab(QWidget):
             return
 
         # 只收集UI上的新数据，将处理逻辑完全交给主窗口
+        try:
+            level_val = int(self.detail_fields["等级"].text())
+        except ValueError:
+            level_val = 0 # Default or handle error appropriately
+
         new_data = {
-            "level": self.detail_fields["等级"].text(),
+            "level": level_val,
             "decoded_parts": self.detail_fields["解码ID"].text(),
             # 我们不再从UI发送可能过时的序列号
         }

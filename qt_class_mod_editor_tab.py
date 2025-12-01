@@ -234,6 +234,13 @@ class QtClassModEditorTab(QWidget):
         name_layout.addWidget(self.name_combo)
         top_controls_layout.addWidget(name_group)
 
+        # Level
+        level_group = QGroupBox(self.ui_loc['top_controls']['level'])
+        level_layout = QVBoxLayout(level_group)
+        self.level_edit = QLineEdit("50")
+        level_layout.addWidget(self.level_edit)
+        top_controls_layout.addWidget(level_group)
+
         # Seed
         seed_group = QGroupBox(self.ui_loc['top_controls']['seed'])
         seed_layout = QHBoxLayout(seed_group)
@@ -250,6 +257,7 @@ class QtClassModEditorTab(QWidget):
         self.class_combo.currentTextChanged.connect(self.on_class_change)
         self.rarity_combo.currentTextChanged.connect(self.on_rarity_change)
         self.name_combo.currentTextChanged.connect(self.on_name_change)
+        self.level_edit.textChanged.connect(self.update_string)
         self.seed_edit.textChanged.connect(self.update_string)
         self.random_seed_btn.clicked.connect(self.generate_random_seed)
         self.skill_search_edit.textChanged.connect(self.populate_skills)
@@ -498,7 +506,9 @@ class QtClassModEditorTab(QWidget):
 
         try:
             current_class_en = self._get_current_class_en()
-            header = f"{self.data['ids'][current_class_en]}, 0, 1, 50| 2, {self.seed_edit.text()}||"
+            level_val = self.level_edit.text() if hasattr(self, 'level_edit') else "50"
+            if not level_val: level_val = "50"
+            header = f"{self.data['ids'][current_class_en]}, 0, 1, {level_val}| 2, {self.seed_edit.text()}||"
             
             rarity_en = self._get_english_key(self.rarity_combo.currentText())
             name_code = self.name_code_map.get(self.name_combo.currentText())

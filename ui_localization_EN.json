@@ -29,7 +29,7 @@
     }
   },
   "main_window": {
-    "window_title": "Borderlands 4 Save Editor V3.3.2",
+    "window_title": "Borderlands 4 Save Editor V3.3.3",
     "subtitle": "By SuperExboom - Free software, if you paid for this you got scammed",
     "header": {
       "title": "Borderlands 4 Save Editor",
@@ -329,6 +329,7 @@
       "class": "Class",
       "rarity": "Rarity",
       "name": "Name",
+      "level": "Level",
       "seed": "Random Seed (1–9999)"
     },
     "legendary": {
@@ -383,6 +384,7 @@
     "labels": {
       "selected_stacks": "Selected Stacks",
       "manufacturer": "Manufacturer",
+      "level": "Level",
       "rarity": "Rarity"
     },
     "buttons": {

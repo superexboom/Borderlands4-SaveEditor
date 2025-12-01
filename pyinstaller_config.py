@@ -74,22 +74,32 @@ a = Analysis(
     hiddenimports=[
         'PIL',
         'pandas',
-        'shield_editor_tab',
-        'grenade_editor_tab',
-        'weapon_editor_tab',
         'PIL.Image',
         'PIL.ImageTk',
         'yaml',
         'Crypto.Cipher',
         'Crypto.Util.Padding',
         'resource_loader',
-        'class_mod_editor_tab',
-        'enhancement_editor_tab',
-        'weapon_editor_tab',
         'bl4_functions',
         'decoder_logic',
         'b_encoder',
+        'unlock_logic',
+        'unlock_data',
+        'save_game_controller',
+        'save_selector_widget',
+        'qt_character_tab',
+        'qt_items_tab',
+        'qt_converter_tab',
+        'qt_yaml_editor_tab',
+        'qt_class_mod_editor_tab',
+        'qt_enhancement_editor_tab',
+        'qt_weapon_editor_tab',
+        'qt_weapon_generator_tab',
+        'qt_grenade_editor_tab',
+        'qt_shield_editor_tab',
         'qt_repkit_editor_tab',
+        'qt_heavy_weapon_editor_tab',
+        'bl4_decoder_py',
     ],
     hookspath=[],
     hooksconfig=[],
@@ -169,7 +179,7 @@ if __name__ == "__main__":
     print("=== PyInstaller Configuration ===")
     print("This script will help you build a Windows executable for BL4 Save Editor")
     print("Make sure all dependencies are installed:")
-    print("  pip install pyinstaller pillow pyyaml pycryptodome")
+    print("  pip install pyinstaller pillow pyyaml pycryptodome pandas PyQt6")
     print()
     
     response = input("Do you want to build the executable now? (y/n): ")

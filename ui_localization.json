@@ -29,7 +29,7 @@
     }
   },
   "main_window": {
-    "window_title": "无主之地4 存档编辑器 V3.3.2",
+    "window_title": "无主之地4 存档编辑器 V3.3.3",
     "subtitle": "By SuperExboom - 免费软件，如果你付费了那你就被骗了",
     "header": {
       "title": "无主之地4 存档编辑器",
@@ -329,6 +329,7 @@
       "class": "职业",
       "rarity": "稀有度",
       "name": "名称",
+      "level": "等级",
       "seed": "随机种子 (1–9999)"
     },
     "legendary": {
@@ -383,6 +384,7 @@
     "labels": {
       "selected_stacks": "已选堆叠",
       "manufacturer": "厂商",
+      "level": "等级",
       "rarity": "稀有度"
     },
     "buttons": {

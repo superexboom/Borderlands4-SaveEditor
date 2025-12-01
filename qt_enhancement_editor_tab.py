@@ -133,6 +133,14 @@ class QtEnhancementEditorTab(QWidget):
         self.rarity_sel.currentTextChanged.connect(self.rebuild_output)
         rarity_layout.addWidget(self.rarity_sel)
         mfg_rarity_layout.addLayout(rarity_layout)
+
+        level_layout = QVBoxLayout()
+        level_layout.addWidget(QLabel(self.ui_loc['labels']['level']))
+        self.level_edit = QLineEdit("50")
+        self.level_edit.textChanged.connect(self.rebuild_output)
+        level_layout.addWidget(self.level_edit)
+        mfg_rarity_layout.addLayout(level_layout)
+
         main_layout.addLayout(mfg_rarity_layout)
 
         # Grids
@@ -379,7 +387,11 @@ class QtEnhancementEditorTab(QWidget):
         mfg_en = self._get_current_mfg_en_name()
         if not mfg_en: return
         mfg_code = enhancement_data['manufacturers'][mfg_en]['code']
-        parts.append(f"{mfg_code}, 0, 1, 50| 2, {self.rnd_seed}||")
+        
+        level_val = self.level_edit.text() if hasattr(self, 'level_edit') else "50"
+        if not level_val: level_val = "50"
+        
+        parts.append(f"{mfg_code}, 0, 1, {level_val}| 2, {self.rnd_seed}||")
         rarity_en = self._get_current_rarity_en_name()
         if not rarity_en: return
         rarity_code = enhancement_data['manufacturers'][mfg_en]['rarities'][rarity_en]
