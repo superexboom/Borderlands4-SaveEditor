@@ -7,7 +7,8 @@ from pathlib import Path
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QMessageBox, QFileDialog,
-    QStatusBar, QStackedWidget, QButtonGroup, QSizeGrip, QInputDialog
+    QStatusBar, QStackedWidget, QButtonGroup, QSizeGrip, QInputDialog,
+    QMenu
 )
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import pyqtSlot, QPropertyAnimation, QEasingCurve, Qt, QTimer, QObject, QThread, pyqtSignal
@@ -258,14 +259,20 @@ class MainWindow(QMainWindow):
         self.update_action_states()
     
     def _load_localization(self):
-        filename = "ui_localization.json" if self.current_language == 'zh-CN' else "ui_localization_EN.json"
+        lang_map = {
+            'zh-CN': "ui_localization.json",
+            'en-US': "ui_localization_EN.json",
+            'ru': "ui_localization_RU.json",
+            'ua': "ui_localization_UA.json"
+        }
+        filename = lang_map.get(self.current_language, "ui_localization_EN.json")
         data = resource_loader.load_json_resource(filename)
         if data and "main_window" in data:
             self.loc = data["main_window"]
         else:
             # Fallback if file missing (or partial)
             self.loc = {
-                "window_title": "Borderlands 4 Save Editor V3.2",
+                "window_title": "Borderlands 4 Save Editor V3.3.3",
                 "subtitle": "By SuperExboom",
                 "header": {"title": "BL4 Save Editor", "open": "Open", "save": "Save", "save_as": "Save As..."},
                 "menu": {"open_selector": "Open Selector", "save": "Save", "save_as": "Save As..."},
@@ -347,9 +354,26 @@ class MainWindow(QMainWindow):
         header_layout.addWidget(self.save_button)
         header_layout.addWidget(self.save_as_button)
 
-        self.lang_button = QPushButton("🌐 CN" if self.current_language == 'zh-CN' else "🌐 EN")
-        self.lang_button.clicked.connect(self.toggle_language)
+        self.lang_button = QPushButton(self._get_lang_button_text())
         self.lang_button.setFixedWidth(60)
+        
+        self.lang_menu = QMenu(self)
+        
+        # Define languages
+        languages = [
+            ("简体中文", "zh-CN"),
+            ("English", "en-US"),
+            ("Русский", "ru"),
+            ("Українська", "ua")
+        ]
+        
+        for label, code in languages:
+            action = QAction(label, self)
+            # Use default parameter to capture 'code' value in lambda closure
+            action.triggered.connect(lambda checked, c=code: self.change_language(c))
+            self.lang_menu.addAction(action)
+
+        self.lang_button.setMenu(self.lang_menu)
         header_layout.addWidget(self.lang_button)
 
         header_layout.addStretch()
@@ -855,14 +879,27 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, self.loc['dialogs']['encrypt_failed'], str(e))
 
-    def toggle_language(self):
-        print(f"DEBUG: toggle_language started. Current: {self.current_language}")
-        self.current_language = 'en-US' if self.current_language == 'zh-CN' else 'zh-CN'
+    def _get_lang_button_text(self):
+        code_map = {
+            'zh-CN': "CN",
+            'en-US': "EN",
+            'ru': "RU",
+            'ua': "UA"
+        }
+        return f"🌐 {code_map.get(self.current_language, 'EN')}"
+
+    def change_language(self, lang_code):
+        if self.current_language == lang_code:
+            return
+
+        print(f"DEBUG: change_language started. New: {lang_code}")
+        self.current_language = lang_code
         
         # Update backend localization
         bl4f.set_language(self.current_language)
 
-        self.lang_button.setText("🌐 CN" if self.current_language == 'zh-CN' else "🌐 EN")
+        self.lang_button.setText(self._get_lang_button_text())
+        
         self._load_localization()
         self.update_ui_text()
         
@@ -882,14 +919,10 @@ class MainWindow(QMainWindow):
                 except Exception as e:
                     print(f"DEBUG: Error updating language for tab {tab.__class__.__name__}: {e}")
         
-        # Basic UI update for tabs handled by localization re-init if they support it
-        # For simple tabs we might need to reload them entirely or just update text if possible
-        # Here we just trigger re-translation of main window elements
-        
         # Refresh all tabs to re-fetch items with new localization
         self.refresh_all_tabs()
         
-        print("DEBUG: toggle_language finished")
+        print("DEBUG: change_language finished")
         
     def update_ui_text(self):
         self.setWindowTitle(self.loc['window_title'])
@@ -902,6 +935,7 @@ class MainWindow(QMainWindow):
         self.save_action.setText(self.loc['menu']['save'])
         self.save_as_action.setText(self.loc['menu']['save_as'])
         self.status_label.setText(self.loc['status']['welcome'])
+        self.lang_button.setText(self._get_lang_button_text())
         
         # Update tab titles
         tab_keys = [

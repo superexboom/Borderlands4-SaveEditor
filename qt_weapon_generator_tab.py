@@ -53,7 +53,7 @@ class QtWeaponGeneratorTab(QWidget):
 
     def load_data(self, lang='zh-CN'):
         try:
-            suffix = "_EN" if lang == 'en-US' else ""
+            suffix = "_EN" if lang in ['en-US', 'ru', 'ua'] else ""
             
             # Helper to get path with fallback
             def get_path(base_name):
@@ -89,7 +89,7 @@ class QtWeaponGeneratorTab(QWidget):
             if lang == 'zh-CN':
                 self.weapon_localization = resource_loader.load_weapon_json('weapon_localization_zh-CN.json') or {}
             
-            loc_file = "ui_localization.json" if lang == 'zh-CN' else "ui_localization_EN.json"
+            loc_file = resource_loader.get_ui_localization_file(lang)
             full_loc = resource_loader.load_json_resource(loc_file) or {}
             self.ui_loc = full_loc.get("weapon_gen_tab", {})
             self.flags_loc = full_loc.get("weapon_editor_tab", {}).get("flags", {})

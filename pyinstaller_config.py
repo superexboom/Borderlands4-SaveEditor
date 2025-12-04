@@ -49,6 +49,8 @@ root_files = [
     ('item_localization_zh-CN.json', '.'),
     ('ui_localization.json', '.'),
     ('ui_localization_EN.json', '.'),
+    ('ui_localization_RU.json', '.'),
+    ('ui_localization_UA.json', '.'),
     ('stylesheet.qss', '.'),
     ('BL4.ico', '.'),
 ]

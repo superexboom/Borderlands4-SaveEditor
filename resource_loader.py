@@ -12,6 +12,24 @@ from typing import Any, Dict, Optional, Union
 import importlib.resources
 import pkg_resources
 
+def get_ui_localization_file(lang: str) -> str:
+    """
+    Get the UI localization file name for the given language code.
+    
+    Args:
+        lang: Language code (e.g., 'zh-CN', 'en-US', 'ru', 'ua')
+        
+    Returns:
+        Filename of the localization JSON.
+    """
+    mapping = {
+        'zh-CN': 'ui_localization.json',
+        'en-US': 'ui_localization_EN.json',
+        'ru': 'ui_localization_RU.json',
+        'ua': 'ui_localization_UA.json'
+    }
+    return mapping.get(lang, 'ui_localization_EN.json')
+
 def get_resource_path(relative_path: Union[str, Path]) -> Path:
     """
     获取资源的绝对路径，支持PyInstaller打包环境

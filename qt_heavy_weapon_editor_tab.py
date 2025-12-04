@@ -18,7 +18,7 @@ import bl4_functions as bl4f
 @lru_cache(maxsize=None)
 def load_heavy_weapon_data(lang='zh-CN'):
     try:
-        suffix = "_EN" if lang == 'en-US' else ""
+        suffix = "_EN" if lang in ['en-US', 'ru', 'ua'] else ""
         main_perk_path = resource_loader.get_heavy_data_path(f'heavy_main_perk{suffix}.csv')
         mfg_perk_path = resource_loader.get_heavy_data_path(f'heavy_manufacturer_perk{suffix}.csv')
         
@@ -62,7 +62,7 @@ class QtHeavyWeaponEditorTab(QWidget):
         self._connect_signals()
 
     def _load_ui_localization(self):
-        loc_file = "ui_localization.json" if self.current_lang == 'zh-CN' else "ui_localization_EN.json"
+        loc_file = resource_loader.get_ui_localization_file(self.current_lang)
         full_loc = resource_loader.load_json_resource(loc_file) or {}
         self.ui_loc = full_loc.get("heavy_weapon_tab", {})
         self.flags_loc = full_loc.get("weapon_editor_tab", {}).get("flags", {})

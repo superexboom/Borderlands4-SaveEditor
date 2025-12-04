@@ -51,7 +51,7 @@ class QtYamlEditorTab(QWidget):
         print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
 
     def _load_localization(self, lang='zh-CN'):
-        file_name = "ui_localization.json" if lang == 'zh-CN' else "ui_localization_EN.json"
+        file_name = resource_loader.get_ui_localization_file(lang)
         data = resource_loader.load_json_resource(file_name)
         if data and "yaml_tab" in data:
             self.loc = data["yaml_tab"]

@@ -111,7 +111,7 @@ def apply_character_and_currency_changes(data: Dict[str, Any], yaml_data: Dict[s
 import decoder_logic
 import lookup
 from typing import TypedDict, List
-from resource_loader import load_json_resource
+from resource_loader import load_json_resource, get_ui_localization_file
 
 # 全局本地化缓存
 localization_cache = None
@@ -125,7 +125,7 @@ def set_language(lang: str):
 
 def get_sync_localization() -> Dict[str, str]:
     """加载并返回同步背包等级相关的错误信息本地化字典。"""
-    filename = "ui_localization.json" if current_localization_lang == 'zh-CN' else "ui_localization_EN.json"
+    filename = get_ui_localization_file(current_localization_lang)
     data = load_json_resource(filename)
     if data and "sync_errors" in data:
         return data["sync_errors"]

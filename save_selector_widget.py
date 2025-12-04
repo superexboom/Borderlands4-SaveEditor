@@ -106,7 +106,7 @@ class SaveSelectorWidget(QWidget):
             print(f"Error saving config: {e}")
 
     def _load_localization(self):
-        filename = "ui_localization.json" if self.current_lang == 'zh-CN' else "ui_localization_EN.json"
+        filename = resource_loader.get_ui_localization_file(self.current_lang)
         localized_data = resource_loader.load_json_resource(filename)
         if localized_data and "save_selector" in localized_data:
             self.loc = localized_data["save_selector"]

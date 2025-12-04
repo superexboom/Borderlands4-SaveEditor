@@ -19,7 +19,7 @@ import bl4_functions as bl4f
 @lru_cache(maxsize=None)
 def load_shield_data(lang='zh-CN'):
     try:
-        suffix = "_EN" if lang == 'en-US' else ""
+        suffix = "_EN" if lang in ['en-US', 'ru', 'ua'] else ""
         main_perk_path = resource_loader.get_shield_data_path(f'shield_main_perk{suffix}.csv')
         mfg_perk_path = resource_loader.get_shield_data_path(f'manufacturer_perk{suffix}.csv')
         df_main = pd.read_csv(main_perk_path)
@@ -58,7 +58,7 @@ class QtShieldEditorTab(QWidget):
         self.on_mfg_change()
 
     def _load_ui_localization(self):
-        loc_file = "ui_localization.json" if self.current_lang == 'zh-CN' else "ui_localization_EN.json"
+        loc_file = resource_loader.get_ui_localization_file(self.current_lang)
         full_loc = resource_loader.load_json_resource(loc_file) or {}
         self.ui_loc = full_loc.get("shield_tab", {})
         self.flags_loc = full_loc.get("weapon_editor_tab", {}).get("flags", {})

@@ -167,7 +167,7 @@ class QtCharacterTab(QWidget):
             self.unlock_requested.emit("set_character_class", {"class_key": class_key})
 
     def _load_localization(self):
-        filename = "ui_localization.json" if self.current_lang == 'zh-CN' else "ui_localization_EN.json"
+        filename = resource_loader.get_ui_localization_file(self.current_lang)
         data = resource_loader.load_json_resource(filename)
         if data and "character_tab" in data:
             self.loc = data["character_tab"]

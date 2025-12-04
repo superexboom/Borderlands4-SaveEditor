@@ -167,7 +167,7 @@ class QtClassModEditorTab(QWidget):
         if lang is None: lang = self.current_lang
         # If English, we assume keys are English and don't need translation mapping (return empty dict)
         # unless there's a specific EN file. For now assuming keys are EN.
-        if lang == 'en-US':
+        if lang in ['en-US', 'ru', 'ua']:
             return {}
         try:
             return resource_loader.load_class_mods_json("class_localization.json")
@@ -177,7 +177,7 @@ class QtClassModEditorTab(QWidget):
 
     def _load_ui_localization(self, lang=None):
         if lang is None: lang = self.current_lang
-        filename = "ui_localization.json" if lang == 'zh-CN' else "ui_localization_EN.json"
+        filename = resource_loader.get_ui_localization_file(lang)
         data = resource_loader.load_json_resource(filename)
         if data and "class_mod_tab" in data:
             return data["class_mod_tab"]
@@ -345,7 +345,7 @@ class QtClassModEditorTab(QWidget):
         # If we loaded flags_loc (we didn't in this file), we could use it.
         # Let's check if we can load it.
         try:
-            loc_file = "ui_localization.json" if self.current_lang == 'zh-CN' else "ui_localization_EN.json"
+            loc_file = resource_loader.get_ui_localization_file(self.current_lang)
             full_loc = resource_loader.load_json_resource(loc_file) or {}
             flags_loc = full_loc.get("weapon_editor_tab", {}).get("flags", {})
             if flags_loc:

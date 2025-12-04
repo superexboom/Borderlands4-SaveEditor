@@ -19,7 +19,7 @@ import bl4_functions as bl4f
 @lru_cache(maxsize=None)
 def load_grenade_data(lang='zh-CN'):
     try:
-        suffix = "_EN" if lang == 'en-US' else ""
+        suffix = "_EN" if lang in ['en-US', 'ru', 'ua'] else ""
         df_main = pd.read_csv(resource_loader.get_grenade_data_path(f'grenade_main_perk{suffix}.csv'))
         df_mfg = pd.read_csv(resource_loader.get_grenade_data_path(f'manufacturer_rarity_perk{suffix}.csv'))
         
@@ -57,7 +57,7 @@ class QtGrenadeEditorTab(QWidget):
         self.on_mfg_change()
 
     def _load_ui_localization(self):
-        loc_file = "ui_localization.json" if self.current_lang == 'zh-CN' else "ui_localization_EN.json"
+        loc_file = resource_loader.get_ui_localization_file(self.current_lang)
         full_loc = resource_loader.load_json_resource(loc_file) or {}
         self.ui_loc = full_loc.get("grenade_tab", {})
         self.flags_loc = full_loc.get("weapon_editor_tab", {}).get("flags", {})

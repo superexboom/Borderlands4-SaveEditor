@@ -1,0 +1,650 @@
+{
+  "save_selector": {
+    "headers": {
+      "file": "Файл",
+      "user_id": "64-бітний ID платформи",
+      "modified": "Дата зміни",
+      "size": "Розмір",
+      "path": "Шлях"
+    },
+    "buttons": {
+      "refresh": "Оновити",
+      "open": "Відкрити з обраним ID",
+      "select_save_folder": "Обрати папку збережень",
+      "select_backup_folder": "Обрати папку резервних копій"
+    },
+    "labels": {
+      "user_id_input": "Введення User ID вручну:",
+      "status_loading": "Сканування папки...",
+      "status_no_saves": "Файли збережень не знайдено.",
+      "status_found_saves": "Знайдено збережень: {count}.",
+      "current_save_path": "Шлях до збережень: {path}",
+      "current_backup_path": "Шлях до резервних копій: {path}"
+    },
+    "dialogs": {
+      "folder_name_warning": "Назва обраної папки має бути 'SaveGames'."
+    },
+    "placeholders": {
+      "user_id_input": "Введіть тут, якщо автовизначення ID неправильне"
+    }
+  },
+  "main_window": {
+    "window_title": "Borderlands 4 Save Editor V3.3.3",
+    "subtitle": "Автор: SuperExboom - Безкоштовне ПЗ, якщо ви заплатили за це, вас обдурили",
+    "header": {
+      "title": "Редактор збережень Borderlands 4",
+      "open": "Відкрити",
+      "save": "Зберегти",
+      "save_as": "Зберегти як..."
+    },
+    "menu": {
+      "open_selector": "Вибір збереження",
+      "save": "Зберегти",
+      "save_as": "Зберегти як..."
+    },
+    "status": {
+      "welcome": "Ласкаво просимо до редактора збережень Borderlands 4"
+    },
+    "tabs": {
+      "select_save": "Вибір збереження",
+      "character": "Персонаж",
+      "items": "Предмети",
+      "converter": "Конвертер",
+      "yaml_editor": "YAML Редактор",
+      "class_mod": "Мод класу",
+      "enhancement": "Посилення",
+      "weapon_editor": "Редактор зброї",
+      "weapon_generator": "Генератор зброї",
+      "grenade": "Граната",
+      "shield": "Щит",
+      "repkit": "Ремкомплект",
+      "heavy_weapon": "Важка зброя"
+    },
+    "dialogs": {
+      "success": "Успіх",
+      "error": "Помилка",
+      "warning": "Попередження",
+      "critical": "Критична помилка",
+      "cancel": "Скасувати",
+      "decrypt_success": "Збереження розшифровано!\nПлатформа: {platform}\nРезервну копію створено: {backup_name}",
+      "decrypt_failed": "Помилка розшифровки",
+      "decrypt_failed_msg": "Не вдалося розшифрувати з ID '{user_id}'.\n({error})\n\nБудь ласка, введіть правильний 64-бітний ID:",
+      "user_id_needed": "Потрібен User ID",
+      "enter_user_id": "Введіть 64-бітний ID (Epic/Steam ID) для цього збереження:",
+      "open_cancelled": "Відкриття збереження скасовано.",
+      "no_save": "Немає збереження",
+      "load_save_first": "Спочатку завантажте файл збереження.",
+      "decrypt_save_first": "Спочатку розшифруйте файл збереження.",
+      "encode_failed": "Помилка кодування",
+      "encode_failed_msg": "Не вдалося закодувати з наданого коду: {error}",
+      "add_success": "Новий предмет успішно додано до рюкзака.",
+      "add_fail": "Не вдалося додати предмет. Дані збереження можуть бути несумісними або пошкодженими.",
+      "add_error": "Критична помилка при додаванні предмета: {error}",
+      "update_error": "Критична помилка при оновленні предмета: {error}",
+      "char_applied": "Дані персонажа застосовано.",
+      "char_apply_error": "Помилка при застосуванні даних персонажа.",
+      "confirm_sync": "Синхронізувати рівні всіх предметів у рюкзаку з рівнем персонажа?",
+      "sync_title": "Синхронізація завершена",
+      "sync_partial": "Частковий збій синхронізації",
+      "sync_msg": "Синхронізація завершена. Успішно: {success}, Невдало: {fail}.",
+      "sync_fail_details": "\n\nДеталі збою:\n{details}",
+      "preset_applied": "Пресет застосовано: {name}",
+      "preset_fail": "Не вдалося застосувати пресет: {name}",
+      "batch_complete": "Пакетне додавання завершено",
+      "batch_success": "Успішно додано предметів: {count}.",
+      "batch_fail": "Пакетне додавання не вдалося",
+      "batch_fail_msg": "Не вдалося додати жодного предмета. Помилок: {count}.",
+      "iter_complete": "Ітеративне додавання завершено",
+      "iter_success": "Успішно додано предметів: {count}.",
+      "iter_fail": "Ітеративне додавання не вдалося",
+      "iter_fail_msg": "Не вдалося додати жодного предмета. Помилок: {count}.",
+      "save_encrypted_title": "Збереження зашифрованого файлу",
+      "save_saved": "Файл збереження записано у:\n{path}",
+      "encrypt_failed": "Помилка шифрування"
+    },
+    "worker": {
+      "no_data": "Дані не згенеровано.",
+      "generating": "Генерація списку обробки...",
+      "base_empty": "Базові дані не можуть бути порожніми.",
+      "combo_error_range": "Початкове значення комбінації не може бути більше кінцевого.",
+      "combo_error_size": "Розмір базового набору комбінації має бути більшим або рівним розміру комбінації.",
+      "iter_error_range": "Початкове значення ітерації не може бути більше кінцевого.",
+      "special_base_needed": "Будь ласка, надайте базове значення у спеціальному форматі.",
+      "generated_writing": "Згенеровано {count} предметів, підготовка до запису...",
+      "writing_progress": "Запис {current}/{total}...",
+      "generated_encoding": "Згенеровано {count} записів, початок кодування...",
+      "encoding_progress": "Кодування {current}/{total}...",
+      "error_prefix": "Помилка: "
+    }
+  },
+  "character_tab": {
+    "groups": {
+      "character_info": "Персонаж (Info)",
+      "currency": "Валюта (Currency)",
+      "world_presets": "Світ (World)",
+      "char_presets": "Персонаж (Presets)"
+    },
+    "labels": {
+      "name": "Ім'я:",
+      "difficulty": "Складність:",
+      "level": "Рівень персонажа:",
+      "xp": "Досвід (XP):",
+      "spec_level": "Рівень спец.:",
+      "spec_points": "Очки спеціалізації:",
+      "money": "Гроші:",
+      "eridium": "Ерідій:"
+    },
+    "buttons": {
+      "apply_changes": "Застосувати зміни персонажа та валюти",
+      "sync_levels": "Синхронізувати рівні предметів у рюкзаку з персонажем"
+    },
+    "warnings": {
+      "sync_warning": "Увага: Це може призвести до зняття екіпірованих предметів. Вам доведеться одягнути їх знову з рюкзака."
+    },
+    "presets": {
+      "clear_fog": "Прибрати туман війни",
+      "discover_locs": "Виявити всі локації",
+      "unlock_safehouses": "Розблокувати всі притулки",
+      "unlock_collectibles": "Розблокувати всі колекційні предмети",
+      "complete_challenges": "Завершити всі випробування",
+      "complete_achievements": "Завершити всі досягнення",
+      "skip_story": "Пропустити сюжетні місії",
+      "skip_all": "Пропустити всі місії",
+      "change_class": "Змінити клас персонажа",
+      "max_level": "Макс. рівень (50)",
+      "max_sdu": "Макс. SDU (Покращення сховища)",
+      "unlock_vault": "Відкрити всі ворота Сховища",
+      "unlock_vehicles": "Розблокувати весь транспорт",
+      "unlock_specs": "Розблокувати всі спеціалізації",
+      "unlock_uvhm": "Розблокувати UVHM",
+      "unlock_max": "Розблокувати/Максимізувати все"
+    },
+    "dialogs": {
+      "change_class_title": "Зміна класу персонажа",
+      "select_class": "Оберіть новий клас:"
+    }
+  },
+  "items_tab": {
+    "columns": {
+      "name": "Назва",
+      "type": "Тип",
+      "slot": "Контейнер/Слот",
+      "level": "Рівень"
+    },
+    "containers": {
+      "Backpack": "Рюкзак",
+      "背包": "Рюкзак",
+      "Bank": "Банк",
+      "银行": "Банк",
+      "Lost Loot": "Втрачене",
+      "丢失物品": "Втрачене",
+      "Equipped": "Екіпіровано",
+      "装备中­": "Екіпіровано"
+    },
+    "search_placeholder": "Пошук предметів...",
+    "add_item": {
+      "label_serial": "Серійний номер:",
+      "placeholder_serial": "Введіть @U... або декодований код",
+      "label_flag": "Прапорець (Flag):",
+      "button_add": "Додати до рюкзака",
+      "flags": {
+        "1": "1 (Звичайний)",
+        "3": "3 (Улюблене)",
+        "5": "5 (Мотлох)",
+        "17": "17 (Група 1)",
+        "33": "33 (Група 2)",
+        "65": "65 (Група 3)",
+        "129": "129 (Група 4)"
+      }
+    },
+    "details": {
+      "group_summary": "Підсумок",
+      "group_fields": "Поля",
+      "item": "Предмет",
+      "container": "Контейнер",
+      "slot": "Слот",
+      "manufacturer": "Виробник",
+      "type": "Тип",
+      "level": "Рівень",
+      "serial": "Серійний номер",
+      "decoded_id": "Декодований ID",
+      "button_update": "Оновити обраний предмет"
+    },
+    "defaults": {
+      "unknown_container": "Невідомий контейнер",
+      "unknown_type": "Невідомий тип"
+    },
+    "dialogs": {
+      "input_error": "Помилка введення",
+      "enter_serial": "Будь ласка, введіть серійний номер або код.",
+      "no_selection": "Нічого не обрано",
+      "select_item": "Спочатку оберіть предмет зі списку.",
+      "error": "Помилка",
+      "missing_path": "Неможливо оновити; у предмета відсутня інформація про внутрішній шлях.",
+      "update_success": "Предмет успішно оновлено."
+    }
+  },
+  "converter_tab": {
+    "groups": {
+      "single": "Одиничний конвертер",
+      "batch": "Пакетний конвертер",
+      "batch_add": "Пакетне додавання до рюкзака",
+      "iterator": "Генератор ітерацій"
+    },
+    "labels": {
+      "base85": "Base85:",
+      "deserialize": "Десеріалізація:",
+      "status_ready": "Статус: Готовий",
+      "input_batch": "Введення (один на рядок):",
+      "output": "Результат:",
+      "status_processing": "Статус: Обробка...",
+      "status_error": "Статус: Помилка: {error}",
+      "status_success": "Статус: Конвертація успішна!",
+      "status_critical": "Статус: Критична помилка: {error}",
+      "status_empty": "Статус: Порожнє введення.",
+      "status_progress": "Статус: Обробка {current} / {total}...",
+      "status_complete": "Статус: Обробку завершено!",
+      "input_batch_add": "Введення (один на рядок, Base85 або рядок):",
+      "select_flag": "Вибір прапорця:",
+      "status_prepare": "Статус: Підготовка...",
+      "status_batch_add_progress": "Статус: Обробка {current}/{total}... Успіх: {success}, Невдача: {fail}",
+      "status_batch_add_complete": "Статус: Завершено. Успіх: {success}, Невдача: {fail}.",
+      "base_data": "Базові дані (Deserialized):",
+      "iter_start": "Початок ітерації:",
+      "iter_end": "Кінець ітерації:",
+      "special_base": "Базове значення (спец. формат):",
+      "combo_start": "Початок комбо-набору:",
+      "combo_end": "Кінець комбо-набору:",
+      "combo_size": "Розмір комбо:",
+      "generated_result": "Згенерований результат:",
+      "special_combo_input": "Введення комбінації:",
+      "status_generating": "Статус: Генерація...",
+      "status_gen_complete": "Статус: Генерацію завершено!"
+    },
+    "placeholders": {
+      "base85": "Введіть Base85 код, наприклад: @Ug#2fK2...",
+      "deserialize": "Введіть дані, наприклад: 255, 0, 1, 50|..."
+    },
+    "buttons": {
+      "clear": "Очистити",
+      "export_txt": "Експорт у .txt",
+      "start_batch": "Почати пакетну обробку",
+      "batch_add": "Пакетне додавання",
+      "adding": "Додавання...",
+      "processing": "Обробка...",
+      "start_iter": "Почати ітерацію та генерацію",
+      "export_result": "Експорт результату",
+      "gen_write": "Згенерувати та записати до рюкзака (режим YAML)",
+      "generating": "Генерація...",
+      "gen_writing": "Генерація та запис..."
+    },
+    "checkboxes": {
+      "special_format": "Увімкнути спец. формат {base:var}",
+      "skin_mode": "Увімкнути режим скінів зброї",
+      "combo_mode": "Увімкнути режим комбінацій",
+      "special_combo": "Спец. комбо {AAA:B} -> {AAA:[... B]}",
+      "yaml_format": "Увімкнути виведення у форматі YAML (Універсальний)"
+    },
+    "flags": {
+      "1": "1 (Звичайний)",
+      "3": "3 (Улюблене)",
+      "5": "5 (Мотлох)",
+      "17": "17 (Група 1)",
+      "33": "33 (Група 2)",
+      "65": "65 (Група 3)",
+      "129": "129 (Група 4)"
+    },
+    "dialogs": {
+      "no_content": "Немає контенту",
+      "no_export": "Немає результатів для експорту.",
+      "export_batch_title": "Експорт пакетних результатів",
+      "success": "Успіх",
+      "export_success": "Результати експортовано у:\n{path}",
+      "export_fail": "Помилка експорту",
+      "write_fail": "Не вдалося записати файл: {error}",
+      "no_input": "Немає даних",
+      "batch_add_empty": "Немає вмісту в полі пакетного введення.",
+      "export_yaml": "Експорт як YAML",
+      "export_txt_title": "Експорт як TXT",
+      "export_opts": "Опції експорту",
+      "only_base85": "Експортувати тільки Base85 коди?"
+    }
+  },
+  "yaml_tab": {
+    "tree_headers": {
+      "key": "Ключ",
+      "value": "Значення"
+    },
+    "buttons": {
+      "yaml_view": "Перегляд YAML",
+      "tree_view": "Деревоподібний перегляд"
+    },
+    "dialogs": {
+      "yaml_error": "Помилка YAML",
+      "parse_error": "Не вдалося розібрати YAML: {error}"
+    }
+  },
+  "class_mod_tab": {
+    "top_controls": {
+      "class": "Клас",
+      "rarity": "Рідкість",
+      "name": "Назва",
+      "level": "Рівень",
+      "seed": "Випадковий Сід (1–9999)"
+    },
+    "legendary": {
+      "title": "Легендарний додаток",
+      "clear": "Очистити"
+    },
+    "output": {
+      "title": "Десеріалізація",
+      "base85": "Base85:",
+      "deserialize": "Дані:",
+      "add_to_backpack": "Додати до рюкзака"
+    },
+    "skills": {
+      "title": "Список навичок",
+      "search_placeholder": "Пошук навичок...",
+      "header_icon": "Іконка",
+      "header_skill": "Навичка",
+      "header_codes": "Код (Порядок)",
+      "header_points": "+Очки"
+    },
+    "perks": {
+      "title": "Загальні перки",
+      "search_placeholder": "Пошук перків...",
+      "clear": "Очистити"
+    },
+    "skill_point_widget": {
+      "min": "Мін",
+      "max": "Макс"
+    },
+    "dialogs": {
+      "error": "Помилка",
+      "load_error_code": "Не вдалося завантажити class_code.json: {error}",
+      "warning": "Попередження",
+      "load_error_loc": "Не вдалося завантажити class_localization.json: {error}",
+      "no_data": "Немає даних",
+      "no_valid_base85": "Немає доступного дійсного Base85 коду.",
+      "coding_error": "Помилка кодування: {error}",
+      "gen_error": "Помилка генерації: {error}"
+    },
+    "tooltips": {
+      "type": "Тип"
+    }
+  },
+  "enhancement_tab": {
+    "groups": {
+      "output": "Десеріалізація",
+      "base85": "Base85 Код",
+      "perks_mfg": "Перки виробника",
+      "perk_stacking": "Стеки перків",
+      "builder_247": "Будівельник вторинних характеристик"
+    },
+    "labels": {
+      "selected_stacks": "Обрані стеки",
+      "manufacturer": "Виробник",
+      "level": "Рівень",
+      "rarity": "Рідкість"
+    },
+    "buttons": {
+      "copy": "Копіювати",
+      "add_to_backpack": "Додати до рюкзака",
+      "clear": "Очистити"
+    },
+    "flags": {
+      "1": "1 (Звичайний)",
+      "3": "3 (Улюблене)",
+      "5": "5 (Мотлох)",
+      "17": "17 (Група 1)",
+      "33": "33 (Група 2)",
+      "65": "65 (Група 3)",
+      "129": "129 (Група 4)"
+    },
+    "dialogs": {
+      "error_load": "Помилка: Не вдалося завантажити enhancement_data.txt.",
+      "copied": "Скопійовано",
+      "copy_raw_msg": "Вихідний код скопійовано в буфер обміну!",
+      "copy_b85_msg": "Base85 код скопійовано в буфер обміну!",
+      "no_valid_code": "Недійсний код",
+      "gen_valid_first": "Будь ласка, спочатку згенеруйте дійсний код посилення."
+    }
+  },
+  "weapon_editor_tab": {
+    "labels": {
+      "load_from_backpack": "Завантажити з рюкзака",
+      "decrypt_save_to_show_weapons": "Зброя з'явиться тут після розшифровки збереження...",
+      "serial_b85": "Base85:",
+      "serial_decoded": "Дані:",
+      "manufacturer": "Виробник",
+      "weapon_type": "Тип зброї",
+      "rarity": "Рідкість",
+      "level": "Рівень",
+      "seed": "Сід",
+      "weapon_name_label": "Назва зброї: ",
+      "weapon_parts": "Частини зброї",
+      "parts_list": "Список частин",
+      "parse_serial_to_show_parts": "Частини з'являться тут після парсингу серійного номера...",
+      "level_label": "Рівень",
+      "slot_label": "Слот"
+    },
+    "buttons": {
+      "update_weapon": "Оновити зброю",
+      "add_to_backpack": "Додати до рюкзака",
+      "add_part": "+ Додати частину",
+      "confirm_add": "Підтвердити"
+    },
+    "flags": {
+      "1": "1 (Звичайний)",
+      "3": "3 (Улюблене)",
+      "5": "5 (Мотлох)",
+      "17": "17 (Група 1)",
+      "33": "33 (Група 2)",
+      "65": "65 (Група 3)",
+      "129": "129 (Група 4)"
+    },
+    "dialogs": {
+      "error": "Помилка",
+      "no_weapons_in_backpack": "Відповідної зброї в рюкзаку не знайдено.",
+      "no_valid_decoded_data": "Немає дійсних даних декодування для цього предмета.",
+      "parse_error": "Помилка парсингу",
+      "parse_weapon_error": "Невідома помилка при парсингу зброї",
+      "parts_not_found": "Частини не знайдено або вони нечитабельні.",
+      "no_selection": "Нічого не обрано",
+      "select_weapon_first": "Будь ласка, спочатку оберіть зброю.",
+      "encoding_fail": "Помилка кодування",
+      "cannot_reencode_serial": "Неможливо перекодувати серійний номер",
+      "cannot_encode_serial": "Неможливо закодувати серійний номер",
+      "success": "Успіх",
+      "no_input": "Немає введення",
+      "serial_empty": "Серійний номер порожній.",
+      "no_weapon": "Немає зброї",
+      "load_weapon_first": "Спочатку завантажте зброю.",
+      "add_part_title": "Додати частину",
+      "select_parts_to_add": "Оберіть частини для додавання",
+      "cannot_determine_mfg": "Неможливо визначити виробника.",
+      "select_skin_title": "Вибір скіна",
+      "select_skin_msg": "Оберіть скін для застосування",
+      "update_success": "Зброю успішно оновлено.",
+      "parts_refresh_success": "Список частин оновлено."
+    },
+    "misc": {
+      "skin": "Скін",
+      "elemental": "Стихія"
+    }
+  },
+  "weapon_gen_tab": {
+    "labels": {
+      "serial_decoded": "Дані:",
+      "serial_b85": "Base85:",
+      "manufacturer": "Виробник",
+      "weapon_type": "Тип зброї",
+      "level": "Рівень",
+      "seed": "Сід",
+      "select_flag": "Вибір прапорця:"
+    },
+    "buttons": {
+      "add_to_backpack": "Додати до рюкзака"
+    },
+    "dialogs": {
+      "error_title": "Помилка",
+      "load_error": "Помилка завантаження даних: {error}",
+      "file_not_found": "Не знайдено один або кілька шляхів до CSV файлів зброї.",
+      "loc_file_error": "Помилка завантаження 'weapon_localization_zh-CN.json'.",
+      "no_serial_title": "Немає серійного номера",
+      "gen_first": "Спочатку згенеруйте зброю."
+    }
+  },
+  "grenade_tab": {
+    "groups": {
+      "perks": "Перки",
+      "mfg_perks": "Перки виробника",
+      "element": "Стихія (Одиничн.)",
+      "firmware": "Прошивка (Одиничн.)",
+      "legendary": "Легендарні перки",
+      "universal": "Універсальні перки",
+      "output": "Десеріалізація",
+      "base_attrs": "Базові атрибути"
+    },
+    "labels": {
+      "raw": "Дані:",
+      "base85": "Base85:",
+      "manufacturer": "Виробник:",
+      "level": "Рівень:",
+      "rarity": "Рідкість:"
+    },
+    "buttons": {
+      "copy": "Копіювати",
+      "add_to_backpack": "Додати до рюкзака",
+      "clear": "Очистити"
+    },
+    "misc": {
+      "none": "Немає"
+    },
+    "dialogs": {
+      "load_error": "Помилка: Дані гранат не завантажено.",
+      "success": "Успіх",
+      "copied": "Скопійовано в буфер обміну.",
+      "no_valid_code": "Немає дійсного коду",
+      "gen_first": "Будь ласка, спочатку згенеруйте дійсний серійний номер."
+    }
+  },
+  "shield_tab": {
+    "groups": {
+      "perks": "Перки",
+      "element": "Опір стихіям (Одиничн.)",
+      "firmware": "Прошивка (Одиничн.)",
+      "legendary": "Легендарні перки",
+      "energy": "Перки енергощита",
+      "armor": "Перки бронещита",
+      "universal": "Універсальні перки",
+      "output": "Десеріалізація",
+      "base_attrs": "Базові атрибути"
+    },
+    "labels": {
+      "raw": "Дані:",
+      "base85": "Base85:",
+      "manufacturer": "Виробник (Тип щита):",
+      "level": "Рівень:",
+      "rarity": "Рідкість:"
+    },
+    "buttons": {
+      "copy": "Копіювати",
+      "add_to_backpack": "Додати до рюкзака",
+      "clear": "Очистити"
+    },
+    "misc": {
+      "none": "Немає"
+    },
+    "dialogs": {
+      "load_error": "Помилка: Дані щитів не завантажено.",
+      "success": "Успіх",
+      "copied": "Скопійовано в буфер обміну.",
+      "no_valid_code": "Немає дійсного коду",
+      "gen_first": "Будь ласка, спочатку згенеруйте дійсний серійний номер."
+    }
+  },
+  "repkit_tab": {
+    "groups": {
+      "perks": "Навички/Перки",
+      "prefix": "Префікс (Одиничн.)",
+      "resistance": "Опір/Імунітет (Одиничн.)",
+      "firmware": "Прошивка (Одиничн.)",
+      "legendary": "Легендарні перки",
+      "universal": "Універсальні перки (Мульти)",
+      "output": "Десеріалізація",
+      "base_attrs": "Базові атрибути"
+    },
+    "labels": {
+      "raw": "Дані:",
+      "base85": "Base85:",
+      "manufacturer": "Виробник:",
+      "level": "Рівень:",
+      "rarity": "Рідкість:",
+      "model_plus": "Плагін модуля:"
+    },
+    "buttons": {
+      "copy": "Копіювати",
+      "add_to_backpack": "Додати до рюкзака",
+      "clear": "Очистити",
+      "random": "Випадково"
+    },
+    "misc": {
+      "none": "Немає"
+    },
+    "dialogs": {
+      "load_error": "Помилка: Дані ремкомплекту не завантажено.",
+      "success": "Успіх",
+      "copied": "Скопійовано в буфер обміну.",
+      "no_valid_code": "Немає дійсного коду",
+      "gen_first": "Будь ласка, спочатку згенеруйте дійсний серійний номер.",
+      "load_fail_title": "Збій завантаження даних",
+      "path_error": "Не знайдено шлях до CSV файлу ремкомплектів.",
+      "parse_error": "Не вдається завантажити або розібрати файл даних ремкомплекту: {error}"
+    }
+  },
+  "sync_errors": {
+    "char_level_unknown": "Неможливо визначити рівень персонажа.",
+    "char_data_missing": "Інформацію про досвід/рівень не знайдено в даних YAML.",
+    "no_inventory_items": "Предмети в рюкзаку не знайдено.",
+    "missing_serial": "Відсутній серійний номер",
+    "decode_fail": "Збій декодування",
+    "update_level_fail": "Не вдалося оновити рівень у декодованому рядку",
+    "reencode_fail": "Збій перекодування",
+    "write_fail": "Помилка запису в YAML"
+  },
+  "heavy_weapon_tab": {
+    "groups": {
+      "perks": "Перки",
+      "barrel": "Ствол (Одиничн.)",
+      "element": "Стихія (Одиничн.)",
+      "firmware": "Прошивка (Одиничн.)",
+      "barrel_acc": "Аксесуар ствола (Мульти)",
+      "body_acc": "Аксесуар корпусу (Мульти)",
+      "output": "Десеріалізація",
+      "base_attrs": "Базові атрибути"
+    },
+    "labels": {
+      "raw": "Дані:",
+      "base85": "Base85:",
+      "manufacturer": "Виробник:",
+      "level": "Рівень:",
+      "rarity": "Рідкість:"
+    },
+    "buttons": {
+      "copy": "Копіювати",
+      "add_to_backpack": "Додати до рюкзака",
+      "clear": "Очистити"
+    },
+    "misc": {
+      "none": "Немає"
+    },
+    "dialogs": {
+      "load_error": "Помилка: Дані важкої зброї не завантажено.",
+      "success": "Успіх",
+      "copied": "Скопійовано в буфер обміну.",
+      "no_valid_code": "Немає дійсного коду",
+      "gen_first": "Будь ласка, спочатку згенеруйте дійсний серійний номер."
+    }
+  }
+}

@@ -20,7 +20,7 @@ import bl4_functions as bl4f
 def load_repkit_data(lang='zh-CN'):
     """使用资源加载器加载修复套件数据。"""
     try:
-        suffix = "_EN" if lang == 'en-US' else ""
+        suffix = "_EN" if lang in ['en-US', 'ru', 'ua'] else ""
         main_perk_path = resource_loader.get_repkit_data_path(f'repkit_main_perk{suffix}.csv')
         mfg_perk_path = resource_loader.get_repkit_data_path(f'repkit_manufacturer_perk{suffix}.csv')
         
@@ -76,7 +76,7 @@ class QtRepkitEditorTab(QWidget):
         self.on_mfg_change()
 
     def _load_ui_localization(self):
-        loc_file = "ui_localization.json" if self.current_lang == 'zh-CN' else "ui_localization_EN.json"
+        loc_file = resource_loader.get_ui_localization_file(self.current_lang)
         full_loc = resource_loader.load_json_resource(loc_file) or {}
         self.ui_loc = full_loc.get("repkit_tab", {})
         self.flags_loc = full_loc.get("weapon_editor_tab", {}).get("flags", {})

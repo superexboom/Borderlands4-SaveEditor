@@ -33,7 +33,7 @@ class QtEnhancementEditorTab(QWidget):
 
     def _load_game_localization(self, lang=None):
         if lang is None: lang = self.current_lang
-        if lang == 'en-US': return {}
+        if lang in ['en-US', 'ru', 'ua']: return {}
         try:
             return resource_loader.load_enhancement_json("localization_zh-CN.json")
         except:
@@ -55,7 +55,7 @@ class QtEnhancementEditorTab(QWidget):
 
     def _load_ui_localization(self, lang=None):
         if lang is None: lang = self.current_lang
-        filename = "ui_localization.json" if lang == 'zh-CN' else "ui_localization_EN.json"
+        filename = resource_loader.get_ui_localization_file(lang)
         data = resource_loader.load_json_resource(filename)
         if data and "enhancement_tab" in data:
             return data["enhancement_tab"]

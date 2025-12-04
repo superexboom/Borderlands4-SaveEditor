@@ -590,7 +590,7 @@ class QtConverterTab(QWidget):
                 QMessageBox.critical(self, self.loc['dialogs']['export_fail'], self.loc['dialogs']['write_fail'].format(error=e))
     
     def _load_localization(self):
-        filename = "ui_localization.json" if self.current_lang == 'zh-CN' else "ui_localization_EN.json"
+        filename = resource_loader.get_ui_localization_file(self.current_lang)
         data = resource_loader.load_json_resource(filename)
         if data and "converter_tab" in data:
             self.loc = data["converter_tab"]
