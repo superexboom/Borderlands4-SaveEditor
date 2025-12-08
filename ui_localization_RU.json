@@ -554,7 +554,10 @@
       "clear": "Очистить"
     },
     "misc": {
-      "none": "Нет"
+      "none": "Нет",
+      "perk_type_mismatch": "Текущий тип щита: {shield_type}.\nНельзя добавить перки типа {incompatible_type}.",
+      "shield_type_energy": "Энергощит",
+      "shield_type_armor": "Бронещит"
     },
     "dialogs": {
       "load_error": "Ошибка: Данные щитов не загружены.",

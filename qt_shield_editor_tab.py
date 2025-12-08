@@ -170,6 +170,7 @@ class QtShieldEditorTab(QWidget):
     def _create_scrollable_radio_group(self, title):
         group_box = QGroupBox(title); scroll_area = QScrollArea(); scroll_area.setWidgetResizable(True)
         scroll_area.setMinimumHeight(200)
+        scroll_area.setMaximumHeight(200)
         widget_in_scroll = QWidget(); layout = QVBoxLayout(widget_in_scroll)
         scroll_area.setWidget(widget_in_scroll); main_layout = QVBoxLayout(group_box); main_layout.addWidget(scroll_area)
         return group_box, layout, []
@@ -212,6 +213,20 @@ class QtShieldEditorTab(QWidget):
         
         setattr(self, f"{prefix}_avail_list", avail); setattr(self, f"{prefix}_sel_list", sel)
         setattr(self, f"{prefix}_clear_btn", clear_btn)
+        setattr(self, f"{prefix}_move_btn", move_btn)
+        setattr(self, f"{prefix}_remove_btn", remove_btn)
+        if multiplier_box:
+            setattr(self, f"{prefix}_multiplier", multiplier_box)
+        
+        # Create placeholder label for energy/armor type mismatch message
+        if prefix in ['energy', 'armor']:
+            placeholder_label = QLabel()
+            placeholder_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            placeholder_label.setStyleSheet("font-size: 14px; font-weight: bold; color: #888; padding: 20px;")
+            placeholder_label.setWordWrap(True)
+            placeholder_label.hide()  # Hidden by default
+            layout.addWidget(placeholder_label, 1, 0, 1, 3)  # Span all columns
+            setattr(self, f"{prefix}_placeholder_label", placeholder_label)
         
         move_btn.clicked.connect(lambda: self._move_selected_items(avail, sel, single_select, multiplier_box))
         remove_btn.clicked.connect(lambda: self._remove_selected_items(sel))
@@ -313,9 +328,45 @@ class QtShieldEditorTab(QWidget):
             item.setData(Qt.ItemDataRole.UserRole, (row['Part_ID'], row['Manufacturer ID']))
             self.legendary_avail_list.addItem(item)
         
-        # Use base type for logic check
-        self.energy_group.setEnabled(mfg_type == 'Energy')
-        self.armor_group.setEnabled(mfg_type == 'Armor')
+        # Get localized type names
+        energy_type_name = self.ui_loc.get('misc', {}).get('shield_type_energy', 'Energy')
+        armor_type_name = self.ui_loc.get('misc', {}).get('shield_type_armor', 'Armor')
+        mismatch_template = self.ui_loc.get('misc', {}).get('perk_type_mismatch', 'Current shield type is {shield_type}.\nCannot add {incompatible_type} type perks.')
+        
+        # Handle energy group visibility and placeholder
+        is_energy = mfg_type == 'Energy'
+        self.energy_avail_list.setVisible(is_energy)
+        self.energy_sel_list.setVisible(is_energy)
+        self.energy_move_btn.setVisible(is_energy)
+        self.energy_remove_btn.setVisible(is_energy)
+        self.energy_clear_btn.setVisible(is_energy)
+        if hasattr(self, 'energy_multiplier'):
+            self.energy_multiplier.setVisible(is_energy)
+        if hasattr(self, 'energy_placeholder_label'):
+            if not is_energy:
+                msg = mismatch_template.format(shield_type=armor_type_name, incompatible_type=energy_type_name)
+                self.energy_placeholder_label.setText(msg)
+                self.energy_placeholder_label.show()
+            else:
+                self.energy_placeholder_label.hide()
+        
+        # Handle armor group visibility and placeholder
+        is_armor = mfg_type == 'Armor'
+        self.armor_avail_list.setVisible(is_armor)
+        self.armor_sel_list.setVisible(is_armor)
+        self.armor_move_btn.setVisible(is_armor)
+        self.armor_remove_btn.setVisible(is_armor)
+        self.armor_clear_btn.setVisible(is_armor)
+        if hasattr(self, 'armor_multiplier'):
+            self.armor_multiplier.setVisible(is_armor)
+        if hasattr(self, 'armor_placeholder_label'):
+            if not is_armor:
+                msg = mismatch_template.format(shield_type=energy_type_name, incompatible_type=armor_type_name)
+                self.armor_placeholder_label.setText(msg)
+                self.armor_placeholder_label.show()
+            else:
+                self.armor_placeholder_label.hide()
+        
         self.rebuild_output()
 
     def rebuild_output(self, *args):

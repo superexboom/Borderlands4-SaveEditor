@@ -20,12 +20,12 @@ class QtWeaponGeneratorTab(QWidget):
         "Rarity": (0, 0), "Legendary Type": (0, 1),
         "Element 1": (1, 0), "Element 2": (1, 1),
         "Body": (2, 0), "Body Accessory": (2, 1),
-        "Barrel": (2, 2), "Barrel Accessory": (2, 3),
-        "Magazine": (3, 0), "Stat Modifier": (3, 1),
-        "Grip": (3, 2), "Foregrip": (3, 3),
-        "Manufacturer Part": (4, 0), "Scope": (4, 1),
-        "Scope Accessory": (4, 2), "Underbarrel": (4, 3),
-        "Underbarrel Accessory": (5, 3)
+        "Barrel": (3, 0), "Barrel Accessory": (3, 1),
+        "Magazine": (4, 0), "Stat Modifier": (4, 1),
+        "Grip": (5, 0), "Foregrip": (5, 1),
+        "Manufacturer Part": (6, 0), "Scope": (6, 1),
+        "Scope Accessory": (7, 0), "Underbarrel": (7, 1),
+        "Underbarrel Accessory": (8, 0)
     }
     MULTI_SELECT_SLOTS = {
         "Body Accessory": 4, "Barrel Accessory": 4, 

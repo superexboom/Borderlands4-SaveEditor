@@ -554,7 +554,10 @@
       "clear": "Clear"
     },
     "misc": {
-      "none": "None"
+      "none": "None",
+      "perk_type_mismatch": "Current shield type is {shield_type}.\nCannot add {incompatible_type} type perks.",
+      "shield_type_energy": "Energy",
+      "shield_type_armor": "Armor"
     },
     "dialogs": {
       "load_error": "Error: Shield data unable to load.",
