@@ -53,8 +53,8 @@
       "yaml_editor": "YAML Editor",
       "class_mod": "Class Mod",
       "enhancement": "Enhancement",
-      "weapon_editor": "Weapon Editor",
-      "weapon_generator": "Weapon Generator",
+      "weapon_editor": "Wpn Edit",
+      "weapon_generator": "Wpn Gen",
       "grenade": "Grenade",
       "shield": "Shield",
       "repkit": "Repkit",
@@ -470,7 +470,9 @@
     },
     "misc": {
       "skin": "Skin",
-      "elemental": "Elemental"
+      "elemental": "Elemental",
+      "elements": "Elements",
+      "element_switch": "Element Switch"
     }
   },
   "weapon_gen_tab": {

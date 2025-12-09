@@ -12,6 +12,53 @@ import resource_loader
 class WeaponEditorTab(QtWidgets.QWidget):
     add_to_backpack_requested = QtCore.pyqtSignal(str, str)
     update_item_requested = QtCore.pyqtSignal(dict)
+    
+    # Part type color mapping based on QSS stylesheet
+    PART_TYPE_COLORS = {
+        # English
+        "Barrel": "#90A4AE",
+        "Barrel Accessory": "#78909C",
+        "Body": "#A1887F",
+        "Body Accessory": "#8D6E63",
+        "Foregrip": "#9CCC65",
+        "Grip": "#7CB342",
+        "Magazine": "#FFB300",
+        "Manufacturer Part": "#5C6BC0",
+        "Scope": "#4DD0E1",
+        "Scope Accessory": "#26C6DA",
+        "Stat Modifier": "#F06292",
+        "Underbarrel": "#8D6E63",
+        "Underbarrel Accessory": "#795548",
+        "Elemental": "#EF9A9A",
+        "Element": "#EF9A9A",
+        "Skin": "#FFEA00",
+        "Rarity": "#B39DDB",
+        "Legendary": "#FF8A65",
+        # Chinese
+        "枪管": "#90A4AE",
+        "枪管附件": "#78909C",
+        "枪身": "#A1887F",
+        "枪身附属": "#8D6E63",
+        "前握把": "#9CCC65",
+        "后握把/枪托": "#7CB342",
+        "弹匣": "#FFB300",
+        "厂商授权部件": "#5C6BC0",
+        "瞄准镜": "#4DD0E1",
+        "瞄准镜附件": "#26C6DA",
+        "属性修改组件": "#F06292",
+        "下挂": "#8D6E63",
+        "下挂附件": "#795548",
+        "元素": "#EF9A9A",
+        "皮肤": "#FFEA00",
+        "稀有度": "#B39DDB",
+        "传奇": "#FF8A65",
+        # Russian
+        "Стихия": "#EF9A9A",
+        "Скин": "#FFEA00",
+        # Ukrainian  
+        "Стихія": "#EF9A9A",
+        "Скін": "#FFEA00",
+    }
 
     def __init__(self, main_app):
         super().__init__()
@@ -127,22 +174,22 @@ class WeaponEditorTab(QtWidgets.QWidget):
         main_frame = QtWidgets.QFrame()
         scroll_area.setWidget(main_frame)
         layout = QtWidgets.QGridLayout(main_frame)
-        layout.setColumnStretch(0, 1) 
-        layout.setRowStretch(4, 1)
+        layout.setColumnStretch(0, 1)
+        layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)  # Align all items to top
 
         bp_frame = QtWidgets.QFrame(); bp_frame.setObjectName("InnerFrame")
         bp_layout = QtWidgets.QVBoxLayout(bp_frame)
         bp_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("load_from_backpack")))
         self.backpack_items_frame = QtWidgets.QScrollArea()
         self.backpack_items_frame.setWidgetResizable(True)
-        self.backpack_items_frame.setMinimumHeight(240)
+        self.backpack_items_frame.setFixedHeight(200)  # Fixed height to prevent flickering
         bp_scroll_content = QtWidgets.QWidget()
         self.backpack_items_layout = QtWidgets.QVBoxLayout(bp_scroll_content)
         self.backpack_items_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
         self.backpack_items_frame.setWidget(bp_scroll_content)
         self.backpack_items_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("decrypt_save_to_show_weapons")))
         bp_layout.addWidget(self.backpack_items_frame)
-        layout.addWidget(bp_frame, 0, 0)
+        layout.addWidget(bp_frame, 0, 0, QtCore.Qt.AlignmentFlag.AlignTop)
         
         s_frame = QtWidgets.QFrame(); s_frame.setObjectName("InnerFrame")
         s_layout = QtWidgets.QGridLayout(s_frame)
@@ -209,8 +256,8 @@ class WeaponEditorTab(QtWidgets.QWidget):
         layout.addWidget(editor_frame, 3, 0)
         
         parts_frame = QtWidgets.QFrame(); parts_frame.setObjectName("InnerFrame")
-        parts_layout = QtWidgets.QGridLayout(parts_frame)
-        parts_layout.setColumnStretch(0, 1); parts_layout.setRowStretch(1, 1)
+        parts_layout = QtWidgets.QVBoxLayout(parts_frame)
+        
         parts_header_frame = QtWidgets.QFrame()
         parts_header_layout = QtWidgets.QGridLayout(parts_header_frame)
         parts_header_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("weapon_parts")), 0, 0, QtCore.Qt.AlignmentFlag.AlignLeft)
@@ -219,16 +266,16 @@ class WeaponEditorTab(QtWidgets.QWidget):
         parts_header_layout.addWidget(self.refresh_parts_btn, 0, 1, QtCore.Qt.AlignmentFlag.AlignRight)
         self.add_part_btn = QtWidgets.QPushButton(self.get_localized_string("add_part")); self.add_part_btn.setFixedWidth(100)
         parts_header_layout.addWidget(self.add_part_btn, 0, 2, QtCore.Qt.AlignmentFlag.AlignRight)
-        parts_layout.addWidget(parts_header_frame, 0, 0)
+        parts_layout.addWidget(parts_header_frame)
         
-        self.parts_list_scroll = QtWidgets.QScrollArea(); self.parts_list_scroll.setWidgetResizable(True)
+        # Parts list container - no independent scroll, uses page scroll
         parts_list_content = QtWidgets.QWidget()
         self.parts_list_layout = QtWidgets.QVBoxLayout(parts_list_content)
         self.parts_list_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
-        self.parts_list_scroll.setWidget(parts_list_content)
+        self.parts_list_layout.setContentsMargins(0, 0, 0, 0)
         self.parts_list_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("parse_serial_to_show_parts")))
-        parts_layout.addWidget(self.parts_list_scroll, 1, 0)
-        layout.addWidget(parts_frame, 4, 0)
+        parts_layout.addWidget(parts_list_content)
+        layout.addWidget(parts_frame, 4, 0, QtCore.Qt.AlignmentFlag.AlignTop)
         main_frame.setLayout(layout) # Set the grid layout to the main frame
         
         self.serial_b85_entry.textChanged.connect(self.handle_b85_change)
@@ -300,6 +347,8 @@ class WeaponEditorTab(QtWidgets.QWidget):
             # Misc
             "Skin": self.ui_localization.get('misc', {}).get('skin'),
             "Elemental": self.ui_localization.get('misc', {}).get('elemental'),
+            "elements": self.ui_localization.get('misc', {}).get('elements'),
+            "element_switch": self.ui_localization.get('misc', {}).get('element_switch'),
         }
         
         if key in ui_map and ui_map[key]:
@@ -508,7 +557,9 @@ class WeaponEditorTab(QtWidgets.QWidget):
             if not d.empty: info.update({'type': self.get_localized_string(d.iloc[0]['Part Type']), 'str': d.iloc[0]['String'], 'stat': d.iloc[0]['Stat']})
         display_text = f"  {part_id}  " if not is_elemental else f"  {part_info['id']}:{part_info['sub_id']}  "
         id_label = QtWidgets.QLabel(display_text); id_label.setStyleSheet("background-color: #4a4a4a; border-radius: 5px; padding: 2px;")
-        layout.addWidget(id_label, 0, 0); layout.addWidget(QtWidgets.QLabel(info['type']), 0, 1)
+        type_color = self.PART_TYPE_COLORS.get(info['type'], "#e0e0e0")
+        type_label = QtWidgets.QLabel(info['type']); type_label.setStyleSheet(f"color: {type_color}; font-weight: bold;")
+        layout.addWidget(id_label, 0, 0); layout.addWidget(type_label, 0, 1)
         layout.addWidget(QtWidgets.QLabel(info['str']), 0, 2); layout.addWidget(QtWidgets.QLabel(str(info['stat']) if pd.notna(info['stat']) else ""), 0, 3)
         layout.addWidget(self._add_action_buttons(index, is_skin), 0, 4, QtCore.Qt.AlignmentFlag.AlignRight)
         return frame
@@ -664,29 +715,118 @@ class WeaponEditorTab(QtWidgets.QWidget):
     def open_add_part_window(self):
         if not self.serial_decoded_entry.text():
             QtWidgets.QMessageBox.warning(self, self.get_localized_string("no_weapon"), self.get_localized_string("load_weapon_first")); return
-        win = QtWidgets.QDialog(self); win.setWindowTitle(self.get_localized_string("add_part_title"))
-        win.setMinimumSize(800, 600); win.setModal(True)
-        layout = QtWidgets.QVBoxLayout(win); layout.addWidget(QtWidgets.QLabel(self.get_localized_string("select_parts_to_add")))
+        
+        win = QtWidgets.QDialog(self)
+        win.setWindowTitle(self.get_localized_string("add_part_title"))
+        win.setMinimumSize(900, 700)
+        win.setModal(True)
+        
+        layout = QtWidgets.QVBoxLayout(win)
+        layout.setSpacing(10)
+        layout.setContentsMargins(15, 15, 15, 15)
+        
+        # Header label with styling
+        header_label = QtWidgets.QLabel(self.get_localized_string("select_parts_to_add"))
+        header_label.setStyleSheet("font-size: 14px; font-weight: bold; color: #64B5F6; padding: 5px 0;")
+        layout.addWidget(header_label)
+        
         self.selected_parts_to_add = []
-        scroll_frame = QtWidgets.QScrollArea(); scroll_frame.setWidgetResizable(True)
-        scroll_content = QtWidgets.QWidget(); scroll_layout = QtWidgets.QVBoxLayout(scroll_content)
-        scroll_layout.setSpacing(0)
-        elemental_container = self._create_add_part_category(self.get_localized_string("Elemental"), lambda p, d: self.create_elemental_list(p, d), self.elemental_df)
+        
+        # Scroll area for part categories
+        scroll_frame = QtWidgets.QScrollArea()
+        scroll_frame.setWidgetResizable(True)
+        scroll_frame.setStyleSheet("QScrollArea { border: 1px solid #444; border-radius: 5px; }")
+        
+        scroll_content = QtWidgets.QWidget()
+        scroll_layout = QtWidgets.QVBoxLayout(scroll_content)
+        scroll_layout.setSpacing(8)
+        scroll_layout.setContentsMargins(5, 5, 5, 5)
+        
+        # Elemental category
+        elemental_container = self._create_add_part_category(
+            self.get_localized_string("Elemental"), 
+            lambda p, d: self.create_elemental_list(p, d), 
+            self.elemental_df,
+            color="#EF9A9A"
+        )
         scroll_layout.addWidget(elemental_container)
+        
+        # Weapon type categories
         for wt, group in self.all_weapon_parts_df.groupby('Weapon Type'):
-            scroll_layout.addWidget(self._create_add_part_category(self.get_localized_string(wt), self.create_manufacturer_list, group))
-        scroll_frame.setWidget(scroll_content); layout.addWidget(scroll_frame)
-        confirm_btn = QtWidgets.QPushButton(self.get_localized_string("confirm_add")); confirm_btn.clicked.connect(lambda: self.add_selected_parts(win)); layout.addWidget(confirm_btn)
+            localized_wt = self.get_localized_string(wt)
+            scroll_layout.addWidget(self._create_add_part_category(
+                localized_wt, 
+                self.create_manufacturer_list, 
+                group,
+                color="#64B5F6"
+            ))
+        
+        scroll_layout.addStretch()
+        scroll_frame.setWidget(scroll_content)
+        layout.addWidget(scroll_frame, 1)  # stretch factor 1
+        
+        # Confirm button with styling
+        confirm_btn = QtWidgets.QPushButton(self.get_localized_string("confirm_add"))
+        confirm_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                font-weight: bold;
+                padding: 12px 24px;
+                border-radius: 5px;
+                font-size: 12px;
+            }
+            QPushButton:hover {
+                background-color: #66BB6A;
+            }
+            QPushButton:pressed {
+                background-color: #388E3C;
+            }
+        """)
+        confirm_btn.clicked.connect(lambda: self.add_selected_parts(win))
+        layout.addWidget(confirm_btn)
+        
         win.exec()
 
-    def _create_add_part_category(self, title, content_creator_func, data):
-        container = QtWidgets.QFrame(); container_layout = QtWidgets.QVBoxLayout(container); container_layout.setContentsMargins(0,0,0,0); container_layout.setSpacing(2)
-        header = QtWidgets.QFrame(); header_layout = QtWidgets.QHBoxLayout(header)
-        content = QtWidgets.QFrame(); content.setVisible(False)
-        toggle_btn = QtWidgets.QPushButton("▶"); toggle_btn.setFixedSize(24, 24)
+    def _create_add_part_category(self, title, content_creator_func, data, color="#e0e0e0"):
+        container = QtWidgets.QFrame()
+        container.setStyleSheet("QFrame { background-color: #333; border-radius: 5px; }")
+        container_layout = QtWidgets.QVBoxLayout(container)
+        container_layout.setContentsMargins(8, 8, 8, 8)
+        container_layout.setSpacing(5)
+        
+        # Header with toggle button and styled title
+        header = QtWidgets.QFrame()
+        header_layout = QtWidgets.QHBoxLayout(header)
+        header_layout.setContentsMargins(0, 0, 0, 0)
+        
+        content = QtWidgets.QFrame()
+        content.setVisible(False)
+        
+        toggle_btn = QtWidgets.QPushButton("▶")
+        toggle_btn.setFixedSize(28, 28)
+        toggle_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #4a4a4a;
+                border: none;
+                border-radius: 4px;
+                font-size: 12px;
+            }
+            QPushButton:hover {
+                background-color: #5a5a5a;
+            }
+        """)
         toggle_btn.clicked.connect(lambda: self._toggle_lazy_load(content, toggle_btn, content_creator_func, data))
-        header_layout.addWidget(toggle_btn); header_layout.addWidget(QtWidgets.QLabel(title)); header_layout.addStretch()
-        container_layout.addWidget(header); container_layout.addWidget(content)
+        
+        title_label = QtWidgets.QLabel(title)
+        title_label.setStyleSheet(f"color: {color}; font-weight: bold; font-size: 12px;")
+        
+        header_layout.addWidget(toggle_btn)
+        header_layout.addWidget(title_label)
+        header_layout.addStretch()
+        
+        container_layout.addWidget(header)
+        container_layout.addWidget(content)
         return container
 
     def _toggle_lazy_load(self, frame, button, creator_func, data):
@@ -695,8 +835,9 @@ class WeaponEditorTab(QtWidgets.QWidget):
         button.setText("▼" if is_visible else "▶")
         
     def create_elemental_list(self, parent_layout, df):
-        self._create_elemental_subsection(parent_layout, "元素", df[df['Part_ID'].between(10, 14)])
-        self._create_elemental_subsection(parent_layout, "元素切换", df[~df['Part_ID'].between(10, 14)])
+        # Use English keys for localization - "elements" and "element_switch" are in weapon_localization
+        self._create_elemental_subsection(parent_layout, "elements", df[df['Part_ID'].between(10, 14)])
+        self._create_elemental_subsection(parent_layout, "element_switch", df[~df['Part_ID'].between(10, 14)])
 
     def _create_elemental_subsection(self, parent_layout, title, df):
         parent_layout.addWidget(self._create_add_part_category(self.get_localized_string(title), self._populate_elemental_parts, df))

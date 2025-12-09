@@ -53,8 +53,8 @@
       "yaml_editor": "YAML редактор",
       "class_mod": "Мод класса",
       "enhancement": "Усиление",
-      "weapon_editor": "Редактор оружия",
-      "weapon_generator": "Генератор оружия",
+      "weapon_editor": "Ред. оружия",
+      "weapon_generator": "Ген. оружия",
       "grenade": "Граната",
       "shield": "Щит",
       "repkit": "Ремкомплект",
@@ -470,7 +470,9 @@
     },
     "misc": {
       "skin": "Скин",
-      "elemental": "Стихия"
+      "elemental": "Стихия",
+      "elements": "Стихии",
+      "element_switch": "Переключение стихий"
     }
   },
   "weapon_gen_tab": {
