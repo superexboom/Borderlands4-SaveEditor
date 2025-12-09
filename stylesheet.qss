@@ -223,6 +223,437 @@ QGroupBox::title {
     color: #e0e0e0;
 }
 
+/* ============================================== */
+/* Functional Block Color Scheme                  */
+/* 功能区块配色方案 - 使用左边框和标题颜色区分     */
+/* ============================================== */
+
+/* Output / Deserialize - 翠绿色 */
+QGroupBox[title="Output"], QGroupBox[title="Deserialize"] {
+    border-left: 4px solid #4CAF50;
+}
+QGroupBox[title="Output"]::title, QGroupBox[title="Deserialize"]::title {
+    color: #81C784;
+}
+
+/* Base Attributes / 基础属性 - 蓝色 */
+QGroupBox[title="Base Attributes"], QGroupBox[title="基础属性"] {
+    border-left: 4px solid #2196F3;
+}
+QGroupBox[title="Base Attributes"]::title, QGroupBox[title="基础属性"]::title {
+    color: #64B5F6;
+}
+
+/* Perks / 专长 - 紫色 */
+QGroupBox[title="Perks"], QGroupBox[title="专长"] {
+    border-left: 4px solid #9C27B0;
+}
+QGroupBox[title="Perks"]::title, QGroupBox[title="专长"]::title {
+    color: #CE93D8;
+}
+
+/* Character Info / 角色 - 橙色 */
+QGroupBox[title="Character Info"], QGroupBox[title="角色"] {
+    border-left: 4px solid #FF9800;
+}
+QGroupBox[title="Character Info"]::title, QGroupBox[title="角色"]::title {
+    color: #FFB74D;
+}
+
+/* Currency / 货币 - 金色 */
+QGroupBox[title="Currency"], QGroupBox[title="货币"] {
+    border-left: 4px solid #FFC107;
+}
+QGroupBox[title="Currency"]::title, QGroupBox[title="货币"]::title {
+    color: #FFD54F;
+}
+
+/* World Presets / 世界 (World) - 青色 */
+QGroupBox[title="World Presets"], QGroupBox[title="World (World)"],
+QGroupBox[title="世界 (World)"] {
+    border-left: 4px solid #00BCD4;
+}
+QGroupBox[title="World Presets"]::title, QGroupBox[title="World (World)"]::title,
+QGroupBox[title="世界 (World)"]::title {
+    color: #4DD0E1;
+}
+
+/* Character Presets / 角色 (Character) - 天蓝色 */
+QGroupBox[title="Character Presets"], QGroupBox[title="Character (Character)"],
+QGroupBox[title="角色 (Character)"] {
+    border-left: 4px solid #00ACC1;
+}
+QGroupBox[title="Character Presets"]::title, QGroupBox[title="Character (Character)"]::title,
+QGroupBox[title="角色 (Character)"]::title {
+    color: #4DD0E1;
+}
+
+/* Item Details - 总结/字段 - 棕褐色 */
+QGroupBox[title="Summary"], QGroupBox[title="总结"],
+QGroupBox[title="Fields"], QGroupBox[title="字段"] {
+    border-left: 4px solid #795548;
+}
+QGroupBox[title="Summary"]::title, QGroupBox[title="总结"]::title,
+QGroupBox[title="Fields"]::title, QGroupBox[title="字段"]::title {
+    color: #A1887F;
+}
+
+/* Legendary / 传奇 - 金橙色 */
+QGroupBox[title="Legendary Additions"], QGroupBox[title="传奇附加"],
+QGroupBox[title="Legendary"], QGroupBox[title="传奇技能"] {
+    border-left: 4px solid #FF5722;
+}
+QGroupBox[title="Legendary Additions"]::title, QGroupBox[title="传奇附加"]::title,
+QGroupBox[title="Legendary"]::title, QGroupBox[title="传奇技能"]::title {
+    color: #FF8A65;
+}
+
+/* Element / 元素 (单选) - 红色 */
+QGroupBox[title="Element"], QGroupBox[title="元素"],
+QGroupBox[title="元素 (单选)"], QGroupBox[title="元素抗性 (单选)"] {
+    border-left: 4px solid #F44336;
+}
+QGroupBox[title="Element"]::title, QGroupBox[title="元素"]::title,
+QGroupBox[title="元素 (单选)"]::title, QGroupBox[title="元素抗性 (单选)"]::title {
+    color: #EF9A9A;
+}
+
+/* Firmware / 固件 (单选) - 灰蓝色 */
+QGroupBox[title="Firmware"], QGroupBox[title="固件"],
+QGroupBox[title="固件 (单选)"] {
+    border-left: 4px solid #607D8B;
+}
+QGroupBox[title="Firmware"]::title, QGroupBox[title="固件"]::title,
+QGroupBox[title="固件 (单选)"]::title {
+    color: #90A4AE;
+}
+
+/* Universal Perks / 通用技能 - 绿松石色 */
+QGroupBox[title="Universal Perks"], QGroupBox[title="通用技能"],
+QGroupBox[title="通用技能 (可多选/堆叠)"], QGroupBox[title="通用专长"] {
+    border-left: 4px solid #26A69A;
+}
+QGroupBox[title="Universal Perks"]::title, QGroupBox[title="通用技能"]::title,
+QGroupBox[title="通用技能 (可多选/堆叠)"]::title, QGroupBox[title="通用专长"]::title {
+    color: #80CBC4;
+}
+
+/* Energy Shield Perks / 能量护盾技能 - 浅蓝色 */
+QGroupBox[title="Energy Shield Perks"], QGroupBox[title="能量护盾技能"] {
+    border-left: 4px solid #03A9F4;
+}
+QGroupBox[title="Energy Shield Perks"]::title, QGroupBox[title="能量护盾技能"]::title {
+    color: #4FC3F7;
+}
+
+/* Armor Shield Perks / 护甲护盾技能 - 深褐色 */
+QGroupBox[title="Armor Shield Perks"], QGroupBox[title="护甲护盾技能"] {
+    border-left: 4px solid #8D6E63;
+}
+QGroupBox[title="Armor Shield Perks"]::title, QGroupBox[title="护甲护盾技能"]::title {
+    color: #BCAAA4;
+}
+
+/* Manufacturer Perks / 制造商专属技能 - 靛蓝色 */
+QGroupBox[title="Manufacturer Perks"], QGroupBox[title="制造商专属技能"] {
+    border-left: 4px solid #3F51B5;
+}
+QGroupBox[title="Manufacturer Perks"]::title, QGroupBox[title="制造商专属技能"]::title {
+    color: #7986CB;
+}
+
+/* Class / 职业 - 淡蓝紫色 */
+QGroupBox[title="Class"], QGroupBox[title="职业"] {
+    border-left: 4px solid #673AB7;
+}
+QGroupBox[title="Class"]::title, QGroupBox[title="职业"]::title {
+    color: #B39DDB;
+}
+
+/* Rarity / 稀有度 - 淡紫色 */
+QGroupBox[title="Rarity"], QGroupBox[title="稀有度"] {
+    border-left: 4px solid #7E57C2;
+}
+QGroupBox[title="Rarity"]::title, QGroupBox[title="稀有度"]::title {
+    color: #B39DDB;
+}
+
+/* Name / 名称 - 淡紫色 */
+QGroupBox[title="Name"], QGroupBox[title="名称"] {
+    border-left: 4px solid #9575CD;
+}
+QGroupBox[title="Name"]::title, QGroupBox[title="名称"]::title {
+    color: #B39DDB;
+}
+
+/* Level / 等级 - 淡紫蓝色 */
+QGroupBox[title="Level"], QGroupBox[title="等级"] {
+    border-left: 4px solid #5C6BC0;
+}
+QGroupBox[title="Level"]::title, QGroupBox[title="等级"]::title {
+    color: #9FA8DA;
+}
+
+/* Seed / 随机种子 - 淡紫色 */
+QGroupBox[title="Seed"], QGroupBox[title="随机种子 (1–9999)"] {
+    border-left: 4px solid #7986CB;
+}
+QGroupBox[title="Seed"]::title, QGroupBox[title="随机种子 (1–9999)"]::title {
+    color: #B39DDB;
+}
+
+/* Skills / 技能目录 - 紫色 */
+QGroupBox[title="Skills"], QGroupBox[title="技能目录"],
+QGroupBox[title="技能"] {
+    border-left: 4px solid #9C27B0;
+}
+QGroupBox[title="Skills"]::title, QGroupBox[title="技能目录"]::title,
+QGroupBox[title="技能"]::title {
+    color: #CE93D8;
+}
+
+/* Barrel / 枪管 (单选) - 深灰蓝色 */
+QGroupBox[title="Barrel"], QGroupBox[title="枪管 (单选)"] {
+    border-left: 4px solid #546E7A;
+}
+QGroupBox[title="Barrel"]::title, QGroupBox[title="枪管 (单选)"]::title {
+    color: #90A4AE;
+}
+
+/* Barrel Acc / 枪管附件 - 深蓝灰 */
+QGroupBox[title="Barrel Accessories"], QGroupBox[title="枪管附件 (可多选/堆叠)"] {
+    border-left: 4px solid #455A64;
+}
+QGroupBox[title="Barrel Accessories"]::title, QGroupBox[title="枪管附件 (可多选/堆叠)"]::title {
+    color: #78909C;
+}
+
+/* Body Acc / 枪身附件 - 青灰 */
+QGroupBox[title="Body Accessories"], QGroupBox[title="枪身附件 (可多选/堆叠)"] {
+    border-left: 4px solid #37474F;
+}
+QGroupBox[title="Body Accessories"]::title, QGroupBox[title="枪身附件 (可多选/堆叠)"]::title {
+    color: #78909C;
+}
+
+/* Prefix / 前缀 (单选) - 深绿色 */
+QGroupBox[title="Prefix"], QGroupBox[title="前缀 (单选)"] {
+    border-left: 4px solid #388E3C;
+}
+QGroupBox[title="Prefix"]::title, QGroupBox[title="前缀 (单选)"]::title {
+    color: #81C784;
+}
+
+/* Resistance / 元素抗性/免疫 (单选) - 橙红色 */
+QGroupBox[title="Resistance"], QGroupBox[title="元素抗性/免疫 (单选)"] {
+    border-left: 4px solid #E64A19;
+}
+QGroupBox[title="Resistance"]::title, QGroupBox[title="元素抗性/免疫 (单选)"]::title {
+    color: #FF8A65;
+}
+
+/* Single Converter / 单个转换器 - 浅绿色 */
+QGroupBox[title="Single Converter"], QGroupBox[title="单个转换器"] {
+    border-left: 4px solid #66BB6A;
+}
+QGroupBox[title="Single Converter"]::title, QGroupBox[title="单个转换器"]::title {
+    color: #A5D6A7;
+}
+
+/* Batch Converter / 批量转换器 - 蓝绿色 */
+QGroupBox[title="Batch Converter"], QGroupBox[title="批量转换器"] {
+    border-left: 4px solid #26A69A;
+}
+QGroupBox[title="Batch Converter"]::title, QGroupBox[title="批量转换器"]::title {
+    color: #80CBC4;
+}
+
+/* Batch Add / 批量加入背包 - 深青色 */
+QGroupBox[title="Batch Add to Backpack"], QGroupBox[title="批量加入背包"] {
+    border-left: 4px solid #00897B;
+}
+QGroupBox[title="Batch Add to Backpack"]::title, QGroupBox[title="批量加入背包"]::title {
+    color: #4DB6AC;
+}
+
+/* Iterator / 遍历生成器 - 靛蓝色 */
+QGroupBox[title="Iterator Generator"], QGroupBox[title="遍历生成器"] {
+    border-left: 4px solid #5C6BC0;
+}
+QGroupBox[title="Iterator Generator"]::title, QGroupBox[title="遍历生成器"]::title {
+    color: #9FA8DA;
+}
+
+/* Perk Stacking / 专长堆叠 - 深紫色 */
+QGroupBox[title="Perk Stacking"], QGroupBox[title="专长堆叠"] {
+    border-left: 4px solid #7B1FA2;
+}
+QGroupBox[title="Perk Stacking"]::title, QGroupBox[title="专长堆叠"]::title {
+    color: #CE93D8;
+}
+
+/* Builder 247 / 次要属性构建器 - 深蓝色 */
+QGroupBox[title="Secondary Attribute Builder"], QGroupBox[title="次要属性构建器"] {
+    border-left: 4px solid #1976D2;
+}
+QGroupBox[title="Secondary Attribute Builder"]::title, QGroupBox[title="次要属性构建器"]::title {
+    color: #64B5F6;
+}
+
+/* Base85 编码 - 绿色 */
+QGroupBox[title="Base85"], QGroupBox[title="Base85 编码"] {
+    border-left: 4px solid #43A047;
+}
+QGroupBox[title="Base85"]::title, QGroupBox[title="Base85 编码"]::title {
+    color: #81C784;
+}
+
+/* Mfg Perks / 所选厂商专长 - 深靛蓝 */
+QGroupBox[title="Manufacturer Specific Perks"], QGroupBox[title="所选厂商专长"] {
+    border-left: 4px solid #303F9F;
+}
+QGroupBox[title="Manufacturer Specific Perks"]::title, QGroupBox[title="所选厂商专长"]::title {
+    color: #7986CB;
+}
+
+/* ============================================== */
+/* Weapon Generator Part Types - 武器生成器部件类型 */
+/* ============================================== */
+
+/* Barrel / 枪管 - 深灰蓝 */
+QGroupBox[title="Barrel"], QGroupBox[title="枪管"] {
+    border-left: 4px solid #546E7A;
+}
+QGroupBox[title="Barrel"]::title, QGroupBox[title="枪管"]::title {
+    color: #90A4AE;
+}
+
+/* Barrel Accessory / 枪管附件 - 青灰 */
+QGroupBox[title="Barrel Accessory"], QGroupBox[title="枪管附件"] {
+    border-left: 4px solid #455A64;
+}
+QGroupBox[title="Barrel Accessory"]::title, QGroupBox[title="枪管附件"]::title {
+    color: #78909C;
+}
+
+/* Body / 枪身 - 棕灰 */
+QGroupBox[title="Body"], QGroupBox[title="枪身"] {
+    border-left: 4px solid #6D4C41;
+}
+QGroupBox[title="Body"]::title, QGroupBox[title="枪身"]::title {
+    color: #A1887F;
+}
+
+/* Body Accessory / 枪身附属 - 浅棕 */
+QGroupBox[title="Body Accessory"], QGroupBox[title="枪身附属"] {
+    border-left: 4px solid #5D4037;
+}
+QGroupBox[title="Body Accessory"]::title, QGroupBox[title="枪身附属"]::title {
+    color: #8D6E63;
+}
+
+/* Foregrip / 前握把 - 橄榄绿 */
+QGroupBox[title="Foregrip"], QGroupBox[title="前握把"] {
+    border-left: 4px solid #558B2F;
+}
+QGroupBox[title="Foregrip"]::title, QGroupBox[title="前握把"]::title {
+    color: #9CCC65;
+}
+
+/* Grip / 后握把/枪托 - 深绿 */
+QGroupBox[title="Grip"], QGroupBox[title="后握把/枪托"] {
+    border-left: 4px solid #33691E;
+}
+QGroupBox[title="Grip"]::title, QGroupBox[title="后握把/枪托"]::title {
+    color: #7CB342;
+}
+
+/* Magazine / 弹匣 - 琥珀色 */
+QGroupBox[title="Magazine"], QGroupBox[title="弹匣"] {
+    border-left: 4px solid #FF8F00;
+}
+QGroupBox[title="Magazine"]::title, QGroupBox[title="弹匣"]::title {
+    color: #FFB300;
+}
+
+/* Manufacturer Part / 厂商授权部件 - 靛蓝 */
+QGroupBox[title="Manufacturer Part"], QGroupBox[title="厂商授权部件"] {
+    border-left: 4px solid #303F9F;
+}
+QGroupBox[title="Manufacturer Part"]::title, QGroupBox[title="厂商授权部件"]::title {
+    color: #5C6BC0;
+}
+
+/* Scope / 瞄准镜 - 青蓝 */
+QGroupBox[title="Scope"], QGroupBox[title="瞄准镜"] {
+    border-left: 4px solid #0097A7;
+}
+QGroupBox[title="Scope"]::title, QGroupBox[title="瞄准镜"]::title {
+    color: #4DD0E1;
+}
+
+/* Scope Accessory / 瞄准镜附件 - 深青 */
+QGroupBox[title="Scope Accessory"], QGroupBox[title="瞄准镜附件"] {
+    border-left: 4px solid #00838F;
+}
+QGroupBox[title="Scope Accessory"]::title, QGroupBox[title="瞄准镜附件"]::title {
+    color: #26C6DA;
+}
+
+/* Stat Modifier / 属性修改组件 - 紫红 */
+QGroupBox[title="Stat Modifier"], QGroupBox[title="属性修改组件"] {
+    border-left: 4px solid #AD1457;
+}
+QGroupBox[title="Stat Modifier"]::title, QGroupBox[title="属性修改组件"]::title {
+    color: #F06292;
+}
+
+/* Underbarrel / 下挂 - 深褐 */
+QGroupBox[title="Underbarrel"], QGroupBox[title="下挂"] {
+    border-left: 4px solid #4E342E;
+}
+QGroupBox[title="Underbarrel"]::title, QGroupBox[title="下挂"]::title {
+    color: #8D6E63;
+}
+
+/* Underbarrel Accessory / 下挂附件 - 浅褐 */
+QGroupBox[title="Underbarrel Accessory"], QGroupBox[title="下挂附件"] {
+    border-left: 4px solid #3E2723;
+}
+QGroupBox[title="Underbarrel Accessory"]::title, QGroupBox[title="下挂附件"]::title {
+    color: #795548;
+}
+
+/* Legendary Type / 传奇武器（皮肤）选择 - 金色 */
+QGroupBox[title="Legendary Type"], QGroupBox[title="LegendaryType"],
+QGroupBox[title="传奇武器（皮肤）选择"] {
+    border-left: 4px solid #FFD600;
+}
+QGroupBox[title="Legendary Type"]::title, QGroupBox[title="LegendaryType"]::title,
+QGroupBox[title="传奇武器（皮肤）选择"]::title {
+    color: #FFEA00;
+}
+
+/* Element1 / 元素1 - 火红 */
+QGroupBox[title="Element 1"], QGroupBox[title="Element1"],
+QGroupBox[title="元素1"] {
+    border-left: 4px solid #E53935;
+}
+QGroupBox[title="Element 1"]::title, QGroupBox[title="Element1"]::title,
+QGroupBox[title="元素1"]::title {
+    color: #EF5350;
+}
+
+/* Element2 / 元素2 - 冰蓝 */
+QGroupBox[title="Element 2"], QGroupBox[title="Element2"],
+QGroupBox[title="元素2（用于元素切换）"] {
+    border-left: 4px solid #1E88E5;
+}
+QGroupBox[title="Element 2"]::title, QGroupBox[title="Element2"]::title,
+QGroupBox[title="元素2（用于元素切换）"]::title {
+    color: #42A5F5;
+}
+
 #nav_bar, #nav_bar_collapsed {
     background-color: #222222;
 }
