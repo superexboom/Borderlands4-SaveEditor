@@ -53,6 +53,7 @@ root_files = [
     ('ui_localization_UA.json', '.'),
     ('stylesheet.qss', '.'),
     ('BL4.ico', '.'),
+    ('bg.jpg', '.'),
 ]
 
 

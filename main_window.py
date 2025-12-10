@@ -5,14 +5,14 @@ import itertools
 import os
 from pathlib import Path
 
-VERSION = "3.3.4"
+VERSION = "3.4"
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QMessageBox, QFileDialog,
     QStatusBar, QStackedWidget, QButtonGroup, QSizeGrip, QInputDialog,
-    QMenu
+    QMenu, QGraphicsBlurEffect, QStackedLayout, QFrame
 )
-from PyQt6.QtGui import QAction, QIcon
+from PyQt6.QtGui import QAction, QIcon, QPixmap, QPainter, QBrush, QColor
 from PyQt6.QtCore import pyqtSlot, QPropertyAnimation, QEasingCurve, Qt, QTimer, QObject, QThread, pyqtSignal
 
 import b_encoder
@@ -33,6 +33,59 @@ from qt_repkit_editor_tab import QtRepkitEditorTab
 from qt_yaml_editor_tab import QtYamlEditorTab
 from qt_enhancement_editor_tab import QtEnhancementEditorTab
 from qt_weapon_editor_tab import WeaponEditorTab as QtWeaponEditorTab
+from theme_manager import ThemeManager
+
+
+class BackgroundWidget(QLabel):
+    """Widget that displays a blurred background image for frosted glass effect."""
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setObjectName("backgroundLayer")
+        self._original_pixmap = None
+        self._corner_radius = 20  # Match the window corner radius
+        # Prevent the background from affecting window size
+        from PyQt6.QtWidgets import QSizePolicy
+        self.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Ignored)
+        self._load_background_image()
+        
+    def _load_background_image(self):
+        """Load and apply the background image with blur effect."""
+        bg_path = resource_loader.get_resource_path("bg.jpg")
+        if bg_path and bg_path.exists():
+            self._original_pixmap = QPixmap(str(bg_path))
+            self._apply_blur()
+        else:
+            # Fallback: solid dark background
+            self.setStyleSheet("background-color: #1a1a20;")
+    
+    def _apply_blur(self):
+        """Apply blur effect to the background."""
+        if self._original_pixmap:
+            blur = QGraphicsBlurEffect(self)
+            blur.setBlurRadius(15)
+            blur.setBlurHints(QGraphicsBlurEffect.BlurHint.QualityHint)
+            self.setGraphicsEffect(blur)
+            # Don't set pixmap directly here, let resizeEvent handle scaling
+            self.setScaledContents(True)
+    
+    def resizeEvent(self, event):
+        """Handle resize to scale background - maintains aspect ratio, crops to fill."""
+        super().resizeEvent(event)
+        if self._original_pixmap:
+            # Use KeepAspectRatioByExpanding to maintain aspect ratio and crop excess
+            scaled_pixmap = self._original_pixmap.scaled(
+                self.size(),
+                Qt.AspectRatioMode.KeepAspectRatioByExpanding,
+                Qt.TransformationMode.SmoothTransformation
+            )
+            # Crop to center if larger than widget size
+            if scaled_pixmap.size() != self.size():
+                x = (scaled_pixmap.width() - self.width()) // 2
+                y = (scaled_pixmap.height() - self.height()) // 2
+                scaled_pixmap = scaled_pixmap.copy(x, y, self.width(), self.height())
+            self.setPixmap(scaled_pixmap)
+        # Note: Mask is applied at the central widget level in MainWindow.resizeEvent
 
 
 class IteratorWorker(QObject):
@@ -197,11 +250,15 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.current_language = 'zh-CN'
         self._load_localization()
+        
+        # Initialize theme manager
+        self.theme_manager = ThemeManager()
+        
         self.setWindowTitle(self.loc['window_title'].format(version=VERSION))
         icon_path = resource_loader.get_resource_path("BL4.ico")
         if icon_path:
             self.setWindowIcon(QIcon(str(icon_path)))
-        self.setGeometry(100, 100, 1400, 900)
+        self.setGeometry(100, 100, 1600, 900)
 
         self.setWindowFlag(Qt.WindowType.FramelessWindowHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
@@ -212,20 +269,36 @@ class MainWindow(QMainWindow):
         self.nav_bar_width_expanded = 150
         self.nav_bar_width_collapsed = 60
 
-        stylesheet_content = resource_loader.load_text_resource("stylesheet.qss")
-        if stylesheet_content:
-            self.setStyleSheet(stylesheet_content)
-        else:
-            print("Warning: stylesheet.qss not found or failed to load.")
+        # Apply themed stylesheet
+        self._apply_themed_stylesheet()
 
         self._create_actions()
 
+        # Create central widget with background support
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         central_widget.setObjectName("centralWidget")
-        root_layout = QVBoxLayout(central_widget)
+        
+        # Use stacked layout for background + content overlay
+        stacked_layout = QStackedLayout(central_widget)
+        stacked_layout.setStackingMode(QStackedLayout.StackingMode.StackAll)
+        stacked_layout.setContentsMargins(0, 0, 0, 0)
+        
+        # Background layer (blurred image)
+        self.background_widget = BackgroundWidget()
+        stacked_layout.addWidget(self.background_widget)
+        
+        # Content layer (on top of background)
+        content_container = QWidget()
+        content_container.setObjectName("contentWrapper")
+        content_container.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, False)
+        root_layout = QVBoxLayout(content_container)
         root_layout.setContentsMargins(0, 0, 0, 0)
         root_layout.setSpacing(0)
+        stacked_layout.addWidget(content_container)
+        
+        # Ensure content is on top
+        stacked_layout.setCurrentWidget(content_container)
 
         self._create_header_bar()
         root_layout.addWidget(self.header_bar)
@@ -302,6 +375,24 @@ class MainWindow(QMainWindow):
         super().resizeEvent(event)
         self.size_grip.move(self.width() - self.size_grip.width(), self.height() - self.size_grip.height())
         self.size_grip.raise_()
+        
+        # Apply rounded corner mask to central widget to clip all child widgets including blur effect
+        central = self.centralWidget()
+        if central:
+            from PyQt6.QtGui import QBitmap, QPainter
+            corner_radius = 20
+            
+            bitmap = QBitmap(central.width(), central.height())
+            bitmap.fill(Qt.GlobalColor.white)  # White = transparent in mask
+            
+            painter = QPainter(bitmap)
+            painter.setBrush(Qt.GlobalColor.black)  # Black = visible in mask
+            painter.setPen(Qt.GlobalColor.black)
+            painter.drawRoundedRect(0, 0, central.width(), central.height(), 
+                                    corner_radius, corner_radius)
+            painter.end()
+            
+            central.setMask(bitmap)
 
     def mouseMoveEvent(self, event):
         if self.old_pos is not None and event.buttons() == Qt.MouseButton.LeftButton:
@@ -377,6 +468,14 @@ class MainWindow(QMainWindow):
 
         self.lang_button.setMenu(self.lang_menu)
         header_layout.addWidget(self.lang_button)
+
+        # Theme toggle button (next to language button)
+        self.theme_button = QPushButton(self.theme_manager.get_theme_icon())
+        self.theme_button.setObjectName("themeButton")
+        self.theme_button.setFixedWidth(45)
+        self.theme_button.setToolTip(self._get_theme_tooltip())
+        self.theme_button.clicked.connect(self.toggle_theme)
+        header_layout.addWidget(self.theme_button)
 
         header_layout.addStretch()
 
@@ -957,6 +1056,32 @@ class MainWindow(QMainWindow):
                 else:
                     # If collapsed, ensure we only show the icon (though it should already be correct)
                     button.setText(icon_char)
+
+    def _apply_themed_stylesheet(self):
+        """Apply the themed stylesheet from ThemeManager."""
+        stylesheet = self.theme_manager.get_stylesheet()
+        if stylesheet:
+            self.setStyleSheet(stylesheet)
+        else:
+            print("Warning: stylesheet.qss not found or failed to load.")
+
+    def toggle_theme(self):
+        """Toggle between dark and light themes."""
+        self.theme_manager.toggle_theme()
+        self._apply_themed_stylesheet()
+        self._update_theme_button()
+
+    def _get_theme_tooltip(self):
+        """Get the tooltip text for the theme button."""
+        if self.theme_manager.is_dark():
+            return self.loc.get('header', {}).get('theme_light', 'Switch to Light Mode')
+        else:
+            return self.loc.get('header', {}).get('theme_dark', 'Switch to Dark Mode')
+
+    def _update_theme_button(self):
+        """Update the theme button icon and tooltip."""
+        self.theme_button.setText(self.theme_manager.get_theme_icon())
+        self.theme_button.setToolTip(self._get_theme_tooltip())
 
 def main():
     app = QApplication(sys.argv)

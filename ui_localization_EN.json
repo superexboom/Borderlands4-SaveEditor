@@ -35,7 +35,9 @@
       "title": "Borderlands 4 Save Editor",
       "open": "Open",
       "save": "Save",
-      "save_as": "Save As..."
+      "save_as": "Save As...",
+      "theme_dark": "Switch to Dark Mode",
+      "theme_light": "Switch to Light Mode"
     },
     "menu": {
       "open_selector": "Open Save Selector",

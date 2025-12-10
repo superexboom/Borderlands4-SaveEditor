@@ -717,6 +717,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
             QtWidgets.QMessageBox.warning(self, self.get_localized_string("no_weapon"), self.get_localized_string("load_weapon_first")); return
         
         win = QtWidgets.QDialog(self)
+        win.setObjectName("addPartDialog")
         win.setWindowTitle(self.get_localized_string("add_part_title"))
         win.setMinimumSize(900, 700)
         win.setModal(True)
@@ -725,17 +726,16 @@ class WeaponEditorTab(QtWidgets.QWidget):
         layout.setSpacing(10)
         layout.setContentsMargins(15, 15, 15, 15)
         
-        # Header label with styling
+        # Header label with objectName for theme-aware styling
         header_label = QtWidgets.QLabel(self.get_localized_string("select_parts_to_add"))
-        header_label.setStyleSheet("font-size: 14px; font-weight: bold; color: #64B5F6; padding: 5px 0;")
+        header_label.setObjectName("addPartDialogHeader")
         layout.addWidget(header_label)
         
         self.selected_parts_to_add = []
         
-        # Scroll area for part categories
+        # Scroll area for part categories (styled by QSS)
         scroll_frame = QtWidgets.QScrollArea()
         scroll_frame.setWidgetResizable(True)
-        scroll_frame.setStyleSheet("QScrollArea { border: 1px solid #444; border-radius: 5px; }")
         
         scroll_content = QtWidgets.QWidget()
         scroll_layout = QtWidgets.QVBoxLayout(scroll_content)
@@ -790,7 +790,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
 
     def _create_add_part_category(self, title, content_creator_func, data, color="#e0e0e0"):
         container = QtWidgets.QFrame()
-        container.setStyleSheet("QFrame { background-color: #333; border-radius: 5px; }")
+        container.setObjectName("addPartCategoryFrame")
         container_layout = QtWidgets.QVBoxLayout(container)
         container_layout.setContentsMargins(8, 8, 8, 8)
         container_layout.setSpacing(5)
@@ -805,21 +805,14 @@ class WeaponEditorTab(QtWidgets.QWidget):
         
         toggle_btn = QtWidgets.QPushButton("▶")
         toggle_btn.setFixedSize(28, 28)
-        toggle_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #4a4a4a;
-                border: none;
-                border-radius: 4px;
-                font-size: 12px;
-            }
-            QPushButton:hover {
-                background-color: #5a5a5a;
-            }
-        """)
+        # Use minimal styling, let theme handle colors
+        toggle_btn.setObjectName("addPartToggleBtn")
         toggle_btn.clicked.connect(lambda: self._toggle_lazy_load(content, toggle_btn, content_creator_func, data))
         
         title_label = QtWidgets.QLabel(title)
-        title_label.setStyleSheet(f"color: {color}; font-weight: bold; font-size: 12px;")
+        title_label.setObjectName("addPartTitleLabel")
+        # Store category color as property; theme stylesheet will handle base text color for readability
+        title_label.setProperty("partColor", color)
         
         header_layout.addWidget(toggle_btn)
         header_layout.addWidget(title_label)

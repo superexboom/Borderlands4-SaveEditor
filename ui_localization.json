@@ -35,7 +35,9 @@
       "title": "无主之地4 存档编辑器",
       "open": "打开",
       "save": "保存",
-      "save_as": "另存为..."
+      "save_as": "另存为...",
+      "theme_dark": "切换到深色模式",
+      "theme_light": "切换到浅色模式"
     },
     "menu": {
       "open_selector": "打开存档选择器",
