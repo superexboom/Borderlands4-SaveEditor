@@ -4,6 +4,8 @@ import time
 import itertools
 import os
 from pathlib import Path
+
+VERSION = "3.3.4"
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QMessageBox, QFileDialog,
@@ -195,7 +197,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.current_language = 'zh-CN'
         self._load_localization()
-        self.setWindowTitle(self.loc['window_title'])
+        self.setWindowTitle(self.loc['window_title'].format(version=VERSION))
         icon_path = resource_loader.get_resource_path("BL4.ico")
         if icon_path:
             self.setWindowIcon(QIcon(str(icon_path)))
@@ -272,7 +274,7 @@ class MainWindow(QMainWindow):
         else:
             # Fallback if file missing (or partial)
             self.loc = {
-                "window_title": "Borderlands 4 Save Editor V3.3.3",
+                "window_title": "Borderlands 4 Save Editor V{version}",
                 "subtitle": "By SuperExboom",
                 "header": {"title": "BL4 Save Editor", "open": "Open", "save": "Save", "save_as": "Save As..."},
                 "menu": {"open_selector": "Open Selector", "save": "Save", "save_as": "Save As..."},
@@ -625,7 +627,7 @@ class MainWindow(QMainWindow):
                 # Success
                 QMessageBox.information(self, self.loc['dialogs']['success'], 
                                         self.loc['dialogs']['decrypt_success'].format(platform=platform.upper(), backup_name=backup_name))
-                self.setWindowTitle(f"{self.loc['window_title']} - {file_path.name}")
+                self.setWindowTitle(f"{self.loc['window_title'].format(version=VERSION)} - {file_path.name}")
                 
                 QTimer.singleShot(0, self.refresh_all_tabs)
                 self.switch_to_tab(1)  # Switch to character tab

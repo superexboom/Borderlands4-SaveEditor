@@ -29,7 +29,7 @@
     }
   },
   "main_window": {
-    "window_title": "Borderlands 4 Save Editor V3.3.3",
+    "window_title": "Borderlands 4 Save Editor V{version}",
     "subtitle": "By SuperExboom - Free software, if you paid for this you got scammed",
     "header": {
       "title": "Borderlands 4 Save Editor",

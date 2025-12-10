@@ -29,7 +29,7 @@
     }
   },
   "main_window": {
-    "window_title": "Borderlands 4 Save Editor V3.3.3",
+    "window_title": "Borderlands 4 Save Editor V{version}",
     "subtitle": "Автор: SuperExboom - Бесплатно. Если вы заплатили за это, вас обманули",
     "header": {
       "title": "Редактор сохранений Borderlands 4",

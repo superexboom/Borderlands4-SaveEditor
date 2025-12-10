@@ -29,7 +29,7 @@
     }
   },
   "main_window": {
-    "window_title": "无主之地4 存档编辑器 V3.3.3",
+    "window_title": "无主之地4 存档编辑器 V{version}",
     "subtitle": "By SuperExboom - 免费软件，如果你付费了那你就被骗了",
     "header": {
       "title": "无主之地4 存档编辑器",
