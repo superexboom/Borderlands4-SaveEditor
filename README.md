@@ -1,6 +1,6 @@
 # Borderlands 4 Save Editor
 
-[Click here for Chinese Version README (中文版)](README_CN.md)
+[中文版](README_CN.md)
 
 <h1 align="center">Borderlands 4 Save Editor</h1>
 <p align="center"><b>By SuperExboom</b></p>
@@ -97,6 +97,25 @@ This script will automatically handle dependencies, collect required resource fi
 ### Notes
 - Please do not use modified illegal items in online multiplayer to ruin other players' experience.
 - This software is completely free. Do NOT pay for it.
+
+---
+
+### System Requirements
+- **Windows 10** or later (64-bit)
+- No additional runtime installation required for pre-compiled releases
+
+---
+
+### Troubleshooting
+
+#### "The ordinal XXX could not be located in dynamic link library" Error
+If you encounter this error when launching the application:
+
+1. **Verify File Integrity**: Ensure the file size matches the official release (~70MB+). If significantly smaller, re-download from the official source.
+2. **Disable Antivirus Temporarily**: Some antivirus software may modify or quarantine parts of the executable.
+3. **Install Visual C++ Redistributable**: Download and install [Microsoft Visual C++ Redistributable 2022 (x64)](https://aka.ms/vs/17/release/vc_redist.x64.exe).
+4. **Run as Administrator**: Right-click the executable and select "Run as administrator".
+5. **Windows 7/8 Users**: This application is designed for Windows 10+. Older Windows versions may lack required system components.
 
 ---
 

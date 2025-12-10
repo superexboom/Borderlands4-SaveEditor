@@ -470,7 +470,9 @@
     },
     "misc": {
       "skin": "皮肤",
-      "elemental": "元素"
+      "elemental": "元素",
+      "elements": "元素",
+      "element_switch": "元素切换"
     }
   },
   "weapon_gen_tab": {

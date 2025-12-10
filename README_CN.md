@@ -99,6 +99,25 @@
 
 ---
 
+### 系统要求
+- **Windows 10** 或更高版本 (64位)
+- 预编译版本无需安装额外运行库
+
+---
+
+### 常见问题排查
+
+#### "The ordinal XXX could not be located in dynamic link library" 错误
+如果启动程序时遇到此错误：
+
+1. **验证文件完整性**：确保文件大小与官方发布版本一致（约70MB左右）。如果文件明显偏小，请从官方渠道重新下载。
+2. **暂时关闭杀毒软件**：部分杀毒软件可能会修改或隔离可执行文件的某些部分。
+3. **安装 Visual C++ 运行库**：下载并安装 [Microsoft Visual C++ Redistributable 2022 (x64)](https://aka.ms/vs/17/release/vc_redist.x64.exe)。
+4. **以管理员身份运行**：右键点击程序，选择"以管理员身份运行"。
+5. **Windows 7/8 用户**：本程序针对 Windows 10+ 设计，旧版 Windows 可能缺少必要的系统组件。
+
+---
+
 ### 特别致谢 / Special Thanks
 - **@Nicnl** and **@InflamedSebi** - For Base85 deserialize huge work
 - **@Whiteshark-2022** and **@Mattmab** - For Class mods icon, Enhancement UI design and data
