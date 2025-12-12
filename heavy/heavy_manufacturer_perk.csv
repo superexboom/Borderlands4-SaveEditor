@@ -85,14 +85,16 @@ Manufacturer ID,Part_ID,Part_type,String,Stat,Description
 275,17,Barrel,Barrel_02,飞盘发射器,
 275,19,Barrel Accessory,Barrel_01_B,热对流,光束发射时间越长，伤害越高
 275,20,Barrel Accessory,Barrel_01_C,散热器,弹匣容量增加+25%
-Examples,23,Barrel Accessory,Barrel_02_B,热交换,初次充能后以全自动模式开火
+275,23,Barrel Accessory,Barrel_02_B,热交换,初次充能后以全自动模式开火
 275,26,Rarity,,Common,
 275,27,Rarity,,Uncommon,
 275,28,Rarity,,Rare,
 275,29,Rarity,,Epic,
-275,30,Barrel,Barrel_02_DiscJockey,反弹饼干,能量圆盘射弹最多反弹5次，每次反弹后获得+20%伤害
+275,30,Barrel,Barrel_02_DiscJockey,（飞盘）反弹饼干,能量圆盘射弹最多反弹5次，每次反弹后获得+20%伤害
 275,31,Rarity,,Legendary,唱片骑师皮肤
 275,32,Rarity,,Legendary,直播网红皮肤
+275,35,Barrel,Barrel_02_jetset,（飞盘）飞行常客,
+275,36,Rarity,,Legendary,环球旅行家皮肤
 289,1,Rarity,,Legendary,瓶装闪电皮肤
 289,2,Barrel Accessory,Barrel_02_C,分裂式,爆炸时生成3颗分裂式魔球
 289,16,Barrel Accessory,Barrel_02_C,分裂式,爆炸时生成3颗分裂式魔球
@@ -103,7 +105,7 @@ Examples,23,Barrel Accessory,Barrel_02_B,热交换,初次充能后以全自动�
 289,6,Body Accessory,Body_A,+弹容,
 289,7,Body Accessory,Body_B,+伤害,
 289,8,Body Accessory,Body_C,--冷却时间,
-29,9,Body Accessory,Body_D,无效果,
+289,9,Body Accessory,Body_D,无效果,
 289,10,Barrel,Barrel_01,能量弹,
 289,11,Barrel,Barrel_02,能量魔球,
 289,12,Barrel Accessory,Barrel_01_A,跳弹,射弹在表面反弹

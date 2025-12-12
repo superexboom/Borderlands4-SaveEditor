@@ -93,6 +93,8 @@ Manufacturer ID,Part_ID,Part_type,String,Stat,Description
 275,30,Barrel,Barrel_02_DiscJockey,"Bouncing Biscuits - Energy disc Projectiles bounce up to 5 times, and gain +20% Damage per bounce","Disc Jockey, 60s CD, 1115 Damage, 83% Acc, 3.0/s FR, 8 Shots"
 275,31,Rarity,,Legendary,Disc Jockey Skin
 275,32,Rarity,,Legendary,Streamer Skin
+275,35,Barrel,Barrel_02_jetset,Frequent Flyer,"Jetsetter, 40s CD, 2320 x 3 Damage, 63% Acc, 1.5/s FR, 5 Shots"
+275,36,Rarity,,Legendary,Jetsetter skin
 289,1,Rarity,,Legendary,Bottled Lightning Skin
 289,2,Barrel Accessory,Barrel_02_C,MIRV - Spawns 3 MIRV Orbs on explosion,No Stat Changes
 289,16,Barrel Accessory,Barrel_02_C,MIRV - Spawns 3 MIRV Orbs on explosion,No Stat Changes

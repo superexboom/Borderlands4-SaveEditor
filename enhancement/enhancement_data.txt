@@ -555,4 +555,5 @@
                    {'code': 244, 'name': 'Sniper Splash DMG +38%'},
                    {'code': 245, 'name': 'Sniper Splash Radius +75%'},
                    {'code': 246, 'name': 'Sniper Status Effect Chance +38%'},
-                   {'code': 247, 'name': 'Sniper Status Effect DMG +38%'}]}
+                   {'code': 247, 'name': 'Sniper Status Effect DMG +38%'},
+{'code': 248, 'name': 'Skillcraft'},]}

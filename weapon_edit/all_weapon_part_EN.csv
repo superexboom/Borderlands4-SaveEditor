@@ -613,7 +613,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 10,Maliwan,Shotgun,3,Body Accessory,MAL_SG.part_body_a,-Reload Speed
 10,Maliwan,Shotgun,4,Body Accessory,MAL_SG.part_body_b,+Ammo
 10,Maliwan,Shotgun,5,Body Accessory,MAL_SG.part_body_c,+Accuracy
-10,Maliwan,Shotgun,6,Body Accessory,MAL_SG.part_body_d,No Stat Changes
+10,Maliwan,Shotgun,6,Body Accessory,MAL_SG.part_body_d,+Elemental Damage
 10,Maliwan,Shotgun,7,Barrel,MAL_SG.part_barrel_01_kickballer,"Kickballer, 5131 Damage, 77% Acc, 0.8/s FR"
 10,Maliwan,Shotgun,8,Barrel,MAL_SG.part_barrel_01,"Stellium, 5131 Damage, 77% Acc, 0.8/s FR"
 10,Maliwan,Shotgun,9,Barrel,MAL_SG.part_barrel_02,"Vertex, 2677 x 2 Damage, 75% Acc, 1.1/s FR, 2 Shot"
@@ -637,12 +637,12 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 10,Maliwan,Shotgun,27,Scope,MAL_SG.part_scope_02_lens_02,ADS +++Zoom
 10,Maliwan,Shotgun,28,Scope Accessory,MAL_SG.part_scope_acc_s01_l01_a,+Damage
 10,Maliwan,Shotgun,29,Scope Accessory,MAL_SG.part_scope_acc_s01_l01_b,-Reload Speed
-10,Maliwan,Shotgun,30,Scope Accessory,MAL_SG.part_scope_acc_s02_l01_a,No Stat Changes
-10,Maliwan,Shotgun,31,Scope Accessory,MAL_SG.part_scope_acc_s02_l01_b,No Stat Changes
+10,Maliwan,Shotgun,30,Scope Accessory,MAL_SG.part_scope_acc_s02_l01_a,+Stability
+10,Maliwan,Shotgun,31,Scope Accessory,MAL_SG.part_scope_acc_s02_l01_b,+Elemental Damage
 10,Maliwan,Shotgun,32,Scope Accessory,MAL_SG.part_scope_acc_s01_l02_a,+Damage
 10,Maliwan,Shotgun,33,Scope Accessory,MAL_SG.part_scope_acc_s01_l02_b,-Reload Speed
-10,Maliwan,Shotgun,34,Scope Accessory,MAL_SG.part_scope_acc_s02_l02_a,No Stat Changes
-10,Maliwan,Shotgun,35,Scope Accessory,MAL_SG.part_scope_acc_s02_l02_b,No Stat Changes
+10,Maliwan,Shotgun,34,Scope Accessory,MAL_SG.part_scope_acc_s02_l02_a,+Stability
+10,Maliwan,Shotgun,35,Scope Accessory,MAL_SG.part_scope_acc_s02_l02_b,+Elemental Damage
 10,Maliwan,Shotgun,36,Grip,MAL_SG.part_grip_05a_ted_legs,"Tediore reload modifier: Legs, no stat changes"
 10,Maliwan,Shotgun,37,Grip,MAL_SG.part_grip_05b_ted_homing,"Tediore reload modifier: Homing, no stat changes"
 10,Maliwan,Shotgun,38,Grip,MAL_SG.part_grip_05c_ted_jav,"Tediore reload modifier: Javelin, no stat changes"
@@ -666,9 +666,10 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 10,Maliwan,Shotgun,56,Barrel,MAL_SG.part_barrel_01_kaleidosplode,"Kaleidosplode, 1171 Damage, 77% Acc, 1.0/s FR"
 10,Maliwan,Shotgun,58,Barrel,MAL_SG.part_barrel_02_sweet_embrace,"Sweet Embrace, 2510 x 4 Damage, 72% Acc, 1.0/s FR, 2 Shot"
 10,Maliwan,Shotgun,59,Foregrip,MAL_SG.part_foregrip_04,No Stat Changes
+10,Maliwan,Shotgun,62,Barrel,MAL_SG.part_barrel_02_mantra,"Mantra, 3430 Damage, 86% Acc, 2.3/s FR"
 10,Maliwan,Shotgun,63,Barrel Accessory,MAL_SG.part_barrel_01_a,+Damage
-10,Maliwan,Shotgun,64,Barrel Accessory,MAL_SG.part_barrel_01_b,No Stat Changes
-10,Maliwan,Shotgun,65,Barrel Accessory,MAL_SG.part_barrel_01_c,No Stat Changes
+10,Maliwan,Shotgun,64,Barrel Accessory,MAL_SG.part_barrel_01_b,+Elemental Damage
+10,Maliwan,Shotgun,65,Barrel Accessory,MAL_SG.part_barrel_01_c,+Elemental Damage
 10,Maliwan,Shotgun,66,Barrel Accessory,MAL_SG.part_barrel_01_d,+Accuracy
 10,Maliwan,Shotgun,67,Barrel Accessory,MAL_SG.part_barrel_02_a,+Damage
 10,Maliwan,Shotgun,68,Barrel Accessory,MAL_SG.part_barrel_02_b,+Accuracy
@@ -1252,6 +1253,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 23,Ripper,Sniper,53,Underbarrel,BOR_SR.part_underbarrel_05_ammoswitcher,"Underbarrel switch, no effects"
 23,Ripper,Sniper,54,Underbarrel,BOR_SR.part_underbarrel_04_atlas_ball,Atlas Tracker Grenades
 23,Ripper,Sniper,55,Underbarrel,BOR_SR.part_underbarrel_03_marked,Alt Fire - Target Marker
+23,Ripper,Sniper,58,Barrel,BOR_SR.part_barrel_02_rainmaker,"Rainmaker, 984 Damage, 93% Acc, 14.0/s FR, +50% Crit Damage"
 23,Ripper,Sniper,62,Manufacturer Part,BOR_SR.part_secondary_ammo_smg,Daedalus SMG Ammo
 23,Ripper,Sniper,63,Manufacturer Part,BOR_SR.part_secondary_ammo_sg,Daedalus Shotgun Ammo
 23,Ripper,Sniper,64,Manufacturer Part,BOR_SR.part_secondary_ammo_ar,Daedalus AR Ammo

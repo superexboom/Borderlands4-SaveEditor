@@ -19,6 +19,8 @@ Manufacturer ID,Part_ID,Part_type,Stat,Description
 283,8,Legendary Perk,裸拳格斗,近战击中时，消耗一个护甲段获得+100%近战伤害。当护甲护盾为0时，获得+50%近战伤害
 283,9,Rarity,Legendary,重量级皮肤
 283,10,Model,/,
+283,11,Legendary Perk,外骨骼,护甲段破裂时，获得753超强护盾
+283,12,Rarity,Legendary,下部护盾金皮肤
 287,1,Rarity,Common,
 287,2,Rarity,Uncommon,
 287,3,Rarity,Rare,

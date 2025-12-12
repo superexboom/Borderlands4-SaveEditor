@@ -69,6 +69,7 @@ a = Analysis(
     binaries=[],
     datas=[
         ('class_mods/*.json', 'class_mods'),
+        ('class_mods/*.csv', 'class_mods'),
         ('class_mods/Amon/*.png', 'class_mods/Amon'),
         ('class_mods/Harlowe/*.png', 'class_mods/Harlowe'),
         ('class_mods/Rafa/*.png', 'class_mods/Rafa'),

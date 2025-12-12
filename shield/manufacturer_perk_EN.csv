@@ -19,6 +19,8 @@ Manufacturer ID,Part_ID,Part_type,Stat,Description
 283,8,Legendary Perk,Bareknuckle,"On Melee Hit, consume an Armor Segment to gain +100% Melee Damage. When Armor Shield is 0, gain +50% Melee Damage"
 283,9,Rarity,Legendary,Heavyweight skin
 283,10,Model,/,
+283,11,Legendary Perk,Exoskeleton,"On Armor Segment break, grants 753 Overshield"
+283,12,Rarity,Legendary,Undershield skin
 287,1,Rarity,Common,
 287,2,Rarity,Uncommon,
 287,3,Rarity,Rare,

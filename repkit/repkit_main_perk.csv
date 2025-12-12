@@ -99,3 +99,4 @@ Repkit_perk_main_ID,Part_ID,Part_type,Stat,Description
 243,105,Perfix,大型,更多回复量&持续回复&更长冷却时间
 243,106,Perfix,兆,最多回复量&持续回复&最长冷却时间
 243,112,Firmware,风险启用,
+243,113,Firmware,技能工艺,

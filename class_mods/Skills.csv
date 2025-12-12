@@ -1,0 +1,338 @@
+﻿class_ID,class_name,skill_name_EN,skill_name_ZH,skill_ID_1,skill_ID_2,skill_ID_3,skill_ID_4,skill_ID_5
+255,Amon,Age of Ice,冰河时代,256,319,382,445,508
+255,Amon,Ancient Ways,古老之道,30,99,137,175,213
+255,Amon,Armor of Contempt,蔑视护甲,233,296,359,422,485
+255,Amon,Ballistic Bulwark,弹道壁垒,247,310,373,436,499
+255,Amon,Battleborn,为战而生,35,105,143,181,219
+255,Amon,Bellows,风箱,52,71,110,148,186
+255,Amon,Berserk,狂战士,266,329,392,455,518
+255,Amon,Blackout,熄灯,259,322,385,448,511
+255,Amon,Blast Furnace,高炉,231,294,357,420,483
+255,Amon,Bloodlust,嗜血,267,330,393,456,519
+255,Amon,Bolt Action,脑栓行动,57,76,115,153,191
+255,Amon,Brimming Vigor,满满活力,270,333,396,459,522
+255,Amon,Bullet Hail,子弹冰雹,31,101,139,177,215
+255,Amon,Bullet Storm,子弹风暴,43,87,126,164,202
+255,Amon,Burning Rage,怒火燃烧,246,309,372,435,498
+255,Amon,Burning Ramparts,焚烧壁垒,274,337,400,463,526
+255,Amon,Cacophony,震耳欲聋,225,288,351,414,477
+255,Amon,Caroming Shard,撞击碎片,257,320,383,446,509
+255,Amon,Cast Iron,铸铁,64,83,122,160,198
+255,Amon,Catastrophe,大灾难,280,343,406,469,532
+255,Amon,Cooling Mantle,冷却斗篷,251,314,377,440,503
+255,Amon,Crackling Aegis,爆裂神盾,284,347,410,473,536
+255,Amon,Destruction Engine,毁灭仿生体,59,78,117,155,193
+255,Amon,Disco Infernus,迪斯科地狱火,248,311,374,437,500
+255,Amon,Discombobulate,乱其方寸,48,93,131,169,207
+255,Amon,Dragon's Breath,龙之吐息,281,344,407,470,533
+255,Amon,Electrical Fire,电子火焰,285,348,411,474,537
+255,Amon,Endless Bombardment,无尽轰炸,227,290,353,416,479
+255,Amon,Escalation,逐步上升,235,298,361,424,487
+255,Amon,Eternal,永恒,34,104,142,180,218
+255,Amon,Executioner,刽子手,61,80,119,157,195
+255,Amon,Fists of Stone,岩石拳头,283,346,409,472,535
+255,Amon,Forged In Steel,钢铁锻造,44,88,127,165,203
+255,Amon,Freezer Burn,冻结烧伤,241,304,367,430,493
+255,Amon,Gathering Storm,暴风前夕,63,82,121,159,197
+255,Amon,Gut Punch,一拳击腹,16,17,18,19,28
+255,Amon,Harbinger,先兆,275,338,401,464,527
+255,Amon,Heavy Plate,重型板甲,47,92,130,168,206
+255,Amon,Herald's Call,赫拉德的召唤,56,75,114,152,190
+255,Amon,High Voltage,超高电压,265,328,391,454,517
+255,Amon,Honed Point,磨砺尖端,237,300,363,426,489
+255,Amon,Icy Rage,寒冰暴怒,252,315,378,441,504
+255,Amon,Impetus,推动力,51,96,134,172,210
+255,Amon,Into The Fray,投入战斗,273,336,399,462,525
+255,Amon,Judgment,审判,282,345,408,471,534
+255,Amon,Lightning Rod,避雷针,234,297,360,423,486
+255,Amon,Machinist,机械师,27,100,138,176,214
+255,Amon,Maiming Strike,致残打击,277,340,403,466,529
+255,Amon,Masterwork,大师杰作,226,289,352,415,478
+255,Amon,Metal Urge,冲量,41,85,124,162,200
+255,Amon,Mortal Flare,致命耀斑,279,342,405,468,531
+255,Amon,My Touch Is Death,死亡触碰,271,334,397,460,523
+255,Amon,Northern Wind,北风,253,316,379,442,505
+255,Amon,Ordained Hammer,受命之锤,229,292,355,418,481
+255,Amon,Permafrost,永久冻土,238,301,364,427,490
+255,Amon,Primal Surge,原始涌动,255,318,381,444,507
+255,Amon,Raging Inferno,熊熊烈火,239,302,365,428,491
+255,Amon,Reactive Armor,反应装甲,242,305,368,431,494
+255,Amon,Rearm,重新武装,276,339,402,465,528
+255,Amon,Reverse Explosion,逆向爆炸,243,306,369,432,495
+255,Amon,Rimebreak,霜破,269,332,395,458,521
+255,Amon,Scar Tissue,疤痕组织,32,102,140,178,216
+255,Amon,Scorched Kairos,焦土凯洛斯,37,107,145,183,221
+255,Amon,Smelter,熔炼炉,262,325,388,451,514
+255,Amon,Stoked,激动振奋,228,291,354,417,480
+255,Amon,Strike the Anvil,重击铁砧,263,326,389,452,515
+255,Amon,Tactician,战略家,261,324,387,450,513
+255,Amon,Tail of the Comet,彗星尾,33,103,141,179,217
+255,Amon,Tempered Ice,淬炼寒冰,224,287,350,413,476
+255,Amon,Tempered Lightning,淬炼闪电,232,295,358,421,484
+255,Amon,Tempered Pyre,淬炼火堆,58,77,116,154,192
+255,Amon,The Best Defense,最强防御,40,84,123,161,199
+255,Amon,The Thrill,真实刺激,36,106,144,182,220
+255,Amon,There is Only Red,唯有血红,268,331,394,457,520
+255,Amon,Thunderous Rage,雷霆之怒,260,323,386,449,512
+255,Amon,Tritanium Knuckles,三钛合金手指虎,45,89,128,166,204
+255,Amon,Twin Tempers,双生怒火,54,73,112,150,188
+255,Amon,Vital Organs,重要器官,55,74,113,151,
+255,Amon,Warrior's Cup,战士之杯,29,97,135,173,211
+255,Amon,What Burns Within,灼烧之心,49,94,132,170,208
+255,Amon,Wield the Storm,执掌风暴,46,91,129,167,205
+255,Amon,Wildfire,野火,245,308,371,434,497
+255,Amon,Wildheart,狂野之心,240,303,366,429,492
+255,Amon,Winter's Kiss,冬日之吻,254,317,380,443,506
+255,Amon,Worldbreaker,世界破坏者,249,312,375,438,501
+255,Amon,Wrath of Nature,自然之怒,39,109,147,185,223
+255,Amon,get the Lead Out,速度加快,60,79,118,156,194
+259,Harlowe,Absolute Zero,绝对零度,58,71,109,147,185
+259,Harlowe,Accretion,冲积层,241,304,367,430,493
+259,Harlowe,Action at a Distance,远距离行动,64,77,115,153,191
+259,Harlowe,Alternative Fuel Source,备用燃料来源,265,328,391,454,517
+259,Harlowe,Annihilation,湮灭,245,308,371,434,497
+259,Harlowe,Bleeding Edge,极端前沿,35,99,137,175,213
+259,Harlowe,Blue Shift,蓝光偏移,225,288,351,414,477
+259,Harlowe,Break the Ice,打破冰封,249,312,375,438,501
+259,Harlowe,Bright Future,光明未来,48,86,124,162,200
+259,Harlowe,Carry the One,随身携带,247,310,373,436,499
+259,Harlowe,Chain Reactor,收紧链带,257,320,383,446,509
+259,Harlowe,Cold Welding,冰冷焊接,252,315,378,441,504
+259,Harlowe,Concurrence,并发,267,330,393,456,519
+259,Harlowe,Confirmative Reality,既定现实,57,70,108,146,184
+259,Harlowe,Control Group,矫正计划,269,332,395,458,521
+259,Harlowe,Core Sample,核心样本,248,311,374,437,500
+259,Harlowe,Creative Overflow,创意泛滥,54,67,105,143,181
+259,Harlowe,Critical Funding,关键资金,236,299,362,425,488
+259,Harlowe,Cryodynamics,低温动力学,41,80,118,156,194
+259,Harlowe,Cyclotron,回旋加速器,40,104,142,180,218
+259,Harlowe,Decoherence,量子退散,226,289,352,415,478
+259,Harlowe,Dirty Bomb,脏弹,259,322,385,448,511
+259,Harlowe,Distribution Function,分布函数,243,306,369,432,495
+259,Harlowe,Domino Effect,多米诺效应,283,346,409,472,535
+259,Harlowe,Elementary,元素,33,97,135,173,211
+259,Harlowe,Elephant's Foot,象脚,30,94,132,170,208
+259,Harlowe,Endothermic Reaction,风寒效应,276,339,402,465,528
+259,Harlowe,Enriched,丰富,28,92,130,168,206
+259,Harlowe,Eureka!,尤里卡！,263,326,389,452,515
+259,Harlowe,Excited State,兴奋状态,240,303,366,429,492
+259,Harlowe,Experimentation,实验,282,345,408,471,534
+259,Harlowe,Exposed Core,暴露核心,237,300,363,426,489
+259,Harlowe,Feedback Loop,反馈循环,228,291,354,417,480
+259,Harlowe,Field-Ready Prototype,战地原型,36,100,138,176,214
+259,Harlowe,Fissile Launcher,裂隙火箭炮,255,318,381,444,507
+259,Harlowe,Flash Freeze,闪现冻结,277,340,403,466,529
+259,Harlowe,Force Of Will,意志力,268,331,394,457,520
+259,Harlowe,Freeze Frame,刺骨寒冷,272,335,398,461,524
+259,Harlowe,Fuzzy Math,模糊数学,37,101,139,177,215
+259,Harlowe,Gamma Ray Burst,伽马射线爆发,232,295,358,421,484
+259,Harlowe,Get up and Go,积极主动,31,95,133,171,209
+259,Harlowe,Glow Up,焕发光彩,254,317,380,443,506
+259,Harlowe,Gordian Knot,戈耳迪之结,287,350,413,476,539
+259,Harlowe,Great Red DoT,红色瞄准点,29,93,131,169,207
+259,Harlowe,Harlowe's Certainty Principle,哈洛的确定性原则,233,296,359,422,485
+259,Harlowe,Heat Death,热寂说,59,72,110,148,186
+259,Harlowe,Heat Sink,散热器,278,341,404,467,530
+259,Harlowe,Highly Efficient,高效率,260,323,386,449,512
+259,Harlowe,Indiscrete Math,不离散数学,281,344,407,470,533
+259,Harlowe,Jaunt,逍遥,235,298,361,424,487
+259,Harlowe,Keep Ice On That,保持冷静,275,338,401,464,527
+259,Harlowe,Latent Charge,潜伏充能,227,290,353,416,479
+259,Harlowe,Mains Hum,主流低频,66,79,117,155,193
+259,Harlowe,Make Extraordinary,创造非凡,49,87,125,163,201
+259,Harlowe,Mass Function,质量函数,61,74,112,150,188
+259,Harlowe,Mechanical Brilliance,机械才华,261,324,387,450,513
+259,Harlowe,MeltDown,熔毁,238,301,364,427,490
+259,Harlowe,Momentum,冲量,62,75,113,151,189
+259,Harlowe,Negative Entropy,负熵,16,17,18,19,20
+259,Harlowe,Neutron Decay,中子衰变,60,73,111,149,187
+259,Harlowe,Opposing Force,对抗力量,251,314,377,440,503
+259,Harlowe,PPE,个人防护,39,103,141,179,217
+259,Harlowe,Parallel Circuit,并联电路,51,89,127,165,203
+259,Harlowe,Pencils Down,放下铅笔,244,307,370,433,496
+259,Harlowe,Periodic Table Flip,周期表翻转,46,85,123,161,199
+259,Harlowe,Personal Observation,个人观察,65,78,116,154,192
+259,Harlowe,Poisoned Sun,中毒烈日,253,316,379,442,505
+259,Harlowe,Practical Applications,实际应用,246,309,372,435,498
+259,Harlowe,Precision Engineering,精密工程,43,82,120,158,196
+259,Harlowe,Pulse Drive,脉冲驱动,50,88,126,164,202
+259,Harlowe,QED,量子电动力学,266,329,392,455,518
+259,Harlowe,Quantum Immortality,神隐,53,91,129,167,205
+259,Harlowe,Refraction,引力波,239,302,365,428,491
+259,Harlowe,Resonance Cascade,共振级联,56,69,107,145,183
+259,Harlowe,Ripple Effect,陷阱风暴,45,84,122,160,198
+259,Harlowe,Rounding Up,迎风上升,264,327,390,453,516
+259,Harlowe,Runaway Reaction,失控反应,231,294,357,420,483
+259,Harlowe,Slingshot,弹弓,271,334,397,460,523
+259,Harlowe,Stun Lock,眩晕锁定,273,336,399,462,525
+259,Harlowe,Sustained Reaction,持续反应,284,347,410,473,536
+259,Harlowe,Test Subjects,实验对象,32,96,134,172,210
+259,Harlowe,Too Coolant For Schoolant,不离散数学,42,81,119,157,195
+259,Harlowe,Triple Point,三倍点数,279,342,405,468,531
+259,Harlowe,Unstable Ice-otope,不稳冰位素,274,337,400,463,526
+259,Harlowe,Wasted,浪费,258,321,384,447,510
+256,Rafa,Abajo,坠落之力,40,84,122,160,198
+256,Rafa,Al Centro,向心力,43,87,125,163,201
+256,Rafa,Arriba,上升之风,45,89,127,165,203
+256,Rafa,Artillería,炮兵,230,293,356,419,482
+256,Rafa,Asymmetric Warfare,非对称战争,245,308,371,434,497
+256,Rafa,Awe,敬畏,270,333,396,459,522
+256,Rafa,Barrage,狂轰滥炸,258,321,384,447,510
+256,Rafa,Blowout,爆裂,223,286,349,412,475
+256,Rafa,Booming Business,蓬勃发展,232,295,358,421,484
+256,Rafa,Brain Dump,大脑转存,265,328,391,454,517
+256,Rafa,CYA,万全防护,58,101,139,177,215
+256,Rafa,Collaborative Ignition,协同点火,231,294,357,420,483
+256,Rafa,Concentrated Build Up,集中建设,255,318,381,444,507
+256,Rafa,Conductivo,传导力,266,329,392,455,518
+256,Rafa,Confeti,五彩纸屑,251,314,377,440,503
+256,Rafa,Cruel Accrual,残酷累积,243,306,369,432,495
+256,Rafa,Deadline,最后期限,283,346,409,472,535
+256,Rafa,Debtonation,内燃爆鸣,276,339,402,465,528
+256,Rafa,Deft Hands,灵巧双手,63,106,144,182,220
+256,Rafa,Devil-May-Care,鬼才在乎,260,323,386,449,512
+256,Rafa,Dial In,拨入,34,78,116,154,192
+256,Rafa,Diamond Hands,钻石之手,32,76,114,152,190
+256,Rafa,Drone Assault,无人机突击,277,340,403,466,529
+256,Rafa,Drone Defense,无人机防御,272,335,398,461,524
+256,Rafa,El Alacrán,阴险毒蝎,256,319,382,445,508
+256,Rafa,El Borracho,纯纯醉汉,237,300,363,426,489
+256,Rafa,El Catrín,贵族男子,268,331,394,457,520
+256,Rafa,El Corazón,跳动之心,33,77,115,153,191
+256,Rafa,El Diablito,恐怖恶魔,236,299,362,425,488
+256,Rafa,El Paraguas,挡雨之伞,224,287,350,413,476
+256,Rafa,El Soldado,英勇士兵,273,336,399,462,525
+256,Rafa,El Valiente,无畏斗士,53,96,134,172,210
+256,Rafa,Empuje,高能推力,238,301,364,427,490
+256,Rafa,Errant Spark,游离火花,246,309,372,435,498
+256,Rafa,Everdrive,永恒动力,259,322,385,448,511
+256,Rafa,Expedite,加速过程,35,79,117,155,193
+256,Rafa,Field Repairs,现场维修,59,102,140,178,216
+256,Rafa,Fiesta,嘉年华,271,334,397,460,523
+256,Rafa,First Impression,第一印象,44,88,126,164,202
+256,Rafa,Handshake Deal,握手协议,39,83,121,159,197
+256,Rafa,Hard Sell,强硬推销,30,74,112,150,188
+256,Rafa,Hemolitions,血怒爆裂,235,298,361,424,487
+256,Rafa,Hostile Acquisition,敌意收购,247,310,373,436,499
+256,Rafa,In The Zone,专注时刻,28,72,110,148,186
+256,Rafa,Inspirado,突发灵感,257,320,383,446,509
+256,Rafa,Jaque,将死,279,342,405,468,531
+256,Rafa,Juerga,狂欢时刻,60,103,141,179,217
+256,Rafa,La Garza,苍鹭,280,343,406,469,532
+256,Rafa,Las Jaras,标枪,50,93,131,169,207
+256,Rafa,Lateral Plinking,横向射击,250,313,376,439,502
+256,Rafa,Liquidation,液化,228,291,354,417,480
+256,Rafa,Maestro,巨匠大师,56,99,137,175,213
+256,Rafa,Mate,逼近,281,344,407,470,533
+256,Rafa,Metal Management,金属管理,41,85,123,161,199
+256,Rafa,Midnight Oil,午夜精油,37,81,119,157,195
+256,Rafa,Motivar,鼓舞士气,240,303,366,429,492
+256,Rafa,Pa' Dentro,血债血偿,16,17,18,19,20
+256,Rafa,Pain Reaction,疼痛反应,253,316,379,442,505
+256,Rafa,Per My Last,遵照指示,285,348,411,474,537
+256,Rafa,Preparado,提前准备,47,90,128,166,204
+256,Rafa,Proprietary Incendiary,专利燃烧弹,249,312,375,438,501
+256,Rafa,Protecto-Pulse,守护脉冲,226,289,352,415,478
+256,Rafa,Resiliencia,复原能力,57,100,138,176,214
+256,Rafa,Rinse,彻底冲洗,52,95,133,171,209
+256,Rafa,Rolling Stone,滚动石头,248,311,374,437,500
+256,Rafa,Saldar,彻底清算,27,71,109,147,185
+256,Rafa,Shield Barriest,持盾者,61,104,142,180,218
+256,Rafa,Shock Market,刺激市场,227,290,353,416,479
+256,Rafa,Sinergia,协同作用,234,297,360,423,486
+256,Rafa,Sitiar,四面楚歌,65,108,146,184,222
+256,Rafa,Soltado,彻底放手,263,326,389,452,515
+256,Rafa,Sustainable Energy,可持续能源,239,302,365,428,491
+256,Rafa,Temerario,大胆鲁莽,262,325,388,451,514
+256,Rafa,The Right Tools,正确工具,275,338,401,464,527
+256,Rafa,The Thrill,真实刺激,48,92,129,167,205
+256,Rafa,To The Last,抗争到底,29,73,111,149,187
+256,Rafa,Venganza,复仇反击,55,98,136,174,212
+256,Rafa,Vitriol,硫酸盐,252,315,378,441,504
+254,Vex,A Deeper Grave,深邃墓穴,238,301,364,427,490
+254,Vex,Ancient Rites,远古仪式,281,344,407,470,533
+254,Vex,Ars Arcana,远古秘法,237,300,363,426,489
+254,Vex,Blast Rites,爆炸仪式,244,307,370,433,496
+254,Vex,Blasted Fiends,爆裂恶魔,246,309,372,435,498
+254,Vex,Blight Attunement,枯萎调和,264,327,390,453,516
+254,Vex,Blood Is Power,血即力量,242,305,368,431,494
+254,Vex,Blood Sacrifice,血腥献祭,31,32,33,34,35
+254,Vex,Blood is Magic,鲜血即魔法,85,117,149,181,214
+254,Vex,Blood Shot,血腥弹药,239,302,365,428,491
+254,Vex,Bloodletter,血书,72,104,136,168,200
+254,Vex,Burning Attunement,焚烧调和,271,334,397,460,523
+254,Vex,Burnt Offering,燔祭,276,339,402,465,528
+254,Vex,Channeling,沟道效应,68,100,132,164,196
+254,Vex,Claw and Bang,利爪与爆炸,16,17,18,19,20
+254,Vex,Cold Iron,寒铁,36,37,38,39,40
+254,Vex,Corporeal,实体,247,310,373,436,499
+254,Vex,Cursed Blade,诅咒之刃,60,92,124,156,188
+254,Vex,Deadwire,死线,259,322,385,448,511
+254,Vex,Death Follows Closer,死神将至,282,345,408,471,534
+254,Vex,Diener,医学助手,283,346,409,472,535
+254,Vex,Dreadlight,恐惧之光,224,287,350,413,476
+254,Vex,Drink Full,满饮一杯,229,292,355,418,481
+254,Vex,Elemental Essence,元素精髓,250,313,376,439,502
+254,Vex,Enchantment,迷咒,87,119,151,183,215
+254,Vex,Essence Leech,精髓吸取,240,303,366,429,492
+254,Vex,Extra Cursed,多重诅咒,57,89,121,153,185
+254,Vex,Fell Inscriptions,邪恶铭文,63,95,127,159,191
+254,Vex,Fiendish Invigoration,恶魔活力,73,105,137,169,201
+254,Vex,Full Moon,满月,226,289,352,415,478
+254,Vex,Ghasterbait,恶灵诱饵,267,330,393,456,519
+254,Vex,Grave Assault,悲冥袭击,94,126,158,190,62
+254,Vex,Grave Command,悲冥命令,86,118,150,182,213
+254,Vex,Grave Current,悲冥电流,258,321,384,447,510
+254,Vex,Grave Elements,悲冥元素,233,296,359,422,485
+254,Vex,Grave Fiends,悲冥恶魔,59,91,123,155,187
+254,Vex,Grave Implements,悲冥法器,71,103,135,167,199
+254,Vex,Grave Power,悲冥力量,69,101,133,165,197
+254,Vex,Grave Quickening,悲冥加速,26,27,28,29,30
+254,Vex,Grave Sights,悲冥视线,74,106,138,170,202
+254,Vex,Grave Sustenance,悲冥滋养,88,120,152,184,216
+254,Vex,Grave Thirst,悲冥渴望,260,323,386,449,512
+254,Vex,Grave Vitality,悲冥活力,236,299,362,425,488
+254,Vex,Guns and Needles,枪与针,77,109,141,173,205
+254,Vex,Haruspex,占卜僧人,275,338,401,464,527
+254,Vex,Hasty Fiends,急躁恶魔,84,116,148,180,212
+254,Vex,Havoc,末日浩劫,227,290,353,416,479
+254,Vex,Icy Attunement,寒冰调和,243,306,369,432,495
+254,Vex,Idle Hands,空闲之手,65,97,129,161,193
+254,Vex,Infernal Sum,炼狱汇聚,252,315,378,441,504
+254,Vex,Infusion,元素注入,261,324,387,450,513
+254,Vex,Keen Fiends,敏锐恶魔,251,314,377,440,503
+254,Vex,Keen Mind,敏锐思维,230,293,356,419,482
+254,Vex,Keen Suffering,敏锐痛楚,266,329,392,455,518
+254,Vex,Leeching Attunement,吸血调和,76,108,140,172,204
+254,Vex,Material Components,沟道效应,46,47,48,49,50
+254,Vex,Mortal Terror,致命恐惧,232,295,358,421,484
+254,Vex,Mourning,哀悼,81,113,145,177,209
+254,Vex,Necrosis,死灵术,269,332,395,458,521
+254,Vex,Obedient Fiends,顺从恶魔,279,342,405,468,531
+254,Vex,Overheal,超能治疗,80,112,144,176,208
+254,Vex,Overprotective,极致保护,83,115,147,179,211
+254,Vex,Overspirited,亢奋爆发,245,308,371,434,497
+254,Vex,Phase Pocket,相位口袋,231,294,357,420,483
+254,Vex,Pincushion,针垫,277,340,403,466,529
+254,Vex,Portents of Suffering,苦难预兆,93,125,157,189,61
+254,Vex,Prismatic Ichor,光棱灵液,265,328,391,454,517
+254,Vex,Prismatic Weaponry,光棱武器,278,341,404,467,530
+254,Vex,Radiant Attunement,辐射调和,222,285,348,411,474
+254,Vex,Reawakening,再次觉醒,254,317,380,443,506
+254,Vex,Recurrence,复发,272,335,398,461,524
+254,Vex,Restorative Tonic,恢复补品,225,288,351,414,477
+254,Vex,Reverburnations,回响灼烧,273,336,399,462,525
+254,Vex,Sanguine Fiends,血腥恶魔,66,98,130,162,194
+254,Vex,Shiver,颤抖,248,311,374,437,500
+254,Vex,Shocking Attunement,电击调和,257,320,383,446,509
+254,Vex,Shot to Go!,一击即中！,268,331,394,457,520
+254,Vex,Spirit Bomb,灵魂炸弹,280,343,406,469,532
+254,Vex,Stormblessed,风暴祝福,262,325,388,451,514
+254,Vex,Strike Me Down,向我开炮,235,298,361,424,487
+254,Vex,Tail Whip,神鞭之尾,255,318,381,444,507
+254,Vex,Target Prescience,目标预判,70,102,134,166,198
+254,Vex,Volatile Essence,易爆精髓,41,42,43,44,45
+254,Vex,Vorpal Fiends,致命恶魔,78,110,142,174,206
+254,Vex,Yowl and Bay,嚎叫与咆哮,82,114,146,178,210
+254,Vex,Conjunction,结合,412,475,349,286,223
+254,Vex,Sacrificial Essence,献祭精髓,253,316,379,442,505

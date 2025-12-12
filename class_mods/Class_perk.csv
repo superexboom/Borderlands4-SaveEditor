@@ -1,0 +1,99 @@
+﻿perk_ID,perk_name_EN,perk_name_ZH
+1,+10% Melee Critical Hit Chance,+10% 近战暴击率
+2,+25% Ordnance Cooldown Rate,+25% 炮械冷却速率
+3,+25% Ordnance Cooldown Rate,+25% 炮械冷却速率
+4,+45% Minion Damage,+45% 仆从伤害
+5,+10% Lifesteal,+10% 吸血
+6,+45% Command Skill Cooldown Rate,+45% 命令技能冷却速率
+7,-33% Phase Clone Health loss over time,-33% 相位克隆体生命值持续损失
+8,+45% Attunement Skill Duration,+45% 调和技能持续时间
+9,+10% Ordnance Critical Hit Chance,+10% 炮械暴击率
+10,+10% Ordnance Critical Hit Chance,+10% 炮械暴击率
+11,+10% Skill Critical Hit Chance,+10% 技能暴击率
+12,+10% Skill Critical Hit Chance,+10% 技能暴击率
+13,+10% Gun Critical Hit Chance,+10% 枪械暴击率提升
+14,+10% Gun Critical Hit Chance,+10% 枪械暴击率提升
+15,+60% Action Skill Damage,+60% 主动技能伤害
+16,+60% Action Skill Damage,+60% 主动技能伤害
+17,+45% Ordnance Damage,+45% 炮械伤害
+18,+45% Ordnance Damage,+45% 炮械伤害
+19,+20% Damage Dealt,+20% 造成伤害
+20,+20% Damage Dealt,+20% 造成伤害
+21,+30% Status Effect Application Chance,+30% 状态效果施加率
+22,+30% Status Effect Damage,+30% 状态效果伤害
+23,+30% Status Effect Application Chance,+30% 状态效果施加率
+24,+30% Status Effect Damage,+30% 状态效果伤害
+25,+40% Kinetic Damage,+40% 动能伤害
+26,+25% Elemental Damage,+25% 元素伤害
+27,+40% Kinetic Damage,+40% 动能伤害
+28,+25% Elemental Damage,+25% 元素伤害
+29,+45% Action Skill Duration,+45% 主动技能持续时间
+30,+30% Gun Damage,+30% 枪械伤害
+31,+35% Splash Damage,+35% 溅射伤害
+32,+45% Skill Damage,+45% 技能伤害
+33,+25% Action Skill Cooldown Rate,+25% 主动技能冷却速率
+34,+50% Energy Shield Regeneration Rate,+50% 能量护盾恢复速率
+35,+26% Reload Speed,+26% 装填时间
+36,+60% Melee Damage,+60% 近战伤害
+37,+2603 Maximum Health Capacity,+2603 最大生命值容量
+38,+20% Fire Rate,+20% 射速
+39,+25% Damage Reduction,+25% 伤害减免
+40,+35% Critical Hit Damage,+35% 暴击率
+41,+56 Health Regen per second,+56 每秒生命值恢复
+42,+20% Movement Speed,+20% 移动速度
+43,.+45% Pistol Damage,手枪伤害
+44,+45% SMG Damage,+45% 微冲伤害
+45,+45% AR Damage,+45% 突击步枪伤害
+46,+45% Shotgun Damage,+45% 霰弹枪伤害
+47,+2231 Maximum Shield Capacity,+2231 最大护盾容量
+48,+45% Sniper Damage,+45% 狙击步枪伤害
+49,+45% Action Skill Duration,+45% 主动技能持续时间
+50,+30% Gun Damage,+30% 枪械伤害
+51,+35% Splash Damage,+35% 溅射伤害
+52,+45% Skill Damage,+45% 技能伤害
+53,+25% Action Skill Cooldown Rate,+25% 主动技能冷却速率
+54,+50% Energy Shield Regeneration Rate,+50% 能量护盾恢复速率
+55,+26% Reload Speed,+26% 装填时间
+56,+60% Melee Damage,+60% 近战伤害
+57,+2603 Maximum Health Capacity,+2603 最大生命值容量
+58,+20% Fire Rate,+20% 射速
+59,+25% Damage Reduction,+25% 伤害减免
+60,+35% Critical Hit Damage,+35% 暴击率
+61,+56 Health Regen per second,+56 每秒生命值恢复
+62,+20% Movement Speed,+20% 移动速度
+63,+45% Pistol Damage,+45% 手枪伤害
+64,+45% SMG Damage,+45% 微冲伤害
+65,+45% AR Damage,+45% 突击步枪伤害
+66,+45% Shotgun Damage,+45% 霰弹枪伤害
+67,+2231 Maximum Shield Capacity,+2231 最大护盾容量
+68,+45% Sniper Damage,+45% 狙击步枪伤害
+74,Risky Boots-Firmware,风险启用-固件
+75,God Killer-Firmware,弑神者-固件
+76,Reel Big Fist-Firmware,沙包大拳头-固件
+77,Lifeblood-Firmware,命脉-固件
+78,Airstrike-Firmware,空袭-固件
+79,High Caliber-Firmware,大口径-固件
+80,Gadget Ahoy-Firmware,装置启动-固件
+81,Baker-Firmware,烘焙师-固件
+82,Osacar Mike-Firmware,正在行动-固件
+83,Rubberband Man-Firmware,橡皮筋人-固件
+84,Deadeye-Firmware,神枪手-固件
+85,Action Fist-Firmware,动能拳头-固件
+86,GOOJFC-Firmware,保命王牌-固件
+87,Atlas E.X.-Firmware,阿特拉斯E.X.-固件
+88,Atlas Infinum-Firmware,阿特拉斯无限量-固件
+89,Trickshot-Firmware,花式射击-固件
+90,Jacked-Firmware,杰克式改造-固件
+91,Get Throwin'-Firmware,发球入场-固件
+92,Heating Up-Firmware,加热升温-固件
+93,Bullets to Spare-Firmware,备用子弹-固件
+94,Daed-dy O'-Firmware,大情圣-固件
+95,+60% Stasis Damage,+60% 静止术伤害
+96,+60% Hazard Damage,+60% 危害源伤害
+97,+60% Forgeskill Damage,+60% 锻造技艺伤害
+98,+60% Detonation Damage,+60% 引爆伤害
+99,+45% Cryo Damage,+45% 冰冻伤害
+100,+45% Forgedrone Duration,+45% 锻造无人机持续时间
+101,+45% Incendiary Damage,+45% 火焰伤害
+102,+10% Melee Critical Hit Chance,+10% 近战暴击率
+103,Skillcraft-Firmware,技能工艺-固件

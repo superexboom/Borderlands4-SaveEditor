@@ -186,8 +186,9 @@ class QtHeavyWeaponEditorTab(QWidget):
         
         self.mfg_combo = QComboBox()
         self.level_edit = QLineEdit("50")
+        self.level_edit.setFixedWidth(100)
         self.rarity_combo = QComboBox()
-        self.rarity_combo.setFixedWidth(600)
+        self.rarity_combo.setFixedWidth(300)
         
         self.mfg_label = QLabel(self.ui_loc['labels']['manufacturer'])
         self.level_label = QLabel(self.ui_loc['labels']['level'])
@@ -387,6 +388,7 @@ class QtHeavyWeaponEditorTab(QWidget):
             desc = f" - {desc_val}" if pd.notna(desc_val) else ""
             self.rarity_combo.addItem(f"{self._(row['Stat'])}{desc}", userData=row['Part_ID'])
         self.rarity_combo.blockSignals(False)
+        self.rarity_combo.setFixedWidth(300)  # Re-apply width after populating
         
         self._populate_barrel_radiobuttons() # Refresh barrels on mfg change
         self.populate_accessory_lists()

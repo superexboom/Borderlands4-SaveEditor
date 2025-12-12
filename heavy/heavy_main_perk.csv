@@ -20,6 +20,7 @@ Heavy_perk_main_ID,Part_ID,Part_type,Stat,Description
 244,19,Firmware,备用子弹,
 244,20,Firmware,大情圣,
 244,26,Firmware,风险启用,
+244,27,Firmware,技能工艺,
 1,10,Element,腐蚀,
 1,11,Element,冰冻,
 1,12,Element,点燃,

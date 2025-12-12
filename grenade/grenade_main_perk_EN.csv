@@ -80,3 +80,4 @@ Grenade_perk_main_ID,Part_ID,Part_type,Stat
 245,80,Perk,"Lethal - Grenade Damage is increased by 25%, and Grenade Projectile Speed is reduced by -50%"
 245,81,Perk,"Wideload - Damage Radius is increased by 38%, Homing Turn Rate reduced by -33%"
 245,87,Firmware,"Risky Boots"
+245,88,Firmware,"Skillcraft"

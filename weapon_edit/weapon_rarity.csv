@@ -61,6 +61,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,Stat,De
 10,Maliwan,Shotgun,98,Rarity,Epic,
 10,Maliwan,Shotgun,1,Rarity,Legendary,Kaleidosplode
 10,Maliwan,Shotgun,57,Rarity,Legendary,Sweet Embrace
+10,Maliwan,Shotgun,80,Rarity,Legendary,Mantra
 10,Maliwan,Shotgun,100,Rarity,Legendary,Kickballer
 21,Maliwan,SMG,58,Rarity,Common,
 21,Maliwan,SMG,96,Rarity,Uncommon,
@@ -116,6 +117,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,Stat,De
 23,Ripper,Sniper,98,Rarity,Epic,
 23,Ripper,Sniper,19,Rarity,Legendary,Stray
 23,Ripper,Sniper,1,Rarity,Legendary,Vamoose
+23,Ripper,Sniper,57,Rarity,Legendary,Rainmaker
 14,Tediore,Assault Rifle,89,Rarity,Common,
 14,Tediore,Assault Rifle,90,Rarity,Uncommon,
 14,Tediore,Assault Rifle,91,Rarity,Rare,

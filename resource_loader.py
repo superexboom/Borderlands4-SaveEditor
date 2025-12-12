@@ -7,8 +7,9 @@
 import sys
 import json
 import ast
+import csv
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 import importlib.resources
 import pkg_resources
 
@@ -160,6 +161,28 @@ def load_class_mods_json(filename: str, use_literal_eval: bool = False) -> Optio
     """
     return load_json_resource(f"class_mods/{filename}", use_literal_eval)
 
+def load_class_mods_csv(filename: str) -> List[Dict[str, str]]:
+    """
+    加载类模组CSV文件
+    
+    Args:
+        filename: CSV文件名
+        
+    Returns:
+        解析后的数据列表，每行作为一个字典，失败时返回空列表
+    """
+    try:
+        resource_path = get_resource_path(f"class_mods/{filename}")
+        if not resource_path.exists():
+            print(f"CSV文件不存在: {resource_path}")
+            return []
+        with open(resource_path, 'r', encoding='utf-8-sig', newline='') as f:
+            reader = csv.DictReader(f)
+            return list(reader)
+    except Exception as e:
+        print(f"加载CSV文件时发生错误 {filename}: {e}")
+        return []
+
 def get_class_mods_image_path(class_name: str, image_name: str) -> Optional[Path]:
     """
     获取类模组图片文件的路径
@@ -176,6 +199,7 @@ def get_class_mods_image_path(class_name: str, image_name: str) -> Optional[Path
 def load_all_skill_descriptions() -> Dict[str, Dict[str, str]]:
     """
     加载所有职业的技能描述文件，并整合成一个字典
+    使用Skills.csv获取英文名到中文名的映射
 
     Returns:
         一个以技能英文名为键，包含中英文描述的字典
@@ -183,8 +207,14 @@ def load_all_skill_descriptions() -> Dict[str, Dict[str, str]]:
     all_skills = {}
     characters = ['Amon', 'Vex', 'Harlowe', 'Rafa']
     
-    # Load localization map for name matching
-    loc_map = load_class_mods_json("class_localization.json") or {}
+    # 从Skills.csv加载英文名→中文名的映射
+    skills_csv = load_class_mods_csv("Skills.csv")
+    skill_name_map = {}  # skill_name_EN -> skill_name_ZH
+    for row in skills_csv:
+        en_name = row.get('skill_name_EN', '').strip()
+        zh_name = row.get('skill_name_ZH', '').strip()
+        if en_name and zh_name:
+            skill_name_map[en_name] = zh_name
 
     for char in characters:
         en_skills_list = load_class_mods_json(f"{char}_en.json")
@@ -208,12 +238,11 @@ def load_all_skill_descriptions() -> Dict[str, Dict[str, str]]:
             desc_en = en_skill_data.get('description', 'No English description.')
             desc_zh = desc_en
             
-            # Attempt to find Chinese description
-            # 1. Try matching via localization map (English Name -> Chinese Name -> ZH Data)
-            zh_name_candidate = loc_map.get(skill_en_name)
+            # 使用Skills.csv中的映射查找中文名称
+            zh_name_candidate = skill_name_map.get(skill_en_name)
             if zh_name_candidate and zh_name_candidate in zh_lookup:
                 desc_zh = zh_lookup[zh_name_candidate].get('description', desc_en)
-            # 2. Fallback: Try direct name match (if keys are identical) or just use EN
+            # Fallback: Try direct name match (if keys are identical)
             elif skill_en_name in zh_lookup:
                 desc_zh = zh_lookup[skill_en_name].get('description', desc_en)
 
@@ -223,7 +252,7 @@ def load_all_skill_descriptions() -> Dict[str, Dict[str, str]]:
                 'type': en_skill_data.get('type', 'N/A')
             }
             
-            # Also add lower-case key to handle inconsistencies in class_code.json keys
+            # Also add lower-case key to handle inconsistencies
             if skill_en_name and skill_en_name.lower() != skill_en_name:
                 all_skills[skill_en_name.lower()] = all_skills[skill_en_name]
 

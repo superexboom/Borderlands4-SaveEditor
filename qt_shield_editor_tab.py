@@ -157,6 +157,8 @@ class QtShieldEditorTab(QWidget):
     def _create_top_controls(self, layout):
         self.base_attrs_group = QGroupBox(self.ui_loc['groups']['base_attrs']); controls_layout = QHBoxLayout(self.base_attrs_group)
         self.mfg_combo = QComboBox(); self.level_edit = QLineEdit("50"); self.rarity_combo = QComboBox()
+        self.level_edit.setFixedWidth(100)
+        self.rarity_combo.setFixedWidth(300)
         
         self.mfg_label = QLabel(self.ui_loc['labels']['manufacturer'])
         self.level_label = QLabel(self.ui_loc['labels']['level'])
@@ -318,6 +320,7 @@ class QtShieldEditorTab(QWidget):
             display_text = f"{self._(row['Stat'])} - {description if pd.notna(description) else ''}"
             self.rarity_combo.addItem(display_text.strip(" - "), row['Part_ID'])
         self.rarity_combo.blockSignals(False)
+        self.rarity_combo.setFixedWidth(300)  # Re-apply width after populating
         
         self.legendary_avail_list.clear()
         df_leg = self.df_mfg[self.df_mfg['Part_type'] == 'Legendary Perk']

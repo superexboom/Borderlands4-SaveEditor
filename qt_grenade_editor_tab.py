@@ -149,6 +149,8 @@ class QtGrenadeEditorTab(QWidget):
     def _create_top_controls(self, layout):
         self.base_attrs_group = QGroupBox(self.ui_loc['groups']['base_attrs']); controls_layout = QHBoxLayout(self.base_attrs_group)
         self.mfg_combo = QComboBox(); self.level_edit = QLineEdit("50"); self.rarity_combo = QComboBox()
+        self.level_edit.setFixedWidth(100)
+        self.rarity_combo.setFixedWidth(300)
         
         self.mfg_label = QLabel(self.ui_loc['labels']['manufacturer'])
         self.level_label = QLabel(self.ui_loc['labels']['level'])
@@ -291,6 +293,7 @@ class QtGrenadeEditorTab(QWidget):
             desc = r['Description']
             self.rarity_combo.addItem(f"{self._(r['Stat'])} - {desc if pd.notna(desc) else ''}", r['Part_ID'])
         self.rarity_combo.blockSignals(False)
+        self.rarity_combo.setFixedWidth(300)  # Re-apply width after populating
         
         self._populate_checkboxes(self.mfg_perk_frame, self.df_mfg[(self.df_mfg['Manufacturer ID'] == mfg_id) & (self.df_mfg['Part_type'] == 'Perk')], self.mfg_perk_widgets)
         self.legendary_avail_list.clear()

@@ -613,7 +613,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 10,Maliwan,Shotgun,3,Body Accessory,MAL_SG.part_body_a,-装填时间
 10,Maliwan,Shotgun,4,Body Accessory,MAL_SG.part_body_b,+弹夹容量
 10,Maliwan,Shotgun,5,Body Accessory,MAL_SG.part_body_c,+精准度
-10,Maliwan,Shotgun,6,Body Accessory,MAL_SG.part_body_d,无可见属性变化
+10,Maliwan,Shotgun,6,Body Accessory,MAL_SG.part_body_d,+元素伤害
 10,Maliwan,Shotgun,7,Barrel,MAL_SG.part_barrel_01_kickballer,"踢球者,5131伤害,77%精准度,0.8/s射速"
 10,Maliwan,Shotgun,8,Barrel,MAL_SG.part_barrel_01,"行星群,5131伤害,77%精准度,0.8/s射速"
 10,Maliwan,Shotgun,9,Barrel,MAL_SG.part_barrel_02,"顶点,2677x2伤害,75%精准度,1.1/s射速,2/每发"
@@ -637,12 +637,12 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 10,Maliwan,Shotgun,27,Scope,MAL_SG.part_scope_02_lens_02,瞄准镜 +++放大倍率
 10,Maliwan,Shotgun,28,Scope Accessory,MAL_SG.part_scope_acc_s01_l01_a,+伤害
 10,Maliwan,Shotgun,29,Scope Accessory,MAL_SG.part_scope_acc_s01_l01_b,-装填时间
-10,Maliwan,Shotgun,30,Scope Accessory,MAL_SG.part_scope_acc_s02_l01_a,无可见属性变化
-10,Maliwan,Shotgun,31,Scope Accessory,MAL_SG.part_scope_acc_s02_l01_b,无可见属性变化
+10,Maliwan,Shotgun,30,Scope Accessory,MAL_SG.part_scope_acc_s02_l01_a,+稳定性
+10,Maliwan,Shotgun,31,Scope Accessory,MAL_SG.part_scope_acc_s02_l01_b,+元素伤害
 10,Maliwan,Shotgun,32,Scope Accessory,MAL_SG.part_scope_acc_s01_l02_a,+伤害
 10,Maliwan,Shotgun,33,Scope Accessory,MAL_SG.part_scope_acc_s01_l02_b,-装填时间
-10,Maliwan,Shotgun,34,Scope Accessory,MAL_SG.part_scope_acc_s02_l02_a,无可见属性变化
-10,Maliwan,Shotgun,35,Scope Accessory,MAL_SG.part_scope_acc_s02_l02_b,无可见属性变化
+10,Maliwan,Shotgun,34,Scope Accessory,MAL_SG.part_scope_acc_s02_l02_a,+稳定性
+10,Maliwan,Shotgun,35,Scope Accessory,MAL_SG.part_scope_acc_s02_l02_b,+元素伤害
 10,Maliwan,Shotgun,36,Grip,MAL_SG.part_grip_05a_ted_legs,"泰迪尔装填修改组件:腿部,无可见属性变化"
 10,Maliwan,Shotgun,37,Grip,MAL_SG.part_grip_05b_ted_homing,"泰迪尔装填修改组件:追踪,无可见属性变化"
 10,Maliwan,Shotgun,38,Grip,MAL_SG.part_grip_05c_ted_jav,"泰迪尔装填修改组件:标枪,无可见属性变化"
@@ -666,9 +666,10 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 10,Maliwan,Shotgun,56,Barrel,MAL_SG.part_barrel_01_kaleidosplode,"万花爆炸,1171伤害,77%精准度,1.0/s射速"
 10,Maliwan,Shotgun,58,Barrel,MAL_SG.part_barrel_02_sweet_embrace,"甜蜜拥抱,2510x4伤害,72%精准度,1.0/s射速,2/每发"
 10,Maliwan,Shotgun,59,Foregrip,MAL_SG.part_foregrip_04,无可见属性变化
+10,Maliwan,Shotgun,62,Barrel,MAL_SG.part_barrel_02_mantra,"真言,3430伤害,86%精准度,2.3/s射速"
 10,Maliwan,Shotgun,63,Barrel Accessory,MAL_SG.part_barrel_01_a,+伤害
-10,Maliwan,Shotgun,64,Barrel Accessory,MAL_SG.part_barrel_01_b,无可见属性变化
-10,Maliwan,Shotgun,65,Barrel Accessory,MAL_SG.part_barrel_01_c,无可见属性变化
+10,Maliwan,Shotgun,64,Barrel Accessory,MAL_SG.part_barrel_01_b,+元素伤害
+10,Maliwan,Shotgun,65,Barrel Accessory,MAL_SG.part_barrel_01_c,+元素伤害
 10,Maliwan,Shotgun,66,Barrel Accessory,MAL_SG.part_barrel_01_d,+精准度
 10,Maliwan,Shotgun,67,Barrel Accessory,MAL_SG.part_barrel_02_a,+伤害
 10,Maliwan,Shotgun,68,Barrel Accessory,MAL_SG.part_barrel_02_b,+精准度
@@ -1252,6 +1253,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 23,Ripper,Sniper,53,Underbarrel,BOR_SR.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
 23,Ripper,Sniper,54,Underbarrel,BOR_SR.part_underbarrel_04_atlas_ball,阿特拉斯追踪手雷
 23,Ripper,Sniper,55,Underbarrel,BOR_SR.part_underbarrel_03_marked,附属开火-目标标记器
+23,Ripper,Sniper,58,Barrel,BOR_SR.part_barrel_02_rainmaker,"造雨师,984伤害,93%精准度,14.0/s射速,+50%暴击伤害"
 23,Ripper,Sniper,62,Manufacturer Part,BOR_SR.part_secondary_ammo_smg,代达洛斯冲锋枪弹药
 23,Ripper,Sniper,63,Manufacturer Part,BOR_SR.part_secondary_ammo_sg,代达洛斯霰弹枪弹药
 23,Ripper,Sniper,64,Manufacturer Part,BOR_SR.part_secondary_ammo_ar,代达洛斯突击步枪弹药

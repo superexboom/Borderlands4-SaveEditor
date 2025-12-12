@@ -108,17 +108,23 @@ class SkillPointWidget(QWidget):
 
 class QtClassModEditorTab(QWidget):
     add_to_backpack_requested = pyqtSignal(str, str)
+    
+    # 职业ID常量
+    CLASS_IDS = {'Amon': 255, 'Harlowe': 259, 'Rafa': 256, 'Vex': 254}
+    CLASS_NAMES = ['Amon', 'Harlowe', 'Rafa', 'Vex']  # 保持顺序一致
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.current_lang = 'zh-CN'
         
         self.ui_loc = self._load_ui_localization()
-        self.data = self._load_class_data()
-        self.localization = self._load_localization()
+        self.localization = self._load_localization()  # 仅用于职业/稀有度名称
         self.skill_descriptions = skill_descriptions
         self.image_cache = {}
         self.current_skill_points = {}
+        
+        # 加载CSV数据
+        self._load_csv_data()
 
         # Set a global font for tooltips for better readability
         font = QFont()
@@ -151,29 +157,59 @@ class QtClassModEditorTab(QWidget):
         self.populate_initial_data()
         self._connect_signals()
         
-    def _(self, text):
-        # Fallback for keys that might not be in the loaded localization file
-        default_map = {"Vex": "Vex", "Rafa": "Rafa", "Harlowe": "Harlowe", "Amon": "Amon"}
-        return self.localization.get(text, default_map.get(text, text))
+    def _(self, text, class_name=None):
+        """
+        获取本地化文本
+        对于职业/稀有度名称，使用localization字典
+        对于技能/名称/perk，从CSV数据中获取
+        """
+        # 职业和稀有度名称仍使用localization
+        if text in self.localization:
+            return self.localization[text]
+        return text
 
-    def _load_class_data(self):
-        try:
-            return resource_loader.load_class_mods_json("class_code.json", use_literal_eval=True)
-        except Exception as e:
-            QMessageBox.critical(self, self.ui_loc['dialogs']['error'], self.ui_loc['dialogs']['load_error_code'].format(error=e))
-            return {}
+    def _load_csv_data(self):
+        """加载所有CSV数据"""
+        self.names_data = resource_loader.load_class_mods_csv("Class_rarity_name.csv")
+        self.skills_data = resource_loader.load_class_mods_csv("Skills.csv")
+        self.perks_data = resource_loader.load_class_mods_csv("Class_perk.csv")
+        self.legendary_map_data = resource_loader.load_class_mods_csv("Class_legendary_map.csv")
+        
+        # 构建快速查找索引
+        self._build_data_indexes()
+    
+    def _build_data_indexes(self):
+        """构建数据索引以加速查找"""
+        # 按class_ID索引技能
+        self.skills_by_class = {}
+        for skill in self.skills_data:
+            class_id = skill.get('class_ID', '')
+            if class_id not in self.skills_by_class:
+                self.skills_by_class[class_id] = []
+            self.skills_by_class[class_id].append(skill)
+        
+        # 按class_ID和rarity索引名称
+        self.names_by_class_rarity = {}
+        for name in self.names_data:
+            key = (name.get('class_ID', ''), name.get('rarity', ''))
+            if key not in self.names_by_class_rarity:
+                self.names_by_class_rarity[key] = []
+            self.names_by_class_rarity[key].append(name)
+        
+        # 按perk_ID索引perks
+        self.perks_by_id = {p['perk_ID']: p for p in self.perks_data}
 
     def _load_localization(self, lang=None):
+        """加载本地化数据 - 仅用于职业和稀有度名称"""
         if lang is None: lang = self.current_lang
-        # If English, we assume keys are English and don't need translation mapping (return empty dict)
-        # unless there's a specific EN file. For now assuming keys are EN.
+        # 英语等语言不需要翻译
         if lang in ['en-US', 'ru', 'ua']:
             return {}
         try:
-            return resource_loader.load_class_mods_json("class_localization.json")
+            return resource_loader.load_class_mods_json("class_localization.json") or {}
         except Exception as e:
-             QMessageBox.warning(self, self.ui_loc['dialogs']['warning'], self.ui_loc['dialogs']['load_error_loc'].format(error=e))
-             return {}
+            print(f"加载本地化文件失败: {e}")
+            return {}
 
     def _load_ui_localization(self, lang=None):
         if lang is None: lang = self.current_lang
@@ -418,12 +454,15 @@ class QtClassModEditorTab(QWidget):
         self.container_layout.addWidget(perks_group)
 
     def populate_initial_data(self):
-        if not self.data:
+        """填充初始数据 - 使用CSV数据源"""
+        if not self.names_data:
             return
-            
-        class_names = [self._(c) for c in self.data.get('classes', {}).keys()]
+        
+        # 职业名称 - 使用固定顺序
+        class_names = [self._(c) for c in self.CLASS_NAMES]
         self.class_combo.addItems(class_names)
         
+        # 稀有度
         rarities = [self._(r) for r in ["Common", "Uncommon", "Rare", "Epic", "Legendary"]]
         self.rarity_combo.addItems(rarities)
         self.rarity_combo.setCurrentText(self._("Legendary"))
@@ -459,37 +498,40 @@ class QtClassModEditorTab(QWidget):
         self.seed_edit.setText(str(random.randint(1, 9999)))
 
     def populate_names(self):
+        """填充名称列表 - 使用CSV数据源"""
         self.name_combo.blockSignals(True)
         self.name_combo.clear()
         
-        # Get English key for class
-        current_class_display = self.class_combo.currentText()
-        current_class_en = ""
-        for key, value in self.localization.items():
-            if value == current_class_display:
-                current_class_en = key
-                break
-        if not current_class_en: current_class_en = current_class_display # Fallback
+        # 获取当前职业的英文名和ID
+        current_class_en = self._get_current_class_en()
+        current_class_id = str(self.CLASS_IDS.get(current_class_en, 0))
 
-        # Get English key for rarity
-        rarity_display = self.rarity_combo.currentText()
-        rarity_en = ""
-        for key, value in self.localization.items():
-            if value == rarity_display:
-                rarity_en = key
-                break
-        if not rarity_en: rarity_en = rarity_display # Fallback
+        # 获取稀有度英文名
+        rarity_en = self._get_english_key(self.rarity_combo.currentText())
+        rarity_key = "legendary" if rarity_en == "Legendary" else "normal"
         
-        name_key = "legendary" if rarity_en == "Legendary" else "normal"
+        # 从索引中获取名称列表
+        names_list = self.names_by_class_rarity.get((current_class_id, rarity_key), [])
         
-        names_data = self.data.get("classes", {}).get(current_class_en, {}).get("names", {}).get(name_key, [])
+        self.name_code_map = {}  # display_name -> name_code (int)
+        self.name_en_map = {}    # display_name -> name_EN
+        self.name_data_map = {}  # display_name -> full row data
         
-        self.name_code_map = {}
-        for name_data in names_data:
-            eng_name = name_data['name']
-            localized_name = self._(eng_name)
-            self.name_combo.addItem(localized_name)
-            self.name_code_map[localized_name] = name_data['code']
+        for name_row in names_list:
+            name_en = name_row.get('name_EN', '')
+            name_zh = name_row.get('name_ZH', '')
+            name_code = name_row.get('name_code', '')
+            
+            # 根据语言选择显示名称
+            if self.current_lang == 'zh-CN' and name_zh:
+                display_name = name_zh
+            else:
+                display_name = name_en
+            
+            self.name_combo.addItem(display_name)
+            self.name_code_map[display_name] = int(name_code) if name_code else 0
+            self.name_en_map[display_name] = name_en
+            self.name_data_map[display_name] = name_row
             
         self.name_combo.blockSignals(False)
         self.update_string()
@@ -499,59 +541,84 @@ class QtClassModEditorTab(QWidget):
         self.update_string()
 
     def update_string(self, *args):
-        if not self.data or not self.name_combo.currentText():
+        """生成序列化字符串 - 使用CSV数据源"""
+        if not self.names_data or not self.name_combo.currentText():
             self.full_string_output.setText("...")
             self.base85_output.setText("...")
             return
 
         try:
             current_class_en = self._get_current_class_en()
+            current_class_id = str(self.CLASS_IDS.get(current_class_en, 0))
+            
             level_val = self.level_edit.text() if hasattr(self, 'level_edit') else "50"
             if not level_val: level_val = "50"
-            header = f"{self.data['ids'][current_class_en]}, 0, 1, {level_val}| 2, {self.seed_edit.text()}||"
+            header = f"{self.CLASS_IDS[current_class_en]}, 0, 1, {level_val}| 2, {self.seed_edit.text()}||"
             
             rarity_en = self._get_english_key(self.rarity_combo.currentText())
-            name_code = self.name_code_map.get(self.name_combo.currentText())
+            name_code = self.name_code_map.get(self.name_combo.currentText(), 0)
             name_chunk = f"{{{name_code}}}" if name_code else ""
 
             rarity_code_val = ""
             if rarity_en == "Legendary":
-                rarity_code_val = self.data['legendaryMap'][current_class_en].get(str(name_code), '')
-                if current_class_en == "Harlowe": name_chunk += " {27}"
+                # 从legendary_map_data查找
+                for row in self.legendary_map_data:
+                    if row.get('class_ID') == current_class_id and row.get('L_name_ID') == str(name_code):
+                        rarity_code_val = row.get('item_card_ID', '')
+                        break
+                if current_class_en == "Harlowe": 
+                    name_chunk += " {27}"
             else:
-                PER_CLASS_RARITIES = {"Vex": {"Common": 217, "Uncommon": 218, "Rare": 219, "Epic": 220},"Rafa": {"Common": 66, "Uncommon": 67, "Rare": 68, "Epic": 69},"Harlowe": {"Common": 224, "Uncommon": 223, "Rare": 222, "Epic": 221},"Amon": {"Common": 70, "Uncommon": 69, "Rare": 68, "Epic": 67}}
+                PER_CLASS_RARITIES = {
+                    "Vex": {"Common": 217, "Uncommon": 218, "Rare": 219, "Epic": 220},
+                    "Rafa": {"Common": 66, "Uncommon": 67, "Rare": 68, "Epic": 69},
+                    "Harlowe": {"Common": 224, "Uncommon": 223, "Rare": 222, "Epic": 221},
+                    "Amon": {"Common": 70, "Uncommon": 69, "Rare": 68, "Epic": 67}
+                }
                 rarity_code_val = PER_CLASS_RARITIES.get(current_class_en, {}).get(rarity_en, "")
             rarity_chunk = f"{{{rarity_code_val}}}" if rarity_code_val else ""
 
+            # 传奇附加
             leg_extras_codes = [f"{{{self.leg_sel_list.item(i).text().split('{')[-1].strip()}" for i in range(self.leg_sel_list.count())]
             leg_extras_chunk = " ".join(leg_extras_codes)
 
+            # 技能 - 使用skills_by_class索引
             skill_chunks = []
-            skills_data = self.data.get("classes", {}).get(current_class_en, {}).get("skills", {})
-            for eng_name, codes in sorted(skills_data.items()):
+            skills_list = self.skills_by_class.get(current_class_id, [])
+            for skill_row in sorted(skills_list, key=lambda x: x.get('skill_name_EN', '')):
+                eng_name = skill_row.get('skill_name_EN', '')
                 points = self.current_skill_points.get(eng_name, 0)
                 if points > 0:
+                    # 获取技能ID列表
+                    codes = []
+                    for i in range(1, 6):
+                        code = skill_row.get(f'skill_ID_{i}', '')
+                        if code:
+                            codes.append(code)
                     skill_chunks.extend([f"{{{c}}}" for c in codes[:points]])
             skills_chunk = " ".join(skill_chunks)
             
+            # Perks - 直接从显示格式[ID]提取perk_id
             perk_codes = []
             for i in range(self.perk_sel_list.count()):
                 item_text = self.perk_sel_list.item(i).text()
-                # Check for (count) prefix
-                match = re.match(r"\((\d+)\)\s+(.*)", item_text)
+                # Check for (count) prefix: "(count) [id] name"
+                match = re.match(r"\((\d+)\)\s+\[(\d+)\]", item_text)
                 if match:
                     count = int(match.group(1))
-                    perk_display_name = match.group(2)
+                    perk_id = match.group(2)
                 else:
-                    count = 1
-                    perk_display_name = item_text
+                    # Try without count prefix: "[id] name"
+                    match_no_count = re.match(r"\[(\d+)\]", item_text)
+                    if match_no_count:
+                        count = 1
+                        perk_id = match_no_count.group(1)
+                    else:
+                        continue
                 
-                perk_eng_name = self._get_english_key(perk_display_name)
-                perk_data = next((p for p in self.data['perks'] if p['name'] == perk_eng_name), None)
-                
-                if perk_data:
+                if perk_id:
                     for _ in range(count):
-                        perk_codes.append(str(perk_data['code']))
+                        perk_codes.append(str(perk_id))
 
             perks_chunk = f" {{234:[{ ' '.join(perk_codes) }]}}" if perk_codes else ""
 
@@ -566,10 +633,13 @@ class QtClassModEditorTab(QWidget):
             else:
                 self.base85_output.setText(encoded_serial)
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             self.full_string_output.setText(self.ui_loc['dialogs']['gen_error'].format(error=e))
             self.base85_output.setText("...")
 
     def populate_legendary_extras(self, preserve_selection=False):
+        """填充传奇附加列表 - 使用CSV数据源"""
         saved_selections = []
         if preserve_selection:
             for i in range(self.leg_sel_list.count()):
@@ -585,9 +655,11 @@ class QtClassModEditorTab(QWidget):
         if not is_legendary: return
 
         current_class_en = self._get_current_class_en()
+        current_class_id = str(self.CLASS_IDS.get(current_class_en, 0))
         if not current_class_en: return
 
-        legendary_names_data = self.data["classes"][current_class_en]["names"]["legendary"]
+        # 从CSV获取legendary名称
+        legendary_names = self.names_by_class_rarity.get((current_class_id, 'legendary'), [])
         primary_name_display = self.name_combo.currentText()
 
         # Helper to extract name from "Name {Code}"
@@ -603,29 +675,54 @@ class QtClassModEditorTab(QWidget):
                     self.leg_sel_list.addItem(item_text)
                     preserved_set.add(item_text)
 
-        for item in legendary_names_data:
-            localized_name = self._(item['name'])
-            item_str = f"{localized_name} {{{item['code']}}}"
+        for name_row in legendary_names:
+            name_en = name_row.get('name_EN', '')
+            name_zh = name_row.get('name_ZH', '')
+            name_code = name_row.get('name_code', '')
             
-            if localized_name == primary_name_display:
+            # 选择显示名称
+            if self.current_lang == 'zh-CN' and name_zh:
+                display_name = name_zh
+            else:
+                display_name = name_en
+            
+            item_str = f"{display_name} {{{name_code}}}"
+            
+            if display_name == primary_name_display:
                 continue
             
             if item_str not in preserved_set:
                 self.leg_avail_list.addItem(item_str)
 
     def populate_perks(self):
+        """填充Perk列表 - 使用CSV数据源"""
         self.perk_avail_list.clear()
         query = self.perk_search_edit.text().lower()
-        perks = self.data.get("perks", [])
-        for perk in perks:
-            name = self._(perk['name'])
-            if not query or query in name.lower():
-                self.perk_avail_list.addItem(name)
+        
+        for perk_row in self.perks_data:
+            perk_id = perk_row.get('perk_ID', '')
+            perk_en = perk_row.get('perk_name_EN', '')
+            perk_zh = perk_row.get('perk_name_ZH', '')
+            
+            # 选择显示名称，格式: [ID] 名称
+            if self.current_lang == 'zh-CN' and perk_zh:
+                display_name = f"[{perk_id}] {perk_zh}"
+            else:
+                display_name = f"[{perk_id}] {perk_en}"
+            
+            if not query or query in display_name.lower() or query in perk_en.lower():
+                self.perk_avail_list.addItem(display_name)
 
     def add_perks(self):
         multiplier = self.perk_multiplier.value()
         for item in self.perk_avail_list.selectedItems():
-            perk_name = item.text()
+            perk_name = item.text()  # 格式: [ID] 名称
+            
+            # 提取perk标识符 [ID]
+            perk_id_match = re.match(r"\[(\d+)\]", perk_name)
+            if not perk_id_match:
+                continue
+            perk_id = perk_id_match.group(1)
             
             # Check if already exists in selection list to update count
             existing_item = None
@@ -633,16 +730,21 @@ class QtClassModEditorTab(QWidget):
                 sel_item = self.perk_sel_list.item(i)
                 sel_text = sel_item.text()
                 
-                # Check for (count) prefix
-                match = re.match(r"\((\d+)\)\s+(.*)", sel_text)
+                # Check for (count) prefix: "(count) [id] name"
+                match = re.match(r"\((\d+)\)\s+\[(\d+)\]", sel_text)
                 if match:
                     current_count = int(match.group(1))
-                    current_name = match.group(2)
+                    current_id = match.group(2)
                 else:
-                    current_count = 1
-                    current_name = sel_text
+                    # "[id] name" without count
+                    match_no_count = re.match(r"\[(\d+)\]", sel_text)
+                    if match_no_count:
+                        current_count = 1
+                        current_id = match_no_count.group(1)
+                    else:
+                        continue
                 
-                if current_name == perk_name:
+                if current_id == perk_id:
                     existing_item = sel_item
                     break
             
@@ -695,7 +797,8 @@ class QtClassModEditorTab(QWidget):
         self.add_to_backpack_requested.emit(serial, flag)
 
     def get_skill_icon(self, skill_name, class_name):
-        safe_name = re.sub(r"[^a-zA-Z0-9_!]", "", skill_name.replace("'", "").replace("’", "").replace(" ", "_")).lower()
+        # Preserve accented Latin characters (Spanish) for proper icon matching
+        safe_name = re.sub(r"[^a-zA-Z0-9_!áéíóúñÁÉÍÓÚÑ]", "", skill_name.replace("'", "").replace("'", "").replace(" ", "_")).lower()
         suffix_map = {"Vex": "_1", "Rafa": "_2", "Harlowe": "_3", "Amon": "_4"}
         suffix = suffix_map.get(class_name, "")
         filename = f"{safe_name}{suffix}.png"
@@ -714,35 +817,55 @@ class QtClassModEditorTab(QWidget):
         return QIcon() # Return empty icon on failure
 
     def populate_skills(self):
+        """填充技能列表 - 使用CSV数据源"""
         self.skill_tree.clear()
         self.skill_widgets = {}
         current_class_en = self._get_current_class_en()
+        current_class_id = str(self.CLASS_IDS.get(current_class_en, 0))
         if not current_class_en: return
 
         query = self.skill_search_edit.text().lower()
-        skills_data = self.data.get("classes", {}).get(current_class_en, {}).get("skills", {})
+        skills_list = self.skills_by_class.get(current_class_id, [])
 
-        for eng_name, codes in sorted(skills_data.items()):
-            localized_name = self._(eng_name)
-            if query and query not in eng_name.lower() and query not in localized_name.lower():
+        for skill_row in sorted(skills_list, key=lambda x: x.get('skill_name_EN', '')):
+            skill_en = skill_row.get('skill_name_EN', '')
+            skill_zh = skill_row.get('skill_name_ZH', '')
+            
+            # 选择显示名称
+            if self.current_lang == 'zh-CN' and skill_zh:
+                display_name = skill_zh
+            else:
+                display_name = skill_en
+            
+            if query and query not in skill_en.lower() and query not in display_name.lower():
                 continue
 
-            icon = self.get_skill_icon(eng_name, current_class_en)
+            icon = self.get_skill_icon(skill_en, current_class_en)
             item = QTreeWidgetItem(self.skill_tree)
 
+            # 获取技能ID列表
+            codes = []
+            for i in range(1, 6):
+                code = skill_row.get(f'skill_ID_{i}', '')
+                if code:
+                    codes.append(int(code))
+
             # Set styled tooltip using pre-loaded descriptions
-            description_info = self.skill_descriptions.get(eng_name)
+            description_info = self.skill_descriptions.get(skill_en)
             if not description_info:
-                description_info = self.skill_descriptions.get(eng_name.lower())
+                description_info = self.skill_descriptions.get(skill_en.lower())
 
             if description_info:
                 skill_type = self._(description_info.get('type', 'N/A'))
-                lang_key = 'zh' if self.current_lang == 'zh-CN' else 'en'
-                desc_text = description_info.get(lang_key, description_info.get('en', 'No description found.'))
+                # 中文界面使用中文描述，从skill_zh获取（如果没有则回退到en）
+                if self.current_lang == 'zh-CN':
+                    desc_text = description_info.get('zh', description_info.get('en', 'No description found.'))
+                else:
+                    desc_text = description_info.get('en', 'No description found.')
                 
                 tooltip_html = f"""
                     <div style='width: 300px;'>
-                        <p><b>{localized_name}</b></p>
+                        <p><b>{display_name}</b></p>
                         <p><i>{self.ui_loc['tooltips']['type']}: {skill_type}</i></p>
                         <hr>
                         <p>{desc_text}</p>
@@ -751,14 +874,14 @@ class QtClassModEditorTab(QWidget):
                 item.setToolTip(1, tooltip_html)
 
             item.setIcon(0, icon)
-            item.setText(1, localized_name)
+            item.setText(1, display_name)
             item.setText(2, f"{{{', '.join(map(str, codes[:5]))}}}")
-            item.setData(1, Qt.ItemDataRole.UserRole, {"eng_name": eng_name, "codes": codes[:5]})
+            item.setData(1, Qt.ItemDataRole.UserRole, {"eng_name": skill_en, "codes": codes[:5]})
             
             max_points = len(codes[:5])
-            current_points = self.current_skill_points.get(eng_name, 0)
+            current_points = self.current_skill_points.get(skill_en, 0)
             sp_widget = SkillPointWidget(current_points, max_points, loc_data=self.ui_loc['skill_point_widget'])
-            sp_widget.valueChanged.connect(lambda val, name=eng_name: self.on_skill_point_change(name, val))
+            sp_widget.valueChanged.connect(lambda val, name=skill_en: self.on_skill_point_change(name, val))
             
             self.skill_tree.setItemWidget(item, 3, sp_widget)
-            self.skill_widgets[eng_name] = item
+            self.skill_widgets[skill_en] = item

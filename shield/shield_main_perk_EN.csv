@@ -57,6 +57,7 @@ Shield_perk_main_ID,Part_ID,Part_type,Stat,Description
 246,57,Perk,Absorb,"+15% Chance to absorb bullets, adding the to your Ammo count"
 246,58,Perk,Absorb,"+30% Chance to absorb bullets, adding the to your Ammo count"
 246,64,Firmware,Risky Boots,
+246,65,Firmware,Skillcraft,
 248,1,Perk,Vagabond,+28% Movement Speed when Energy Shields are full
 248,2,Perk,Shield Booster,10% Chance for Shield Booster that refills up to 13% of Shield Capacity when damaged
 248,3,Perk,Shield Booster,15% Chance for Shield Booster that refills up to 18% of Shield Capacity when damaged
