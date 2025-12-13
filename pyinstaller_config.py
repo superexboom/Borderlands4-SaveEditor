@@ -8,10 +8,10 @@ import sys
 import glob
 from pathlib import Path
 
-# 动态收集enhancement目录下的所有.txt和.json文件
+# 动态收集enhancement目录下的所有.csv和.json文件
 enhancement_files = []
 for file_path in glob.glob('enhancement/*'):
-    if file_path.endswith('.txt') or file_path.endswith('.json'):
+    if file_path.endswith('.csv') or file_path.endswith('.json'):
         enhancement_files.append((file_path, 'enhancement'))
         
 # 动态收集weapon_edit目录下的所有.csv和.json文件

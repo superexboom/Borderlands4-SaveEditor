@@ -1,0 +1,238 @@
+manufacturers_ID,perk_ID,perk_name_EN,perk_name_ZH
+247,1,God Killer,弑神者 -固件
+247,2,Reel Big Fist,沙包大拳头 -固件
+247,3,Lifeblood,命脉 -固件
+247,4,Airstrike,空袭 -固件
+247,5,High Caliber,大口径 -固件
+247,6,Gadget Ahoy,装置启动 -固件
+247,7,Baker,烘焙师 -固件
+247,8,Oscar Mike,正在行动 -固件
+247,9,Rubberband Man,橡皮筋人 -固件
+247,10,Dead Eye,神枪手 -固件
+247,11,Action Fist,动能拳头 -固件
+247,12,GOOJFC,保命王牌 -固件
+247,13,Atlas E.X,阿特拉斯E.X. -固件
+247,14,Atlas Infinum,阿特拉斯无限量 -固件
+247,15,Trickshot,花式射击 -固件
+247,16,Jacked,杰克式改造 -固件
+247,17,Get Throwin',发球入场 -固件
+247,18,Heating Up,加热升温 -固件
+247,19,Bullet Spare,备用子弹 -固件
+247,20,Dead-dy O',大情圣 -固件
+247,21,Sniper Mag +75%,狙击枪弹匣容量 +75%
+247,22,Shotgun Mag +75%,霰弹枪弹匣容量 +75%
+247,23,SMG Mag +75%,冲锋枪弹匣容量 +75%
+247,24,Pistol Mag +75%,手枪弹匣容量 +75%
+247,25,AR Mag +75%,突击步枪弹匣容量 +75%
+247,26,Sniper Crit DMG +75%,狙击枪暴击伤害 +75%
+247,27,Shotgun Crit DMG +75%,霰弹枪暴击伤害 +75%
+247,28,SMG Crit DMG +75%,冲锋枪暴击伤害 +75%
+247,29,Pistol Crit DMG +75%,手枪暴击伤害 +75%
+247,30,AR Crit DMG +75%,突击步枪暴击伤害 +75%
+247,31,Sniper DMG +38%,狙击枪伤害 +38%
+247,32,Shotgun DMG +38%,霰弹枪伤害 +38%
+247,33,SMG DMG +38%,冲锋枪伤害 +38%
+247,34,Pistol DMG +38%,手枪伤害 +38%
+247,35,AR DMG +38%,突击步枪伤害 +38%
+247,36,Sniper Fire Rate +38%,狙击枪射速 +38%
+247,37,Shotgun Fire Rate +38%,霰弹枪射速 +38%
+247,38,SMG Fire Rate +38%,冲锋枪射速 +38%
+247,39,Pistol Fire Rate +38%,手枪射速 +38%
+247,40,AR Fire Rate +38%,突击步枪射速 +38%
+247,41,Sniper Acc +75%,狙击枪精准度 +75%
+247,42,Shotgun Acc +75%,霰弹枪精准度 +75%
+247,43,SMG Acc +75%,冲锋枪精准度 +75%
+247,44,Pistol Acc +75%,手枪精准度 +75%
+247,45,AR Acc +75%,突击步枪精准度 +75%
+247,46,Sniper Splash DMG +38%,狙击枪溅射伤害 +38%
+247,47,Shotgun Splash DMG +38%,霰弹枪溅射伤害 +38%
+247,48,SMG Splash DMG +38%,冲锋枪溅射伤害 +38%
+247,49,Pistol Splash DMG +38%,手枪溅射伤害 +38%
+247,50,AR Splash DMG +38%,突击步枪溅射伤害 +38%
+247,51,Shotgun Splash Radius +75%,霰弹枪溅射半径 +75%
+247,52,Pistol Splash Radius +75%,手枪溅射半径 +75%
+247,53,Sniper Splash Radius +75%,狙击枪溅射半径 +75%
+247,54,SMG Splash Radius +75%,冲锋枪溅射半径 +75%
+247,55,AR Splash Radius +75%,突击步枪溅射半径 +75%
+247,56,Sniper ADS +75%,狙击枪开镜瞄准速度 +75%
+247,57,Shotgun ADS +75%,霰弹枪开镜瞄准速度 +75%
+247,58,SMG ADS +75%,冲锋枪开镜瞄准速度 +75%
+247,59,Pistol ADS +75%,手枪开镜瞄准速度 +75%
+247,60,AR ADS +75%,突击步枪开镜瞄准速度 +75%
+247,61,Pistol Status Effect DMG +38%,手枪状态效果伤害 +38%
+247,62,Sniper Status Effect DMG +38%,狙击枪状态效果伤害 +38%
+247,63,Shotgun Status Effect DMG +38%,霰弹枪状态效果伤害 +38%
+247,64,SMG Status Effect DMG +38%,冲锋枪状态效果伤害 +38%
+247,65,AR Status Effect DMG +38%,突击步枪状态效果伤害 +38%
+247,66,Shotgun Status Effect Chance +38%,霰弹枪状态效果率 +38%
+247,67,SMG Status Effect Chance +38%,冲锋枪状态效果率 +38%
+247,68,Sniper Status Effect Chance +38%,狙击枪状态效果率 +38%
+247,69,Pistol Status Effect Chance +38%,手枪状态效果率 +38%
+247,70,AR Status Effect Chance +38%,突击步枪状态效果率 +38%
+247,71,AR equip +150%,突击步枪装备速度 +150%
+247,72,Pistol equip +150%,手枪装备速度 +150%
+247,73,Shotgun equip +150%,霰弹枪装备速度 +150%
+247,74,SMG equip +150%,冲锋枪装备速度 +150%
+247,75,Sniper equip +150%,狙击枪装备速度 +150%
+247,81,Gun Equip +100%,枪械装备速度 +100%
+247,82,Gun Reload +25%,枪械装填速度 +25%
+247,83,Gun Status Effect Chance +25%,枪械状态效果率 +25%
+247,84,Gun Status Effect DMG +25%,枪械状态效果伤害 +25%
+247,85,Gun ADS +50%,枪械开镜瞄准速度 +50%
+247,86,Gun Splash Radius +50%,枪械溅射半径 +50%
+247,87,Gun Splash Radius +25%,枪械溅射半径 +25%
+247,88,Gun Crit DMG +25%,枪械暴击伤害 +25%
+247,89,Gun Acc +50%,枪械精准度 +50%
+247,90,Gun Fire Rate +25%,枪械射速 +25%
+247,91,Gun DMG +25%,枪械伤害 +25%
+247,92,Sniper Reload +38%,狙击枪装填速度 +38%
+247,93,SMG Reload +38%,冲锋枪装填速度 +38%
+247,94,Shotgun Reload +38%,霰弹枪装填速度 +38%
+247,95,AR Reload +38%,突击步枪装填速度 +38%
+247,96,Pistol Reload +38%,手枪装填速度 +38%
+247,103,Risky Boots,风险启用 -固件
+247,104,Sniper Status Effect DMG +38%,狙击枪状态效果伤害 +38%
+247,105,Sniper Status Effect Chance +38%,狙击枪状态效果率 +38%
+247,106,Sniper Spalsh Radius +75%,狙击枪溅射半径 +75%
+247,107,Sniper Status Effect DMG +38%,狙击枪状态效果伤害 +38%
+247,108,Sniper Reload +38%,狙击枪装填速度 +38%
+247,109,Sniper Mag +75%,狙击枪弹匣容量 +75%
+247,110,Sniper Fire Rate +38%,狙击枪射速 +38%
+247,111,Sniper Equip +150%,狙击枪装备速度 +150%
+247,112,Sniper DMG +38%,狙击枪伤害 +38%
+247,113,Sniper Crit DMG +75%,狙击枪暴击伤害 +75%
+247,114,Sniper ADS +75%,狙击枪开镜瞄准速度 +75%
+247,115,Sniper ACC +75%,狙击枪精准度 +75%
+247,116,SMG Status Effect SMG +38%,冲锋枪状态效果伤害 +38%
+247,117,SMG Status Effect Chance +38%,冲锋枪状态效果率 +38%
+247,118,SMG Splash Radius +75%,冲锋枪溅射半径 +75%
+247,119,SMG Splash DMG +38%,冲锋枪溅射伤害 +38%
+247,120,SMG Reload +38%,冲锋枪装填速度 +38%
+247,121,SMG Mag +75%,冲锋枪弹匣容量 +75%
+247,122,SMG Fire Rate +38%,冲锋枪射速 +38%
+247,123,SMG Equip +150%,冲锋枪装备速度 +150%
+247,124,SMG DMG +38%,冲锋枪伤害 +38%
+247,125,SMG Crit DMG +75%,冲锋枪暴击伤害 +75%
+247,126,SMG ADS +75%,冲锋枪开镜瞄准速度 +75%
+247,127,SMG Acc +75%,冲锋枪精准度 +75%
+247,128,Shotgun Status Effect DMG +38%,霰弹枪状态效果伤害 +38%
+247,129,Shotgun Status Effect Chance +38%,霰弹枪状态效果率 +38%
+247,130,Shotgun Splash Radius +75%,霰弹枪溅射半径 +75%
+247,131,Shotgun Splash DMG +38%,霰弹枪溅射伤害 +38%
+247,132,Shotgun Reload +38%,霰弹枪装填速度 +38%
+247,133,Shotgun Mag +75%,霰弹枪弹匣容量 +75%
+247,134,Shotgun Fire Rate +38%,霰弹枪射速 +38%
+247,135,Shotgun Equip +150%,霰弹枪装备速度 +150%
+247,136,Shotgun DMG +38%,霰弹枪伤害 +38%
+247,137,Shotgun Crit DMG +75%,霰弹枪暴击伤害 +75%
+247,138,Shotgun ADS +75%,霰弹枪开镜瞄准速度 +75%
+247,139,Shotgun Acc +75%,霰弹枪精准度 +75%
+247,140,Pistol Status Effect DMG +38%,手枪状态效果伤害 +38%
+247,141,Pistol Status Effect Chance +38%,手枪状态效果率 +38%
+247,142,Pistol Splash Radius +75%,手枪溅射半径 +75%
+247,143,Pistol Splash DMG +38%,手枪溅射伤害 +38%
+247,144,Pistol Reload +38%,手枪装填速度 +38%
+247,145,Pistol Mag +75%,手枪弹匣容量 +75%
+247,146,Pistol Fire Rate +38%,手枪射速 +38%
+247,147,Pistol Equip +150%,手枪装备速度 +150%
+247,148,Pistol DMG +38%,手枪伤害 +38%
+247,149,Pistol Crit DMG +75%,手枪暴击伤害 +75%
+247,150,Pistol ADS +75%,手枪开镜瞄准速度 +75%
+247,151,Pistol Acc +75%,手枪精准度 +75%
+247,152,AR Status Effect DMG +38%,突击步枪状态效果伤害 +38%
+247,153,AR Status Effect Chance +38%,突击步枪状态效果率 +38%
+247,154,AR Splash Radius +75%,突击步枪溅射半径 +75%
+247,155,AR Splash DMG +38%,突击步枪溅射伤害 +38%
+247,156,AR Reload +38%,突击步枪装填速度 +38%
+247,157,AR Mag +75%,突击步枪弹匣容量 +75%
+247,158,AR Fire Rate +38%,突击步枪射速 +38%
+247,159,AR Equip +150%,突击步枪装备速度 +150%
+247,160,AR DMG +38%,突击步枪伤害 +38%
+247,161,AR Crit DMG +75%,突击步枪暴击伤害 +75%
+247,162,AR ADS +75%,突击步枪开镜瞄准速度 +75%
+247,163,AR Acc +75%,突击步枪精准度 +75%
+247,164,Gun Splash Radius +50%,枪械溅射半径 +50%
+247,165,Gun Splash DMG +25%,枪械溅射伤害 +25%
+247,166,Gun Reload Speed +25%,枪械装填速度 +25%
+247,167,Gun Mag +50%,枪械弹匣容量 +50%
+247,168,Gun Fire Rate +25%,枪械射速 +25%
+247,169,Gun Equip +100%,枪械装备速度 +100%
+247,170,Gun DMG +25%,枪械伤害 +25%
+247,171,Gun Crit DMG +50%,枪械暴击伤害 +50%
+247,172,Gun ADS +50%,枪械开镜瞄准速度 +50%
+247,173,Gun Acc +50%,枪械精准度 +50%
+247,174,Gun Status Effect DMG +25%,枪械状态效果伤害 +25%
+247,175,Gun Status Effect Chance +25%,枪械状态效果率 +25%
+247,176,Gun Effect Chance +25%,枪械状态效果率 +25%
+247,177,Gun Status Effect DMG +25%,枪械状态效果伤害 +25%
+247,178,Gun Acc +50%,枪械精准度 +50%
+247,179,Gun ADS +50%,枪械开镜瞄准速度 +50%
+247,180,Gun Crit DMG +25%,枪械暴击伤害 +25%
+247,181,Gun DMG +25%,枪械伤害 +25%
+247,182,Gun Equip +100%,枪械装备速度 +100%
+247,183,Gun Fire Rate +25%,枪械射速 +25%
+247,184,Gun Mag +50%,枪械弹匣容量 +50%
+247,185,Gun Reload +25%,枪械装填速度 +25%
+247,186,Gun Splash DMG +25%,枪械溅射伤害 +25%
+247,187,Gun Splash Radius +50%,枪械溅射半径 +50%
+247,188,AR Acc +75%,突击步枪精准度 +75%
+247,189,AR ADS +75%,突击步枪开镜瞄准速度 +75%
+247,190,AR Crit DMG +75%,突击步枪暴击伤害 +75%
+247,191,AR DMG +38%,突击步枪伤害 +38%
+247,192,AR Equip +150%,突击步枪装备速度 +150%
+247,193,AR Fire Rate +38%,突击步枪射速 +38%
+247,194,AR Mag +75%,突击步枪弹匣容量 +75%
+247,195,AR Reload +38%,突击步枪装填速度 +38%
+247,196,AR Splash DMG +38%,突击步枪溅射伤害 +38%
+247,197,AR Splash Radius +75%,突击步枪溅射半径 +75%
+247,198,AR Status Effect Chance +38%,突击步枪状态效果率 +38%
+247,199,AR Status Effect DMG +38%,突击步枪状态效果伤害 +38%
+247,200,Pistol Acc +75%,手枪精准度 +75%
+247,201,Pistol ADS +75%,手枪开镜瞄准速度 +75%
+247,202,Pistol Crit DMG +75%,手枪暴击伤害 +75%
+247,203,Pistol DMG +38%,手枪伤害 +38%
+247,204,Pistol Equip +150%,手枪装备速度 +150%
+247,205,Pistol Fire Rate +38%,手枪射速 +38%
+247,206,Pistol Mag +75%,手枪弹匣容量 +75%
+247,207,Pistol Reload +38%,手枪装填速度 +38%
+247,208,Pistol Splash DMG +38%,手枪溅射伤害 +38%
+247,209,Pistol Splash Radius +75%,手枪溅射半径 +75%
+247,210,Pistol Status Effect Chance +38%,手枪状态效果率 +38%
+247,211,Pistol Status Effect DMG +38%,手枪状态效果伤害 +38%
+247,212,Shotgun Acc +75%,霰弹枪精准度 +75%
+247,213,Shotgun ADS +75%,霰弹枪开镜瞄准速度 +75%
+247,214,Shotgun Crit DMG +75%,霰弹枪暴击伤害 +75%
+247,215,Shotgun DMG +38%,霰弹枪伤害 +38%
+247,216,Shotgun Equip +150%,霰弹枪装备速度 +150%
+247,217,Shotgun Fire Rate +38%,霰弹枪射速 +38%
+247,218,Shotgun Mag +75%,霰弹枪弹匣容量 +75%
+247,219,Shotgun Reload +38%,霰弹枪装填速度 +38%
+247,220,Shotgun Splash DMG +38%,霰弹枪溅射伤害 +38%
+247,221,Shotgun Splash Radius +75%,霰弹枪溅射半径 +75%
+247,222,Shotgun Status Effect Chance +38%,霰弹枪状态效果率 +38%
+247,223,Shotgun Status Effect DMG +38%,霰弹枪状态效果伤害 +38%
+247,224,SMG Acc +75%,冲锋枪精准度 +75%
+247,225,SMG ADS +75%,冲锋枪开镜瞄准速度 +75%
+247,226,SMG Crit DMG +75%,冲锋枪暴击伤害 +75%
+247,227,SMG DMG +38%,冲锋枪伤害 +38%
+247,228,SMG Equip +150%,冲锋枪装备速度 +150%
+247,229,SMG Fire Rate +38%,冲锋枪射速 +38%
+247,230,SMG Mag +75%,冲锋枪弹匣容量 +75%
+247,231,SMG Reload +38%,冲锋枪装填速度 +38%
+247,232,SMG Splash DMG +38%,冲锋枪溅射伤害 +38%
+247,233,SMG Splash Radius +75%,冲锋枪溅射半径 +75%
+247,234,SMG Status Effect Chance +38%,冲锋枪状态效果率 +38%
+247,235,SMG Status Effect DMG +38%,冲锋枪状态效果伤害 +38%
+247,236,Sniper Acc +75%,狙击枪精准度 +75%
+247,237,Sniper ADS +75%,狙击枪开镜瞄准速度 +75%
+247,238,Sniper Crit DMG +75%,狙击枪暴击伤害 +75%
+247,239,Sniper DMG +38%,狙击枪伤害 +38%
+247,240,Sniper Equip +150%,狙击枪装备速度 +150%
+247,241,Sniper Fire Rate +38%,狙击枪射速 +38%
+247,242,Sniper Mag +75%,狙击枪弹匣容量 +75%
+247,243,Sniper Reload +38%,狙击枪装填速度 +38%
+247,244,Sniper Splash DMG +38%,狙击枪溅射伤害 +38%
+247,245,Sniper Splash Radius +75%,狙击枪溅射半径 +75%
+247,246,Sniper Status Effect Chance +38%,狙击枪状态效果率 +38%
+247,247,Sniper Status Effect DMG +38%,狙击枪状态效果伤害 +38%
+247,248,Skillcraft,技能工艺 -固件

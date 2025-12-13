@@ -6,7 +6,7 @@ import re
 import b_encoder
 import resource_loader
 
-enhancement_data = resource_loader.load_enhancement_json("enhancement_data.txt", use_literal_eval=True)
+enhancement_data = resource_loader.get_enhancement_data()
 
 class QtEnhancementEditorTab(QWidget):
     add_to_backpack_requested = pyqtSignal(str, str)
@@ -34,10 +34,10 @@ class QtEnhancementEditorTab(QWidget):
     def _load_game_localization(self, lang=None):
         if lang is None: lang = self.current_lang
         if lang in ['en-US', 'ru', 'ua']: return {}
-        try:
-            return resource_loader.load_enhancement_json("localization_zh-CN.json")
-        except:
-            return {}
+        # 使用从CSV加载的本地化数据
+        if enhancement_data and 'localization' in enhancement_data:
+            return enhancement_data['localization']
+        return {}
 
     def _(self, text):
         return self.localization_data.get(text, text)

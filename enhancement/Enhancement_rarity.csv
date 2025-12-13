@@ -1,0 +1,61 @@
+manufacturers_ID,manufacturers_name,rarity_ID,rarity
+284,Atlas,8,Common
+284,Atlas,7,Uncommon
+284,Atlas,6,Rare
+284,Atlas,5,Epic
+284,Atlas,4,Legendary
+286,COV,8,Common
+286,COV,7,Uncommon
+286,COV,6,Rare
+286,COV,5,Epic
+286,COV,4,Legendary
+299,Daedalus,4,Common
+299,Daedalus,5,Uncommon
+299,Daedalus,6,Rare
+299,Daedalus,7,Epic
+299,Daedalus,8,Legendary
+264,Hyperion,4,Common
+264,Hyperion,5,Uncommon
+264,Hyperion,6,Rare
+264,Hyperion,7,Epic
+264,Hyperion,8,Legendary
+268,Jakobs,4,Common
+268,Jakobs,5,Uncommon
+268,Jakobs,6,Rare
+268,Jakobs,7,Epic
+268,Jakobs,8,Legendary
+271,Maliwan,4,Common
+271,Maliwan,5,Uncommon
+271,Maliwan,6,Rare
+271,Maliwan,7,Epic
+271,Maliwan,8,Legendary
+296,Ripper,4,Common
+296,Ripper,8,Uncommon
+296,Ripper,7,Rare
+296,Ripper,6,Epic
+296,Ripper,5,Legendary
+292,Tediore,4,Common
+292,Tediore,5,Uncommon
+292,Tediore,6,Rare
+292,Tediore,7,Epic
+292,Tediore,8,Legendary
+281,The Order,4,Common
+281,The Order,5,Uncommon
+281,The Order,6,Rare
+281,The Order,7,Epic
+281,The Order,8,Legendary
+303,Torgue,4,Common
+303,Torgue,5,Uncommon
+303,Torgue,6,Rare
+303,Torgue,7,Epic
+303,Torgue,8,Legendary
+310,Vladof,8,Common
+310,Vladof,7,Uncommon
+310,Vladof,6,Rare
+310,Vladof,5,Epic
+310,Vladof,4,Legendary
+247,,80,Common
+247,,79,Uncommon
+247,,78,Rare
+247,,77,Epic
+247,,76,Legendary

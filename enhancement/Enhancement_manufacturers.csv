@@ -1,0 +1,45 @@
+manufacturers_ID,manufacturers_name,perk_ID,perk_name_EN,perk_name_ZH
+284,Atlas,1,Sure Shot -Projectiles from Guns with Atlas -licensed parts automatically attach a Tracker Dart every 25s,精确射击 -配备阿特拉斯授权部件的枪械在发射子弹时，每25秒会自动附加追踪飞镖
+284,Atlas,2,Trauma Bond-Guns with Atlas-licensed parts gain +30% Damage while Target Lock is active,创伤纽带 -配备阿特拉斯授权部件的枪械在启用目标锁定时，获得+30%伤害
+284,Atlas,3,Tracker Antenna-Guns with Atlas-licensed parts gain +40% Fire Rate while Target Lock is active,追踪器天线 -配备阿特拉斯授权部件的枪械在启用目标锁定时，获得+40%射速
+284,Atlas,9,Protractor - Guns with Atlas-licensed parts have a +50% Chance to not consume Ammo while Target Lock is active,量角器 -配备阿特拉斯授权部件的枪械在启用目标锁定时，有+50%几率不消耗弹药
+286,COV,1,Ventilator -Guns with CoV-licensed Magazines have a 25% Chance to cost 0 Heat when fired,通风机 -配备秘藏之子授权弹匣的枪械在射击时有25%几率不增加热度
+286,COV,2,Duct Tape -Guns with CoV-licensed Magazines have a 100% Chance to deal Critical Damage while Overheating,胶带 -配备秘藏之子授权弹匣的枪械在过热时有100%几率造成暴击伤害
+286,COV,3,Cold Open -Guns with CoV-licensed Magazines gain +20% Damage when below 50% Heat,冷开场 -配备秘藏之子授权弹匣的枪械在低于50%热度时获得+20%伤害
+286,COV,9,Smelter -Guns with CoV-licensed Magazines have +35% Fire Rate when over 50% Heat,熔炼炉 -配备秘藏之子授权弹匣的枪械在超过50%热度时拥有+35%射速
+299,Daedalus,1,Accelerator - Guns with Daedalus-licensed parts gain +1% Fire Rate per each bullet fired for up to a Maximum 50 Stacks which reset on Reload,加速器 -配备代达洛斯授权部件的枪械每发射一颗子弹，都会获得+1%射速，最多叠加50层，装填时重置
+299,Daedalus,2,Bullet Fabricator - On kill Guns with Daedalus-licensed parts have a 40% Chance to refill your Magazines,弹药制作器 -配备代达洛斯授权部件的枪械在击杀时，有40%几率补充弹匣弹药
+299,Daedalus,3,Stockpiler - On Reload Guns with Daedalus -licensed parts gain up to +25% Damage based on the amount of spare Ammo for the currently-equipped Gun,诸备器 -配备代达洛斯授权部件的枪械在装填时，会根据当前装备枪械的备用弹药储备量，获得最多+25%伤害提升
+299,Daedalus,9,Backup Plan - Guns with Daedalus-licensed parts slowly regenerate reserve Ammo while equipped,备用计划 -配备代达洛斯授权部件的枪械在装备时会缓慢恢复储备弹药
+264,Hyperion,1,Bulwark -Guns with Hyperion-licensed parts gain +100% Gun Shield Capacity,壁垒 -配备亥伯龙授权部件的枪械获得+100%枪械护盾容量
+264,Hyperion,2,Stabilizer -Guns with Hyperion-licensed parts gain +40% Accuracy,稳压器 -配备亥伯龙授权部件的枪械获得+40%精准度
+264,Hyperion,3,Stim Converter - Guns with Hyperion-licensed parts regenerate up to 10% Health when the Gun Shield is hit,兴奋剂转换器 -配备亥伯龙授权部件的枪械在枪械护盾被击中时会恢复最多10%生命值
+264,Hyperion,9,Shock Guard-Guns with Hyperion-licensed parts trigger aShock Nova when deployed (this feature has an Bs Cooldown),电击防护 -配备亥伯龙授权部件的枪械在部署时会触发电击星爆（此效果拥有8秒冷却时间）
+268,Jakobs,1,Piercer - Guns with Jakobs-licensed parts have a 20% Chance to grant a Critical Hit,穿刺器 -配备雅各布斯授权部件的枪械有20%几率造成暴击
+268,Jakobs,2,Leaper - Guns with Jakobs-licensed parts gain a 40% Chance to Ricochet non-Critical Hits,跳跃者 -配备雅各布斯授权部件的枪械在非暴击时有40%几率跳弹
+268,Jakobs,3,Bounce Pass - Guns with Jakobs-licensed parts increase the number of possible Ricochets by 1,反弹传递 -配备雅各布斯授权部件的枪械增加1潜在跳弹次数
+268,Jakobs,9,Sequencer - Guns with Jakobs-licensed parts grant consecutive Critical Hits a stacking +5% Bonus Damage for a Maximum 8 Stacks,序列机 -配备雅各布斯授权部件的枪械在连续暴击时，会获得一层+5%加成伤害，最多叠加8层
+271,Maliwan,1,Synthesizer -Guns with Maliwan-licensed parts have +25% Status Effect Damage,合成器 -配备马里旺授权部件的枪械获得+25%状态效果伤害
+271,Maliwan,2,Primed Potency-Guns with Maliwan-licensed parts have +100% Status Effect Chance on the first bullet after Reload,待发效力 -配备马里旺授权部件的枪械在装填后发射的首发子弹获得+100%状态效果率
+271,Maliwan,3,Mixologist -Guns with Maliwan-licensed parts deal +10% Bonus Damage from the inactive Mode 's Element,调酒师 -配备马里旺授权部件的枪械在攻击时，能够获得来自未激活模式元素的+10%加成伤害
+271,Maliwan,9,Transfuser -On kill Guns with Maliwan-licensed parts spread their active Status Effect to up to 3 nearby targets,传送机 -配备马里旺授权部件的枪械在击杀时，其激活状态效果会传播至最多3个附近目标
+296,Ripper,1,Short Circuit - After Reloading an empty Magazine Guns with Ripper-licensed parts have a 30% Chance to increase the next Magazine's Fire Rate +100%,短路 -配备开颅者授权部件的枪械在装填空弹匣后有30%几率提升下一个弹匣+100%射速
+296,Ripper,2,Hard Charger -Guns with Ripper-licensed parts gain +25% Damage but Charge Time is increased by 30%,强制充能 -配备开颅者授权部件的枪械获得+25%伤害，但充能时间增加30%
+296,Ripper,3,Freeloader -Guns with Ripper-licensed parts have a 30% Chance to instantly refill its Magazine when it's empty,偷吃者 -配备开颅者授权部件的枪械在弹药耗尽时有30%几率立即补充弹药
+296,Ripper,9,High Roller -Guns with Ripper-licensed parts increase Gun Damage by 2% for each consecutive shot fired for a Maximum 25 Stacks,豪赌之王 -配备开颅者授权部件的枪械每次连续射击时，枪械伤害都会提升2%，最多叠加25层
+292,Tediore,1,Extend-a-Friend -Guns with Tediore-licensed parts have +50% longer Lifetime for Thrown Turrets,定制好友 -配备泰迪尔授权部件的枪械可使投炮塔的持续时间延长+50%
+292,Tediore,2,Banger -Guns with Tediore-licensed parts use +50% Maximum Loaded Ammo when calculating Thrown Damage,爆竹 -配备泰迪尔授权部件的枪械将以最大弹匣容量的+50%计算投掷伤害
+292,Tediore,3,Recycler -Guns with Tediore-licensed parts keep 50% of a Magazine's Ammo on Reload,回收器 -配备泰迪尔授权部件的枪械在装填时，保留50%弹匣弹药
+292,Tediore,9,Digi-Divider - Guns with Tediore-licensed parts have a 50% Chance to spawn an additional Projectile on Reload,数字分配器 -配备泰迪尔授权部件的枪械在装填时，有50%几率生成一枚额外射弹
+281,The Order,1,Ammo Generator -Guns with Order-licensed parts slowly refill from reserve Ammo while held,弹药生成器 -配备教团授权部件的枪械在持握时，会从储备弹药中缓慢补充弹匣
+281,The Order,2,Power Shot -Guns with Order-licensed parts gain 30% Damage when firing from Maximum Charge,劲射 -配备教团授权部件的枪械以最大充能射击时获得+30%伤害
+281,The Order,3,Free Charger -When firing from Maximum Charge Guns with Order-licensed parts have a 30% Chance to make the next shot's Charge Time and Ammo cost 0,自充能器 - 配备教团授权部件的枪械以最大充能射击时，下一次射击有30%几率无需花费充能时间和弹药
+281,The Order,9,Muzzle Brake -Guns with Order-licensed parts gain +50% Accuracy and +50% Burst Fire Speed when firing from Maximum Charge,枪口制退器 -配备教团授权部件的枪械以最大充能射击时获得+50%精准度和+50%连发速度
+303,Torgue,1,Head Ringer -Guns with Torgue-licensed parts gain +25% Damage and +100% Damage Radius,头部振鸣器 -配备托格授权部件的枪械获得+25%伤害和+100%伤害半径
+303,Torgue,2,Boompuppy -On kill Guns with Torgue-licensed parts have a 50% Chance to call down a Missile Barrage on a nearby enemy,炸弹小狗 -配备托格授权部件的枪械在击杀时，有50%几率对附近敌人发射导弹弹幕
+303,Torgue,3,Explosi-ception-Guns with Torgue-licensed Sticky Magazines deal +50% of Gun Damage on impact,轰击感 -配备托格授权粘性弹匣的枪械在击中目标时造成+50%的枪械伤害
+303,Torgue,9,Air Burst - Guns with Torgue-licensed parts fire Projectiles that explode on proximity,空中爆炸 -配备托格授权部件的枪械所发射的射弹会在接近时爆炸
+310,Vladof,1,Underdog -Guns with Vladof-licensed parts gain +50% Underbarrel Damage,黑马 -配备弗拉多夫授权部件的枪械获得+50%下挂配件伤害
+310,Vladof,2,Bullet Hose -Guns with Vladof-licensed parts have a 30% Chance to add an extra Projectile per shot,弹药软管 -配备弗拉多夫授权部件的枪械每次射击时，有30%几率增添一枚额外射弹
+310,Vladof,3,Box Magazine - Guns with Vladof-licensed parts gain +20% Fire Rate and +20% Magazine Size,弹匣盒 -配备弗拉多夫授权部件的枪械获得+20%射速和+20%弹匣容量
+310,Vladof,9,Bottom Feeder -Guns with Vladof-licensed parts reduce Underbarrel Cooldown Duration by 40%,底部喂食器 -配备弗拉多夫授权部件的枪械减少40%的下挂配件冷却时间

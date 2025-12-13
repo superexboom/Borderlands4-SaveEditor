@@ -271,6 +271,146 @@ def load_enhancement_json(filename: str, use_literal_eval: bool = False) -> Opti
     """
     return load_json_resource(f"enhancement/{filename}", use_literal_eval)
 
+
+def load_enhancement_csv(filename: str) -> List[Dict[str, str]]:
+    """
+    加载enhancement目录下的CSV文件
+    
+    Args:
+        filename: CSV文件名
+        
+    Returns:
+        解析后的数据列表，每行作为一个字典，失败时返回空列表
+    """
+    try:
+        resource_path = get_resource_path(f"enhancement/{filename}")
+        if not resource_path.exists():
+            print(f"Enhancement CSV文件不存在: {resource_path}")
+            return []
+        with open(resource_path, 'r', encoding='utf-8-sig', newline='') as f:
+            reader = csv.DictReader(f)
+            return list(reader)
+    except Exception as e:
+        print(f"加载Enhancement CSV文件时发生错误 {filename}: {e}")
+        return []
+
+
+def get_enhancement_data() -> Optional[Dict[str, Any]]:
+    """
+    从CSV文件加载enhancement数据并构建与原格式兼容的数据结构
+    
+    Returns:
+        与原enhancement_data.txt格式兼容的数据字典，包含中文翻译
+    """
+    try:
+        # 加载CSV数据
+        manufacturers_csv = load_enhancement_csv("Enhancement_manufacturers.csv")
+        perks_csv = load_enhancement_csv("Enhancement_perk.csv")
+        rarity_csv = load_enhancement_csv("Enhancement_rarity.csv")
+        
+        if not manufacturers_csv or not perks_csv or not rarity_csv:
+            print("Enhancement CSV文件加载失败")
+            return None
+        
+        # 构建英文名到中文名的映射表
+        localization_map = {}
+        
+        # 构建manufacturers数据
+        manufacturers = {}
+        for row in manufacturers_csv:
+            mfg_name = row['manufacturers_name']
+            mfg_id = int(row['manufacturers_ID'])
+            perk_id = int(row['perk_ID'])
+            perk_name_en = row['perk_name_EN']
+            perk_name_zh = row.get('perk_name_ZH', perk_name_en)
+            
+            # 添加到本地化映射
+            localization_map[perk_name_en] = perk_name_zh
+            
+            if mfg_name not in manufacturers:
+                manufacturers[mfg_name] = {
+                    'code': mfg_id,
+                    'name': mfg_name,
+                    'perks': [],
+                    'rarities': {}
+                }
+            
+            manufacturers[mfg_name]['perks'].append({
+                'index': perk_id,
+                'name': perk_name_en,
+                'name_zh': perk_name_zh
+            })
+        
+        # 构建rarities数据
+        rarity_map_247 = {}
+        rarity_localization = {
+            'Common': '普通',
+            'Uncommon': '稀有',
+            'Rare': '特殊',
+            'Epic': '史诗',
+            'Legendary': '传奇'
+        }
+        for rarity_en, rarity_zh in rarity_localization.items():
+            localization_map[rarity_en] = rarity_zh
+        
+        for row in rarity_csv:
+            mfg_id = int(row['manufacturers_ID'])
+            mfg_name = row['manufacturers_name']
+            rarity_id = int(row['rarity_ID'])
+            rarity_name = row['rarity']
+            
+            if mfg_id == 247:
+                # 247的稀有度映射
+                rarity_map_247[rarity_name] = rarity_id
+            else:
+                # 普通制造商的稀有度
+                if mfg_name in manufacturers:
+                    manufacturers[mfg_name]['rarities'][rarity_name] = rarity_id
+        
+        # 构建secondary_247数据
+        secondary_247 = []
+        for row in perks_csv:
+            perk_id = int(row['perk_ID'])
+            perk_name_en = row['perk_name_EN']
+            perk_name_zh = row.get('perk_name_ZH', perk_name_en)
+            
+            # 添加到本地化映射
+            localization_map[perk_name_en] = perk_name_zh
+            
+            secondary_247.append({
+                'code': perk_id,
+                'name': perk_name_en,
+                'name_zh': perk_name_zh
+            })
+        
+        # 添加制造商名称的本地化
+        mfg_name_localization = {
+            'Atlas': '阿特拉斯',
+            'COV': '秘藏之子',
+            'Daedalus': '代达洛斯',
+            'Hyperion': '亥伯龙',
+            'Jakobs': '雅各布斯',
+            'Maliwan': '马里旺',
+            'Ripper': '开颅者',
+            'Tediore': '泰迪尔',
+            'The Order': '教团',
+            'Torgue': '托格',
+            'Vladof': '弗拉多夫'
+        }
+        for mfg_en, mfg_zh in mfg_name_localization.items():
+            localization_map[mfg_en] = mfg_zh
+        
+        return {
+            'manufacturers': manufacturers,
+            'rarity_map_247': rarity_map_247,
+            'secondary_247': secondary_247,
+            'localization': localization_map
+        }
+        
+    except Exception as e:
+        print(f"构建Enhancement数据时发生错误: {e}")
+        return None
+
 def get_weapon_data_path(filename: str) -> Optional[Path]:
     """
     获取武器数据文件的路径

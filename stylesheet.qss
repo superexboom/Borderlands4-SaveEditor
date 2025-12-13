@@ -477,10 +477,12 @@ QGroupBox[title="Base Attributes"]::title, QGroupBox[title="基础属性"]::titl
 
 /* Perks / 专长 - 紫色 */
 QGroupBox[title="Perks"], QGroupBox[title="专长"],
+QGroupBox[title="General Perks"],
 QGroupBox[title="Общие перки"], QGroupBox[title="Загальні перки"] {
     border-left: 4px solid #9C27B0;
 }
 QGroupBox[title="Perks"]::title, QGroupBox[title="专长"]::title,
+QGroupBox[title="General Perks"]::title,
 QGroupBox[title="Общие перки"]::title, QGroupBox[title="Загальні перки"]::title {
     color: #CE93D8;
 }
@@ -534,11 +536,13 @@ QGroupBox[title="Fields"]::title, QGroupBox[title="字段"]::title {
 /* Legendary / 传奇 - 金橙色 */
 QGroupBox[title="Legendary Additions"], QGroupBox[title="传奇附加"],
 QGroupBox[title="Legendary"], QGroupBox[title="传奇技能"],
+QGroupBox[title="Legendary Addition"],
 QGroupBox[title="Легендарное дополнение"], QGroupBox[title="Легендарний додаток"] {
     border-left: 4px solid #FF5722;
 }
 QGroupBox[title="Legendary Additions"]::title, QGroupBox[title="传奇附加"]::title,
 QGroupBox[title="Legendary"]::title, QGroupBox[title="传奇技能"]::title,
+QGroupBox[title="Legendary Addition"]::title,
 QGroupBox[title="Легендарное дополнение"]::title, QGroupBox[title="Легендарний додаток"]::title {
     color: #FF8A65;
 }
@@ -639,21 +643,25 @@ QGroupBox[title="Уровень"]::title, QGroupBox[title="Рівень"]::title
 
 /* Seed / 随机种子 - 淡紫色 */
 QGroupBox[title="Seed"], QGroupBox[title="随机种子 (1–9999)"],
+QGroupBox[title="Random Seed (1–9999)"],
 QGroupBox[title="Случайный Сид (1–9999)"], QGroupBox[title="Випадковий Сід (1–9999)"] {
     border-left: 4px solid #7986CB;
 }
 QGroupBox[title="Seed"]::title, QGroupBox[title="随机种子 (1–9999)"]::title,
+QGroupBox[title="Random Seed (1–9999)"]::title,
 QGroupBox[title="Случайный Сид (1–9999)"]::title, QGroupBox[title="Випадковий Сід (1–9999)"]::title {
     color: #B39DDB;
 }
 
 /* Skills / 技能目录 - 紫色 */
 QGroupBox[title="Skills"], QGroupBox[title="技能目录"],
-QGroupBox[title="技能"], QGroupBox[title="Список навыков"], QGroupBox[title="Список навичок"] {
+QGroupBox[title="技能"], QGroupBox[title="Skill List"],
+QGroupBox[title="Список навыков"], QGroupBox[title="Список навичок"] {
     border-left: 4px solid #9C27B0;
 }
 QGroupBox[title="Skills"]::title, QGroupBox[title="技能目录"]::title,
-QGroupBox[title="技能"]::title, QGroupBox[title="Список навыков"]::title, QGroupBox[title="Список навичок"]::title {
+QGroupBox[title="技能"]::title, QGroupBox[title="Skill List"]::title,
+QGroupBox[title="Список навыков"]::title, QGroupBox[title="Список навичок"]::title {
     color: #CE93D8;
 }
 
@@ -741,30 +749,36 @@ QGroupBox[title="Стеки перков"]::title, QGroupBox[title="Стеки �
 
 /* Builder 247 / 次要属性构建器 - 深蓝色 */
 QGroupBox[title="Secondary Attribute Builder"], QGroupBox[title="次要属性构建器"],
+QGroupBox[title="Secondary Stat Builder"],
 QGroupBox[title="Построитель вторичных характеристик"], QGroupBox[title="Будівельник вторинних характеристик"] {
     border-left: 4px solid #1976D2;
 }
 QGroupBox[title="Secondary Attribute Builder"]::title, QGroupBox[title="次要属性构建器"]::title,
+QGroupBox[title="Secondary Stat Builder"]::title,
 QGroupBox[title="Построитель вторичных характеристик"]::title, QGroupBox[title="Будівельник вторинних характеристик"]::title {
     color: #64B5F6;
 }
 
 /* Base85 编码 - 绿色 */
 QGroupBox[title="Base85"], QGroupBox[title="Base85 编码"],
+QGroupBox[title="Base85 Code"],
 QGroupBox[title="Base85 Код"] {
     border-left: 4px solid #43A047;
 }
 QGroupBox[title="Base85"]::title, QGroupBox[title="Base85 编码"]::title,
+QGroupBox[title="Base85 Code"]::title,
 QGroupBox[title="Base85 Код"]::title {
     color: #81C784;
 }
 
 /* Mfg Perks / 所选厂商专长 - 深靛蓝 */
 QGroupBox[title="Manufacturer Specific Perks"], QGroupBox[title="所选厂商专长"],
+QGroupBox[title="Selected Manufacturer Perks"],
 QGroupBox[title="Перки производителя"], QGroupBox[title="Перки виробника"] {
     border-left: 4px solid #303F9F;
 }
 QGroupBox[title="Manufacturer Specific Perks"]::title, QGroupBox[title="所选厂商专长"]::title,
+QGroupBox[title="Selected Manufacturer Perks"]::title,
 QGroupBox[title="Перки производителя"]::title, QGroupBox[title="Перки виробника"]::title {
     color: #7986CB;
 }
