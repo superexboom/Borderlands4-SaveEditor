@@ -46,6 +46,7 @@ Manufacturer & Weapon Type ID,Part ID,Name
 10,9,Vertex
 10,56,Kaleidosplode
 10,58,Sweet Embrace
+10,62,Mantra
 21,7,Ephemeris
 21,8,Synastry
 21,59,Ohm I Got
@@ -83,6 +84,7 @@ Manufacturer & Weapon Type ID,Part ID,Name
 23,8,Daemon
 23,20,Stray
 23,21,Vamoose
+23,58,Rainmaker
 14,7,Assaultomatic
 14,8,Perforator
 14,34,Chuck

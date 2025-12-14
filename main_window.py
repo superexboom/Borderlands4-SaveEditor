@@ -5,7 +5,7 @@ import itertools
 import os
 from pathlib import Path
 
-VERSION = "3.4.5.1"
+VERSION = "3.4.5.2"
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QMessageBox, QFileDialog,
