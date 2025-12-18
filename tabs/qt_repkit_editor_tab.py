@@ -11,10 +11,10 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6.QtGui import QColor
 
-import b_encoder
-import resource_loader
+from core import b_encoder
+from core import resource_loader
 import lookup
-import bl4_functions as bl4f
+from core import bl4_functions as bl4f
 
 @lru_cache(maxsize=None)
 def load_repkit_data(lang='zh-CN'):

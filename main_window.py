@@ -15,25 +15,17 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QAction, QIcon, QPixmap, QPainter, QBrush, QColor
 from PyQt6.QtCore import pyqtSlot, QPropertyAnimation, QEasingCurve, Qt, QTimer, QObject, QThread, pyqtSignal
 
-import b_encoder
-import resource_loader
-import bl4_functions as bl4f
+from core import b_encoder
+from core import resource_loader
+from core import bl4_functions as bl4f
+from core import SaveGameController, SaveSelectorWidget, ThemeManager
 
-from save_game_controller import SaveGameController
-from save_selector_widget import SaveSelectorWidget
-from qt_character_tab import QtCharacterTab
-from qt_items_tab import QtItemsTab
-from qt_weapon_generator_tab import QtWeaponGeneratorTab
-from qt_converter_tab import QtConverterTab
-from qt_class_mod_editor_tab import QtClassModEditorTab
-from qt_heavy_weapon_editor_tab import QtHeavyWeaponEditorTab
-from qt_shield_editor_tab import QtShieldEditorTab
-from qt_grenade_editor_tab import QtGrenadeEditorTab
-from qt_repkit_editor_tab import QtRepkitEditorTab
-from qt_yaml_editor_tab import QtYamlEditorTab
-from qt_enhancement_editor_tab import QtEnhancementEditorTab
-from qt_weapon_editor_tab import WeaponEditorTab as QtWeaponEditorTab
-from theme_manager import ThemeManager
+from tabs import (
+    QtCharacterTab, QtItemsTab, QtWeaponGeneratorTab, QtConverterTab,
+    QtClassModEditorTab, QtHeavyWeaponEditorTab, QtShieldEditorTab,
+    QtGrenadeEditorTab, QtRepkitEditorTab, QtYamlEditorTab,
+    QtEnhancementEditorTab, WeaponEditorTab as QtWeaponEditorTab
+)
 
 
 class BackgroundWidget(QLabel):
@@ -51,7 +43,7 @@ class BackgroundWidget(QLabel):
         
     def _load_background_image(self):
         """Load and apply the background image with blur effect."""
-        bg_path = resource_loader.get_resource_path("bg.jpg")
+        bg_path = resource_loader.get_resource_path("assets/bg.jpg")
         if bg_path and bg_path.exists():
             self._original_pixmap = QPixmap(str(bg_path))
             self._apply_blur()
@@ -255,7 +247,7 @@ class MainWindow(QMainWindow):
         self.theme_manager = ThemeManager()
         
         self.setWindowTitle(self.loc['window_title'].format(version=VERSION))
-        icon_path = resource_loader.get_resource_path("BL4.ico")
+        icon_path = resource_loader.get_resource_path("assets/BL4.ico")
         if icon_path:
             self.setWindowIcon(QIcon(str(icon_path)))
         self.setGeometry(100, 100, 1600, 900)
@@ -335,12 +327,12 @@ class MainWindow(QMainWindow):
     
     def _load_localization(self):
         lang_map = {
-            'zh-CN': "ui_localization.json",
-            'en-US': "ui_localization_EN.json",
-            'ru': "ui_localization_RU.json",
-            'ua': "ui_localization_UA.json"
+            'zh-CN': "i18n/ui_localization.json",
+            'en-US': "i18n/ui_localization_EN.json",
+            'ru': "i18n/ui_localization_RU.json",
+            'ua': "i18n/ui_localization_UA.json"
         }
-        filename = lang_map.get(self.current_language, "ui_localization_EN.json")
+        filename = lang_map.get(self.current_language, "i18n/ui_localization_EN.json")
         data = resource_loader.load_json_resource(filename)
         if data and "main_window" in data:
             self.loc = data["main_window"]
@@ -1085,7 +1077,7 @@ class MainWindow(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
-    icon_path = resource_loader.get_resource_path("BL4.ico")
+    icon_path = resource_loader.get_resource_path("assets/BL4.ico")
     if icon_path:
         app.setWindowIcon(QIcon(str(icon_path)))
     window = MainWindow()

@@ -8,7 +8,7 @@ from pathlib import Path
 from PyQt6.QtCore import QSettings
 from PyQt6.QtWidgets import QApplication
 
-import resource_loader
+from . import resource_loader
 
 
 class ThemeManager:
@@ -122,7 +122,7 @@ class ThemeManager:
     
     def _load_stylesheet_template(self):
         """Load the stylesheet template from file."""
-        content = resource_loader.load_text_resource("stylesheet.qss")
+        content = resource_loader.load_text_resource("assets/stylesheet.qss")
         if content:
             return content
         return ""

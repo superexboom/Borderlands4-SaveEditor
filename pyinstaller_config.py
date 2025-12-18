@@ -44,16 +44,17 @@ for file_path in glob.glob('heavy/*'):
     if file_path.endswith('.csv') or file_path.endswith('.json'):
         heavy_files.append((file_path, 'heavy'))
 
-# 动态收集根目录下的item_localization_zh-CN.json文件
-root_files = [
-    ('item_localization_zh-CN.json', '.'),
-    ('ui_localization.json', '.'),
-    ('ui_localization_EN.json', '.'),
-    ('ui_localization_RU.json', '.'),
-    ('ui_localization_UA.json', '.'),
-    ('stylesheet.qss', '.'),
-    ('BL4.ico', '.'),
-    ('bg.jpg', '.'),
+# 动态收集i18n目录下的所有本地化文件
+i18n_files = []
+for file_path in glob.glob('i18n/*'):
+    if file_path.endswith('.json'):
+        i18n_files.append((file_path, 'i18n'))
+
+# 收集assets目录下的资源文件
+assets_files = [
+    ('assets/stylesheet.qss', 'assets'),
+    ('assets/BL4.ico', 'assets'),
+    ('assets/bg.jpg', 'assets'),
 ]
 
 
@@ -74,7 +75,7 @@ a = Analysis(
         ('class_mods/Harlowe/*.png', 'class_mods/Harlowe'),
         ('class_mods/Rafa/*.png', 'class_mods/Rafa'),
         ('class_mods/Vex/*.png', 'class_mods/Vex'),
-    ] + {enhancement_files} + {weapon_files} + {grenade_files} + {shield_files} + {repkit_files} + {heavy_files} + {root_files},
+    ] + {enhancement_files} + {weapon_files} + {grenade_files} + {shield_files} + {repkit_files} + {heavy_files} + {i18n_files} + {assets_files},
     hiddenimports=[
         'PIL',
         'pandas',
@@ -83,26 +84,30 @@ a = Analysis(
         'yaml',
         'Crypto.Cipher',
         'Crypto.Util.Padding',
-        'resource_loader',
-        'bl4_functions',
-        'decoder_logic',
-        'b_encoder',
-        'unlock_logic',
-        'unlock_data',
-        'save_game_controller',
-        'save_selector_widget',
-        'qt_character_tab',
-        'qt_items_tab',
-        'qt_converter_tab',
-        'qt_yaml_editor_tab',
-        'qt_class_mod_editor_tab',
-        'qt_enhancement_editor_tab',
-        'qt_weapon_editor_tab',
-        'qt_weapon_generator_tab',
-        'qt_grenade_editor_tab',
-        'qt_shield_editor_tab',
-        'qt_repkit_editor_tab',
-        'qt_heavy_weapon_editor_tab',
+        'core',
+        'core.resource_loader',
+        'core.bl4_functions',
+        'core.decoder_logic',
+        'core.b_encoder',
+        'core.unlock_logic',
+        'core.unlock_data',
+        'core.save_game_controller',
+        'core.save_selector_widget',
+        'core.theme_manager',
+        'core.lookup',
+        'tabs',
+        'tabs.qt_character_tab',
+        'tabs.qt_items_tab',
+        'tabs.qt_converter_tab',
+        'tabs.qt_yaml_editor_tab',
+        'tabs.qt_class_mod_editor_tab',
+        'tabs.qt_enhancement_editor_tab',
+        'tabs.qt_weapon_editor_tab',
+        'tabs.qt_weapon_generator_tab',
+        'tabs.qt_grenade_editor_tab',
+        'tabs.qt_shield_editor_tab',
+        'tabs.qt_repkit_editor_tab',
+        'tabs.qt_heavy_weapon_editor_tab',
         'bl4_decoder_py',
     ],
     hookspath=[],
@@ -136,7 +141,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon="BL4.ico",
+    icon="assets/BL4.ico",
 )
 '''
 

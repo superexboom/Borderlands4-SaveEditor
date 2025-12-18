@@ -24,12 +24,12 @@ def get_ui_localization_file(lang: str) -> str:
         Filename of the localization JSON.
     """
     mapping = {
-        'zh-CN': 'ui_localization.json',
-        'en-US': 'ui_localization_EN.json',
-        'ru': 'ui_localization_RU.json',
-        'ua': 'ui_localization_UA.json'
+        'zh-CN': 'i18n/ui_localization.json',
+        'en-US': 'i18n/ui_localization_EN.json',
+        'ru': 'i18n/ui_localization_RU.json',
+        'ua': 'i18n/ui_localization_UA.json'
     }
-    return mapping.get(lang, 'ui_localization_EN.json')
+    return mapping.get(lang, 'i18n/ui_localization_EN.json')
 
 def get_resource_path(relative_path: Union[str, Path]) -> Path:
     """
@@ -45,8 +45,8 @@ def get_resource_path(relative_path: Union[str, Path]) -> Path:
         # PyInstaller打包环境
         base_path = Path(sys._MEIPASS)
     else:
-        # 开发环境
-        base_path = Path(__file__).parent
+        # 开发环境 - 使用父目录（core的父目录是项目根目录）
+        base_path = Path(__file__).parent.parent
     
     return base_path / relative_path
 

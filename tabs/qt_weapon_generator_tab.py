@@ -6,8 +6,8 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import pyqtSignal, Qt
 
-import resource_loader
-import b_encoder
+from core import resource_loader
+from core import b_encoder
 
 class QtWeaponGeneratorTab(QWidget):
     # 自定义信号，当用户点击“添加到背包”时发射

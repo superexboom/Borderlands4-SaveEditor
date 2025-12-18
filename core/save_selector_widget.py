@@ -1,5 +1,5 @@
 import json
-import resource_loader
+from . import resource_loader
 import os
 from pathlib import Path
 from PyQt6.QtWidgets import (

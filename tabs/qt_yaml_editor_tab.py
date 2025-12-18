@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QTreeWidget, QTreeWidgetItem, QStackedWidget, QGroupBox, QHBoxLayout, QPushButton, QMessageBox
 from PyQt6.QtCore import Qt, pyqtSignal, QTimer
 import yaml
-import resource_loader
+from core import resource_loader
 
 def get_yaml_loader():
     class AnyTagLoader(yaml.SafeLoader): pass

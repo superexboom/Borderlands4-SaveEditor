@@ -3,53 +3,54 @@ from functools import lru_cache
 import random
 import re
 
+from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit,
-    QPushButton, QGroupBox, QComboBox, QRadioButton, QCheckBox, QListWidget, QListWidgetItem,
+    QPushButton, QGroupBox, QComboBox, QRadioButton, QListWidget, QListWidgetItem,
     QScrollArea, QMessageBox, QSpinBox
 )
 from PyQt6.QtCore import pyqtSignal, Qt
-from PyQt6.QtGui import QColor
 
-import b_encoder
-import resource_loader
+from core import b_encoder
+from core import resource_loader
 import lookup
-import bl4_functions as bl4f
+from core import bl4_functions as bl4f
 
 @lru_cache(maxsize=None)
-def load_grenade_data(lang='zh-CN'):
+def load_shield_data(lang='zh-CN'):
     try:
         suffix = "_EN" if lang in ['en-US', 'ru', 'ua'] else ""
-        df_main = pd.read_csv(resource_loader.get_grenade_data_path(f'grenade_main_perk{suffix}.csv'))
-        df_mfg = pd.read_csv(resource_loader.get_grenade_data_path(f'manufacturer_rarity_perk{suffix}.csv'))
+        main_perk_path = resource_loader.get_shield_data_path(f'shield_main_perk{suffix}.csv')
+        mfg_perk_path = resource_loader.get_shield_data_path(f'manufacturer_perk{suffix}.csv')
+        df_main = pd.read_csv(main_perk_path)
+        df_mfg = pd.read_csv(mfg_perk_path)
         
-        # Load localization json if available, mainly for Chinese
         localization = {}
         if lang == 'zh-CN':
-            localization = resource_loader.load_json_resource('grenade/Grenade_localization_zh-CN.json') or {}
+            localization = resource_loader.load_json_resource('shield/Shield_localization_zh-CN.json') or {}
             
         return df_main, df_mfg, localization
     except Exception as e:
-        print(f"Error loading grenade data ({lang}): {e}")
+        print(f"Error loading shield data: {e}")
         return None, None, None
 
-class QtGrenadeEditorTab(QWidget):
+class QtShieldEditorTab(QWidget):
     add_to_backpack_requested = pyqtSignal(str, str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.current_lang = 'zh-CN'
-        self.df_main, self.df_mfg, self.localization = load_grenade_data(self.current_lang)
+        self.df_main, self.df_mfg, self.localization = load_shield_data(self.current_lang)
         
         self._load_ui_localization()
 
         if self.df_main is None:
-            layout = QVBoxLayout(self); layout.addWidget(QLabel(self.ui_loc.get('dialogs', {}).get('load_error', "错误: 手雷数据(grenade data)无法加载。"))); return
+            layout = QVBoxLayout(self); layout.addWidget(QLabel(self.ui_loc.get('dialogs', {}).get('load_error', "错误: 护盾数据(shield data)无法加载。"))); return
 
-        self.mfg_ids = [263, 267, 270, 272, 278, 291, 298, 311]
-        self.mfg_perk_widgets = []
-        self.element_widgets = []
-        self.firmware_widgets = []
+        self.mfg_ids = [279, 283, 287, 293, 300, 306, 312, 321]
+        # Hardcode types for logic, but localize for display
+        self.mfg_type_map_base = {279: "Energy", 283: "Armor", 287: "Armor", 293: "Energy", 300: "Energy", 306: "Armor", 312: "Energy", 321: "Armor"}
+        self.mfg_model_map = {row['Manufacturer ID']: row['Part_ID'] for _, row in self.df_mfg[self.df_mfg['Part_type'] == 'Model'].iterrows()}
         
         self._build_ui()
         self.populate_initial_data()
@@ -59,16 +60,16 @@ class QtGrenadeEditorTab(QWidget):
     def _load_ui_localization(self):
         loc_file = resource_loader.get_ui_localization_file(self.current_lang)
         full_loc = resource_loader.load_json_resource(loc_file) or {}
-        self.ui_loc = full_loc.get("grenade_tab", {})
+        self.ui_loc = full_loc.get("shield_tab", {})
         self.flags_loc = full_loc.get("weapon_editor_tab", {}).get("flags", {})
 
     def update_language(self, lang):
         print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
         self.current_lang = lang
-        self.df_main, self.df_mfg, self.localization = load_grenade_data(lang)
+        self.df_main, self.df_mfg, self.localization = load_shield_data(lang)
         
         if self.df_main is None:
-            print(f"DEBUG: load_grenade_data failed for {self.__class__.__name__}")
+            print(f"DEBUG: load_shield_data failed for {self.__class__.__name__}")
             return
 
         self._load_ui_localization()
@@ -91,13 +92,16 @@ class QtGrenadeEditorTab(QWidget):
         self.rarity_label.setText(self.ui_loc.get('labels', {}).get('rarity', 'Rarity'))
         
         self.perks_group.setTitle(self.ui_loc.get('groups', {}).get('perks', 'Perks'))
-        self.mfg_perk_group.setTitle(self.ui_loc.get('groups', {}).get('mfg_perks', 'Mfg Perks'))
         self.element_group.setTitle(self.ui_loc.get('groups', {}).get('element', 'Element'))
         self.firmware_group.setTitle(self.ui_loc.get('groups', {}).get('firmware', 'FW'))
         self.legendary_group.setTitle(self.ui_loc.get('groups', {}).get('legendary', 'Legendary'))
+        self.energy_group.setTitle(self.ui_loc.get('groups', {}).get('energy', 'Energy'))
+        self.armor_group.setTitle(self.ui_loc.get('groups', {}).get('armor', 'Armor'))
         self.universal_group.setTitle(self.ui_loc.get('groups', {}).get('universal', 'Universal'))
         
         self.legendary_clear_btn.setText(self.ui_loc.get('buttons', {}).get('clear', 'Clear'))
+        self.energy_clear_btn.setText(self.ui_loc.get('buttons', {}).get('clear', 'Clear'))
+        self.armor_clear_btn.setText(self.ui_loc.get('buttons', {}).get('clear', 'Clear'))
         self.universal_clear_btn.setText(self.ui_loc.get('buttons', {}).get('clear', 'Clear'))
         
         self._populate_flags()
@@ -112,28 +116,32 @@ class QtGrenadeEditorTab(QWidget):
     def _(self, text): return self.localization.get(str(text), str(text))
 
     def _build_ui(self):
-        main_layout = QVBoxLayout(self); scroll = QScrollArea(); scroll.setWidgetResizable(True); main_layout.addWidget(scroll)
+        main_layout = QVBoxLayout(self)
+        scroll = QScrollArea(); scroll.setWidgetResizable(True); main_layout.addWidget(scroll)
         container = QWidget(); scroll.setWidget(container); layout = QVBoxLayout(container)
-        self._create_output_group(layout); self._create_top_controls(layout)
-        
+
+        self._create_output_group(layout)
+        self._create_top_controls(layout)
+
         self.perks_group = QGroupBox(self.ui_loc['groups']['perks']); perks_layout = QGridLayout(self.perks_group)
-        self.mfg_perk_group, self.mfg_perk_frame, self.mfg_perk_widgets = self._create_scrollable_checkbox_group(self.ui_loc['groups']['mfg_perks'])
         self.element_group, self.element_frame, self.element_widgets = self._create_scrollable_radio_group(self.ui_loc['groups']['element'])
         self.firmware_group, self.firmware_frame, self.firmware_widgets = self._create_scrollable_radio_group(self.ui_loc['groups']['firmware'])
-        perks_layout.addWidget(self.mfg_perk_group, 0, 0); perks_layout.addWidget(self.element_group, 0, 1); perks_layout.addWidget(self.firmware_group, 0, 2)
+        perks_layout.addWidget(self.element_group, 0, 0); perks_layout.addWidget(self.firmware_group, 0, 1)
+
         self.legendary_group = self._create_list_perk_group(self.ui_loc['groups']['legendary'], use_multiplier=False)
+        self.energy_group = self._create_list_perk_group(self.ui_loc['groups']['energy'], use_multiplier=True)
+        self.armor_group = self._create_list_perk_group(self.ui_loc['groups']['armor'], use_multiplier=True)
         self.universal_group = self._create_list_perk_group(self.ui_loc['groups']['universal'], use_multiplier=True)
-        perks_layout.addWidget(self.legendary_group, 1, 0, 1, 3); perks_layout.addWidget(self.universal_group, 2, 0, 1, 3)
+        perks_layout.addWidget(self.legendary_group, 1, 0, 1, 2); perks_layout.addWidget(self.energy_group, 2, 0, 1, 2)
+        perks_layout.addWidget(self.armor_group, 3, 0, 1, 2); perks_layout.addWidget(self.universal_group, 4, 0, 1, 2)
         layout.addWidget(self.perks_group)
 
     def _create_output_group(self, layout):
         self.output_group = QGroupBox(self.ui_loc['groups']['output']); grid = QGridLayout(self.output_group)
         self.raw_output_edit = QLineEdit(); self.raw_output_edit.setReadOnly(True)
         self.b85_output_edit = QLineEdit(); self.b85_output_edit.setReadOnly(True)
-        self.copy_raw_btn = QPushButton(self.ui_loc['buttons']['copy'])
-        self.copy_b85_btn = QPushButton(self.ui_loc['buttons']['copy'])
+        self.copy_raw_btn = QPushButton(self.ui_loc['buttons']['copy']); self.copy_b85_btn = QPushButton(self.ui_loc['buttons']['copy'])
         self.add_to_pack_btn = QPushButton(self.ui_loc['buttons']['add_to_backpack'])
-        
         self.flag_combo = QComboBox()
         self._populate_flags()
             
@@ -161,17 +169,16 @@ class QtGrenadeEditorTab(QWidget):
         controls_layout.addWidget(self.rarity_label); controls_layout.addWidget(self.rarity_combo)
         controls_layout.addStretch(); layout.addWidget(self.base_attrs_group)
 
-    def _create_scrollable_radio_group(self, title): return self._create_scrollable_group(title, QRadioButton)
-    def _create_scrollable_checkbox_group(self, title): return self._create_scrollable_group(title, QCheckBox)
-
-    def _create_scrollable_group(self, title, widget_type):
-        group_box=QGroupBox(title); scroll_area=QScrollArea(); scroll_area.setWidgetResizable(True); container=QWidget()
+    def _create_scrollable_radio_group(self, title):
+        group_box = QGroupBox(title); scroll_area = QScrollArea(); scroll_area.setWidgetResizable(True)
         scroll_area.setMinimumHeight(200)
-        layout=QVBoxLayout(container); scroll_area.setWidget(container); main_layout=QVBoxLayout(group_box); main_layout.addWidget(scroll_area)
+        scroll_area.setMaximumHeight(200)
+        widget_in_scroll = QWidget(); layout = QVBoxLayout(widget_in_scroll)
+        scroll_area.setWidget(widget_in_scroll); main_layout = QVBoxLayout(group_box); main_layout.addWidget(scroll_area)
         return group_box, layout, []
 
     def _create_list_perk_group(self, title, single_select=False, use_multiplier=False):
-        group=QGroupBox(title); layout=QGridLayout(group)
+        group = QGroupBox(title); layout = QGridLayout(group)
         avail, sel = QListWidget(), QListWidget()
         avail.setMinimumHeight(200)
         sel.setMinimumHeight(200)
@@ -189,7 +196,7 @@ class QtGrenadeEditorTab(QWidget):
             multiplier_box.setRange(1, 999)
             multiplier_box.setValue(1)
             btn_layout.addWidget(multiplier_box)
-            
+        
         move_btn = QPushButton("»")
         remove_btn = QPushButton("«")
         clear_btn = QPushButton(self.ui_loc['buttons']['clear'])
@@ -201,34 +208,40 @@ class QtGrenadeEditorTab(QWidget):
         
         layout.addWidget(avail, 0, 0); layout.addLayout(btn_layout, 0, 1); layout.addWidget(sel, 0, 2)
         
-        # Determine prefix based on key keywords, to support multiple languages
-        # '传奇' or 'Legendary' -> legendary
-        # '通用' or 'Universal' -> universal
-        if '传奇' in title or 'Legendary' in title:
-            prefix = 'legendary'
-        else:
-            prefix = 'universal'
-            
-        setattr(self, f"{prefix}_avail_list", avail)
-        setattr(self, f"{prefix}_sel_list", sel)
+        if '传奇' in title or 'Legendary' in title: prefix = 'legendary'
+        elif '能量' in title or 'Energy' in title: prefix = 'energy'
+        elif '护甲' in title or 'Armor' in title: prefix = 'armor'
+        else: prefix = 'universal'
+        
+        setattr(self, f"{prefix}_avail_list", avail); setattr(self, f"{prefix}_sel_list", sel)
         setattr(self, f"{prefix}_clear_btn", clear_btn)
+        setattr(self, f"{prefix}_move_btn", move_btn)
+        setattr(self, f"{prefix}_remove_btn", remove_btn)
         if multiplier_box:
             setattr(self, f"{prefix}_multiplier", multiplier_box)
-            
+        
+        # Create placeholder label for energy/armor type mismatch message
+        if prefix in ['energy', 'armor']:
+            placeholder_label = QLabel()
+            placeholder_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            placeholder_label.setStyleSheet("font-size: 14px; font-weight: bold; color: #888; padding: 20px;")
+            placeholder_label.setWordWrap(True)
+            placeholder_label.hide()  # Hidden by default
+            layout.addWidget(placeholder_label, 1, 0, 1, 3)  # Span all columns
+            setattr(self, f"{prefix}_placeholder_label", placeholder_label)
+        
         move_btn.clicked.connect(lambda: self._move_selected_items(avail, sel, single_select, multiplier_box))
         remove_btn.clicked.connect(lambda: self._remove_selected_items(sel))
         clear_btn.clicked.connect(lambda: self._clear_list(sel))
-        
         return group
         
     def _connect_signals(self):
         self.mfg_combo.currentTextChanged.connect(self.on_mfg_change)
-        self.level_edit.textChanged.connect(self.rebuild_output)
-        self.rarity_combo.currentTextChanged.connect(self.rebuild_output)
+        for w in [self.level_edit, self.rarity_combo]: w.currentTextChanged.connect(self.rebuild_output) if isinstance(w, QComboBox) else w.textChanged.connect(self.rebuild_output)
         self.add_to_pack_btn.clicked.connect(self._add_to_backpack)
-        for widgets in [self.mfg_perk_widgets, self.element_widgets, self.firmware_widgets]:
-            for w in widgets: w.toggled.connect(self.rebuild_output)
-        for name in ["legendary", "universal"]:
+        for _, frame, widgets in [(self.element_group, self.element_frame, self.element_widgets), (self.firmware_group, self.firmware_frame, self.firmware_widgets)]:
+            for rb in widgets: rb.toggled.connect(self.rebuild_output)
+        for name in ["legendary", "energy", "armor", "universal"]:
             sel_list = getattr(self, f"{name}_sel_list")
             sel_list.model().rowsInserted.connect(self.rebuild_output); sel_list.model().rowsRemoved.connect(self.rebuild_output)
 
@@ -240,92 +253,145 @@ class QtGrenadeEditorTab(QWidget):
 
     def populate_initial_data(self):
         self.mfg_combo.clear()
-        # Generate map dynamically
-        mfg_map = {mid: self._get_mfg_name(mid) for mid in self.mfg_ids}
-        self.mfg_combo.addItems([f"{v} - {k}" for k, v in sorted(mfg_map.items(), key=lambda x: x[1])]) # Sort by name? or Keep ID? Original sorted by items() which sorts by ID.
-        # Original: sorted(self.mfg_map.items()) -> sorted by ID
         
-        self._populate_radio_buttons(self.element_frame, self.df_main[self.df_main['Part_type'] == 'Element'], self.element_widgets)
-        self._populate_radio_buttons(self.firmware_frame, self.df_main[self.df_main['Part_type'] == 'Firmware'], self.firmware_widgets)
-        self._populate_listbox(self.universal_avail_list, self.df_main[self.df_main['Part_type'] == 'Perk'])
+        items = []
+        for k in self.mfg_ids:
+            name = self._get_mfg_name(k)
+            type_base = self.mfg_type_map_base.get(k, "Unknown")
+            # Try to localize type if possible, otherwise use base
+            type_loc = self._(type_base) if self._(type_base) != type_base else type_base
+            # If still English and we are in Chinese, maybe map it manually?
+            if self.current_lang == 'zh-CN' and type_base == 'Energy': type_loc = "能量"
+            if self.current_lang == 'zh-CN' and type_base == 'Armor': type_loc = "护甲"
+            
+            items.append((f"{name} ({type_loc}) - {k}", k)) # Store tuple for sorting? No, addItems takes list of strings.
+            
+        # Sort items by name for display? Or keep ID sort?
+        # Original sorted by ID (mfg_map.items()).
+        items.sort(key=lambda x: x[1])
         
-    def _clear_layout(self, layout):
-        while layout.count():
-            item = layout.takeAt(0)
-            if item.widget():
-                item.widget().deleteLater()
+        self.mfg_combo.addItems([x[0] for x in items])
+        
+        self._populate_radio_buttons(self.element_frame, self.df_main[self.df_main['Shield_perk_main_ID'] == 246], self.element_widgets, 'Elemental Resistance')
+        self._populate_radio_buttons(self.firmware_frame, self.df_main[self.df_main['Shield_perk_main_ID'] == 246], self.firmware_widgets, 'Firmware')
+        self._populate_listbox(self.universal_avail_list, self.df_main[(self.df_main['Shield_perk_main_ID'] == 246) & (self.df_main['Part_type'] == 'Perk')])
+        self._populate_listbox(self.energy_avail_list, self.df_main[(self.df_main['Shield_perk_main_ID'] == 248) & (self.df_main['Part_type'] == 'Perk')])
+        self._populate_listbox(self.armor_avail_list, self.df_main[(self.df_main['Shield_perk_main_ID'] == 237) & (self.df_main['Part_type'] == 'Perk')])
+        self.on_mfg_change()
 
-    def _populate_radio_buttons(self, frame, df, widget_list):
-        self._clear_layout(frame)
-        widget_list.clear(); none_rb = QRadioButton(self.ui_loc['misc']['none']); none_rb.setChecked(True); frame.addWidget(none_rb); widget_list.append(none_rb)
-        for _, r in df.iterrows():
-            text = self._(r['Stat'])
-            if 'Description' in r and pd.notna(r['Description']): text += f" - {r['Description']}"
-            rb = QRadioButton(text); rb.setProperty("part_id", r['Part_ID']); frame.addWidget(rb); widget_list.append(rb)
-        frame.addStretch(); [rb.toggled.connect(self.rebuild_output) for rb in widget_list]
-
-    def _populate_checkboxes(self, frame, df, widget_list):
-        self._clear_layout(frame)
+    def _populate_radio_buttons(self, frame_layout, df, widget_list, part_type):
+        while frame_layout.count():
+            child = frame_layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
         widget_list.clear()
-        for _, r in df.iterrows():
-            text = self._(r['Stat'])
-            if 'Description' in r and pd.notna(r['Description']): text += f" - {r['Description']}"
-            cb = QCheckBox(text); cb.setProperty("part_id", r['Part_ID']); frame.addWidget(cb); widget_list.append(cb)
-        frame.addStretch(); [cb.toggled.connect(self.rebuild_output) for cb in widget_list]
-
+        none_rb = QRadioButton(self.ui_loc['misc']['none']); none_rb.setChecked(True); frame_layout.addWidget(none_rb); widget_list.append(none_rb)
+        for _, row in df[df['Part_type'] == part_type].iterrows():
+            description = row['Description']
+            display_text = f"{self._(row['Stat'])} - {description if pd.notna(description) else ''}"
+            rb = QRadioButton(display_text.strip("- "))
+            rb.setProperty("part_id", row['Part_ID'])
+            frame_layout.addWidget(rb)
+            widget_list.append(rb)
+        frame_layout.addStretch()
+        for rb in widget_list: rb.toggled.connect(self.rebuild_output)
+        
     def _populate_listbox(self, listbox, df):
         listbox.clear()
-        for _, r in df.iterrows():
-            text = self._(r['Stat'])
-            if 'Description' in r and pd.notna(r['Description']): text += f" - {r['Description']}"
-            item=QListWidgetItem(text); item.setData(Qt.ItemDataRole.UserRole, r['Part_ID']); listbox.addItem(item)
-
+        for _, row in df.iterrows():
+            item = QListWidgetItem(f"{self._(row['Stat'])} - {row['Description'] if pd.notna(row['Description']) else ''}")
+            item.setData(Qt.ItemDataRole.UserRole, row['Part_ID'])
+            listbox.addItem(item)
+            
     def on_mfg_change(self, *args):
         if not self.mfg_combo.currentText(): return
         try:
             mfg_id = int(self.mfg_combo.currentText().split(' - ')[-1])
         except ValueError:
-            return # Should not happen with formatted strings
+            return
+
+        mfg_type = self.mfg_type_map_base.get(mfg_id)
         
         self.rarity_combo.blockSignals(True)
         self.rarity_combo.clear()
-        for _, r in self.df_mfg[(self.df_mfg['Manufacturer ID'] == mfg_id) & (self.df_mfg['Part_type'] == 'Rarity')].iterrows():
-            desc = r['Description']
-            self.rarity_combo.addItem(f"{self._(r['Stat'])} - {desc if pd.notna(desc) else ''}", r['Part_ID'])
+        df_rarities = self.df_mfg[(self.df_mfg['Manufacturer ID'] == mfg_id) & (self.df_mfg['Part_type'] == 'Rarity')]
+        for _, row in df_rarities.iterrows():
+            description = row['Description']
+            display_text = f"{self._(row['Stat'])} - {description if pd.notna(description) else ''}"
+            self.rarity_combo.addItem(display_text.strip(" - "), row['Part_ID'])
         self.rarity_combo.blockSignals(False)
         self.rarity_combo.setFixedWidth(300)  # Re-apply width after populating
         
-        self._populate_checkboxes(self.mfg_perk_frame, self.df_mfg[(self.df_mfg['Manufacturer ID'] == mfg_id) & (self.df_mfg['Part_type'] == 'Perk')], self.mfg_perk_widgets)
         self.legendary_avail_list.clear()
         df_leg = self.df_mfg[self.df_mfg['Part_type'] == 'Legendary Perk']
-        for _, r in df_leg.iterrows():
-            desc = r['Description']
-            mfg_name = self._get_mfg_name(r['Manufacturer ID'])
-            display_text = f"{mfg_name} - {self._(r['Stat'])} - {desc if pd.notna(desc) else ''}"
-            item = QListWidgetItem(display_text)
-            item.setData(Qt.ItemDataRole.UserRole, (r['Part_ID'], r['Manufacturer ID']))
+        for _, row in df_leg.iterrows():
+            description = row['Description']
+            display_text = f"{self._get_mfg_name(row['Manufacturer ID'])} - {self._(row['Stat'])} - {description if pd.notna(description) else ''}"
+            item = QListWidgetItem(display_text.strip(" - "))
+            item.setData(Qt.ItemDataRole.UserRole, (row['Part_ID'], row['Manufacturer ID']))
             self.legendary_avail_list.addItem(item)
+        
+        # Get localized type names
+        energy_type_name = self.ui_loc.get('misc', {}).get('shield_type_energy', 'Energy')
+        armor_type_name = self.ui_loc.get('misc', {}).get('shield_type_armor', 'Armor')
+        mismatch_template = self.ui_loc.get('misc', {}).get('perk_type_mismatch', 'Current shield type is {shield_type}.\nCannot add {incompatible_type} type perks.')
+        
+        # Handle energy group visibility and placeholder
+        is_energy = mfg_type == 'Energy'
+        self.energy_avail_list.setVisible(is_energy)
+        self.energy_sel_list.setVisible(is_energy)
+        self.energy_move_btn.setVisible(is_energy)
+        self.energy_remove_btn.setVisible(is_energy)
+        self.energy_clear_btn.setVisible(is_energy)
+        if hasattr(self, 'energy_multiplier'):
+            self.energy_multiplier.setVisible(is_energy)
+        if hasattr(self, 'energy_placeholder_label'):
+            if not is_energy:
+                msg = mismatch_template.format(shield_type=armor_type_name, incompatible_type=energy_type_name)
+                self.energy_placeholder_label.setText(msg)
+                self.energy_placeholder_label.show()
+            else:
+                self.energy_placeholder_label.hide()
+        
+        # Handle armor group visibility and placeholder
+        is_armor = mfg_type == 'Armor'
+        self.armor_avail_list.setVisible(is_armor)
+        self.armor_sel_list.setVisible(is_armor)
+        self.armor_move_btn.setVisible(is_armor)
+        self.armor_remove_btn.setVisible(is_armor)
+        self.armor_clear_btn.setVisible(is_armor)
+        if hasattr(self, 'armor_multiplier'):
+            self.armor_multiplier.setVisible(is_armor)
+        if hasattr(self, 'armor_placeholder_label'):
+            if not is_armor:
+                msg = mismatch_template.format(shield_type=energy_type_name, incompatible_type=armor_type_name)
+                self.armor_placeholder_label.setText(msg)
+                self.armor_placeholder_label.show()
+            else:
+                self.armor_placeholder_label.hide()
+        
         self.rebuild_output()
 
     def rebuild_output(self, *args):
         try:
             mfg_id = int(self.mfg_combo.currentText().split(' - ')[-1]); level = self.level_edit.text(); rarity_id = self.rarity_combo.currentData()
-            main_parts = [f"{mfg_id}, 0, 1, {level}| 2, {305}||"]; skill_parts = []; secondary = {}
+            main_parts = [f"{mfg_id}, 0, 1, {level}| 2, 306||"]; skill_parts = []; secondary = {}
             if rarity_id: skill_parts.append(f"{{{rarity_id}}}")
-           
+            
             leg_items = [self.legendary_sel_list.item(i) for i in range(self.legendary_sel_list.count())]
-            if leg_items:
+            if not leg_items:
+                if mfg_id in self.mfg_model_map:
+                    skill_parts.append(f"{{{self.mfg_model_map[mfg_id]}}}")
+            else:
                 other_mfg_perks = {}
                 for it in leg_items:
-                    # Handle (count) prefix if present, though not explicitly enabled for legendary yet
-                    text = it.text()
+                    # Handle (count) prefix (though typically 1 for legendary if not multiplied)
                     count = 1
-                    match = re.match(r"\((\d+)\)\s+(.*)", text)
+                    match = re.match(r"\((\d+)\)\s+(.*)", it.text())
                     if match:
-                         count = int(match.group(1))
+                        count = int(match.group(1))
                     
                     part_id, item_mfg_id = it.data(Qt.ItemDataRole.UserRole)
-                    
                     for _ in range(count):
                         if item_mfg_id == mfg_id:
                             skill_parts.append(f"{{{part_id}}}")
@@ -341,24 +407,27 @@ class QtGrenadeEditorTab(QWidget):
                         skill_parts.append(f"{{{item_mfg_id}:[{' '.join(map(str, sorted_ids))}]}}")
 
             for rb in self.element_widgets + self.firmware_widgets:
-                if rb.isChecked() and rb.property("part_id"): secondary.setdefault(245, []).append(rb.property("part_id"))
-            for cb in self.mfg_perk_widgets:
-                if cb.isChecked() and cb.property("part_id"): skill_parts.append(f"{{{cb.property('part_id')}}}")
-            for l, pid_key in [(self.universal_sel_list, 245)]:
-                for i in range(l.count()): 
-                    item = l.item(i)
-                    text = item.text()
-                    count = 1
-                    match = re.match(r"\((\d+)\)\s+(.*)", text)
-                    if match:
-                         count = int(match.group(1))
-                    
-                    pid = item.data(Qt.ItemDataRole.UserRole)
-                    for _ in range(count):
-                        secondary.setdefault(pid_key, []).append(pid)
-            
+                if rb.isChecked() and rb.property("part_id"):
+                    part_id = rb.property("part_id")
+                    if 246 not in secondary: secondary[246] = []
+                    secondary[246].append(part_id)
+
+            for l, pid in [(self.universal_sel_list, 246), (self.energy_sel_list, 248), (self.armor_sel_list, 237)]:
+                if l.parent().isEnabled() and l.count() > 0:
+                    if pid not in secondary: secondary[pid] = []
+                    for i in range(l.count()): 
+                        item = l.item(i)
+                        count = 1
+                        match = re.match(r"\((\d+)\)\s+(.*)", item.text())
+                        if match:
+                            count = int(match.group(1))
+                        
+                        part_val = item.data(Qt.ItemDataRole.UserRole)
+                        for _ in range(count):
+                            secondary[pid].append(part_val)
+
             for k, v in secondary.items():
-                if v:
+                if v: 
                     skill_parts.append(f"{{{k}:[{' '.join(map(str, sorted(v)))}]}}" if len(v) > 1 else f"{{{k}:{v[0]}}}")
 
             final_str = " ".join(main_parts) + " " + " ".join(skill_parts) + " |"
@@ -368,17 +437,16 @@ class QtGrenadeEditorTab(QWidget):
 
     def _move_selected_items(self, src, dest, single, multiplier_box=None):
         if single and dest.count() > 0: return
-        
+
         count_val = multiplier_box.value() if multiplier_box else 1
         
         items_to_move = src.selectedItems()
         for item in items_to_move:
             if item.flags() & Qt.ItemFlag.ItemIsEnabled:
-                base_text = item.text()
-                
-                # Check existing
-                existing_item = None
-                for i in range(dest.count()):
+                 base_text = item.text()
+                 
+                 existing_item = None
+                 for i in range(dest.count()):
                     sel_item = dest.item(i)
                     sel_text = sel_item.text()
                     
@@ -394,22 +462,22 @@ class QtGrenadeEditorTab(QWidget):
                         existing_item = sel_item
                         break
                 
-                if existing_item and not single:
+                 if existing_item and not single:
                     new_count = current_count + count_val
                     existing_item.setText(f"({new_count}) {base_text}")
-                else:
+                 else:
                     new_item = item.clone()
                     if not single and multiplier_box:
                         new_item.setText(f"({count_val}) {base_text}")
                     dest.addItem(new_item)
         
         if not single:
-            pass # Allow stacking
+            pass 
 
     def _remove_selected_items(self, list_widget):
         for item in list_widget.selectedItems(): list_widget.takeItem(list_widget.row(item))
         self.rebuild_output()
-        
+
     def _clear_list(self, list_widget):
         list_widget.clear()
         self.rebuild_output()

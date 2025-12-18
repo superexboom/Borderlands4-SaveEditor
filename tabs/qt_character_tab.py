@@ -4,8 +4,8 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import pyqtSignal, Qt
 from typing import Dict, Any
-from unlock_data import CHARACTER_CLASSES
-import resource_loader
+from core.unlock_data import CHARACTER_CLASSES
+from core import resource_loader
 
 class QtCharacterTab(QWidget):
     character_data_changed = pyqtSignal(dict)

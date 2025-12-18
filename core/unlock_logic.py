@@ -1,6 +1,6 @@
 import uuid
 import copy
-from unlock_data import (
+from .unlock_data import (
     COLLECTIBLES, MISSIONSETS, UNLOCKABLES, LOCATIONS,
     CHARACTER_CLASSES, MAX_LEVEL, SAFEHOUSE_SILO_LOCATIONS
 )

@@ -3,8 +3,8 @@ from PyQt6.QtCore import pyqtSignal, Qt
 import random
 import re
 
-import b_encoder
-import resource_loader
+from core import b_encoder
+from core import resource_loader
 
 enhancement_data = resource_loader.get_enhancement_data()
 

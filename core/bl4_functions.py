@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List, Optional, Tuple, Union
 import re
-import b_encoder
+from . import b_encoder
 
 
 # Helper to find deeply nested dictionary paths
@@ -108,10 +108,10 @@ def apply_character_and_currency_changes(data: Dict[str, Any], yaml_data: Dict[s
         return False
 
 # ── Item Processing Logic ─────────────────────────────────────────────────────
-import decoder_logic
-import lookup
+from . import decoder_logic
+from . import lookup
 from typing import TypedDict, List
-from resource_loader import load_json_resource, get_ui_localization_file
+from .resource_loader import load_json_resource, get_ui_localization_file
 
 # 全局本地化缓存
 localization_cache = None
@@ -149,7 +149,7 @@ def get_localized_string(key: str) -> str:
             # 尝试加载武器本地化文件
             weapon_loc = load_json_resource('weapon_edit/weapon_localization_zh-CN.json') or {}
             # 尝试加载物品本地化文件
-            item_loc = load_json_resource('item_localization_zh-CN.json') or {}
+            item_loc = load_json_resource('i18n/item_localization_zh-CN.json') or {}
             # 合并字典
             localization_cache = {**weapon_loc, **item_loc}
         else:

@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 from PyQt6.QtCore import pyqtSignal, Qt, QModelIndex
 from typing import Dict, List, Any, Optional
-import resource_loader
+from core import resource_loader
 
 class QtItemsTab(QWidget):
     add_item_requested = pyqtSignal(str, str)

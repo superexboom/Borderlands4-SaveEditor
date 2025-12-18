@@ -5,9 +5,9 @@ import re
 import sys
 from functools import partial
 
-import bl4_functions as bl4f
-import b_encoder
-import resource_loader
+from core import bl4_functions as bl4f
+from core import b_encoder
+from core import resource_loader
 
 class WeaponEditorTab(QtWidgets.QWidget):
     add_to_backpack_requested = QtCore.pyqtSignal(str, str)

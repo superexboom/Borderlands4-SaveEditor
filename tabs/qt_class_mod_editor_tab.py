@@ -12,8 +12,8 @@ from PyQt6.QtGui import QIcon, QFontMetrics, QFont
 from PyQt6.QtWidgets import QToolTip
 from PyQt6.QtCore import pyqtSignal, Qt, QSize
 
-import b_encoder
-import resource_loader
+from core import b_encoder
+from core import resource_loader
 
 # Load all skill descriptions at startup
 skill_descriptions = resource_loader.load_all_skill_descriptions()

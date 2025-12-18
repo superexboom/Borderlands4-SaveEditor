@@ -8,8 +8,8 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import pyqtSignal, QTimer, Qt, QObject, QThread
 
 import decoder_logic
-import b_encoder
-import resource_loader
+from core import b_encoder
+from core import resource_loader
 
 class BatchConverterWorker(QObject):
     """后台工作线程，用于批量转换"""
