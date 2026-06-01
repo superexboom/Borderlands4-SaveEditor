@@ -100,4 +100,5 @@ Repkit_perk_main_ID,Part_ID,Part_type,Stat,Description
 243,106,Perfix,兆,最多回复量&持续回复&最长冷却时间
 243,112,Firmware,风险启用,
 243,113,Firmware,技能工艺,
+243,114,Firmware,主动开火,
 243,119,Perk,类固醇狂怒,使时获得5层类固醇狂怒，该叠加会持续衰减。每次叠加失效时，都会生成腐蚀星爆，造成3122伤害

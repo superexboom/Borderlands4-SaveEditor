@@ -25,6 +25,8 @@ Manufacturer ID,Part_ID,Part_type,String,Stat,Description
 282,27,Barrel Accessory,Barrel_01_C,Magic Bullet - Every 6th shot is homing,"-Cooldown, -Damage"
 282,28,Barrel Accessory,Barrel_01_A_D,Devil's Share - Every 6th shot deals +100% Damage,+Damage
 282,29,Barrel,Barrel_01,Minigun Barrel,
+282,30,Barrel,part_barrel_02_flak,Flakking Good,
+282,31,Rarity,,Legendary,Flak Cannon Skin
 273,1,Barrel Accessory,Barrel_01_D,Reticle Homing - Rocket homes in on the Reticle's target,No Stat Changes
 273,2,Barrel Accessory,Barrel_01_D,Reticle Homing - Rocket homes in on the Reticle's target,No Stat Changes
 273,3,Barrel Accessory,Barrel_01_D,Reticle Homing - Rocket homes in on the Reticle's target,No Stat Changes

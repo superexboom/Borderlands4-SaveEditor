@@ -28,6 +28,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,Stat,De
 20,Daedalus,SMG,98,Rarity,Epic,,
 20,Daedalus,SMG,63,Rarity,Legendary,Darkbeast,暗兽
 20,Daedalus,SMG,2,Rarity,Legendary,Prowler,徘徊者
+20,Daedalus,SMG,72,Rarity,Legendary,Screwstonian,糟糕烂人
 27,Jakobs,Assault Rifle,95,Rarity,Common,,
 27,Jakobs,Assault Rifle,96,Rarity,Uncommon,,
 27,Jakobs,Assault Rifle,97,Rarity,Rare,,
@@ -35,6 +36,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,Stat,De
 27,Jakobs,Assault Rifle,1,Rarity,Legendary,Bonnie and Clyde,雌雄大盗
 27,Jakobs,Assault Rifle,74,Rarity,Legendary,Rowan's Charge,罗恩的冲锋
 27,Jakobs,Assault Rifle,79,Rarity,Legendary,Rowdy Rider,暴走骑士
+27,Jakobs,Assault Rifle,81,Rarity,Legendary,Gomie,老铁
 3,Jakobs,Pistol,95,Rarity,Common,,
 3,Jakobs,Pistol,96,Rarity,Uncommon,,
 3,Jakobs,Pistol,97,Rarity,Rare,,
@@ -53,6 +55,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,Stat,De
 9,Jakobs,Shotgun,85,Rarity,Legendary,Rainbow Vomit,彩虹呕吐物
 9,Jakobs,Shotgun,91,Rarity,Legendary,T.K's Wave,尊者波动
 9,Jakobs,Shotgun,100,Rarity,Legendary,Doeshot,一命呼呼
+9,Jakobs,Shotgun,101,Rarity,Legendary,Constable,康斯特布尔
 24,Jakobs,Sniper,95,Rarity,Common,,
 24,Jakobs,Sniper,96,Rarity,Uncommon,,
 24,Jakobs,Sniper,97,Rarity,Rare,,
@@ -79,6 +82,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,Stat,De
 21,Maliwan,SMG,83,Rarity,Legendary,Matador's Match(Pre-order only),斗牛大赛（仅限预购）
 21,Maliwan,SMG,81,Rarity,Legendary,Broken Wings,折翼
 21,Maliwan,SMG,85,Rarity,Legendary,Flash Cyclone,闪电冲锋
+21,Maliwan,SMG,90,Rarity,Legendary,Juliet's Sparkle,朱丽叶之光
 25,Maliwan,Sniper,95,Rarity,Common,,
 25,Maliwan,Sniper,96,Rarity,Uncommon,,
 25,Maliwan,Sniper,97,Rarity,Rare,,
@@ -110,6 +114,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,Stat,De
 26,Order,Sniper,1,Rarity,Legendary,Fisheye,鱼眼
 26,Order,Sniper,76,Rarity,Legendary,Symmetry,对称
 26,Order,Sniper,79,Rarity,Legendary,Rooker,浪子
+26,Order,Sniper,84,Rarity,Legendary,Solar Temper,太阳怒焰
 7,Ripper,Shotgun,95,Rarity,Common,,
 7,Ripper,Shotgun,96,Rarity,Uncommon,,
 7,Ripper,Shotgun,97,Rarity,Rare,,
@@ -127,6 +132,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,Stat,De
 19,Ripper,SMG,19,Rarity,Legendary,Hellfire,地狱火
 19,Ripper,SMG,56,Rarity,Legendary,Roil,激怒
 19,Ripper,SMG,59,Rarity,Legendary,Falke,猎鹰
+19,Ripper,SMG,61,Rarity,Legendary,Jail-Broken Gatling,越狱加特林
 23,Ripper,Sniper,95,Rarity,Common,,
 23,Ripper,Sniper,96,Rarity,Uncommon,,
 23,Ripper,Sniper,97,Rarity,Rare,,
@@ -135,6 +141,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,Stat,De
 23,Ripper,Sniper,1,Rarity,Legendary,Vamoose,闪人
 23,Ripper,Sniper,57,Rarity,Legendary,Rainmaker,造雨师
 23,Ripper,Sniper,56,Rarity,Legendary,Tankbuster,反坦克炮
+23,Ripper,Sniper,61,Rarity,Legendary,Abyss,深渊
 14,Tediore,Assault Rifle,89,Rarity,Common,,
 14,Tediore,Assault Rifle,90,Rarity,Uncommon,,
 14,Tediore,Assault Rifle,91,Rarity,Rare,,
@@ -151,6 +158,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,Stat,De
 5,Tediore,Pistol,60,Rarity,Legendary,Budget Deity,预算之神
 5,Tediore,Pistol,66,Rarity,Legendary,Ruby's Grasp,红宝石的触碰
 5,Tediore,Pistol,86,Rarity,Legendary,Inscriber,记录器
+5,Tediore,Pistol,89,Rarity,Legendary,Shammy Kablammy,诈爆轰轰
 11,Tediore,Shotgun,95,Rarity,Common,,
 11,Tediore,Shotgun,96,Rarity,Uncommon,,
 11,Tediore,Shotgun,97,Rarity,Rare,,
@@ -167,6 +175,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,Stat,De
 17,Torgue,Assault Rifle,56,Rarity,Legendary,Cold Shoulder,冷屁股
 17,Torgue,Assault Rifle,78,Rarity,Legendary,Potato Thrower IV,土豆投掷者Ⅳ
 17,Torgue,Assault Rifle,83,Rarity,Legendary,Fleabag,跳蚤袋
+17,Torgue,Assault Rifle,85,Rarity,Legendary,Lockjaw,锁喉
 6,Torgue,Pistol,95,Rarity,Common,,
 6,Torgue,Pistol,96,Rarity,Uncommon,,
 6,Torgue,Pistol,97,Rarity,Rare,,
@@ -176,6 +185,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,Stat,De
 6,Torgue,Pistol,59,Rarity,Legendary,Hardpoint,承力点
 6,Torgue,Pistol,78,Rarity,Legendary,Handcannon,手铳
 6,Torgue,Pistol,57,Rarity,Legendary,Scoot'n'Shoot,疾行射击
+6,Torgue,Pistol,85,Rarity,Legendary,Herald,赫拉德
 12,Torgue,Shotgun,95,Rarity,Common,,
 12,Torgue,Shotgun,96,Rarity,Uncommon,,
 12,Torgue,Shotgun,97,Rarity,Rare,,
@@ -202,6 +212,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,Stat,De
 22,Vladof,SMG,67,Rarity,Legendary,Kaoson,考森
 22,Vladof,SMG,88,Rarity,Legendary,Birt's Bees,伯特的蜜蜂
 22,Vladof,SMG,92,Rarity,Legendary,Mercurious,水银好奇者
+22,Vladof,SMG,101,Rarity,Legendary,Parasite,寄生体
 16,Vladof,Sniper,95,Rarity,Common,,
 16,Vladof,Sniper,96,Rarity,Uncommon,,
 16,Vladof,Sniper,97,Rarity,Rare,,

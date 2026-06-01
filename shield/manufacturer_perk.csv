@@ -45,6 +45,8 @@ Manufacturer ID,Part_ID,Part_type,Stat,Description
 293,8,Rarity,Epic,
 293,9,Rarity,Legendary,金皮肤
 293,10,Rarity,Legendary,灰烬壳皮肤
+293,11,Rarity,Legendary,收藏家皮肤
+293,12,Legendary Perk,欧米伽,能量护盾启动时，每秒恢复7,041生命值
 300,1,Rarity,Common,
 300,2,Rarity,Uncommon,
 300,3,Rarity,Rare,

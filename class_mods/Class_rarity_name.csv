@@ -7,6 +7,7 @@
 255,Amon,legendary,15,Forge Master,锻造大师
 255,Amon,legendary,66,Lamplighter,点灯行者
 255,Amon,legendary,540,Tempest,风暴
+255,Amon,legendary,544,Artificer,军工技师
 255,Amon,normal,1,Brawler,重拳手
 255,Amon,normal,2,Grenadier,掷弹兵
 255,Amon,normal,3,Icebringer,寒冰使者
@@ -25,6 +26,7 @@
 259,Harlowe,legendary,15,Scientist,科学家
 259,Harlowe,legendary,540,Trooper,超级战士
 259,Harlowe,legendary,542,Phlebotomist,抽血师
+259,Harlowe,legendary,546,Plasmaphile,血浆爱好者
 259,Harlowe,normal,1,Chemist,化学家
 259,Harlowe,normal,2,Assistant,助手
 259,Harlowe,normal,3,Physicist,物理学家
@@ -43,6 +45,7 @@
 256,Rafa,legendary,15,Grenazerker,掷弹狂战士
 256,Rafa,legendary,539,Overdriver,超速驾驶
 256,Rafa,legendary,540,Reaparición,重新显现
+256,Rafa,legendary,544,Bombastic,夸夸其谈
 256,Rafa,normal,1,Genio,天才艺术家
 256,Rafa,normal,2,Soldado,士兵
 256,Rafa,normal,3,Demolitionist,爆破专家
@@ -60,6 +63,7 @@
 254,Vex,legendary,15,Teen Witch,少女巫师
 254,Vex,legendary,538,Misericorde,慈悲为怀
 254,Vex,legendary,539,Configuration,配置
+254,Vex,legendary,543,Grim Sister,冷酷姐姐
 254,Vex,normal,1,Transistor,晶体管
 254,Vex,normal,2,Firedancer,火焰舞者
 254,Vex,normal,3,Naturalist,博物学家
@@ -78,6 +82,7 @@
 404,C4sh,legendary,51,Windrider,驭风者
 404,C4sh,legendary,222,Gamer,玩家
 404,C4sh,legendary,538,Hooligan,街头混混
+404,C4sh,legendary,543,Prestidigitator,魔术师
 404,C4sh,normal,1,Pistoleer,手枪手
 404,C4sh,normal,2,Bane,祸根
 404,C4sh,normal,3,Gambler,赌徒

@@ -45,6 +45,8 @@ Manufacturer ID,Part_ID,Part_type,Stat,Description
 293,8,Rarity,Epic,
 293,9,Rarity,Legendary,Gold skin
 293,10,Rarity,Legendary,Cindershelly skin
+293,11,Rarity,Legendary,Collector skin
+293,12,Legendary Perk,Omega,"When energy shields are active, regenerates 7041 Health/s"
 300,1,Rarity,Common,
 300,2,Rarity,Uncommon,
 300,3,Rarity,Rare,

@@ -25,6 +25,8 @@ Manufacturer ID,Part_ID,Part_type,String,Stat,Description
 282,27,Barrel Accessory,Barrel_01_C,魔法子弹,每6次射击的最后一发将自动追踪
 282,28,Barrel Accessory,Barrel_01_A_D,恶魔份额,每6次射击的最后一发造成+100%伤害
 282,29,Barrel,Barrel_01,加特林,
+282,30,Barrel,part_barrel_02_flak,高射爆,
+282,31,Rarity,,Legendary,高射炮皮肤
 273,1,Barrel Accessory,Barrel_01_D,准星追踪,火箭会追踪准星目标
 273,2,Barrel Accessory,Barrel_01_D,准星追踪,火箭会追踪准星目标
 273,3,Barrel Accessory,Barrel_01_D,准星追踪,火箭会追踪准星目标

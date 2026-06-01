@@ -81,3 +81,4 @@ Grenade_perk_main_ID,Part_ID,Part_type,Stat
 245,81,Perk,"Wideload - Damage Radius is increased by 38%, Homing Turn Rate reduced by -33%"
 245,87,Firmware,"Risky Boots"
 245,88,Firmware,"Skillcraft"
+245,89,Firmware,"Active Fire"

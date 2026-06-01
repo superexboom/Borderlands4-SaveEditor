@@ -97,3 +97,6 @@
 101,+45% Incendiary Damage,+45% 火焰伤害
 102,+10% Melee Critical Hit Chance,+10% 近战暴击率
 103,Skillcraft-Firmware,技能工艺-固件
+104,Active Fire-Firmware,主动开火-固件
+"CLASSMOD.statspecial_gliding_damage",+105% Damage while Gliding,滑翔时造成+105%伤害
+"CLASSMOD.statspecial_ricochet_damage",+30% Ricochet Damage,+30% 跳弹伤害
