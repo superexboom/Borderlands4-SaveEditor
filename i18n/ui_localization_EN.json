@@ -726,7 +726,7 @@
       "open_first": "Open a save file first",
       "no_equipped_data": "No equipped item data found"
     },
-    "notice": "Due to game limitations, equipment may not always overwrite completely. This is not a bug in the save editor — do not report it as such. Also, please do not equip items that are not in your backpack. Skills shown here include Specials and Vault skills. Missing skill icons are not a bug — the skill names stored in the game save may not match the actual names. There is no fix planned for this.",
+    "notice": "Due to game limitations, equipment may not always overwrite completely. This is not a bug in the save editor — do not report it as such. Also, please do not equip items that are not in your backpack. Skills shown here include Specials and Vault skills.",
     "dialogs": {
       "hint": "Notice",
       "open_save_first": "Please open a save file first.",

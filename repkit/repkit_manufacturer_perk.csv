@@ -1,62 +1,62 @@
-Manufacturer ID,Part_ID,Part_type,Stat,Description
-277,1,Legendary Perk,脉搏计,持续被动恢复生命值，生命值较低时速率提升
-277,2,Model,/,
-277,3,Rarity,Common,
-277,4,Rarity,Uncommon,
-277,5,Rarity,Rare,
-277,6,Rarity,Epic,
-277,7,Rarity,Legendary,起搏器皮肤
-277,8,Legendary Perk,轻柔舒缓,在修复套件启动和结束时生成生命值增强器
-277,9,Rarity,Legendary,生命值提升器皮肤
-265,1,Rarity,Common,
-265,2,Rarity,Uncommon,
-265,3,Rarity,Rare,
-265,4,Rarity,Epic,
-265,5,Rarity,Legendary,除颤仪皮肤
-265,6,Legendary Perk,心脏休克,当生命值低于20%时，有50%几率补充1个修复套件能量点
-265,7,Model,/,
-266,1,Rarity,Common,
-266,2,Rarity,Uncommon,
-266,3,Rarity,Rare,
-266,4,Rarity,Epic,
-266,5,Rarity,Legendary,血液分析仪皮肤
-266,6,Legendary Perk,免疫射击,使用时对最后受到的元素伤害类型免疫，持续7秒
-266,7,Model,/,
-266,8,Rarity,Legendary,盖革类固醇皮肤
-285,1,Legendary Perk,心脏泵,该修复套件拥有3个能量点，且有30%几率在击杀敌人时补充1个能量点
-285,2,Model,/,
-285,3,Rarity,Common,
-285,4,Rarity,Uncommon,
-285,5,Rarity,Rare,
-285,6,Rarity,Epic,
-285,7,Rarity,Legendary,三重旁通皮肤
-285,8,Legendary Perk,破碎药瓶,治疗在最后4秒内受到的最后5次伤害
-285,9,Rarity,Legendary,血月皮肤
-274,1,Legendary Perk,时间膨胀,修复套件持续时间增加+100%，而冷却时间减少-50%
-274,2,Model,/,
-274,3,Rarity,Common,
-274,4,Rarity,Uncommon,
-274,5,Rarity,Rare,
-274,6,Rarity,Epic,
-274,7,Rarity,Legendary,义体AF1000皮肤
-290,1,Legendary Perk,血液虹吸,击杀时将多余伤害的100%转移至会寻找附近友方的治疗魔球
-290,2,Model,/,
-290,3,Rarity,Common,
-290,4,Rarity,Uncommon,
-290,5,Rarity,Rare,
-290,6,Rarity,Epic,
-290,7,Rarity,Legendary,杀戮之春皮肤
-261,1,Rarity,Common,
-261,2,Rarity,Uncommon,
-261,3,Rarity,Rare,
-261,4,Rarity,Epic,
-261,5,Rarity,Legendary,闪亮战妆皮肤
-261,6,Legendary Perk,铬合金,使用时获得+30%射速和+30%移动速度并持续15秒，每次受到伤害时修复套件冷却时间减少2秒
-261,7,Model,/,
-269,1,Rarity,Common,
-269,2,Rarity,Uncommon,
-269,3,Rarity,Rare,
-269,4,Rarity,Epic,
-269,5,Rarity,Legendary,肾上腺素泵皮肤
-269,6,Legendary Perk,热血冲头,卷土重来时自动恢复生命值
-269,7,Model,/,
+﻿Manufacturer ID,Part_ID,Part_type,Stat_ZH,Stat_EN,Description_ZH,Description_EN
+277,1,Legendary Perk,脉搏计,Pulseometer,持续被动恢复生命值，生命值较低时速率提升,"Continuously passively regenerates Health, rate increases when Health is low"
+277,2,Model,/,Stim,,
+277,3,Rarity,Common,Common,,
+277,4,Rarity,Uncommon,Uncommon,,
+277,5,Rarity,Rare,Rare,,
+277,6,Rarity,Epic,Epic,,
+277,7,Rarity,Legendary,Legendary,起搏器皮肤,Pacemaker Skin
+277,8,Legendary Perk,轻柔舒缓,Soothing,在修复套件启动和结束时生成生命值增强器,Spawns Health Boosters when Repkit starts and ends
+277,9,Rarity,Legendary,Legendary,生命值提升器皮肤,Healthraiser Skin
+265,1,Rarity,Common,Common,,
+265,2,Rarity,Uncommon,Uncommon,,
+265,3,Rarity,Rare,Rare,,
+265,4,Rarity,Epic,Epic,,
+265,5,Rarity,Legendary,Legendary,除颤仪皮肤,Defibrillator Skin
+265,6,Legendary Perk,心脏休克,Cardiac Shot,当生命值低于20%时，有50%几率补充1个修复套件能量点,"When Health is below 20%, has a 50% chance to refill 1 Repkit Charge"
+265,7,Model,/,Tonic,,
+266,1,Rarity,Common,Common,,
+266,2,Rarity,Uncommon,Uncommon,,
+266,3,Rarity,Rare,Rare,,
+266,4,Rarity,Epic,Epic,,
+266,5,Rarity,Legendary,Legendary,血液分析仪皮肤,Blood Analyzer Skin
+266,6,Legendary Perk,免疫射击,Immunity Shot,使用时对最后受到的元素伤害类型免疫，持续7秒,"On use, grants immunity to the last received Elemental Damage type for 7 seconds"
+266,7,Model,/,Refresher,,
+266,8,Rarity,Legendary,Legendary,盖革类固醇皮肤,Geiger-Roid Skin
+285,1,Legendary Perk,心脏泵,Heart Pump,该修复套件拥有3个能量点，且有30%几率在击杀敌人时补充1个能量点,"This Repkit has 3 Charges, and a 30% chance to refill 1 Charge on enemy kill"
+285,2,Model,/,Recorporator,,
+285,3,Rarity,Common,Common,,
+285,4,Rarity,Uncommon,Uncommon,,
+285,5,Rarity,Rare,Rare,,
+285,6,Rarity,Epic,Epic,,
+285,7,Rarity,Legendary,Legendary,三重旁通皮肤,Triple Bypass Skin
+285,8,Legendary Perk,破碎药瓶,Broken Vial,治疗在最后4秒内受到的最后5次伤害,Heals for the last 5 instances of Damage taken within the last 4 seconds
+285,9,Rarity,Legendary,Legendary,血月皮肤,Blood Moon Skin
+274,1,Legendary Perk,时间膨胀,Time Dialation,修复套件持续时间增加+100%，而冷却时间减少-50%,"Repkit Duration increased by +100%, and Cooldown reduced by -50%"
+274,2,Model,/,Scabber,,
+274,3,Rarity,Common,Common,,
+274,4,Rarity,Uncommon,Uncommon,,
+274,5,Rarity,Rare,Rare,,
+274,6,Rarity,Epic,Epic,,
+274,7,Rarity,Legendary,Legendary,义体AF1000皮肤,AF1000 Skin
+290,1,Legendary Perk,血液虹吸,Blood Siphon,击杀时将多余伤害的100%转移至会寻找附近友方的治疗魔球,"On kill, converts 100% of overkill damage into a healing orb that seeks nearby allies"
+290,2,Model,/,Pocket Doc,,
+290,3,Rarity,Common,Common,,
+290,4,Rarity,Uncommon,Uncommon,,
+290,5,Rarity,Rare,Rare,,
+290,6,Rarity,Epic,Epic,,
+290,7,Rarity,Legendary,Legendary,杀戮之春皮肤,Kill Spring Skin
+261,1,Rarity,Common,Common,,
+261,2,Rarity,Uncommon,Uncommon,,
+261,3,Rarity,Rare,Rare,,
+261,4,Rarity,Epic,Epic,,
+261,5,Rarity,Legendary,Legendary,闪亮战妆皮肤,War Paint Skin
+261,6,Legendary Perk,铬合金,Chrome,使用时获得+30%射速和+30%移动速度并持续15秒，每次受到伤害时修复套件冷却时间减少2秒,"On use, gain +30% Fire Rate and +30% Movement Speed for 15s. Taking damage reduces Repkit Cooldown by 2s"
+261,7,Model,/,Juicer,,
+269,1,Rarity,Common,Common,,
+269,2,Rarity,Uncommon,Uncommon,,
+269,3,Rarity,Rare,Rare,,
+269,4,Rarity,Epic,Epic,,
+269,5,Rarity,Legendary,Legendary,肾上腺素泵皮肤,Adrenaline Pump Skin
+269,6,Legendary Perk,热血冲头,Blood Rush,卷土重来时自动恢复生命值,Automatically regenerates Health during Fight For Your Life
+269,7,Model,/,Sobirat,,

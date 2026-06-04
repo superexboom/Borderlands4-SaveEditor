@@ -10,8 +10,6 @@ import ast
 import csv
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
-import importlib.resources
-import pkg_resources
 
 def get_ui_localization_file(lang: str) -> str:
     """
@@ -112,6 +110,28 @@ def load_text_resource(relative_path: Union[str, Path]) -> Optional[str]:
     except Exception as e:
         # print(f"加载文本资源时发生未知错误 {relative_path}: {e}")
         return None
+
+
+def load_localized_csv_resource(relative_path: Union[str, Path], lang: str):
+    """
+    Load a merged EN/ZH CSV and expose old-compatible Stat/Description columns.
+
+    Merged data keeps localized text in Stat_ZH/Stat_EN and
+    Description_ZH/Description_EN. Existing tabs still read Stat/Description.
+    """
+    import pandas as pd
+
+    resource_path = get_resource_path(relative_path)
+    df = pd.read_csv(resource_path)
+    suffix = "EN" if lang in ["en-US", "ru", "ua"] else "ZH"
+
+    for base_col in ("Stat", "Description"):
+        localized_col = f"{base_col}_{suffix}"
+        if localized_col in df.columns:
+            df[base_col] = df[localized_col]
+
+    return df
+
 
 def get_image_resource_path(relative_path: Union[str, Path]) -> Optional[Path]:
     """

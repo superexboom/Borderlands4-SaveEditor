@@ -19,9 +19,8 @@ from core import bl4_functions as bl4f
 @lru_cache(maxsize=None)
 def load_grenade_data(lang='zh-CN'):
     try:
-        suffix = "_EN" if lang in ['en-US', 'ru', 'ua'] else ""
-        df_main = pd.read_csv(resource_loader.get_grenade_data_path(f'grenade_main_perk{suffix}.csv'))
-        df_mfg = pd.read_csv(resource_loader.get_grenade_data_path(f'manufacturer_rarity_perk{suffix}.csv'))
+        df_main = resource_loader.load_localized_csv_resource('grenade/grenade_main_perk.csv', lang)
+        df_mfg = resource_loader.load_localized_csv_resource('grenade/manufacturer_rarity_perk.csv', lang)
         
         # Load localization json if available, mainly for Chinese
         localization = {}

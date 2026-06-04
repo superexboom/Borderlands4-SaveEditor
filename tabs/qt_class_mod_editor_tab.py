@@ -221,6 +221,33 @@ class QtClassModEditorTab(QWidget):
         # 按perk_ID索引perks
         self.perks_by_id = {p['perk_ID']: p for p in self.perks_data}
 
+    def _extract_perk_selection(self, item_text: str):
+        """Extract (count, perk_id) from '(N) [perk_id] name' or '[perk_id] name'."""
+        match = re.match(r"\((\d+)\)\s+\[([^\]]+)\]", item_text)
+        if match:
+            return int(match.group(1)), match.group(2)
+
+        match = re.match(r"\[([^\]]+)\]", item_text)
+        if match:
+            return 1, match.group(1)
+
+        return 0, ""
+
+    def _format_perk_code(self, perk_id: str) -> str:
+        """Format perk IDs for the 234 perk list.
+
+        Numeric IDs keep the existing compact form. GB path IDs are emitted as
+        quoted strings, matching the raw serial syntax used by the game.
+        """
+        perk_id = str(perk_id).strip()
+        if not perk_id:
+            return ""
+        if perk_id.isdigit():
+            return perk_id
+        if perk_id.startswith('"') and perk_id.endswith('"'):
+            return perk_id
+        return f'"{perk_id}"'
+
     def _load_localization(self, lang=None):
         """加载本地化数据 - 仅用于职业和稀有度名称"""
         if lang is None: lang = self.current_lang
@@ -622,31 +649,25 @@ class QtClassModEditorTab(QWidget):
                     skill_chunks.extend([f"{{{c}}}" for c in codes[:points]])
             skills_chunk = " ".join(skill_chunks)
             
-            # Perks - 直接从显示格式[ID]提取perk_id
+            # Perks - numeric IDs go into 234; GB path IDs are emitted as standalone quoted fields.
             perk_codes = []
+            special_perk_codes = []
             for i in range(self.perk_sel_list.count()):
                 item_text = self.perk_sel_list.item(i).text()
-                # Check for (count) prefix: "(count) [id] name"
-                match = re.match(r"\((\d+)\)\s+\[(\d+)\]", item_text)
-                if match:
-                    count = int(match.group(1))
-                    perk_id = match.group(2)
-                else:
-                    # Try without count prefix: "[id] name"
-                    match_no_count = re.match(r"\[(\d+)\]", item_text)
-                    if match_no_count:
-                        count = 1
-                        perk_id = match_no_count.group(1)
-                    else:
-                        continue
+                count, perk_id = self._extract_perk_selection(item_text)
                 
                 if perk_id:
+                    perk_code = self._format_perk_code(perk_id)
                     for _ in range(count):
-                        perk_codes.append(str(perk_id))
+                        if str(perk_id).strip().isdigit():
+                            perk_codes.append(perk_code)
+                        else:
+                            special_perk_codes.append(perk_code)
 
             perks_chunk = f" {{234:[{ ' '.join(perk_codes) }]}}" if perk_codes else ""
+            special_perks_chunk = " ".join(special_perk_codes)
 
-            parts = [header, rarity_chunk, name_chunk, leg_extras_chunk, skills_chunk, perks_chunk]
+            parts = [header, rarity_chunk, name_chunk, leg_extras_chunk, skills_chunk, perks_chunk, special_perks_chunk]
             full_string = " ".join(p for p in parts if p).replace("  ", " ").strip() + "|"
             
             self.full_string_output.setText(full_string)
@@ -743,30 +764,18 @@ class QtClassModEditorTab(QWidget):
             perk_name = item.text()  # 格式: [ID] 名称
             
             # 提取perk标识符 [ID]
-            perk_id_match = re.match(r"\[(\d+)\]", perk_name)
-            if not perk_id_match:
+            _, perk_id = self._extract_perk_selection(perk_name)
+            if not perk_id:
                 continue
-            perk_id = perk_id_match.group(1)
             
             # Check if already exists in selection list to update count
             existing_item = None
+            current_count = 0
             for i in range(self.perk_sel_list.count()):
                 sel_item = self.perk_sel_list.item(i)
                 sel_text = sel_item.text()
                 
-                # Check for (count) prefix: "(count) [id] name"
-                match = re.match(r"\((\d+)\)\s+\[(\d+)\]", sel_text)
-                if match:
-                    current_count = int(match.group(1))
-                    current_id = match.group(2)
-                else:
-                    # "[id] name" without count
-                    match_no_count = re.match(r"\[(\d+)\]", sel_text)
-                    if match_no_count:
-                        current_count = 1
-                        current_id = match_no_count.group(1)
-                    else:
-                        continue
+                current_count, current_id = self._extract_perk_selection(sel_text)
                 
                 if current_id == perk_id:
                     existing_item = sel_item

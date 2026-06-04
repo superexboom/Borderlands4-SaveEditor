@@ -76,7 +76,8 @@ class QtLoadoutManagerTab(QWidget):
     """配置管理器标签页 (with full i18n support)"""
 
     # CLASS_IDS mirrors QtClassModEditorTab for icon lookup
-    CLASS_IDS = {'Amon': 255, 'Harlowe': 259, 'Rafa': 256, 'Vex': 254}
+    CLASS_IDS = {'Amon': 255, 'Harlowe': 259, 'Rafa': 256, 'Vex': 254, 'C4sh': 404, 'C4SH': 404}
+    CLASS_NAME_ALIASES = {'C4SH': 'C4sh'}
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -243,25 +244,68 @@ class QtLoadoutManagerTab(QWidget):
         # 加载技能名称映射表
         self._load_skill_name_mapping()
 
+    @staticmethod
+    def _normalize_mapping_text(value: str) -> str:
+        return re.sub(r"\s+", " ", str(value or "").strip()).casefold()
+
+    def _skill_mapping_key(self, class_id: str, graph_name: str, node_name: str) -> tuple:
+        return (
+            str(class_id or "").strip(),
+            self._normalize_mapping_text(graph_name),
+            self._normalize_mapping_text(node_name),
+        )
+
+    def _skill_mapping_class_key(self, class_id: str, node_name: str) -> tuple:
+        return (
+            str(class_id or "").strip(),
+            self._normalize_mapping_text(node_name),
+        )
+
     def _load_skill_name_mapping(self):
-        """加载 loadout/skill_name_mapping.csv 映射表 (raw_display_name -> skill_name_EN)"""
+        """加载 loadout/skill_name_mapping.csv 映射表。"""
         self.skill_name_mapping = {}
+        self.skill_name_mapping_by_graph = {}
+        self.skill_name_mapping_by_class = {}
         try:
             mapping_path = _get_editor_root() / "loadout" / "skill_name_mapping.csv"
             if mapping_path.exists():
                 with open(mapping_path, 'r', encoding='utf-8-sig') as f:
                     reader = csv.DictReader(f)
+                    fieldnames = set(reader.fieldnames or [])
                     for row in reader:
-                        raw_name = row.get('raw_display_name', '').strip()
-                        mapped_name = row.get('skill_name_EN', '').strip()
-                        if raw_name and mapped_name:
-                            self.skill_name_mapping[raw_name] = mapped_name
-                print(f"Loadout: 已加载 {len(self.skill_name_mapping)} 条技能名称映射")
+                        if {'class_id', 'graph_name', 'node_name', 'middle_name', 'skill_name_EN'}.issubset(fieldnames):
+                            class_id = row.get('class_id', '').strip()
+                            graph_name = row.get('graph_name', '').strip()
+                            node_name = row.get('node_name', '').strip()
+                            middle_name = row.get('middle_name', '').strip()
+                            mapped_name = row.get('skill_name_EN', '').strip()
+
+                            if not (class_id and mapped_name):
+                                continue
+                            for lookup_name in {node_name, middle_name}:
+                                if graph_name and lookup_name:
+                                    self.skill_name_mapping_by_graph[
+                                        self._skill_mapping_key(class_id, graph_name, lookup_name)
+                                    ] = row
+                                if lookup_name:
+                                    self.skill_name_mapping_by_class[
+                                        self._skill_mapping_class_key(class_id, lookup_name)
+                                    ] = row
+                                    self.skill_name_mapping.setdefault(lookup_name, mapped_name)
+                        else:
+                            raw_name = row.get('raw_display_name', '').strip()
+                            mapped_name = row.get('skill_name_EN', '').strip()
+                            if raw_name and mapped_name:
+                                self.skill_name_mapping[raw_name] = mapped_name
+                total = len(self.skill_name_mapping_by_graph) or len(self.skill_name_mapping)
+                print(f"Loadout: 已加载 {total} 条技能名称映射")
             else:
                 print(f"Loadout: 映射表不存在 {mapping_path}")
         except Exception as e:
             print(f"Loadout: 加载技能名称映射表失败: {e}")
             self.skill_name_mapping = {}
+            self.skill_name_mapping_by_graph = {}
+            self.skill_name_mapping_by_class = {}
 
     # ══════════════════════════════════════════════════════════════════
     # 角色/技能辅助
@@ -275,7 +319,8 @@ class QtLoadoutManagerTab(QWidget):
             class_raw = state.get('class', '')
             class_key = class_raw.replace('Char_', '') if class_raw.startswith('Char_') else class_raw
             char_info = CHARACTER_CLASSES.get(class_key, {})
-            return char_info.get('name', class_key)
+            class_name = char_info.get('name', class_key)
+            return self.CLASS_NAME_ALIASES.get(class_name, class_name)
         except (AttributeError, TypeError):
             return ''
 
@@ -283,7 +328,8 @@ class QtLoadoutManagerTab(QWidget):
         """获取技能图标"""
         safe_name = re.sub(r"[^a-zA-Z0-9_!áéíóúñÁÉÍÓÚÑ]", "",
                            skill_name.replace("'", "").replace("\u2019", "").replace(" ", "_")).lower()
-        suffix_map = {"Vex": "_1", "Rafa": "_2", "Harlowe": "_3", "Amon": "_4"}
+        class_name = self.CLASS_NAME_ALIASES.get(class_name, class_name)
+        suffix_map = {"Vex": "_1", "Rafa": "_2", "Harlowe": "_3", "Amon": "_4", "C4sh": "_5"}
         suffix = suffix_map.get(class_name, "")
         filename = f"{safe_name}{suffix}.png"
         if filename in self.image_cache:
@@ -298,20 +344,42 @@ class QtLoadoutManagerTab(QWidget):
             print(f"Could not load icon {filename}: {e}")
         return QIcon()
 
+    def _find_loadout_skill_mapping(self, class_id: str, graph_name: str, skill_name: str) -> dict:
+        if graph_name and skill_name:
+            row = self.skill_name_mapping_by_graph.get(
+                self._skill_mapping_key(class_id, graph_name, skill_name)
+            )
+            if row:
+                return row
+        if skill_name:
+            row = self.skill_name_mapping_by_class.get(
+                self._skill_mapping_class_key(class_id, skill_name)
+            )
+            if row:
+                return row
+        return {}
+
     def _get_skill_display_info(self, skill_name_en: str, class_name: str,
-                                class_id: str) -> tuple:
+                                class_id: str, graph_name: str = '') -> tuple:
         """查找技能的本地化名和图标。返回 (display_name, icon)。
-        
-        流程：先用映射表将 raw_display_name -> skill_name_EN，
-        然后用映射后的名称去 Skills.csv 查找。
+
+        优先使用从 progress_graph + uitooltipdata 生成的新映射表；
+        找不到时再回退到旧的 Skills.csv 名称匹配。
         """
-        # Step 1: 使用映射表转换名称 (raw_display_name -> skill_name_EN)
         original_name = skill_name_en
+        class_name = self.CLASS_NAME_ALIASES.get(class_name, class_name)
+        mapping_row = self._find_loadout_skill_mapping(class_id, graph_name, skill_name_en)
+        if mapping_row:
+            mapped_name = mapping_row.get('skill_name_EN', '').strip() or skill_name_en
+            zh_name = mapping_row.get('skill_name_ZH', '').strip()
+            display_name = zh_name if self.current_lang == 'zh-CN' and zh_name else mapped_name
+            icon = self.get_skill_icon(mapped_name, class_name)
+            return display_name, icon
+
         mapped_name = self.skill_name_mapping.get(skill_name_en, skill_name_en)
         if mapped_name != original_name:
             print(f"Loadout: 技能名称映射 '{original_name}' -> '{mapped_name}'")
         
-        # 使用映射后的名称进行查找
         lookup_name = mapped_name
         display_name = lookup_name
         icon = QIcon()
@@ -847,6 +915,7 @@ class QtLoadoutManagerTab(QWidget):
         activated_text = self._t('labels', 'activated')
 
         for graph in skill_graphs:
+            graph_name = graph.get('name', '')
             for node in graph.get('nodes', []):
                 name = node.get('name', '未知')
                 pts = node.get('points_spent', 0)
@@ -854,12 +923,12 @@ class QtLoadoutManagerTab(QWidget):
 
                 if pts and pts > 0:
                     found_any = True
-                    display_name, icon = self._get_skill_display_info(name, class_name, class_id)
+                    display_name, icon = self._get_skill_display_info(name, class_name, class_id, graph_name)
                     row = self._create_skill_row(display_name, f"{pts}{pts_suffix}", "#64b5f6", icon)
                     self.skills_layout.addWidget(row)
                 elif is_activated:
                     found_any = True
-                    display_name, icon = self._get_skill_display_info(name, class_name, class_id)
+                    display_name, icon = self._get_skill_display_info(name, class_name, class_id, graph_name)
                     row = self._create_skill_row(display_name, activated_text, "#4caf50", icon)
                     self.skills_layout.addWidget(row)
 

@@ -1,223 +1,624 @@
-raw_display_name,skill_name_EN
-Age of Ice,Age of Ice
-Ancient Ways,Ancient Ways
-Battleborn,Battleborn
-Berserk,Berserk
-Bloodlust,Bloodlust
-Bolt Action,Bolt Action
-Bullet Hail,Bullet Hail
-Bullet Storm,Bullet Storm
-Cast Iron,Cast Iron
-Destruction Engine,Destruction Engine
-Electical Fire,Electrical Fire
-Escalation,Escalation
-Forged In Steel,Forged In Steel
-Harbinger,Harbinger
-Into the Fray,Into The Fray
-Judgement,Judgment
-Lightning Rod,Lightning Rod
-Machinist,Machinist
-Ordained Hammer,Ordained Hammer
-Raging Inferno,Raging Inferno
-Rearm,Rearm
-Tactician,Tactician
-Tempered Ice,Tempered Ice
-Tempered Lightning,Tempered Lightning
-Tempered Flame,Tempered Pyre
-The Best Defense,The Best Defense
-The Thrill,The Thrill
-Wield The Storm,Wield the Storm
-Wildfire,Wildfire
-Worldbreaker,Worldbreaker
-Wrath Of Nature,Wrath of Nature
-Absolute Zero,Absolute Zero
-Absorption,Accretion
-Accretion,Action at a Distance
-Annihilation,Annihilation
-Bleeding Edge,Bleeding Edge
-Blueshift,Blue Shift
-Break the Ice,Break the Ice
-Pulse Drive,Bright Future
-Carry the One,Carry the One
-Chain Reactor,Chain Reactor
-Cold Welding,Cold Welding
-Concurrence,Concurrence
-Flux,Confirmative Reality
-Control Group,Control Group
-Sample Collection,Core Sample
-Blast Chill,Creative Overflow
-Amplifier at Will,Critical Funding
-Cryodynamics,Cryodynamics
-Velocity,Cyclotron
-Decoherence,Decoherence
-Dirty Bomb,Dirty Bomb
-Distribution Function,Distribution Function
-Reproduce Findings,Domino Effect
-Elementary,Elementary
-Fracture,Elephant's Foot
-Endothermic Reaction,Endothermic Reaction
-Eureka,Eureka!
-Epicenter,Excited State
-Experimentation,Experimentation
-Exposed Core,Exposed Core
-Feedback Loop,Feedback Loop
-Bleeding Edge,Field-Ready Prototype
-Fissile Launcher,Fissile Launcher
-Flash Freeze,Flash Freeze
-Observer Effect,Force Of Will
-Freeze Frame,Freeze Frame
-Fuzzy Math,Fuzzy Math
-Gamma Ray Burst,Gamma Ray Burst
-Propulsion,Get up and Go
-Glow Up,Glow Up
-Gordian Knot,Gordian Knot
-Everstorm,Great Red DoT
-Certainty Principle,Harlowe's Certainty Principle
-Heat Death,Heat Death
-Heat Sink,Heat Sink
-Reclamation,Highly Efficient
-Superposition,Jaunt
-Cryogenics,Keep Ice On That
-Showing Potential,Latent Charge
-Extragalactic,Mains Hum
-Field Research,Make Extraordinary
-Mass  Function,Mass Function
-Arithmatic Progression,Mechanical Brilliance
-Meltdown,MeltDown
-Momentum,Momentum
-Neutron Decay,Neutron Decay
-PPE,PPE
-Eager,Parallel Circuit
-Supercooled Barrels,Pencils Down
-Ignition,Periodic Table Flip
-Personal Observation,Personal Observation
-Proven Results,Poisoned Sun
-Applied Theory,Practical Applications
-Precision Engineering,Precision Engineering
-Pulse Drive,Pulse Drive
-QED,QED
-Quantum Immortality,Quantum Immortality
-Grav Wave,Refraction
-Feedback Loop,Resonance Cascade
-Butterfly Effect,Ripple Effect
-Chaos Theory,Runaway Reaction
-Speed Trap,Slingshot
-Snapshot,Stun Lock
-Controlled Chaos,Sustained Reaction
-Test Subjects,Test Subjects
-Supercooldown,Too Coolant For Schoolant
-Triple Point,Triple Point
-Absolute Zero,Unstable Ice-otope
-Unraveled,Wasted
-Abajo,Abajo
-Al Centro,Al Centro
-Arriba,Arriba
-Artilleria,Artillería
-Assymetric Warfare,Asymmetric Warfare
-Awe,Awe
-Barrage,Barrage
-Blowout,Blowout
-Booming Business,Booming Business
-Brain Dump,Brain Dump
-CYA,CYA
-Collabrate Ignition,Collaborative Ignition
-Conductivo,Conductivo
-Confeti,Confeti
-Cruel Accrual,Cruel Accrual
-Deadline,Deadline
-Debtonation,Debtonation
-Deft Hands,Deft Hands
-Devil May Care,Devil-May-Care
-Dial In,Dial In
-Diamond Hands,Diamond Hands
-Drone Assault,Drone Assault
-Drone Defense,Drone Defense
-El Alacrin,El Alacrán
-El Borracho,El Borracho
-El Catrin,El Catrín
-El Corazon,El Corazón
-El Diabilito,El Diablito
-El Paraguas,El Paraguas
-El Soldado,El Soldado
-El Valiente,El Valiente
-Empuje,Empuje
-Errant Spark,Errant Spark
-Everdrive,Everdrive
-Expedite,Expedite
-Field Repairs,Field Repairs
-Fiesta,Fiesta
-First Impression,First Impression
-Handshake Deal,Handshake Deal
-Hard Sell,Hard Sell
-Hemolitions,Hemolitions
-Hostile Acquisition,Hostile Acquisition
-In the Zone,In The Zone
-Inspirado,Inspirado
-Jaque,Jaque
-Juerga,Juerga
-La Garza,La Garza
-Las Jaras,Las Jaras
-Lateral Plinking,Lateral Plinking
-Liquidation,Liquidation
-Maestro,Maestro
-MAte,Mate
-Metal Management,Metal Management
-Midnight Oil,Midnight Oil
-Motivar,Motivar
-Pa Dentro,Pa' Dentro
-Pain Reaction,Pain Reaction
-Per My Last,Per My Last
-Preparado,Preparado
-Propietary Incendiary,Proprietary Incendiary
-Protector Pulse,Protecto-Pulse
-Resiliencia,Resiliencia
-Rinse,Rinse
-Rolling Stone,Rolling Stone
-Saldar,Saldar
-Shield Barriest,Shield Barriest
-Shock Market,Shock Market
-Sinergia,Sinergia
-Sitiar,Sitiar
-Soltado,Soltado
-Sustainable Energy,Sustainable Energy
-Temerario,Temerario
-The Right Tools,The Right Tools
-The Thrill,The Thrill
-To the Last,To The Last
-Venganza,Venganza
-Vitriol,Vitriol
-Ancient Rites,Ancient Rites
-Fiery Attunement,Blight Attunement
-Blood Is Power,Blood Is Power
-Blood Sacrifice,Blood Sacrifice
-Bloodshot,Blood Shot
-Draining Attunement,Burning Attunement
-Claw and Bang,Claw and Bang
-Cursed Blade,Cursed Blade
-Undead Wire,Deadwire
-Elemental Essence,Elemental Essence
-Drone Assault,Grave Assault
-Grave Command,Grave Command
-Grave Elements,Grave Elements
-Grave Fiends,Grave Fiends
-Grave Power,Grave Power
-Grave Quickening,Grave Quickening
-Grave Sights,Grave Sights
-Grave Vitality,Grave Vitality
-Guns and Needles,Guns and Needles
-Fiery Attunement,Icy Attunement
-Keen Fiends,Keen Fiends
-Grim Suffering,Keen Suffering
-Shocking Attunement,Leeching Attunement
-Overprotective,Overprotective
-Overspirited,Overspirited
-Phase Pocket,Phase Pocket
-Radiating Attunement,Radiant Attunement
-Concurrence,Recurrence
-Reverberations,Reverburnations
-Shocking Attunement,Shocking Attunement
-Spirit Bomb,Spirit Bomb
-Target Prescience,Target Prescience
-VolatileEssence,Volatile Essence
-Vorpal Fiends,Vorpal Fiends
-Disco Inferno,Disco Infernus
+﻿class_id,class_name,category,graph_name,node_name,middle_name,graph_coord,pair_key,node_alias,skill_internal,paramdata,tooltip_key,tooltip_uuid,skill_name_EN,skill_name_ZH,source,status
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseAvatar,Desecration,Desecration,,pair4044920886,Desecration,SkillDef_DarkSiren_ActionSkill_PhaseAvatar,SkillParam_DarkSiren_PhaseAvatar_Cap_1.SkillParam_DarkSiren_PhaseAvatar_Cap_1,tooltip_darksiren_actionskill_phaseavatar_capstone_phasegeist,6349BED94565B3B20BC36CBA416F3E46,Desecration,神圣亵渎,alias_match,tooltip
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseAvatar,Energy Vampire,Energy Vampire,,pair455943371,Energy Vampire,SkillDef_DarkSiren_ActionSkill_PhaseAvatar,SkillParam_DarkSiren_PhaseAvatar_Aug_5.SkillParam_DarkSiren_PhaseAvatar_Aug_5,tooltip_darksiren_actionskill_phaseavatar_augment_flux,D4BE263344DD4CD4DD7C9FB7D4B5957C,Energy Vampire,能量吸血鬼,alias_match,tooltip
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseAvatar,Geistwave,Geistwave,,pair217450736,Geistwave,SkillDef_DarkSiren_ActionSkill_PhaseAvatar,SkillParam_DarkSiren_PhaseAvatar_Aug_2.SkillParam_DarkSiren_PhaseAvatar_Aug_2,tooltip_darksiren_actionskill_phaseavatar_augment_geistwave,BFABBD844F237055A76A92B2EB7571F1,Geistwave,精神浪潮,alias_match,tooltip
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseAvatar,Heartpiercer,Heartpiercer,,pair1631222928,Heartpiercer,SkillDef_DarkSiren_ActionSkill_PhaseAvatar,SkillParam_DarkSiren_PhaseAvatar_Cap_3.SkillParam_DarkSiren_PhaseAvatar_Cap_3,tooltip_darksiren_actionskill_phaseavatar_capstone_necrophase,4553C8D04417DD1E9712C0A1A9E48627,Heartpiercer,穿心者,alias_match,tooltip
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseAvatar,Iron Maiden,Iron Maiden,,pair2945127574,Iron Maiden,SkillDef_DarkSiren_ActionSkill_PhaseAvatar,SkillParam_DarkSiren_PhaseAvatar_Aug_3.SkillParam_DarkSiren_PhaseAvatar_Aug_3,tooltip_darksiren_actionskill_phaseavatar_augment_spiritarmor,5A2D7E1B4CD8B4A7C6B176975A93CDEC,Iron Maiden,铁娘子,alias_match,tooltip
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseAvatar,Phase Reap,Phase Reap,,pair3092265133,Phase Reap,SkillDef_DarkSiren_ActionSkill_PhaseAvatar,SkillParam_DarkSiren_PhaseAvatar_Aug_4.SkillParam_DarkSiren_PhaseAvatar_Aug_4,,,Phase Reap,,fallback,alias_fallback
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseAvatar,Vibe Check,Vibe Check,,pair3259457782,Vibe Check,SkillDef_DarkSiren_ActionSkill_PhaseAvatar,SkillParam_DarkSiren_PhaseAvatar_Cap_2.SkillParam_DarkSiren_PhaseAvatar_Cap_2,tooltip_darksiren_actionskill_phaseavatar_capstone_resonance,C703D79F4DD68546575C1EB33C292567,Vibe Check,感受调查,alias_match,tooltip
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseAvatar,Witchy Trigger Finger,Witchy Trigger Finger,,pair1068101680,Witchy Trigger Finger,SkillDef_DarkSiren_ActionSkill_PhaseAvatar,SkillParam_DarkSiren_PhaseAvatar_Aug_1.SkillParam_DarkSiren_PhaseAvatar_Aug_1,tooltip_darksiren_actionskill_phaseavatar_augment_warlockandload,FBA2DAAB4D7A56B75F61E8B1480FB224,Witchy Trigger Finger,巫术扳机指,alias_match,tooltip
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseFamiliar,Apex Beast,Apex Beast,,pair1631222928,Apex Beast,SkillDef_DarkSiren_ActionSkill_PhaseFamiliar,SkillParam_DarkSiren_PhaseFamiliar_Cap_3.SkillParam_DarkSiren_PhaseFamiliar_Cap_3,,,Apex Beast,,fallback,alias_fallback
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseFamiliar,Armored Beast,Armored Beast,,pair4044920886,Armored Beast,SkillDef_DarkSiren_ActionSkill_PhaseFamiliar,SkillParam_DarkSiren_PhaseFamiliar_Cap_1.SkillParam_DarkSiren_PhaseFamiliar_Cap_1,,,Armored Beast,,fallback,alias_fallback
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseFamiliar,Beast Mode,Beast Mode,,pair455943371,Beast Mode,SkillDef_DarkSiren_ActionSkill_PhaseFamiliar,SkillParam_DarkSiren_PhaseFamiliar_Aug_5.SkillParam_DarkSiren_PhaseFamiliar_Aug_5,tooltip_darksiren_actionskill_phasefamiliar_augment_beastmode,9A43593D456DBE8D5EA557BA0513FEE4,Beast Mode,猛兽模式,alias_match,tooltip
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseFamiliar,Blinkstrike,Blinkstrike,,pair217450736,Blinkstrike,SkillDef_DarkSiren_ActionSkill_PhaseFamiliar,SkillParam_DarkSiren_PhaseFamiliar_Aug_2.SkillParam_DarkSiren_PhaseFamiliar_Aug_2,tooltip_darksiren_actionskill_phasefamiliar_augment_blinkstrike,5A89A70643751D566FA62DAE1D4E697E,Blink Strike,闪烁打击,alias_match,tooltip
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseFamiliar,Charge Mode,Charge Mode,,pair2945127574,Charge Mode,SkillDef_DarkSiren_ActionSkill_PhaseFamiliar,SkillParam_DarkSiren_PhaseFamiliar_Aug_3.SkillParam_DarkSiren_PhaseFamiliar_Aug_3,,,Charge Mode,,fallback,alias_fallback
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseFamiliar,Critical Mode,Critical Mode,,pair3092265133,Critical Mode,SkillDef_DarkSiren_ActionSkill_PhaseFamiliar,SkillParam_DarkSiren_PhaseFamiliar_Aug_4.SkillParam_DarkSiren_PhaseFamiliar_Aug_4,,,Critical Mode,,fallback,alias_fallback
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseFamiliar,Double Trouble,Double Trouble,,pair3259457782,Double Trouble,SkillDef_DarkSiren_ActionSkill_PhaseFamiliar,SkillParam_DarkSiren_PhaseFamiliar_Cap_2.SkillParam_DarkSiren_PhaseFamiliar_Cap_2,tooltip_darksiren_actionskill_phasefamiliar_capstone_illusorybeast,493805F54417CFB419BBC48798270CE3,Double Trouble,双重麻烦,alias_match,tooltip
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseFamiliar,Outburst,Outburst,,pair1068101680,Outburst,SkillDef_DarkSiren_ActionSkill_PhaseFamiliar,SkillParam_DarkSiren_PhaseFamiliar_Aug_1.SkillParam_DarkSiren_PhaseFamiliar_Aug_1,,,Outburst,,fallback,alias_fallback
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseShard,Banshee Wail,Banshee Wail,,pair455943371,Banshee Wail,SkillDef_DarkSiren_ActionSkill_PhaseShard,SkillParam_DarkSiren_PhaseShard_Aug_5.SkillParam_DarkSiren_PhaseShard_Aug_5,,,Banshee Wail,,fallback,alias_fallback
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseShard,Ghastblaster,Ghastblaster,,pair1068101680,Ghastblaster,SkillDef_DarkSiren_ActionSkill_PhaseShard,SkillParam_DarkSiren_PhaseShard_Aug_1.SkillParam_DarkSiren_PhaseShard_Aug_1,tooltip_darksiren_actionskill_phaseshard_augment_spectralblast,AD9EA702408E4955E7E1AFAD3159D33F,Ghast Blaster,恶灵爆冲,alias_match,tooltip
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseShard,Grim Reaper,Grim Reaper,,pair3259457782,Grim Reaper,SkillDef_DarkSiren_ActionSkill_PhaseShard,SkillParam_DarkSiren_PhaseShard_Cap_2.SkillParam_DarkSiren_PhaseShard_Cap_2,tooltip_darksiren_actionskill_phaseshard_capstone_grimreaper,C4A05BFC4249D597505CD5ADB1701B4F,Grim Reaper,镰刀死神,alias_match,tooltip
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseShard,Heirloom,Heirloom,,pair4044920886,Heirloom,SkillDef_DarkSiren_ActionSkill_PhaseShard,SkillParam_DarkSiren_PhaseShard_Cap_1.SkillParam_DarkSiren_PhaseShard_Cap_1,tooltip_darksiren_actionskill_phaseshard_capstone_spectralarmory,A062F80748F8AB29E49A0FBE3CBC7A5F,Heirloom,传家之宝,alias_match,tooltip
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseShard,Hellish Harvest,Hellish Harvest,,pair3092265133,Hellish Harvest,SkillDef_DarkSiren_ActionSkill_PhaseShard,SkillParam_DarkSiren_PhaseShard_Aug_4.SkillParam_DarkSiren_PhaseShard_Aug_4,tooltip_darksiren_actionskill_phaseshard_augment_demoniccleave,1ECA8D8E4889E2CBFA507E8473DE6ED0,Hellish Harvest,地狱收割,alias_match,tooltip
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseShard,Medium Armor,Medium Armor,,pair217450736,Medium Armor,SkillDef_DarkSiren_ActionSkill_PhaseShard,SkillParam_DarkSiren_PhaseShard_Aug_2.SkillParam_DarkSiren_PhaseShard_Aug_2,,,Medium Armor,,fallback,alias_fallback
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseShard,Wake the Dead,Wake the Dead,,pair1631222928,Wake the Dead,SkillDef_DarkSiren_ActionSkill_PhaseShard,SkillParam_DarkSiren_PhaseShard_Cap_3.SkillParam_DarkSiren_PhaseShard_Cap_3,,,Wake the Dead,,fallback,alias_fallback
+254,Vex,action_modifier,Progress_DarkSiren_ActionSkill_Modifiers_PhaseShard,Wither,Wither,,pair2945127574,Wither,SkillDef_DarkSiren_ActionSkill_PhaseShard,SkillParam_DarkSiren_PhaseShard_Aug_3.SkillParam_DarkSiren_PhaseShard_Aug_3,tooltip_darksiren_actionskill_phaseshard_augment_weakeninghex,514A79E042A9D10FC2516CB09B4E2EA2,Wither,凋零,alias_match,tooltip
+254,Vex,action_skill,Progress_DarkSiren_ActionSkills,Phase Avatar,Phase Avatar,,pair1008204052,Phase Avatar,SkillDef_DarkSiren_ActionSkill_PhaseAvatar,,tooltip_darksiren_actionskill_phaseavatar,3AC7C46B4C7E245F40F1CD9360871276,Incarnate,化身,exact_skill,tooltip
+254,Vex,action_skill,Progress_DarkSiren_ActionSkills,Phase Covenant,Phase Covenant,,pair2442309920,Phase Covenant,SkillDef_DS_Trait_PhaseCovenant,,tooltip_ds_trait_phasecovenant,BB80F66F409E73D6F061E8A6F7ED4653,Phase Covenant,相位契约,exact_skill,tooltip
+254,Vex,action_skill,Progress_DarkSiren_ActionSkills,Phase Echo,Phase Echo,,pair256377300,Phase Echo,SkillDef_DarkSiren_ActionSkill_PhaseShard,,tooltip_darksiren_actionskill_phaseecho,6EAC64F94031CE46A652D68C7A7D1D5F,Dead Ringer,死亡分身,exact_skill,tooltip
+254,Vex,action_skill,Progress_DarkSiren_ActionSkills,Phase Familiar,Phase Familiar,,pair2674582898,Phase Familiar,SkillDef_DarkSiren_ActionSkill_PhaseFamiliar,,tooltip_darksiren_actionskill_phasefamiliar,34C626644ED11F340CBAD485A8FE2B86,Phase Phamiliar,相位魔宠,exact_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_01,Branch - Row 3 - 3,Branch - Row 3 - 3,Branch - Row 3 - 3,pair247481704,,,,,,Branch - Row 3 - 3,,fallback,coord_fallback
+254,Vex,passive,Progress_DS_Branch_Death_01,Radiating Attunement,Radiating Attunement,Branch - Row 1 - 1,pair4271287588,Radiating Attunement,SkillDef_DS_P_RadiatingAttunement,,tooltip_ds_p_radiatingattunement,6CA0C7FC47E7B78F5759018E06883D5F,Radiant Attunement,辐射调和,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_01,Radiating Influence,Radiating Influence,Branch - Row 3 - 1,pair2665652686,Radiating Influence,SkillDef_DS_P_RadiatingInfluence,,tooltip_ds_p_radiatinginfluence,664FFE8043DB23ECE57580BB57FEC90E,Havoc,末日浩劫,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_01,Radioactive Resonance,Radioactive Resonance,Branch - Row 2 - 1,pair1833012133,Radioactive Resonance,SkillDef_DS_P_RadioactiveResonance,,tooltip_ds_p_radioactiveresonance,0BB4A14C4076D3A8985711AF0FF0434B,Dreadlight,恐惧之光,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_01,Refreshing Waters,Refreshing Waters,Branch - Row 2 - 2,pair1579053925,Refreshing Waters,SkillDef_DS_P_RefreshingWaters,,tooltip_ds_p_refreshingwaters,3E48308448842C437220138D01D6D208,Restorative Tonic,恢复补品,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_01,Spirit Cooling,Spirit Cooling,Branch - Row 2 - 3,pair4251152131,Spirit Cooling,SkillDef_DS_P_SpiritCooling,,tooltip_ds_p_spiritcooling,BAF7F77743B4F6AB1E43FDB2913F630F,Full Moon,满月,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_01,Vorpal Spirits,Vorpal Spirits,Branch - Row 1 - 3,pair1857309058,Vorpal Spirits,SkillDef_DS_P_VorpalSpirits,,tooltip_ds_p_vorpalspirits,F52B9D9643F833A686316AA3D69494E8,Conjunction,结合,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_02,Branch - Row 3 - 1,Branch - Row 3 - 1,Branch - Row 3 - 1,pair2665652686,,,,,,Branch - Row 3 - 1,,fallback,coord_fallback
+254,Vex,passive,Progress_DS_Branch_Death_02,Extra,Extra,Branch - Row 2 - 2,pair1579053925,Extra,SkillDef_DS_P_Extra,,tooltip_ds_p_extra,E60CC5AE40AEA8E2E0C8E5B83686C207,Mortal Terror,致命恐惧,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_02,Grave Elements,Grave Elements,Branch - Row 2 - 3,pair4251152131,Grave Elements,SkillDef_DS_P_GraveElements,,tooltip_ds_p_graveelements,685A7E7F47FC5255A0CDEAA2E375CB45,Grave Elements,悲冥元素,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_02,Phase Pocket,Phase Pocket,Branch - Row 2 - 1,pair1833012133,Phase Pocket,SkillDef_DS_P_PhasePocket,,tooltip_ds_p_phasepocket,4A7D87C548A39D5C15D62DA07E88946E,Phase Pocket,相位口袋,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_02,Spirited Away,Spirited Away,Branch - Row 3 - 3,pair247481704,Spirited Away,SkillDef_DS_P_SpiritedAway,,tooltip_ds_p_spiritedaway,724D78C34E0A328E31857A97FB17ADA1,Strike Me Down,向我开炮,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_02,Vorpal Mind,Vorpal Mind,Branch - Row 1 - 3,pair1857309058,Vorpal Mind,SkillDef_DS_P_VorpalMind,,tooltip_ds_p_vorpalmind,809C8C2C48C7DD84D2793E9D5BC56B52,Keen Mind,敏锐思维,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_02,Wombo Combo,Wombo Combo,Branch - Row 1 - 1,pair4271287588,Wombo Combo,SkillDef_DS_P_WomboCombo,,tooltip_ds_p_wombocombo,4B99F25F4B05C0F3B7372AAE2A9C27E2,Drink Full,满饮一杯,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_03,Blood Is Power,Blood Is Power,Branch - Row 3 - 3,pair247481704,Blood Is Power,SkillDef_DS_P_BloodIsPower,,tooltip_ds_p_bloodispower,29D69E75411796B9F5F727AEEA5744CE,Blood Is Power,血即力量,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_03,Bloodshot,Bloodshot,Branch - Row 2 - 2,pair1579053925,Bloodshot,SkillDef_DS_P_Bloodshot,,tooltip_ds_p_bloodshot,C240A2B94113863F806699A2E30E2D02,Blood Shot,血腥弹药,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_03,Branch - Row 3 - 1,Branch - Row 3 - 1,Branch - Row 3 - 1,pair2665652686,,,,,,Branch - Row 3 - 1,,fallback,coord_fallback
+254,Vex,passive,Progress_DS_Branch_Death_03,Draining Essence,Draining Essence,Branch - Row 2 - 3,pair4251152131,Draining Essence,SkillDef_DS_P_DrainingEssence,,tooltip_ds_p_drainingessence,8C931B4A494E1D434F5830898C0761F2,Essence Leech,精髓吸取,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_03,Enlightenment,Enlightenment,Branch - Row 1 - 3,pair1857309058,Enlightenment,SkillDef_DS_P_Enlightenment,,tooltip_ds_p_enlightenment,4074054E426C394F4B39BBB92DC7157B,Ars Arcana,奥法秘术,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_03,Grave Extension,Grave Extension,Branch - Row 2 - 1,pair1833012133,Grave Extension,SkillDef_DS_P_PhaseExtension,,tooltip_ds_p_phaseextension,78037BCB4BC33AC1092B8EB4408D756B,A Deeper Grave,深邃墓穴,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Death_03,Grave Vitality,Grave Vitality,Branch - Row 1 - 1,pair4271287588,Grave Vitality,SkillDef_DS_P_GraveVitality,,tooltip_ds_p_gravevitality,B972991C466F4D6FF331DC97C8AF3AC0,Grave Vitality,悲冥活力,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_01,Branch - Row 3 - 3,Branch - Row 3 - 3,Branch - Row 3 - 3,pair247481704,,,,,,Branch - Row 3 - 3,,fallback,coord_fallback
+254,Vex,passive,Progress_DS_Branch_Domination_01,Cryonic Attunement,Cryonic Attunement,Branch - Row 1 - 1,pair4271287588,Cryonic Attunement,SkillDef_DS_P_CryonicAttunement,,tooltip_ds_p_cryonicattunement,4BDDAE6343F6D5337D7D08872F898565,Icy Attunement,寒冰调和,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_01,Cryonic Influence,Cryonic Influence,Branch - Row 3 - 1,pair2665652686,Cryonic Influence,SkillDef_DS_P_CryonicInfluence,,tooltip_ds_p_cryonicinfluence,90653D7D4E44CB0611E4A49580004FC7,Shiver,颤抖,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_01,Explosive Fiends,Explosive Fiends,Branch - Row 2 - 2,pair1579053925,Explosive Fiends,SkillDef_DS_P_ExplosiveFiends,,tooltip_ds_p_explosivefiends,7DBE378D45F7899A559EDCBEE034055E,Blasted Fiends,爆裂恶魔,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_01,Hardened Spirit,Hardened Spirit,Branch - Row 2 - 3,pair4251152131,Hardened Spirit,SkillDef_DS_P_HardenedSpirit,,tooltip_ds_p_hardenedspirit,D7ECD42441AB5E92B46A469E8D9FC0AD,Corporeal,实体,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_01,Overspirited,Overspirited,Branch - Row 2 - 1,pair1833012133,Overspirited,SkillDef_DS_P_Overspirited,,tooltip_ds_p_overspirited,9F143435486D7DA11DB8088E7B0C6D1C,Overspirited,亢奋爆发,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_01,Primed and Ready,Primed and Ready,Branch - Row 1 - 3,pair1857309058,Primed and Ready,SkillDef_DS_P_PrimedAndReady,,tooltip_ds_p_primedandready,7AAA35C74D4DE8C77B4A2BA7C8EFC6CF,Blast Rites,爆炸仪式,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_02,Branch - Row 3 - 3,Branch - Row 3 - 3,Branch - Row 3 - 3,pair247481704,,,,,,Branch - Row 3 - 3,,fallback,coord_fallback
+254,Vex,passive,Progress_DS_Branch_Domination_02,Elemental Essence,Elemental Essence,Branch - Row 1 - 1,pair4271287588,Elemental Essence,SkillDef_DS_P_ElementalEssence,,tooltip_ds_p_elementalessence,0AA4C3F44CAC67C6880547924ABC57AA,Elemental Essence,元素精髓,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_02,Grave Sacrifice,Grave Sacrifice,Branch - Row 2 - 2,pair1579053925,Grave Sacrifice,SkillDef_DS_P_GraveSacrifice,,tooltip_ds_p_gravesacrifice,545E7278447EF9E0AC0476BFD7D809D2,Sacrificial Essence,献祭精髓,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_02,Keen Fiends,Keen Fiends,Branch - Row 1 - 3,pair1857309058,Keen Fiends,SkillDef_DS_P_KeenFiends,,tooltip_ds_p_keenfiends,D14B5AC0448EFD292288358B7FED3D25,Keen Fiends,敏锐恶魔,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_02,Keen Preservation,Keen Preservation,Branch - Row 2 - 3,pair4251152131,Keen Preservation,SkillDef_DS_P_PreservingEssence,,tooltip_ds_p_preservingessence,D35508A54F6EA17F67A2428328DC5DCD,Reawakening,再次觉醒,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_02,Tail Whip,Tail Whip,Branch - Row 3 - 1,pair2665652686,Tail Whip,SkillDef_DarkSiren_ActionSkill_PhaseFamiliar,SkillParam_DarkSiren_PhaseFamiliar_TailWhip.SkillParam_DarkSiren_PhaseFamiliar_TailWhip,tooltip_darksiren_actionskill_phasefamiliar,34C626644ED11F340CBAD485A8FE2B86,Phase Phamiliar,相位魔宠,exact_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_02,The Reaping,The Reaping,Branch - Row 2 - 1,pair1833012133,The Reaping,SkillDef_DS_P_TheReaping,,tooltip_ds_p_thereaping,E70EFC8F4127F30EE47756A7B98AC1FC,Infernal Sum,炼狱汇聚,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_03,Branch - Row 3 - 3,Branch - Row 3 - 3,Branch - Row 3 - 3,pair247481704,,,,,,Branch - Row 3 - 3,,fallback,coord_fallback
+254,Vex,passive,Progress_DS_Branch_Domination_03,Grave Shock,Grave Shock,Branch - Row 1 - 3,pair1857309058,Grave Shock,SkillDef_DS_P_GraveShock,,tooltip_ds_p_graveshock,5739FC814AEF599B73A5F78CDCA05602,Grave Current,悲冥电流,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_03,Gravy Drain,Gravy Drain,Branch - Row 2 - 2,pair1579053925,Gravy Drain,SkillDef_DS_P_GravyDrain,,tooltip_ds_p_gravydrain,E30F12094F7C258BE62C538DA127561B,Grave Thirst,悲冥渴望,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_03,Runic Mediicine,Runic Mediicine,Branch - Row 2 - 3,pair4251152131,Runic Mediicine,SkillDef_DS_P_RunicMedicine,,tooltip_ds_p_runicmedicine,FABE2584449ED682717BDAB924124ADF,Infusion,灌注,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_03,Shocking Attunement,Shocking Attunement,Branch - Row 1 - 1,pair4271287588,Shocking Attunement,SkillDef_DS_P_ShockingAttunement,,tooltip_ds_p_shockingattunement,786B087D4D83401E9C9BB79401765C17,Shocking Attunement,电击调和,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_03,Shocking Influence,Shocking Influence,Branch - Row 3 - 1,pair2665652686,Shocking Influence,SkillDef_DS_P_ShockingInfluence,,tooltip_ds_p_shockinginfluence,E985CA1F409CEE8D0AC01F87022F16C8,Stormblessed,风暴祝福,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Domination_03,Undead Wire,Undead Wire,Branch - Row 2 - 1,pair1833012133,Undead Wire,SkillDef_DS_P_UndeadWire,,tooltip_ds_p_undeadwire,F93492AF4B704F855987F783A1431D15,Deadwire,死线,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_01,Assassin,Assassin,Branch - Row 2 - 2,pair1579053925,Assassin,SkillDef_DS_P_Assassin,,tooltip_ds_p_assassin,E7C913654EE7EABB03626FBD305406B8,Ghasterbait,恶灵诱饵,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_01,Branch - Row 3 - 3,Branch - Row 3 - 3,Branch - Row 3 - 3,pair247481704,,,,,,Branch - Row 3 - 3,,fallback,coord_fallback
+254,Vex,passive,Progress_DS_Branch_Duplicate_01,Corroding Attunement,Corroding Attunement,Branch - Row 1 - 1,pair4271287588,Corroding Attunement,SkillDef_DS_P_CorrodingAttunement,,tooltip_ds_p_corrodingattunement,04B034464DEA6EC17E2A208DBC1AC5E8,Blight Attunement,枯萎调和,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_01,Corroding Influence,Corroding Influence,Branch - Row 3 - 1,pair2665652686,Corroding Influence,SkillDef_DS_P_CorrodingInfluence,,tooltip_ds_p_corrodinginfluence,DB178BD6482789B6F60794B22D19A46F,Necrosis,死灵术,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_01,Critical Suffering,Critical Suffering,Branch - Row 2 - 1,pair1833012133,Critical Suffering,SkillDef_DS_P_CriticalSuffering,,tooltip_ds_p_criticalsuffering,6F1F4998449F279A205EE3A4BAF04147,Keen Suffering,敏锐痛楚,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_01,Hot Swap,Hot Swap,Branch - Row 2 - 3,pair4251152131,Hot Swap,SkillDef_DS_P_HotSwap,,tooltip_ds_p_hotswap,DC2A54FD43F5B0102F0B2C88933A5E83,Shot To Go!,一击即中！,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_01,Prismatic Poisons,Prismatic Poisons,Branch - Row 1 - 3,pair1857309058,Prismatic Poisons,SkillDef_DS_P_PrismaticPoisons,,tooltip_ds_p_prismaticpoisons,FB9B27BC493C0044B030828C893CB4E0,Prismatic Ichor,光棱灵液,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_02,Deathstraction,Deathstraction,Branch - Row 2 - 2,pair1579053925,Deathstraction,SkillDef_DS_P_Deathstraction,,tooltip_ds_p_deathstraction,346FA5AD4A379BE67515B6BA02529997,Death Follows Closer,死神将至,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_02,Fiery Attunement,Fiery Attunement,Branch - Row 1 - 1,pair4271287588,Fiery Attunement,SkillDef_DS_P_FireyAttunement,,tooltip_ds_p_fireyattunement,C2B8A0B44C867ADB3F7BE4B687325A54,Burning Attunement,焚烧调和,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_02,Fiery Influence,Fiery Influence,Branch - Row 3 - 1,pair2665652686,Fiery Influence,SkillDef_DS_P_FieryInfluence,,tooltip_ds_p_fieryinfluence,FA341FCD4642F15B380A5486EAE3E404,Burnt Offering,燔祭,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_02,Phase Dagger,Phase Dagger,Branch - Row 2 - 3,pair4251152131,Phase Dagger,SkillDef_DS_P_PhaseDagger,,tooltip_ds_p_phasedagger,9A19A0D241AAE0A4FC595BADFA836587,Haruspex,占卜僧人,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_02,Reverberations,Reverberations,Branch - Row 2 - 1,pair1833012133,Reverberations,SkillDef_DS_P_Reverberations,,tooltip_ds_p_reverberations,4D5C34E1414158B9E62D79A3E21A18F5,Reverburnations,回响灼烧,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_02,Tameshigiri,Tameshigiri,Branch - Row 1 - 3,pair1857309058,Tameshigiri,SkillDef_DS_P_Tameshigiri,,tooltip_ds_p_tameshigiri,3D2653984DF25B287C33BBAAAE308C25,Recurrence,复发,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_02,Volley,Volley,Branch - Row 3 - 3,pair247481704,Volley,SkillDef_DS_P_PhaseDagger,SkillParam_DS_P_PhaseDagger_Extra.SkillParam_DS_P_PhaseDagger_Extra,tooltip_ds_p_phasedagger,9A19A0D241AAE0A4FC595BADFA836587,Haruspex,占卜僧人,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_03,Ancient Rites,Ancient Rites,Branch - Row 2 - 2,pair1579053925,Ancient Rites,SkillDef_DS_P_AncientRites,,tooltip_ds_p_ancientrites,A595E5F94335A74C487EC497A8156328,Ancient Rites,远古仪式,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_03,Branch - Row 3 - 3,Branch - Row 3 - 3,Branch - Row 3 - 3,pair247481704,,,,,,Branch - Row 3 - 3,,fallback,coord_fallback
+254,Vex,passive,Progress_DS_Branch_Duplicate_03,Commanding Attunement,Commanding Attunement,Branch - Row 1 - 3,pair1857309058,Commanding Attunement,SkillDef_DS_P_CommandingAttunement,,tooltip_ds_p_commandingattunement,CDFC9AF94E19A1430E08B4B2DBEBAF41,Obedient Fiends,顺从恶魔,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_03,Corroding Armaments,Corroding Armaments,Branch - Row 1 - 1,pair4271287588,Corroding Armaments,SkillDef_DS_P_CorrodingArmaments,,tooltip_ds_p_corrodingarmaments,F6D49E7248714E3F4543B49D2DB87A29,Prismatic Weaponry,光棱武器,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_03,Deathstraction,Deathstraction,Branch - Row 2 - 3,pair4251152131,Deathstraction,SkillDef_DS_P_Deathstraction,,tooltip_ds_p_deathstraction,346FA5AD4A379BE67515B6BA02529997,Death Follows Closer,死神将至,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_03,Resounding Echos,Resounding Echos,Branch - Row 3 - 1,pair2665652686,Resounding Echos,SkillDef_DS_P_ResoundingEchoes,,tooltip_ds_p_resoundingechoes,F04F352C409E5CB9F2BCDF993C4C9721,Diener,医学助手,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Branch_Duplicate_03,Spirit Bomb,Spirit Bomb,Branch - Row 2 - 1,pair1833012133,Spirit Bomb,SkillDef_DS_P_SpiritBomb,,tooltip_ds_p_spiritbomb,E929C4C5479699A096C94B8A61992366,Spirit Bomb,灵魂炸弹,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Death,Bleed,Bleed,,pair949974351,Bleed,SkillDef_DS_P_Bleed,,tooltip_ds_p_bleed,C82A033243BE683A8C2065B69B1EF0F7,Bloodletter,血书,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Death,Draining Attunement,Draining Attunement,,pair2873643982,Draining Attunement,SkillDef_DS_P_DrainingAttunement,,tooltip_ds_p_drainingattunement,4926A7F7440AE0B00F772BA5D20E3E61,Leeching Attunement,吸血调和,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Death,Grave Power,Grave Power,,pair3706155807,Grave Power,SkillDef_DS_P_GravePower,,tooltip_ds_p_gravepower,4C1924A849F42BC628B1BCABC67DB2E0,Grave Power,悲冥力量,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Death,Grave Sights,Grave Sights,,pair535716755,Grave Sights,SkillDef_DS_P_GraveSights,,tooltip_ds_p_gravesights,3CBE70104C34368B0873878E46B95537,Grave Sights,悲冥视线,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Death,Guns and Needles,Guns and Needles,,pair996849512,Guns and Needles,SkillDef_DS_P_GunsAndNeedles,,tooltip_ds_p_gunsandneedles,F5D413614AF917AE81B74FB772F31913,Guns and Needles,枪与针,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Death,Infused Bullets,Infused Bullets,,pair2352563474,Infused Bullets,SkillDef_DS_P_InfusedBullets,,tooltip_ds_p_infusedbullets,ED907FD244A3F844F2AC67A4D0A1E047,Grave Implements,悲冥法器,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Death,Kinetic Influence,Kinetic Influence,,pair3409731364,Kinetic Influence,SkillDef_DS_P_KineticInfluence,,tooltip_ds_p_kineticinfluence,67C830F14B03B71B7482EA8541ABB4E1,Material Components,材料成分,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Death,Phase Sync,Phase Sync,,pair1749107522,Phase Sync,SkillDef_DS_P_PhaseSync,,tooltip_ds_p_phasesync,E6E48AE6486F47F4A69A2AA83B7BD743,Channeling,沟道效应,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Death,Stimpack,Stimpack,,pair2830995945,Stimpack,SkillDef_DS_P_Stimpack,,tooltip_ds_p_stimpack,E022F8AB472D31C6F88B72A2CB4450C5,Fiendish Invigoration,恶魔活力,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Death,Target Prescience,Target Prescience,,pair2140827513,Target Prescience,SkillDef_DS_P_TargetPrescience,,tooltip_ds_p_targetprescience,936F5D174CADAC5DEF1F6E817F6494CF,Target Prescience,目标预判,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Death,VolatileEssence,VolatileEssence,,pair137711528,VolatileEssence,SkillDef_DS_P_VolatileEssence,,tooltip_ds_p_volatileessence,86F849864194EA62F0D124B0A972E579,Volatile Essence,易爆精髓,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Domination,Claw and Bang,Claw and Bang,,pair1749107522,Claw and Bang,SkillDef_DS_P_ClawAndBang,,tooltip_ds_p_clawandbang,28E0C8A64A05CE6580A683B7424B3150,Claw and Bang,利爪与爆炸,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Domination,Grave Command,Grave Command,,pair2830995945,Grave Command,SkillDef_DS_P_GraveCommand,,tooltip_ds_p_gravecommand,6E43F3764855F2597C94138F80B3723D,Grave Command,悲冥命令,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Domination,Grave Sustain,Grave Sustain,,pair996849512,Grave Sustain,SkillDef_DS_P_GraveSustain,,tooltip_ds_p_gravesustain,158C06FC44CFD933E1E82C951367520F,Grave Sustenance,悲冥滋养,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Domination,Overpowered,Overpowered,,pair2873643982,Overpowered,SkillDef_DS_P_OverPowered,,tooltip_ds_p_overpowered,0579F3994BB83718C21F81BC7E8FDC83,Blood Is Magic,鲜血即魔法,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Domination,Overprotective,Overprotective,,pair949974351,Overprotective,SkillDef_DS_P_Overprotective,,tooltip_ds_p_overprotective,5CC6C0044703BA814BB1E28298536A49,Overprotective,极致保护,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Domination,Overseer,Overseer,,pair3409731364,Overseer,SkillDef_DS_P_Overseer,,tooltip_ds_p_overseer,9E7567A24F830FF0E31D419C0B0900E0,Overheal,超能治疗,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Domination,Phase Bullets,Phase Bullets,,pair137711528,Phase Bullets,SkillDef_DS_P_PhaseBullets,,tooltip_ds_p_phasebullets,A2BB272F45E4D53C5AB64BB1D9096441,Enchantment,迷咒,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Domination,Phase Harvest,Phase Harvest,,pair1528740738,Phase Harvest,SkillDef_DS_P_PhaseHarvest,,tooltip_ds_p_phaseharvest,FC3DAA3E4854A00BD68E81B6198D2359,Mourning,哀悼,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Domination,Phase Plating,Phase Plating,,pair535716755,Phase Plating,SkillDef_DS_P_PhasePlating,,tooltip_ds_p_phaseplating,61F663CD45CFB258A6632D9C0B990522,Hasty Fiends,急躁恶魔,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Domination,Summoner,Summoner,,pair2352563474,Summoner,SkillDef_DS_P_Summoner,,tooltip_ds_p_summoner,76267E61412F82EB998D2DA47018D55C,Yowl and Bay,嚎叫与咆哮,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Domination,Vorpal Fiends,Vorpal Fiends,,pair2140827513,Vorpal Fiends,SkillDef_DS_P_VorpalFiends,,tooltip_ds_p_vorpalfiends,344593CA47F524AF54CFE896EAF7D704,Vorpal Fiends,致命恶魔,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Duplicate,,,,pair3163783157,,SkillDef_DS_P_DemonicInscriptions,,tooltip_ds_p_demonicinscriptions,46F476874BA91F5FCAAA5893B27CD6AD,Fell Inscriptions,邪恶铭文,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Duplicate,Baneful Weaponry,Baneful Weaponry,,pair2830995945,Baneful Weaponry,SkillDef_DS_P_BanefulWeaponry,,tooltip_ds_p_banefulweaponry,AD13244A4661D45F08DE92BBDD03B6DF,Grave Assault,悲冥袭击,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Duplicate,Blood Sacrifice,Blood Sacrifice,,pair1528740738,Blood Sacrifice,SkillDef_DS_P_BloodSacrifice,,tooltip_ds_p_bloodsacrifice,60F768124DF3B33CFE6D9BBCB22CE780,Blood Sacrifice,血腥献祭,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Duplicate,Cursed Blade,Cursed Blade,,pair2352563474,Cursed Blade,SkillDef_DS_P_Curse,,tooltip_ds_p_curse,0BFBC36D4149533ADBFA489FF1123A2A,Cursed Blade,诅咒之刃,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Duplicate,Demonic Inscriptions,Demonic Inscriptions,,pair535716755,Demonic Inscriptions,SkillDef_DS_P_DemonicInscriptions,,tooltip_ds_p_demonicinscriptions,46F476874BA91F5FCAAA5893B27CD6AD,Fell Inscriptions,邪恶铭文,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Duplicate,Extra Cursed,Extra Cursed,,pair2140827513,Extra Cursed,SkillDef_DS_P_Curse,SkillParam_DS_P_ExtraCursed.SkillParam_DS_P_ExtraCursed,tooltip_ds_p_curse,0BFBC36D4149533ADBFA489FF1123A2A,Cursed Blade,诅咒之刃,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Duplicate,Grave Fiends,Grave Fiends,,pair1749107522,Grave Fiends,SkillDef_DS_P_GraveFiends,,tooltip_ds_p_gravefiends,7E1A74E044C595062963A8BA7DE396AD,Grave Fiends,悲冥恶魔,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Duplicate,Grave Quickening,Grave Quickening,,pair3706155807,Grave Quickening,SkillDef_DS_P_GraveQuickening,,tooltip_ds_p_gravequickening,A993B6AE424309F1E2167C8572E4BB57,Grave Quickening,悲冥加速,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Duplicate,Grim Suffering,Grim Suffering,,pair949974351,Grim Suffering,SkillDef_DS_P_GrimSuffering,,tooltip_ds_p_grimsuffering,034B62854EADA3B29BCB628C2D2C5BD7,Portents of Suffering,苦难预兆,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Duplicate,Sanguine Brood,Sanguine Brood,,pair996849512,Sanguine Brood,SkillDef_DS_P_SanguineBrood,,tooltip_ds_p_sanguinebrood,EF6CFDFD4B95DE771106BA85265B718E,Sanguine Fiends,血腥恶魔,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Duplicate,Spectral Weapons,Spectral Weapons,,pair2873643982,Spectral Weapons,SkillDef_DS_P_SpectralWeapons,,tooltip_ds_p_spectralweapons,71ECD9D247381A8B910AF7AC2A9644A3,Cold Iron,寒铁,passive_skill,tooltip
+254,Vex,passive,Progress_DS_Trunk_Duplicate,Undead Hands,Undead Hands,,pair137711528,Undead Hands,SkillDef_DS_P_DeadHands,,tooltip_ds_p_deadhands,39237A0E495D937F3D29B28E1800BE41,Idle Hands,空闲之手,passive_skill,tooltip
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_Scourge,Augment_1,Augment_1,,pair1068101680,,SkillDef_Paladin_ActionSkill_Scourge,SkillParam_Paladin_Scourge_Aug_1.SkillParam_Paladin_Scourge_Aug_1,,,Augment_1,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_Scourge,Augment_2,Augment_2,,pair217450736,,SkillDef_Paladin_ActionSkill_Scourge,SkillParam_Paladin_Scourge_Aug_2.SkillParam_Paladin_Scourge_Aug_2,,,Augment_2,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_Scourge,Augment_3,Augment_3,,pair2945127574,,SkillDef_Paladin_ActionSkill_Scourge,SkillParam_Paladin_Scourge_Aug_3.SkillParam_Paladin_Scourge_Aug_3,,,Augment_3,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_Scourge,Augment_4,Augment_4,,pair3092265133,,SkillDef_Paladin_ActionSkill_Scourge,SkillParam_Paladin_Scourge_Aug_4.SkillParam_Paladin_Scourge_Aug_4,,,Augment_4,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_Scourge,Augment_5,Augment_5,,pair455943371,,SkillDef_Paladin_ActionSkill_Scourge,SkillParam_Paladin_Scourge_Aug_5.SkillParam_Paladin_Scourge_Aug_5,,,Augment_5,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_Scourge,Capstone_1,Capstone_1,,pair4044920886,,SkillDef_Paladin_ActionSkill_Scourge,SkillParam_Paladin_Scourge_Cap_1.SkillParam_Paladin_Scourge_Cap_1,,,Capstone_1,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_Scourge,Capstone_2,Capstone_2,,pair3259457782,,SkillDef_Paladin_ActionSkill_Scourge,SkillParam_Paladin_Scourge_Cap_2.SkillParam_Paladin_Scourge_Cap_2,,,Capstone_2,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_Scourge,Capstone_3,Capstone_3,,pair1631222928,,SkillDef_Paladin_ActionSkill_Scourge,SkillParam_Paladin_Scourge_Cap_3.SkillParam_Paladin_Scourge_Cap_3,,,Capstone_3,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_Warforge,Augment_1,Augment_1,,pair1068101680,,SkillDef_Paladin_ActionSkill_Warforge,SkillParam_Paladin_Warforge_Aug_1.SkillParam_Paladin_Warforge_Aug_1,,,Augment_1,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_Warforge,Augment_2,Augment_2,,pair217450736,,SkillDef_Paladin_ActionSkill_Warforge,SkillParam_Paladin_Warforge_Aug_2.SkillParam_Paladin_Warforge_Aug_2,,,Augment_2,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_Warforge,Augment_3,Augment_3,,pair2945127574,,SkillDef_Paladin_ActionSkill_Warforge,SkillParam_Paladin_Warforge_Aug_3.SkillParam_Paladin_Warforge_Aug_3,,,Augment_3,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_Warforge,Augment_4,Augment_4,,pair3092265133,,SkillDef_Paladin_ActionSkill_Warforge,SkillParam_Paladin_Warforge_Aug_4.SkillParam_Paladin_Warforge_Aug_4,,,Augment_4,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_Warforge,Augment_5,Augment_5,,pair455943371,,SkillDef_Paladin_ActionSkill_Warforge,SkillParam_Paladin_Warforge_Aug_5.SkillParam_Paladin_Warforge_Aug_5,,,Augment_5,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_Warforge,Capstone_1,Capstone_1,,pair4044920886,,SkillDef_Paladin_ActionSkill_Warforge,SkillParam_Paladin_Warforge_Cap_1.SkillParam_Paladin_Warforge_Cap_1,,,Capstone_1,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_Warforge,Capstone_2,Capstone_2,,pair3259457782,,SkillDef_Paladin_ActionSkill_Warforge,SkillParam_Paladin_Warforge_Cap_2.SkillParam_Paladin_Warforge_Cap_2,,,Capstone_2,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_Warforge,Capstone_3,Capstone_3,,pair1631222928,,SkillDef_Paladin_ActionSkill_Warforge,SkillParam_Paladin_Warforge_Cap_3.SkillParam_Paladin_Warforge_Cap_3,,,Capstone_3,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_WeaponMaster,Augment_1,Augment_1,,pair1068101680,,SkillDef_Paladin_ActionSkill_WeaponMaster,SkillParam_Paladin_WeaponMaster_Aug_1.SkillParam_Paladin_WeaponMaster_Aug_1,,,Augment_1,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_WeaponMaster,Augment_2,Augment_2,,pair217450736,,SkillDef_Paladin_ActionSkill_WeaponMaster,SkillParam_Paladin_WeaponMaster_Aug_2.SkillParam_Paladin_WeaponMaster_Aug_2,,,Augment_2,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_WeaponMaster,Augment_3,Augment_3,,pair2945127574,,SkillDef_Paladin_ActionSkill_WeaponMaster,SkillParam_Paladin_WeaponMaster_Aug_3.SkillParam_Paladin_WeaponMaster_Aug_3,,,Augment_3,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_WeaponMaster,Augment_4,Augment_4,,pair3092265133,,SkillDef_Paladin_ActionSkill_WeaponMaster,SkillParam_Paladin_WeaponMaster_Aug_4.SkillParam_Paladin_WeaponMaster_Aug_4,,,Augment_4,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_WeaponMaster,Augment_5,Augment_5,,pair455943371,,SkillDef_Paladin_ActionSkill_WeaponMaster,SkillParam_Paladin_WeaponMaster_Aug_5.SkillParam_Paladin_WeaponMaster_Aug_5,,,Augment_5,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_WeaponMaster,Capstone_1,Capstone_1,,pair4044920886,,SkillDef_Paladin_ActionSkill_WeaponMaster,SkillParam_Paladin_WeaponMaster_Cap_1.SkillParam_Paladin_WeaponMaster_Cap_1,,,Capstone_1,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_WeaponMaster,Capstone_2,Capstone_2,,pair3259457782,,SkillDef_Paladin_ActionSkill_WeaponMaster,SkillParam_Paladin_WeaponMaster_Cap_2.SkillParam_Paladin_WeaponMaster_Cap_2,,,Capstone_2,,fallback,coord_fallback
+255,Amon,action_modifier,Progress_Paladin_ActionSkill_Modifiers_WeaponMaster,Capstone_3,Capstone_3,,pair1631222928,,SkillDef_Paladin_ActionSkill_WeaponMaster,SkillParam_Paladin_WeaponMaster_Cap_3.SkillParam_Paladin_WeaponMaster_Cap_3,,,Capstone_3,,fallback,coord_fallback
+255,Amon,action_skill,Progress_Paladin_ActionSkills,Forgefist,Forgefist,,pair2442309920,Forgefist,SkillDef_Paladin_Trait_Forgefist,,tooltip_trait_forgefist,01DE86D744DBC9BB30E4E7AD633139E8,Forgeskill,锻造技艺,exact_skill,tooltip
+255,Amon,action_skill,Progress_Paladin_ActionSkills,Scourge,Scourge,,pair2674582898,Scourge,SkillDef_Paladin_ActionSkill_Scourge,,tooltip_pld_as_scourge,1BDDDCF24752AB2EEEB1CFAA4E053191,Scourge,鞭笞,exact_skill,tooltip
+255,Amon,action_skill,Progress_Paladin_ActionSkills,Warforge,Warforge,,pair1008204052,Warforge,SkillDef_Paladin_ActionSkill_Warforge,,tooltip_pld_as_warforge,A09DE83245EEE5D8555084AF7605A8F1,Crucible,严酷熔炉,exact_skill,tooltip
+255,Amon,action_skill,Progress_Paladin_ActionSkills,WeaponMaster,WeaponMaster,,pair256377300,WeaponMaster,SkillDef_Paladin_ActionSkill_WeaponMaster,,tooltip_pld_as_weaponmaster,B08BFAEA4968FE65DC05BD901F46ADF0,Onslaughter,猛攻,exact_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_01,Ancestral Strikes,Ancestral Strikes,Branch - Row 3 - 1,pair2665652686,Ancestral Strikes,SkillDef_PLD_P_AncestralStrikes,,tooltip_pld_p_ancestralstrikes,8353E396444DF5E2AB00BB909B499DB2,My Touch Is Death,死亡触碰,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_01,Berserk,Berserk,Branch - Row 1 - 1,pair4271287588,Berserk,SkillDef_PLD_P_Berserk,,tooltip_pld_p_berserk,40D2FAAD40E9C8DB877264BD5E3FAA3C,Berserk,狂暴,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_01,Bloodlust,Bloodlust,Branch - Row 1 - 3,pair1857309058,Bloodlust,SkillDef_PLD_P_Bloodlust,,tooltip_pld_p_bloodlust,12952BC244668578AC4071BC01AC7B2E,Bloodlust,嗜血,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_01,Branch - Row 3 - 3,Branch - Row 3 - 3,Branch - Row 3 - 3,pair247481704,,,,,,Branch - Row 3 - 3,,fallback,coord_fallback
+255,Amon,passive,Progress_PLD_Branch_Calamity_01,Emergency Refresh,Emergency Refresh,Branch - Row 2 - 2,pair1579053925,Emergency Refresh,SkillDef_PLD_P_EmergencyRefresh,,tooltip_pld_p_emergencyrefresh,F742D81A4086F7FF3839D8BA36AD266D,Rimebreak,霜破,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_01,Seeing Red,Seeing Red,Branch - Row 2 - 1,pair1833012133,Seeing Red,SkillDef_PLD_P_Berserk,SkillParam_PLD_P_SeeingRed.SkillParam_PLD_P_SeeingRed,tooltip_pld_p_berserk,40D2FAAD40E9C8DB877264BD5E3FAA3C,Berserk,狂暴,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_01,Titan,Titan,Branch - Row 2 - 3,pair4251152131,Titan,SkillDef_PLD_P_Titan,,tooltip_pld_p_titan,AC0D57674FC8DD878FFFFA97E7FC3E32,Brimming Vigor,满满活力,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_02,Branch - Row 3 - 1,Branch - Row 3 - 1,Branch - Row 3 - 1,pair2665652686,,SkillDef_PLD_P_Rearm,,tooltip_pld_p_rearm,76CEBE1741BDA4E78D4417955C94C1E8,Rearm,重新武装,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_02,Flare Up,Flare Up,Branch - Row 3 - 3,pair247481704,Flare Up,SkillDef_PLD_P_FlareUp,,tooltip_pld_p_flareup,5432D8F143C51038849E59A9844A2DA1,Mortal Flare,致命耀斑,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_02,Harbinger,Harbinger,Branch - Row 2 - 1,pair1833012133,Harbinger,SkillDef_PLD_P_Harbinger,,tooltip_pld_p_harbinger,2EB0E2C14F4A85CC26ADE186B3566313,Harbinger,先兆,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_02,Into the Fray,Into the Fray,Branch - Row 1 - 1,pair4271287588,Into the Fray,SkillDef_PLD_P_IntoTheFray,,tooltip_pld_p_intothefray,C1147EC44FFBC015109FF389F8CD5161,Into The Fray,投入战斗,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_02,Rearm,Rearm,Branch - Row 2 - 2,pair1579053925,Rearm,SkillDef_PLD_P_Rearm,,tooltip_pld_p_rearm,76CEBE1741BDA4E78D4417955C94C1E8,Rearm,重新武装,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_02,Spartan,Spartan,Branch - Row 1 - 3,pair1857309058,Spartan,SkillDef_PLD_P_Spartan,,tooltip_pld_p_spartan,817F1B1E4FADE3716FC21494610B7F39,Burning Ramparts,焚烧壁垒,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_02,Weakening Blows,Weakening Blows,Branch - Row 2 - 3,pair4251152131,Weakening Blows,SkillDef_PLD_P_WeakeningBlows,,tooltip_pld_p_weakeningblows,BCC46BD44D545022C85FA4B5EBD36FB4,Maiming Strike,致残打击,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_03,Branch - Row 3 - 3,Branch - Row 3 - 3,Branch - Row 3 - 3,pair247481704,,,,,,Branch - Row 3 - 3,,fallback,coord_fallback
+255,Amon,passive,Progress_PLD_Branch_Calamity_03,Cataclsym,Cataclsym,Branch - Row 1 - 1,pair4271287588,Cataclsym,SkillDef_PLD_P_Cataclysm,,tooltip_pld_p_cataclysm,AA4F37A040AE3FAF62DBF084FD2E5582,Catastrophe,大灾难,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_03,Electical Fire,Electical Fire,Branch - Row 3 - 1,pair2665652686,Electical Fire,SkillDef_PLD_P_ElectricalFire,,tooltip_pld_p_electricalfire,18AD73D049EA1195B1B9568E801751F0,Electrical Fire,电子火焰,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_03,Judgement,Judgement,Branch - Row 2 - 1,pair1833012133,Judgement,SkillDef_PLD_P_Judgement,,tooltip_pld_p_judgement,5672FADA4343D2B0B93267A9A4DB27E5,Judgement,审判,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_03,Shield Matrix,Shield Matrix,Branch - Row 2 - 3,pair4251152131,Shield Matrix,SkillDef_PLD_P_ShieldMatrix,,tooltip_pld_p_shieldmatrix,4AFB5883450224D9290E3F83CC925A3B,Crackling Aegis,爆裂神盾,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_03,Stopping Power,Stopping Power,Branch - Row 1 - 3,pair1857309058,Stopping Power,SkillDef_PLD_P_StoppingPower,,tooltip_pld_p_stoppingpower,96776DCC46B0CEC379BB8D946208CF8F,Dragon's Breath,龙之吐息,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Calamity_03,Thunderclap,Thunderclap,Branch - Row 2 - 2,pair1579053925,Thunderclap,SkillDef_PLD_P_Thunderclap,,tooltip_pld_p_thunderclap,A4976989404FB8292E17BAB91FD84382,Fists of Stone,岩石拳头,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_01,Annihilation,Annihilation,Branch - Row 2 - 3,pair4251152131,Annihilation,SkillDef_PLD_P_Annihilation,,tooltip_pld_p_annihilation,0015D1CB4D18B0DB96D704B4F173432C,Stoked,激动振奋,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_01,Branch - Row 3 - 3,Branch - Row 3 - 3,Branch - Row 3 - 3,pair247481704,,,,,,Branch - Row 3 - 3,,fallback,coord_fallback
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_01,Detonation Station,Detonation Station,Branch - Row 1 - 3,pair1857309058,Detonation Station,SkillDef_PLD_P_DetonationStation,,tooltip_pld_p_detonationstation,A3088EBB4048A7D90727AAA38BF9E00F,Cacophany,杂音,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_01,Empowered Weapons,Empowered Weapons,Branch - Row 2 - 1,pair1833012133,Empowered Weapons,SkillDef_PLD_P_EmpoweredWeapons,,tooltip_pld_p_empoweredweapons,3AC172D3442634DCD873C7949FFE0E24,Masterwork,大师杰作,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_01,Engineering,Engineering,Branch - Row 2 - 2,pair1579053925,Engineering,SkillDef_PLD_P_Engineering,,tooltip_pld_p_engineering,E5F134B44616F45DDB58E89E6B1F6F78,Endless Bombardment,无尽轰炸,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_01,Ordained Hammer,Ordained Hammer,Branch - Row 3 - 1,pair2665652686,Ordained Hammer,SkillDef_PLD_P_TemperedIce,SkillParam_PLD_P_OrdainedHammer.SkillParam_PLD_P_OrdainedHammer,tooltip_pld_p_temperedice,4A9F141542B56A9645A9DA96168922F8,Tempered Ice,淬炼寒冰,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_01,Tempered Ice,Tempered Ice,Branch - Row 1 - 1,pair4271287588,Tempered Ice,SkillDef_PLD_P_TemperedIce,,tooltip_pld_p_temperedice,4A9F141542B56A9645A9DA96168922F8,Tempered Ice,淬炼寒冰,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_02,Branch - Row 3 - 1,Branch - Row 3 - 1,Branch - Row 3 - 1,pair2665652686,,,,,,Branch - Row 3 - 1,,fallback,coord_fallback
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_02,Escalation,Escalation,Branch - Row 1 - 1,pair4271287588,Escalation,SkillDef_PLD_P_Escalation,,tooltip_pld_p_escalation,23AA9CF74581E1AFB3B6928FDB9A3DF2,Blast Furnace,高炉,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_02,Iron Dome,Iron Dome,Branch - Row 2 - 1,pair1833012133,Iron Dome,SkillDef_PLD_P_IronDome,,tooltip_pld_p_irondome,00495F1943FA27C448F17EAFCCCDAF42,Armor of Contempt,蔑视护甲,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_02,Lightning Rod,Lightning Rod,Branch - Row 2 - 2,pair1579053925,Lightning Rod,SkillDef_PLD_P_LightningRod,,tooltip_pld_p_lightningrod,489B28FC44E301CD9F3E7995D9F49FEB,Lightning Rod,避雷针,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_02,Quickened Weapons,Quickened Weapons,Branch - Row 2 - 3,pair4251152131,Quickened Weapons,SkillDef_PLD_P_QuickenedWeapons,,tooltip_pld_p_quickenedweapons,C8E2E1B9440FE72645DBB7982685345B,Escalation,逐步上升,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_02,Sharpened Weapons,Sharpened Weapons,Branch - Row 3 - 3,pair247481704,Sharpened Weapons,SkillDef_PLD_P_SharpendWeapons,,tooltip_pld_p_sharpendweapons,CA20F3784C4166A332C7BF8A4D42A8CE,Honed Point,磨砺尖端,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_02,Tempered Lightning,Tempered Lightning,Branch - Row 1 - 3,pair1857309058,Tempered Lightning,SkillDef_PLD_P_TemperedLightning,,tooltip_pld_p_temperedlightning,F920A2EB4C1BED9E9BBF0BB2927F30EC,Tempered Lightning,淬炼闪电,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_03,Branch - Row 3 - 3,Branch - Row 3 - 3,Branch - Row 3 - 3,pair247481704,,,,,,Branch - Row 3 - 3,,fallback,coord_fallback
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_03,Brightburn,Brightburn,Branch - Row 2 - 1,pair1833012133,Brightburn,SkillDef_PLD_P_Brightburn,,tooltip_pld_p_brightburn,332CA41145FA305D3B3980BBB6523801,Wildheart,狂野之心,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_03,Cryogenic Impulse,Cryogenic Impulse,Branch - Row 1 - 1,pair4271287588,Cryogenic Impulse,SkillDef_PLD_P_CryogenicImpulse,,tooltip_pld_p_cryogenicimpulse,7A61E1B94D20DC253536F394724FADF4,Permafrost,永久冻土,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_03,Elemental Font,Elemental Font,Branch - Row 2 - 3,pair4251152131,Elemental Font,SkillDef_PLD_P_ElementalFont,,tooltip_pld_p_elementalfont,BB729D5D492A9AEA24A10EB3E7ED3DD4,Reactive Armor,反应装甲,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_03,Heat Exchange,Heat Exchange,Branch - Row 2 - 2,pair1579053925,Heat Exchange,SkillDef_PLD_P_HeatExchange,,tooltip_pld_p_heatexchange,3CA0607E46E022154AE9EBB14A1183C4,Freezer Burn,冻结烧伤,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_03,Pull of the Elements,Pull of the Elements,Branch - Row 3 - 1,pair2665652686,Pull of the Elements,SkillDef_PLD_P_PullOfTheElements,,tooltip_pld_p_pulloftheelements,B6CED65F44C4883B341ACC9C365E6E60,Reverse Explosion,逆向爆炸,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Cybernetics_03,Raging Inferno,Raging Inferno,Branch - Row 1 - 3,pair1857309058,Raging Inferno,SkillDef_PLD_P_RagingInferno,,tooltip_pld_p_raginginferno,652BBA7245A9BE3ADB1FA4A94085581D,Raging Inferno,熊熊烈火,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Vengeance_01,Attenuation,Attenuation,Branch - Row 3 - 3,pair247481704,Attenuation,SkillDef_PLD_P_Worldbreaker,SkillParam_PLD_P_Attenuation.SkillParam_PLD_P_Attenuation,tooltip_pld_p_worldbreaker,E6AB761648231E3C630C0C8A31988954,Worldbreaker,世界破坏者,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Vengeance_01,Ballistic Shielding,Ballistic Shielding,Branch - Row 2 - 1,pair1833012133,Ballistic Shielding,SkillDef_PLD_P_BallisticShielding,,tooltip_pld_p_ballisticshielding,341C10F241D476E32C8F03ABC26C51A8,Ballistic Bulwark,弹道壁垒,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Vengeance_01,Branch - Row 3 - 1,Branch - Row 3 - 1,Branch - Row 3 - 1,pair2665652686,,,,,,Branch - Row 3 - 1,,fallback,coord_fallback
+255,Amon,passive,Progress_PLD_Branch_Vengeance_01,Disco Inferno,Disco Inferno,Branch - Row 2 - 2,pair1579053925,Disco Inferno,SkillDef_PLD_P_DiscoInferno,,tooltip_pld_p_discoinferno,5524D8034FEB2E5959775AA7DED506D9,Disco Infernus,迪斯科地狱火,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Vengeance_01,Flame Affinity,Flame Affinity,Branch - Row 1 - 3,pair1857309058,Flame Affinity,SkillDef_PLD_P_FlameAffinity,,tooltip_pld_p_flameaffinity,D59340604F2882ABD766C9BD058D77D6,Burning Rage,怒火燃烧,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Vengeance_01,Wildfire,Wildfire,Branch - Row 1 - 1,pair4271287588,Wildfire,SkillDef_PLD_P_Wildfire,,tooltip_pld_p_wildfire,93CAA729429B6E9A5A633288AED91889,Wildfire,野火燎原,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Vengeance_01,Worldbreaker,Worldbreaker,Branch - Row 2 - 3,pair4251152131,Worldbreaker,SkillDef_PLD_P_Worldbreaker,,tooltip_pld_p_worldbreaker,E6AB761648231E3C630C0C8A31988954,Worldbreaker,世界破坏者,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Vengeance_02,Age of Ice,Age of Ice,Branch - Row 2 - 3,pair4251152131,Age of Ice,SkillDef_PLD_P_AgeOfIce,,tooltip_pld_p_ageofice,046548FE4993AB7390C3C39F0E925B80,Age of Ice,冰河时代,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Vengeance_02,Branch - Row 3 - 3,Branch - Row 3 - 3,Branch - Row 3 - 3,pair247481704,,,,,,Branch - Row 3 - 3,,fallback,coord_fallback
+255,Amon,passive,Progress_PLD_Branch_Vengeance_02,Brittle Hollow Points,Brittle Hollow Points,Branch - Row 1 - 3,pair1857309058,Brittle Hollow Points,SkillDef_PLD_P_BrittleHollowPoints,,,,Brittle Hollow Points,,fallback,alias_fallback
+255,Amon,passive,Progress_PLD_Branch_Vengeance_02,Cryo Affinity,Cryo Affinity,Branch - Row 1 - 1,pair4271287588,Cryo Affinity,SkillDef_PLD_P_CryoAffinity,,tooltip_pld_p_cryoaffinity,27B1F2954FF7C98A91C1C1A42D0465B6,Icy Rage,寒冰暴怒,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Vengeance_02,Elemental Echoes,Elemental Echoes,Branch - Row 2 - 1,pair1833012133,Elemental Echoes,SkillDef_PLD_P_ElementalEchoes,,tooltip_pld_p_elementalechoes,A50DF2AF4D8C67A8C50F29842FCAB054,Winter's Kiss,冬日之吻,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Vengeance_02,Elemental Surge,Elemental Surge,Branch - Row 2 - 2,pair1579053925,Elemental Surge,SkillDef_PLD_P_ElementalSurge,,tooltip_pld_p_elementalsurge,1557A4E74D3046DC0C47F8B2161ECE69,Primal Surge,原始涌动,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Vengeance_02,Split Echoes,Split Echoes,Branch - Row 3 - 1,pair2665652686,Split Echoes,SkillDef_PLD_P_ElementalEchoes,SkillParam_PLD_P_SplitEchoes.SkillParam_PLD_P_SplitEchoes,tooltip_pld_p_elementalechoes,A50DF2AF4D8C67A8C50F29842FCAB054,Winter's Kiss,冬日之吻,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Vengeance_03,Branch - Row 3 - 1,Branch - Row 3 - 1,Branch - Row 3 - 1,pair2665652686,,,,,,Branch - Row 3 - 1,,fallback,coord_fallback
+255,Amon,passive,Progress_PLD_Branch_Vengeance_03,Elemental Bolt,Elemental Bolt,Branch - Row 2 - 3,pair4251152131,Elemental Bolt,SkillDef_PLD_P_ElementalBolt,,tooltip_pld_p_elementalbolt,AE74A4E34EE620C3B76C0CAB99AD6E51,Strike the Anvil,重击铁砧,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Vengeance_03,Flashbang,Flashbang,Branch - Row 1 - 1,pair4271287588,Flashbang,SkillDef_PLD_P_Flashbang,,tooltip_pld_p_flashbang,6974B5E2482595161AD6328A2E6C1BE0,Blackout,灯火管制,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Vengeance_03,Forecast,Forecast,Branch - Row 2 - 2,pair1579053925,Forecast,SkillDef_PLD_P_Forecast,,tooltip_pld_p_forecast,DB67CEE648203FE397F6F691D7CA8183,Smelter,熔炼炉,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Vengeance_03,High Voltage,High Voltage,Branch - Row 3 - 3,pair247481704,High Voltage,SkillDef_PLD_P_ElementalBolt,SkillParam_PLD_P_HighVoltage.SkillParam_PLD_P_HighVoltage,tooltip_pld_p_elementalbolt,AE74A4E34EE620C3B76C0CAB99AD6E51,Strike the Anvil,重击铁砧,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Vengeance_03,Shock Affinity,Shock Affinity,Branch - Row 1 - 3,pair1857309058,Shock Affinity,SkillDef_PLD_P_ShockAffinity,,tooltip_pld_p_shockaffinity,A4EF4B18494D9FC4AE4205809FB6672A,Thunderous Rage,雷霆之怒,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Branch_Vengeance_03,Tactician,Tactician,Branch - Row 2 - 1,pair1833012133,Tactician,SkillDef_PLD_P_Tactician,,tooltip_pld_p_tactician,D0F0D8F942CED3CF75C24FBE3843FDA0,Tactician,战略家,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Calamity,Adaptive Charge,Adaptive Charge,,pair996849512,Adaptive Charge,SkillDef_PLD_P_AdaptiveCharge,,tooltip_pld_p_adaptivecharge,BB223E5E410636137DB074BBFEDA7010,Impetus,推动力,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Calamity,Armored Plating,Armored Plating,,pair535716755,Armored Plating,SkillDef_PLD_P_ArmoredPlating,,tooltip_pld_p_armoredplating,B4A2DF384F0319F858968FBCBE6B2873,Heavy Plate,重型板甲,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Calamity,Brass Knuckles,Brass Knuckles,,pair3163783157,Brass Knuckles,SkillDef_PLD_P_BrassKnuckles,,tooltip_pld_p_brassknuckles,FBC284B548398DC91D0A57B50E525AC0,Discombobulate,乱其方寸,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Calamity,Bullet Storm,Bullet Storm,,pair1749107522,Bullet Storm,SkillDef_PLD_P_BulletStorm,,tooltip_pld_p_bulletstorm,6B06A6D542BE0CD0EC77AE9A754AF5DC,Bullet Storm,子弹风暴,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Calamity,Doom Fist,Doom Fist,,pair2352563474,Doom Fist,SkillDef_PLD_P_DoomFist,,tooltip_pld_p_doomfist,B0E74EE34059EF0BC54947A0C86EC662,Tritanium Knuckles,三钛合金手指虎,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Calamity,Fiery Spirit,Fiery Spirit,,pair2873643982,Fiery Spirit,SkillDef_PLD_P_FierySpirit,,tooltip_pld_p_fieryspirit,F130A17840684829DA6F1A8AD2BEF829,What Burns Within,灼烧之心,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Calamity,Forged In Steel,Forged In Steel,,pair1528740738,Forged In Steel,SkillDef_PLD_P_ForgedInSteel,,tooltip_pld_p_forgedinsteel,3A68C24F49375148CBF2A0975711D997,Forged In Steel,钢铁锻造,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Calamity,Momentum,Momentum,,pair3706155807,Momentum,SkillDef_PLD_P_Momentum,,tooltip_pld_p_momentum,52B175DA4F3909BD7280EDA520A84318,Metal Urge,金属涌动,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Calamity,The Best Defense,The Best Defense,,pair2140827513,The Best Defense,SkillDef_PLD_P_TheBestDefense,,tooltip_pld_p_thebestdefense,F197587B4E0D484BE30ADEA0AA079B7A,The Best Defense,最强防御,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Calamity,Weakening Blast,Weakening Blast,,pair949974351,Weakening Blast,SkillDef_PLD_P_WeakeningBlast,,tooltip_pld_p_weakeningblast,EE3E4DC54E12CB6E86BCD8982534BA26,Gut Punch,一拳击腹,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Calamity,Wield The Storm,Wield The Storm,,pair2830995945,Wield The Storm,SkillDef_PLD_P_WieldTheStorm,,tooltip_pld_p_wieldthestorm,842AF11A4772F5F14B3517BCDB169867,Wield the Storm,执掌风暴,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Cybernetics,Bolt Action,Bolt Action,Trunk - Row 2 - 5,pair2352563474,Bolt Action,SkillDef_PLD_P_BoltAction,,tooltip_pld_p_boltaction,7BADD54844A7DB6032E73C9FA7E912F5,Bolt Action,栓动电击,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Cybernetics,Building Storm,Building Storm,Trunk - Row 1 - 2,pair137711528,Building Storm,SkillDef_PLD_P_BuildingStorm,,tooltip_pld_p_buildingstorm,61ACD5CB43C476CFF3F7E9B522810DFE,Gathering Storm,暴风前夕,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Cybernetics,Cast Iron,Cast Iron,Trunk - Row 1 - 1,pair996849512,Cast Iron,SkillDef_PLD_P_CastIron,,tooltip_pld_p_castiron,94FAAB2E476011E438A2FB9E163032B0,Cast Iron,铸铁,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Cybernetics,Destruction Engine,Destruction Engine,Trunk - Row 2 - 1,pair2830995945,Destruction Engine,SkillDef_PLD_P_DestructionEngine,,tooltip_pld_p_destructionengine,72EA7DEE486E03492DCC249FB38DC0F9,Destruction Engine,毁灭仿生体,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Cybernetics,Excitable,Excitable,Trunk - Row 3 - 1,pair1528740738,Excitable,SkillDef_PLD_P_Excitable,,tooltip_pld_p_excitable,C13707464C6C5A1723C68E9270E7621D,Bellows,风箱,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Cybernetics,Locked In,Locked In,Trunk - Row 3 - 4,pair3706155807,Locked In,SkillDef_PLD_P_LockedIn,,tooltip_pld_p_lockedin,45EF071A4572ACF8AA5FD69E2CD01C01,Vital Organs,重要器官,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Cybernetics,Rapid Reload,Rapid Reload,Trunk - Row 1 - 5,pair535716755,Rapid Reload,SkillDef_PLD_P_RapidReload,,tooltip_pld_p_rapidreload,898894EB4BB26718F67FD7A9F604D2F5,Get the Lead Out,速度加快,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Cybernetics,Storms Herald,Storms Herald,Trunk - Row 3 - 5,pair2140827513,Storms Herald,SkillDef_PLD_P_StormsHerald,,tooltip_pld_p_stormsherald,54E1EA1641BEEF454DF299A8627DBBC2,Herald's Call,赫拉德的召唤,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Cybernetics,Tempered Flame,Tempered Flame,Trunk - Row 2 - 3,pair949974351,Tempered Flame,SkillDef_PLD_P_TemperedFlame,,tooltip_pld_p_temperedflame,B1DEC9E4445C9ECCBAB6E4B561775EF0,Tempered Pyre,淬炼火堆,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Cybernetics,Trunk - Row 1 - 3,Trunk - Row 1 - 3,Trunk - Row 1 - 3,pair2873643982,,,,,,Trunk - Row 1 - 3,,fallback,coord_fallback
+255,Amon,passive,Progress_PLD_Trunk_Cybernetics,Trunk - Row 3 - 2,Trunk - Row 3 - 2,Trunk - Row 3 - 2,pair1749107522,,,,,,Trunk - Row 3 - 2,,fallback,coord_fallback
+255,Amon,passive,Progress_PLD_Trunk_Cybernetics,Twinned Armaments,Twinned Armaments,Trunk - Row 3 - 3,pair3409731364,Twinned Armaments,SkillDef_PLD_P_TemperedFlame,SkillParam_PLD_P_TwinnedArmaments.SkillParam_PLD_P_TwinnedArmaments,tooltip_pld_p_temperedflame,B1DEC9E4445C9ECCBAB6E4B561775EF0,Tempered Pyre,淬炼火堆,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Cybernetics,Weapon Master,Weapon Master,Trunk - Row 1 - 4,pair3163783157,Weapon Master,SkillDef_PLD_P_WeaponMaster,,tooltip_pld_p_weaponmaster,B23166CF45657815202F13B697F37BAD,Executioner,刽子手,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Vengeance,Ancient Ways,Ancient Ways,,pair3409731364,Ancient Ways,SkillDef_PLD_P_AncientWays,,tooltip_pld_p_ancientways,37BCCA1E45336743E73AE6BC014B2D2D,Ancient Ways,古老之道,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Vengeance,Battleborn,Battleborn,,pair535716755,Battleborn,SkillDef_PLD_P_Battleborn,,tooltip_pld_p_battleborn,CE77C4F4448D2698D4BF78BA33CD5407,Battleborn,为战而生,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Vengeance,Bullet Hail,Bullet Hail,,pair1528740738,Bullet Hail,SkillDef_PLD_P_BulletHail,,tooltip_pld_p_bullethail,2D14677846BBA352D9B966B2D91CE3FD,Bullet Hail,子弹冰雹,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Vengeance,Demolitiionist,Demolitiionist,,pair2873643982,Demolitiionist,SkillDef_PLD_P_Demolitionist,,tooltip_pld_p_demolitionist,58DE9FE34CBF4A53833B61B66421A628,Scorched Kairos,焦土凯洛斯,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Vengeance,Feedback Loop,Feedback Loop,,pair2140827513,Feedback Loop,SkillDef_PLD_P_FeedbackLoop,,tooltip_pld_p_feedbackloop,85B3B0964837196254E868BA74C9D6EB,Warrior's Cup,战士之杯,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Vengeance,Frost Bite,Frost Bite,,pair949974351,Frost Bite,SkillDef_PLD_P_FrostBite,,tooltip_pld_p_frostbite,2DF983C74FAEE268E9B19B98192691A6,Tail of the Comet,彗星尾,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Vengeance,Machinist,Machinist,,pair1749107522,Machinist,SkillDef_PLD_P_Machinist,,tooltip_pld_p_machinist,30AEC1544DC54F433A7DB5994D798CEE,Machinist,机械师,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Vengeance,Perpetual,Perpetual,,pair2830995945,Perpetual,SkillDef_PLD_P_Perpetual,,tooltip_pld_p_perpetual,20C5AA22465390E4B1FAD7B13F9782AA,Eternal,永恒,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Vengeance,Resolute,Resolute,,pair3163783157,Resolute,SkillDef_PLD_P_Resolute,,tooltip_pld_p_resolute,58836E374D1591E9DDF4F3BD937A3E83,The Thrill,真实刺激,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Vengeance,Vigor,Vigor,,pair2352563474,Vigor,SkillDef_PLD_P_Vigor,,tooltip_pld_p_vigor,BF4A1C08469EC7E8F1BAAA9AF196CA0E,Scar Tissue,疤痕组织,passive_skill,tooltip
+255,Amon,passive,Progress_PLD_Trunk_Vengeance,Wrath Of Nature,Wrath Of Nature,,pair996849512,Wrath Of Nature,SkillDef_PLD_P_WrathOfNature,,tooltip_pld_p_wrathofnature,09A41DDC435B72526840028890D9E309,Wrath of Nature,自然之怒,passive_skill,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_auto_lock,Beam Team,Beam Team,,pair3259457782,Beam Team,,,tooltip_exo_autolock_capstone_beamteam,623E873940CB7409BF945AA92033E219,Beam Team,光束战队,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_auto_lock,Bullet-Buddy Deluxe,Bullet-Buddy Deluxe,,pair3092265133,Bullet-Buddy Deluxe,,,tooltip_exo_autolock_augment_overeload,84097B0043BDA1AD6199C9820A773779,Bullet-Buddy Deluxe,子弹基友豪华版,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_auto_lock,Double-Ought Autoshot,Double-Ought Autoshot,,pair4044920886,Double-Ought Autoshot,,,tooltip_exo_autolock_capstone_moreoomph,17619C4244216C92DDE5AB9E2598CE98,Double-Ought Autoshot,大口径连射,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_auto_lock,Hell in a Shell,Hell in a Shell,,pair455943371,Hell in a Shell,,,tooltip_exo_autolock_augment_phosphorusshell,9D4857E1482BB46D2537E59CC2D93D71,Hell in a Shell,壳中地狱,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_auto_lock,Insta-Fort Battle System,Insta-Fort Battle System,,pair2945127574,Insta-Fort Battle System,,,tooltip_exo_autolock_augment_psd,AF50AA514813B576204EBEA309CF44A7,Insta-Fort Battle System,即时堡垒作战系统,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_auto_lock,Instinto,Instinto,,pair217450736,Instinto,,,tooltip_exo_autolock_augment_conduit,A3671EC949E372975A8F8693BFFF6CCE,Instinto,战斗本能,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_auto_lock,Unmissable Missiles,Unmissable Missiles,,pair1068101680,Unmissable Missiles,,,tooltip_exo_autolock_augment_homingmissileflurry,259E14D14BF8FC19C2FD11BA09EF1939,Unmissable Missiles,精确导弹,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_auto_lock,Volatile Hollowpoints,Volatile Hollowpoints,,pair1631222928,Volatile Hollowpoints,,,tooltip_exo_autolock_capstone_rocketpods,6C82835F4DB72B804D6CF083FF5F12B4,Volatile Hollowpoints,易爆弹头,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_buster,Battery Subscription Service,Battery Subscription Service,,pair3092265133,Battery Subscription Service,,,tooltip_exo_bunkerbuster_extrabatteries,68D909374D6463568679BC96FE2F7C5A,Battery Subscription Service,电池订阅服务,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_buster,Engorged Bore,Engorged Bore,,pair1068101680,Engorged Bore,,,tooltip_exo_bunkerbuster_magrail,47F5B2BE4ADDE7455C183B9B8FB3A165,Engorged Bore,爆裂穿刺,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_buster,Gibistruct Module,Gibistruct Module,,pair217450736,Gibistruct Module,,,tooltip_exo_bunkerbuster_ducttapemod,D6653B0E421E6AD8B96A8189C26CAAA2,Gibistruct Module,数据构造模块,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_buster,Ojo Rojo,Ojo Rojo,,pair2945127574,Ojo Rojo,,,tooltip_exo_bunkerbuster_stabilizer,63F9A1C34C9B8D7340C78586AACC2837,Ojo Rojo,红色眼睛,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_buster,Project: BASILISK,Project: BASILISK,,pair1631222928,Project: BASILISK,,,tooltip_exo_bunkerbuster_capstone_hazardouspayload,3BA0F6CD4F6430486F66F1B607E8D6A8,PROJECT: Basilisk,蛇怪计划,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_buster,Project: GORGON,Project: GORGON,,pair4044920886,Project: GORGON,,,tooltip_exo_bunkerbuster_capstone_laserfocused,2D3276F04A3E95A6A856178494032966,PROJECT: Gorgon,戈耳工计划,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_buster,Project: RAIJU,Project: RAIJU,,pair3259457782,Project: RAIJU,,,tooltip_exo_bunkerbuster_capstone_taserface,3F4CAC8841671C3B416835B7B8C43443,PROJECT: Raiju,雷兽计划,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_buster,Sangre por Sangre,Sangre por Sangre,,pair455943371,Sangre por Sangre,,,tooltip_exo_bunkerbuster_efficiencyengine,1B6398134CB21FB44844A89D52BE564C,Sangre por Sangre,血债血偿,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_heavy_arms,Acid Drop,Acid Drop,,pair1068101680,Acid Drop,,,tooltip_exo_heavyarms_augment_causticleap,D1948D6E4CE495CB04FAB0AEF0B77963,Acid Drop,酸液水滴,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_heavy_arms,Altered Cabr?n,Altered Cabr?n,,pair3092265133,Altered Cabr?n,,,tooltip_exo_heavyarms_augment_adrenalinejunkie,F3ECABB144DA224F5BADC6B4FE39BF19,Altered Cabrón,变异混蛋,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_heavy_arms,Dead Man Walking,Dead Man Walking,,pair217450736,Dead Man Walking,,,tooltip_exo_heavyarms_augment_deadmanwalking,0C74B4EF43471B2D0C3BBF812CB80D97,Dead Man Walking,死尸漫步,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_heavy_arms,Galvanic Panic,Galvanic Panic,,pair1631222928,Galvanic Panic,,,tooltip_exo_heavyarms_capstone_violentfrenzy,10C744E646421A045A77AD9EC0BDCD39,Galvanic Panic,电流恐慌,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_heavy_arms,Hurac?n Especial,Hurac?n Especial,,pair4044920886,Hurac?n Especial,,,tooltip_exo_heavyarms_capstone_whirlwind,EAADB3124FDA6E99C5B70BA90BA73C75,Huracán Especial,飓风之力,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_heavy_arms,Inferno Protocol,Inferno Protocol,,pair3259457782,Inferno Protocol,,,tooltip_exo_heavyarms_capstone_chargeburst,AD94D301410DF92B9CE3D48753307B1B,Inferno Protocol,地狱协议,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_heavy_arms,Parting Gift,Parting Gift,,pair455943371,Parting Gift,,,tooltip_exo_heavyarms_augment_partinggift,08E301D545CE3D64D13C4A94024FE01A,Parting Gift,离别礼物,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_exo_mods_heavy_arms,Thundercutter,Thundercutter,,pair2945127574,Thundercutter,,,tooltip_exo_heavyarms_augment_excessiveenergy,8E3765F440D21D1CA95A8989789CB3D1,Thundercutter,雷霆斩击者,alias_match,tooltip
+256,Rafa,action_modifier,progress_graph_grav_mods_exodus,Augment 1: Anachrony,Augment 1: Anachrony,,pair1068101680,Augment 1: Anachrony,,,tooltip_augment_grav_exodus_anachrony,0D45933B483EA151A9EBEDAE1B66C6FE,Field Research,野外调查,grav_modifier_key,tooltip
+256,Rafa,action_modifier,progress_graph_grav_mods_exodus,Augment 2: Inflation,Augment 2: Inflation,,pair217450736,Augment 2: Inflation,,,tooltip_augment_grav_exodus_inflation,791F4FDD4C3CC2288F8994991106203A,Containment Breach,抑制失效,grav_modifier_key,tooltip
+256,Rafa,action_modifier,progress_graph_grav_mods_exodus,Augment 3: Temporal Loop,Augment 3: Temporal Loop,,pair2945127574,Augment 3: Temporal Loop,,,tooltip_augment_grav_exodus_temporalloop,AF7DC9804CA94F307312DA9393FD2F29,Neutron Capture,中子捕获,grav_modifier_key,tooltip
+256,Rafa,action_modifier,progress_graph_grav_mods_exodus,Augment 4: Demi,Augment 4: Demi,,pair3092265133,Augment 4: Demi,,,tooltip_augment_grav_exodus_demi,2645409145B2AEEB440EC498F326F6AF,Voidstar,虚空之星,grav_modifier_key,tooltip
+256,Rafa,action_modifier,progress_graph_grav_mods_exodus,Augment 5: Special Magnets,Augment 5: Special Magnets,,pair455943371,Augment 5: Special Magnets,,,,,Special Magnets,,fallback,alias_fallback
+256,Rafa,action_modifier,progress_graph_grav_mods_exodus,Capstone 1: Devastation,Capstone 1: Devastation,,pair4044920886,Capstone 1: Devastation,,,tooltip_capstone_grav_exodus_devastation,8C7EA11C478FEE3AB5737CB7F110C947,Demon Core,恶魔核心,grav_modifier_key,tooltip
+256,Rafa,action_modifier,progress_graph_grav_mods_exodus,Capstone 2: Dynamism,Capstone 2: Dynamism,,pair3259457782,Capstone 2: Dynamism,,,tooltip_capstone_grav_exodus_dynamism,BE97F6D44E9A0EEA56D3408584D865C2,Q-Ball,Q球,grav_modifier_key,tooltip
+256,Rafa,action_modifier,progress_graph_grav_mods_exodus,Capstone 3: Destruction,Capstone 3: Destruction,,pair1631222928,Capstone 3: Destruction,,,tooltip_capstone_grav_exodus_destruction,70D53DC24C78D1BEE0539BA7851233C6,The Shattering Light,耀眼光芒,grav_modifier_key,tooltip
+256,Rafa,action_skill,progress_graph_exo_action_skills,APOPHIS Lance,APOPHIS Lance,,pair1008204052,APOPHIS Lance,Skill_Exo_BunkerBuster2,,tooltip_exo_bunkerbuster,78F81FF845842E2412B2FB990266F141,APOPHIS Lance,阿波菲斯长矛,exact_skill,tooltip
+256,Rafa,action_skill,progress_graph_exo_action_skills,Overdrive,Overdrive,,pair2442309920,Overdrive,Trait_Exo_OverdriveSM,,,,Overdrive,,fallback,alias_fallback
+256,Rafa,action_skill,progress_graph_exo_action_skills,Peacebreaker Cannons,Peacebreaker Cannons,,pair2674582898,Peacebreaker Cannons,Skill_Exo_AutoLock3,,tooltip_exo_autolock,0BA3EEE3425CC881B3BC0593434B6D7D,Peacebreaker Cannons,和平破坏者火炮,exact_skill,tooltip
+256,Rafa,action_skill,progress_graph_exo_action_skills,Type IX Arc-Knives,Type IX Arc-Knives,,pair256377300,Type IX Arc-Knives,Skill_Exo_HeavyArms3,,tooltip_exo_heavyarms,A7FE909543BEAB7762667BBC7C5C2B04,Arc-Knives,电弧匕首,exact_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_Gimmick_01,Blowout,Blowout,,pair4271287588,Blowout,Passive_Exo_63_Blowout,,tooltip_exo_passive_63_blowout,EE04FFE3407971C8F182418B04BE0554,Blowout,爆裂,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_Gimmick_01,El Paraguas,El Paraguas,,pair1857309058,El Paraguas,Passive_Exo_64_ElParaguas,,tooltip_exo_passive_64_elparaguas,E942183847E4EB5D6DEB5AB9AEAF6294,El Paraguas,挡雨之伞,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_Gimmick_01,Liquidation,Liquidation,,pair2665652686,Liquidation,Passive_Exo_67_Liquidation_A,,tooltip_exo_passive_67_liquidation,2FEE57884B340BE1D576B0884BD90FCF,Liquidation,液化,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_Gimmick_01,Protector Pulse,Protector Pulse,,pair1579053925,Protector Pulse,Passive_Exo_65_ProtectoPulse,,tooltip_exo_passive_65_protectopulse,05A8616F4CF2706FAB0BB689F65BB5A7,Protecto-Pulse,守护脉冲,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_Gimmick_01,Shock Market,Shock Market,,pair4251152131,Shock Market,Passive_Exo_66_ShockMarket,,tooltip_exo_passive_66_shockmarket,8CD9E179420EFDE7DA824C8C5BFF8C86,Shock Market,刺激市场,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_Gimmick_02,Artilleria,Artilleria,,pair4271287588,Artilleria,Passive_Exo_68_Artilleria,,tooltip_exo_passive_68_artilleria,62293A45440BF013EF4A079D5E439C4C,Artillería,炮兵,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_Gimmick_02,Booming Business,Booming Business,,pair1833012133,Booming Business,Passive_Exo_70_BoomingBusiness_A,,tooltip_exo_passive_70_boomingbusiness,CDC36E7B496AE292815691AD1E727491,Booming Business,蓬勃发展,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_Gimmick_02,Collabrate Ignition,Collabrate Ignition,,pair1857309058,Collabrate Ignition,Passive_Exo_69_CollabrateIgnition_A,,tooltip_exo_passive_69_collabrateignition,ECE58B7A46360A90FD0154A241F1BFB4,Collaborate Ignition,协同点火,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_Gimmick_02,El Diabilito,El Diabilito,,pair247481704,El Diabilito,Passive_Exo_73_ElDiabilito,,tooltip_exo_passive_73_eldiabilito,FD86A62445611114AC186BB0D81DFE43,El Diablito,恐怖恶魔,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_Gimmick_02,Hemolitions,Hemolitions,,pair2665652686,Hemolitions,Passive_Exo_72_Hemolitions_A,,tooltip_exo_passive_72_hemolitions,BEDB010A4CDC9747EC1A30B34F1E6075,Hemolitions,血怒爆裂,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_Gimmick_02,Sinergia,Sinergia,,pair4251152131,Sinergia,Passive_Exo_71_Sinergia_A,,tooltip_exo_passive_71_sinergia,43684E584C6DDB2E0448D5A059521B54,Sinergia,协同作用,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_Gimmick_03,Cruel Accrual,Cruel Accrual,,pair247481704,Cruel Accrual,Passive_Exo_78_CruelAccrual,,tooltip_exo_passive_78_cruelaccrual,F32C915D46139CCC2C2A1283E71974D6,Cruel Accrual,残酷累积,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_Gimmick_03,El Borracho,El Borracho,,pair4271287588,El Borracho,Passive_Exo_74_ElBorracho_A,,tooltip_exo_passive_74_elborracho,84601E7D4556185691E005B1C84AC2F3,El Borracho,纯纯醉汉,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_Gimmick_03,Empuje,Empuje,,pair1857309058,Empuje,Passive_Exo_75_Empuje,,tooltip_exo_passive_75_empuje,D479628E4996835E64441F8584AAF0FB,Empuje,高能推力,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_Gimmick_03,Motivar,Motivar,,pair1579053925,Motivar,Passive_Exo_77_Motivar,,tooltip_exo_passive_77_motivar,2E8984E9401F65543618A09EF402437A,Motivar ,鼓舞士气 ,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_Gimmick_03,Sustainable Energy,Sustainable Energy,,pair1833012133,Sustainable Energy,Passive_Exo_76_SustainableEnergy,,tooltip_exo_passive_76_sustainableenergy,6BC553D749AE8CC44F9487BBE21C693A,Sustainable Energy,可持续能源,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_PeoplePerson_01,Awe,Awe,,pair2665652686,Awe,PassiveSkill_Exo_14_Awe,,tooltip_exo_passive_14_awe,D0F7591D42EF6BEB368AB7BAA09C53B5,Awe,敬畏,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_PeoplePerson_01,Brain Dump,Brain Dump,,pair4271287588,Brain Dump,PassiveSkill_Exo_11_BrainDrump_A,,tooltip_exo_passive_11_braindrump,B7B6D4AE49B234149659CC81D2E175B1,Brain Dump,大脑转存,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_PeoplePerson_01,Conductivo,Conductivo,,pair1857309058,Conductivo,PassiveSkill_Exo_12_Conductivo,,tooltip_exo_passive_12_conductivo,7C0FADA148A109F03415C493D4CD11F8,Conductivo,传导力,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_PeoplePerson_01,El Catrin,El Catrin,,pair1579053925,El Catrin,PassiveSkill_Exo_13_ElCatrin_A,,tooltip_exo_passive_13_elcatrin,55C8D1C54480EA3062E64AB2A5E0B042,El Catrín,贵族男子,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_PeoplePerson_01,Fiesta,Fiesta,,pair247481704,Fiesta,PassiveSkill_Exo_15_Fiesta_A,,tooltip_exo_passive_15_fiesta,D76219E24CD886D6EE0C30A48592C44B,Fiesta,嘉年华,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_PeoplePerson_02,Debtonation,Debtonation,,pair4251152131,Debtonation,PassiveSkill_Exo_19_Debtonation,,tooltip_exo_passive_19_debtonation,29EABFA146F2690C970615B3F1FFD82B,Debtonation,内燃爆鸣,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_PeoplePerson_02,Drone Assault,Drone Assault,,pair2665652686,Drone Assault,PassiveSkill_Exo_20_DroneAssault,,tooltip_exo_passive_20_droneassault,CFDE9F17451AC9A049F283B1269528DE,Drone Assault,无人机突击,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_PeoplePerson_02,Drone Defense,Drone Defense,,pair4271287588,Drone Defense,PassiveSkill_Exo_16_DroneDefense,,tooltip_exo_passive_16_dronedefense,1B7C50CB43DEEF5F7CAFEABC50144419,Drone Defense,无人机防御,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_PeoplePerson_02,El Soldado,El Soldado,,pair1857309058,El Soldado,PassiveSkill_Exo_17_ElSoldado_A,,tooltip_exo_passive_17_elsoldado,05173A9B45115B3A02EF8D848646D14A,El Soldado,英勇士兵,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_PeoplePerson_02,The Right Tools,The Right Tools,,pair1579053925,The Right Tools,PassiveSkill_Exo_18_TheRightTools_A,,tooltip_exo_passive_18_therighttools,77FF5AE549448A52F32936BDC5C05D1C,The Right Tools,正确工具,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_PeoplePerson_03,Deadline,Deadline,,pair4251152131,Deadline,PassiveSkill_Exo_24_Deadline,,tooltip_exo_passive_24_deadline,E985E9F14D6CD35ECABC88A77BCF9B01,Deadline,最后期限,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_PeoplePerson_03,Jaque,Jaque,,pair4271287588,Jaque,PassiveSkill_Exo_21_Jaque_A,,tooltip_exo_passive_21_jaque,6422075A4A4FB56C95883B99B4019030,Jaque,将死,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_PeoplePerson_03,La Garza,La Garza,,pair1857309058,La Garza,PassiveSkill_Exo_22_LaGarza,,tooltip_exo_passive_22_lagarza,22F346C844B9C36233C0BF896956C17B,La Garza,苍鹭,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_PeoplePerson_03,MAte,MAte,,pair1833012133,MAte,PassiveSkill_Exo_23_Mate_A,,tooltip_exo_passive_23_mate,939441C14189129B8825B49EA82DC219,Mate,逼近,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_PeoplePerson_03,Per My Last,Per My Last,,pair247481704,Per My Last,PassiveSkill_Exo_25_PerMyLast,,tooltip_exo_passive_25_permylast,B87A4E2C479B2AE95CBF6E81B6AB06E1,Per My Last,遵照指示,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_RemoteAgent_01,Assymetric Warfare,Assymetric Warfare,,pair1857309058,Assymetric Warfare,passiveskill_exo_36_AssymreticWarfare,,tooltip_exo_passive_36_assymreticwarfare,8D993B384792153FE01BE399FDA15D80,Asymmetric Warfare,非对称战争,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_RemoteAgent_01,Errant Spark,Errant Spark,,pair1833012133,Errant Spark,passiveskill_exo_37_ErrantSpark,,tooltip_exo_passive_37_errantspark,C453F8564D9621521FAC8E8BCD1A666D,Errant Spark,游离火花,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_RemoteAgent_01,Hostile Acquisition,Hostile Acquisition,,pair1579053925,Hostile Acquisition,passiveskill_exo_38_Ardid,,tooltip_exo_passive_38_ardid,E94745BF4A04C25A866C199D6F3C26F3,Hostile Acquisition,敌意收购,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_RemoteAgent_01,Lateral Plinking,Lateral Plinking,,pair247481704,Lateral Plinking,passiveskill_exo_41_LaterialPlinking,,tooltip_exo_passive_41_laterialplinking,3A4BCBE34023FF664651CDA33623A1D8,Lateral Plinking,横向射击,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_RemoteAgent_01,Propietary Incendiary,Propietary Incendiary,,pair2665652686,Propietary Incendiary,passiveskill_exo_40_ProprietaryIncendiary,,tooltip_exo_passive_40_proprietaryincendiary,314F945A4E6E5A45DC304B9794FB86A3,Proprietary Incendiary,专利燃烧弹,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_RemoteAgent_01,Rolling Stone,Rolling Stone,,pair4251152131,Rolling Stone,PassiveSkill_Exo_39_RollingStone_A,,tooltip_exo_passive_39_rollingstone,BBD8A2B048F05130B53A70A89A18A823,Rolling Stone,滚滚落石,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_RemoteAgent_02,Confeti,Confeti,,pair4271287588,Confeti,passiveskill_exo_42_Confeti,,tooltip_exo_passive_42_confeti,4B11347648F50B6DF174FBA9333F3A81,Confeti,五彩纸屑,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_RemoteAgent_02,El Alacrin,El Alacrin,,pair2665652686,El Alacrin,passiveskill_exo_46_ElAlacrin,,tooltip_exo_passive_46_elalacrin,7FE7155E4979607972CFD4A9134971C8,El Alacrán,阴险毒蝎,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_RemoteAgent_02,Inspirado,Inspirado,,pair247481704,Inspirado,passiveskill_exo_47_Inspirado,,tooltip_exo_passive_47_inspirado,55DFAC14460E63F6D428BF82D9871039,Inspirado,突发灵感,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_RemoteAgent_02,Lightning Rod,Lightning Rod,,pair4251152131,Lightning Rod,PassiveSkill_Exo_45_LightningRod_A,,tooltip_exo_passive_45_lightningrod,68591E82446855F2624BFF9C6B19EA69,Concentrated Build Up,集中建设,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_RemoteAgent_02,Pain Reaction,Pain Reaction,,pair1833012133,Pain Reaction,passiveskill_exo_44_PainReaction,,tooltip_exo_passive_44_painreaction,D86F261E41B13E0D9A941DB97863BB8B,Pain Reaction,疼痛反应,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_RemoteAgent_02,Vitriol,Vitriol,,pair1857309058,Vitriol,passiveskill_exo_43_Vitriol_A,,_tooltip_augments_grav,6F13215544280DA580F825AE4586BFB0,[primary]Grav Augment[/primary],[primary]重力强化[/primary],passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_RemoteAgent_03,Barrage,Barrage,,pair4271287588,Barrage,passiveskill_exo_48_Barrage_A,,_tooltip_augments_grav,6F13215544280DA580F825AE4586BFB0,[primary]Grav Augment[/primary],[primary]重力强化[/primary],passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_RemoteAgent_03,Devil May Care,Devil May Care,,pair1833012133,Devil May Care,PassiveSkill_Exo_50_DevilMayCare_A,,tooltip_exo_passive_50_devilmaycare,9E88B9C5465F30152063B69148701430,Devil-May-Care,鬼才在乎,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_RemoteAgent_03,Everdrive,Everdrive,,pair1857309058,Everdrive,passiveskill_exo_49_Everdrive,,tooltip_exo_passive_49_everdrive,5843E6ED42E229F4FCD0418184243112,Everdrive,永恒动力,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_RemoteAgent_03,Soltado,Soltado,,pair2665652686,Soltado,PassiveSkill_Exo_52_Soltado_A,,tooltip_exo_passive_52_soltado,1D666BC74158E4A238BC509805853195,Soltado,彻底放手,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Branch_RemoteAgent_03,Temerario,Temerario,,pair4251152131,Temerario,PassiveSkill_Exo_51_Temerario_A,,tooltip_exo_passive_51_temerario,B87C65C64497542EBFE50E892135EBDD,Temerario,大胆鲁莽,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_Gimmick,Dial In,Dial In,,pair2830995945,Dial In,Passive_Exo_56_DialIn,,tooltip_exo_passive_56_dialin,6EB4832F41D268420976C08E44E49761,Dial In,拨入,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_Gimmick,Diamond Hands,Diamond Hands,,pair2352563474,Diamond Hands,Passive_Exo_58_DiamondHands_A,,tooltip_exo_passive_58_diamondhands,29588DC44E8CC703DB4920BC9503CEE7,Diamond Hands,钻石之手,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_Gimmick,El Corazon,El Corazon,,pair949974351,El Corazon,Passive_Exo_57_ElCorazon,,tooltip_exo_passive_57_elcorazon,BE41970F46E1E9402B8BEEBC9FA22185,El Corazón,跳动之心,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_Gimmick,Expedite,Expedite,,pair535716755,Expedite,Passive_Exo_55_Expedite_A,,tooltip_exo_passive_55_expedite,456081B84E0AFD0E7C21CDABCCD6358D,Expedite,加速过程,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_Gimmick,Handshake Deal,Handshake Deal,,pair996849512,Handshake Deal,Passive_Exo_53_HandshakeDeal,,tooltip_exo_passive_53_handshakedeal,1AD51987436ED234458F78B14B0FE592,Handshake Deal,握手协议,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_Gimmick,Hard Sell,Hard Sell,,pair3706155807,Hard Sell,Passive_Exo_62_HardSell_A,,tooltip_exo_passive_62_hardsell,067668AE44778C540112B496958DE151,Hard Sell,强硬推销,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_Gimmick,In the Zone,In the Zone,,pair1749107522,In the Zone,Passive_Exo_60_InTheZone_A,,tooltip_exo_passive_60_inthezone,B9B6F7A64F4D51806C103D96A0D9E6C7,In the Zone,专注时刻,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_Gimmick,Midnight Oil,Midnight Oil,,pair2873643982,Midnight Oil,Passive_Exo_54_MidnightOil_A,,tooltip_exo_passive_54_midnightoil,31A828344B0A39C4992256BAA53F034D,Midnight Oil,午夜精油,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_Gimmick,Saldar,Saldar,,pair1528740738,Saldar,Passive_Exo_59_Saldar,,tooltip_exo_passive_59_saldar,67468F7F4C98E494E6C4819D15ED0F9C,Saldar,彻底清算,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_Gimmick,To the Last,To the Last,,pair3409731364,To the Last,Passive_Exo_61_ToTheLast,,tooltip_exo_passive_61_tothelast,C6F1E7FA4DCAA02665DF25B66BC6946F,To the Last,抗争到底,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_PeoplePerson,Abajo,Abajo,,pair2140827513,Abajo,PassiveSkill_Exo_10_Abajo_A,,tooltip_exo_passive_10_abajo,51D676884B451225B85BFFA541C65033,Abajo,坠落之力,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_PeoplePerson,Al Centro,Al Centro,,pair1749107522,Al Centro,PassiveSkill_Exo_08_AlCentro_A,,tooltip_exo_passive_08_alcentro,3969753D449AA8B82D970A8ED36B1FCC,Al Centro,向心力,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_PeoplePerson,Arriba,Arriba,,pair2352563474,Arriba,PassiveSkill_Exo_06_Arriba_A,,tooltip_exo_passive_06_arriba,3DB0834745F5F8BF440D4B9ED06A461E,Arriba ,上升之风,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_PeoplePerson,First Impression,First Impression,,pair1528740738,First Impression,PassiveSkill_Exo_07_FirstImpression_A,,tooltip_exo_passive_07_firstimpression,7F60E6F540ADD6384AF194BA4E1EEA9B,First Impression,第一印象,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_PeoplePerson,Las Jaras,Las Jaras,,pair2873643982,Las Jaras,PassiveSkill_Exo_02_LasJaras_A,,tooltip_exo_passive_02_lasjaras,1F4AD1E24519B17A551DDC823D6D13F4,Las Jaras,标枪,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_PeoplePerson,Metal Management,Metal Management,,pair3706155807,Metal Management,PassiveSkill_Exo_09_MetalManagement_A,,tooltip_exo_passive_09_metalmanagement,7D63F657419BA9EA0F9118AD52199316,Metal Management,金属管理,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_PeoplePerson,Pa Dentro,Pa Dentro,,pair949974351,Pa Dentro,PassiveSkill_Exo_05_PaDentro_A,,tooltip_exo_passive_05_padentro,110A931E4A95C573CE4B42AC1597F2AD,Pa' Dentro,融入,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_PeoplePerson,Preparado,Preparado,,pair2830995945,Preparado,PassiveSkill_Exo_04_Preparado_A,,tooltip_exo_passive_04_preparado,4704A8D14A7C6D86BF8877BFBDFE68D7,Preparado ,提前准备 ,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_PeoplePerson,Rinse,Rinse,,pair996849512,Rinse,PassiveSkill_Exo_01_Rinse,,tooltip_exo_passive_01_rinse,93A0186640A80B30FFECB5836896137F,Rinse,彻底冲洗,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_PeoplePerson,The Thrill,The Thrill,,pair535716755,The Thrill,PassiveSkill_Exo_03_TheThrill_A,,tooltip_exo_passive_03_thethrill,34A691E8433CD753C9A977A66B3C72CB,The Thrill,真实刺激,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_RemoteAgent,CYA,CYA,,pair2352563474,CYA,PassiveSkill_Exo_31_CYA,,tooltip_exo_passive_31_cya,937C32604D80171F170A17B9CBEE4079,CYA,万全防护,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_RemoteAgent,Deft Hands,Deft Hands,,pair2873643982,Deft Hands,PassiveSkill_Exo_27_DeftHands,,tooltip_exo_passive_27_defthands,8082DB0E4C80A02241A2919DBFFD7F34,Deft Hands,灵巧双手,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_RemoteAgent,El Valiente,El Valiente,,pair2140827513,El Valiente,passiveskill_exo_35_ElValiente_A,,_tooltip_augments_grav,6F13215544280DA580F825AE4586BFB0,[primary]Grav Augment[/primary],[primary]重力强化[/primary],passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_RemoteAgent,Field Repairs,Field Repairs,,pair949974351,Field Repairs,PassiveSkill_Exo_30_FieldRepairs,,tooltip_exo_passive_30_fieldrepairs,7562FD624E11B9A9CF0DB495FAAD0ADD,Field Repairs,现场维修,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_RemoteAgent,Juerga,Juerga,,pair2830995945,Juerga,PassiveSkill_Exo_29_Juerga,,tooltip_exo_passive_29_juerga,B3A96BB14E3B572D0EF63AA3681AB9FC,Juerga,狂欢时刻,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_RemoteAgent,Maestro,Maestro,,pair1749107522,Maestro,passiveskill_exo_33_Maestro,,tooltip_exo_passive_33_maestro,F8BABE8E4690CE0FD6D0CEA348A986D4,Maestro,巨匠大师,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_RemoteAgent,Resiliencia,Resiliencia,,pair1528740738,Resiliencia,PassiveSkill_Exo_32_Resiliencia_A,,tooltip_exo_passive_32_resiliencia,574FAE3A42759B72E5256BA775DAED27,Resiliencia,复原能力,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_RemoteAgent,Shield Barriest,Shield Barriest,,pair535716755,Shield Barriest,PassiveSkill_Exo_28_ShieldBarriest_A,,tooltip_exo_passive_28_shieldbarriest,840273FA4E7950B85A620487FD1A6109,Shield Barriest,持盾者,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_RemoteAgent,Sitiar,Sitiar,,pair996849512,Sitiar,PassiveSkill_Exo_26_Sitiar,,tooltip_exo_passive_26_sitiar,1363AE6B4E7587C942C0C28AFB70D68E,Sitiar,四面楚歌,passive_skill,tooltip
+256,Rafa,passive,Progress_EXO_Trunk_RemoteAgent,Venganza,Venganza,,pair3409731364,Venganza,PassiveSkill_Exo_34_Venganza_A,,tooltip_exo_passive_34_venganza,8F6319FC41A66BDDBD10089BA70C23CF,Venganza,复仇反击,passive_skill,tooltip
+256,Rafa,passive,Progress_ExoSoldier_Branch,Branch - Row 1 - 1,Branch - Row 1 - 1,Branch - Row 1 - 1,pair4271287588,,,,,,Branch - Row 1 - 1,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Branch,Branch - Row 1 - 3,Branch - Row 1 - 3,Branch - Row 1 - 3,pair1857309058,,,,,,Branch - Row 1 - 3,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Branch,Branch - Row 2 - 1,Branch - Row 2 - 1,Branch - Row 2 - 1,pair1833012133,,,,,,Branch - Row 2 - 1,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Branch,Branch - Row 2 - 2,Branch - Row 2 - 2,Branch - Row 2 - 2,pair1579053925,,,,,,Branch - Row 2 - 2,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Branch,Branch - Row 2 - 3,Branch - Row 2 - 3,Branch - Row 2 - 3,pair4251152131,,,,,,Branch - Row 2 - 3,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Branch,Branch - Row 3 - 1,Branch - Row 3 - 1,Branch - Row 3 - 1,pair2665652686,,,,,,Branch - Row 3 - 1,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Branch,Branch - Row 3 - 3,Branch - Row 3 - 3,Branch - Row 3 - 3,pair247481704,,,,,,Branch - Row 3 - 3,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Trunk,Trunk - Row 1 - 1,Trunk - Row 1 - 1,Trunk - Row 1 - 1,pair996849512,,,,,,Trunk - Row 1 - 1,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Trunk,Trunk - Row 1 - 2,Trunk - Row 1 - 2,Trunk - Row 1 - 2,pair137711528,,,,,,Trunk - Row 1 - 2,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Trunk,Trunk - Row 1 - 3,Trunk - Row 1 - 3,Trunk - Row 1 - 3,pair2873643982,,,,,,Trunk - Row 1 - 3,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Trunk,Trunk - Row 1 - 4,Trunk - Row 1 - 4,Trunk - Row 1 - 4,pair3163783157,,,,,,Trunk - Row 1 - 4,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Trunk,Trunk - Row 1 - 5,Trunk - Row 1 - 5,Trunk - Row 1 - 5,pair535716755,,,,,,Trunk - Row 1 - 5,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Trunk,Trunk - Row 2 - 1,Trunk - Row 2 - 1,Trunk - Row 2 - 1,pair2830995945,,,,,,Trunk - Row 2 - 1,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Trunk,Trunk - Row 2 - 3,Trunk - Row 2 - 3,Trunk - Row 2 - 3,pair949974351,,,,,,Trunk - Row 2 - 3,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Trunk,Trunk - Row 2 - 5,Trunk - Row 2 - 5,Trunk - Row 2 - 5,pair2352563474,,,,,,Trunk - Row 2 - 5,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Trunk,Trunk - Row 3 - 1,Trunk - Row 3 - 1,Trunk - Row 3 - 1,pair1528740738,,,,,,Trunk - Row 3 - 1,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Trunk,Trunk - Row 3 - 2,Trunk - Row 3 - 2,Trunk - Row 3 - 2,pair1749107522,,,,,,Trunk - Row 3 - 2,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Trunk,Trunk - Row 3 - 3,Trunk - Row 3 - 3,Trunk - Row 3 - 3,pair3409731364,,,,,,Trunk - Row 3 - 3,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Trunk,Trunk - Row 3 - 4,Trunk - Row 3 - 4,Trunk - Row 3 - 4,pair3706155807,,,,,,Trunk - Row 3 - 4,,fallback,coord_fallback
+256,Rafa,passive,Progress_ExoSoldier_Trunk,Trunk - Row 3 - 5,Trunk - Row 3 - 5,Trunk - Row 3 - 5,pair2140827513,,,,,,Trunk - Row 3 - 5,,fallback,coord_fallback
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_01,Applied Theory,Applied Theory,,pair4271287588,Applied Theory,Passive_Grav_40_PracticalApplications,,tooltip_grav_passive_40_practicalapplications,886F44B8488FDBAD0D4CCEA5147FA79F,Practical Applications,实际应用,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_01,Break the Ice,Break the Ice,,pair1579053925,Break the Ice,Passive_Grav_43_BreakTheIce,,tooltip_grav_passive_43_breaktheice,7C7756FF4E9088F9BE1C53983A29BD30,Break the Ice,打破冰封,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_01,Carry the One,Carry the One,,pair1857309058,Carry the One,Passive_Grav_41_CarryTheOne,,tooltip_grav_passive_41_carrytheone,3D30A33D43330FB41CEFEC84937DA95D,Carry the One,随身携带,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_01,Cold Welding,Cold Welding,,pair247481704,Cold Welding,Passive_Grav_45_ColdWelding,,tooltip_grav_passive_45_coldwelding,6B92F9BD4C1B5418C35A39991B3D7C0F,Cold Welding,冰冷焊接,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_01,Power Cycle,Power Cycle,,pair2665652686,Power Cycle,Passive_Grav_44_PowerCycle,,tooltip_grav_passive_44_powercycle,336BC5F64578294F7C6183B73AE2F457,Opposing Force,对抗力量,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_01,Sample Collection,Sample Collection,,pair1833012133,Sample Collection,Passive_Grav_42_CoreSample,,tooltip_grav_passive_42_coresample,C03185E64D0AEC5E1D00E4B6E84AD3E6,Core Sample,核心样本,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_02,Chain Reactor,Chain Reactor,,pair4251152131,Chain Reactor,Passive_Grav_49_ChainReactor,,tooltip_grav_passive_49_chainreactor,60ECC5FB42F5B7D28E99629F1238FE7B,Chain Reactor,连锁反应堆,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_02,Dirty Bomb,Dirty Bomb,,pair247481704,Dirty Bomb,Passive_Grav_51_DirtyBomb,,tooltip_grav_passive_51_dirtybomb,EF24950B40B395FD783A60B8ECE882F4,Dirty Bomb,脏弹,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_02,Fissile Launcher,Fissile Launcher,,pair1833012133,Fissile Launcher,Passive_Grav_48_FissileLauncher,,tooltip_grav_passive_48_fissilelauncher,B33EEC004D23C3D2E7010E8EE527BF98,Fissile Launcher,裂隙火箭炮,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_02,Glow Up,Glow Up,,pair1857309058,Glow Up,Passive_Grav_47_GlowUp,,tooltip_grav_passive_47_glowup,876D3CC5446F0E90CA81C785171CC6E4,Glow Up,焕发光彩,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_02,Proven Results,Proven Results,,pair4271287588,Proven Results,Passive_Grav_46_PoisonedSun,,tooltip_grav_passive_46_poisonedsun,D6109984404D18B018420DBFDCB0C942,Poisoned Sun,中毒烈日,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_02,Unraveled,Unraveled,,pair2665652686,Unraveled,Passive_Grav_50_Wasted,,tooltip_grav_passive_50_wasted,17C50B2C4707E4C8E298808985111162,Wasted,浪费,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_03,Arithmatic Progression,Arithmatic Progression,,pair1857309058,Arithmatic Progression,Passive_Grav_53_MechanicalBrilliance,,tooltip_grav_passive_53_mechanicalbrilliance,945890D04AF4710FC0352EAA1B7EAB05,Mechanical Brilliance,机械才华,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_03,Eureka,Eureka,,pair1579053925,Eureka,Passive_Grav_54_Eureka,,tooltip_grav_passive_54_eureka,932A046244974281924CDDB27D8C012D,Eureka!,见证奇迹！,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_03,QED,QED,,pair247481704,QED,Passive_Grav_57_QED,,tooltip_grav_passive_57_qed,67AC352849B2760856DDC29F506E6727,QED,量子电动力学,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_03,Reclamation,Reclamation,,pair4271287588,Reclamation,Passive_Grav_52_HighlyEfficient,,tooltip_grav_passive_52_highlyefficient,DC0FE2F244ABDA903FB8DA8D2864F60D,Highly Efficient,高效率,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_03,Relative Ease,Relative Ease,,pair2665652686,Relative Ease,Passive_Grav_56_AltFuelSource,,tooltip_grav_passive_56_altfuelsource,917126A946F28503DBFB78916A1677AE,Alternative Fuel Source,备用燃料来源,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Branch_ExodusShard_03,Rounding Down,Rounding Down,,pair4251152131,Rounding Down,Passive_Grav_55_RoundingDown,,tooltip_grav_passive_55_roundingdown,EFE258FE4EFB485B1673CB86B14DEAF6,Rounding Up,迎风上升,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Trunk_ExodusShard,Bleeding Edge,Bleeding Edge,,pair535716755,Bleeding Edge,Passive_Grav_32_FieldReadyPrototype,,tooltip_grav_passive_32_fieldreadyprototype,193F07AC458231BD20742A92B2F21853,Field-Ready Prototype,战地原型,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Trunk_ExodusShard,Elementary,Elementary,,pair2352563474,Elementary,Passive_Grav_34_Elementary,,tooltip_grav_passive_34_elementary,461B0B29433888A73E86CC9E39193A7A,Elementary,元素,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Trunk_ExodusShard,Everstorm,Everstorm,,pair3706155807,Everstorm,Passive_Grav_38_Everstorm,,tooltip_grav_passive_38_greatreddot,73BFC80E43AA872236CC038D0D47DE40,Great Red DoT,红色瞄准点,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Trunk_ExodusShard,Fracture,Fracture,,pair3409731364,Fracture,Passive_Grav_37_ElephantsFoot,,tooltip_grav_passive_37_elephantsfoot,2483C1774D53A3F0DCE034A8BF0AC8BD,Elephant's Foot,象脚,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Trunk_ExodusShard,Fuzzy Math,Fuzzy Math,,pair3163783157,Fuzzy Math,Passive_Grav_31_FuzzyMath,,tooltip_grav_passive_31_fuzzymath,C46D0C04468758F52B78CD939D7BE1EE,Fuzzy Math,模糊数学,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Trunk_ExodusShard,Mad Rads,Mad Rads,,pair2140827513,Mad Rads,Passive_Grav_39_Enriched_ChoosingFavorites,,tooltip_grav_passive_39_enriched,379B0EF54E52BAFEAB4BE7B5DAC5D470,Enriched,丰富,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Trunk_ExodusShard,Modulo 0,Modulo 0,,pair2830995945,Modulo 0,Passive_Grav_33_BleedingEdge_Broken,,tooltip_grav_passive_33_bleedingedge_broken,48323D664DF570A3B69C3EA35FE04C49,Bleeding Edge,极端前沿,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Trunk_ExodusShard,PPE,PPE,,pair137711528,PPE,Passive_Grav_30_PPE,,tooltip_grav_passive_30_ppe,AE7EBC184AACBC0E1A47B7AED545A290,PPE,个人防护,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Trunk_ExodusShard,Propulsion,Propulsion,,pair1749107522,Propulsion,Passive_Grav_36_GetUpAndGo,,tooltip_grav_passive_36_getupandgo,80FE674149618D11B15C22B365ABB22E,Get Up and Go,积极主动,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Trunk_ExodusShard,Test Subjects,Test Subjects,,pair1528740738,Test Subjects,Passive_Grav_35_TestSubjects,,tooltip_grav_passive_35_testsubjects,1E0707474CD8EB2D29686B922C2DAE9A,Test Subjects,实验对象,passive_skill,tooltip
+256,Rafa,passive,Progress_Grav_Trunk_ExodusShard,Velocity,Velocity,,pair996849512,Velocity,Passive_Grav_29_Cyclotron,,tooltip_grav_passive_29_cyclotron,3F075733410AC5865E3EBAAE1220C4CF,Cyclotron,回旋加速器,passive_skill,tooltip
+259,Harlowe,action_modifier,progress_graph_grav_mods_stasis,Augment 1: Bullet Magnet,Augment 1: Bullet Magnet,,pair1068101680,Augment 1: Bullet Magnet,,,tooltip_augment_grav_stasis_bulletmagnet,26D018E44017636C78127E92B988D0A0,Strange Attractor,奇异引力源,grav_modifier_key,tooltip
+259,Harlowe,action_modifier,progress_graph_grav_mods_stasis,Augment 2: Controlled Chaos,Augment 2: Controlled Chaos,,pair217450736,Augment 2: Controlled Chaos,,,tooltip_augment_grav_stasis_controlledchaos,B3703AB64E07205C2D0F099FA20E9E11,Cold Storage,冷藏库,grav_modifier_key,tooltip
+259,Harlowe,action_modifier,progress_graph_grav_mods_stasis,Augment 3: Peer Review,Augment 3: Peer Review,,pair2945127574,Augment 3: Peer Review,,,tooltip_augment_grav_stasis_peerreview,F3FDC03B4E7CEF1818811E8424A54EFC,Peer Review,同行评审,grav_modifier_key,tooltip
+259,Harlowe,action_modifier,progress_graph_grav_mods_stasis,Augment 4: More Power,Augment 4: More Power,,pair3092265133,Augment 4: More Power,,,tooltip_augment_grav_stasis_morepower,599AA90A445DF865161B17A9922DF565,Wildcat Destabilization,野猫大破坏,grav_modifier_key,tooltip
+259,Harlowe,action_modifier,progress_graph_grav_mods_stasis,Augment 5: In Perpetuity,Augment 5: In Perpetuity,,pair455943371,Augment 5: In Perpetuity,,,tooltip_augment_grav_stasis_inperpetuity,62A70B454973FADCA83EE58744D085C6,Inertia,惯性,grav_modifier_key,tooltip
+259,Harlowe,action_modifier,progress_graph_grav_mods_stasis,Capstone 1: Nth Dimension,Capstone 1: Nth Dimension,,pair4044920886,Capstone 1: Nth Dimension,,,tooltip_capstone_grav_stasis_nthdimension,49E5320A43FB45AF7E9EAA8A8B393125,Cold Plunge,冰冷猛冲,grav_modifier_key,tooltip
+259,Harlowe,action_modifier,progress_graph_grav_mods_stasis,Capstone 2: Kinetic Chaos,Capstone 2: Kinetic Chaos,,pair3259457782,Capstone 2: Kinetic Chaos,,,tooltip_capstone_grav_stasis_kineticchaos,EBBB55F9467A6CA483E7E38B84015A9A,Ground State,基态,grav_modifier_key,tooltip
+259,Harlowe,action_modifier,progress_graph_grav_mods_stasis,Capstone 3: Particle Diffuser,Capstone 3: Particle Diffuser,,pair1631222928,Capstone 3: Particle Diffuser,,,tooltip_capstone_grav_stasis_particlediffuser,62C476B348781F281F7D4FABC914DC27,Falling Bodies,坠落躯体,grav_modifier_key,tooltip
+259,Harlowe,action_modifier,progress_graph_grav_mods_terminal,Augment 1: Corona,Augment 1: Corona,,pair1068101680,Augment 1: Corona,,,tooltip_augment_grav_terminal_corona,74F27B4C423B35118CEF8483ECD9DD42,Coronal Mass Ejection,日冕物质喷射,grav_modifier_key,tooltip
+259,Harlowe,action_modifier,progress_graph_grav_mods_terminal,Augment 2: Heat Transfer,Augment 2: Heat Transfer,,pair217450736,Augment 2: Heat Transfer,,,tooltip_augment_grav_terminal_heattransfer,0ADE3B014D4DD458AE18768EFD9995FD,Unified Theory,统一理论,grav_modifier_key,tooltip
+259,Harlowe,action_modifier,progress_graph_grav_mods_terminal,Augment 3: Irradiance,Augment 3: Irradiance,,pair2945127574,Augment 3: Irradiance,,,tooltip_augment_grav_terminal_irradiance,E014B1C54C087D2659127DA5C0C0EECF,Nuclear Winter,核冬天,grav_modifier_key,tooltip
+259,Harlowe,action_modifier,progress_graph_grav_mods_terminal,Augment 4: Coronal Loop,Augment 4: Coronal Loop,,pair3092265133,Augment 4: Coronal Loop,,,tooltip_augment_grav_terminal_coronalloop,2E5AF1C44390CCBB293C9B97645A3888,Perpetual Engine,永恒引擎,grav_modifier_key,tooltip
+259,Harlowe,action_modifier,progress_graph_grav_mods_terminal,Augment 5: Red Giant,Augment 5: Red Giant,,pair455943371,Augment 5: Red Giant,,,tooltip_augment_grav_terminal_redgiant,679B2F9148581E25912A3E9280ED00C1,Blue Giant,蓝色巨人,grav_modifier_key,tooltip
+259,Harlowe,action_modifier,progress_graph_grav_mods_terminal,Capstone 1: Ultraviolent Radiation,Capstone 1: Ultraviolent Radiation,,pair4044920886,Capstone 1: Ultraviolent Radiation,,,tooltip_capstone_grav_terminal_ultraviolentradiation,B0CE8C3543AFA4BAE9AF05842FB5C814,Violent Horizon,暴烈地平线,grav_modifier_key,tooltip
+259,Harlowe,action_modifier,progress_graph_grav_mods_terminal,Capstone 2: Potential Transference,Capstone 2: Potential Transference,,pair3259457782,Capstone 2: Potential Transference,,,tooltip_capstone_grav_terminal_potentialtransference,D07C2F654A15EABD71CF7598B1388702,Potential Transference,潜在传递,grav_modifier_key,tooltip
+259,Harlowe,action_modifier,progress_graph_grav_mods_terminal,Capstone 3: Sun Spots,Capstone 3: Sun Spots,,pair1631222928,Capstone 3: Sun Spots,,,,,Sun Spots,,fallback,alias_fallback
+259,Harlowe,action_skill,progress_graph_grav_action_skills,Exodus,Exodus,,pair2674582898,Exodus,Skill_Grav_Exodus2,,tooltip_exodus,B43B7A254F81C9D5051B9A81E8E00168,CHROMA Accelerator,铬合金加速器,exact_skill,tooltip
+259,Harlowe,action_skill,progress_graph_grav_action_skills,Grav,Grav,,pair2442309920,Grav,trait_gravitar,,,,Grav,,fallback,alias_fallback
+259,Harlowe,action_skill,progress_graph_grav_action_skills,Stasis,Stasis,,pair1008204052,Stasis,Skill_Grav_Stasis3,,tooltip_stasis,97476BCD407D21A52110B5895D8A8658,Zero-Point,零点,exact_skill,tooltip
+259,Harlowe,action_skill,progress_graph_grav_action_skills,Terminal,Terminal,,pair256377300,Terminal,Skill_Grav_Terminal2,,tooltip_terminal,88BD0C334BA73CDD3915ECA248443784,Flux Generator,通量生成器,exact_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch,Branch - Row 1 - 1,Branch - Row 1 - 1,Branch - Row 1 - 1,pair4271287588,,,,,,Branch - Row 1 - 1,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Branch,Branch - Row 1 - 3,Branch - Row 1 - 3,Branch - Row 1 - 3,pair1857309058,,,,,,Branch - Row 1 - 3,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Branch,Branch - Row 2 - 1,Branch - Row 2 - 1,Branch - Row 2 - 1,pair1833012133,,,,,,Branch - Row 2 - 1,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Branch,Branch - Row 2 - 2,Branch - Row 2 - 2,Branch - Row 2 - 2,pair1579053925,,,,,,Branch - Row 2 - 2,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Branch,Branch - Row 2 - 3,Branch - Row 2 - 3,Branch - Row 2 - 3,pair4251152131,,,,,,Branch - Row 2 - 3,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Branch,Branch - Row 3 - 1,Branch - Row 3 - 1,Branch - Row 3 - 1,pair2665652686,,,,,,Branch - Row 3 - 1,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Branch,Branch - Row 3 - 3,Branch - Row 3 - 3,Branch - Row 3 - 3,pair247481704,,,,,,Branch - Row 3 - 3,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Branch_StasisShard_01,Concurrence,Concurrence,,pair4271287588,Concurrence,Passive_Grav_69_Concurrence,,tooltip_grav_passive_69_concurrence,4C5FFCA54087AB492C5F538454615520,Concurrence,并行发生,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_StasisShard_01,Control Group,Control Group,,pair1833012133,Control Group,Passive_Grav_71_ControlGroup,,tooltip_grav_passive_71_controlgroup,3AD3D2A94FB99B329A471487D9640402,Control Group,控制组,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_StasisShard_01,Freeze Frame,Freeze Frame,,pair2665652686,Freeze Frame,Passive_Grav_73_FreezeFrame,,tooltip_grav_passive_73_freezeframe,A76CB9E94AB0ACBDCA2267A0BE3CE764,Freeze Frame,定格动画,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_StasisShard_01,Observer Effect,Observer Effect,,pair1857309058,Observer Effect,Passive_Grav_72_ObserverEffect,,tooltip_grav_passive_72_forceofwill,0F0661BF47AAF86CBA090DB2CA27FE36,Force of Will,意志力,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_StasisShard_01,Snapshot,Snapshot,,pair247481704,Snapshot,Passive_Grav_74_StunLock,,tooltip_grav_passive_74_stunlock,290836464CA994FAE0C30A9A9469CF8E,Stun Lock,眩晕锁定,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_StasisShard_01,Speed Trap,Speed Trap,,pair4251152131,Speed Trap,Passive_Grav_70_Slingshot,,tooltip_grav_passive_70_slingshot,EB71BE28449E410FE77676AB4BC48885,Slingshot,弹弓,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_StasisShard_02,Absolute Zero,Absolute Zero,,pair4271287588,Absolute Zero,Passive_Grav_75_UnstoppableIceotope,,tooltip_grav_passive_75_unstoppableiceotope,4B4DB679474D1C237C338EB000C9C1BF,Unstable Ice-otope,不稳冰位素,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_StasisShard_02,Cryogenics,Cryogenics,,pair1857309058,Cryogenics,Passive_Grav_76_KeepIceOnThat,,tooltip_grav_passive_76_keepiceonthat,17C71B7A41F34A05C032079E56ACBB26,Keep Ice On That,保持冷静,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_StasisShard_02,Endothermic Reaction,Endothermic Reaction,,pair1833012133,Endothermic Reaction,Passive_Grav_77_EndothermicReaction,,tooltip_grav_passive_77_endothermicreaction,BC361D2D4A8ED6EC047FC1B968B6A0B9,Endothermic Reaction,吸热反应,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_StasisShard_02,Flash Freeze,Flash Freeze,,pair1579053925,Flash Freeze,Passive_Grav_78_FlashFreeze,,tooltip_grav_passive_78_flashfreeze,905D1627420DE02CC0AB41BD13BA8FF1,Flash Freeze,闪现冻结,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_StasisShard_02,Heat Sink,Heat Sink,,pair4251152131,Heat Sink,Passive_Grav_79_HeatSink,,tooltip_grav_passive_79_heatsink,BFE49F294BD26B7EB6A7E0B684FB1AC8,Heat Sink,散热器,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_StasisShard_02,Triple Point,Triple Point,,pair2665652686,Triple Point,Passive_Grav_80_TriplePoint,,tooltip_grav_passive_80_triplepoint,01DF7A094F22FE3D20480A91149B8D64,Triple Point,三倍点数,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_StasisShard_03,Controlled Chaos,Controlled Chaos,,pair1579053925,Controlled Chaos,Passive_Grav_84_SustainedReaction,,tooltip_grav_passive_84_sustainedreaction,E50B2D384CCF8A295638DDB0C997A607,Sustained Reaction,持续反应,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_StasisShard_03,Experimentation,Experimentation,,pair1857309058,Experimentation,Passive_Grav_82_Experimentation,,tooltip_grav_passive_82_experimentation,B119C9074933613847B2958F5C7AE25D,Experimentation,实验,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_StasisShard_03,Gordian Knot,Gordian Knot,,pair247481704,Gordian Knot,Passive_Grav_85_GordianKnot,,tooltip_grav_passive_85_gordianknot,F3817D7B47EF8D0716A3CD9743D74F16,Gordian Knot,戈耳迪之结,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_StasisShard_03,Indiscrete Mathematics,Indiscrete Mathematics,,pair4271287588,Indiscrete Mathematics,Passive_Grav_81_IndiscreteMathematics,,tooltip_grav_passive_81_indiscretemathematics,E4F50FF34BBCEC5E79BFD987832D1900,Indiscrete Math,不离散数学,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_StasisShard_03,Reproduce Findings,Reproduce Findings,,pair1833012133,Reproduce Findings,Passive_Grav_83_DominoEffect,,tooltip_grav_passive_83_dominoeffect,84BA76904329124384FF419D9DFCF031,Domino Effect,多米诺效应,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_TerminalShard_01,Blueshift,Blueshift,,pair4271287588,Blueshift,Passive_Grav_12_Blueshift,,tooltip_grav_passive_12_blueshift,F44DEEC1461F6BBC5E015C9754A39C0F,Blue Shift,蓝光偏移,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_TerminalShard_01,Chaos Theory,Chaos Theory,,pair247481704,Chaos Theory,Passive_Grav_16_RunawayReaction,,tooltip_grav_passive_16_runawayreaction,EB3EFA644B9E81AE6A867199B33AB468,Runaway Reaction,失控反应,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_TerminalShard_01,Cluster,Cluster,,pair1579053925,Cluster,Passive_Grav_15_FeedbackLoop,,tooltip_grav_passive_15_feedbackloop,95FAB918418DB31A8259AEA77C637659,Feedback Loop,反馈循环,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_TerminalShard_01,Decoherence,Decoherence,,pair1857309058,Decoherence,Passive_Grav_13_Decoherence,,tooltip_grav_passive_13_decoherence,C2D0D8B5470466414B1862BABACEF44F,Decoherence,量子退散,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_TerminalShard_01,Showing Potential,Showing Potential,,pair1833012133,Showing Potential,Passive_Grav_14_LatentCharge,,tooltip_grav_passive_14_latentcharge,A609D53A4010F7FF8D3064B7E363FEB4,Latent Charge,潜伏充能,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_TerminalShard_02,Amplifier at Will,Amplifier at Will,,pair4251152131,Amplifier at Will,Passive_Grav_20_CriticalFunding,,tooltip_grav_passive_20_criticalfunding,083E4205469D18A9FF8948B7A57DB649,Critical Funding,关键资金,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_TerminalShard_02,Certainty Principle,Certainty Principle,,pair1857309058,Certainty Principle,Passive_Grav_18_CertaintyPrinciple_Assemble,,tooltip_grav_passive_18_certaintyprinciple,81C339DF46E0361414B808B48C1F7B48,Harlowe's Certainty Principle,哈洛的确定性原则,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_TerminalShard_02,Exposed Core,Exposed Core,,pair2665652686,Exposed Core,Passive_Grav_21_ExposedCore,,tooltip_grav_passive_21_exposedcore,77462D7B43F04A7D3549CB98AA244C98,Exposed Core,暴露核心,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_TerminalShard_02,Gamma Ray Burst,Gamma Ray Burst,,pair4271287588,Gamma Ray Burst,Passive_Grav_17_GammaRayBurst_Aperture,,tooltip_grav_passive_17_gammarayburst,B5B9683046899160E714DD9001686AD3,Gamma Ray Burst,伽马射线爆发,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_TerminalShard_02,Meltdown,Meltdown,,pair247481704,Meltdown,Passive_Grav_22_Meltdown,,tooltip_grav_passive_22_meltdown,9C3793CC4C32812512820182C8C9F06A,Meltdown,熔毁,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_TerminalShard_02,Superposition,Superposition,,pair1579053925,Superposition,Passive_Grav_19_Jaunt,,tooltip_grav_passive_19_jaunt,485C0ED040944F2A7BACDFB3D0DAF872,Jaunt,逍遥,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_TerminalShard_03,Absorption,Absorption,,pair1833012133,Absorption,Passive_Grav_25_Accretion,,tooltip_grav_passive_25_accretion,5A2A06D44A130501BC173194CB7DCC71,Accretion,冲积层,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_TerminalShard_03,Annihilation,Annihilation,,pair247481704,Annihilation,Passive_Grav_28_Annihilation,,tooltip_grav_passive_28_annihilation,666DA9CA40D483672A59FA9B9F90C65D,Annihilation,湮灭,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_TerminalShard_03,Distribution Function,Distribution Function,,pair4251152131,Distribution Function,Passive_Grav_26_DistributionFunction_Starburst,,tooltip_grav_passive_26_distributionfunction,7363F3AB46DA86AA7A6B149DCD27ECD8,Distribution Function,分布函数,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_TerminalShard_03,Epicenter,Epicenter,,pair1857309058,Epicenter,Passive_Grav_24_ExcitedState,,tooltip_grav_passive_24_excitedstate,53A4D6C844C7B9F02F65F0805F2689FC,Excited State,兴奋状态,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_TerminalShard_03,Grav Wave,Grav Wave,,pair4271287588,Grav Wave,Passive_Grav_23_GravWave,,tooltip_grav_passive_23_refraction,66EE48F040140B1062E8ECA6204C1E97,Refraction,折射,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Branch_TerminalShard_03,Supercooled Barrels,Supercooled Barrels,,pair2665652686,Supercooled Barrels,Passive_Grav_27_PencilsDown,,tooltip_grav_passive_27_pencilsdown,F6532EAA419F013C69FCD6AF3F127D11,Pencils Down,放下铅笔,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk,Trunk - Row 1 - 1,Trunk - Row 1 - 1,Trunk - Row 1 - 1,pair996849512,,,,,,Trunk - Row 1 - 1,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Trunk,Trunk - Row 1 - 2,Trunk - Row 1 - 2,Trunk - Row 1 - 2,pair137711528,,,,,,Trunk - Row 1 - 2,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Trunk,Trunk - Row 1 - 3,Trunk - Row 1 - 3,Trunk - Row 1 - 3,pair2873643982,,,,,,Trunk - Row 1 - 3,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Trunk,Trunk - Row 1 - 4,Trunk - Row 1 - 4,Trunk - Row 1 - 4,pair3163783157,,,,,,Trunk - Row 1 - 4,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Trunk,Trunk - Row 1 - 5,Trunk - Row 1 - 5,Trunk - Row 1 - 5,pair535716755,,,,,,Trunk - Row 1 - 5,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Trunk,Trunk - Row 2 - 1,Trunk - Row 2 - 1,Trunk - Row 2 - 1,pair2830995945,,,,,,Trunk - Row 2 - 1,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Trunk,Trunk - Row 2 - 3,Trunk - Row 2 - 3,Trunk - Row 2 - 3,pair949974351,,,,,,Trunk - Row 2 - 3,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Trunk,Trunk - Row 2 - 5,Trunk - Row 2 - 5,Trunk - Row 2 - 5,pair2352563474,,,,,,Trunk - Row 2 - 5,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Trunk,Trunk - Row 3 - 1,Trunk - Row 3 - 1,Trunk - Row 3 - 1,pair1528740738,,,,,,Trunk - Row 3 - 1,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Trunk,Trunk - Row 3 - 2,Trunk - Row 3 - 2,Trunk - Row 3 - 2,pair1749107522,,,,,,Trunk - Row 3 - 2,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Trunk,Trunk - Row 3 - 3,Trunk - Row 3 - 3,Trunk - Row 3 - 3,pair3409731364,,,,,,Trunk - Row 3 - 3,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Trunk,Trunk - Row 3 - 4,Trunk - Row 3 - 4,Trunk - Row 3 - 4,pair3706155807,,,,,,Trunk - Row 3 - 4,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Trunk,Trunk - Row 3 - 5,Trunk - Row 3 - 5,Trunk - Row 3 - 5,pair2140827513,,,,,,Trunk - Row 3 - 5,,fallback,coord_fallback
+259,Harlowe,passive,Progress_Grav_Trunk_StasisShard,Butterfly Effect,Butterfly Effect,,pair1528740738,Butterfly Effect,Passive_Grav_08_RippleEffect,,tooltip_grav_passive_08_rippleeffect,0B0764A04667148CC42E60AE7C643D98,Ripple Effect,涟漪效应,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_StasisShard,Cryodynamics,Cryodynamics,,pair2140827513,Cryodynamics,Passive_Grav_65_Cryodynamics,,tooltip_grav_passive_65_cryodynamics,3E3E25584F85BCECFF913D9E55D14A87,Cryodynamics,冰冻动力学,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_StasisShard,Eager,Eager,,pair2873643982,Eager,Passive_Grav_60_ParallelCircuit,,tooltip_grav_passive_60_parallelcircuit,8E108A444446A63832D8C9883B1CA2BB,Parallel Circuit,并联电路,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_StasisShard,Field Research,Field Research,,pair535716755,Field Research,Passive_Grav_59_MakeExtraordinary,,tooltip_grav_passive_59_makeextraordinary,204714F14D2A9B0EF30578B9B4F4FDF9,Make Extraordinary,创造非凡,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_StasisShard,Ignition,Ignition,,pair2352563474,Ignition,Passive_Grav_62_PeriodicTableFlip,,tooltip_grav_passive_62_periodictableflip,AC0D94654C7F8CAC137C468E64138EB9,Periodic Table Flip,周期表翻转,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_StasisShard,Negentropy,Negentropy,,pair949974351,Negentropy,Passive_Grav_64_Negentropy,,tooltip_grav_passive_64_negentropy,32D1EEA34007F3649CAFE599E88A4C46,Negative Entropy,负熵,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_StasisShard,Precision Engineering,Precision Engineering,,pair3409731364,Precision Engineering,Passive_Grav_67_PrecisionEngineering,,tooltip_grav_passive_67_precisionengineering,8E7B14C44A68B7C809160F84C6C271E8,Precision Engineering,精密工程,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_StasisShard,Pulse Drive,Pulse Drive,,pair2830995945,Pulse Drive,Passive_Grav_63_BrightFuture,,tooltip_grav_passive_63_brightfuture,FE43B3704B1A77C161431AB79F8D5F47,Bright Future,光明未来,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_StasisShard,Quantum Immortality,Quantum Immortality,,pair996849512,Quantum Immortality,Passive_Grav_58_QuantumImmortality,,tooltip_grav_passive_58_quantumimmortality,894F7DC647EB607553466A9C64794399,Quantum Immortality,量子不朽,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_StasisShard,Relativity,Relativity,,pair3163783157,Relativity,Passive_Grav_61_PulseDrive,,tooltip_grav_passive_61_pulsedrive,C258EF3640AAC418E7A6C3B112F8D2F0,Pulse Drive,脉冲驱动,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_StasisShard,Supercooldown,Supercooldown,,pair3706155807,Supercooldown,Passive_Grav_68_2Coolant4Schoolant,,tooltip_grav_passive_68_2coolant4schoolant,7EF94E79410926D35AFEB9A7591899D5,Too Coolant For Schoolant,对学霸来说太酷,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_TerminalShard,Accretion,Accretion,,pair2873643982,Accretion,Passive_Grav_03_ActionAtADistance,,tooltip_grav_passive_03_actionatadistance,EF66650F4EABA9B0C1CE6EAD7737E473,Action at a Distance,远距离行动,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_TerminalShard,Blast Chill,Blast Chill,,pair1528740738,Blast Chill,Passive_Grav_66_CreativeOverflow,,tooltip_grav_passive_66_creativeoverflow,24D8278D44B8F376D26BCCAAF7B9A813,Creative Overflow,创意泛滥,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_TerminalShard,Extragalactic,Extragalactic,,pair996849512,Extragalactic,Passive_Grav_01_MainsHum,,tooltip_grav_passive_01_mainshum,A2BAC0E74C81739D08A60DA8910ED2D7,Mains Hum,主流低频,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_TerminalShard,Feedback Loop,Feedback Loop,,pair3409731364,Feedback Loop,Passive_Grav_09_ResonanceCascade,,tooltip_grav_passive_09_resonancecascade,1DE5BFD341AD7458270E2E98774AB131,Resonance Cascade,共振级联,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_TerminalShard,Flux,Flux,,pair3706155807,Flux,Passive_Grav_10_Flux,,tooltip_grav_passive_10_confirmativereality,128E6F204BF8BACD9440FD9B37CDC640,Confirmative Reality,既定现实,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_TerminalShard,Heat Death,Heat Death,,pair2352563474,Heat Death,Passive_Grav_07_HeatDeath,,tooltip_grav_passive_07_heatdeath,69874A8B4AC6D7421BC5CE934DEBE7DE,Heat Death,热寂说,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_TerminalShard,Mass  Function,Mass  Function,,pair2830995945,Mass  Function,Passive_Grav_05_MassFunction,,tooltip_grav_passive_05_massfunction,49418F50490F7EC0C56A319E861D67CA,Mass Function,质量函数,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_TerminalShard,Momentum,Momentum,,pair535716755,Momentum,Passive_Grav_04_A_Momentum,,tooltip_grav_passive_04_momentum,E940767C4CF7489C68B612A0D0520B02,Momentum,冲量,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_TerminalShard,Neutron Decay,Neutron Decay,,pair949974351,Neutron Decay,Passive_Grav_06_NeutronDecay_A,,tooltip_grav_passive_06_neutrondecay,9360197242E8860C86D72E8C82933A0C,Neutron Decay,中子衰变,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_TerminalShard,Personal Observation,Personal Observation,,pair137711528,Personal Observation,Passive_Grav_02_PersonalObservation,,tooltip_grav_passive_02_personalobservation,5F2B028B4716DA00E242078BF14A43C4,Personal Observation,个人观察,passive_skill,tooltip
+259,Harlowe,passive,Progress_Grav_Trunk_TerminalShard,Zero Point,Zero Point,,pair2140827513,Zero Point,Passive_Grav_11_AbsoluteZero,,tooltip_grav_passive_11_absolutezero,DB887B7F4D809A5E34D2EE8EE13892B4,Absolute Zero,绝对零度,passive_skill,tooltip
+404,C4sh,action_modifier,progress_robo_mods_sleightOfHand,Augment 2 - Acid Spray,Augment 2 - Acid Spray,,pair217450736,Augment 2 - Acid Spray,,,tooltip_robo_as_sleightofhand_aug_2_cowboy,BB449F3A44684CFCFF4A5B89973083CE,Cowboy,牛仔,robo_modifier_number,tooltip
+404,C4sh,action_modifier,progress_robo_mods_sleightOfHand,Augment 3 - Radiation Black Hole,Augment 3 - Radiation Black Hole,,pair2945127574,Augment 3 - Radiation Black Hole,,,tooltip_robo_as_sleightofhand_aug_3_inthecards,271E97A6485FE2105F293291F261B40D,Big Pull,大赌局,robo_modifier_number,tooltip
+404,C4sh,action_modifier,progress_robo_mods_sleightOfHand,Augment 4 - Vampiric Touch,Augment 4 - Vampiric Touch,,pair3092265133,Augment 4 - Vampiric Touch,,,tooltip_robo_as_sleightofhand_aug_4_deathcard,8D7C086D401756CEA2936DA35203057A,Bet on Red,红色全押,robo_modifier_number,tooltip
+404,C4sh,action_modifier,progress_robo_mods_sleightOfHand,Augment 5 - Color Spray,Augment 5 - Color Spray,,pair455943371,Augment 5 - Color Spray,,,tooltip_robo_as_sleightofhand_aug_5_sweetenthepot,8483962048222BDE483BC5B49A3348B4,Sweeten the Pot,增加赌注,robo_modifier_number,tooltip
+404,C4sh,action_modifier,progress_robo_mods_sleightOfHand,Augment 6 - Cryo Shards,Augment 6 - Cryo Shards,,pair4044920886,Augment 6 - Cryo Shards,,,tooltip_robo_as_sleightofhand_aug_6_aceinthehole,0EAB316F42744017E9D8049BF71AD0D9,The Cooler,冷却器,robo_modifier_number,tooltip
+404,C4sh,action_modifier,progress_robo_mods_sleightOfHand,Augment 7 - Homing Nuke,Augment 7 - Homing Nuke,,pair3259457782,Augment 7 - Homing Nuke,,,tooltip_robo_as_sleightofhand_aug_7_sharptop,FEEFD5354F684699754867A5BF67AAB6,Dead Man's Hand,亡者之手,robo_modifier_number,tooltip
+404,C4sh,action_modifier,progress_robo_mods_sleightOfHand,Augment 8 - Ball of Fire and Lightning,Augment 8 - Ball of Fire and Lightning,,pair1631222928,Augment 8 - Ball of Fire and Lightning,,,tooltip_robo_as_sleightofhand_aug_8_showyourhand,B145E9E04DF430CA69D543B8C2F325C4,Furious Fingers,狂怒手指,robo_modifier_number,tooltip
+404,C4sh,action_modifier,progress_robo_mods_sleightOfHand,Augment1 - Bolt,Augment1 - Bolt,,pair1068101680,Augment1 - Bolt,,,tooltip_robo_as_sleightofhand_aug_1_playyourcardsright,50CD6BEA40292649E522F695555D5FE3,Thunder the Table,暗自轰雷,robo_modifier_number,tooltip
+404,C4sh,passive,Progress_robo_branch,Branch - Row 1 - 1,Branch - Row 1 - 1,Branch - Row 1 - 1,pair4271287588,,,,,,Branch - Row 1 - 1,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_branch,Branch - Row 1 - 3,Branch - Row 1 - 3,Branch - Row 1 - 3,pair1857309058,,,,,,Branch - Row 1 - 3,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_branch,Branch - Row 2 - 1,Branch - Row 2 - 1,Branch - Row 2 - 1,pair1833012133,,,,,,Branch - Row 2 - 1,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_branch,Branch - Row 2 - 2,Branch - Row 2 - 2,Branch - Row 2 - 2,pair1579053925,,,,,,Branch - Row 2 - 2,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_branch,Branch - Row 2 - 3,Branch - Row 2 - 3,Branch - Row 2 - 3,pair4251152131,,,,,,Branch - Row 2 - 3,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_branch,Branch - Row 3 - 1,Branch - Row 3 - 1,Branch - Row 3 - 1,pair2665652686,,,,,,Branch - Row 3 - 1,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_branch,Branch - Row 3 - 3,Branch - Row 3 - 3,Branch - Row 3 - 3,pair247481704,,,,,,Branch - Row 3 - 3,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_branch_cleromancy_1,68 - Can't Stop Winning,68 - Can't Stop Winning,,pair4271287588,68 - Can't Stop Winning,Passive_Robo_68_CriticalRole,,tooltip_robo_passive_68_criticalrole,DEDB46FC432B74F0D6EB7598C4635ABD,Can't Stop Winning,彻底赢麻,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_cleromancy_1,69 - Turn of Fate,69 - Turn of Fate,,pair1857309058,69 - Turn of Fate,Passive_Robo_69_SpinOfFate,,tooltip_robo_passive_69_spinoffate,E5093D3844F1A24F0D7A83B0564A3064,Turn of Fate,命运转折,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_cleromancy_1,70 - High Stakes,70 - High Stakes,,pair1833012133,70 - High Stakes,Passive_Robo_70_HighStakes,,tooltip_robo_passive_70_highstakes,760A8A1A483ADE68B2AD40B52FC78496,High Stakes,高风险,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_cleromancy_1,71 - Fortune's Favor,71 - Fortune's Favor,,pair4251152131,71 - Fortune's Favor,Passive_Robo_71_FortunesFavor,,tooltip_robo_passive_71_fortunesfavor,61ED63414E43E63840E298BD7E8FFC6F,Fortune's Favor,好运的眷顾,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_cleromancy_1,72 - Let it Ride,72 - Let it Ride,,pair2665652686,72 - Let it Ride,Passive_Robo_72_LetItRide,,tooltip_robo_passive_72_letitride,CAA897C741E21510B4F10C9CC4E27C00,Let it Ride,任逍遥,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_cleromancy_1,73 - Wild,73 - Wild,,pair247481704,73 - Wild,Passive_Robo_73_Wild,,tooltip_robo_passive_73_wild,BA59F002444E768F8C11DAA2BE421E08,The Wilds,狂野风范,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_cleromancy_2,66 - Restless Remains,66 - Restless Remains,,pair1857309058,66 - Restless Remains,Passive_Robo_66_Undying,,tooltip_robo_passive_66_undying,3144EEC74C1D0F32395C1CB210D77612,Restless Remains,焦躁遗骸,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_cleromancy_2,74 - Potent Posse,74 - Potent Posse,,pair4271287588,74 - Potent Posse,Passive_Robo_74_PackMentality,,tooltip_robo_passive_74_packmentality,04A3D05A47964BB75AAC62BAAABCBAEC,Potent Posse,强大团队,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_cleromancy_2,76 - Sorcerer,76 - Sorcerer,,pair1833012133,76 - Sorcerer,Passive_Robo_76_LoadedDice,,tooltip_robo_passive_76_loadeddice,C8289B3744C5B8679524E18DD6785430,Sorcerer,幽暗术士,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_cleromancy_2,77 - Tooth and Nail,77 - Tooth and Nail,,pair1579053925,77 - Tooth and Nail,Passive_Robo_77_ShadowsEmbrace,,tooltip_robo_passive_77_shadowsembrace,8C2FFB444B1B1109388FBA9AC7F25C17,Tooth and Nail,全力以赴,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_cleromancy_2,78 - Serendipity,78 - Serendipity,,pair4251152131,78 - Serendipity,Passive_Robo_78_Serendipity,,tooltip_robo_passive_78_serendipity,29A2D81847B72EDF2228A182A28EEC8A,Serendipity,机缘巧合,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_cleromancy_2,79 - Sidekick's Revenge,79 - Sidekick's Revenge,,pair2665652686,79 - Sidekick's Revenge,Passive_Robo_79_SidekicksRevenge,,tooltip_robo_passive_79_sidekicksrevenge,89C915F34D5A2BD5C1075C80A9F84AC6,Sidekick's Revenge,仆从的复仇,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_cleromancy_2,80 - Dead Friend Redemption,80 - Dead Friend Redemption,,pair247481704,80 - Dead Friend Redemption,Passive_Robo_80_AlphasCall,,tooltip_robo_passive_80_alphascall,17FADC06492F3FB84F9B75B8188EC96F,The Glorious Dead,死得光荣,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_cleromancy_3,81 - Accursed Bones,81 - Accursed Bones,,pair4271287588,81 - Accursed Bones,Passive_Robo_81_CursedCall,,tooltip_robo_passive_81_cursedcall,7AFCE04648E144819E01D380CDFBA59A,Accursed Bones,诅咒骸骨,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_cleromancy_3,82 - Tormented,82 - Tormented,,pair1857309058,82 - Tormented,Passive_Robo_82_Haunted,,tooltip_robo_passive_82_haunted,2D2506E74C58296BE04BB089AEE0C653,Tormented,无尽折磨,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_cleromancy_3,83 - Graveyard Shift,83 - Graveyard Shift,,pair1579053925,83 - Graveyard Shift,Passive_Robo_83_GraveyardShift,,tooltip_robo_passive_83_graveyardshift,0B4A985B477DA75FAE07D49F52409BBF,Graveyard Shift,墓地轮班,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_cleromancy_3,84 - Snake Eyes,84 - Snake Eyes,,pair2665652686,84 - Snake Eyes,Passive_Robo_84_SnakeEyes,,tooltip_robo_passive_84_snakeeyes,CA4F6B1A463F6A51AAF6718337DCAF84,Snake Eyes,两点,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_cleromancy_3,85 - The Call,85 - The Call,,pair247481704,85 - The Call,Passive_Robo_85_WitchingHour,,tooltip_robo_passive_85_witchinghour,E3CCA22A4B8C38E181D5B08ED0418249,Call,呼唤,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_crossFire_1,42 - Brimstone,42 - Brimstone,,pair4271287588,42 - Brimstone,Passive_Robo_42_Brimstone,,tooltip_robo_passive_42_brimstone,B32E1AB04BE5035E4682D58872FC1BF1,Brimstone,硫磺,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_crossFire_1,43 - Fast C4SH,43 - Fast C4SH,,pair1857309058,43 - Fast C4SH,Passive_Robo_43_TheClaim,,tooltip_robo_passive_43_theclaim,9E87EDF045E6C2F8C8C3EFA53A0EFEC8,Fast C4SH,快速老钱,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_crossFire_1,44 - Firestorm,44 - Firestorm,,pair1833012133,44 - Firestorm,Passive_Robo_44_TheGunfighter,,tooltip_robo_passive_44_thegunfighter,0625E690494F9028C546CD8C24FA9675,Firestorm,火焰风暴,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_crossFire_1,45 - Burn the House Down,45 - Burn the House Down,,pair1579053925,45 - Burn the House Down,Passive_Robo_45_DebtsToPay,,tooltip_robo_passive_45_debtstopay,FDFDC0A74568DD0988B65B8FBADB757E,Burn the House Down,扳倒庄家,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_crossFire_1,46 - High Noon,46 - High Noon,,pair4251152131,46 - High Noon,Passive_Robo_46_HellAndBack,,tooltip_robo_passive_46_hellandback,3FE7C7B441CEF657BF27448D94F664A1,High Noon,正午,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_crossFire_1,47 - Bloodstained Moon,47 - Bloodstained Moon,,pair2665652686,47 - Bloodstained Moon,Passive_Robo_47_BloodOnElpis,,tooltip_robo_passive_47_bloodonelpis,C30FB42A40ED5560768AEE9C0D73C633,Bloodstained Moon,血污之月,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_crossFire_2,48 - Lawless,48 - Lawless,,pair4271287588,48 - Lawless,Passive_Robo_48_Lawless,,tooltip_robo_passive_48_lawless,9C15BAD2406814C964B3CA8A4B5CF717,Lawless,无法无天,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_crossFire_2,49 - Truck Full of Nitro,49 - Truck Full of Nitro,,pair1857309058,49 - Truck Full of Nitro,Passive_Robo_49_TNT,,tooltip_robo_passive_49_tnt,BEA342E2419E8F8994725D9E396B4E7D,Truck Full of Nitro,氮气卡车,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_crossFire_2,50 - War Wagon,50 - War Wagon,,pair1579053925,50 - War Wagon,Passive_Robo_50_WarWagon,,tooltip_robo_passive_50_warwagon,AD7268CD47BED7D21825819B1F41F129,War Wagon,战车,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_crossFire_2,51 - Pale Rider,51 - Pale Rider,,pair4251152131,51 - Pale Rider,Passive_Robo_51_PaleRider,,tooltip_robo_passive_51_palerider,26C67F754805C32599AFA8B41AF334E5,Pale Rider,苍白骑士,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_crossFire_2,52 - Nothing Beats Lead,52 - Nothing Beats Lead,,pair2665652686,52 - Nothing Beats Lead,Passive_Robo_52_Forsaken,,tooltip_robo_passive_52_forsaken,A5AB6E0649645F4D8EF73A86613C511B,Nothing Beats Lead,子弹无敌,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_crossFire_3,53 - Mr Pocket,53 - Mr Pocket,,pair4271287588,53 - Mr Pocket,Passive_Robo_53_TheWind,,tooltip_robo_passive_53_thewind,59EE9ACE4AF2F52793C3FFADBEFABA96,Mr. Pocket,掏袋先生,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_crossFire_3,54 - Unshaken,54 - Unshaken,,pair1857309058,54 - Unshaken,Passive_Robo_54_Maverick,,tooltip_robo_passive_54_maverick,639C93304E8A3F4B63AD258605A83792,Unshaken,绝不动摇,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_crossFire_3,55 - From Gloam to Glow,55 - From Gloam to Glow,,pair1833012133,55 - From Gloam to Glow,Passive_Robo_55_Cottonmouth,,tooltip_robo_passive_55_cottonmouth,90B5CE674E696FD4239B4A883EEA7CE1,From Gloam to Glow,从昏暗到光明,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_crossFire_3,56 - Dusty Trail,56 - Dusty Trail,,pair4251152131,56 - Dusty Trail,Passive_Robo_56_BrokenArrow,,tooltip_robo_passive_56_brokenarrow,1F68BD21406056D4058A8397EE406D83,Dusty Trail,尘土踪迹,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_crossFire_3,57 - Bleed the Bad,57 - Bleed the Bad,,pair247481704,57 - Bleed the Bad,Passive_Robo_57_BadMenMustBleed,,tooltip_robo_passive_57_badmenmustbleed,26DC004341796FDF4881BBB5FF6CFD8D,Bleed the Bad,痛宰恶霸,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_1,13 - High Roller,13 - High Roller,,pair4271287588,13 - High Roller,Passive_Robo_13_HighRoller,,tooltip_robo_passive_13_highroller,4A48D0C5485E5E71CEF609A0442FE27A,High Roller,豪赌之王,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_1,14 - Take the Pot,14 - Take the Pot,,pair1857309058,14 - Take the Pot,Passive_Robo_14_TakeThePot,,tooltip_robo_passive_14_takethepot,CC70316C4290EA16A08172A73F9F2DF2,Take the Pot,碰运气,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_1,15 - Stack the Deck,15 - Stack the Deck,,pair1833012133,15 - Stack the Deck,Passive_Robo_15_StackTheDeck,,tooltip_robo_passive_15_stackthedeck,A3DB168A470ACB0954F862B9FABB7F78,Stack the Deck,送牌,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_1,16 - Legerdemain,16 - Legerdemain,,pair1579053925,16 - Legerdemain,Passive_Robo_16_Legerdemain,,tooltip_robo_passive_16_legerdemain,71C243354E9B2402EFA4B5B15CF7080F,Legerdemain,巧妙花招,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_1,17 - Vigorish,17 - Vigorish,,pair4251152131,17 - Vigorish,Passive_Robo_17_Fortuity,,tooltip_robo_passive_17_fortuity,1D2E0B044FCDD692FD3589881E809CBF,Vigorish,活力满满,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_1,18 - Dealer's Bluff,18 - Dealer's Bluff,,pair2665652686,18 - Dealer's Bluff,Passive_Robo_18_DealersBluff,,tooltip_robo_passive_18_dealersbluff,05180FF041480C59740CCC90150B1B10,Dealer's Bluff,庄家把戏,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_2,05 - Ante Up,05 - Ante Up,,pair247481704,05 - Ante Up,Passive_Robo_05_Ante,,tooltip_robo_passive_05_ante,C258FA9445F167D38D61EFBA82CEC59B,Ante Up,加大赌注,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_2,19 - Ace in the Hole,19 - Ace in the Hole,,pair4271287588,19 - Ace in the Hole,Passive_Robo_19_AceInTheHole,,tooltip_robo_passive_19_aceinthehole,7E05AC174E4FD86F9B3BBC9B7E6329BB,Ace in the Hole,手中王牌,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_2,20 - Around the Corner,20 - Around the Corner,,pair1857309058,20 - Around the Corner,Passive_Robo_20_AroundTheCorner,,tooltip_robo_passive_20_aroundthecorner,6D6EBA144D58514FD893E58A9BBA0B46,Around the Corner,近在咫尺,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_2,21 - C4SH Game,21 - C4SH Game,,pair4251152131,21 - C4SH Game,Passive_Robo_21_C4SHGame,,tooltip_robo_passive_21_c4shgame,4C2D676D4669C0C1AD6ADBB5B8D1ED91,C4SH Game,老钱游戏,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_2,22 - House Edge,22 - House Edge,,pair1579053925,22 - House Edge,Passive_Robo_22_TheHouse,,tooltip_robo_passive_22_thehouse,F72D710541BE239369F8CEB0B63D4BE2,House Edge,庄家优势,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_2,23 - No Limit,23 - No Limit,,pair2665652686,23 - No Limit,Passive_Robo_23_RiskyBusiness,,tooltip_robo_passive_23_riskybusiness,FF5F4462438CD30988E856AAC9340126,No Limit,毫无限制,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_3,25 - Kill Button,25 - Kill Button,,pair4271287588,25 - Kill Button,Passive_Robo_25_TheTurn,,tooltip_robo_passive_25_theturn,C5533E62459F759BF44C01B5EA69562C,Kill Button,杀戮按钮,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_3,26 - Payout,26 - Payout,,pair1857309058,26 - Payout,Passive_Robo_26_Payout,,tooltip_robo_passive_26_payout,A9596F7B4C9668976E2A4EBAD82F039A,Payout,派彩,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_3,27 - Boom or Bust,27 - Boom or Bust,,pair1833012133,27 - Boom or Bust,Passive_Robo_27_BoomOrBus,,tooltip_robo_passive_27_boomorbus,7CD4D1B44CB0FE78F3D994B111B6C99D,Boom or Bust,要么暴富，要么破产,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_3,28 - Tender Hearts,28 - Tender Hearts,,pair1579053925,28 - Tender Hearts,Passive_Robo_28_HeartOfTheCards,,tooltip_robo_passive_28_heartofthecards,451A112A45E032EFB63F778C7ECA31F6,Tender Hearts,温柔之心,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_3,29 - Card sharp,29 - Card sharp,,pair4251152131,29 - Card sharp,Passive_Robo_29_RunningLuck,,tooltip_robo_passive_29_runningluck,59BC1F56408DEB83365D068752B156A9,Card Sharp,千王之王,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_branch_sleightOfHand_3,30 - Hot Streak,30 - Hot Streak,,pair2665652686,30 - Hot Streak,Passive_Robo_30_HotStreak,,tooltip_robo_passive_30_hotstreak,D110A32D4DA533839AF679ABF9BB5D4B,Hot Streak,连战连胜,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk,Trunk - Row 1 - 1,Trunk - Row 1 - 1,Trunk - Row 1 - 1,pair996849512,,,,,,Trunk - Row 1 - 1,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_trunk,Trunk - Row 1 - 2,Trunk - Row 1 - 2,Trunk - Row 1 - 2,pair137711528,,,,,,Trunk - Row 1 - 2,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_trunk,Trunk - Row 1 - 3,Trunk - Row 1 - 3,Trunk - Row 1 - 3,pair2873643982,,,,,,Trunk - Row 1 - 3,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_trunk,Trunk - Row 1 - 4,Trunk - Row 1 - 4,Trunk - Row 1 - 4,pair3163783157,,,,,,Trunk - Row 1 - 4,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_trunk,Trunk - Row 1 - 5,Trunk - Row 1 - 5,Trunk - Row 1 - 5,pair535716755,,,,,,Trunk - Row 1 - 5,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_trunk,Trunk - Row 2 - 1,Trunk - Row 2 - 1,Trunk - Row 2 - 1,pair2830995945,,,,,,Trunk - Row 2 - 1,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_trunk,Trunk - Row 2 - 3,Trunk - Row 2 - 3,Trunk - Row 2 - 3,pair949974351,,,,,,Trunk - Row 2 - 3,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_trunk,Trunk - Row 2 - 5,Trunk - Row 2 - 5,Trunk - Row 2 - 5,pair2352563474,,,,,,Trunk - Row 2 - 5,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_trunk,Trunk - Row 3 - 1,Trunk - Row 3 - 1,Trunk - Row 3 - 1,pair1528740738,,,,,,Trunk - Row 3 - 1,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_trunk,Trunk - Row 3 - 2,Trunk - Row 3 - 2,Trunk - Row 3 - 2,pair1749107522,,,,,,Trunk - Row 3 - 2,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_trunk,Trunk - Row 3 - 3,Trunk - Row 3 - 3,Trunk - Row 3 - 3,pair3409731364,,,,,,Trunk - Row 3 - 3,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_trunk,Trunk - Row 3 - 4,Trunk - Row 3 - 4,Trunk - Row 3 - 4,pair3706155807,,,,,,Trunk - Row 3 - 4,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_trunk,Trunk - Row 3 - 5,Trunk - Row 3 - 5,Trunk - Row 3 - 5,pair2140827513,,,,,,Trunk - Row 3 - 5,,fallback,coord_fallback
+404,C4sh,passive,Progress_robo_trunk_cleromancy,58 - Luck Be a Robot,58 - Luck Be a Robot,,pair996849512,58 - Luck Be a Robot,Passive_Robo_58_LucksARobot,,tooltip_robo_passive_58_lucksarobot,3D7DD8764304F9F07C5E748070A676E7,Luck Be a Robot,运气是机器人,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_cleromancy,59 - Sweet Roll,59 - Sweet Roll,,pair2873643982,59 - Sweet Roll,Passive_Robo_59_AllForOne,,tooltip_robo_passive_59_allforone,BA4EC63A4B1038802FC9B3AD2E0869B0,Sweet Roll,甜卷面包,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_cleromancy,60 - Charm Bracelet,60 - Charm Bracelet,,pair535716755,60 - Charm Bracelet,Passive_Robo_60_LuckyCharm,,tooltip_robo_passive_60_luckycharm,C7E26A80432CF93D16E404BEFE7CDA62,Charm Bracelet,魔法手链,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_cleromancy,61 - O Fortuna,61 - O Fortuna,,pair2830995945,61 - O Fortuna,Passive_Robo_61_TheLuckyOne,,tooltip_robo_passive_61_theluckyone,F4D5B29D44D6A71C26984FB820FE48E6,O Fortuna,命运女神,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_cleromancy,62 - Red Moon Rising,62 - Red Moon Rising,,pair949974351,62 - Red Moon Rising,Passive_Robo_62_RedMoonRising,,tooltip_robo_passive_62_redmoonrising,F93B0B4A4489191BE0D54B863CBA293D,Red Moon Rising,赤月高升,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_cleromancy,63 - Ready to Roll,63 - Ready to Roll,,pair2352563474,63 - Ready to Roll,Passive_Robo_63_RollingTheDeep,,tooltip_robo_passive_63_rollingthedeep,2ED12DCB49770E37DC92628551BAD5C6,Ready to Roll,掷骰准备,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_cleromancy,64 - Riding High,64 - Riding High,,pair1528740738,64 - Riding High,Passive_Robo_64_RidingHigh,,tooltip_robo_passive_64_ridinghigh,0367112D41D0F1E242C414A980ECF55B,Riding High,乘势而上,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_cleromancy,65 - Bonemeal Ticket,65 - Bonemeal Ticket,,pair1749107522,65 - Bonemeal Ticket,Passive_Robo_65_GravePact,,tooltip_robo_passive_65_gravepact,AD0ED7CC4ECB8970D44D2F902B7B86F1,Bonemeal Ticket,骨粉票券,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_cleromancy,67 - Luckless,67 - Luckless,,pair2140827513,67 - Luckless,Passive_Robo_67_Luckless,,tooltip_robo_passive_67_luckless,FD2D1B4046F579F4092215953A328C61,Luckless,坏运气,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_cleromancy,75 - Before She Knows You're Dead,75 - Before She Knows You're Dead,,pair3706155807,75 - Before She Knows You're Dead,Passive_Robo_75_DoubleTime,,tooltip_robo_passive_75_doubletime,7BC77B1A4B7B4CEA300D699071D891A9,Before She Knows You're Dead,赶在她知道你死掉之前,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_cleromancy,Devil's Tines - CL,Devil's Tines - CL,,pair3409731364,Devil's Tines - CL,Passive_Robo_10_DevilsTines,,tooltip_robo_passive_10_devilstines,7F4A8DDC40E31E9808A412928870AAEE,Devil's Tines,恶魔之齿,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_crossFire,31 - Unchained,31 - Unchained,,pair996849512,31 - Unchained,Passive_Robo_31_Gunslinger,,tooltip_robo_passive_31_unchained,D7539C664E7817EEE9CD3C97BE11295B,Unleashed,彻底释放,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_crossFire,32 - Huckleberry,32 - Huckleberry,,pair2873643982,32 - Huckleberry,Passive_Robo_32_DeathHunt,,tooltip_robo_passive_32_deathhunt,7BFF0CD84057D01F7E97ECA83E96BA6A,Your Huckleberry,最佳人选,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_crossFire,33 - The Determinator,33 - The Determinator,,pair3163783157,33 - The Determinator,Passive_Robo_33_TheMissing,,tooltip_robo_passive_33_determinator,7CF5DDF0481ADEF72F6792A25A9EC309,The Determinator,终结者,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_crossFire,34 - Hard Boiled,34 - Hard Boiled,,pair535716755,34 - Hard Boiled,Passive_Robo_34_LastStand,,tooltip_robo_passive_34_hardboiled,BA23419C42B85CF8E5A2FE8F268D0803,Hard-Boiled,冷硬作风,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_crossFire,35 - Hot Hand,35 - Hot Hand,,pair1528740738,35 - Hot Hand,Passive_Robo_35_TheFuries,,tooltip_robo_passive_35_thefuries,CAB55A7F45E502EEC73D6E8F1AD2C7E9,Hot Hand,手感火辣,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_crossFire,36 - Shootist,36 - Shootist,,pair949974351,36 - Shootist,Passive_Robo_36_TheShootist,,tooltip_robo_passive_36_theshootist,0F18829B468AF7332465C89F4AD812CA,Shootist,射手,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_crossFire,37 - Stand and Bleed,37 - Stand and Bleed,,pair2352563474,37 - Stand and Bleed,Passive_Robo_37_StandAndBleed,,tooltip_robo_passive_37_standandbleed,D7F718ED4D89F3B3F45E959F87F1B336,Stand and Bleed,挺身流血,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_crossFire,38 - Blur of Fingers and Brass,38 - Blur of Fingers and Brass,,pair2140827513,38 - Blur of Fingers and Brass,Passive_Robo_38_Unchained,,tooltip_robo_passive_38_unchained,998753464881E1971F724EB3FC39864B,A Blur of Fingers and Brass,铜管交响曲,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_crossFire,39 - Trick Shot,39 - Trick Shot,,pair1749107522,39 - Trick Shot,Passive_Robo_39_BoneShrapnel,,tooltip_robo_passive_39_boneshrapnel,8A7AA3F44C227CEBE15840AB936C0295,Trick Shot,特技射击,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_crossFire,40 - Ride to Ruin,40 - Ride to Ruin,,pair3706155807,40 - Ride to Ruin,Passive_Robo_40_RideWithTheDevil,,tooltip_robo_passive_40_ridewiththedevil,E209550A4DAA0F8E8AA09B9D81548DE7,Ride to Ruin,奔向毁灭,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_crossFire,Devil's Tine - CR,Devil's Tine - CR,,pair3409731364,Devil's Tine - CR,Passive_Robo_10_DevilsTines,,tooltip_robo_passive_10_devilstines,7F4A8DDC40E31E9808A412928870AAEE,Devil's Tines,恶魔之齿,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_sleightOfHand,01 - Table Flip,01 - Table Flip,,pair996849512,01 - Table Flip,Passive_Robo_01_TableFlip,,tooltip_robo_passive_01_tableflip,6857CB924BEA89E3457B48B500A73CF9,Fast Hands,快手,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_sleightOfHand,02 - Insurance,02 - Insurance,,pair137711528,02 - Insurance,Passive_Robo_02_HeroCall,,tooltip_robo_passive_02_herocall,D79B53874E1E21BF461DEEB133C55650,Insurance,保险,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_sleightOfHand,03 - Splash the Pot,03 - Splash the Pot,,pair3163783157,03 - Splash the Pot,Passive_Robo_03_Steam,,tooltip_robo_passive_03_steam,836159BD45906F9B28659DA790A8BAD5,Splash the Pot,溅锅水,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_sleightOfHand,04 - Alchemy,04 - Alchemy,,pair535716755,04 - Alchemy,Passive_Robo_04_Alchemy,,tooltip_robo_passive_04_alchemy,7E66037C409A0B023BB457A21F54389B,Alchemy,炼金术,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_sleightOfHand,06 - Sounds of Rain,06 - Sounds of Rain,,pair949974351,06 - Sounds of Rain,Passive_Robo_06_SoundsOfRain,,tooltip_robo_passive_06_soundsofrain,6B6EFB8448C928BF719B3AB4A02B1E1D,Sounds of Rain,雨声滴滴,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_sleightOfHand,07 - Trick-Taker,07 - Trick-Taker,,pair2352563474,07 - Trick-Taker,Passive_Robo_07_TrickTaker,,tooltip_robo_passive_07_tricktaker,87D3A71349174D10DBF5BFA6A0F1791C,Trick-Taker,抽牌,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_sleightOfHand,09 - Late Scratch,09 - Late Scratch,,pair1749107522,09 - Late Scratch,Passive_Robo_09_LateScratch,,tooltip_robo_passive_09_latescratch,71D38BB24620C6A8908BF3826950F6B4,Late Scratch,意外退赛,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_sleightOfHand,11 - Double-Down,11 - Double-Down,,pair3706155807,11 - Double-Down,Passive_Robo_11_DoubleDown,,tooltip_robo_passive_11_doubledown,14209D6B4F8FF61BCC4ED5A0A181CF5E,Double-Down,双倍下注,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_sleightOfHand,12 - Wretched Shadows,12 - Wretched Shadows,,pair2140827513,12 - Wretched Shadows,Passive_Robo_12_WretchedShadows,,tooltip_robo_passive_12_wretchedshadows,2DDB0A35469CE61A6CC3E097AB48F0DC,Wretched Shadows,可悲身影,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_sleightOfHand,24 - Go For Broke,24 - Go For Broke,,pair2830995945,24 - Go For Broke,Passive_Robo_24_ReadTheSigns,,tooltip_robo_passive_24_readthesigns,60CC3E3F46A939001285C69C760268AC,Go for Broke,孤注一掷,passive_skill,tooltip
+404,C4sh,passive,Progress_robo_trunk_sleightOfHand,Devil's Tines - SoH,Devil's Tines - SoH,,pair3409731364,Devil's Tines - SoH,Passive_Robo_10_DevilsTines,,tooltip_robo_passive_10_devilstines,7F4A8DDC40E31E9808A412928870AAEE,Devil's Tines,恶魔之齿,passive_skill,tooltip

@@ -1,105 +1,105 @@
-Manufacturer ID,Part_ID,Part_type,Stat,Description
-263,1,Perk,碎片强化,向敌人发射第2颗生成的手雷
-263,2,Perk,分配器有效载荷,有效载荷-飞行途中生成第2颗手雷
-263,3,Perk,马里旺,手雷会粘在敌人身上，如掉落地面，则会自动飞向最近的来袭敌人
-263,4,Rarity,Common,
-263,5,Rarity,Uncommon,
-263,6,Rarity,Rare,
-263,7,Rarity,Epic,
-263,8,Rarity,Legendary,金皮肤
-263,9,Rarity,Legendary,毁灭迪斯科皮肤
-263,10,Legendary Perk,凹槽,一边播放迪斯科音乐一边向投掷方向飞行，并对范围内造成属性伤害，飞行一段时间后爆炸
-263,11,Rarity,Legendary,递归皮肤
-263,12,Legendary Perk,循环,触碰物体后停留在物体上，一段时间后爆炸；朝空中投掷一定距离时，可悬停在空中
-263,13,Perk,中继器强化,飞行途中向下生成额外手雷
-267,1,Perk,雅各布斯,手雷击中弱点时会造成暴击伤害
-267,2,Perk,分配器有效载荷,有效载荷-飞行途中生成第2颗手雷
-267,3,Perk,碎片强化,向敌人发射第2颗生成的手雷
-267,4,Rarity,Common,
-267,5,Rarity,Uncommon,
-267,6,Rarity,Rare,
-267,7,Rarity,Epic,
-267,8,Rarity,Legendary,金皮肤
-267,9,Legendary Perk,杂要演员,接住反弹的手雷，恢复1个手雷能量点
-267,10,Rarity,Legendary,旋转刀刃皮肤
-267,11,Legendary Perk,忍者速度,每次连续命中都会短时间内获得+10%移动速度，最多叠加7层
-267,12,Rarity,Legendary,翔苦无皮肤
-267,13,Perk,中继器强化,飞行途中生成额外手雷
-267,14,Legendary Perk,铋元素,命中时附着。敌人身上每有一把匕首，所受电击伤害将提升15%
-267,15,Legendary Perk,铋元素,命中时附着。敌人身上每有一把匕首，所受辐射伤害将提升15%
-267,16,Legendary Perk,铋元素,命中时附着。敌人身上每有一把匕首，所受点燃伤害将提升15%
-267,17,Legendary Perk,铋元素,命中时附着。敌人身上每有一把匕首，所受冰冻伤害将提升15%
-267,18,Legendary Perk,铋元素,命中时附着。敌人身上每有一把匕首，所受腐蚀伤害将提升15%
-267,19,Perk,雅各布斯,手雷击中弱点时会造成暴击伤害（铋尖匕首）
-267,20,Rarity,Legendary,铋尖匕首皮肤
-270,1,Rarity,Common,
-270,2,Rarity,Uncommon,
-270,3,Rarity,Rare,
-270,4,Rarity,Epic,
-270,5,Rarity,Legendary,金皮肤
-270,6,Legendary Perk,临时替代,无特殊效果，如词条说明般，只是个临时替代品
-270,7,Rarity,Legendary,震颤斧皮肤
-270,8,Legendary Perk,筑垒阵地,爆炸前会有随机语音：爆炸后，手雷在原地跳动，向外溅射伤害并散发气体，同时射出追踪弹，造成对应属性的伤害
-270,9,Rarity,Legendary,导火索皮肤
-270,10,Perk,代达洛斯,手雷在手持时会开始计时，并在固定时间后爆炸
-272,1,Perk,教团,手雷会自动追踪附近敌人
-272,2,Rarity,Common,
-272,3,Rarity,Uncommon,
-272,4,Rarity,Rare,
-272,5,Rarity,Epic,
-272,6,Rarity,Legendary,金皮肤
-272,7,Legendary Perk,空心入筐,必定带有分裂式有效载荷和教团词条：爆炸时分裂出三颗手雷，一共分裂两次，且手雷会自动追踪附近的敌人
-272,8,Rarity,Legendary,蜂群皮肤
-272,9,Legendary Perk,不间断,持续追踪目标
-272,10,Rarity,Legendary,乔穆尔基皮肤
-272,11,Legendary Perk,被诅咒的,扔出一个缓慢移动并追踪目标的骷髅头，骷髅头移动时会向目标发射子弹，碰到目标爆炸
-272,12,Rarity,Legendary,骷髅皮肤
-278,1,Perk,中继器强化,飞行途中向下生成额外手雷
-278,2,Perk,开颅者,手雷会传送至目的地
-278,3,Perk,分配器有效载荷,有效载荷-飞行途中生成第2颗手雷
-278,4,Rarity,Common,
-278,5,Rarity,Uncommon,
-278,6,Rarity,Rare,
-278,7,Rarity,Epic,
-278,8,Rarity,Legendary,金皮肤
-278,9,Rarity,Legendary,果冻皮肤
-278,10,Legendary Perk,自我复制,投掷后在触碰物体时会爆炸，同时在较短时间内会反弹并衍生出新的手雷
-278,11,Legendary Perk,浮力,若投掷出一定距离，手雷会在投掷方向空中悬浮
-278,12,Rarity,Legendary,浮标皮肤
-278,13,Perk,碎片强化,向敌人发射第2颗生成的手雷
-291,1,Rarity,Common,
-291,2,Rarity,Uncommon,
-291,3,Rarity,Rare,
-291,4,Rarity,Epic,
-291,5,Rarity,Legendary,金皮肤
-291,6,Legendary Perk,掩护你,投掷后，向四周大范围弹射4+8个衍生物，并在原地弹跳，造成对应属性伤害
-291,7,Rarity,Legendary,一鸣惊人皮肤
-291,8,Legendary Perk,瀑布,伤害目标时引起额外爆炸
-291,9,Rarity,Legendary,瀑布皮肤
-291,10,Perk,弗拉多夫,撞击时手雷爆炸
-291,11,Legendary Perk,触手,
-291,12,Rarity,Legendary,芭芭拉皮肤
-298,1,Rarity,Common,
-298,2,Rarity,Uncommon,
-298,3,Rarity,Rare,
-298,4,Rarity,Epic,
-298,5,Rarity,Legendary,金皮肤
-298,6,Legendary Perk,超辣,持续生成追踪式托格粘性弹
-298,7,Rarity,Legendary,火锅皮肤
-298,8,Legendary Perk,剑鱼,引爆时造成近战伤害
-298,9,Rarity,Legendary,滑溜溜皮肤
-298,10,Perk,托格,撞击敌人时手雷爆炸
-298,11,Legendary Perk,"诱饵","发射干扰弹，转移附近敌人注意力"
-298,12,Rarity,Legendary,"反制措施皮肤"
-311,1,Rarity,Common,
-311,2,Rarity,Uncommon,
-311,3,Rarity,Rare,
-311,4,Rarity,Epic,
-311,5,Rarity,Legendary,金皮肤
-311,6,Legendary Perk,粘性扳机,手雷引爆时会生成组合魔球
-311,7,Rarity,Legendary,雷管故障皮肤
-311,8,Legendary Perk,天降死神,在投掷位置发出信号，召唤无人机并在信号范围附近投下多枚爆炸物，并产生对应属性伤害
-311,9,Rarity,Legendary,无人机皮肤
-311,10,Perk,泰迪尔,轻按两次远程引爆投掷的手雷
-311,11,Legendary Perk,海胆泡泡,
-311,12,Rarity,Legendary,海胆皮肤
+﻿Manufacturer ID,Part_ID,Part_type,Stat_ZH,Stat_EN,Description_ZH,Description_EN
+263,1,Perk,碎片强化,Splinter Augment,向敌人发射第2颗生成的手雷,Launches the second spawned Grenade toward an enemy
+263,2,Perk,分配器有效载荷,Divider Payload,有效载荷-飞行途中生成第2颗手雷,Payload - Spawns a second Grenade while midflight
+263,3,Perk,马里旺,Maliwan,手雷会粘在敌人身上，如掉落地面，则会自动飞向最近的来袭敌人,"Grenades stick to enemies; if they hit the ground, they automatically fly towards the nearest incoming enemy"
+263,4,Rarity,Common,Common,,
+263,5,Rarity,Uncommon,Uncommon,,
+263,6,Rarity,Rare,Rare,,
+263,7,Rarity,Epic,Epic,,
+263,8,Rarity,Legendary,Legendary,金皮肤,Gold skin
+263,9,Rarity,Legendary,Legendary,毁灭迪斯科皮肤,Destructive Disco skin
+263,10,Legendary Perk,凹槽,Groove,一边播放迪斯科音乐一边向投掷方向飞行，并对范围内造成属性伤害，飞行一段时间后爆炸,"Flies in the throw direction playing disco music, dealing elemental damage in the area, and explodes after a duration"
+263,11,Rarity,Legendary,Legendary,递归皮肤,Recursive skin
+263,12,Legendary Perk,循环,Recursion,触碰物体后停留在物体上，一段时间后爆炸；朝空中投掷一定距离时，可悬停在空中,"Stays on object upon contact and explodes after a duration; if thrown a certain distance into the air, it can hover"
+263,13,Perk,中继器强化,Repeater Augment,飞行途中向下生成额外手雷,Spawns additional Grenades downwards while midflight
+267,1,Perk,雅各布斯,Jakobs,手雷击中弱点时会造成暴击伤害,Grenades deal critical damage when hitting weak points
+267,2,Perk,分配器有效载荷,Divider Payload,有效载荷-飞行途中生成第2颗手雷,Payload - Spawns a second Grenade while midflight
+267,3,Perk,碎片强化,Splinter Augment,向敌人发射第2颗生成的手雷,Launches the second spawned Grenade toward an enemy
+267,4,Rarity,Common,Common,,
+267,5,Rarity,Uncommon,Uncommon,,
+267,6,Rarity,Rare,Rare,,
+267,7,Rarity,Epic,Epic,,
+267,8,Rarity,Legendary,Legendary,金皮肤,Gold skin
+267,9,Legendary Perk,杂要演员,Acrobat,接住反弹的手雷，恢复1个手雷能量点,Catch a rebounded grenade to restore 1 grenade charge
+267,10,Rarity,Legendary,Legendary,旋转刀刃皮肤,Spinning Blade skin
+267,11,Legendary Perk,忍者速度,Ninja Speed,每次连续命中都会短时间内获得+10%移动速度，最多叠加7层,"Consecutive hits grant +10% movement speed for a short duration, stacks up to 7 times"
+267,12,Rarity,Legendary,Legendary,翔苦无皮肤,Sho Kunai skin
+267,13,Perk,中继器强化,Repeater Augment,飞行途中生成额外手雷,Spawns additional Grenades while midflight
+267,14,Legendary Perk,铋元素,Bismuth,命中时附着。敌人身上每有一把匕首，所受电击伤害将提升15%,Attaches on Hit. Enemies take 15% more Shock damage for each attached Dagger.
+267,15,Legendary Perk,铋元素,Bismuth,命中时附着。敌人身上每有一把匕首，所受辐射伤害将提升15%,Attaches on Hit. Enemies take 15% more Radiation damage for each attached Dagger.
+267,16,Legendary Perk,铋元素,Bismuth,命中时附着。敌人身上每有一把匕首，所受点燃伤害将提升15%,Attaches on Hit. Enemies take 15% more Fire damage for each attached Dagger.
+267,17,Legendary Perk,铋元素,Bismuth,命中时附着。敌人身上每有一把匕首，所受冰冻伤害将提升15%,Attaches on Hit. Enemies take 15% more Cryo damage for each attached Dagger.
+267,18,Legendary Perk,铋元素,Bismuth,命中时附着。敌人身上每有一把匕首，所受腐蚀伤害将提升15%,Attaches on Hit. Enemies take 15% more Corrosive damage for each attached Dagger.
+267,19,Perk,雅各布斯,Jakobs,手雷击中弱点时会造成暴击伤害（铋尖匕首）,Grenades deal critical damage when hitting weak points(Bismuth)
+267,20,Rarity,Legendary,Legendary,铋尖匕首皮肤,Bismuth skin
+270,1,Rarity,Common,Common,,
+270,2,Rarity,Uncommon,Uncommon,,
+270,3,Rarity,Rare,Rare,,
+270,4,Rarity,Epic,Epic,,
+270,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+270,6,Legendary Perk,临时替代,Temporary Substitute,无特殊效果，如词条说明般，只是个临时替代品,"No special effect, just like the tooltip says, just a temporary substitute"
+270,7,Rarity,Legendary,Legendary,震颤斧皮肤,Buzz Axe skin
+270,8,Legendary Perk,筑垒阵地,Fortification,爆炸前会有随机语音：爆炸后，手雷在原地跳动，向外溅射伤害并散发气体，同时射出追踪弹，造成对应属性的伤害,"Random voice lines before explosion: After exploding, the grenade bounces in place dealing splash damage and releasing gas, while firing tracking shots dealing corresponding elemental damage"
+270,9,Rarity,Legendary,Legendary,导火索皮肤,Fuse skin
+270,10,Perk,代达洛斯,Daedalus,手雷在手持时会开始计时，并在固定时间后爆炸,Grenade timer starts when held and explodes after a fixed time
+272,1,Perk,教团,Order,手雷会自动追踪附近敌人,Grenades automatically track nearby enemies
+272,2,Rarity,Common,Common,,
+272,3,Rarity,Uncommon,Uncommon,,
+272,4,Rarity,Rare,Rare,,
+272,5,Rarity,Epic,Epic,,
+272,6,Rarity,Legendary,Legendary,金皮肤,Gold skin
+272,7,Legendary Perk,空心入筐,Swish,必定带有分裂式有效载荷和教团词条：爆炸时分裂出三颗手雷，一共分裂两次，且手雷会自动追踪附近的敌人,"Always comes with Divider Payload and Order perk: Splits into three grenades upon explosion, splitting twice in total, and grenades automatically track nearby enemies"
+272,8,Rarity,Legendary,Legendary,蜂群皮肤,Swarm skin
+272,9,Legendary Perk,不间断,Unceasing,持续追踪目标,Continuously tracks target
+272,10,Rarity,Legendary,Legendary,乔穆尔基皮肤,Chaumurky skin
+272,11,Legendary Perk,被诅咒的,Cursed,扔出一个缓慢移动并追踪目标的骷髅头，骷髅头移动时会向目标发射子弹，碰到目标爆炸,Throws a slowly moving skull that tracks the target; the skull fires bullets at the target while moving and explodes on contact
+272,12,Rarity,Legendary,Legendary,骷髅皮肤,Skully skin
+278,1,Perk,中继器强化,Repeater Augment,飞行途中向下生成额外手雷,Spawns additional Grenades downwards while midflight
+278,2,Perk,开颅者,Skullcracker,手雷会传送至目的地,Grenade teleports to destination
+278,3,Perk,分配器有效载荷,Divider Payload,有效载荷-飞行途中生成第2颗手雷,Payload - Spawns a second Grenade while midflight
+278,4,Rarity,Common,Common,,
+278,5,Rarity,Uncommon,Uncommon,,
+278,6,Rarity,Rare,Rare,,
+278,7,Rarity,Epic,Epic,,
+278,8,Rarity,Legendary,Legendary,金皮肤,Gold skin
+278,9,Rarity,Legendary,Legendary,果冻皮肤,Jelly skin
+278,10,Legendary Perk,自我复制,Self-Replication,投掷后在触碰物体时会爆炸，同时在较短时间内会反弹并衍生出新的手雷,"Explodes on contact with objects, then bounces and spawns new grenades within a short time"
+278,11,Legendary Perk,浮力,Buoyancy,若投掷出一定距离，手雷会在投掷方向空中悬浮,"If thrown a certain distance, the grenade hovers in the air in the direction of the throw"
+278,12,Rarity,Legendary,Legendary,浮标皮肤,Buoy skin
+278,13,Perk,碎片强化,Splinter Augment,向敌人发射第2颗生成的手雷,Launches the second spawned Grenade toward an enemy
+291,1,Rarity,Common,Common,,
+291,2,Rarity,Uncommon,Uncommon,,
+291,3,Rarity,Rare,Rare,,
+291,4,Rarity,Epic,Epic,,
+291,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+291,6,Legendary Perk,掩护你,Covering Fire,投掷后，向四周大范围弹射4+8个衍生物，并在原地弹跳，造成对应属性伤害,"After throwing, ejects 4+8 spawns in a large area around it, bouncing in place and dealing corresponding elemental damage"
+291,7,Rarity,Legendary,Legendary,一鸣惊人皮肤,Blockbuster skin
+291,8,Legendary Perk,瀑布,Waterfall,伤害目标时引起额外爆炸,Causes additional explosions when damaging targets
+291,9,Rarity,Legendary,Legendary,瀑布皮肤,Waterfall skin
+291,10,Perk,弗拉多夫,Vladof,撞击时手雷爆炸,Grenade explodes on impact
+291,11,Legendary Perk,触手,Tentacles,,Deals Skill Damage
+291,12,Rarity,Legendary,Legendary,芭芭拉皮肤,Barb'ara skin
+298,1,Rarity,Common,Common,,
+298,2,Rarity,Uncommon,Uncommon,,
+298,3,Rarity,Rare,Rare,,
+298,4,Rarity,Epic,Epic,,
+298,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+298,6,Legendary Perk,超辣,Super Spicy,持续生成追踪式托格粘性弹,Continuously spawns tracking Torgue sticky bombs
+298,7,Rarity,Legendary,Legendary,火锅皮肤,Firepot skin
+298,8,Legendary Perk,剑鱼,Swordfish,引爆时造成近战伤害,Deals melee damage on detonation
+298,9,Rarity,Legendary,Legendary,滑溜溜皮肤,Slippy skin
+298,10,Perk,托格,Torgue,撞击敌人时手雷爆炸,Grenade explodes on impacting enemy
+298,11,Legendary Perk,诱饵,Decoy,发射干扰弹，转移附近敌人注意力,Launches flares that distract nearby enemies
+298,12,Rarity,Legendary,Legendary,反制措施皮肤,Countermeasure Skin
+311,1,Rarity,Common,Common,,
+311,2,Rarity,Uncommon,Uncommon,,
+311,3,Rarity,Rare,Rare,,
+311,4,Rarity,Epic,Epic,,
+311,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+311,6,Legendary Perk,粘性扳机,Sticky Trigger,手雷引爆时会生成组合魔球,Spawns a combo orb when the grenade detonates
+311,7,Rarity,Legendary,Legendary,雷管故障皮肤,Faulty Detonator skin
+311,8,Legendary Perk,天降死神,Death from Above,在投掷位置发出信号，召唤无人机并在信号范围附近投下多枚爆炸物，并产生对应属性伤害,"Emits a signal at the throw location, summoning a drone to drop multiple explosives near the signal, dealing corresponding elemental damage"
+311,9,Rarity,Legendary,Legendary,无人机皮肤,UAV skin
+311,10,Perk,泰迪尔,Tediore,轻按两次远程引爆投掷的手雷,Double tap to remotely detonate thrown grenades
+311,11,Legendary Perk,海胆泡泡,Snaboopie-pop,,
+311,12,Rarity,Legendary,Legendary,海胆皮肤,Urchin skin

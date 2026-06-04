@@ -20,16 +20,8 @@ from core import bl4_functions as bl4f
 def load_repkit_data(lang='zh-CN'):
     """使用资源加载器加载修复套件数据。"""
     try:
-        suffix = "_EN" if lang in ['en-US', 'ru', 'ua'] else ""
-        main_perk_path = resource_loader.get_repkit_data_path(f'repkit_main_perk{suffix}.csv')
-        mfg_perk_path = resource_loader.get_repkit_data_path(f'repkit_manufacturer_perk{suffix}.csv')
-        
-        if not main_perk_path or not mfg_perk_path:
-            QMessageBox.critical(None, "加载数据失败", "无法找到修复套件CSV文件路径。")
-            return None, None, None
-
-        df_main = pd.read_csv(main_perk_path)
-        df_mfg = pd.read_csv(mfg_perk_path)
+        df_main = resource_loader.load_localized_csv_resource('repkit/repkit_main_perk.csv', lang)
+        df_mfg = resource_loader.load_localized_csv_resource('repkit/repkit_manufacturer_perk.csv', lang)
         
         localization = {}
         if lang == 'zh-CN':

@@ -20,6 +20,7 @@ Vex = "Vex"
 Amon = "Amon"
 Rafa = "Rafa"
 Harlowe = "Harlowe"
+C4sh = "C4sh"
 
 Pistol = "Pistol"
 Shotgun = "Shotgun"
@@ -61,10 +62,11 @@ ID_MAP = {
     (Maliwan, SniperRifle): 25,
     (Order, SniperRifle): 26,
     (Jakobs, AssaultRifle): 27,
-    (Rafa, ClassMod): 254,
+    (Vex, ClassMod): 254,
     (Amon, ClassMod): 255,
-    (Vex, ClassMod): 256,
+    (Rafa, ClassMod): 256,
     (Harlowe, ClassMod): 259,
+    (C4sh, ClassMod): 404,
     (Torgue, Repkit): 261,
     (Maliwan, Grenade): 263,
     (Hyperion, Enhancement): 264,
@@ -113,7 +115,10 @@ def get_item_type_id(manufacturer: str, item_type: str) -> (int, bool):
     Looks up the ID for a (Manufacturer/Character, ItemType) combination.
     Returns the ID and a boolean indicating if it was found.
     """
-    return ID_MAP.get((manufacturer, item_type), (0, False))
+    item_id = ID_MAP.get((manufacturer, item_type))
+    if item_id is None:
+        return 0, False
+    return item_id, True
 
 def get_kind_enums(item_id: int) -> (str, str, bool):
     """

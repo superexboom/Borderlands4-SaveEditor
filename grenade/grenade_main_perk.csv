@@ -1,84 +1,84 @@
-Grenade_perk_main_ID,Part_ID,Part_type,Stat
-245,1,Firmware,弑神者
-245,2,Firmware,沙包大拳头
-245,3,Firmware,命脉
-245,4,Firmware,空袭
-245,5,Firmware,大口径
-245,6,Firmware,装置启动
-245,7,Firmware,烘焙师
-245,8,Firmware,正在行动
-245,9,Firmware,橡皮筋人
-245,10,Firmware,神枪手
-245,11,Firmware,动能拳头
-245,12,Firmware,保命王牌
-245,13,Firmware,阿特拉斯E.X.
-245,14,Firmware,阿特拉斯无限量
-245,15,Firmware,花式射击
-245,16,Firmware,杰克式改造
-245,17,Firmware,发球入场
-245,18,Firmware,加热升温
-245,19,Firmware,备用子弹
-245,20,Firmware,大情圣
-245,21,Perk,持续时间强化-持续性手雷的持续时间增加50%
-245,22,Perk,生成强化-每次反弹都会生成额外手雷
-245,24,Element,腐蚀
-245,25,Element,冰冻
-245,26,Element,点燃
-245,27,Element,辐射
-245,28,Element,电击
-245,29,Perk,分裂式有效载荷-爆炸时生成4颗分裂式手雷
-245,30,Perk,分配器有效载荷-有效载荷-飞行途中生成第2颗手雷
-245,31,Perk,弹簧有效载荷-原地反弹，额外爆炸3次
-245,32,Perk,火炮有效载荷-向手雷周围发射子弹，每秒造成3093伤害
-245,33,Perk,奇点有效载荷-生成一个奇点，并吸入附近敌人
-245,34,Perk,持续性有效载荷-生成4道旋转光束，每秒造成3093燃烧伤害
-245,35,Perk,持续性有效载荷-生成4道旋转光束，每秒造成3093腐蚀伤害
-245,36,Perk,持续性有效载荷-猛烈冲击附近3名敌人，对每名敌人每秒造成1547电击伤害
-245,37,Perk,持续性有效载荷-生成冰冻水坑，对其中的所有敌人每秒造成1740伤害
-245,38,Perk,持续性有效载荷-生成自动追踪附近敌人的辐射球体，造成1547伤害
-245,39,Perk,伤害增强有效载荷-被击中的目标受到的伤害提升+15%，持续10秒
-245,40,Perk,紧密包装强化-生成的分裂式手雷数量增加+2
-245,41,Perk,涂胶处理强化-分裂式手雷在爆炸前最多反弹5次
-245,42,Perk,微型分裂式强化-每颗分裂式手雷在爆炸时会生成3颗微型分裂式手雷
-245,43,Perk,弹簧强化-分裂式手雷会原地反弹3次，每次反弹都会爆炸
-245,44,Perk,长除法强化-战斗时额外生成另一枚手雷
-245,45,Perk,碎片强化-向敌人发射第2颗生成的手雷
-245,46,Perk,引力强化-每颗手雷都会生成奇点
-245,47,Perk,中继器强化-飞行途中向下生成额外手雷
-245,48,Perk,弹簧强化-每颗手雷都会原地反弹，并额外爆炸3次
-245,49,Perk,紧密盘绕强化-手雷会原地反弹，并额外爆炸+3次
-245,50,Perk,顶点强化-每颗手雷在每次反弹到最高点时都会爆炸
-245,51,Perk,复合强化-每次反弹，伤害提升+25%，伤害半径增加+13%
-245,52,Perk,弹跳者强化-每颗手雷都会向附近敌人反弹
-245,53,Perk,持续时间强化-火炮手雷的持续时间增加+50%
-245,54,Perk,跳弹强化-炮弹会从敌人身上反弹并跳弹至附近另一名敌人
-245,55,Perk,导弹强化-发射自动追踪附近敌人的微型导弹，每枚造成3867伤害
-245,56,Perk,电磁锁强化-自动追踪附近敌人
-245,57,Perk,迫击炮强化-向敌人位置发射迫击炮，每发造成4640伤害
-245,58,Perk,延长强化-奇点手雷的持续时间增加50%
-245,59,Perk,侵蚀强化-在奇点持续时间内每秒造成2379伤害
-245,60,Perk,坍缩强化-奇点将以更强引力极速吸入较大半径内的敌人
-245,61,Perk,驱动器强化-爆炸时将敌人从奇点向外推开
-245,62,Perk,持续时间强化-持续性手雷的持续时间增加50%
-245,63,Perk,脉冲强化-手雷射出元素脉冲，每道脉冲造成1547伤害
-245,64,Perk,喷溅包强化-发射3枚射弹，每枚落地时都会生成元素水坑
-245,65,Perk,破裂强化-在手雷投掷方向生成3根元素柱，每根造成5027伤害
-245,66,Perk,炼金强化-手雷状态效果率提升+300%
-245,67,Perk,反弹刀刃强化-向附近敌人跳弹额外飞刀，造成5800伤害
-245,68,Perk,抑制器强化-被击中的目标所造成的伤害减少-25%，持续X秒
-245,69,Perk,穿透器强化-对击中目标造成的伤害有30%几率为暴击，持续5秒
-245,70,Perk,泛滥-手雷最大使用次数增加+1
-245,71,Perk,特急-手雷冷却时间减少-21%
-245,72,Perk,爆炸-手雷伤害提升+21%
-245,73,Perk,膨胀-手雷伤害半径增加+41%
-245,74,Perk,有害物质-手雷状态效果率提升+17%，手雷状态效果伤害提升+33%
-245,75,Perk,严苛-手雷有25%几率造成暴击
-245,76,Perk,核弹-手雷伤害提升+31%，手雷伤害半径增加+62%，手雷冷却时间增加+25%
-245,77,Perk,震荡-击退力提升+83%
-245,78,Perk,嗜血-手雷吸血增加17%
-245,79,Perk,无情-手雷暴击伤害提升+83%
-245,80,Perk,绝命-手雷伤害提升+41%，手雷射弹速度降低-50%
-245,81,Perk,宽载-伤害半径增加+62%，追踪转向速率降低33%
-245,87,Firmware,风险启用
-245,88,Firmware,技能工艺
-245,89,Firmware,主动开火
+﻿Grenade_perk_main_ID,Part_ID,Part_type,Stat_ZH,Stat_EN
+245,1,Firmware,弑神者,God Killer
+245,2,Firmware,沙包大拳头,Reel Big Fist
+245,3,Firmware,命脉,Lifeblood
+245,4,Firmware,空袭,Airstrike
+245,5,Firmware,大口径,High Caliber
+245,6,Firmware,装置启动,Gadget Ahoy
+245,7,Firmware,烘焙师,Baker
+245,8,Firmware,正在行动,Oscar Mike
+245,9,Firmware,橡皮筋人,Rubberband Man
+245,10,Firmware,神枪手,Deadeye
+245,11,Firmware,动能拳头,Action Fist
+245,12,Firmware,保命王牌,GooJFC
+245,13,Firmware,阿特拉斯E.X.,Atlas E.X.
+245,14,Firmware,阿特拉斯无限量,Atlas Infinum
+245,15,Firmware,花式射击,Trickshot
+245,16,Firmware,杰克式改造,Jacked
+245,17,Firmware,发球入场,Get Throwin'
+245,18,Firmware,加热升温,Heating Up
+245,19,Firmware,备用子弹,Bullets to Spare
+245,20,Firmware,大情圣,Daed-dy O'
+245,21,Perk,持续时间强化-持续性手雷的持续时间增加50%,Duration Augment - Increases the duration of the Lingering Grenade by 50%
+245,22,Perk,生成强化-每次反弹都会生成额外手雷,Spawning Augment - Spawns additional Grenades on each bounce
+245,24,Element,腐蚀,Corrosive
+245,25,Element,冰冻,Cryo
+245,26,Element,点燃,Fire
+245,27,Element,辐射,Radiation
+245,28,Element,电击,Shock
+245,29,Perk,分裂式有效载荷-爆炸时生成4颗分裂式手雷,MIRV Payload - Spawns 4 MIRV Grenades on exploding
+245,30,Perk,分配器有效载荷-有效载荷-飞行途中生成第2颗手雷,Divider Payload - Spawns a second Grenade while midflight
+245,31,Perk,弹簧有效载荷-原地反弹，额外爆炸3次,"Spring Payload - Bounces in place, exploding 3 additional times"
+245,32,Perk,火炮有效载荷-向手雷周围发射子弹，每秒造成3093伤害,"Artillery Payload - Fires bullets around the Grenade, Dealing 0 damage/s"
+245,33,Perk,奇点有效载荷-生成一个奇点，并吸入附近敌人,Singularity Payload - Spawns a Singularity that pulls in nearby enemies
+245,34,Perk,持续性有效载荷-生成4道旋转光束，每秒造成3093燃烧伤害,Lingering Payload - Spawns 4 rotating beams dealing 0 incendiary damage/s
+245,35,Perk,持续性有效载荷-生成4道旋转光束，每秒造成3093腐蚀伤害,Lingering Payload - Corrosive
+245,36,Perk,持续性有效载荷-猛烈冲击附近3名敌人，对每名敌人每秒造成1547电击伤害,Lingering Payload - Shock
+245,37,Perk,持续性有效载荷-生成冰冻水坑，对其中的所有敌人每秒造成1740伤害,Lingering Payload - Cryo
+245,38,Perk,持续性有效载荷-生成自动追踪附近敌人的辐射球体，造成1547伤害,Lingering Payload - Radiation
+245,39,Perk,伤害增强有效载荷-被击中的目标受到的伤害提升+15%，持续10秒,Damage Amp Payload - Damage Taken by impacted target is increased by +15% for 10s
+245,40,Perk,紧密包装强化-生成的分裂式手雷数量增加+2,Tightly Packed Augment - Increases amount of MIRV Grenades spawned by +2
+245,41,Perk,涂胶处理强化-分裂式手雷在爆炸前最多反弹5次,Rubberized Augment - MIRV Grenades bounce up to 5 times before exploding
+245,42,Perk,微型分裂式强化-每颗分裂式手雷在爆炸时会生成3颗微型分裂式手雷,Micro Mirv Augment - MIRV Grenades each spawn 3 Micro MIRVs when they explode
+245,43,Perk,弹簧强化-分裂式手雷会原地反弹3次，每次反弹都会爆炸,"Spring Augment - MIRV Grenades bounce in place 3 times, exploding on each bounce"
+245,44,Perk,长除法强化-战斗时额外生成另一枚手雷,Long Division Augment - Spawn another additional Grenade while midflight
+245,45,Perk,碎片强化-向敌人发射第2颗生成的手雷,Splinter Augment - Launches the second spawned Grenade toward an enemy
+245,46,Perk,引力强化-每颗手雷都会生成奇点,Pulling Augment - Each Grenade spawns a Singularity
+245,47,Perk,中继器强化-飞行途中向下生成额外手雷,Repeater Augment - Spawns additional Grenades downwards while midflight
+245,48,Perk,弹簧强化-每颗手雷都会原地反弹，并额外爆炸3次,"Spring Augment - Each Grenade bounces in place, exploding 3 extra times"
+245,49,Perk,紧密盘绕强化-手雷会原地反弹，并额外爆炸+3次,"Tightly Coiled - Grenade bounces in place, exploding an additional +3 times"
+245,50,Perk,顶点强化-每颗手雷在每次反弹到最高点时都会爆炸,Apex Augment - Each Grenade also explodes at the apex of each bounce
+245,51,Perk,复合强化-每次反弹，伤害提升+25%，伤害半径增加+13%,Compounding Augment - With every bounce Damage increases by +25% and Damage Radius by +13%
+245,52,Perk,弹跳者强化-每颗手雷都会向附近敌人反弹,Bouncer Augment - Each Grenade bounces twards nearby enemies
+245,53,Perk,持续时间强化-火炮手雷的持续时间增加+50%,Duration Augment - Increases the Duration of the Artillery Grenade by +50%
+245,54,Perk,跳弹强化-炮弹会从敌人身上反弹并跳弹至附近另一名敌人,"Ricochet Augment - Artillery Projectiles will bounce off of enemies, and Ricochet towards another nearby enemy"
+245,55,Perk,导弹强化-发射自动追踪附近敌人的微型导弹，每枚造成3867伤害,"Missles Augment - Fires Micro-Missiles that home in on nearby enemies, each dealing 2974 Damage"
+245,56,Perk,电磁锁强化-自动追踪附近敌人,Maglock Augment - Homes in on nearby enemies
+245,57,Perk,迫击炮强化-向敌人位置发射迫击炮，每发造成4640伤害,"Mortar Augment - Fires Mortars toward enemy positions, each dealing 3569 Damage"
+245,58,Perk,延长强化-奇点手雷的持续时间增加50%,Prolonged Augment - Increases the duration of the Singularity Grenade by 50%
+245,59,Perk,侵蚀强化-在奇点持续时间内每秒造成2379伤害,Gnawing Augment - Deals 2379 Damage/s for the Duration of the Singularity
+245,60,Perk,坍缩强化-奇点将以更强引力极速吸入较大半径内的敌人,"Collapsing Augment - The Singularity pulls in enemies more rapidly, and with increased Force withen a large Radius"
+245,61,Perk,驱动器强化-爆炸时将敌人从奇点向外推开,"Repulsor Augment - Upon Exploding, pushes enemies away from the singularity"
+245,62,Perk,持续时间强化-持续性手雷的持续时间增加50%,Duration Augment - Increases the Duration of the Lingering Grenade by 50%
+245,63,Perk,脉冲强化-手雷射出元素脉冲，每道脉冲造成1547伤害,Pulsing Augment - Radiates Elemental Pulses from the Grenade each Pulse dealing 1190 Damage
+245,64,Perk,喷溅包强化-发射3枚射弹，每枚落地时都会生成元素水坑,Splat Pack Augment - Launches 3 Projectiles that each spawn an Elemental Puddle on landing
+245,65,Perk,破裂强化-在手雷投掷方向生成3根元素柱，每根造成5027伤害,"Fracture Augment - Spawns 3 Elemental Pillars in the direction the Grenade was thrown, each dealing 3867 damage"
+245,66,Perk,炼金强化-手雷状态效果率提升+300%,Alchemic Augment - Grenade Status Effect Chance +300%
+245,67,Perk,反弹刀刃强化-向附近敌人跳弹额外飞刀，造成5800伤害,"Bouncing Blade Augment - Ricochets additional knives toward nearby enemies, dealing 4461 Damage"
+245,68,Perk,抑制器强化-被击中的目标所造成的伤害减少-25%，持续X秒,Supressor Augment - Damage Delt by impacted target is reduced by -25% for 10s
+245,69,Perk,穿透器强化-对击中目标造成的伤害有30%几率为暴击，持续5秒,Penetrator Augment - Damge to the impacted target has a 30% Chance to be a Critical Hit for 5s
+245,70,Perk,泛滥-手雷最大使用次数增加+1,Overflow - Maximum Grenade Charge is increased by +1
+245,71,Perk,特急-手雷冷却时间减少-21%,Express - Grenade cooldown Duration is reduced by -12%
+245,72,Perk,爆炸-手雷伤害提升+21%,Explosive - Grenade Damage is increased by 13%
+245,73,Perk,膨胀-手雷伤害半径增加+41%,Expansive - Grenade Damage Radius is increased by +25%
+245,74,Perk,有害物质-手雷状态效果率提升+17%，手雷状态效果伤害提升+33%,Hazardous - Grenade Status Effect Chance is increased by +10% and Greande Status Effect Damage is increased by +20%
+245,75,Perk,严苛-手雷有25%几率造成暴击,Exacting - Grenade has a 15% Chance to deal Critical Damage
+245,76,Perk,核弹-手雷伤害提升+31%，手雷伤害半径增加+62%，手雷冷却时间增加+25%,"Nuke - Grenade Damage is Increased by 19% Grenade Damage Radius is increased by 38%, and Grenade Cooldown Duration is increased by +25%"
+245,77,Perk,震荡-击退力提升+83%,Concussive - Knockback Force is increased by +50%
+245,78,Perk,嗜血-手雷吸血增加17%,Bloodthirsty - Grenade Lifesteal is increased by 10%
+245,79,Perk,无情-手雷暴击伤害提升+83%,Merciless - Grenade Critical Damage is increased by +50%
+245,80,Perk,绝命-手雷伤害提升+41%，手雷射弹速度降低-50%,"Lethal - Grenade Damage is increased by 25%, and Grenade Projectile Speed is reduced by -50%"
+245,81,Perk,宽载-伤害半径增加+62%，追踪转向速率降低33%,"Wideload - Damage Radius is increased by 38%, Homing Turn Rate reduced by -33%"
+245,87,Firmware,风险启用,Risky Boots
+245,88,Firmware,技能工艺,Skillcraft
+245,89,Firmware,主动开火,Active Fire

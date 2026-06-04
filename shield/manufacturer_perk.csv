@@ -1,93 +1,93 @@
-Manufacturer ID,Part_ID,Part_type,Stat,Description
-279,1,Legendary Perk,核合成,当能量护盾破裂或填充时会触发星爆，造成14872伤害
-279,2,Model,/,
-279,3,Rarity,Common,
-279,4,Rarity,Uncommon,
-279,5,Rarity,Rare,
-279,6,Rarity,Epic,
-279,7,Rarity,Legendary,金皮肤
-279,8,Legendary Perk,精神错乱,受到伤害时，获得+15%元素抗性和+50%抗性（针对最后所受伤害类型），持续5秒
-279,9,Rarity,Legendary,潘多拉纪念品皮肤
-279,10,Rarity,Legendary,超大中杯皮肤
-279,11,Legendary Perk,星屑坠落,造成近战伤害时，生成流星星团砸向受伤害的敌人
-279,12,Rarity,Legendary,厄尔皮斯之星皮肤
-283,1,Rarity,Common,
-283,2,Rarity,Uncommon,
-283,3,Rarity,Rare,
-283,4,Rarity,Epic,
-283,5,Rarity,Legendary,金皮肤
-283,6,Legendary Perk,茶点,击杀时有50%几率生成弹药增强器，并立即补充枪械弹药
-283,7,Rarity,Legendary,囤积者皮肤
-283,8,Legendary Perk,裸拳格斗,近战击中时，消耗一个护甲段获得+100%近战伤害。当护甲护盾为0时，获得+50%近战伤害
-283,9,Rarity,Legendary,重量级皮肤
-283,10,Model,/,
-283,11,Legendary Perk,外骨骼,护甲段破裂时，获得753超强护盾
-283,12,Rarity,Legendary,下部护盾金皮肤
-287,1,Rarity,Common,
-287,2,Rarity,Uncommon,
-287,3,Rarity,Rare,
-287,4,Rarity,Epic,
-287,5,Rarity,Legendary,金皮肤
-287,6,Legendary Perk,护盾小子,最后一个护甲段破裂时生成护盾小子
-287,7,Rarity,Legendary,首要皮肤
-287,8,Rarity,Legendary,时间尊者新护盾皮肤
-287,9,Legendary Perk,比尼努,装备后，获得+7436最大生命值，每秒恢复+372生命值，同时受到的伤害降低33%
-287,10,Model,/,
-287,11,Rarity,Legendary,跳房子皮肤
-287,12,Legendary Perk,震荡,当护甲段破裂时，生成一个奇点
-293,1,Legendary Perk,玻璃,受到伤害时，获得一层决心，每有一层决心，所受伤害减少2%，最多叠加25层。能量护盾破裂时将释放星爆，造成7436伤害，每有一层决心，该伤害提升+20%
-293,2,Legendary Perk,直流电,通过落地猛击切换此效果开关。启用后，会持续消耗护盾并获得+40%加成电击伤害，但受到的伤害会直接穿透护盾
-293,3,Rarity,Legendary,变形细胞皮肤
-293,4,Model,/,
-293,5,Rarity,Common,
-293,6,Rarity,Uncommon,
-293,7,Rarity,Rare,
-293,8,Rarity,Epic,
-293,9,Rarity,Legendary,金皮肤
-293,10,Rarity,Legendary,灰烬壳皮肤
-293,11,Rarity,Legendary,收藏家皮肤
-293,12,Legendary Perk,欧米伽,能量护盾启动时，每秒恢复7041生命值
-300,1,Rarity,Common,
-300,2,Rarity,Uncommon,
-300,3,Rarity,Rare,
-300,4,Rarity,Epic,
-300,5,Rarity,Legendary,金皮肤
-300,6,Legendary Perk,短路,能量护盾未满时，会周期性电击附近敌人
-300,7,Rarity,Legendary,电光护盾皮肤
-300,8,Legendary Perk,超强护盾吞噬者,启用能量护盾时，被击中的敌人有12%几率掉落超强护盾。如拥有超强护盾，获得+25%电击伤害
-300,9,Rarity,Legendary,通电晚餐皮肤
-300,10,Model,/,
-300,11,Legendary Perk,后门,能量护盾破裂时，对3名敌人触发星爆并造成5577伤害
-300,12,Rarity,Legendary,防火线皮肤
-306,1,Rarity,Common,
-306,2,Rarity,Uncommon,
-306,3,Rarity,Rare,
-306,4,Rarity,Epic,
-306,5,Rarity,Legendary,金皮肤
-306,6,Rarity,Legendary,陈年橡木桶皮肤
-306,7,Legendary Perk,老式复古,仅有一格护甲
-306,8,Legendary Perk,葱皮,护甲段破裂时，获得2秒伤害免疫
-306,9,Rarity,Legendary,洋葱皮肤
-306,10,Model,/,
-312,1,Rarity,Common,
-312,2,Rarity,Uncommon,
-312,3,Rarity,Rare,
-312,4,Rarity,Epic,
-312,5,Rarity,Legendary,金皮肤
-312,6,Legendary Perk,恩典之翼,装备后，在殊死一搏状态下可更快复活。当殊死一搏时间耗尽时，每300秒免费获得1次卷土重来
-312,7,Rarity,Legendary,守护天使皮肤
-312,8,Legendary Perk,优势局面,当能量护盾填充时，获得超强护盾。当能量护盾全满时，获得25%射速、25%移动速度，同时每秒恢复1弹药
-312,9,Rarity,Legendary,超级士兵皮肤
-312,10,Model,/,
-312,11,Rarity,Legendary,蜜獾皮肤
-312,12,Legendary Perk,凶猛,启用护盾时自我伤害降低90%
-321,1,Rarity,Common,
-321,2,Rarity,Uncommon,
-321,3,Rarity,Rare,
-321,4,Rarity,Epic,
-321,5,Rarity,Legendary,金皮肤
-321,6,Legendary Perk,捆绑,击杀时生成导弹，自动追踪附近敌人，每枚造成7436伤害
-321,7,Rarity,Legendary,烟火表演皮肤
-321,8,Rarity,Legendary,完成皮肤
-321,9,Legendary Perk,西西弗斯式,护甲护盾全满时，立刻失去一个护甲段
-321,10,Model,/,
+﻿Manufacturer ID,Part_ID,Part_type,Stat_ZH,Stat_EN,Description_ZH,Description_EN
+279,1,Legendary Perk,核合成,Nucleosynthesis,当能量护盾破裂或填充时会触发星爆，造成14872伤害,Triggers a Star Burst dealing 14872 Damage when Energy Shield breaks or fills
+279,2,Model,/,/,,
+279,3,Rarity,Common,Common,,
+279,4,Rarity,Uncommon,Uncommon,,
+279,5,Rarity,Rare,Rare,,
+279,6,Rarity,Epic,Epic,,
+279,7,Rarity,Legendary,Legendary,金皮肤,Gold skin
+279,8,Legendary Perk,精神错乱,Psychosis,受到伤害时，获得+15%元素抗性和+50%抗性（针对最后所受伤害类型），持续5秒,"When damaged, gain +15% Elemental Resistance and +50% Resistance to the last damage type received for 5s"
+279,9,Rarity,Legendary,Legendary,潘多拉纪念品皮肤,Pandoran Memento skin
+279,10,Rarity,Legendary,Legendary,超大中杯皮肤,Extra Medium skin
+279,11,Legendary Perk,星屑坠落,Moonfall,造成近战伤害时，生成流星星团砸向受伤害的敌人,"When dealing Melee Damage, spawn a Meteor Cluster to fall on the damaged enemy"
+279,12,Rarity,Legendary,Legendary,厄尔皮斯之星皮肤,Elpis Star skin
+283,1,Rarity,Common,Common,,
+283,2,Rarity,Uncommon,Uncommon,,
+283,3,Rarity,Rare,Rare,,
+283,4,Rarity,Epic,Epic,,
+283,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+283,6,Legendary Perk,茶点,Refreshments,击杀时有50%几率生成弹药增强器，并立即补充枪械弹药,"On kill, 50% chance to spawn an Ammo Booster and instantly refill Gun Ammo"
+283,7,Rarity,Legendary,Legendary,囤积者皮肤,Hoarder skin
+283,8,Legendary Perk,裸拳格斗,Bareknuckle,近战击中时，消耗一个护甲段获得+100%近战伤害。当护甲护盾为0时，获得+50%近战伤害,"On Melee Hit, consume an Armor Segment to gain +100% Melee Damage. When Armor Shield is 0, gain +50% Melee Damage"
+283,9,Rarity,Legendary,Legendary,重量级皮肤,Heavyweight skin
+283,10,Model,/,/,,
+283,11,Legendary Perk,外骨骼,Exoskeleton,护甲段破裂时，获得753超强护盾,"On Armor Segment break, grants 753 Overshield"
+283,12,Rarity,Legendary,Legendary,下部护盾金皮肤,Undershield skin
+287,1,Rarity,Common,Common,,
+287,2,Rarity,Uncommon,Uncommon,,
+287,3,Rarity,Rare,Rare,,
+287,4,Rarity,Epic,Epic,,
+287,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+287,6,Legendary Perk,护盾小子,Shield Boi,最后一个护甲段破裂时生成护盾小子,Spawns a Shield Boi when the last Armor Segment breaks
+287,7,Rarity,Legendary,Legendary,首要皮肤,Principal skin
+287,8,Rarity,Legendary,Legendary,时间尊者新护盾皮肤,Timekeeper's New skin
+287,9,Legendary Perk,比尼努,Bininu,装备后，获得+7436最大生命值，每秒恢复+372生命值，同时受到的伤害降低33%,"While equipped, gain +7436 Max Health, regenerate +372 Health/s, and reduce Damage Taken by 33%"
+287,10,Model,/,/,,
+287,11,Rarity,Legendary,Legendary,跳房子皮肤,Hopscotch skin
+287,12,Legendary Perk,震荡,Shook,当护甲段破裂时，生成一个奇点,Spawns a Singularity when an Armor Segment breaks
+293,1,Legendary Perk,玻璃,Glass,受到伤害时，获得一层决心，每有一层决心，所受伤害减少2%，最多叠加25层。能量护盾破裂时将释放星爆，造成7436伤害，每有一层决心，该伤害提升+20%,"When damaged, gain a stack of Determination. Each stack reduces Damage Taken by 2%, max 25 stacks. When Energy Shield breaks, release a Star Burst dealing 7436 Damage, increased by +20% per stack of Determination"
+293,2,Legendary Perk,直流电,Direct Current,通过落地猛击切换此效果开关。启用后，会持续消耗护盾并获得+40%加成电击伤害，但受到的伤害会直接穿透护盾,"Toggle via Ground Slam. When active, continuously drains Shield to gain +40% Bonus Shock Damage, but incoming Damage bypasses Shield"
+293,3,Rarity,Legendary,Legendary,变形细胞皮肤,Protean Cell skin
+293,4,Model,/,/,,
+293,5,Rarity,Common,Common,,
+293,6,Rarity,Uncommon,Uncommon,,
+293,7,Rarity,Rare,Rare,,
+293,8,Rarity,Epic,Epic,,
+293,9,Rarity,Legendary,Legendary,金皮肤,Gold skin
+293,10,Rarity,Legendary,Legendary,灰烬壳皮肤,Cindershelly skin
+293,11,Rarity,Legendary,Legendary,收藏家皮肤,Collector skin
+293,12,Legendary Perk,欧米伽,Omega,能量护盾启动时，每秒恢复7041生命值,"When energy shields are active, regenerates 7041 Health/s"
+300,1,Rarity,Common,Common,,
+300,2,Rarity,Uncommon,Uncommon,,
+300,3,Rarity,Rare,Rare,,
+300,4,Rarity,Epic,Epic,,
+300,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+300,6,Legendary Perk,短路,Short Circuit,能量护盾未满时，会周期性电击附近敌人,Periodically shocks nearby enemies while Energy Shield is not full
+300,7,Rarity,Legendary,Legendary,电光护盾皮肤,Sparky Shield skin
+300,8,Legendary Perk,超强护盾吞噬者,Overshield Eater,启用能量护盾时，被击中的敌人有12%几率掉落超强护盾。如拥有超强护盾，获得+25%电击伤害,"When Energy Shield is active, damaged enemies have a 12% chance to drop Overshield. While you have Overshield, gain +25% Shock Damage"
+300,9,Rarity,Legendary,Legendary,通电晚餐皮肤,Watts 4 Dinner skin
+300,10,Model,/,/,,
+300,11,Legendary Perk,后门,Backdoor,能量护盾破裂时，对3名敌人触发星爆并造成5577伤害,"When Energy Shield breaks, trigger a Star Burst on 3 enemies dealing 5577 Damage"
+300,12,Rarity,Legendary,Legendary,防火线皮肤,Firebreak skin
+306,1,Rarity,Common,Common,,
+306,2,Rarity,Uncommon,Uncommon,,
+306,3,Rarity,Rare,Rare,,
+306,4,Rarity,Epic,Epic,,
+306,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+306,6,Rarity,Legendary,Legendary,陈年橡木桶皮肤,Aged Cask skin
+306,7,Legendary Perk,老式复古,Vintage,仅有一格护甲,Has only 1 Armor Segment
+306,8,Legendary Perk,葱皮,Shallot Shell,护甲段破裂时，获得2秒伤害免疫,Gain 2 seconds of Damage Immunity when an Armor Segment breaks
+306,9,Rarity,Legendary,Legendary,洋葱皮肤,Onion skin
+306,10,Model,/,/,,
+312,1,Rarity,Common,Common,,
+312,2,Rarity,Uncommon,Uncommon,,
+312,3,Rarity,Rare,Rare,,
+312,4,Rarity,Epic,Epic,,
+312,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+312,6,Legendary Perk,恩典之翼,Wings of Grace,装备后，在殊死一搏状态下可更快复活。当殊死一搏时间耗尽时，每300秒免费获得1次卷土重来,"While equipped, revive faster in Fight For Your Life. Automatically gain a Second Wind when FFYL time expires (300s cooldown)"
+312,7,Rarity,Legendary,Legendary,守护天使皮肤,Guardian Angel skin
+312,8,Legendary Perk,优势局面,Power Play,当能量护盾填充时，获得超强护盾。当能量护盾全满时，获得25%射速、25%移动速度，同时每秒恢复1弹药,"Gain Overshield when Energy Shield fills. When Energy Shield is full, gain +25% Fire Rate, +25% Movement Speed, and regenerate 1 Ammo/s"
+312,9,Rarity,Legendary,Legendary,超级士兵皮肤,Super Soldier skin
+312,10,Model,/,/,,
+312,11,Rarity,Legendary,Legendary,蜜獾皮肤,Honey Badger skin
+312,12,Legendary Perk,凶猛,Ferocity,启用护盾时自我伤害降低90%,Reduces self-Damage dealt by 90% while Shield is active
+321,1,Rarity,Common,Common,,
+321,2,Rarity,Uncommon,Uncommon,,
+321,3,Rarity,Rare,Rare,,
+321,4,Rarity,Epic,Epic,,
+321,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+321,6,Legendary Perk,捆绑,Bundled,击杀时生成导弹，自动追踪附近敌人，每枚造成7436伤害,"On kill, spawn Missiles that home in on nearby enemies, dealing 7436 Damage each"
+321,7,Rarity,Legendary,Legendary,烟火表演皮肤,Firewerks skin
+321,8,Rarity,Legendary,Legendary,完成皮肤,Compleation skin
+321,9,Legendary Perk,西西弗斯式,Sisyphusian,护甲护盾全满时，立刻失去一个护甲段,Immediately lose an Armor Segment when Armor Shield becomes full
+321,10,Model,/,/,,

@@ -18,12 +18,8 @@ from core import bl4_functions as bl4f
 @lru_cache(maxsize=None)
 def load_heavy_weapon_data(lang='zh-CN'):
     try:
-        suffix = "_EN" if lang in ['en-US', 'ru', 'ua'] else ""
-        main_perk_path = resource_loader.get_heavy_data_path(f'heavy_main_perk{suffix}.csv')
-        mfg_perk_path = resource_loader.get_heavy_data_path(f'heavy_manufacturer_perk{suffix}.csv')
-        
-        df_main = pd.read_csv(main_perk_path)
-        df_mfg = pd.read_csv(mfg_perk_path)
+        df_main = resource_loader.load_localized_csv_resource('heavy/heavy_main_perk.csv', lang)
+        df_mfg = resource_loader.load_localized_csv_resource('heavy/heavy_manufacturer_perk.csv', lang)
         df_mfg['Manufacturer ID'] = pd.to_numeric(df_mfg['Manufacturer ID'], errors='coerce')
         df_mfg.dropna(subset=['Manufacturer ID'], inplace=True)
         df_mfg['Manufacturer ID'] = df_mfg['Manufacturer ID'].astype(int)

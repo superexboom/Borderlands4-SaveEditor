@@ -19,11 +19,8 @@ from core import bl4_functions as bl4f
 @lru_cache(maxsize=None)
 def load_shield_data(lang='zh-CN'):
     try:
-        suffix = "_EN" if lang in ['en-US', 'ru', 'ua'] else ""
-        main_perk_path = resource_loader.get_shield_data_path(f'shield_main_perk{suffix}.csv')
-        mfg_perk_path = resource_loader.get_shield_data_path(f'manufacturer_perk{suffix}.csv')
-        df_main = pd.read_csv(main_perk_path)
-        df_mfg = pd.read_csv(mfg_perk_path)
+        df_main = resource_loader.load_localized_csv_resource('shield/shield_main_perk.csv', lang)
+        df_mfg = resource_loader.load_localized_csv_resource('shield/manufacturer_perk.csv', lang)
         
         localization = {}
         if lang == 'zh-CN':
