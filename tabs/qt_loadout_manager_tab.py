@@ -267,8 +267,8 @@ class QtLoadoutManagerTab(QWidget):
         self.skill_name_mapping_by_graph = {}
         self.skill_name_mapping_by_class = {}
         try:
-            mapping_path = _get_editor_root() / "loadout" / "skill_name_mapping.csv"
-            if mapping_path.exists():
+            mapping_path = resource_loader.get_loadout_data_path("skill_name_mapping.csv")
+            if mapping_path and mapping_path.exists():
                 with open(mapping_path, 'r', encoding='utf-8-sig') as f:
                     reader = csv.DictReader(f)
                     fieldnames = set(reader.fieldnames or [])

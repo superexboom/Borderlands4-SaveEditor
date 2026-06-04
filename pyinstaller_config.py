@@ -5,68 +5,51 @@ PyInstaller配置文件
 """
 
 import sys
-import glob
 from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent
+
+
+def collect_data_files(folder: str, suffixes: tuple[str, ...]) -> list[tuple[str, str]]:
+    files = []
+    for file_path in sorted((BASE_DIR / folder).glob('*')):
+        if file_path.suffix.lower() in suffixes:
+            files.append((str(file_path), folder))
+    return files
+
+
 # 动态收集enhancement目录下的所有.csv和.json文件
-enhancement_files = []
-for file_path in glob.glob('enhancement/*'):
-    if file_path.endswith('.csv') or file_path.endswith('.json'):
-        enhancement_files.append((file_path, 'enhancement'))
+enhancement_files = collect_data_files('enhancement', ('.csv', '.json'))
         
 # 动态收集weapon_edit目录下的所有.csv和.json文件
-weapon_files = []
-for file_path in glob.glob('weapon_edit/*'):
-    if file_path.endswith('.csv') or file_path.endswith('.json'):
-        weapon_files.append((file_path, 'weapon_edit'))
+weapon_files = collect_data_files('weapon_edit', ('.csv', '.json'))
 
 # 动态收集grenade目录下的所有.csv和.json文件
-grenade_files = []
-for file_path in glob.glob('grenade/*'):
-    if file_path.endswith('.csv') or file_path.endswith('.json'):
-        grenade_files.append((file_path, 'grenade'))
+grenade_files = collect_data_files('grenade', ('.csv', '.json'))
 
 # 动态收集shield目录下的所有.csv和.json文件
-shield_files = []
-for file_path in glob.glob('shield/*'):
-    if file_path.endswith('.csv') or file_path.endswith('.json'):
-        shield_files.append((file_path, 'shield'))
+shield_files = collect_data_files('shield', ('.csv', '.json'))
 
 # 动态收集repkit目录下的所有.csv和.json文件
-repkit_files = []
-for file_path in glob.glob('repkit/*'):
-    if file_path.endswith('.csv') or file_path.endswith('.json'):
-        repkit_files.append((file_path, 'repkit'))
+repkit_files = collect_data_files('repkit', ('.csv', '.json'))
 
 # 动态收集heavy目录下的所有.csv和.json文件
-heavy_files = []
-for file_path in glob.glob('heavy/*'):
-    if file_path.endswith('.csv') or file_path.endswith('.json'):
-        heavy_files.append((file_path, 'heavy'))
+heavy_files = collect_data_files('heavy', ('.csv', '.json'))
 
 # 动态收集loadout目录下的所有.csv和.json文件
-loadout_files = []
-for file_path in glob.glob('loadout/*'):
-    if file_path.endswith('.csv') or file_path.endswith('.json'):
-        loadout_files.append((file_path, 'loadout'))
+loadout_files = collect_data_files('loadout', ('.csv', '.json'))
 
 # 动态收集i18n目录下的所有本地化文件
-i18n_files = []
-for file_path in glob.glob('i18n/*'):
-    if file_path.endswith('.json'):
-        i18n_files.append((file_path, 'i18n'))
+i18n_files = collect_data_files('i18n', ('.json',))
 
 # 动态收集core/data目录下的解锁数据文件
-core_data_files = []
-for file_path in glob.glob('core/data/*'):
-    if file_path.endswith('.txt') or file_path.endswith('.json') or file_path.endswith('.csv'):
-        core_data_files.append((file_path, 'core/data'))
+core_data_files = collect_data_files('core/data', ('.txt', '.json', '.csv'))
 
 # 收集assets目录下的资源文件
 assets_files = [
-    ('assets/stylesheet.qss', 'assets'),
-    ('assets/BL4.ico', 'assets'),
-    ('assets/bg.jpg', 'assets'),
+    (str(BASE_DIR / 'assets/stylesheet.qss'), 'assets'),
+    (str(BASE_DIR / 'assets/BL4.ico'), 'assets'),
+    (str(BASE_DIR / 'assets/bg.jpg'), 'assets'),
 ]
 
 
@@ -77,17 +60,17 @@ SPEC_CONTENT = f'''
 block_cipher = None
 
 a = Analysis(
-    ['main_window.py'],
-    pathex=[],
+    [r'{str(BASE_DIR / "main_window.py")}'],
+    pathex=[r'{str(BASE_DIR)}'],
     binaries=[],
     datas=[
-        ('class_mods/*.json', 'class_mods'),
-        ('class_mods/*.csv', 'class_mods'),
-        ('class_mods/Amon/*.png', 'class_mods/Amon'),
-        ('class_mods/C4sh/*.png', 'class_mods/C4sh'),
-        ('class_mods/Harlowe/*.png', 'class_mods/Harlowe'),
-        ('class_mods/Rafa/*.png', 'class_mods/Rafa'),
-        ('class_mods/Vex/*.png', 'class_mods/Vex'),
+        (r'{str(BASE_DIR / "class_mods" / "*.json")}', 'class_mods'),
+        (r'{str(BASE_DIR / "class_mods" / "*.csv")}', 'class_mods'),
+        (r'{str(BASE_DIR / "class_mods" / "Amon" / "*.png")}', 'class_mods/Amon'),
+        (r'{str(BASE_DIR / "class_mods" / "C4sh" / "*.png")}', 'class_mods/C4sh'),
+        (r'{str(BASE_DIR / "class_mods" / "Harlowe" / "*.png")}', 'class_mods/Harlowe'),
+        (r'{str(BASE_DIR / "class_mods" / "Rafa" / "*.png")}', 'class_mods/Rafa'),
+        (r'{str(BASE_DIR / "class_mods" / "Vex" / "*.png")}', 'class_mods/Vex'),
     ] + {enhancement_files} + {weapon_files} + {grenade_files} + {shield_files} + {repkit_files} + {heavy_files} + {loadout_files} + {i18n_files} + {core_data_files} + {assets_files},
     hiddenimports=[
         'PIL',
@@ -155,13 +138,13 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon="assets/BL4.ico",
+    icon=r"{str(BASE_DIR / 'assets' / 'BL4.ico')}",
 )
 '''
 
 def create_spec_file():
     """创建PyInstaller spec文件"""
-    spec_path = Path('BL4SaveEditor.spec')
+    spec_path = BASE_DIR / 'BL4SaveEditor.spec'
     # 使用f-string来格式化SPEC_CONTENT
     with open(spec_path, 'w', encoding='utf-8') as f:
         f.write(SPEC_CONTENT)
@@ -186,7 +169,7 @@ def build_executable():
         '--clean',
         '--noconfirm',
         str(spec_path)
-    ], capture_output=True, text=True)
+    ], capture_output=True, text=True, cwd=str(BASE_DIR))
     
     if result.returncode == 0:
         print("Build successful!")

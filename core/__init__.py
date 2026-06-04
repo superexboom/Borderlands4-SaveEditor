@@ -25,6 +25,8 @@ from .resource_loader import (
     load_repkit_json,
     get_heavy_data_path,
     load_heavy_json,
+    get_loadout_data_path,
+    load_loadout_csv,
     get_builtin_localization,
 )
 

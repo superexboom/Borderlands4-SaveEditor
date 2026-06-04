@@ -559,6 +559,34 @@ def load_heavy_json(filename: str) -> Optional[Dict[str, Any]]:
     return load_json_resource(f"heavy/{filename}")
 
 
+def get_loadout_data_path(filename: str) -> Optional[Path]:
+    """
+    获取配置管理器静态数据文件的路径。
+
+    注意：这里只用于打包进程序的只读资源，例如
+    loadout/skill_name_mapping.csv。用户保存的配置方案仍应写入
+    exe 同目录下的 loadouts/，不要走 PyInstaller 临时目录。
+    """
+    return get_resource_path(f"loadout/{filename}")
+
+
+def load_loadout_csv(filename: str) -> List[Dict[str, str]]:
+    """
+    加载loadout目录下的CSV文件。
+    """
+    try:
+        resource_path = get_loadout_data_path(filename)
+        if not resource_path or not resource_path.exists():
+            print(f"Loadout CSV文件不存在: {resource_path}")
+            return []
+        with open(resource_path, 'r', encoding='utf-8-sig', newline='') as f:
+            reader = csv.DictReader(f)
+            return list(reader)
+    except Exception as e:
+        print(f"加载Loadout CSV文件时发生错误 {filename}: {e}")
+        return []
+
+
 # 向后兼容的函数
 def get_builtin_localization() -> Dict[str, str]:
     """
