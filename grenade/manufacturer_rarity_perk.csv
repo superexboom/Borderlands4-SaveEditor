@@ -67,6 +67,8 @@
 278,11,Legendary Perk,浮力,Buoyancy,若投掷出一定距离，手雷会在投掷方向空中悬浮,"If thrown a certain distance, the grenade hovers in the air in the direction of the throw"
 278,12,Rarity,Legendary,Legendary,浮标皮肤,Buoy skin
 278,13,Perk,碎片强化,Splinter Augment,向敌人发射第2颗生成的手雷,Launches the second spawned Grenade toward an enemy
+278,16,Legendary Perk,火炮球体,Artillery Sphere,装备后，生成环绕观察者，对附近敌人每秒造成14500伤害。观察者会短暂攻击被手雷击中的敌人。,"On equip, spawns an orbiting Observer that deals 14500/s to nearby enemies. The Observer will briefly attack enemies damaged by the grenade."
+278,17,Rarity,Legendary,Legendary,火炮球体皮肤,Artillery Sphere Skin
 291,1,Rarity,Common,Common,,
 291,2,Rarity,Uncommon,Uncommon,,
 291,3,Rarity,Rare,Rare,,
@@ -103,3 +105,5 @@
 311,10,Perk,泰迪尔,Tediore,轻按两次远程引爆投掷的手雷,Double tap to remotely detonate thrown grenades
 311,11,Legendary Perk,海胆泡泡,Snaboopie-pop,,
 311,12,Rarity,Legendary,Legendary,海胆皮肤,Urchin skin
+311,13,Rarity,Legendary,Legendary,条例皮肤,Ordinance Skin
+311,14,Legendary Perk,第25-2条例,Ord 25-2,,

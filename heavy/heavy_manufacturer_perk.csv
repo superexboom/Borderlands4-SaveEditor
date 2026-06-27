@@ -99,6 +99,8 @@
 275,32,Rarity,,Legendary,Legendary,直播网红皮肤,Streamer Skin
 275,35,Barrel,Barrel_02_jetset,（飞盘）飞行常客,Frequent Flyer,,
 275,36,Rarity,,Legendary,Legendary,环球旅行家皮肤,Jetsetter skin
+275,37,Barrel,part_barrel_02_draupner,（飞盘）回波,Return Wave,,
+275,38,Rarity,,Legendary,Legendary,德劳普纳皮肤,Draupner Skin
 289,1,Rarity,,Legendary,Legendary,瓶装闪电皮肤,Bottled Lightning Skin
 289,2,Barrel Accessory,Barrel_02_C,分裂式,MIRV - Spawns 3 MIRV Orbs on explosion,爆炸时生成3颗分裂式魔球,No Stat Changes
 289,16,Barrel Accessory,Barrel_02_C,分裂式,MIRV - Spawns 3 MIRV Orbs on explosion,爆炸时生成3颗分裂式魔球,No Stat Changes
@@ -127,3 +129,5 @@
 289,26,Barrel,Barrel_02_BottledLightning,（能量魔球）得手两次,Strike Twice,蓄力后射出一个能量球，能量球朝前缓慢飞行，并对沿途周围释放闪电,
 289,27,Barrel,Barrel_01_ichor,（能量弹）致命危害,Deihazard - Deals Incendiary and Corrosive Damage,造成燃烧和腐蚀伤害,
 289,28,Rarity,,Legendary,Legendary,灵液皮肤,Ichor Skin
+289,29,Rarity,,Legendary,Legendary,库珀欺诈者皮肤,Cooper Duper Skin
+289,30,Barrel,part_barrel_02_barrel,"（能量魔球）全息爆桶","Holo-Barrel - Shoots holographic barrels that pierce enemies and attach to the world. Shooting attached barrels causes it to explode, dealing 16730 damage.","发射全息爆桶,其会穿透敌人并附着在场景中。射击附着的爆桶会引起爆炸,造成16730伤害",

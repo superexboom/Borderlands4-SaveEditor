@@ -15,6 +15,8 @@
 265,5,Rarity,Legendary,Legendary,除颤仪皮肤,Defibrillator Skin
 265,6,Legendary Perk,心脏休克,Cardiac Shot,当生命值低于20%时，有50%几率补充1个修复套件能量点,"When Health is below 20%, has a 50% chance to refill 1 Repkit Charge"
 265,7,Model,/,Tonic,,
+265,8,Legendary Perk,生命之血,Lifeblood,造成暴击伤害时治疗145生命值,Heals for 145 on Critical Damage Dealt
+265,9,Rarity,Legendary,Legendary,鲜血皮肤,Vitae Skin
 266,1,Rarity,Common,Common,,
 266,2,Rarity,Uncommon,Uncommon,,
 266,3,Rarity,Rare,Rare,,
@@ -39,6 +41,8 @@
 274,5,Rarity,Rare,Rare,,
 274,6,Rarity,Epic,Epic,,
 274,7,Rarity,Legendary,Legendary,义体AF1000皮肤,AF1000 Skin
+274,8,Legendary Perk,增能器,Energizer,当激活修复套件时，对附近敌人每秒造成2320电击伤害，并有100%几率反射子弹。,"While Repair Kit is active, deal 2320 Shock Damage per second to nearby enemies and gain a 100% chance to reflect bullets."
+274,9,Rarity,Legendary,Legendary,,Hugger Skin
 290,1,Legendary Perk,血液虹吸,Blood Siphon,击杀时将多余伤害的100%转移至会寻找附近友方的治疗魔球,"On kill, converts 100% of overkill damage into a healing orb that seeks nearby allies"
 290,2,Model,/,Pocket Doc,,
 290,3,Rarity,Common,Common,,

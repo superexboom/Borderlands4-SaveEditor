@@ -59,6 +59,7 @@
 246,64,Firmware,风险启用,Risky Boots,,
 246,65,Firmware,技能工艺,Skillcraft,,
 246,66,Firmware,主动开火,Active Fire,,
+246,67,Firmware,重击者,Bruiser,,
 248,1,Perk,漂泊者,Vagabond,能量护盾全满时，获得+28%移动速度,+28% Movement Speed when Energy Shields are full
 248,2,Perk,护盾增强器,Shield Booster,受到伤害时，有10%几率生成护盾增强器，最高补充13%护盾容量,10% Chance for Shield Booster that refills up to 13% of Shield Capacity when damaged
 248,3,Perk,护盾增强器,Shield Booster,受到伤害时，有15%几率生成护盾增强器，最高补充18%护盾容量,15% Chance for Shield Booster that refills up to 18% of Shield Capacity when damaged

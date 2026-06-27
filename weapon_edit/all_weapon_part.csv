@@ -1,5 +1,5 @@
-Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,Stat
-13,Daedalus,Assault Rifle,1,Body,DAD_AR.part_body,"无属性变化，固有部件"
+﻿Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,Stat
+13,Daedalus,Assault Rifle,1,Body,DAD_AR.part_body,无属性变化，固有部件
 13,Daedalus,Assault Rifle,2,Body Accessory,DAD_AR.part_body_a,-装填时间
 13,Daedalus,Assault Rifle,3,Body Accessory,DAD_AR.part_body_b,-装填时间
 13,Daedalus,Assault Rifle,4,Body Accessory,DAD_AR.part_body_c,+精准度
@@ -33,7 +33,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 13,Daedalus,Assault Rifle,33,Stat Modifier,DAD_AR.part_mag_ted_thrown_03_tor,2.0s装填时间
 13,Daedalus,Assault Rifle,34,Stat Modifier,DAD_AR.part_mag_ted_thrown_04_cov,3.0s装填时间
 13,Daedalus,Assault Rifle,35,Stat Modifier,DAD_AR.part_mag_ted_thrown_05_bor,3.0s装填时间
-13,Daedalus,Assault Rifle,36,Body,DAD_AR.part_body_bolt,"无属性变化，固有部件"
+13,Daedalus,Assault Rifle,36,Body,DAD_AR.part_body_bolt,无属性变化，固有部件
 13,Daedalus,Assault Rifle,37,Scope,DAD_AR.part_scope_02_lens_02,瞄准镜 ++++放大倍率
 13,Daedalus,Assault Rifle,38,Scope,DAD_AR.part_scope_02_lens_01,瞄准镜 +++放大倍率
 13,Daedalus,Assault Rifle,39,Scope,DAD_AR.part_scope_01_lens_02,瞄准镜 ++放大倍率
@@ -57,7 +57,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 13,Daedalus,Assault Rifle,57,Barrel,DAD_AR.part_barrel_02_lumberjack,"血腥伐木工,1227伤害,82%精准度,4.0/s射速,2/每发"
 13,Daedalus,Assault Rifle,58,Underbarrel,DAD_AR.part_underbarrel_04_atlas_ball,阿特拉斯追踪手雷
 13,Daedalus,Assault Rifle,59,Underbarrel,DAD_AR.part_underbarrel_04_atlas,阿特拉斯追踪飞镖
-13,Daedalus,Assault Rifle,60,Underbarrel,DAD_AR.part_underbarrel_06_malswitch,"马里旺元素切换下挂"
+13,Daedalus,Assault Rifle,60,Underbarrel,DAD_AR.part_underbarrel_06_malswitch,马里旺元素切换下挂
 13,Daedalus,Assault Rifle,61,Underbarrel,DAD_AR.part_underbarrel_02_shotgun,附属开火-霰弹枪
 13,Daedalus,Assault Rifle,62,Underbarrel,DAD_AR.part_underbarrel_03_microrocket,附属开火-微型火箭发射架
 13,Daedalus,Assault Rifle,63,Underbarrel,DAD_AR.part_underbarrel_01_grenade,附属开火-榴弹发射器
@@ -79,8 +79,9 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 13,Daedalus,Assault Rifle,82,Barrel,DAD_AR.part_barrel_01_Mercredi,"星期三,892伤害,78%精准度,6.8/s射速"
 13,Daedalus,Assault Rifle,89,Underbarrel,DAD_AR.part_underbarrel_04_atlas_ball_Mercredi,阿特拉斯追踪手雷，仅限星期三
 13,Daedalus,Assault Rifle,90,Underbarrel,DAD_AR.part_underbarrel_04_atlas_Mercredi,阿特拉斯追踪飞镖，仅限星期三
+13,Daedalus,Assault Rifle,86,Barrel,DAD_AR.part_barrel_02_harddark,"黑暗能量,1338伤害,73%精准度,4.8/s射速,2/每发"
 2,Daedalus,Pistol,1,Barrel,DAD_PS.part_barrel_01_zipgun,"拉链,692伤害,75%精准度,6.2/s射速"
-2,Daedalus,Pistol,2,Body,DAD_PS.part_body,"无属性变化，固有部件"
+2,Daedalus,Pistol,2,Body,DAD_PS.part_body,无属性变化，固有部件
 2,Daedalus,Pistol,3,Body Accessory,DAD_PS.part_body_a,-装填时间
 2,Daedalus,Pistol,4,Body Accessory,DAD_PS.part_body_b,-装填时间
 2,Daedalus,Pistol,5,Body Accessory,DAD_PS.part_body_c,+精准度
@@ -123,7 +124,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 2,Daedalus,Pistol,42,Grip,DAD_PS.part_grip_01,+伤害
 2,Daedalus,Pistol,43,Grip,DAD_PS.part_grip_02,+射速
 2,Daedalus,Pistol,44,Grip,DAD_PS.part_grip_03,-装填时间
-2,Daedalus,Pistol,45,Underbarrel,DAD_PS.part_underbarrel_06_malswitch,"马里旺元素切换下挂"
+2,Daedalus,Pistol,45,Underbarrel,DAD_PS.part_underbarrel_06_malswitch,马里旺元素切换下挂
 2,Daedalus,Pistol,46,Underbarrel,DAD_PS.part_underbarrel_04_atlas_ball,阿特拉斯追踪手雷
 2,Daedalus,Pistol,47,Underbarrel,DAD_PS.part_underbarrel_02_knifelauncher,附属开火-战术刀发射器
 2,Daedalus,Pistol,48,Underbarrel,DAD_PS.part_underbarrel_01_taser,附属开火-泰瑟枪
@@ -156,7 +157,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 2,Daedalus,Pistol,79,Barrel,DAD_PS.part_barrel_02_soulsurvivor,"灵魂幸存者,714伤害,81%精准度,12/s射速"
 2,Daedalus,Pistol,82,Manufacturer Part,DAD_PS.part_mag_torgue_normal_soulsurvivor,托格冲击弹匣
 2,Daedalus,Pistol,81,Manufacturer Part,DAD_PS.part_mag_torgue_sticky_soulsurvivor,托格粘性弹匣
-8,Daedalus,Shotgun,2,Body,DAD_SG.part_body,"无属性变化，固有部件"
+8,Daedalus,Shotgun,2,Body,DAD_SG.part_body,无属性变化，固有部件
 8,Daedalus,Shotgun,3,Body Accessory,DAD_SG.part_body_a,-装填时间
 8,Daedalus,Shotgun,4,Body Accessory,DAD_SG.part_body_b,-装填时间
 8,Daedalus,Shotgun,5,Body Accessory,DAD_SG.part_body_c,+精准度
@@ -198,7 +199,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 8,Daedalus,Shotgun,41,Grip,DAD_SG.part_grip_03,-装填时间
 8,Daedalus,Shotgun,42,Grip,DAD_SG.part_grip_04_hyp,"亥伯龙握把,-精准度,持续射击提升精准度"
 8,Daedalus,Shotgun,43,Underbarrel,DAD_SG.part_underbarrel_02_singularity,附属开火-重力鱼叉
-8,Daedalus,Shotgun,44,Underbarrel,DAD_SG.part_underbarrel_06_malswitch,"马里旺元素切换下挂"
+8,Daedalus,Shotgun,44,Underbarrel,DAD_SG.part_underbarrel_06_malswitch,马里旺元素切换下挂
 8,Daedalus,Shotgun,45,Underbarrel,DAD_SG.part_underbarrel_01_microrocket,附属开火-微型火箭发射架
 8,Daedalus,Shotgun,46,Underbarrel,DAD_SG.part_underbarrel_04_atlas,阿特拉斯追踪飞镖
 8,Daedalus,Shotgun,47,Foregrip,DAD_SG.part_foregrip_01,+伤害
@@ -230,6 +231,8 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 8,Daedalus,Shotgun,78,Manufacturer Part,DAD_SG.part_body_mag_smg,代达洛斯冲锋枪弹药
 8,Daedalus,Shotgun,79,Manufacturer Part,DAD_SG.part_body_mag_ar,代达洛斯突击步枪弹药
 8,Daedalus,Shotgun,80,Manufacturer Part,DAD_SG.part_body_mag_sr,代达洛斯狙击枪弹药
+8,Daedalus,Shotgun,60,Barrel,DAD_SG.part_barrel_cannonbrawl,"天鹅之歌,1673x4伤害,65%精准度,3.5/s射速"
+8,Daedalus,Shotgun,81,Foregrip,DAD_SG.part_underbarrel_01_cannonbrawl,天鹅之歌下挂-炮弹
 20,Daedalus,SMG,3,Body Accessory,DAD_SM.part_body_a,-装填时间
 20,Daedalus,SMG,4,Body Accessory,DAD_SM.part_body_b,-装填时间
 20,Daedalus,SMG,5,Body Accessory,DAD_SM.part_body_c,+精准度
@@ -274,7 +277,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 20,Daedalus,SMG,44,Grip,DAD_SM.part_grip_01,+伤害
 20,Daedalus,SMG,45,Grip,DAD_SM.part_grip_02,+射速
 20,Daedalus,SMG,46,Grip,DAD_SM.part_grip_03,-装填时间
-20,Daedalus,SMG,47,Underbarrel,DAD_SM.part_underbarrel_06_malswitch,"马里旺元素切换下挂"
+20,Daedalus,SMG,47,Underbarrel,DAD_SM.part_underbarrel_06_malswitch,马里旺元素切换下挂
 20,Daedalus,SMG,48,Underbarrel,DAD_SM.part_underbarrel_02_shotgun,附属开火-霰弹枪
 20,Daedalus,SMG,49,Underbarrel,DAD_SM.part_underbarrel_03_overcharge,附属开火-超级充能
 20,Daedalus,SMG,50,Underbarrel,DAD_SM.part_underbarrel_04_atlas,阿特拉斯追踪飞镖
@@ -287,7 +290,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 20,Daedalus,SMG,57,Manufacturer Part,DAD_SM.part_body_mag_sr,代达洛斯狙击枪弹药
 20,Daedalus,SMG,58,Manufacturer Part,DAD_SM.part_body_mag_sg,代达洛斯霰弹枪弹药
 20,Daedalus,SMG,60,Barrel,DAD_SM.part_barrel_01_luty,"疯小子卢迪,446伤害,78%精准度,22.0/s射速"
-20,Daedalus,SMG,62,Body,DAD_SM.part_body,"无属性变化，固有部件"
+20,Daedalus,SMG,62,Body,DAD_SM.part_body,无属性变化，固有部件
 20,Daedalus,SMG,64,Barrel,DAD_SM.part_barrel_01_bloodstarved,"暗兽,658x2伤害,71%精准度,6.7/s射速,2/每发"
 20,Daedalus,SMG,66,Stat Modifier,DAD_SM.part_mag_borg_barrel_02,3.3s装填时间
 20,Daedalus,SMG,67,Stat Modifier,DAD_SM.part_mag_borg_barrel_01,3.3s装填时间
@@ -309,7 +312,8 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 20,Daedalus,SMG,93,Manufacturer Part,DAD_SM.part_barrel_licensed_hyp,"亥伯龙护盾可见附件,无可见属性变化"
 20,Daedalus,SMG,1,Barrel,DAD_SM.part_barrel_02_follower,"徘徊者,1294伤害,71%精准度,5.3/s射速"
 20,Daedalus,SMG,71,Barrel,DAD_SM.part_barrel_02_screwed,"糟糕烂人,1450伤害,79%精准度,5.9/s射速"
-27,Jakobs,Assault Rifle,2,Body,JAK_AR.part_body,"无属性变化，固有部件"
+20,Daedalus,SMG,59,Barrel,DAD_SM.part_barrel_01_raiden,"雷电,1115伤害,71%精准度,6.7/s射速,2/每发"
+27,Jakobs,Assault Rifle,2,Body,JAK_AR.part_body,无属性变化，固有部件
 27,Jakobs,Assault Rifle,3,Body Accessory,JAK_AR.part_body_a,-装填时间
 27,Jakobs,Assault Rifle,4,Body Accessory,JAK_AR.part_body_b,+射速
 27,Jakobs,Assault Rifle,5,Body Accessory,JAK_AR.part_body_c,+精准度
@@ -367,7 +371,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 27,Jakobs,Assault Rifle,57,Underbarrel,JAK_AR.part_underbarrel_02_crank,附属开火-手摇曲柄
 27,Jakobs,Assault Rifle,58,Underbarrel,JAK_AR.part_underbarrel_04_atlas_ball,阿特拉斯追踪手雷
 27,Jakobs,Assault Rifle,59,Underbarrel,JAK_AR.part_underbarrel_04_atlas,阿特拉斯追踪飞镖
-27,Jakobs,Assault Rifle,60,Underbarrel,JAK_AR.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
+27,Jakobs,Assault Rifle,60,Underbarrel,JAK_AR.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
 27,Jakobs,Assault Rifle,61,Foregrip,JAK_AR.part_foregrip_01,+伤害
 27,Jakobs,Assault Rifle,62,Foregrip,JAK_AR.part_foregrip_02,+射速
 27,Jakobs,Assault Rifle,63,Foregrip,JAK_AR.part_foregrip_03,+精准度
@@ -384,7 +388,9 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 27,Jakobs,Assault Rifle,78,Barrel,JAK_AR.part_barrel_02_rowdy,"暴走骑士,2008伤害,64%精准度,3.2/s射速,-55%暴击伤害"
 27,Jakobs,Assault Rifle,85,Manufacturer Part,JAK_AR.part_shield_ammo,亥伯龙吸收护盾
 27,Jakobs,Assault Rifle,80,Barrel,JAK_AR.part_barrel_01_gomie,"老铁,1918伤害,83%精准度,6/s射速,+20%暴击伤害"
-3,Jakobs,Pistol,2,Body,JAK_PS.part_body,"无属性变化，固有部件"
+27,Jakobs,Assault Rifle,82,Barrel,JAK_AR.part_barrel_02_fishward,"鱼群,1562伤害,64%精准度,3.2/s射速,-55%暴击伤害"
+27,Jakobs,Assault Rifle,84,Foregrip,JAK_AR.part_underbarrel_02_crank_fishward,附属开火-手摇曲柄
+3,Jakobs,Pistol,2,Body,JAK_PS.part_body,无属性变化，固有部件
 3,Jakobs,Pistol,3,Body Accessory,JAK_PS.part_body_a,-装填时间
 3,Jakobs,Pistol,4,Body Accessory,JAK_PS.part_body_b,-装填时间
 3,Jakobs,Pistol,5,Body Accessory,JAK_PS.part_body_c,+精准度
@@ -429,7 +435,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 3,Jakobs,Pistol,44,Grip,JAK_PS.part_grip_04_hyp,"亥伯龙握把,-精准度,持续射击提升精准度"
 3,Jakobs,Pistol,45,Underbarrel,JAK_PS.part_underbarrel_02_knifelauncher,附属开火-飞刀发射器
 3,Jakobs,Pistol,46,Underbarrel,JAK_PS.part_underbarrel_01_microrocket,附属开火-极速火箭
-3,Jakobs,Pistol,47,Underbarrel,JAK_PS.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
+3,Jakobs,Pistol,47,Underbarrel,JAK_PS.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
 3,Jakobs,Pistol,48,Underbarrel,JAK_PS.part_underbarrel_04_atlas,阿特拉斯追踪飞镖
 3,Jakobs,Pistol,49,Foregrip,JAK_PS.part_foregrip_02,+射速
 3,Jakobs,Pistol,50,Foregrip,JAK_PS.part_foregrip_03,+精准度
@@ -458,8 +464,9 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 3,Jakobs,Pistol,77,Barrel,JAK_PS.part_barrel_01_phantom_flame,"幻影火焰,1785伤害,43%精准度,9.0/s射速"
 3,Jakobs,Pistol,80,Barrel,JAK_PS.part_barrel_01_seventh_sense,"第七感,1785伤害,67%精准度,9.0/s射速"
 3,Jakobs,Pistol,82,Barrel,JAK_PS.part_barrel_shalashaska,"沙拉沙斯卡,2275伤害,82%精准度,7.5/s射速,+20%暴击伤害"
+3,Jakobs,Pistol,84,Barrel,JAK_PS.part_barrel_shoals,"浅滩,892x3伤害,51%精准度,7.5/s射速,+20%暴击伤害"
 9,Jakobs,Shotgun,1,Stat Modifier,JAK_SG.part_body_ele_rainbowvomit_cryo_fire_shock,彩色喷雾-冰冻，点燃，点击
-9,Jakobs,Shotgun,2,Body,JAK_SG.part_body,"无属性变化，固有部件"
+9,Jakobs,Shotgun,2,Body,JAK_SG.part_body,无属性变化，固有部件
 9,Jakobs,Shotgun,3,Body Accessory,JAK_SG.part_body_a,-装填时间
 9,Jakobs,Shotgun,4,Body Accessory,JAK_SG.part_body_b,-装填时间
 9,Jakobs,Shotgun,5,Body Accessory,JAK_SG.part_body_c,+精准度
@@ -506,7 +513,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 9,Jakobs,Shotgun,46,Underbarrel,JAK_SG.part_underbarrel_02_meathook,附属开火-重力鱼叉
 9,Jakobs,Shotgun,47,Foregrip,JAK_SG.part_foregrip_02,+射速
 9,Jakobs,Shotgun,48,Foregrip,JAK_SG.part_foregrip_03,+精准度
-9,Jakobs,Shotgun,49,Underbarrel,JAK_SG.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
+9,Jakobs,Shotgun,49,Underbarrel,JAK_SG.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
 9,Jakobs,Shotgun,50,Underbarrel,JAK_SG.part_underbarrel_01_knifelauncher,附属开火-飞刀发射器
 9,Jakobs,Shotgun,51,Manufacturer Part,JAK_SG.part_secondary_ammo_smg,代达洛斯冲锋枪弹药
 9,Jakobs,Shotgun,52,Manufacturer Part,JAK_SG.part_secondary_ammo_ps,代达洛斯手枪弹药
@@ -549,7 +556,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 9,Jakobs,Shotgun,94,Magazine,JAK_SG.part_mag_01_b02,"1.7s装填时间,2弹容,2/每发"
 9,Jakobs,Shotgun,99,Barrel,JAK_SG.part_barrel_Doeshot,"一命呼呼,1543x2伤害,82%精准度,2.7/s射速,+20%暴击伤害"
 9,Jakobs,Shotgun,102,Barrel,JAK_SG.part_barrel_01_constable,"康斯特布尔,669x9伤害,45%精准度,2.0/s射速,+20%暴击伤害,2/发"
-24,Jakobs,Sniper,2,Body,JAK_SR.part_body,"无属性变化，固有部件"
+24,Jakobs,Sniper,2,Body,JAK_SR.part_body,无属性变化，固有部件
 24,Jakobs,Sniper,3,Body Accessory,JAK_SR.part_body_a,-装填时间
 24,Jakobs,Sniper,4,Body Accessory,JAK_SR.part_body_b,-装填时间
 24,Jakobs,Sniper,5,Body Accessory,JAK_SR.part_body_c,无可见属性变化
@@ -595,7 +602,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 24,Jakobs,Sniper,45,Underbarrel,JAK_SR.part_underbarrel_01_shotgun,附属开火-霰弹枪
 24,Jakobs,Sniper,46,Underbarrel,JAK_SR.part_underbarrel_02_rocket,附属开火-大型火箭
 24,Jakobs,Sniper,47,Underbarrel,JAK_SR.part_underbarrel_04_atlas_ball,阿特拉斯追踪手雷
-24,Jakobs,Sniper,48,Underbarrel,JAK_SR.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
+24,Jakobs,Sniper,48,Underbarrel,JAK_SR.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
 24,Jakobs,Sniper,49,Foregrip,JAK_SR.part_foregrip_02,-装填时间
 24,Jakobs,Sniper,50,Foregrip,JAK_SR.part_foregrip_03,无可见属性变化
 24,Jakobs,Sniper,51,Foregrip,JAK_SR.part_foregrip_01,+伤害
@@ -624,7 +631,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 24,Jakobs,Sniper,77,Barrel,JAK_SR.part_barrel_02_fearstalker,"恐惧追猎者,4685伤害,91%精准度,1.6/s射速,+70%暴击伤害"
 24,Jakobs,Sniper,81,Manufacturer Part,JAK_SR.part_mag_torgue_normal_fearstalker,托格冲击弹匣
 24,Jakobs,Sniper,80,Manufacturer Part,JAK_SR.part_mag_torgue_sticky_fearstalker,托格粘性弹匣
-10,Maliwan,Shotgun,2,Body,MAL_SG.part_body,"无属性变化，固有部件"
+10,Maliwan,Shotgun,2,Body,MAL_SG.part_body,无属性变化，固有部件
 10,Maliwan,Shotgun,3,Body Accessory,MAL_SG.part_body_a,-装填时间
 10,Maliwan,Shotgun,4,Body Accessory,MAL_SG.part_body_b,+弹夹容量
 10,Maliwan,Shotgun,5,Body Accessory,MAL_SG.part_body_c,+精准度
@@ -668,7 +675,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 10,Maliwan,Shotgun,43,Underbarrel,MAL_SG.part_underbarrel_03_beam_tosser,附属开火-光束传递者
 10,Maliwan,Shotgun,44,Underbarrel,MAL_SG.part_underbarrel_02_energydisc,附属开火-能量圆盘
 10,Maliwan,Shotgun,45,Underbarrel,MAL_SG.part_underbarrel_04_atlas_ball,阿特拉斯追踪手雷
-10,Maliwan,Shotgun,46,Underbarrel,MAL_SG.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
+10,Maliwan,Shotgun,46,Underbarrel,MAL_SG.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
 10,Maliwan,Shotgun,47,Foregrip,MAL_SG.part_foregrip_02,+射速
 10,Maliwan,Shotgun,48,Foregrip,MAL_SG.part_foregrip_03,+精准度
 10,Maliwan,Shotgun,49,Underbarrel,MAL_SG.part_underbarrel_01_blowback,附属开火-能量冲击波
@@ -700,7 +707,8 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 10,Maliwan,Shotgun,78,Manufacturer Part,MAL_SG.part_mag_torgue_sticky,托格粘性弹匣
 10,Maliwan,Shotgun,79,Magazine,MAL_SG.part_mag_03_tor,"2.2s装填时间,4弹容"
 10,Maliwan,Shotgun,60,Barrel,MAL_SG.part_barrel_01_reminisce,"追忆,837伤害,77%精准度,4/s射速"
-21,Maliwan,SMG,2,Body,MAL_SM.part_body,"无属性变化，固有部件"
+10,Maliwan,Shotgun,82,Barrel,MAL_SG.part_barrel_01_discybusiness,"盘子生意,5131伤害,77%精准度,0.8/s射速"
+21,Maliwan,SMG,2,Body,MAL_SM.part_body,无属性变化，固有部件
 21,Maliwan,SMG,3,Body Accessory,MAL_SM.part_body_a,-装填时间
 21,Maliwan,SMG,4,Body Accessory,MAL_SM.part_body_b,+弹夹容量
 21,Maliwan,SMG,5,Body Accessory,MAL_SM.part_body_c,+精准度
@@ -746,7 +754,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 21,Maliwan,SMG,45,Underbarrel,MAL_SM.part_underbarrel_03_railgun,附属开火-轨道炮
 21,Maliwan,SMG,46,Underbarrel,MAL_SM.part_underbarrel_02_overcharge,附属开火-能量释放
 21,Maliwan,SMG,47,Underbarrel,MAL_SM.part_underbarrel_04_atlas_ball,阿特拉斯追踪手雷
-21,Maliwan,SMG,48,Underbarrel,MAL_SM.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
+21,Maliwan,SMG,48,Underbarrel,MAL_SM.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
 21,Maliwan,SMG,49,Foregrip,MAL_SM.part_foregrip_02,+射速
 21,Maliwan,SMG,50,Foregrip,MAL_SM.part_foregrip_03,+精准度
 21,Maliwan,SMG,51,Foregrip,MAL_SM.part_foregrip_01,+伤害
@@ -780,7 +788,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 21,Maliwan,SMG,87,Foregrip,MAL_SM.part_foregrip_02_flashcyclone,+射速
 21,Maliwan,SMG,86,Foregrip,MAL_SM.part_foregrip_03_flashcyclone,+精准度
 21,Maliwan,SMG,89,Barrel,MAL_SM.part_barrel_02_juliet,"朱丽叶之光,1428伤害,80%精准度,5.7/s射速"
-25,Maliwan,Sniper,2,Body,MAL_SR.part_body,"无属性变化，固有部件"
+25,Maliwan,Sniper,2,Body,MAL_SR.part_body,无属性变化，固有部件
 25,Maliwan,Sniper,3,Body Accessory,MAL_SR.part_body_a,-装填时间
 25,Maliwan,Sniper,4,Body Accessory,MAL_SR.part_body_b,+弹夹容量
 25,Maliwan,Sniper,5,Body Accessory,MAL_SR.part_body_c,+精准度
@@ -824,7 +832,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 25,Maliwan,Sniper,43,Grip,MAL_SR.part_grip_01,+伤害
 25,Maliwan,Sniper,44,Grip,MAL_SR.part_grip_02,+射速
 25,Maliwan,Sniper,45,Grip,MAL_SR.part_grip_03,-装填时间
-25,Maliwan,Sniper,46,Underbarrel,MAL_SR.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
+25,Maliwan,Sniper,46,Underbarrel,MAL_SR.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
 25,Maliwan,Sniper,47,Underbarrel,MAL_SR.part_underbarrel_04_atlas_ball,阿特拉斯追踪手雷
 25,Maliwan,Sniper,48,Underbarrel,MAL_SR.part_underbarrel_02_multitaser,附属开火-电击立场
 25,Maliwan,Sniper,49,Underbarrel,MAL_SR.part_underbarrel_01_singularity,附属开火-奇点榴弹发射器
@@ -857,6 +865,8 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 25,Maliwan,Sniper,78,Manufacturer Part,MAL_SR.part_barrel_licensed_hyp,"亥伯龙护盾可见附件,无可见属性变化"
 25,Maliwan,Sniper,79,Barrel,MAL_SR.part_barrel_01_asher,"亚瑟的崛起,1522伤害,89%精准度,6.6/s射速"
 25,Maliwan,Sniper,81,Barrel,MAL_SR.part_barrel_02_conflux,"汇流,2342伤害,87%精准度,2.0/s射速,+50%暴击伤害"
+25,Maliwan,Sniper,85,Barrel,MAL_SR.part_barrel_01_manifest,"马歇尔之爪,1405x3伤害,76%精准度,2.8/s射速,+50%暴击伤害"
+25,Maliwan,Sniper,86,Magazine Accessory,MAL_SR.part_mag_05_borg_acc_manifest,"-伤害,-精准度,-装填时间"
 15,Order,Assault Rifle,1,Scope,ORD_AR.part_scope_02_lens_02_gmr,瞄准镜 +++放大倍率
 15,Order,Assault Rifle,2,Barrel,ORD_AR.part_barrel_02_gmr,"G.M.R.,1785伤害,65%精准度,4.0/s射速"
 15,Order,Assault Rifle,3,Body Accessory,ORD_AR.part_body_a,-装填时间
@@ -925,14 +935,14 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 15,Order,Assault Rifle,66,Manufacturer Part,ORD_AR.part_mag_torgue_normal,托格冲击弹匣
 15,Order,Assault Rifle,67,Manufacturer Part,ORD_AR.part_mag_torgue_sticky,托格粘性弹匣
 15,Order,Assault Rifle,68,Underbarrel,ORD_AR.part_underbarrel_02_deathsphere,附属开火-死亡之球
-15,Order,Assault Rifle,69,Underbarrel,ORD_AR.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
+15,Order,Assault Rifle,69,Underbarrel,ORD_AR.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
 15,Order,Assault Rifle,70,Foregrip,ORD_AR.part_foregrip_01,+伤害
 15,Order,Assault Rifle,71,Magazine,ORD_AR.part_mag_03_tor,"2.1s装填时间,15弹容"
 15,Order,Assault Rifle,72,Barrel,ORD_AR.part_barrel_02_goalkeeper,"门将,1785伤害,84%精准度,7.0/s射速"
-15,Order,Assault Rifle,74,Body,ORD_AR.part_body,"无属性变化，固有部件"
+15,Order,Assault Rifle,74,Body,ORD_AR.part_body,无属性变化，固有部件
 15,Order,Assault Rifle,78,Barrel,ORD_AR.part_barrel_02_crowsourced,"大众协作,1182伤害,84%精准度,7/s射速"
 4,Order,Pistol,1,Magazine,ORD_PS.part_mag_03_rocketreload,"1.9s装填时间,6弹容"
-4,Order,Pistol,2,Body,ORD_PS.part_body,"无属性变化，固有部件"
+4,Order,Pistol,2,Body,ORD_PS.part_body,无属性变化，固有部件
 4,Order,Pistol,3,Body Accessory,ORD_PS.part_body_a,-装填时间
 4,Order,Pistol,4,Body Accessory,ORD_PS.part_body_b,+伤害
 4,Order,Pistol,5,Body Accessory,ORD_PS.part_body_c,+精准度
@@ -972,7 +982,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 4,Order,Pistol,39,Grip,ORD_PS.part_grip_01,+伤害
 4,Order,Pistol,40,Grip,ORD_PS.part_grip_02,+射速
 4,Order,Pistol,41,Grip,ORD_PS.part_grip_03,-装填时间
-4,Order,Pistol,42,Underbarrel,ORD_PS.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
+4,Order,Pistol,42,Underbarrel,ORD_PS.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
 4,Order,Pistol,43,Underbarrel,ORD_PS.part_underbarrel_03_rockets,附属开火-微型火箭
 4,Order,Pistol,44,Underbarrel,ORD_PS.part_underbarrel_01_energyburst,附属开火-能量爆发
 4,Order,Pistol,45,Underbarrel,ORD_PS.part_underbarrel_04_atlas,阿特拉斯追踪飞镖
@@ -1008,7 +1018,8 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 4,Order,Pistol,81,Barrel,ORD_PS.part_barrel_02_rocketreload,"幸运四叶草,892伤害,75%精准度,8.0/s射速"
 4,Order,Pistol,84,Barrel,ORD_PS.part_barrel_02_Roulette,"轮盘赌,1227伤害,84%精准度,8.0/s射速,+5%暴击伤害"
 4,Order,Pistol,82,Barrel,ORD_PS.part_barrel_sunspot,"太阳黑子,1115伤害,76%精准度,8/s射速,+5%暴击伤害"
-26,Order,Sniper,2,Body,ORD_SR.part_body,"无属性变化，固有部件"
+4,Order,Pistol,86,Barrel,ORD_PS.part_barrel_rhythm,"韵律,1115伤害,76%精准度,8.0/s射速,+5%暴击伤害"
+26,Order,Sniper,2,Body,ORD_SR.part_body,无属性变化，固有部件
 26,Order,Sniper,3,Body Accessory,ORD_SR.part_body_a,-装填时间
 26,Order,Sniper,4,Body Accessory,ORD_SR.part_body_b,+伤害
 26,Order,Sniper,5,Body Accessory,ORD_SR.part_body_c,无可见属性变化
@@ -1062,7 +1073,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 26,Order,Sniper,53,Grip,ORD_SR.part_grip_01,+伤害
 26,Order,Sniper,54,Grip,ORD_SR.part_grip_02,+射速
 26,Order,Sniper,55,Grip,ORD_SR.part_grip_03,-装填时间
-26,Order,Sniper,56,Underbarrel,ORD_SR.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
+26,Order,Sniper,56,Underbarrel,ORD_SR.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
 26,Order,Sniper,57,Underbarrel,ORD_SR.part_underbarrel_02_tether_snare,附属开火-系链圈套
 26,Order,Sniper,58,Underbarrel,ORD_SR.part_underbarrel_03_railgun,附属开火-轨道炮
 26,Order,Sniper,59,Underbarrel,ORD_SR.part_underbarrel_04_atlas,阿特拉斯追踪飞镖
@@ -1084,8 +1095,10 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 26,Order,Sniper,77,Underbarrel,ORD_SR.part_underbarrel_03_seamstress,浪子附属开火-冷酷无情
 26,Order,Sniper,78,Barrel,ORD_SR.part_barrel_01_seamstress,"浪子,2342伤害,83%精准度,2/s射速,+55%暴击伤害"
 26,Order,Sniper,83,Barrel,ORD_SR.part_barrel_02_temper,"太阳怒焰,2881伤害,92%精准度,1.5/s射速,+55%暴击伤害"
+26,Order,Sniper,80,Foregrip,ORD_SR.part_underbarrel_02_tether_snare_ishmael,附属开火-系链圈套
+26,Order,Sniper,81,Barrel,ORD_SR.part_barrel_02_ishmael,"以实玛利,2811伤害,82%精准度,2.0/s射速,+55%暴击伤害"
 7,Ripper,Shotgun,1,Barrel,BOR_SG.part_barrel_02_goremaster,"血腥大师,349x6伤害,70%精准度,3.0/s射速"
-7,Ripper,Shotgun,2,Body,BOR_SG.part_body,"无属性变化，固有部件"
+7,Ripper,Shotgun,2,Body,BOR_SG.part_body,无属性变化，固有部件
 7,Ripper,Shotgun,3,Body Accessory,BOR_SG.part_body_a,-装填时间
 7,Ripper,Shotgun,4,Body Accessory,BOR_SG.part_body_b,+弹夹容量
 7,Ripper,Shotgun,5,Body Accessory,BOR_SG.part_body_c,+精准度
@@ -1132,8 +1145,8 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 7,Ripper,Shotgun,49,Underbarrel,BOR_SG.part_underbarrel_02_gauss,附属开火-电磁枪
 7,Ripper,Shotgun,50,Foregrip,BOR_SG.part_foregrip_01,+伤害
 7,Ripper,Shotgun,51,Foregrip,BOR_SG.part_foregrip_03,+精准度
-7,Ripper,Shotgun,52,Underbarrel,BOR_SG.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
-7,Ripper,Shotgun,53,Underbarrel,BOR_SG.part_underbarrel_06_malswitch,"马里旺元素切换下挂"
+7,Ripper,Shotgun,52,Underbarrel,BOR_SG.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
+7,Ripper,Shotgun,53,Underbarrel,BOR_SG.part_underbarrel_06_malswitch,马里旺元素切换下挂
 7,Ripper,Shotgun,60,Manufacturer Part,BOR_SG.part_secondary_ammo_smg,代达洛斯冲锋枪弹药
 7,Ripper,Shotgun,61,Manufacturer Part,BOR_SG.part_secondary_ammo_ar,代达洛斯突击步枪弹药
 7,Ripper,Shotgun,62,Manufacturer Part,BOR_SG.part_secondary_ammo_ps,代达洛斯手枪弹药
@@ -1161,7 +1174,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 7,Ripper,Shotgun,21,Barrel,BOR_SG.part_barrel_crazedearl,"疯狂厄尔,1338x2伤害,63%精准度,4.5/s射速"
 7,Ripper,Shotgun,58,Magazine,BOR_SG.part_mag_01_crazedearl,2.4s装填时间 15弹容
 7,Ripper,Shotgun,57,Magazine,BOR_SG.part_mag_02_crazedearl,-伤害 2.6s装填时间 20弹容
-19,Ripper,SMG,2,Body,BOR_SM.part_body,"无属性变化，固有部件"
+19,Ripper,SMG,2,Body,BOR_SM.part_body,无属性变化，固有部件
 19,Ripper,SMG,3,Body Accessory,BOR_SM.part_body_a,-装填时间
 19,Ripper,SMG,4,Body Accessory,BOR_SM.part_body_b,+弹夹容量
 19,Ripper,SMG,5,Body Accessory,BOR_SM.part_body_c,+精准度
@@ -1205,13 +1218,13 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 19,Ripper,SMG,45,Grip,BOR_SM.part_grip_04_hyp,"亥伯龙握把,-精准度,持续射击提升精准度"
 19,Ripper,SMG,46,Underbarrel,BOR_SM.part_underbarrel_03_gastrap,附属开火-毒气陷阱
 19,Ripper,SMG,47,Underbarrel,BOR_SM.part_underbarrel_02_drunkrocket,附属开火-开颅者火箭
-19,Ripper,SMG,48,Underbarrel,BOR_SM.part_underbarrel_06_malswitch,"马里旺元素切换下挂"
+19,Ripper,SMG,48,Underbarrel,BOR_SM.part_underbarrel_06_malswitch,马里旺元素切换下挂
 19,Ripper,SMG,49,Underbarrel,BOR_SM.part_underbarrel_04_atlas,阿特拉斯追踪飞镖
 19,Ripper,SMG,50,Foregrip,BOR_SM.part_foregrip_01,+伤害
 19,Ripper,SMG,51,Foregrip,BOR_SM.part_foregrip_03,+精准度
 19,Ripper,SMG,52,Underbarrel,BOR_SM.part_underbarrel_01_shrapnel,附属开火-破片火炮
 19,Ripper,SMG,53,Underbarrel,BOR_SM.part_underbarrel_04_atlas_ball,阿特拉斯追踪手雷
-19,Ripper,SMG,54,Underbarrel,BOR_SM.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
+19,Ripper,SMG,54,Underbarrel,BOR_SM.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
 19,Ripper,SMG,55,Foregrip,BOR_SM.part_foregrip_02,+射速
 19,Ripper,SMG,57,Barrel,BOR_SM.part_barrel_01_Roil,"激怒,937伤害,70%精准度,6.8/s射速"
 19,Ripper,SMG,62,Manufacturer Part,BOR_SM.part_secondary_ammo_sg,代达洛斯霰弹枪弹药
@@ -1236,7 +1249,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 19,Ripper,SMG,81,Manufacturer Part,BOR_SM.part_mag_torgue_sticky,托格粘性弹匣
 19,Ripper,SMG,58,Barrel,BOR_SM.part_barrel_01_falke,"猎鹰,535x3伤害,70%精准度,6.8/s射速"
 19,Ripper,SMG,60,Barrel,BOR_SM.part_barrel_01_jailbroken,"越狱加特林,1205伤害,59%精准度,5/s射速"
-23,Ripper,Sniper,2,Body,BOR_SR.part_body,"无属性变化，固有部件"
+23,Ripper,Sniper,2,Body,BOR_SR.part_body,无属性变化，固有部件
 23,Ripper,Sniper,3,Body Accessory,BOR_SR.part_body_a,-装填时间
 23,Ripper,Sniper,4,Body Accessory,BOR_SR.part_body_b,+弹夹容量
 23,Ripper,Sniper,5,Body Accessory,BOR_SR.part_body_c,无可见属性变化
@@ -1277,14 +1290,14 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 23,Ripper,Sniper,43,Grip,BOR_SR.part_grip_01,+伤害
 23,Ripper,Sniper,44,Grip,BOR_SR.part_grip_02,+射速
 23,Ripper,Sniper,45,Grip,BOR_SR.part_grip_03,-装填时间
-23,Ripper,Sniper,46,Underbarrel,BOR_SR.part_underbarrel_06_malswitch,"马里旺元素切换下挂"
+23,Ripper,Sniper,46,Underbarrel,BOR_SR.part_underbarrel_06_malswitch,马里旺元素切换下挂
 23,Ripper,Sniper,47,Underbarrel,BOR_SR.part_underbarrel_02_seeker,附属开火-搜索者导弹
 23,Ripper,Sniper,48,Underbarrel,BOR_SR.part_underbarrel_01_gravtrap,附属开火-重力陷阱
 23,Ripper,Sniper,49,Underbarrel,BOR_SR.part_underbarrel_04_atlas,阿特拉斯追踪飞镖
 23,Ripper,Sniper,50,Foregrip,BOR_SR.part_foregrip_01,+伤害
 23,Ripper,Sniper,51,Foregrip,BOR_SR.part_foregrip_03,无可见属性变化
 23,Ripper,Sniper,52,Foregrip,BOR_SR.part_foregrip_02,+射速
-23,Ripper,Sniper,53,Underbarrel,BOR_SR.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
+23,Ripper,Sniper,53,Underbarrel,BOR_SR.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
 23,Ripper,Sniper,54,Underbarrel,BOR_SR.part_underbarrel_04_atlas_ball,阿特拉斯追踪手雷
 23,Ripper,Sniper,55,Underbarrel,BOR_SR.part_underbarrel_03_marked,附属开火-目标标记器
 23,Ripper,Sniper,58,Barrel,BOR_SR.part_barrel_02_rainmaker,"造雨师,984伤害,93%精准度,14.0/s射速,+50%暴击伤害"
@@ -1312,7 +1325,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 23,Ripper,Sniper,59,Scope Accessory,BOR_SR.part_scope_acc_s01_l01_b_abyss,-装填时间
 23,Ripper,Sniper,60,Barrel,BOR_SR.part_barrel_02_abyss,"深渊,2811伤害,93%精准度,9/s射速"
 14,Tediore,Assault Rifle,1,Magazine,TED_AR.part_mag_01_Chuck,"0.7s装填时间,10弹容"
-14,Tediore,Assault Rifle,2,Body,TED_AR.part_body,"无属性变化，固有部件"
+14,Tediore,Assault Rifle,2,Body,TED_AR.part_body,无属性变化，固有部件
 14,Tediore,Assault Rifle,3,Body Accessory,TED_AR.part_body_a,无可见属性变化
 14,Tediore,Assault Rifle,4,Body Accessory,TED_AR.part_body_b,+弹夹容量
 14,Tediore,Assault Rifle,5,Body Accessory,TED_AR.part_body_c,+精准度
@@ -1375,8 +1388,8 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 14,Tediore,Assault Rifle,66,Foregrip,TED_AR.part_foregrip_01,+伤害
 14,Tediore,Assault Rifle,67,Foregrip,TED_AR.part_foregrip_03,+精准度
 14,Tediore,Assault Rifle,68,Underbarrel,TED_AR.part_underbarrel_01_buffdrone,附属开火-支援无人机
-14,Tediore,Assault Rifle,69,Underbarrel,TED_AR.part_underbarrel_06_malswitch,"马里旺元素切换下挂"
-14,Tediore,Assault Rifle,70,Underbarrel,TED_AR.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
+14,Tediore,Assault Rifle,69,Underbarrel,TED_AR.part_underbarrel_06_malswitch,马里旺元素切换下挂
+14,Tediore,Assault Rifle,70,Underbarrel,TED_AR.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
 14,Tediore,Assault Rifle,71,Foregrip,TED_AR.part_foregrip_02,+射速
 14,Tediore,Assault Rifle,72,Manufacturer Part,TED_AR.part_secondary_ammo_sm,代达洛斯冲锋枪弹药
 14,Tediore,Assault Rifle,73,Manufacturer Part,TED_AR.part_secondary_ammo_sg,代达洛斯霰弹枪弹药
@@ -1391,7 +1404,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 14,Tediore,Assault Rifle,87,Manufacturer Part,TED_AR.part_mag_torgue_normal,托格冲击弹匣
 14,Tediore,Assault Rifle,88,Manufacturer Part,TED_AR.part_mag_torgue_sticky,托格粘性弹匣
 14,Tediore,Assault Rifle,78,Barrel,TED_AR.part_barrel_01_LaserDisc,"激光飞盘,2900伤害,75%精准度,1.5/s射速"
-5,Tediore,Pistol,2,Body,TED_PS.part_body,"无属性变化，固有部件"
+5,Tediore,Pistol,2,Body,TED_PS.part_body,无属性变化，固有部件
 5,Tediore,Pistol,3,Body Accessory,TED_PS.part_body_a,无可见属性变化
 5,Tediore,Pistol,4,Body Accessory,TED_PS.part_body_b,+弹夹容量
 5,Tediore,Pistol,5,Body Accessory,TED_PS.part_body_c,+精准度
@@ -1437,9 +1450,9 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 5,Tediore,Pistol,46,Grip,TED_PS.part_grip_01,+伤害
 5,Tediore,Pistol,47,Grip,TED_PS.part_grip_02,+射速
 5,Tediore,Pistol,48,Grip,TED_PS.part_grip_03,+弹夹容量
-5,Tediore,Pistol,49,Underbarrel,TED_PS.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
+5,Tediore,Pistol,49,Underbarrel,TED_PS.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
 5,Tediore,Pistol,50,Underbarrel,TED_PS.part_underbarrel_03_shotgun,附属开火-微型霰弹枪
-5,Tediore,Pistol,51,Underbarrel,TED_PS.part_underbarrel_06_malswitch,"马里旺元素切换下挂"
+5,Tediore,Pistol,51,Underbarrel,TED_PS.part_underbarrel_06_malswitch,马里旺元素切换下挂
 5,Tediore,Pistol,52,Underbarrel,TED_PS.part_underbarrel_04_atlas_ball,阿特拉斯追踪手雷
 5,Tediore,Pistol,53,Foregrip,TED_PS.part_foregrip_01,+伤害
 5,Tediore,Pistol,54,Foregrip,TED_PS.part_foregrip_03,+精准度
@@ -1473,7 +1486,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 5,Tediore,Pistol,84,Manufacturer Part,TED_PS.part_mag_torgue_normal_Inscriber,记录器-托格冲击弹匣
 5,Tediore,Pistol,85,Barrel,TED_PS.part_barrel_02_Inscriber,"记录器,2342伤害,73%精准度,2.5/s射速"
 5,Tediore,Pistol,88,Barrel,TED_PS.part_barrel_01_shammy,"诈爆轰轰,848伤害,52%精准度,6/s射速"
-11,Tediore,Shotgun,2,Body,TED_SG.part_body,"无属性变化，固有部件"
+11,Tediore,Shotgun,2,Body,TED_SG.part_body,无属性变化，固有部件
 11,Tediore,Shotgun,3,Body Accessory,TED_SG.part_body_a,无可见属性变化
 11,Tediore,Shotgun,4,Body Accessory,TED_SG.part_body_b,+弹夹容量
 11,Tediore,Shotgun,5,Body Accessory,TED_SG.part_body_c,+精准度
@@ -1526,8 +1539,8 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 11,Tediore,Shotgun,52,Foregrip,TED_SG.part_foregrip_01,+伤害
 11,Tediore,Shotgun,53,Foregrip,TED_SG.part_foregrip_03,+精准度
 11,Tediore,Shotgun,54,Foregrip,TED_SG.part_foregrip_02,+DPS但是不改变面板
-11,Tediore,Shotgun,55,Underbarrel,TED_SG.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
-11,Tediore,Shotgun,56,Underbarrel,TED_SG.part_underbarrel_06_malswitch,"马里旺元素切换下挂"
+11,Tediore,Shotgun,55,Underbarrel,TED_SG.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
+11,Tediore,Shotgun,56,Underbarrel,TED_SG.part_underbarrel_06_malswitch,马里旺元素切换下挂
 11,Tediore,Shotgun,57,Underbarrel,TED_SG.part_underbarrel_01_autoturret,附属开火-数字备份
 11,Tediore,Shotgun,58,Manufacturer Part,TED_SG.part_secondary_ammo_sm,代达洛斯冲锋枪弹药
 11,Tediore,Shotgun,59,Manufacturer Part,TED_SG.part_secondary_ammo_ps,代达洛斯手枪弹药
@@ -1550,6 +1563,13 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 11,Tediore,Shotgun,77,Barrel,TED_SG.part_barrel_01_commbd,"遗弃混沌,480x8伤害,61%精准度,1.3/s射速,2/每发"
 11,Tediore,Shotgun,79,Underbarrel,TED_SG.part_underbarrel_01_heavyturret,哈士奇好友下挂-哈士奇自动炮塔
 11,Tediore,Shotgun,81,Barrel,TED_SG.part_barrel_01_Eigenburst,"特征爆发,1394x3伤害,82%精准度,2.3/s射速,2/每发"
+11,Tediore,Shotgun,83,Manufacturer Part,TED_SG.part_mag_torgue_sticky_sharkbait,托格粘性弹匣
+11,Tediore,Shotgun,84,Manufacturer Part,TED_SG.part_mag_torgue_normal_sharkbait,托格冲击弹匣
+11,Tediore,Shotgun,85,Grip,TED_SG.part_grip_05c_ted_jav_sharkbait,"泰迪尔装填修改组件:标枪,无可见属性变化"
+11,Tediore,Shotgun,86,Grip,TED_SG.part_grip_05b_ted_homing_sharkbait,"泰迪尔装填修改组件:追踪,无可见属性变化"
+11,Tediore,Shotgun,87,Grip,TED_SG.part_grip_05a_ted_legs_mirv_sharkbait,"泰迪尔分裂式,无可见属性变化"
+11,Tediore,Shotgun,88,Grip,TED_SG.part_grip_05a_ted_legs_sharkbait,"泰迪尔装填修改组件:腿部,无可见属性变化"
+11,Tediore,Shotgun,89,Barrel,TED_SG.part_barrel_01_sharkbait,"鲨鱼饵,558x5伤害,61%精准度,1.3/s射速,2/每发"
 17,Torgue,Assault Rifle,3,Body Accessory,TOR_AR.part_body_a,-装填时间
 17,Torgue,Assault Rifle,4,Body Accessory,TOR_AR.part_body_b,+伤害
 17,Torgue,Assault Rifle,5,Body Accessory,TOR_AR.part_body_c,+精准度
@@ -1588,8 +1608,8 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 17,Torgue,Assault Rifle,38,Grip,TOR_AR.part_grip_02,+射速
 17,Torgue,Assault Rifle,39,Grip,TOR_AR.part_grip_03,-装填时间
 17,Torgue,Assault Rifle,40,Grip,TOR_AR.part_grip_04_hyp,"亥伯龙握把,-精准度,持续射击提升精准度"
-17,Torgue,Assault Rifle,41,Underbarrel,TOR_AR.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
-17,Torgue,Assault Rifle,42,Underbarrel,TOR_AR.part_underbarrel_06_malswitch,"马里旺元素切换下挂"
+17,Torgue,Assault Rifle,41,Underbarrel,TOR_AR.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
+17,Torgue,Assault Rifle,42,Underbarrel,TOR_AR.part_underbarrel_06_malswitch,马里旺元素切换下挂
 17,Torgue,Assault Rifle,43,Underbarrel,TOR_AR.part_underbarrel_01_mirvgrenade,附属开火-分裂式榴弹发射器
 17,Torgue,Assault Rifle,44,Underbarrel,TOR_AR.part_underbarrel_04_atlas_ball,阿特拉斯追踪手雷
 17,Torgue,Assault Rifle,45,Underbarrel,TOR_AR.part_underbarrel_03_airstrike,附属开火-空袭
@@ -1599,7 +1619,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 17,Torgue,Assault Rifle,49,Manufacturer Part,TOR_AR.part_secondary_ammo_sg,代达洛斯霰弹枪弹药
 17,Torgue,Assault Rifle,50,Manufacturer Part,TOR_AR.part_secondary_ammo_ps,代达洛斯手枪弹药
 17,Torgue,Assault Rifle,51,Manufacturer Part,TOR_AR.part_secondary_ammo_sr,代达洛斯狙击枪弹药
-17,Torgue,Assault Rifle,52,Body,TOR_AR.part_body,"无属性变化，固有部件"
+17,Torgue,Assault Rifle,52,Body,TOR_AR.part_body,无属性变化，固有部件
 17,Torgue,Assault Rifle,54,Barrel,TOR_AR.part_barrel_02_bugbear,"熊熊虫,1124伤害,78%精准度,5.5/s射速"
 17,Torgue,Assault Rifle,55,Barrel,TOR_AR.part_barrel_coldshoulder,"冷屁股,1285伤害,78%精准度,5.5/s射速"
 17,Torgue,Assault Rifle,57,Foregrip,TOR_AR.part_foregrip_01_pt,+伤害
@@ -1628,7 +1648,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 17,Torgue,Assault Rifle,81,Foregrip,TOR_AR.part_foregrip_01_fleabag,+伤害
 17,Torgue,Assault Rifle,82,Barrel,TOR_AR.part_barrel_fleabag,"跳蚤袋,1472伤害,78%精准度,5.5/s射速"
 17,Torgue,Assault Rifle,84,Barrel,TOR_AR.part_barrel_lockjaw,"锁喉,2231伤害,78%精准度,2/s射速"
-6,Torgue,Pistol,2,Body,TOR_PS.part_body,"无属性变化，固有部件"
+6,Torgue,Pistol,2,Body,TOR_PS.part_body,无属性变化，固有部件
 6,Torgue,Pistol,3,Body Accessory,TOR_PS.part_body_a,-装填时间
 6,Torgue,Pistol,4,Body Accessory,TOR_PS.part_body_b,+伤害
 6,Torgue,Pistol,5,Body Accessory,TOR_PS.part_body_c,+精准度
@@ -1667,8 +1687,8 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 6,Torgue,Pistol,38,Grip,TOR_PS.part_grip_02,+射速
 6,Torgue,Pistol,39,Grip,TOR_PS.part_grip_03,-装填时间
 6,Torgue,Pistol,40,Grip,TOR_PS.part_grip_04_hyp,"亥伯龙握把,-精准度,持续射击提升精准度"
-6,Torgue,Pistol,41,Underbarrel,TOR_PS.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
-6,Torgue,Pistol,42,Underbarrel,TOR_PS.part_underbarrel_06_malswitch,"马里旺元素切换下挂"
+6,Torgue,Pistol,41,Underbarrel,TOR_PS.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
+6,Torgue,Pistol,42,Underbarrel,TOR_PS.part_underbarrel_06_malswitch,马里旺元素切换下挂
 6,Torgue,Pistol,43,Underbarrel,TOR_PS.part_underbarrel_04_atlas_ball,阿特拉斯追踪手雷
 6,Torgue,Pistol,44,Underbarrel,TOR_PS.part_underbarrel_01_rockets,附属开火-马格南火箭
 6,Torgue,Pistol,45,Underbarrel,TOR_PS.part_underbarrel_03_cleaver,附属开火-涡轮切割刀
@@ -1707,7 +1727,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 6,Torgue,Pistol,83,Foregrip,TOR_PS.part_foregrip_02_herald,"托格粘性弹匣,+射速"
 6,Torgue,Pistol,82,Foregrip,TOR_PS.part_foregrip_03_herald,托格粘性弹匣
 6,Torgue,Pistol,86,Barrel,TOR_PS.part_barrel_01_herald,"赫拉德,892x3伤害,64%精准度,2.6/s射速,3/发"
-12,Torgue,Shotgun,2,Body,TOR_SG.part_body,"无属性变化，固有部件"
+12,Torgue,Shotgun,2,Body,TOR_SG.part_body,无属性变化，固有部件
 12,Torgue,Shotgun,3,Body Accessory,TOR_SG.part_body_a,-装填时间
 12,Torgue,Shotgun,4,Body Accessory,TOR_SG.part_body_b,+伤害
 12,Torgue,Shotgun,5,Body Accessory,TOR_SG.part_body_c,+精准度
@@ -1746,8 +1766,8 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 12,Torgue,Shotgun,38,Grip,TOR_SG.part_grip_02,+射速
 12,Torgue,Shotgun,39,Grip,TOR_SG.part_grip_03,-装填时间
 12,Torgue,Shotgun,40,Grip,TOR_SG.part_grip_04_hyp,"亥伯龙握把,-精准度,持续射击提升精准度"
-12,Torgue,Shotgun,41,Underbarrel,TOR_SG.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
-12,Torgue,Shotgun,42,Underbarrel,TOR_SG.part_underbarrel_06_malswitch,"马里旺元素切换下挂"
+12,Torgue,Shotgun,41,Underbarrel,TOR_SG.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
+12,Torgue,Shotgun,42,Underbarrel,TOR_SG.part_underbarrel_06_malswitch,马里旺元素切换下挂
 12,Torgue,Shotgun,43,Underbarrel,TOR_SG.part_underbarrel_01_seeker_missiles,附属开火-搜索者导弹
 12,Torgue,Shotgun,44,Underbarrel,TOR_SG.part_underbarrel_03_bounce_grenade,附属开火-滚雷手雷
 12,Torgue,Shotgun,45,Underbarrel,TOR_SG.part_underbarrel_04_atlas,阿特拉斯追踪飞镖
@@ -1781,8 +1801,12 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 12,Torgue,Shotgun,75,Foregrip,TOR_SG.part_foregrip_01_unstable_kor,+伤害
 12,Torgue,Shotgun,60,Foregrip,TOR_SG.part_foregrip_02_unstable_kor,+射速
 12,Torgue,Shotgun,59,Foregrip,TOR_SG.part_foregrip_03_unstable_kor,+溅射范围
+12,Torgue,Shotgun,80,Foregrip,TOR_SG.part_foregrip_03_cormano,+溅射范围
+12,Torgue,Shotgun,81,Foregrip,TOR_SG.part_foregrip_02_cormano,+射速
+12,Torgue,Shotgun,82,Foregrip,TOR_SG.part_foregrip_01_cormano,+伤害
+12,Torgue,Shotgun,84,Barrel,TOR_SG.part_barrel_02_cormano,"科尔马诺,976x9伤害,66%精准度,1.6/s射速,2/每发"
 18,Vladof,Assault Rifle,1,Barrel,VLA_AR.part_barrel_01_lucian,"卢西恩的侧攻,647伤害,76%精准度,11.5/s射速"
-18,Vladof,Assault Rifle,2,Body,VLA_AR.part_body,"无属性变化，固有部件"
+18,Vladof,Assault Rifle,2,Body,VLA_AR.part_body,无属性变化，固有部件
 18,Vladof,Assault Rifle,3,Body Accessory,VLA_AR.part_body_a,-装填时间
 18,Vladof,Assault Rifle,4,Body Accessory,VLA_AR.part_body_b,+弹夹容量
 18,Vladof,Assault Rifle,5,Body Accessory,VLA_AR.part_body_c,+精准度
@@ -1825,7 +1849,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 18,Vladof,Assault Rifle,42,Grip,VLA_AR.part_grip_02,+射速
 18,Vladof,Assault Rifle,43,Grip,VLA_AR.part_grip_03,-装填时间
 18,Vladof,Assault Rifle,44,Grip,VLA_AR.part_grip_04_hyp,"亥伯龙握把,-精准度,持续射击提升精准度"
-18,Vladof,Assault Rifle,45,Underbarrel,VLA_AR.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
+18,Vladof,Assault Rifle,45,Underbarrel,VLA_AR.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
 18,Vladof,Assault Rifle,46,Underbarrel,VLA_AR.part_underbarrel_04_atlas_ball,阿特拉斯追踪手雷
 18,Vladof,Assault Rifle,47,Underbarrel,VLA_AR.part_underbarrel_04_atlas,阿特拉斯追踪飞镖
 18,Vladof,Assault Rifle,48,Underbarrel,VLA_AR.part_underbarrel_03_bipod,附属开火-枪架
@@ -1862,7 +1886,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 18,Vladof,Assault Rifle,82,Manufacturer Part,VLA_AR.part_barrel_licensed_ted_shooting,"泰迪尔射击,无可见属性变化"
 18,Vladof,Assault Rifle,83,Manufacturer Part,VLA_AR.part_barrel_licensed_ted_mirv,"泰迪尔分裂式,无可见属性变化"
 18,Vladof,Assault Rifle,84,Manufacturer Part,VLA_AR.part_barrel_licensed_hyp,"亥伯龙护盾可见附件,无可见属性变化"
-18,Vladof,Assault Rifle,85,Underbarrel,VLA_AR.part_underbarrel_06_malswitch,"马里旺元素切换下挂"
+18,Vladof,Assault Rifle,85,Underbarrel,VLA_AR.part_underbarrel_06_malswitch,马里旺元素切换下挂
 18,Vladof,Assault Rifle,86,Underbarrel,VLA_AR.part_underbarrel_07_secondbarrel,附属开火-额外枪管
 18,Vladof,Assault Rifle,87,Underbarrel,VLA_AR.part_underbarrel_02_shotgun,附属开火-霰弹枪
 18,Vladof,Assault Rifle,89,Underbarrel Accessory,VLA_AR.part_underbarrel_overdrive_acc,无可见属性变化
@@ -1873,7 +1897,7 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 18,Vladof,Assault Rifle,99,Barrel,VLA_AR.part_barrel_01_bubbles,"泡泡,1004x2伤害,61%精准度,5.6/s射速"
 18,Vladof,Assault Rifle,102,Barrel,VLA_AR.part_barrel_01_lasercutter,"激光切割器,1673x3伤害,72%精准度,2/s射速,3/每发"
 18,Vladof,Assault Rifle,101,Underbarrel,VLA_AR.part_underbarrel_07_secondbarrel_lasercutter,附属开火-额外枪管
-22,Vladof,SMG,2,Body,VLA_SM.part_body,"无属性变化，固有部件"
+22,Vladof,SMG,2,Body,VLA_SM.part_body,无属性变化，固有部件
 22,Vladof,SMG,3,Body Accessory,VLA_SM.part_body_a,-装填时间
 22,Vladof,SMG,4,Body Accessory,VLA_SM.part_body_b,+弹夹容量
 22,Vladof,SMG,5,Body Accessory,VLA_SM.part_body_c,+精准度
@@ -1917,9 +1941,9 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 22,Vladof,SMG,44,Grip,VLA_SM.part_grip_01,+伤害
 22,Vladof,SMG,45,Grip,VLA_SM.part_grip_02,+射速
 22,Vladof,SMG,46,Grip,VLA_SM.part_grip_03,-装填时间
-22,Vladof,SMG,47,Underbarrel,VLA_SM.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
+22,Vladof,SMG,47,Underbarrel,VLA_SM.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
 22,Vladof,SMG,48,Underbarrel,VLA_SM.part_underbarrel_04_atlas_ball,阿特拉斯追踪手雷
-22,Vladof,SMG,49,Underbarrel,VLA_SM.part_underbarrel_06_malswitch,"马里旺元素切换下挂"
+22,Vladof,SMG,49,Underbarrel,VLA_SM.part_underbarrel_06_malswitch,马里旺元素切换下挂
 22,Vladof,SMG,50,Underbarrel,VLA_SM.part_underbarrel_01_microrockets,附属开火-极速火箭
 22,Vladof,SMG,51,Underbarrel,VLA_SM.part_underbarrel_02_taser,附属开火-泰瑟枪
 22,Vladof,SMG,52,Underbarrel,VLA_SM.part_underbarrel_03_flamethrower,附属开火-火焰喷射器
@@ -1964,8 +1988,9 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 22,Vladof,SMG,99,Manufacturer Part,VLA_SM.part_mag_torgue_sticky_locust,托格粘性弹匣
 22,Vladof,SMG,102,Underbarrel,VLA_SM.part_underbarrel_uni_locust_rocket,附属开火-蝗虫火箭
 22,Vladof,SMG,103,Barrel,VLA_SM.part_barrel_locust,"寄生体,902伤害,76%精准度,10/s射速"
+22,Vladof,SMG,93,Barrel,VLA_SM.part_barrel_brickhouse,"砖屋,1562伤害,71%精准度,6.0/s射速"
 16,Vladof,Sniper,1,Barrel,VLA_SR.part_barrel_02_finnty,"芬妮迪XXX-L,937伤害,94%精准度,13.0/s射速,50%暴击伤害"
-16,Vladof,Sniper,2,Body,VLA_SR.part_body,"无属性变化，固有部件"
+16,Vladof,Sniper,2,Body,VLA_SR.part_body,无属性变化，固有部件
 16,Vladof,Sniper,3,Body Accessory,VLA_SR.part_body_d,无可见属性变化
 16,Vladof,Sniper,4,Body Accessory,VLA_SR.part_body_a,-装填时间
 16,Vladof,Sniper,5,Body Accessory,VLA_SR.part_body_b,+弹夹容量
@@ -2008,8 +2033,8 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 16,Vladof,Sniper,42,Grip,VLA_SR.part_grip_01,+伤害
 16,Vladof,Sniper,43,Grip,VLA_SR.part_grip_02,+射速
 16,Vladof,Sniper,44,Grip,VLA_SR.part_grip_03,-装填时间
-16,Vladof,Sniper,45,Underbarrel,VLA_SR.part_underbarrel_06_malswitch,"马里旺元素切换下挂"
-16,Vladof,Sniper,46,Underbarrel,VLA_SR.part_underbarrel_05_ammoswitcher,"代达洛斯弹药切换下挂"
+16,Vladof,Sniper,45,Underbarrel,VLA_SR.part_underbarrel_06_malswitch,马里旺元素切换下挂
+16,Vladof,Sniper,46,Underbarrel,VLA_SR.part_underbarrel_05_ammoswitcher,代达洛斯弹药切换下挂
 16,Vladof,Sniper,47,Underbarrel,VLA_SR.part_underbarrel_04_atlas_ball,阿特拉斯追踪手雷
 16,Vladof,Sniper,48,Underbarrel,VLA_SR.part_underbarrel_02_rocket,附属开火-大型火箭
 16,Vladof,Sniper,49,Underbarrel,VLA_SR.part_underbarrel_07_secondbarrel,附属开火-额外枪管
@@ -2047,3 +2072,4 @@ Manufacturer & Weapon Type ID,Manufacturer,Weapon Type,Part ID,Part Type,String,
 16,Vladof,Sniper,85,Manufacturer Part,VLA_SR.part_barrel_licensed_hyp,"亥伯龙护盾可见附件,无可见属性变化"
 16,Vladof,Sniper,86,Grip,VLA_SR.part_grip_05c_ted_jav,"泰迪尔装填修改组件:标枪,无可见属性变化"
 16,Vladof,Sniper,87,Barrel,VLA_SR.part_barrel_01_hemorrhage,"出血,2623伤害87%精准度3/s射速,+50暴击伤害"
+16,Vladof,Sniper,90,Barrel,VLA_SR.part_barrel_01_lightgun,"轻型枪械,1522伤害,87%精准度,4.0/s射速,+50%暴击伤害"

@@ -18,6 +18,7 @@
 255,Amon,normal,8,Cyborg,机械人
 255,Amon,normal,9,Outlaw,法外狂徒
 255,Amon,normal,65,Guardian,护卫者
+255,Amon,legendary,546,Damned,诅咒
 259,Harlowe,legendary,10,Bio Robot,生化机器
 259,Harlowe,legendary,11,Reactor,反应堆
 259,Harlowe,legendary,12,Generator,发电机
@@ -37,6 +38,7 @@
 259,Harlowe,normal,8,Radiologist,放射学家
 259,Harlowe,normal,9,Savant,博学者
 259,Harlowe,normal,220,Breaker,击破者
+259,Harlowe,legendary,548,Chirurgeon,外科医生
 256,Rafa,legendary,10,Dancer,舞者
 256,Rafa,legendary,11,Filantropo,慈善家
 256,Rafa,legendary,12,Instigator,煽动者
@@ -55,6 +57,7 @@
 256,Rafa,normal,7,Trooper,战士
 256,Rafa,normal,8,Tanker,坦克手
 256,Rafa,normal,9,Practitioner,实践者
+256,Rafa,legendary,546,Power-Puncher,强力拳击手
 254,Vex,legendary,10,Technomancer,科技术士
 254,Vex,legendary,11,Avatar,神通
 254,Vex,legendary,12,Undead Eye,亡灵之眼
@@ -74,6 +77,7 @@
 254,Vex,normal,8,Commander,指挥官
 254,Vex,normal,9,Hunter,猎人
 254,Vex,normal,221,Psion,灵能者
+254,Vex,legendary,545,Living Weapon,活体武器
 404,C4sh,legendary,11,Rounder,巡回者
 404,C4sh,legendary,12,Ludopath,嗜赌如命
 404,C4sh,legendary,13,Hotshot,能人
@@ -93,3 +97,4 @@
 404,C4sh,normal,8,Triggerbot,触发机器人
 404,C4sh,normal,9,Crack Shot,百发百中
 404,C4sh,normal,10,Pack Leader,头狼
+404,C4sh,legendary,545,Trainer,训练师
