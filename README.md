@@ -13,19 +13,10 @@ This tool allows you to modify character data, manage inventory items, unlock ga
 
 ---
 
-### What's New in v3.6.0
-- Added fully offline weapon stat resolution for damage, accuracy, fire rate, reload time, magazine size, DPS, critical damage, ammo cost, splash radius, ADS time, and equip time.
-- Added BL4-style weapon hover cards to the Items tab with weapon icons, live stats, and rarity-colored frames, including Pearlescent.
-- Reworked the Weapon Editor and Weapon Generator with searchable part catalogs, persistent weapon selection, live previews, responsive layouts, Pearlescent support, skin tools, and detailed part effect scales.
-- Reworked Class Mod skill and universal perk selection with skill-tree color filters, categorized search, descriptions, and clear selected states.
-- Added self-maintained unlock presets and improved save discovery, user ID detection, and malformed item handling.
-
----
-
 ### Features
 
 #### Save Management
-- Automatically scans game save directories.
+- Automatically scans Steam and Epic game save directories and detects the corresponding user ID.
 - Supports 64-bit ID decryption and encryption for Steam and Epic platforms.
 - Supports opening, saving, and "save as" for `.sav` files.
 - Automatically backs up original save files.
@@ -40,6 +31,7 @@ This tool allows you to modify character data, manage inventory items, unlock ga
 
 #### Unlocks & Presets
 Provides various one-click unlock functions:
+- Uses built-in offline preset data that can be updated alongside game content.
 - Remove map fog, discover all locations, unlock all safehouses.
 - Unlock all collectibles, complete all challenges, complete all achievements.
 - Skip story missions, skip all missions.
@@ -49,15 +41,18 @@ Provides various one-click unlock functions:
 
 #### Items & Backpack
 - View and manage items in your backpack.
+- Resolve item prefixes and names fully offline across all item types.
+- Resolve weapon stats fully offline, including damage, accuracy, fire rate, reload time, magazine size, DPS, critical damage, ammo cost, splash radius, ADS time, and equip time.
+- Display BL4-style weapon hover cards with weapon icons, live stats, and rarity-colored frames, including Pearlescent.
 - Set Item Flags (Common, Favorite, Junk, Groups 1-4).
 - Directly add items to backpack using Base85 codes or decoded format.
 - Read items from backpack for modification or copy their serial numbers.
 
 #### Gear Generation & Editing
 Features dedicated tabs for deep customization of various gear types:
-- **Weapon Editor**: Modify parts, skins, elements, anointments, etc., of existing weapons.
-- **Weapon Generator**: Generate custom weapons from scratch.
-- **Class Mod**: Customize class, rarity, skill bonuses, and passive perks.
+- **Weapon Editor**: Search existing weapons, inspect live stats, and modify parts, skins, elements, Pearlescent overrides, and other properties through filterable part catalogs.
+- **Weapon Generator**: Generate custom weapons from scratch with live stat previews, responsive part selectors, and detailed part effect scales.
+- **Class Mod**: Customize class, rarity, skill bonuses, and passive perks through searchable catalogs with class and skill-tree color filters, descriptions, and selected-state highlighting.
 - **Enhancement**: Customize manufacturer, rarity, and perk stacking.
 - **Grenade**: Customize manufacturer, level, rarity, perks, elements, fuses, etc.
 - **Shield**: Customize manufacturer, level, rarity, shield type (Energy/Armor), and perks.
