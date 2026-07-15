@@ -7,7 +7,9 @@ from functools import partial
 
 from core import bl4_functions as bl4f
 from core import b_encoder
+from core import item_display_resolver
 from core import resource_loader
+from tabs.qt_catalog_picker import CatalogPicker, ContainedWheelListWidget, ContainedWheelScrollArea
 
 class WeaponEditorTab(QtWidgets.QWidget):
     add_to_backpack_requested = QtCore.pyqtSignal(str, str)
@@ -16,39 +18,51 @@ class WeaponEditorTab(QtWidgets.QWidget):
     # Part type color mapping based on QSS stylesheet
     PART_TYPE_COLORS = {
         # English
-        "Barrel": "#90A4AE",
-        "Barrel Accessory": "#78909C",
-        "Body": "#A1887F",
-        "Body Accessory": "#8D6E63",
+        "Barrel": "#B0BEC5",
+        "Barrel Accessory": "#90A4AE",
+        "Body": "#BCAAA4",
+        "Body Accessory": "#A1887F",
         "Foregrip": "#9CCC65",
-        "Grip": "#7CB342",
+        "Grip": "#AED581",
         "Magazine": "#FFB300",
-        "Manufacturer Part": "#5C6BC0",
+        "Magazine Accessory": "#FFCA28",
+        "Manufacturer Part": "#9FA8DA",
         "Scope": "#4DD0E1",
         "Scope Accessory": "#26C6DA",
         "Stat Modifier": "#F06292",
-        "Underbarrel": "#8D6E63",
-        "Underbarrel Accessory": "#795548",
+        "Underbarrel": "#BCAAA4",
+        "Underbarrel Accessory": "#A1887F",
         "Elemental": "#EF9A9A",
+        "Element": "#EF9A9A",
+        "Element Switch": "#EF9A9A",
+        "Underbarrel Element Switch": "#EF9A9A",
+        "Pearl Elements": "#80CBC4",
+        "Pearl Stat": "#CE93D8",
         "Element": "#EF9A9A",
         "Skin": "#FFEA00",
         "Rarity": "#B39DDB",
         "Legendary": "#FF8A65",
         # Chinese
-        "枪管": "#90A4AE",
-        "枪管附件": "#78909C",
-        "枪身": "#A1887F",
-        "枪身附属": "#8D6E63",
+        "枪管": "#B0BEC5",
+        "枪管附件": "#90A4AE",
+        "枪身": "#BCAAA4",
+        "枪身附属": "#A1887F",
         "前握把": "#9CCC65",
-        "后握把/枪托": "#7CB342",
+        "后握把/枪托": "#AED581",
         "弹匣": "#FFB300",
-        "厂商授权部件": "#5C6BC0",
+        "弹匣附件": "#FFCA28",
+        "厂商授权部件": "#9FA8DA",
         "瞄准镜": "#4DD0E1",
         "瞄准镜附件": "#26C6DA",
         "属性修改组件": "#F06292",
-        "下挂": "#8D6E63",
-        "下挂附件": "#795548",
+        "下挂": "#BCAAA4",
+        "下挂附件": "#A1887F",
         "元素": "#EF9A9A",
+        "常规元素": "#EF9A9A",
+        "元素切换": "#EF9A9A",
+        "元素下挂切换": "#EF9A9A",
+        "珠光元素": "#80CBC4",
+        "珠光属性": "#CE93D8",
         "皮肤": "#FFEA00",
         "稀有度": "#B39DDB",
         "传奇": "#FF8A65",
@@ -134,13 +148,15 @@ class WeaponEditorTab(QtWidgets.QWidget):
         # Save current state
         current_decoded = self.serial_decoded_entry.text() if hasattr(self, 'serial_decoded_entry') else ""
         current_flag_idx = self.flag_combo.currentIndex() if hasattr(self, 'flag_combo') else 0
+        current_weapon_path = self.selected_weapon_path
         
         # Clean up internal state
         self.parts_data = []
         self.rarity_part = None
-        self.selected_weapon_path = None
+        self.selected_weapon_path = current_weapon_path
         
         self.create_widgets()
+        self.refresh_backpack_items()
         
         # Restore state
         if hasattr(self, 'flag_combo') and self.flag_combo.count() > current_flag_idx:
@@ -182,15 +198,23 @@ class WeaponEditorTab(QtWidgets.QWidget):
         bp_frame = QtWidgets.QFrame(); bp_frame.setObjectName("InnerFrame")
         bp_layout = QtWidgets.QVBoxLayout(bp_frame)
         bp_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("load_from_backpack")))
-        self.backpack_items_frame = QtWidgets.QScrollArea()
-        self.backpack_items_frame.setWidgetResizable(True)
-        self.backpack_items_frame.setFixedHeight(200)  # Fixed height to prevent flickering
-        bp_scroll_content = QtWidgets.QWidget()
-        self.backpack_items_layout = QtWidgets.QVBoxLayout(bp_scroll_content)
-        self.backpack_items_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
-        self.backpack_items_frame.setWidget(bp_scroll_content)
-        self.backpack_items_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("decrypt_save_to_show_weapons")))
-        bp_layout.addWidget(self.backpack_items_frame)
+        self.weapon_search = QtWidgets.QLineEdit()
+        self.weapon_search.setClearButtonEnabled(True)
+        self.weapon_search.setPlaceholderText("搜索名称、厂商、类型、等级或槽位" if self.current_lang == "zh-CN" else "Search name, manufacturer, type, level, or slot")
+        self.weapon_search.textChanged.connect(self._filter_backpack_items)
+        bp_layout.addWidget(self.weapon_search)
+        self.backpack_items_list = ContainedWheelListWidget()
+        self.backpack_items_list.setObjectName("weaponBrowser")
+        self.backpack_items_list.setMinimumHeight(220)
+        self.backpack_items_list.setMaximumHeight(300)
+        self.backpack_items_list.itemActivated.connect(lambda item: self.load_weapon_data(item.data(QtCore.Qt.ItemDataRole.UserRole)))
+        self.backpack_items_list.itemClicked.connect(lambda item: self.load_weapon_data(item.data(QtCore.Qt.ItemDataRole.UserRole)))
+        bp_layout.addWidget(self.backpack_items_list)
+        self.selected_weapon_summary = QtWidgets.QLabel()
+        self.selected_weapon_summary.setObjectName("selectedWeaponSummary")
+        self.selected_weapon_summary.setWordWrap(True)
+        self._update_selected_weapon_summary()
+        bp_layout.addWidget(self.selected_weapon_summary)
         layout.addWidget(bp_frame, 0, 0, QtCore.Qt.AlignmentFlag.AlignTop)
         
         s_frame = QtWidgets.QFrame(); s_frame.setObjectName("InnerFrame")
@@ -255,6 +279,25 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.weapon_name_label = QtWidgets.QLabel(self.weapon_name_label_str)
         self.weapon_name_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         editor_layout.addWidget(self.weapon_name_label, 2, 0, 1, 5)
+
+        stats_layout = QtWidgets.QGridLayout()
+        stats_loc = self.ui_localization.get('stats', {})
+        self.weapon_stat_value_labels = {}
+        for index, key in enumerate(item_display_resolver.WEAPON_STAT_KEYS):
+            row, column = divmod(index, 4)
+            title_row = row * 2
+            title = QtWidgets.QLabel(stats_loc.get(key, key.replace('_', ' ').title()))
+            title.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+            title.setWordWrap(True)
+            value = QtWidgets.QLabel("—")
+            value.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+            value.setMinimumWidth(72)
+            value.setObjectName("WeaponStatValue")
+            stats_layout.addWidget(title, title_row, column)
+            stats_layout.addWidget(value, title_row + 1, column)
+            stats_layout.setColumnStretch(column, 1)
+            self.weapon_stat_value_labels[key] = value
+        editor_layout.addLayout(stats_layout, 3, 0, 1, 5)
         layout.addWidget(editor_frame, 3, 0)
         
         parts_frame = QtWidgets.QFrame(); parts_frame.setObjectName("InnerFrame")
@@ -264,10 +307,16 @@ class WeaponEditorTab(QtWidgets.QWidget):
         parts_header_layout = QtWidgets.QGridLayout(parts_header_frame)
         parts_header_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("weapon_parts")), 0, 0, QtCore.Qt.AlignmentFlag.AlignLeft)
         parts_header_layout.setColumnStretch(0, 1)
-        self.refresh_parts_btn = QtWidgets.QPushButton("🔄"); self.refresh_parts_btn.setFixedWidth(30)
+        self.refresh_parts_btn = QtWidgets.QPushButton()
+        self.refresh_parts_btn.setObjectName("PartActionButton")
+        self.refresh_parts_btn.setIcon(self.style().standardIcon(QtWidgets.QStyle.StandardPixmap.SP_BrowserReload))
+        self.refresh_parts_btn.setFixedSize(34, 34)
+        self.refresh_parts_btn.setToolTip("刷新部件" if self.current_lang == "zh-CN" else "Refresh parts")
         parts_header_layout.addWidget(self.refresh_parts_btn, 0, 1, QtCore.Qt.AlignmentFlag.AlignRight)
-        self.add_part_btn = QtWidgets.QPushButton(self.get_localized_string("add_part")); self.add_part_btn.setFixedWidth(100)
+        self.add_part_btn = QtWidgets.QPushButton(self.get_localized_string("add_part")); self.add_part_btn.setMinimumWidth(100)
         parts_header_layout.addWidget(self.add_part_btn, 0, 2, QtCore.Qt.AlignmentFlag.AlignRight)
+        self.add_skin_btn = QtWidgets.QPushButton(self.get_localized_string("add_skin")); self.add_skin_btn.setMinimumWidth(100)
+        parts_header_layout.addWidget(self.add_skin_btn, 0, 3, QtCore.Qt.AlignmentFlag.AlignRight)
         parts_layout.addWidget(parts_header_frame)
         
         # Parts list container - no independent scroll, uses page scroll
@@ -282,6 +331,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         
         self.serial_b85_entry.textChanged.connect(self.handle_b85_change)
         self.serial_decoded_entry.textChanged.connect(self.handle_decoded_change)
+        self.serial_decoded_entry.textChanged.connect(self._update_weapon_stats)
         self.rarity_combo.currentIndexChanged.connect(self.update_decoded_from_ui)
         self.level_entry.textChanged.connect(self.update_decoded_from_ui)
         self.seed_entry.textChanged.connect(self.update_decoded_from_ui)
@@ -290,6 +340,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.add_to_backpack_btn.clicked.connect(self.add_new_weapon_to_backpack)
         self.refresh_parts_btn.clicked.connect(self.force_refresh_parts)
         self.add_part_btn.clicked.connect(self.open_add_part_window)
+        self.add_skin_btn.clicked.connect(lambda: self.open_select_skin_window(None))
 
     def get_localized_string(self, key, default=''):
         # Check UI localization first (flattened check or mapped)
@@ -320,6 +371,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
             "update_weapon": self.ui_localization.get('buttons', {}).get('update_weapon'),
             "add_to_backpack": self.ui_localization.get('buttons', {}).get('add_to_backpack'),
             "add_part": self.ui_localization.get('buttons', {}).get('add_part'),
+            "add_skin": self.ui_localization.get('buttons', {}).get('add_skin'),
             "confirm_add": self.ui_localization.get('buttons', {}).get('confirm_add'),
             
             # Dialogs/Messages
@@ -398,7 +450,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
             self.serial_b85_entry.setText(new_b85)
             self.serial_b85_entry.blockSignals(False)
 
-    def _get_rarity_and_weapon_name(self, parts, m_id):
+    def _get_rarity_and_weapon_name(self, parts, m_id, decoded_str=""):
         rarity, weapon_name, rarity_part, display_rarity, remaining_parts = "Unknown", "Unknown", None, "Unknown", list(parts)
         for p in parts:
             if not isinstance(p, dict) or p.get('type') != 'simple':
@@ -408,9 +460,9 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 continue
             part_details = self.all_weapon_parts_df[(self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == m_id) & (self.all_weapon_parts_df['Part ID'] == part_id)]
             if not part_details.empty and part_details.iloc[0]['Part Type'] == 'Barrel':
-                stat_val = str(part_details.iloc[0]['Stat']) if pd.notna(part_details.iloc[0]['Stat']) else ''
-                if stat_val:
-                    weapon_name = stat_val.split(',')[0].strip()
+                part_name = item_display_resolver.weapon_part_name(m_id, part_id, self.current_lang, part_details.iloc[0])
+                if part_name:
+                    weapon_name = part_name
                     if weapon_name.endswith(' Barrel'):
                         weapon_name = weapon_name[:-len(' Barrel')]
                     break
@@ -419,10 +471,36 @@ class WeaponEditorTab(QtWidgets.QWidget):
             rarity_info = self.weapon_rarity_df[(self.weapon_rarity_df['Manufacturer & Weapon Type ID'] == m_id) & (self.weapon_rarity_df['Part ID'] == simple_parts[0]['id'] )]
             if not rarity_info.empty:
                 details = rarity_info.iloc[0]; rarity, desc = details['Stat'], details[self.rarity_desc_col]
-                display_rarity = f"{rarity} - {desc}" if rarity == "Legendary" and pd.notna(desc) and desc else rarity
+                display_rarity = f"{rarity} - {desc}" if rarity in {"Legendary", "Pearl"} and pd.notna(desc) and desc else rarity
                 rarity_part = simple_parts[0]
         if not rarity_part: display_rarity = rarity = "Legendary"
+        pearl_ids = set(range(51, 61))
+        if any(
+            p.get('id') == 1
+            and (
+                p.get('sub_id') in pearl_ids
+                or bool(pearl_ids.intersection(p.get('sub_ids', [])))
+            )
+            for p in parts
+            if isinstance(p, dict) and p.get('type') in {'elemental', 'group'}
+        ):
+            suffix = display_rarity.split(' - ', 1)[1] if ' - ' in display_rarity else ''
+            rarity = "Pearl"
+            display_rarity = f"Pearl - {suffix}" if suffix else "Pearl"
         if rarity_part: remaining_parts = [p for p in remaining_parts if p is not rarity_part]
+        if decoded_str:
+            m_rows = self.all_weapon_parts_df[self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == m_id]
+            if not m_rows.empty:
+                m_info = m_rows.iloc[0]
+                display = item_display_resolver.resolve_item_display(
+                    m_id,
+                    str(m_info['Manufacturer']),
+                    str(m_info['Weapon Type']),
+                    decoded_str,
+                    self.current_lang,
+                )
+                if display.get("display_source") != "fallback" and display.get("display_name"):
+                    weapon_name = display["display_name"]
         return display_rarity, weapon_name, rarity_part, remaining_parts
 
     def _parse_component_string(self, component_str):
@@ -446,6 +524,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.serial_decoded_entry.clear(); self.manufacturer_entry.clear(); self.item_type_entry.clear()
         self.rarity_combo.setCurrentIndex(-1); self.level_entry.clear(); self.seed_entry.clear()
         self.weapon_name_label.setText(self.weapon_name_label_str)
+        self._update_weapon_stats("")
 
         while self.parts_list_layout.count():
             item = self.parts_list_layout.takeAt(0)
@@ -460,6 +539,8 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.parts_list_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("parse_serial_to_show_parts")))
         self.serial_b85_entry.setReadOnly(False); self.update_weapon_btn.setEnabled(False)
         self.selected_weapon_path, self.parts_data, self.rarity_part = None, [], None
+        self._select_current_backpack_item()
+        self._update_selected_weapon_summary()
         self.is_handling_change = False
 
     def update_decoded_from_ui(self):
@@ -473,7 +554,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 seed_parts = parts[1].split(','); seed_parts[1] = f" {self.seed_entry.text()}"; parts[1] = ",".join(seed_parts)
                 updated_str = "|".join(parts)
 
-            if self.rarity_part and "Legendary" not in self.rarity_combo.currentText():
+            if self.rarity_part and self.rarity_combo.isEnabled():
                 rarity_map = {self.get_localized_string(k): k for k in ["Common", "Uncommon", "Rare", "Epic"]}
                 if rarity_en := rarity_map.get(self.rarity_combo.currentText()):
                     m_id = int(updated_str.split('||')[0].strip().split('|')[0].strip().split(',')[0])
@@ -488,8 +569,12 @@ class WeaponEditorTab(QtWidgets.QWidget):
 
     def randomize_seed(self): self.seed_entry.setText(str(random.randint(100, 9999)))
     def load_weapon_data(self, weapon_data):
+        if not weapon_data:
+            return
         self.main_app.log(f"Loading weapon: {weapon_data.get('name')}")
         self.selected_weapon_path = weapon_data.get("original_path")
+        self._select_current_backpack_item()
+        self._update_selected_weapon_summary(weapon_data)
         self.is_handling_change = True
         self.serial_b85_entry.setText(weapon_data.get('serial', ''))
         decoded_str = weapon_data.get('decoded_full', '')
@@ -513,24 +598,32 @@ class WeaponEditorTab(QtWidgets.QWidget):
             self.seed_entry.setText(sections[1].strip().split(',')[1].strip() if len(sections) > 1 and len(sections[1].strip().split(',')) > 1 else "")
             
             temp_parts = self._parse_component_string(component_part)
-            display_rarity, weapon_name, self.rarity_part, remaining_parts = self._get_rarity_and_weapon_name(temp_parts, m_id)
+            display_rarity, weapon_name, self.rarity_part, remaining_parts = self._get_rarity_and_weapon_name(temp_parts, m_id, decoded_str)
             
             rarity_parts = display_rarity.split(' - ')
             base_rarity, localized_base = rarity_parts[0], self.get_localized_string(rarity_parts[0])
             final_display_rarity = f"{localized_base} - {self.get_localized_string(rarity_parts[1], rarity_parts[1])}" if len(rarity_parts) > 1 else localized_base
             
-            if base_rarity == "Legendary":
+            if base_rarity in {"Legendary", "Pearl"}:
                 self.rarity_combo.setEditable(True); self.rarity_combo.lineEdit().setText(final_display_rarity); self.rarity_combo.setEnabled(False)
             else:
                 self.rarity_combo.setEditable(False); self.rarity_combo.setEnabled(True)
                 if (index := self.rarity_combo.findText(localized_base)) != -1: self.rarity_combo.setCurrentIndex(index)
 
             self.weapon_name_label.setText(f"{self.weapon_name_label_str} {weapon_name}")
+            self._update_weapon_stats(decoded_str)
             self.parts_data = remaining_parts; self.display_parts(m_id)
             self.is_handling_change = False
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, self.get_localized_string("parse_error"), f"{self.get_localized_string('parse_weapon_error')}: {e}")
             self.main_app.log(f"Error parsing weapon: {e}"); self.clear_all_fields()
+
+    def _update_weapon_stats(self, decoded_str):
+        if not hasattr(self, 'weapon_stat_value_labels'):
+            return
+        stats = item_display_resolver.resolve_weapon_stats(decoded_str) if decoded_str else {}
+        for key, label in self.weapon_stat_value_labels.items():
+            label.setText(item_display_resolver.format_weapon_stat(key, stats.get(key), self.current_lang) or "—")
 
     def display_parts(self, manufacturer_id):
         while self.parts_list_layout.count():
@@ -552,48 +645,108 @@ class WeaponEditorTab(QtWidgets.QWidget):
 
     def _create_simple_part_frame(self, part_info, m_id, index):
         frame = QtWidgets.QFrame(); frame.setObjectName('PartFrame')
-        layout = QtWidgets.QGridLayout(frame); layout.setColumnStretch(2, 1)
-        part_id = part_info.get('id'); info = {'type': "未知", 'str': "错误", 'stat': ""}
+        layout = QtWidgets.QVBoxLayout(frame); layout.setSpacing(5)
+        part_id = part_info.get('id'); info = {'type': "未知", 'str': "", 'stat': "无属性变化"}
         is_skin, is_elemental = (part_info.get('type') == 'skin'), (part_info.get('type') == 'elemental')
         if is_skin:
-            if not (d := self.skin_df[self.skin_df['Skin_ID'].str.lower() == str(part_id).lower()]).empty: info.update({'type': self.get_localized_string("Skin"), 'str': d.iloc[0][self.skin_stat_col]})
+            if not (d := self.skin_df[self.skin_df['Skin_ID'].str.lower() == str(part_id).lower()]).empty: info.update({'type': self.get_localized_string("Skin"), 'str': d.iloc[0][self.skin_stat_col], 'stat': "外观配件" if self.current_lang == "zh-CN" else "Cosmetic part"})
         elif is_elemental:
-            if not (d := self.elemental_df[self.elemental_df['Part_ID'] == part_info['sub_id']]).empty: info.update({'type': self.get_localized_string("Elemental"), 'str': d.iloc[0][self.elemental_stat_col]})
+            if not (d := self.elemental_df[self.elemental_df['Part_ID'] == part_info['sub_id']]).empty:
+                row = d.iloc[0]
+                description = item_display_resolver.format_weapon_part_description(
+                    1, str(part_info['sub_id']), self.serial_decoded_entry.text(), self.current_lang, "Elemental"
+                )
+                no_change = description in {"无属性变化", "No stat changes"}
+                info.update({
+                    'type': self.get_localized_string(self._elemental_part_type(row)),
+                    'str': row[self.elemental_stat_col],
+                    'stat': ("元素配置" if self.current_lang == "zh-CN" else "Element configuration") if no_change else description,
+                })
         else:
             d = self.all_weapon_parts_df[(self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == m_id) & (self.all_weapon_parts_df['Part ID'] == part_id)]
-            if not d.empty: info.update({'type': self.get_localized_string(d.iloc[0]['Part Type']), 'str': d.iloc[0]['String'], 'stat': d.iloc[0]['Stat']})
+            if not d.empty:
+                row = d.iloc[0]
+                name = item_display_resolver.weapon_part_name(m_id, part_id, self.current_lang, row)
+                description = item_display_resolver.format_weapon_part_description(
+                    m_id, part_id, self.serial_decoded_entry.text(), self.current_lang, str(row['Part Type'])
+                )
+                info.update({
+                    'type': self.get_localized_string(row['Part Type']),
+                    'str': name or (("未命名枪管" if self.current_lang == "zh-CN" else "Unnamed Barrel") if str(row['Part Type']) == "Barrel" else ""),
+                    'stat': description,
+                })
         display_text = f"  {part_id}  " if not is_elemental else f"  {part_info['id']}:{part_info['sub_id']}  "
-        id_label = QtWidgets.QLabel(display_text); id_label.setStyleSheet("background-color: #4a4a4a; border-radius: 5px; padding: 2px;")
+        header = QtWidgets.QHBoxLayout()
+        id_label = QtWidgets.QLabel(display_text); id_label.setObjectName("PartIdBadge")
         type_color = self.PART_TYPE_COLORS.get(info['type'], "#e0e0e0")
-        type_label = QtWidgets.QLabel(info['type']); type_label.setStyleSheet(f"color: {type_color}; font-weight: bold;")
-        layout.addWidget(id_label, 0, 0); layout.addWidget(type_label, 0, 1)
-        layout.addWidget(QtWidgets.QLabel(info['str']), 0, 2); layout.addWidget(QtWidgets.QLabel(str(info['stat']) if pd.notna(info['stat']) else ""), 0, 3)
-        layout.addWidget(self._add_action_buttons(index, is_skin), 0, 4, QtCore.Qt.AlignmentFlag.AlignRight)
+        type_label = QtWidgets.QLabel(info['type']); type_label.setObjectName("PartTypeBadge"); type_label.setStyleSheet(f"color: {type_color}; border-color: {type_color};")
+        header.addWidget(type_label)
+        if info['str']:
+            name_label = QtWidgets.QLabel(str(info['str'])); name_label.setObjectName("PartName"); name_label.setWordWrap(True)
+            header.addWidget(name_label, 1)
+        else:
+            header.addStretch(1)
+        header.addWidget(id_label); header.addWidget(self._add_action_buttons(index, is_skin))
+        description_label = QtWidgets.QLabel(str(info['stat']) if pd.notna(info['stat']) else "")
+        description_label.setObjectName("PartDescription"); description_label.setWordWrap(True)
+        layout.addLayout(header); layout.addWidget(description_label)
         return frame
 
     def _create_collapsible_part_frame(self, part_info, index):
         container = QtWidgets.QFrame(); container.setObjectName('PartGroupFrame')
         container_layout = QtWidgets.QVBoxLayout(container); container_layout.setSpacing(0); container_layout.setContentsMargins(0,0,0,0)
-        header, content = QtWidgets.QFrame(), QtWidgets.QFrame(); content.setVisible(False)
+        header, content = QtWidgets.QFrame(), QtWidgets.QFrame(); content.setVisible(True)
         header_layout, content_layout = QtWidgets.QGridLayout(header), QtWidgets.QVBoxLayout(content)
-        group_id = part_info.get('id', 0); mfg_name, is_known = "未知厂商", False
-        try:
-            mfg_name = self.get_localized_string(self.all_weapon_parts_df[self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == group_id].iloc[0]['Manufacturer']); is_known = True
-        except (IndexError, KeyError): pass
-        toggle_btn = QtWidgets.QPushButton("▶"); toggle_btn.setFixedSize(24, 24)
+        group_id = part_info.get('id', 0); mfg_name = "未知厂商"
+        if group_id != 1:
+            try:
+                mfg_name = self.get_localized_string(self.all_weapon_parts_df[self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == group_id].iloc[0]['Manufacturer'])
+            except (IndexError, KeyError):
+                pass
+        toggle_btn = QtWidgets.QPushButton("▾"); toggle_btn.setObjectName("PartActionButton"); toggle_btn.setFixedSize(28, 28)
         toggle_btn.clicked.connect(lambda checked, b=toggle_btn, c=content: self._toggle_group_visibility(b, c))
-        header_layout.addWidget(toggle_btn, 0, 0); header_layout.addWidget(QtWidgets.QLabel(f"折叠组: {part_info['raw']} {'(未知)' if not is_known else ''}"), 0, 1)
+        if group_id == 1:
+            group_title = f"元素配置组 · {len(part_info.get('sub_ids', []))} 个配件" if self.current_lang == "zh-CN" else f"Element Configuration Group · {len(part_info.get('sub_ids', []))} parts"
+        else:
+            group_title = f"授权配件组 · {mfg_name} · {len(part_info.get('sub_ids', []))} 个配件" if self.current_lang == "zh-CN" else f"Licensed Part Group · {mfg_name} · {len(part_info.get('sub_ids', []))} parts"
+        title_label = QtWidgets.QLabel(group_title); title_label.setObjectName("PartName")
+        header_layout.addWidget(toggle_btn, 0, 0); header_layout.addWidget(title_label, 0, 1)
         header_layout.setColumnStretch(1, 1)
         action_buttons = self._add_action_buttons(index)
         header_layout.addWidget(action_buttons, 0, 2, QtCore.Qt.AlignmentFlag.AlignRight)
         for sub_id in part_info.get('sub_ids', []):
-            sub_frame = QtWidgets.QFrame(); sub_layout = QtWidgets.QGridLayout(sub_frame); sub_layout.setColumnStretch(2, 1)
-            sub_layout.addWidget(QtWidgets.QLabel(f"  {sub_id}  "), 0, 0)
-            p_type, p_str, p_stat = "未知", "无法解析", ""
-            d = self.all_weapon_parts_df[(self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == group_id) & (self.all_weapon_parts_df['Part ID'] == sub_id)]
-            if not d.empty: p_type, p_str, p_stat = self.get_localized_string(d.iloc[0]['Part Type']), d.iloc[0]['String'], d.iloc[0]['Stat']
-            sub_layout.addWidget(QtWidgets.QLabel(f"{mfg_name} - {p_type}"), 0, 1); sub_layout.addWidget(QtWidgets.QLabel(p_str), 0, 2)
-            sub_layout.addWidget(QtWidgets.QLabel(str(p_stat) if pd.notna(p_stat) else ""), 0, 3)
+            sub_frame = QtWidgets.QFrame(); sub_frame.setObjectName("PartSubFrame")
+            sub_layout = QtWidgets.QGridLayout(sub_frame); sub_layout.setColumnStretch(1, 1)
+            id_label = QtWidgets.QLabel(f"  {sub_id}  "); id_label.setObjectName("PartIdBadge")
+            sub_layout.addWidget(id_label, 0, 0)
+            p_type, p_str, p_stat = "未知", "", "无属性变化"
+            if group_id == 1:
+                d = self.elemental_df[
+                    (self.elemental_df['Elemental_ID'] == group_id)
+                    & (self.elemental_df['Part_ID'] == sub_id)
+                ]
+                if not d.empty:
+                    row = d.iloc[0]
+                    description = item_display_resolver.format_weapon_part_description(
+                        group_id, str(sub_id), self.serial_decoded_entry.text(), self.current_lang, "Elemental"
+                    )
+                    p_type = self.get_localized_string(self._elemental_part_type(row))
+                    p_str = str(row[self.elemental_stat_col])
+                    p_stat = ("元素配置" if self.current_lang == "zh-CN" else "Element configuration") if description in {"无属性变化", "No stat changes"} else description
+            else:
+                d = self.all_weapon_parts_df[(self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == group_id) & (self.all_weapon_parts_df['Part ID'] == sub_id)]
+                if not d.empty:
+                    row = d.iloc[0]
+                    name = item_display_resolver.weapon_part_name(group_id, sub_id, self.current_lang, row)
+                    description = item_display_resolver.format_weapon_part_description(
+                        group_id, sub_id, self.serial_decoded_entry.text(), self.current_lang, str(row['Part Type'])
+                    )
+                    p_type = self.get_localized_string(row['Part Type'])
+                    p_str = name or (("未命名枪管" if self.current_lang == "zh-CN" else "Unnamed Barrel") if str(row['Part Type']) == "Barrel" else "")
+                    p_stat = description
+            name_label = QtWidgets.QLabel(" · ".join(value for value in (p_type, p_str) if value)); name_label.setObjectName("PartName"); name_label.setWordWrap(True)
+            stat_label = QtWidgets.QLabel(str(p_stat)); stat_label.setObjectName("PartDescription"); stat_label.setWordWrap(True)
+            sub_layout.addWidget(name_label, 0, 1); sub_layout.addWidget(stat_label, 1, 1)
             content_layout.addWidget(sub_frame)
         content.setLayout(content_layout); container_layout.addWidget(header); container_layout.addWidget(content)
         return container
@@ -604,11 +757,14 @@ class WeaponEditorTab(QtWidgets.QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(5)
         if is_skin:
-            edit_btn = QtWidgets.QPushButton("🖌️"); edit_btn.setFixedWidth(35); edit_btn.clicked.connect(partial(self.open_select_skin_window, index)); layout.addWidget(edit_btn)
+            edit_btn = QtWidgets.QPushButton("✎"); edit_btn.setToolTip("更换皮肤" if self.current_lang == "zh-CN" else "Change skin"); edit_btn.clicked.connect(partial(self.open_select_skin_window, index)); layout.addWidget(edit_btn)
         else:
-            up_btn = QtWidgets.QPushButton("⬆"); up_btn.setFixedWidth(35); up_btn.clicked.connect(partial(self.move_part, index, -1)); layout.addWidget(up_btn)
-            down_btn = QtWidgets.QPushButton("⬇"); down_btn.setFixedWidth(35); down_btn.clicked.connect(partial(self.move_part, index, 1)); layout.addWidget(down_btn)
-        del_btn = QtWidgets.QPushButton("❌"); del_btn.setFixedWidth(35); del_btn.setStyleSheet("background-color: firebrick;"); del_btn.clicked.connect(partial(self.delete_part, index)); layout.addWidget(del_btn)
+            up_btn = QtWidgets.QPushButton("↑"); up_btn.setToolTip("上移" if self.current_lang == "zh-CN" else "Move up"); up_btn.clicked.connect(partial(self.move_part, index, -1)); layout.addWidget(up_btn)
+            down_btn = QtWidgets.QPushButton("↓"); down_btn.setToolTip("下移" if self.current_lang == "zh-CN" else "Move down"); down_btn.clicked.connect(partial(self.move_part, index, 1)); layout.addWidget(down_btn)
+        del_btn = QtWidgets.QPushButton("✕"); del_btn.setObjectName("PartDeleteButton"); del_btn.setToolTip("移除" if self.current_lang == "zh-CN" else "Remove"); del_btn.clicked.connect(partial(self.delete_part, index)); layout.addWidget(del_btn)
+        for button in frame.findChildren(QtWidgets.QPushButton):
+            if button.objectName() != "PartDeleteButton": button.setObjectName("PartActionButton")
+            button.setFixedSize(30, 30)
         return frame
 
     def move_part(self, index, direction):
@@ -638,52 +794,122 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.main_app.log("Forcing parts list refresh..."); self.parse_and_display_weapon(decoded_str)
         QtWidgets.QMessageBox.information(self, self.get_localized_string("success"), self.get_localized_string("parts_refresh_success"))
 
+    def _weapon_browser_row(self, title, detail, decoded_str):
+        row = QtWidgets.QWidget()
+        row.setObjectName("WeaponBrowserRow")
+        row_layout = QtWidgets.QHBoxLayout(row)
+        row_layout.setContentsMargins(10, 5, 10, 5)
+        row_layout.setSpacing(12)
+
+        text_layout = QtWidgets.QVBoxLayout()
+        text_layout.setContentsMargins(0, 0, 0, 0)
+        text_layout.setSpacing(2)
+        name_label = QtWidgets.QLabel(title)
+        name_label.setObjectName("WeaponBrowserName")
+        name_label.setToolTip(title)
+        name_label.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
+        detail_label = QtWidgets.QLabel(detail)
+        detail_label.setObjectName("WeaponBrowserMeta")
+        text_layout.addWidget(name_label)
+        text_layout.addWidget(detail_label)
+        row_layout.addLayout(text_layout, 1)
+
+        stats = item_display_resolver.resolve_weapon_stats(decoded_str) if decoded_str else {}
+        stat_titles = self.ui_localization.get('stats', {})
+        for key in ("damage", "accuracy", "fire_rate", "reload_time", "magazine"):
+            stat_layout = QtWidgets.QVBoxLayout()
+            stat_layout.setContentsMargins(0, 0, 0, 0)
+            stat_layout.setSpacing(1)
+            title_label = QtWidgets.QLabel(stat_titles.get(key, key.replace('_', ' ').title()))
+            title_label.setObjectName("WeaponBrowserStatTitle")
+            title_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+            value = item_display_resolver.format_weapon_stat(key, stats.get(key), self.current_lang) or "—"
+            value_label = QtWidgets.QLabel(value)
+            value_label.setObjectName("WeaponBrowserStatValue")
+            value_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+            value_label.setMinimumWidth(66)
+            stat_layout.addWidget(title_label)
+            stat_layout.addWidget(value_label)
+            row_layout.addLayout(stat_layout)
+        return row
+
     def refresh_backpack_items(self):
-        while self.backpack_items_layout.count():
-            item = self.backpack_items_layout.takeAt(0)
-            if (widget := item.widget()): widget.deleteLater()
-            elif (layout := item.layout()):
-                while layout.count():
-                    sub_item = layout.takeAt(0)
-                    if (sub_widget := sub_item.widget()): sub_widget.deleteLater()
-        
+        self.backpack_items_list.clear()
         if self.main_app.controller.yaml_obj is None or not (items := self.main_app.controller.get_all_items()):
-            self.backpack_items_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("decrypt_save_to_show_weapons"))); return
+            self.backpack_items_list.addItem(self.get_localized_string("decrypt_save_to_show_weapons"))
+            self.backpack_items_list.setEnabled(False)
+            return
         
         weapon_types = {"Pistol", "Shotgun", "SMG", "Assault Rifle", "Sniper"}
         filtered = [i for i in items if i.get("type_en") in weapon_types and "Backpack" in i.get("container", "")]
         if not filtered:
-            self.backpack_items_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("no_weapons_in_backpack"))); return
+            self.backpack_items_list.addItem(self.get_localized_string("no_weapons_in_backpack"))
+            self.backpack_items_list.setEnabled(False)
+            return
+
+        self.backpack_items_list.setEnabled(True)
 
         for weapon in filtered:
             try:
-                self.main_app.log(f"开始处理背包中的武器，序列号: {weapon.get('serial', 'N/A')}")
                 header, component = weapon.get('decoded_full', '').split('||', 1)
-                self.main_app.log("  - 已成功分离头部和组件")
-                
                 m_id = int(header.strip().split('|')[0].strip().split(',')[0])
-                self.main_app.log(f"  - 已解析制造商ID: {m_id}")
-
                 parsed_components = self._parse_component_string(component)
-                self.main_app.log(f"  - 已解析出 {len(parsed_components)} 个组件")
-
-                _, name, _, _ = self._get_rarity_and_weapon_name(parsed_components, m_id)
-                self.main_app.log(f"  - 已获取武器名称: {name}")
-                
+                _, name, _, _ = self._get_rarity_and_weapon_name(parsed_components, m_id, weapon.get('decoded_full', ''))
                 w_name = self.get_localized_string(name, name)
                 disp_name = f"{weapon.get('manufacturer', '未知')} {weapon.get('type', '未知物品')} ({w_name})" if w_name not in ["N/A", "Unknown", "未知"] else f"{weapon.get('manufacturer', '未知')} {weapon.get('type', '未知物品')}"
-                btn_text = f"{disp_name} - {self.get_localized_string('level_label')}: {weapon.get('level', 'N/A')} - {self.get_localized_string('slot_label')}: {weapon.get('slot', 'N/A').replace('slot_', '')}"
-                btn = QtWidgets.QPushButton(btn_text)
-                btn.clicked.connect(partial(self.load_weapon_data, weapon))
-                self.backpack_items_layout.addWidget(btn)
-                self.main_app.log(f"  - 成功创建并添加武器按钮: {btn_text}")
+                detail = f"{self.get_localized_string('level_label')} {weapon.get('level', 'N/A')}  ·  {self.get_localized_string('slot_label')} {weapon.get('slot', 'N/A').replace('slot_', '')}"
+                item = QtWidgets.QListWidgetItem()
+                item.setData(QtCore.Qt.ItemDataRole.UserRole, weapon)
+                item.setData(QtCore.Qt.ItemDataRole.UserRole + 1, f"{weapon.get('name', '')} {disp_name} {detail}".lower())
+                item.setToolTip(f"{disp_name} · {detail}")
+                item.setSizeHint(QtCore.QSize(0, 62))
+                self.backpack_items_list.addItem(item)
+                self.backpack_items_list.setItemWidget(
+                    item,
+                    self._weapon_browser_row(disp_name, detail, weapon.get('decoded_full', '')),
+                )
 
             except Exception as e:
                 self.main_app.log(f"在处理背包武器时发生严重错误。序列号: {weapon.get('serial', '未知')}，错误: {e}")
-                # 创建一个错误按钮以提供反馈
-                error_btn = QtWidgets.QPushButton(f"错误: 无法加载序列号为 {weapon.get('serial', '未知')} 的武器")
-                error_btn.setStyleSheet("background-color: #581b1b;")
-                self.backpack_items_layout.addWidget(error_btn)
+        self._filter_backpack_items(self.weapon_search.text())
+        self._select_current_backpack_item()
+
+    def _filter_backpack_items(self, query):
+        query = query.strip().lower()
+        for row in range(self.backpack_items_list.count()):
+            item = self.backpack_items_list.item(row)
+            search_text = item.data(QtCore.Qt.ItemDataRole.UserRole + 1) or item.text().lower()
+            item.setHidden(bool(query and query not in search_text))
+
+    def _select_current_backpack_item(self):
+        if not hasattr(self, "backpack_items_list"):
+            return
+        self.backpack_items_list.clearSelection()
+        for row in range(self.backpack_items_list.count()):
+            item = self.backpack_items_list.item(row)
+            weapon = item.data(QtCore.Qt.ItemDataRole.UserRole)
+            if weapon and weapon.get("original_path") == self.selected_weapon_path:
+                self.backpack_items_list.setCurrentItem(item)
+                self.backpack_items_list.scrollToItem(item, QtWidgets.QAbstractItemView.ScrollHint.PositionAtCenter)
+                return
+
+    def _update_selected_weapon_summary(self, weapon=None):
+        if not hasattr(self, "selected_weapon_summary"):
+            return
+        if weapon is None and hasattr(self, "backpack_items_list"):
+            for row in range(self.backpack_items_list.count()):
+                candidate = self.backpack_items_list.item(row).data(QtCore.Qt.ItemDataRole.UserRole)
+                if candidate and candidate.get("original_path") == self.selected_weapon_path:
+                    weapon = candidate
+                    break
+        if not weapon:
+            self.selected_weapon_summary.setText("当前未选择背包武器" if self.current_lang == "zh-CN" else "No backpack weapon selected")
+            return
+        name = weapon.get("name") or weapon.get("manufacturer") or "Weapon"
+        self.selected_weapon_summary.setText(
+            f"当前选择 · {name} · Lv.{weapon.get('level', 'N/A')}" if self.current_lang == "zh-CN"
+            else f"Selected · {name} · Lv.{weapon.get('level', 'N/A')}"
+        )
 
     def update_weapon(self):
         if not self.selected_weapon_path:
@@ -722,145 +948,107 @@ class WeaponEditorTab(QtWidgets.QWidget):
     def open_add_part_window(self):
         if not self.serial_decoded_entry.text():
             QtWidgets.QMessageBox.warning(self, self.get_localized_string("no_weapon"), self.get_localized_string("load_weapon_first")); return
-        
+
         win = QtWidgets.QDialog(self)
         win.setObjectName("addPartDialog")
         win.setWindowTitle(self.get_localized_string("add_part_title"))
-        win.setMinimumSize(900, 700)
+        win.setMinimumSize(1050, 720)
         win.setModal(True)
-        
+
         layout = QtWidgets.QVBoxLayout(win)
         layout.setSpacing(10)
         layout.setContentsMargins(15, 15, 15, 15)
-        
-        # Header label with objectName for theme-aware styling
+
         header_label = QtWidgets.QLabel(self.get_localized_string("select_parts_to_add"))
         header_label.setObjectName("addPartDialogHeader")
         layout.addWidget(header_label)
-        
-        self.selected_parts_to_add = []
-        
-        # Scroll area for part categories (styled by QSS)
-        scroll_frame = QtWidgets.QScrollArea()
-        scroll_frame.setWidgetResizable(True)
-        
-        scroll_content = QtWidgets.QWidget()
-        scroll_layout = QtWidgets.QVBoxLayout(scroll_content)
-        scroll_layout.setSpacing(8)
-        scroll_layout.setContentsMargins(5, 5, 5, 5)
-        
-        # Elemental category
-        elemental_container = self._create_add_part_category(
-            self.get_localized_string("Elemental"), 
-            lambda p, d: self.create_elemental_list(p, d), 
-            self.elemental_df,
-            color="#EF9A9A"
+
+        picker = CatalogPicker(
+            stackable=True,
+            search_placeholder="搜索部件名称、效果、厂商或类型" if self.current_lang == "zh-CN" else "Search part name, effect, manufacturer, or type",
+            avail_title="可用部件" if self.current_lang == "zh-CN" else "Available Parts",
+            selected_title="已选部件" if self.current_lang == "zh-CN" else "Selected Parts",
+            clear_text="清空" if self.current_lang == "zh-CN" else "Clear",
         )
-        scroll_layout.addWidget(elemental_container)
-        
-        # Weapon type categories
-        for wt, group in self.all_weapon_parts_df.groupby('Weapon Type'):
-            localized_wt = self.get_localized_string(wt)
-            scroll_layout.addWidget(self._create_add_part_category(
-                localized_wt, 
-                self.create_manufacturer_list, 
-                group,
-                color="#64B5F6"
-            ))
-        
-        scroll_layout.addStretch()
-        scroll_frame.setWidget(scroll_content)
-        layout.addWidget(scroll_frame, 1)  # stretch factor 1
-        
-        # Confirm button with styling
+        source, part_types, manufacturers, weapon_types = self._add_part_catalog_items()
+        picker.set_categories(
+            [("all", "全部" if self.current_lang == "zh-CN" else "All"), *[(value, self.get_localized_string(value)) for value in part_types]],
+            columns=5,
+        )
+        picker.set_subcategories(
+            [("all", "全部厂商" if self.current_lang == "zh-CN" else "All Manufacturers"), *[(value, self.get_localized_string(value)) for value in manufacturers]],
+            columns=6,
+        )
+        picker.set_third_categories(
+            [("all", "全部武器类型" if self.current_lang == "zh-CN" else "All Weapon Types"), *[(value, self.get_localized_string(value)) for value in weapon_types]],
+            columns=6,
+        )
+        picker.set_source(source)
+        layout.addWidget(picker, 1)
+
         confirm_btn = QtWidgets.QPushButton(self.get_localized_string("confirm_add"))
-        confirm_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                font-weight: bold;
-                padding: 12px 24px;
-                border-radius: 5px;
-                font-size: 12px;
-            }
-            QPushButton:hover {
-                background-color: #66BB6A;
-            }
-            QPushButton:pressed {
-                background-color: #388E3C;
-            }
-        """)
-        confirm_btn.clicked.connect(lambda: self.add_selected_parts(win))
+        confirm_btn.setObjectName("genAddButton")
+        confirm_btn.clicked.connect(lambda: self.add_selected_parts(win, picker))
         layout.addWidget(confirm_btn)
-        
         win.exec()
 
-    def _create_add_part_category(self, title, content_creator_func, data, color="#e0e0e0"):
-        container = QtWidgets.QFrame()
-        container.setObjectName("addPartCategoryFrame")
-        container_layout = QtWidgets.QVBoxLayout(container)
-        container_layout.setContentsMargins(8, 8, 8, 8)
-        container_layout.setSpacing(5)
-        
-        # Header with toggle button and styled title
-        header = QtWidgets.QFrame()
-        header_layout = QtWidgets.QHBoxLayout(header)
-        header_layout.setContentsMargins(0, 0, 0, 0)
-        
-        content = QtWidgets.QFrame()
-        content.setVisible(False)
-        
-        toggle_btn = QtWidgets.QPushButton("▶")
-        toggle_btn.setFixedSize(28, 28)
-        # Use minimal styling, let theme handle colors
-        toggle_btn.setObjectName("addPartToggleBtn")
-        toggle_btn.clicked.connect(lambda: self._toggle_lazy_load(content, toggle_btn, content_creator_func, data))
-        
-        title_label = QtWidgets.QLabel(title)
-        title_label.setObjectName("addPartTitleLabel")
-        # Store category color as property; theme stylesheet will handle base text color for readability
-        title_label.setProperty("partColor", color)
-        
-        header_layout.addWidget(toggle_btn)
-        header_layout.addWidget(title_label)
-        header_layout.addStretch()
-        
-        container_layout.addWidget(header)
-        container_layout.addWidget(content)
-        return container
+    def _add_part_catalog_items(self):
+        source = []
+        part_types = list(dict.fromkeys(str(value) for value in self.all_weapon_parts_df['Part Type'].dropna()))
+        elemental_type = "Elemental"
+        elemental_types = ("Element", "Element Switch", "Underbarrel Element Switch", "Pearl Elements", "Pearl Stat")
+        part_types.extend(value for value in elemental_types if value not in part_types)
+        manufacturers = list(dict.fromkeys(str(value) for value in self.all_weapon_parts_df['Manufacturer'].dropna()))
+        manufacturers.append(elemental_type)
+        weapon_types = list(dict.fromkeys(str(value) for value in self.all_weapon_parts_df['Weapon Type'].dropna()))
+        weapon_types.append(elemental_type)
 
-    def _toggle_lazy_load(self, frame, button, creator_func, data):
-        if not frame.layout(): layout = QtWidgets.QVBoxLayout(frame); creator_func(layout, data)
-        is_visible = not frame.isVisible(); frame.setVisible(is_visible)
-        button.setText("▼" if is_visible else "▶")
-        
-    def create_elemental_list(self, parent_layout, df):
-        self._create_elemental_subsection(parent_layout, "elements", df[df['Part_ID'].between(10, 14)])
-        self._create_elemental_subsection(parent_layout, "element_switch", df[df['Part_ID'].between(5, 49) & ~df['Part_ID'].between(10, 14)])
-        self._create_elemental_subsection(parent_layout, "pearl_stat", df[df['Part_ID'].between(51, 54)])
-        self._create_elemental_subsection(parent_layout, "pearl_elements", df[df['Part_ID'].between(55, 60)])
+        try:
+            level = int(self.level_entry.text())
+        except ValueError:
+            level = 60
+        for _, row in self.all_weapon_parts_df.iterrows():
+            item_id, part_id = int(row['Manufacturer & Weapon Type ID']), str(row['Part ID'])
+            part_type, manufacturer = str(row['Part Type']), str(row['Manufacturer'])
+            weapon_type = str(row['Weapon Type'])
+            name = item_display_resolver.weapon_part_name(item_id, part_id, self.current_lang, row)
+            preview_serial = f"{item_id}, 0, 1, {level}| 2, 0|| |"
+            description = item_display_resolver.format_weapon_part_description(
+                item_id, part_id, preview_serial, self.current_lang, part_type
+            )
+            name = name or (("未命名枪管" if self.current_lang == "zh-CN" else "Unnamed Barrel") if part_type == "Barrel" else "")
+            detail = " · ".join(value for value in (name, description) if value)
+            metadata = " / ".join(self.get_localized_string(value) for value in (manufacturer, weapon_type, part_type))
+            label = f"{detail}  [{metadata}]"
+            source.append({
+                "key": f"normal:{item_id}:{part_id}", "label": label, "category": part_type,
+                "subcategory": manufacturer, "tertiary": weapon_type,
+                "data": {"id": part_id, "mfg_id": item_id, "type": "normal"},
+            })
 
-    def _create_elemental_subsection(self, parent_layout, title, df):
-        parent_layout.addWidget(self._create_add_part_category(self.get_localized_string(title), self._populate_elemental_parts, df))
+        for _, row in self.elemental_df.iterrows():
+            element_id, part_id = int(row['Elemental_ID']), int(row['Part_ID'])
+            name = str(row[self.elemental_stat_col])
+            part_type = self._elemental_part_type(row)
+            source.append({
+                "key": f"elemental:{element_id}:{part_id}", "label": name, "category": part_type,
+                "subcategory": elemental_type, "tertiary": elemental_type,
+                "data": {"id": part_id, "mfg_id": element_id, "type": "elemental"},
+            })
+        return source, part_types, manufacturers, weapon_types
 
-    def _populate_elemental_parts(self, layout, df):
-        for _, row in df.iterrows():
-            var = QtWidgets.QCheckBox(f"{row['Elemental_ID']}:{row['Part_ID']} | {row[self.elemental_stat_col]}")
-            layout.addWidget(var)
-            self.selected_parts_to_add.append({'var': var, 'id': row['Part_ID'], 'mfg_id': 1, 'type': 'elemental'})
-
-    def create_manufacturer_list(self, parent_layout, data_group):
-        for mfg, mfg_group in data_group.groupby('Manufacturer'):
-            parent_layout.addWidget(self._create_add_part_category(self.get_localized_string(mfg), self.populate_add_part_list, mfg_group))
-
-    def populate_add_part_list(self, parent_layout, parts_group):
-        for _, row in parts_group.iterrows():
-            part_frame = QtWidgets.QFrame(); part_layout = QtWidgets.QHBoxLayout(part_frame); part_layout.setContentsMargins(0,0,0,0); part_layout.setSpacing(5)
-            var = QtWidgets.QCheckBox(f"{row['Part ID']} | {self.get_localized_string(row['Part Type'])} | {row['String']} | {str(row['Stat']) if pd.notna(row['Stat']) else ''}")
-            qty_entry = QtWidgets.QLineEdit("1"); qty_entry.setFixedWidth(40); qty_entry.setVisible(False)
-            var.toggled.connect(qty_entry.setVisible)
-            part_layout.addWidget(var); part_layout.addWidget(qty_entry); parent_layout.addWidget(part_frame)
-            self.selected_parts_to_add.append({'var': var, 'id': row['Part ID'], 'mfg_id': row['Manufacturer & Weapon Type ID'], 'entry': qty_entry})
+    @staticmethod
+    def _elemental_part_type(row):
+        stat = str(row['Stat'])
+        if stat.startswith("Pearl Stat"):
+            return "Pearl Stat"
+        if stat.startswith("Pearl Elements"):
+            return "Pearl Elements"
+        if stat.startswith("Maliwan Underbarrel-switch"):
+            return "Underbarrel Element Switch"
+        if stat.startswith("switch between"):
+            return "Element Switch"
+        return "Element"
 
     def _build_part_strings(self, parts_by_mfg, current_weapon_mfg_id):
         new_parts_list = []
@@ -876,7 +1064,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 new_parts_list.append(f"{{{mfg_id}:[{' '.join(map(str, sorted(normal_parts)))}]}}")
         return new_parts_list
 
-    def add_selected_parts(self, window):
+    def add_selected_parts(self, window, picker):
         parts_by_mfg = {}
         try:
             current_weapon_mfg_id = int(self.serial_decoded_entry.text().split(',')[0])
@@ -884,14 +1072,12 @@ class WeaponEditorTab(QtWidgets.QWidget):
             QtWidgets.QMessageBox.critical(self, self.get_localized_string("error"), self.get_localized_string("cannot_determine_mfg"))
             return window.close()
 
-        for item in self.selected_parts_to_add:
-            if item['var'].isChecked():
-                mfg_id = int(item['mfg_id'])
-                parts_by_mfg.setdefault(mfg_id, [])
-                if item.get('type') == 'elemental':
-                    parts_by_mfg[mfg_id].append({'id': item['id'], 'type': 'elemental'})
-                elif 'entry' in item and (num_parts := item['entry'].text()).isdigit():
-                    parts_by_mfg[mfg_id].extend([{'id': item['id'], 'type': 'normal'}] * int(num_parts))
+        for entry in picker.entries():
+            item = entry['data']
+            mfg_id = int(item['mfg_id'])
+            parts_by_mfg.setdefault(mfg_id, [])
+            count = 1 if item['type'] == 'elemental' else entry['count']
+            parts_by_mfg[mfg_id].extend([{'id': item['id'], 'type': item['type']}] * count)
 
         if not parts_by_mfg:
             return window.close()
@@ -924,10 +1110,13 @@ class WeaponEditorTab(QtWidgets.QWidget):
         window.close()
 
     def open_select_skin_window(self, part_index):
+        if not self.serial_decoded_entry.text():
+            QtWidgets.QMessageBox.warning(self, self.get_localized_string("no_weapon"), self.get_localized_string("load_weapon_first"))
+            return
         win = QtWidgets.QDialog(self); win.setWindowTitle(self.get_localized_string("Select Skin"))
         win.setMinimumSize(400, 500); win.setModal(True)
         layout = QtWidgets.QVBoxLayout(win); layout.addWidget(QtWidgets.QLabel(self.get_localized_string("Select a skin to apply")))
-        scroll_area = QtWidgets.QScrollArea(); scroll_area.setWidgetResizable(True)
+        scroll_area = ContainedWheelScrollArea(); scroll_area.setWidgetResizable(True)
         scroll_content = QtWidgets.QWidget(); scroll_layout = QtWidgets.QVBoxLayout(scroll_content)
         for _, row in self.skin_df.iterrows():
             skin_name = row[self.skin_stat_col] if pd.notna(row.get(self.skin_stat_col)) else row['Stat']
@@ -938,25 +1127,33 @@ class WeaponEditorTab(QtWidgets.QWidget):
     def _toggle_group_visibility(self, button, content_frame):
         is_visible = not content_frame.isVisible()
         content_frame.setVisible(is_visible)
-        button.setText("▼" if is_visible else "▶")
+        button.setText("▾" if is_visible else "▸")
 
     def update_skin(self, part_index, new_skin_id, window):
-        if 0 <= part_index < len(self.parts_data) and isinstance(part_info := self.parts_data[part_index], dict) and part_info.get('type') == 'skin':
-            if isinstance(new_skin_id, str) and not new_skin_id.isdigit():
-                part_info['id'], part_info['raw'] = new_skin_id, f' "c", "{new_skin_id}"'
-            else:
-                part_info['id'], part_info['raw'] = int(new_skin_id) if str(new_skin_id).isdigit() else new_skin_id, f' "c", {new_skin_id}'
-            self.regenerate_ui_and_serial(); self.main_app.log(f"Weapon skin updated to ID: {new_skin_id}")
-        else: QtWidgets.QMessageBox.critical(self, "Error", "The selected part is not a skin part.")
+        is_text_id = isinstance(new_skin_id, str) and not new_skin_id.isdigit()
+        skin = {
+            'type': 'skin',
+            'id': new_skin_id if is_text_id else int(new_skin_id),
+            'raw': f' "c", "{new_skin_id}"' if is_text_id else f' "c", {int(new_skin_id)}',
+        }
+        target_index = part_index
+        if target_index is None:
+            target_index = next(
+                (i for i, part in enumerate(self.parts_data) if isinstance(part, dict) and part.get('type') == 'skin'),
+                None,
+            )
+        if target_index is not None and 0 <= target_index < len(self.parts_data):
+            if not isinstance(self.parts_data[target_index], dict) or self.parts_data[target_index].get('type') != 'skin':
+                QtWidgets.QMessageBox.critical(self, "Error", "The selected part is not a skin part.")
+                window.close()
+                return
+            self.parts_data[target_index] = skin
+        else:
+            self.parts_data.append(skin)
+            self.parts_data.append('|')
+        self.regenerate_ui_and_serial()
+        self.main_app.log(f"Weapon skin updated to ID: {new_skin_id}")
         window.close()
-
-try:
-    from PyQt6.QtCore import Qt
-    from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QComboBox, QScrollArea, QFrame, QGridLayout, QMessageBox, QDialog, QCheckBox
-    from PyQt6.QtGui import QIntValidator
-except ImportError:
-    print("PyQt6 is not installed. Please install it with: pip install PyQt6")
-    sys.exit(1)
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

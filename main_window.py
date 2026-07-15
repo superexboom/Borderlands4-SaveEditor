@@ -5,20 +5,20 @@ import itertools
 import os
 from pathlib import Path
 
-VERSION = "3.5.0"
+VERSION = "3.6.0"
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QMessageBox, QFileDialog,
-    QStatusBar, QStackedWidget, QButtonGroup, QSizeGrip, QInputDialog,
-    QMenu, QGraphicsBlurEffect, QStackedLayout, QFrame
+    QStackedWidget, QButtonGroup, QSizeGrip, QInputDialog,
+    QMenu, QGraphicsBlurEffect, QStackedLayout
 )
-from PyQt6.QtGui import QAction, QIcon, QPixmap, QPainter, QBrush, QColor
+from PyQt6.QtGui import QAction, QIcon, QPixmap, QPainter
 from PyQt6.QtCore import pyqtSlot, QPropertyAnimation, QEasingCurve, Qt, QTimer, QObject, QThread, pyqtSignal
 
 from core import b_encoder
 from core import resource_loader
 from core import bl4_functions as bl4f
-from core import SaveGameController, SaveSelectorWidget, ThemeManager
+from core import SaveGameController, SaveSelectorWidget, ThemeManager, infer_user_id_from_save_path
 
 from tabs import (
     QtCharacterTab, QtItemsTab, QtWeaponGeneratorTab, QtConverterTab,
@@ -603,7 +603,6 @@ class MainWindow(QMainWindow):
 
         self.items_tab = QtItemsTab()
         self.items_tab.add_item_requested.connect(self.handle_add_to_backpack)
-        self.items_tab.update_item_requested.connect(self.handle_update_item)
         self.add_tab(self.items_tab, self.loc['tabs']['items'], "🎒")
 
         self.converter_tab = QtConverterTab()
@@ -704,38 +703,7 @@ class MainWindow(QMainWindow):
         if not file_path:
             return
 
-        path_obj = Path(file_path)
-        # 尝试从路径中回溯获取ID
-        # 这里的逻辑参考了存档结构：.../SaveGames/<ID>/Profiles/client/...
-        # 我们向上遍历父文件夹，寻找符合ID特征的文件夹名
-        inferred_id = ""
-        current_path = path_obj.parent
-        
-        # 防止死循环，最多向上查找5层 (SaveGames -> ID -> Profiles -> client -> save)
-        for _ in range(5):
-            dirname = current_path.name
-            # 简单检查是否符合ID特征 (参考 save_game_controller.validate_user_id)
-            # Steam ID: 17位数字
-            # Epic ID: 较长的字母数字组合 (通常 > 10)
-            # 排除常见文件夹名如 "Profiles", "client", "SaveGames" (有些虽然是字母但长度不够)
-            
-            is_valid_format = False
-            if dirname.isdigit() and 10 <= len(dirname) <= 20:
-                is_valid_format = True
-            elif dirname.replace('-', '').replace('_', '').isalnum() and 10 <= len(dirname) <= 50:
-                # 排除一些特定的短名字，虽然上面长度判断可能已经排除了一部分
-                if dirname.lower() not in ["profiles", "client", "savegames", "saved", "config"]:
-                    is_valid_format = True
-            
-            if is_valid_format:
-                inferred_id = dirname
-                break
-            
-            if current_path.parent == current_path: # 到达根目录
-                break
-            current_path = current_path.parent
-
-        self.open_save_from_selector(file_path, inferred_id)
+        self.open_save_from_selector(file_path, infer_user_id_from_save_path(file_path))
 
     @pyqtSlot()
     def toggle_nav_bar(self):
@@ -938,7 +906,7 @@ class MainWindow(QMainWindow):
             success, fail, info = self.controller.sync_inventory_levels()
             msg = self.loc['dialogs']['sync_msg'].format(success=success, fail=fail)
             if fail > 0:
-                details = '/n'.join(info)
+                details = '\n'.join(info)
                 QMessageBox.warning(self, self.loc['dialogs']['sync_partial'], f"{msg}{self.loc['dialogs']['sync_fail_details'].format(details=details)}")
             else:
                 QMessageBox.information(self, self.loc['dialogs']['sync_title'], msg)

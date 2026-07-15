@@ -155,7 +155,7 @@
       "character_only_hint": "仅普通角色存档可用；Profile 存档会自动灰置。",
       "preset_mode_profile": "当前存档类型：Profile。Profile 预设可用，角色预设已灰置。",
       "preset_mode_character": "当前存档类型：普通角色存档。角色预设可用，Profile 预设已灰置。",
-      "preset_credit": "感谢 iyre 的 preset 数据！喜欢的话可以去 iyre.github.io/bl4-save-tools/ 支持他的网页存档编辑器"
+      "preset_credit": ""
     },
     "buttons": {
       "apply_changes": "应用角色与货币更改",
@@ -169,6 +169,7 @@
       "discover_locs": "发现所有地点",
       "unlock_safehouses": "解锁所有安全屋",
       "unlock_collectibles": "解锁所有收集品",
+      "unlock_cosmetics": "解锁所有装扮与武器皮肤",
       "complete_challenges": "完成所有挑战",
       "complete_achievements": "完成所有成就",
       "skip_story": "跳过剧情任务",
@@ -191,8 +192,22 @@
     "columns": {
       "name": "物品名称",
       "type": "类型",
-      "slot": "容器/格",
-      "level": "等级"
+      "manufacturer": "厂商",
+      "rarity": "稀有度",
+      "level": "等级",
+      "flags": "Flag",
+      "damage": "伤害",
+      "dps": "伤害输出",
+      "accuracy": "精准度",
+      "fire_rate": "射速",
+      "reload_time": "装填时间",
+      "magazine": "弹容量",
+      "critical_damage": "暴击伤害",
+      "ammo_cost": "弹药消耗",
+      "splash_radius": "爆炸范围",
+      "ads_time": "开镜时间",
+      "equip_time": "装备时间",
+      "serial": "序列"
     },
     "containers": {
       "Backpack": "背包",
@@ -232,6 +247,12 @@
       "serial": "序列",
       "decoded_id": "解码ID",
       "button_update": "更新选中物品"
+    },
+    "actions": {
+      "copy_name": "复制名称",
+      "copy_serial": "复制序列",
+      "copy_decoded": "复制完整解码",
+      "copy_parts": "复制部件串"
     },
     "defaults": {
       "unknown_container": "未知容器",
@@ -463,6 +484,7 @@
       "update_weapon": "更新武器",
       "add_to_backpack": "添加到背包",
       "add_part": "+ 添加部件",
+      "add_skin": "+ 添加皮肤",
       "confirm_add": "确认添加"
     },
     "flags": {
@@ -473,6 +495,19 @@
       "33": "33 (编组2)",
       "65": "65 (编组3)",
       "129": "129 (编组4)"
+    },
+    "stats": {
+      "damage": "伤害",
+      "dps": "伤害输出",
+      "accuracy": "精准度",
+      "fire_rate": "射速",
+      "reload_time": "装填时间",
+      "magazine": "弹容量",
+      "critical_damage": "暴击伤害",
+      "ammo_cost": "弹药消耗",
+      "splash_radius": "爆炸范围",
+      "ads_time": "开镜时间",
+      "equip_time": "装备时间"
     },
     "dialogs": {
       "error": "错误",

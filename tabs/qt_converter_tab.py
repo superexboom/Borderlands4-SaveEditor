@@ -1,5 +1,4 @@
 import time
-import itertools
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit,
     QPushButton, QGroupBox, QTextEdit, QMessageBox, QFileDialog, QComboBox,

@@ -1,5 +1,5 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QTreeWidget, QTreeWidgetItem, QStackedWidget, QGroupBox, QHBoxLayout, QPushButton, QMessageBox
-from PyQt6.QtCore import Qt, pyqtSignal, QTimer
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QTreeWidget, QTreeWidgetItem, QStackedWidget, QHBoxLayout, QPushButton, QMessageBox
+from PyQt6.QtCore import pyqtSignal, QTimer
 import yaml
 from core import resource_loader
 

@@ -44,10 +44,10 @@ Elemental_ID,Part_ID,Stat,Stat_ZH
 1,47,Maliwan Underbarrel-switch between Corrosive and Shock Elements,元素切换下挂-腐蚀&电击
 1,48,switch between Incendiary and Shock Elements,元素切换-燃烧&电击
 1,49,Maliwan Underbarrel-switch between Incendiary and Shock Elements,元素切换下挂-燃烧&电击
-1,51,Pearl Stat:+Damage -Acc -Reload -FR,珠光属性:+伤害 -精准 -换弹 -射速
-1,52,Pearl Stat:-Damage +Acc +Reload -FR -Mag,珠光属性:-伤害 +精准 +换弹 -射速 -弹匣
-1,53,Pearl Stat:-Damage -Acc -Reload ++FR,珠光属性:-伤害 -精准 -换弹 ++射速
-1,54,Pearl Stat:-Damage +Acc -Reload -FR,珠光属性:-伤害 +精准 -换弹 -射速
+1,51,"Pearl Stat:Damage ×1.225, Spread ×1.075, Reload Time ×1.06, Fire Rate ×0.943","珠光属性:伤害 ×1.225, 散布 ×1.075, 装填时间 ×1.06, 射速 ×0.943"
+1,52,"Pearl Stat:Damage ×0.925, Reload Time ×0.82, Fire Rate ×0.943, Magazine ×0.85","珠光属性:伤害 ×0.925, 装填时间 ×0.82, 射速 ×0.943, 弹容 ×0.85"
+1,53,"Pearl Stat:Damage ×0.925, Spread ×1.075, Reload Time ×1.06, Fire Rate ×1.173","珠光属性:伤害 ×0.925, 散布 ×1.075, 装填时间 ×1.06, 射速 ×1.173"
+1,54,"Pearl Stat:Damage ×0.925, Spread ×0.775, Reload Time ×1.06, Fire Rate ×0.943","珠光属性:伤害 ×0.925, 散布 ×0.775, 装填时间 ×1.06, 射速 ×0.943"
 1,55,Pearl Elements:Kinetic Override,珠光元素:动能覆盖
 1,56,Pearl Elements:Shock Override,珠光元素:电击覆盖
 1,57,Pearl Elements:Radiation Override,珠光元素:辐射覆盖

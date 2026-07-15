@@ -155,7 +155,7 @@
       "character_only_hint": "Только для сохранения персонажа. В Profile кнопки будут неактивны.",
       "preset_mode_profile": "Тип сохранения: Profile. Пресеты Profile активны, пресеты персонажа отключены.",
       "preset_mode_character": "Тип сохранения: персонаж. Пресеты персонажа активны, пресеты Profile отключены.",
-      "preset_credit": "Thanks to iyre for preset data! If you like it, support the web save editor: iyre.github.io/bl4-save-tools/"
+      "preset_credit": ""
     },
     "buttons": {
       "apply_changes": "Применить изменения персонажа и валюты",
@@ -169,6 +169,7 @@
       "discover_locs": "Открыть все локации",
       "unlock_safehouses": "Разблокировать все убежища",
       "unlock_collectibles": "Разблокировать все коллекционные предметы",
+      "unlock_cosmetics": "Разблокировать всю косметику и скины оружия",
       "complete_challenges": "Завершить все испытания",
       "complete_achievements": "Завершить все достижения",
       "skip_story": "Пропустить сюжетные миссии",
@@ -191,8 +192,22 @@
     "columns": {
       "name": "Название",
       "type": "Тип",
-      "slot": "Контейнер/Слот",
-      "level": "Уровень"
+      "manufacturer": "Производитель",
+      "rarity": "Редкость",
+      "level": "Уровень",
+      "flags": "Флаг",
+      "damage": "Урон",
+      "dps": "Урон/с",
+      "accuracy": "Точность",
+      "fire_rate": "Скорострельность",
+      "reload_time": "Перезарядка",
+      "magazine": "Магазин",
+      "critical_damage": "Крит. урон",
+      "ammo_cost": "Расход боеприпасов",
+      "splash_radius": "Радиус взрыва",
+      "ads_time": "Время прицеливания",
+      "equip_time": "Время экипировки",
+      "serial": "Серийный номер"
     },
     "containers": {
       "Backpack": "Рюкзак",
@@ -232,6 +247,12 @@
       "serial": "Серийный номер",
       "decoded_id": "Декодированный ID",
       "button_update": "Обновить выбранный предмет"
+    },
+    "actions": {
+      "copy_name": "Копировать название",
+      "copy_serial": "Копировать серийный номер",
+      "copy_decoded": "Копировать полную расшифровку",
+      "copy_parts": "Копировать детали"
     },
     "defaults": {
       "unknown_container": "Неизвестный контейнер",
@@ -463,6 +484,7 @@
       "update_weapon": "Обновить оружие",
       "add_to_backpack": "Добавить в рюкзак",
       "add_part": "+ Добавить часть",
+      "add_skin": "+ Добавить скин",
       "confirm_add": "Подтвердить"
     },
     "flags": {
@@ -473,6 +495,19 @@
       "33": "33 (Группа 2)",
       "65": "65 (Группа 3)",
       "129": "129 (Группа 4)"
+    },
+    "stats": {
+      "damage": "Урон",
+      "dps": "Урон/с",
+      "accuracy": "Точность",
+      "fire_rate": "Скорострельность",
+      "reload_time": "Перезарядка",
+      "magazine": "Магазин",
+      "critical_damage": "Крит. урон",
+      "ammo_cost": "Расход боеприпасов",
+      "splash_radius": "Радиус взрыва",
+      "ads_time": "Время прицеливания",
+      "equip_time": "Время экипировки"
     },
     "dialogs": {
       "error": "Ошибка",

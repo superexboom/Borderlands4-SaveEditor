@@ -1,4 +1,5 @@
 import base64
+import json
 import zlib
 import yaml
 import sys
@@ -58,6 +59,18 @@ def _load_project_blob(filename: str, fallback: str) -> str:
             pass
     return fallback
 
+def _load_project_json(filename: str) -> dict:
+    """Load generated preset data, or return an empty fallback."""
+    if getattr(sys, 'frozen', False):
+        path = Path(sys._MEIPASS) / "core" / "data" / filename
+    else:
+        path = Path(__file__).resolve().parent / "data" / filename
+    try:
+        value = json.loads(path.read_text(encoding='utf-8'))
+        return value if isinstance(value, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
 # --- Loaded Data ---
 
 COLLECTIBLES_COMPRESSED = _load_project_blob("collectibles_compressed.txt", COLLECTIBLES_COMPRESSED)
@@ -70,6 +83,23 @@ MISSIONSETS = load_yaml_blob(MISSIONSETS_COMPRESSED)
 UNLOCKABLES = load_yaml_blob(UNLOCKABLES_COMPRESSED)
 LOCATIONS = load_array_blob(LOCATIONS_COMPRESSED)
 # REWARDS = load_array_blob(REWARDS_COMPRESSED) # Not used in logic
+
+UNLOCK_PRESETS = _load_project_json("unlock_presets.json")
+PROFILE_UNLOCKABLES = UNLOCK_PRESETS.get("profile_unlockables", {})
+CHARACTER_UNLOCKABLES = UNLOCK_PRESETS.get("character_unlockables", {})
+STAT_TARGETS = UNLOCK_PRESETS.get("stat_targets", {})
+EXPLORATION = UNLOCK_PRESETS.get("exploration", {})
+POSTGAME = UNLOCK_PRESETS.get("postgame", {})
+
+# The generated NCS snapshot supersedes the stale shared unlock lists. Keep the
+# compressed blobs above as a compatibility fallback for source checkouts that
+# have not generated unlock_presets.json yet.
+for _namespace, _entries in PROFILE_UNLOCKABLES.items():
+    if isinstance(_namespace, str) and isinstance(_entries, list):
+        UNLOCKABLES[_namespace] = {"entries": _entries}
+
+if isinstance(EXPLORATION.get("locations"), list) and EXPLORATION["locations"]:
+    LOCATIONS = EXPLORATION["locations"]
 
 # --- Constants from ui.js ---
 

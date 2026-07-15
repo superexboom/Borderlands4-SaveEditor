@@ -1,6 +1,5 @@
 import pandas as pd
 from functools import lru_cache
-import random
 import re
 
 from PyQt6.QtWidgets import (
@@ -13,6 +12,7 @@ from PyQt6.QtGui import QColor
 
 from core import b_encoder
 from core import resource_loader
+from tabs.qt_catalog_picker import ContainedWheelListWidget, ContainedWheelScrollArea
 import lookup
 from core import bl4_functions as bl4f
 
@@ -215,14 +215,14 @@ class QtRepkitEditorTab(QWidget):
         layout.addWidget(self.base_attrs_group)
     
     def _create_scrollable_radio_group(self, title):
-        group_box=QGroupBox(title); scroll_area=QScrollArea(); scroll_area.setWidgetResizable(True); container=QWidget()
+        group_box=QGroupBox(title); scroll_area=ContainedWheelScrollArea(); scroll_area.setWidgetResizable(True); container=QWidget()
         scroll_area.setMinimumHeight(200)
         layout=QVBoxLayout(container); scroll_area.setWidget(container); main_layout=QVBoxLayout(group_box); main_layout.addWidget(scroll_area)
         return group_box, layout, []
 
     def _create_list_perk_group(self, title, use_multiplier=False):
         group = QGroupBox(title); layout = QGridLayout(group)
-        avail = QListWidget(); sel = QListWidget()
+        avail = ContainedWheelListWidget(); sel = ContainedWheelListWidget()
         avail.setMinimumHeight(200); sel.setMinimumHeight(200)
         avail.setSelectionMode(QListWidget.SelectionMode.ExtendedSelection)
         sel.setSelectionMode(QListWidget.SelectionMode.ExtendedSelection)

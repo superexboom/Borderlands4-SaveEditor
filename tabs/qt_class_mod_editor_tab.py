@@ -1,110 +1,24 @@
-import json
 import random
 import re
+from html import escape
 from pathlib import Path
 
 from PyQt6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit,
-    QPushButton, QGroupBox, QComboBox, QListWidget, QTreeWidget, QTreeWidgetItem,
-    QScrollArea, QMessageBox, QInputDialog, QAbstractItemView, QSpinBox
+    QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit,
+    QPushButton, QGroupBox, QComboBox,
+    QScrollArea, QMessageBox
 )
-from PyQt6.QtGui import QIcon, QFontMetrics, QFont
+from PyQt6.QtGui import QIcon, QFont
 from PyQt6.QtWidgets import QToolTip
-from PyQt6.QtCore import pyqtSignal, Qt, QSize
+from PyQt6.QtCore import pyqtSignal
 
 from core import b_encoder
 from core import resource_loader
 
+from .qt_catalog_picker import InlineCatalogPicker
+
 # Load all skill descriptions at startup
 skill_descriptions = resource_loader.load_all_skill_descriptions()
-
-class SkillPointWidget(QWidget):
-    valueChanged = pyqtSignal(int)
-
-    def __init__(self, current_val=0, max_val=5, parent=None, loc_data=None):
-        super().__init__(parent)
-        self.current = current_val
-        self.max_val = max_val
-        self.loc = loc_data
-
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(2)
-
-        min_text = self.loc['min'] if self.loc else "Min"
-        max_text = self.loc['max'] if self.loc else "Max"
-
-        self.btn_min = QPushButton(min_text)
-        self.btn_min.setFixedSize(QSize(55, 35)) # Increased size
-        self.btn_min.clicked.connect(self.to_min)
-
-        self.btn_minus = QPushButton("-")
-        self.btn_minus.setFixedSize(QSize(35, 35)) # Increased size
-        self.btn_minus.clicked.connect(self.decrease)
-        
-        self.input_field = QLineEdit(str(self.current))
-        self.input_field.setFixedSize(QSize(35, 35)) # Adjusted width and height matching buttons
-        self.input_field.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.input_field.editingFinished.connect(self.update_from_text)
-
-        self.btn_plus = QPushButton("+")
-        self.btn_plus.setFixedSize(QSize(35, 35)) # Increased size
-        self.btn_plus.clicked.connect(self.increase)
-
-        self.btn_max = QPushButton(max_text)
-        self.btn_max.setFixedSize(QSize(55, 35)) # Increased size
-        self.btn_max.clicked.connect(self.to_max)
-
-        layout.addWidget(self.btn_min)
-        layout.addWidget(self.btn_minus)
-        layout.addWidget(self.input_field)
-        layout.addWidget(self.btn_plus)
-        layout.addWidget(self.btn_max)
-        
-        self.update_ui()
-
-    def to_min(self):
-        if self.current > 0:
-            self.current = 0
-            self.update_ui()
-            self.valueChanged.emit(self.current)
-
-    def to_max(self):
-        if self.current < self.max_val:
-            self.current = self.max_val
-            self.update_ui()
-            self.valueChanged.emit(self.current)
-
-    def decrease(self):
-        if self.current > 0:
-            self.current -= 1
-            self.update_ui()
-            self.valueChanged.emit(self.current)
-
-    def increase(self):
-        if self.current < self.max_val:
-            self.current += 1
-            self.update_ui()
-            self.valueChanged.emit(self.current)
-            
-    def update_from_text(self):
-        text = self.input_field.text()
-        if text.isdigit():
-            val = int(text)
-            if val < 0: val = 0
-            if val > self.max_val: val = self.max_val
-            self.current = val
-        else:
-            pass
-        self.update_ui()
-        self.valueChanged.emit(self.current)
-
-    def update_ui(self):
-        self.input_field.setText(str(self.current))
-        self.btn_minus.setEnabled(self.current > 0)
-        self.btn_min.setEnabled(self.current > 0)
-        self.btn_plus.setEnabled(self.current < self.max_val)
-        self.btn_max.setEnabled(self.current < self.max_val)
 
 class QtClassModEditorTab(QWidget):
     add_to_backpack_requested = pyqtSignal(str, str)
@@ -122,7 +36,6 @@ class QtClassModEditorTab(QWidget):
         self.localization = self._load_localization()  # 仅用于职业/稀有度名称
         self.skill_descriptions = skill_descriptions
         self.image_cache = {}
-        self.current_skill_points = {}
         
         # 加载CSV数据
         self._load_csv_data()
@@ -190,6 +103,9 @@ class QtClassModEditorTab(QWidget):
             return self.localization[text]
         return text
 
+    def _pick_text(self, zh, en):
+        return zh if self.current_lang == 'zh-CN' else en
+
     def _load_csv_data(self):
         """加载所有CSV数据"""
         self.names_data = resource_loader.load_class_mods_csv("Class_rarity_name.csv")
@@ -220,18 +136,6 @@ class QtClassModEditorTab(QWidget):
         
         # 按perk_ID索引perks
         self.perks_by_id = {p['perk_ID']: p for p in self.perks_data}
-
-    def _extract_perk_selection(self, item_text: str):
-        """Extract (count, perk_id) from '(N) [perk_id] name' or '[perk_id] name'."""
-        match = re.match(r"\((\d+)\)\s+\[([^\]]+)\]", item_text)
-        if match:
-            return int(match.group(1)), match.group(2)
-
-        match = re.match(r"\[([^\]]+)\]", item_text)
-        if match:
-            return 1, match.group(1)
-
-        return 0, ""
 
     def _format_perk_code(self, perk_id: str) -> str:
         """Format perk IDs for the 234 perk list.
@@ -346,40 +250,18 @@ class QtClassModEditorTab(QWidget):
         self.level_edit.textChanged.connect(self.update_string)
         self.seed_edit.textChanged.connect(self.update_string)
         self.random_seed_btn.clicked.connect(self.generate_random_seed)
-        self.skill_search_edit.textChanged.connect(self.populate_skills)
-        self.perk_search_edit.textChanged.connect(self.populate_perks)
-
-        # Connect list transfer buttons
-        self.leg_move_btn.clicked.connect(lambda: self._move_selected_items(self.leg_avail_list, self.leg_sel_list))
-        self.leg_remove_btn.clicked.connect(self.on_legendary_remove)
-        self.leg_clear_btn.clicked.connect(self.on_legendary_clear)
-
-        self.perk_move_btn.clicked.connect(self.add_perks)
-        self.perk_remove_btn.clicked.connect(lambda: self._remove_selected_items(self.perk_sel_list))
-        self.perk_clear_btn.clicked.connect(lambda: self._clear_list(self.perk_sel_list))
 
     def _create_legendary_group(self):
         leg_group = QGroupBox(self.ui_loc['legendary']['title'])
-        layout = QGridLayout(leg_group)
-        
-        self.leg_avail_list = QListWidget()
-        self.leg_sel_list = QListWidget()
-        
-        layout.addWidget(self.leg_avail_list, 0, 0)
-        
-        button_layout = QVBoxLayout()
-        self.leg_move_btn = QPushButton("»")
-        self.leg_remove_btn = QPushButton("«")
-        self.leg_clear_btn = QPushButton(self.ui_loc['legendary']['clear'])
-        button_layout.addWidget(self.leg_move_btn)
-        button_layout.addWidget(self.leg_remove_btn)
-        button_layout.addWidget(self.leg_clear_btn)
-        button_layout.addStretch()
-        layout.addLayout(button_layout, 0, 1)
+        layout = QVBoxLayout(leg_group)
 
-        layout.addWidget(self.leg_sel_list, 0, 2)
-        layout.setColumnStretch(0, 1)
-        layout.setColumnStretch(2, 1)
+        self.leg_picker = InlineCatalogPicker(
+            stackable=False,
+            search_placeholder=self._pick_text("搜索…", "Search..."),
+            clear_text=self.ui_loc['legendary'].get('clear', self._pick_text("清空", "Clear")),
+        )
+        self.leg_picker.changed.connect(self.update_string)
+        layout.addWidget(self.leg_picker)
 
         self.container_layout.addWidget(leg_group, 1)
 
@@ -452,55 +334,29 @@ class QtClassModEditorTab(QWidget):
         skills_group = QGroupBox(self.ui_loc['skills']['title'])
         skills_layout = QVBoxLayout(skills_group)
         
-        self.skill_search_edit = QLineEdit()
-        self.skill_search_edit.setPlaceholderText(self.ui_loc['skills']['search_placeholder'])
-        skills_layout.addWidget(self.skill_search_edit)
-
-        self.skill_tree = QTreeWidget()
-        self.skill_tree.setHeaderLabels([self.ui_loc['skills']['header_icon'], self.ui_loc['skills']['header_skill'], 
-                                         self.ui_loc['skills']['header_codes'], self.ui_loc['skills']['header_points']])
-        self.skill_tree.setIconSize(QSize(48, 48))
-        self.skill_tree.setColumnWidth(0, 100)
-        self.skill_tree.setColumnWidth(1, 200)
-        self.skill_tree.setColumnWidth(2, 300)
-        self.skill_tree.setMinimumHeight(400)
-        skills_layout.addWidget(self.skill_tree)
+        self.skill_picker = InlineCatalogPicker(
+            stackable=True,
+            search_placeholder=self.ui_loc['skills']['search_placeholder'],
+            clear_text=self.ui_loc['perks'].get('clear', self._pick_text("清空", "Clear")),
+        )
+        self.skill_picker.list.setMinimumHeight(420)
+        self.skill_picker.changed.connect(self.update_string)
+        skills_layout.addWidget(self.skill_picker)
         
         self.container_layout.addWidget(skills_group, 3)
 
         # Perks
         perks_group = QGroupBox(self.ui_loc['perks']['title'])
         perks_group.setMinimumHeight(250)
-        perks_layout = QGridLayout(perks_group)
-        self.perk_search_edit = QLineEdit()
-        self.perk_search_edit.setPlaceholderText(self.ui_loc['perks']['search_placeholder'])
-        perks_layout.addWidget(self.perk_search_edit, 0, 0, 1, 3)
-
-        self.perk_avail_list = QListWidget()
-        self.perk_sel_list = QListWidget()
-        self.perk_avail_list.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
-        self.perk_sel_list.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
-        perks_layout.addWidget(self.perk_avail_list, 1, 0)
-        
-        button_layout = QVBoxLayout()
-        self.perk_multiplier = QSpinBox()
-        self.perk_multiplier.setRange(1, 999)
-        self.perk_multiplier.setValue(1)
-        self.perk_move_btn = QPushButton("»")
-        self.perk_remove_btn = QPushButton("«")
-        self.perk_clear_btn = QPushButton(self.ui_loc['perks']['clear'])
-        
-        button_layout.addWidget(self.perk_multiplier)
-        button_layout.addWidget(self.perk_move_btn)
-        button_layout.addWidget(self.perk_remove_btn)
-        button_layout.addWidget(self.perk_clear_btn)
-        button_layout.addStretch()
-        perks_layout.addLayout(button_layout, 1, 1)
-
-        perks_layout.addWidget(self.perk_sel_list, 1, 2)
-        perks_layout.setColumnStretch(0, 1)
-        perks_layout.setColumnStretch(2, 1)
-        
+        perks_layout = QVBoxLayout(perks_group)
+        self.perk_picker = InlineCatalogPicker(
+            stackable=True,
+            search_placeholder=self.ui_loc['perks'].get('search_placeholder', self._pick_text("搜索…", "Search...")),
+            clear_text=self.ui_loc['perks'].get('clear', self._pick_text("清空", "Clear")),
+        )
+        self.perk_picker.list.setMinimumHeight(286)
+        self.perk_picker.changed.connect(self.update_string)
+        perks_layout.addWidget(self.perk_picker)
         self.container_layout.addWidget(perks_group)
 
     def populate_initial_data(self):
@@ -521,7 +377,7 @@ class QtClassModEditorTab(QWidget):
         self.on_class_change()
 
     def on_class_change(self):
-        self.current_skill_points.clear()
+        self.skill_picker.clear()
         self.populate_names()
         self.populate_legendary_extras()
         self.populate_skills()
@@ -535,14 +391,6 @@ class QtClassModEditorTab(QWidget):
     def on_name_change(self):
         self.populate_legendary_extras(preserve_selection=True)
         self.update_string()
-
-    def on_legendary_remove(self):
-        self._remove_selected_items(self.leg_sel_list)
-        self.populate_legendary_extras(preserve_selection=True)
-
-    def on_legendary_clear(self):
-        self._clear_list(self.leg_sel_list)
-        self.populate_legendary_extras(preserve_selection=True)
 
     def generate_random_seed(self):
         self.seed_edit.setText(str(random.randint(1, 9999)))
@@ -586,10 +434,6 @@ class QtClassModEditorTab(QWidget):
         self.name_combo.blockSignals(False)
         self.update_string()
 
-    def on_skill_point_change(self, skill_name, points):
-        self.current_skill_points[skill_name] = points
-        self.update_string()
-
     def update_string(self, *args):
         """生成序列化字符串 - 使用CSV数据源"""
         if not self.names_data or not self.name_combo.currentText():
@@ -630,39 +474,29 @@ class QtClassModEditorTab(QWidget):
             rarity_chunk = f"{{{rarity_code_val}}}" if rarity_code_val else ""
 
             # 传奇附加
-            leg_extras_codes = [f"{{{self.leg_sel_list.item(i).text().split('{')[-1].strip()}" for i in range(self.leg_sel_list.count())]
+            leg_extras_codes = [f"{{{e['data']['name_code']}}}" for e in self.leg_picker.entries()]
             leg_extras_chunk = " ".join(leg_extras_codes)
 
-            # 技能 - 使用skills_by_class索引
             skill_chunks = []
-            skills_list = self.skills_by_class.get(current_class_id, [])
-            for skill_row in sorted(skills_list, key=lambda x: x.get('skill_name_EN', '')):
-                eng_name = skill_row.get('skill_name_EN', '')
-                points = self.current_skill_points.get(eng_name, 0)
-                if points > 0:
-                    # 获取技能ID列表
-                    codes = []
-                    for i in range(1, 6):
-                        code = skill_row.get(f'skill_ID_{i}', '')
-                        if code:
-                            codes.append(code)
-                    skill_chunks.extend([f"{{{c}}}" for c in codes[:points]])
+            for entry in self.skill_picker.entries():
+                codes = entry["data"]["codes"]
+                skill_chunks.extend([f"{{{code}}}" for code in codes[:entry["count"]]])
             skills_chunk = " ".join(skill_chunks)
             
             # Perks - numeric IDs go into 234; GB path IDs are emitted as standalone quoted fields.
             perk_codes = []
             special_perk_codes = []
-            for i in range(self.perk_sel_list.count()):
-                item_text = self.perk_sel_list.item(i).text()
-                count, perk_id = self._extract_perk_selection(item_text)
-                
-                if perk_id:
-                    perk_code = self._format_perk_code(perk_id)
-                    for _ in range(count):
-                        if str(perk_id).strip().isdigit():
-                            perk_codes.append(perk_code)
-                        else:
-                            special_perk_codes.append(perk_code)
+            for e in self.perk_picker.entries():
+                perk_id = e["data"]["perk_id"]
+                count = e["count"]
+                if not perk_id:
+                    continue
+                perk_code = self._format_perk_code(perk_id)
+                for _ in range(count):
+                    if str(perk_id).strip().isdigit():
+                        perk_codes.append(perk_code)
+                    else:
+                        special_perk_codes.append(perk_code)
 
             perks_chunk = f" {{234:[{ ' '.join(perk_codes) }]}}" if perk_codes else ""
             special_perks_chunk = " ".join(special_perk_codes)
@@ -684,129 +518,85 @@ class QtClassModEditorTab(QWidget):
             self.base85_output.setText("...")
 
     def populate_legendary_extras(self, preserve_selection=False):
-        """填充传奇附加列表 - 使用CSV数据源"""
-        saved_selections = []
-        if preserve_selection:
-            for i in range(self.leg_sel_list.count()):
-                saved_selections.append(self.leg_sel_list.item(i).text())
-
-        self.leg_avail_list.clear()
-        self.leg_sel_list.clear()
-        
+        """填充传奇附加目录 - 使用 CatalogPicker"""
         is_legendary = self.rarity_combo.currentText() == self._("Legendary")
-        self.leg_avail_list.setEnabled(is_legendary)
-        self.leg_sel_list.setEnabled(is_legendary)
+        self.leg_picker.setEnabled(is_legendary)
 
-        if not is_legendary: return
+        if not is_legendary:
+            self.leg_picker.clear()
+            self.leg_picker.set_source([])
+            return
 
         current_class_en = self._get_current_class_en()
         current_class_id = str(self.CLASS_IDS.get(current_class_en, 0))
-        if not current_class_en: return
+        if not current_class_en:
+            return
 
-        # 从CSV获取legendary名称
         legendary_names = self.names_by_class_rarity.get((current_class_id, 'legendary'), [])
         primary_name_display = self.name_combo.currentText()
 
-        # Helper to extract name from "Name {Code}"
-        def get_name_from_item_str(item_text):
-             return item_text.rpartition(' {')[0]
-
-        preserved_set = set()
-
-        if preserve_selection:
-            for item_text in saved_selections:
-                name_part = get_name_from_item_str(item_text)
-                if name_part != primary_name_display:
-                    self.leg_sel_list.addItem(item_text)
-                    preserved_set.add(item_text)
-
+        items = []
+        primary_key = None
         for name_row in legendary_names:
             name_en = name_row.get('name_EN', '')
             name_zh = name_row.get('name_ZH', '')
             name_code = name_row.get('name_code', '')
-            
-            # 选择显示名称
-            if self.current_lang == 'zh-CN' and name_zh:
-                display_name = name_zh
-            else:
-                display_name = name_en
-            
-            item_str = f"{display_name} {{{name_code}}}"
-            
+
+            display_name = name_zh if (self.current_lang == 'zh-CN' and name_zh) else name_en
+
             if display_name == primary_name_display:
+                primary_key = name_code
                 continue
-            
-            if item_str not in preserved_set:
-                self.leg_avail_list.addItem(item_str)
+
+            items.append({
+                "key": name_code,
+                "label": f"{display_name} {{{name_code}}}",
+                "category": None,
+                "subcategory": None,
+                "data": {"name_code": name_code},
+            })
+
+        if not preserve_selection:
+            self.leg_picker.clear()
+        self.leg_picker.set_source(items)
+        # 主名不能同时作为传奇附加
+        if primary_key is not None:
+            self.leg_picker.remove_key(primary_key)
 
     def populate_perks(self):
-        """填充Perk列表 - 使用CSV数据源"""
-        self.perk_avail_list.clear()
-        query = self.perk_search_edit.text().lower()
-        
+        """填充可筛选的通用专长目录。"""
+        categories = [
+            ("all", self._pick_text("全部", "All")),
+            ("weapon", self._pick_text("武器", "Weapon")),
+            ("skill", self._pick_text("技能", "Skill")),
+            ("element", self._pick_text("元素", "Element")),
+            ("defense", self._pick_text("生存", "Defense")),
+            ("utility", self._pick_text("通用", "Utility")),
+            ("firmware", self._pick_text("固件", "Firmware")),
+            ("other", self._pick_text("其他", "Other")),
+        ]
+        self.perk_picker.set_categories(categories, columns=4)
+        items = []
         for perk_row in self.perks_data:
             perk_id = perk_row.get('perk_ID', '')
             perk_en = perk_row.get('perk_name_EN', '')
             perk_zh = perk_row.get('perk_name_ZH', '')
-            
-            # 选择显示名称，格式: [ID] 名称
-            if self.current_lang == 'zh-CN' and perk_zh:
-                display_name = f"[{perk_id}] {perk_zh}"
-            else:
-                display_name = f"[{perk_id}] {perk_en}"
-            
-            if not query or query in display_name.lower() or query in perk_en.lower():
-                self.perk_avail_list.addItem(display_name)
+            internal = perk_row.get('perk_internal', '')
+            category = perk_row.get('perk_category', 'other') or 'other'
+            display_name = perk_zh if self.current_lang == 'zh-CN' and perk_zh else perk_en
+            detail = f"{internal}  ·  ID {perk_id}" if internal else f"ID {perk_id}"
 
-    def add_perks(self):
-        multiplier = self.perk_multiplier.value()
-        for item in self.perk_avail_list.selectedItems():
-            perk_name = item.text()  # 格式: [ID] 名称
-            
-            # 提取perk标识符 [ID]
-            _, perk_id = self._extract_perk_selection(perk_name)
-            if not perk_id:
-                continue
-            
-            # Check if already exists in selection list to update count
-            existing_item = None
-            current_count = 0
-            for i in range(self.perk_sel_list.count()):
-                sel_item = self.perk_sel_list.item(i)
-                sel_text = sel_item.text()
-                
-                current_count, current_id = self._extract_perk_selection(sel_text)
-                
-                if current_id == perk_id:
-                    existing_item = sel_item
-                    break
-            
-            if existing_item:
-                # Update count
-                new_count = current_count + multiplier
-                existing_item.setText(f"({new_count}) {perk_name}")
-            else:
-                # Add new item
-                self.perk_sel_list.addItem(f"({multiplier}) {perk_name}")
-        
-        self.update_string()
-
-    def _move_selected_items(self, source_list, dest_list, allow_duplicates=False):
-        for item in source_list.selectedItems():
-            if allow_duplicates or not dest_list.findItems(item.text(), Qt.MatchFlag.MatchExactly):
-                dest_list.addItem(item.text())
-            if not allow_duplicates:
-                source_list.takeItem(source_list.row(item))
-        self.update_string()
-
-    def _remove_selected_items(self, list_widget):
-        for item in list_widget.selectedItems():
-            list_widget.takeItem(list_widget.row(item))
-        self.update_string()
-
-    def _clear_list(self, list_widget):
-        list_widget.clear()
-        self.update_string()
+            items.append({
+                "key": perk_id,
+                "label": display_name,
+                "detail": detail,
+                "category": category,
+                "accent": "blue" if category == "firmware" else None,
+                "search_text": f"{perk_id} {internal} {perk_en} {perk_zh}",
+                "tooltip": escape(detail),
+                "data": {"perk_id": perk_id},
+            })
+        self.perk_picker.set_source(items)
 
     def _get_current_class_en(self):
         current_class_display = self.class_combo.currentText()
@@ -850,74 +640,76 @@ class QtClassModEditorTab(QWidget):
         return QIcon() # Return empty icon on failure
 
     def populate_skills(self):
-        """填充技能列表 - 使用CSV数据源"""
-        self.skill_tree.clear()
-        self.skill_widgets = {}
+        """填充按三色技能树筛选的单列技能目录。"""
         current_class_en = self._get_current_class_en()
         current_class_id = str(self.CLASS_IDS.get(current_class_en, 0))
         if not current_class_en: return
 
-        query = self.skill_search_edit.text().lower()
         skills_list = self.skills_by_class.get(current_class_id, [])
+        tree_names = {}
+        for row in skills_list:
+            color = row.get('tree_color', '')
+            if color:
+                tree_names[color] = self._pick_text(row.get('tree_name_ZH', ''), row.get('tree_name_EN', ''))
+        color_labels = {
+            "red": self._pick_text("红", "Red"),
+            "green": self._pick_text("绿", "Green"),
+            "blue": self._pick_text("蓝", "Blue"),
+        }
+        categories = [("all", self._pick_text("全部技能", "All Skills"))]
+        for color in ("red", "green", "blue"):
+            name = tree_names.get(color, color_labels[color])
+            categories.append((color, f"{color_labels[color]} · {name}"))
+        self.skill_picker.set_categories(categories, columns=4)
 
-        for skill_row in sorted(skills_list, key=lambda x: x.get('skill_name_EN', '')):
+        items = []
+        color_order = {"red": 0, "green": 1, "blue": 2}
+        for skill_row in sorted(skills_list, key=lambda row: (color_order.get(row.get('tree_color', ''), 9), row.get('skill_name_EN', ''))):
             skill_en = skill_row.get('skill_name_EN', '')
             skill_zh = skill_row.get('skill_name_ZH', '')
-            
-            # 选择显示名称
-            if self.current_lang == 'zh-CN' and skill_zh:
-                display_name = skill_zh
-            else:
-                display_name = skill_en
-            
-            if query and query not in skill_en.lower() and query not in display_name.lower():
-                continue
+            lookup_name = re.sub(r" [BGR]$", "", skill_en) if current_class_en == "C4sh" else skill_en
+            localized_name = skill_zh if self.current_lang == 'zh-CN' and skill_zh else skill_en
+            display_name = re.sub(r" [BGR]$", "", localized_name) if current_class_en == "C4sh" else localized_name
 
-            icon = self.get_skill_icon(skill_en, current_class_en)
-            item = QTreeWidgetItem(self.skill_tree)
-
-            # 获取技能ID列表
             codes = []
             for i in range(1, 6):
                 code = skill_row.get(f'skill_ID_{i}', '')
                 if code:
                     codes.append(int(code))
 
-            # Set styled tooltip using pre-loaded descriptions
-            description_info = self.skill_descriptions.get(skill_en)
-            if not description_info:
-                description_info = self.skill_descriptions.get(skill_en.lower())
-
+            description_info = self.skill_descriptions.get((current_class_en.casefold(), lookup_name.casefold()))
+            tooltip_html = ""
             if description_info:
                 skill_type = self._(description_info.get('type', 'N/A'))
-                # 中文界面使用中文描述，从skill_zh获取（如果没有则回退到en）
                 if self.current_lang == 'zh-CN':
                     desc_text = description_info.get('zh', description_info.get('en', 'No description found.'))
                 else:
                     desc_text = description_info.get('en', 'No description found.')
-                
+                desc_html = escape(desc_text).replace('\n', '<br>')
                 tooltip_html = f"""
-                    <div style='width: 300px;'>
-                        <p><b>{display_name}</b></p>
-                        <p><i>{self.ui_loc['tooltips']['type']}: {skill_type}</i></p>
+                    <div style='width: 390px; white-space: normal;'>
+                        <p><b>{escape(display_name)}</b></p>
+                        <p><i>{escape(self.ui_loc['tooltips']['type'])}: {escape(str(skill_type))}</i></p>
                         <hr>
-                        <p>{desc_text}</p>
+                        <p>{desc_html}</p>
                     </div>
                 """
-                item.setToolTip(1, tooltip_html)
-
-            item.setIcon(0, icon)
-            item.setText(1, display_name)
-            item.setText(2, f"{{{', '.join(map(str, codes[:5]))}}}")
-            item.setData(1, Qt.ItemDataRole.UserRole, {"eng_name": skill_en, "codes": codes[:5]})
-            
-            max_points = len(codes[:5])
-            current_points = self.current_skill_points.get(skill_en, 0)
-            sp_widget = SkillPointWidget(current_points, max_points, loc_data=self.ui_loc['skill_point_widget'])
-            sp_widget.valueChanged.connect(lambda val, name=skill_en: self.on_skill_point_change(name, val))
-            
-            self.skill_tree.setItemWidget(item, 3, sp_widget)
-            self.skill_widgets[skill_en] = item
+            color = skill_row.get('tree_color', '')
+            tree_name = self._pick_text(skill_row.get('tree_name_ZH', ''), skill_row.get('tree_name_EN', ''))
+            stable_key = skill_row.get('skill_key') or f"{current_class_id}:{codes[0] if codes else skill_en}"
+            items.append({
+                "key": stable_key,
+                "label": display_name,
+                "detail": tree_name,
+                "category": color,
+                "accent": color,
+                "icon": self.get_skill_icon(skill_en, current_class_en),
+                "tooltip": tooltip_html,
+                "max_count": len(codes),
+                "search_text": f"{skill_en} {skill_zh} {tree_name} {skill_row.get('skill_internal', '')}",
+                "data": {"codes": codes, "skill_key": stable_key},
+            })
+        self.skill_picker.set_source(items)
 
     def set_character_level(self, level: str):
         """设置角色等级，更新默认等级显示。"""

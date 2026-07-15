@@ -39,6 +39,9 @@ heavy_files = collect_data_files('heavy', ('.csv', '.json'))
 # 动态收集loadout目录下的所有.csv和.json文件
 loadout_files = collect_data_files('loadout', ('.csv', '.json'))
 
+# 动态收集item目录下的索引文件
+item_files = collect_data_files('item', ('.json',))
+
 # 动态收集i18n目录下的所有本地化文件
 i18n_files = collect_data_files('i18n', ('.json',))
 
@@ -50,7 +53,7 @@ assets_files = [
     (str(BASE_DIR / 'assets/stylesheet.qss'), 'assets'),
     (str(BASE_DIR / 'assets/BL4.ico'), 'assets'),
     (str(BASE_DIR / 'assets/bg.jpg'), 'assets'),
-]
+] + collect_data_files('assets/item_stats_icon', ('.png',)) + collect_data_files('assets/item_card_type', ('.png',))
 
 
 # PyInstaller spec文件内容
@@ -71,12 +74,9 @@ a = Analysis(
         (r'{str(BASE_DIR / "class_mods" / "Harlowe" / "*.png")}', 'class_mods/Harlowe'),
         (r'{str(BASE_DIR / "class_mods" / "Rafa" / "*.png")}', 'class_mods/Rafa'),
         (r'{str(BASE_DIR / "class_mods" / "Vex" / "*.png")}', 'class_mods/Vex'),
-    ] + {enhancement_files} + {weapon_files} + {grenade_files} + {shield_files} + {repkit_files} + {heavy_files} + {loadout_files} + {i18n_files} + {core_data_files} + {assets_files},
+    ] + {enhancement_files} + {weapon_files} + {grenade_files} + {shield_files} + {repkit_files} + {heavy_files} + {loadout_files} + {item_files} + {i18n_files} + {core_data_files} + {assets_files},
     hiddenimports=[
-        'PIL',
         'pandas',
-        'PIL.Image',
-        'PIL.ImageTk',
         'yaml',
         'Crypto.Cipher',
         'Crypto.Util.Padding',
@@ -85,6 +85,8 @@ a = Analysis(
         'core.bl4_functions',
         'core.decoder_logic',
         'core.b_encoder',
+        'core.item_display_resolver',
+        'core.weapon_display_stats',
         'core.unlock_logic',
         'core.unlock_data',
         'core.save_game_controller',
@@ -96,6 +98,7 @@ a = Analysis(
         'tabs.qt_items_tab',
         'tabs.qt_converter_tab',
         'tabs.qt_yaml_editor_tab',
+        'tabs.qt_catalog_picker',
         'tabs.qt_class_mod_editor_tab',
         'tabs.qt_enhancement_editor_tab',
         'tabs.qt_weapon_editor_tab',
@@ -110,7 +113,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig=[],
     runtime_hooks=[],
-    excludes=[],
+    excludes=['PIL'],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
@@ -185,7 +188,7 @@ if __name__ == "__main__":
     print("=== PyInstaller Configuration ===")
     print("This script will help you build a Windows executable for BL4 Save Editor")
     print("Make sure all dependencies are installed:")
-    print("  pip install pyinstaller pillow pyyaml pycryptodome pandas PyQt6")
+    print("  pip install pyinstaller pyyaml pycryptodome pandas PyQt6")
     print()
     
     response = input("Do you want to build the executable now? (y/n): ")

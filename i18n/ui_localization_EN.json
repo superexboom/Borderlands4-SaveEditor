@@ -155,7 +155,7 @@
       "character_only_hint": "Character save only. Disabled on profile saves.",
       "preset_mode_profile": "Current save type: Profile. Profile presets enabled, character presets disabled.",
       "preset_mode_character": "Current save type: Character save. Character presets enabled, profile presets disabled.",
-      "preset_credit": "Thanks to iyre for preset data! If you like it, support the web save editor: iyre.github.io/bl4-save-tools/"
+      "preset_credit": ""
     },
     "buttons": {
       "apply_changes": "Apply Character & Currency Changes",
@@ -169,6 +169,7 @@
       "discover_locs": "Discover All Locations",
       "unlock_safehouses": "Unlock All Safehouses",
       "unlock_collectibles": "Unlock All Collectibles",
+      "unlock_cosmetics": "Unlock All Cosmetics & Weapon Skins",
       "complete_challenges": "Complete All Challenges",
       "complete_achievements": "Complete All Achievements",
       "skip_story": "Skip Story Missions",
@@ -191,8 +192,22 @@
     "columns": {
       "name": "Item Name",
       "type": "Type",
-      "slot": "Container/Slot",
-      "level": "Level"
+      "manufacturer": "Manufacturer",
+      "rarity": "Rarity",
+      "level": "Level",
+      "flags": "Flag",
+      "damage": "Damage",
+      "dps": "DPS",
+      "accuracy": "Accuracy",
+      "fire_rate": "Fire Rate",
+      "reload_time": "Reload Time",
+      "magazine": "Magazine",
+      "critical_damage": "Critical Damage",
+      "ammo_cost": "Ammo Cost",
+      "splash_radius": "Splash Radius",
+      "ads_time": "ADS Time",
+      "equip_time": "Equip Time",
+      "serial": "Serial"
     },
     "containers": {
       "Backpack": "Backpack",
@@ -232,6 +247,12 @@
       "serial": "Serial",
       "decoded_id": "Decoded ID",
       "button_update": "Update Selected Item"
+    },
+    "actions": {
+      "copy_name": "Copy name",
+      "copy_serial": "Copy serial",
+      "copy_decoded": "Copy full decoded",
+      "copy_parts": "Copy parts"
     },
     "defaults": {
       "unknown_container": "Unknown Container",
@@ -463,6 +484,7 @@
       "update_weapon": "Update Weapon",
       "add_to_backpack": "Add to Backpack",
       "add_part": "+ Add Part",
+      "add_skin": "+ Add Skin",
       "confirm_add": "Confirm Add"
     },
     "flags": {
@@ -473,6 +495,19 @@
       "33": "33 (Group 2)",
       "65": "65 (Group 3)",
       "129": "129 (Group 4)"
+    },
+    "stats": {
+      "damage": "Damage",
+      "dps": "DPS",
+      "accuracy": "Accuracy",
+      "fire_rate": "Fire Rate",
+      "reload_time": "Reload Time",
+      "magazine": "Magazine",
+      "critical_damage": "Critical Damage",
+      "ammo_cost": "Ammo Cost",
+      "splash_radius": "Splash Radius",
+      "ads_time": "ADS Time",
+      "equip_time": "Equip Time"
     },
     "dialogs": {
       "error": "Error",

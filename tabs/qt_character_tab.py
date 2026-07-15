@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit, QPushButton, 
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton,
     QGroupBox, QFormLayout, QComboBox, QDialog, QDialogButtonBox, QSizePolicy
 )
 from PyQt6.QtCore import pyqtSignal, Qt
@@ -150,6 +150,7 @@ class QtCharacterTab(QWidget):
             ("discover_locs", self.loc['presets']['discover_locs'], "discover_all_locations"),
             ("unlock_safehouses", self.loc['presets']['unlock_safehouses'], "complete_all_safehouse_missions"),
             ("unlock_collectibles", self.loc['presets']['unlock_collectibles'], "complete_all_collectibles"),
+            ("unlock_cosmetics", self.loc['presets']['unlock_cosmetics'], "unlock_all_cosmetics"),
             ("max_sdu", self.loc['presets']['max_sdu'], "set_max_sdu"),
             ("unlock_vault", self.loc['presets']['unlock_vault'], "unlock_vault_powers"),
             ("unlock_vehicles", self.loc['presets']['unlock_vehicles'], "unlock_all_hover_drives"),
@@ -246,7 +247,7 @@ class QtCharacterTab(QWidget):
                     "character_only_hint": "Character save only. Disabled on profile saves.",
                     "preset_mode_profile": "Current save type: Profile. Profile presets enabled, character presets disabled.",
                     "preset_mode_character": "Current save type: Character save. Character presets enabled, profile presets disabled.",
-                    "preset_credit": "Thanks to iyre for preset data! If you like it, support the web save editor: iyre.github.io/bl4-save-tools/"
+                    "preset_credit": ""
                 },
                 "buttons": {"apply_changes": "Apply Changes", "sync_levels": "Sync Item Levels"},
                 "warnings": {"sync_warning": "Warning: May unequip items."},
@@ -254,7 +255,7 @@ class QtCharacterTab(QWidget):
                             "unlock_collectibles": "Unlock Collectibles", "complete_challenges": "Complete Challenges", 
                             "complete_achievements": "Complete Achievements", "skip_story": "Skip Story", "skip_all": "Skip All Missions",
                             "change_class": "Change Class", "max_level": "Max Level", "max_sdu": "Max SDU", 
-                            "unlock_vault": "Unlock Vault", "unlock_vehicles": "Unlock Vehicles", "unlock_specs": "Unlock Specs",
+                            "unlock_vault": "Unlock Vault", "unlock_vehicles": "Unlock Vehicles", "unlock_cosmetics": "Unlock Cosmetics", "unlock_specs": "Unlock Specs",
                             "unlock_uvhm": "Unlock UVHM", "unlock_max": "Unlock Max"},
                 "dialogs": {"change_class_title": "Change Class", "select_class": "Select Class:"}
             }
@@ -273,7 +274,7 @@ class QtCharacterTab(QWidget):
         self.loc["labels"].setdefault("character_only_hint", "Character save only. Disabled on profile saves.")
         self.loc["labels"].setdefault("preset_mode_profile", "Current save type: Profile. Profile presets enabled, character presets disabled.")
         self.loc["labels"].setdefault("preset_mode_character", "Current save type: Character save. Character presets enabled, profile presets disabled.")
-        self.loc["labels"].setdefault("preset_credit", "Thanks to iyre for preset data! If you like it, support the web save editor: iyre.github.io/bl4-save-tools/")
+        self.loc["labels"].setdefault("preset_credit", "")
 
     def update_language(self, lang):
         print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")

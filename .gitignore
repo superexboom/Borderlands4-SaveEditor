@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+.pytest_cache/
+*.py[cod]
+*$py.class
+*.so
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Virtual Environment
+venv/
+.venv/
+env/
+.env/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Backup files
+*.bak
+
+#测试杂物
+sth/
+loadouts/
+count_lines.py
+weapon_edit/weapon_part_importer.py
+config.json
+xp_calc.py
+CsvMergeAutomationPlan.md
+ItemIdPartOverview.md

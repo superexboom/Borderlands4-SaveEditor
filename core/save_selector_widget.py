@@ -1,5 +1,6 @@
 import json
 from . import resource_loader
+from .save_game_controller import infer_user_id_from_save_path
 import os
 from pathlib import Path
 from PyQt6.QtWidgets import (
@@ -7,7 +8,7 @@ from PyQt6.QtWidgets import (
     QTreeView, QAbstractItemView, QHeaderView, QFileDialog, QMessageBox
 )
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
-from PyQt6.QtCore import pyqtSignal, Qt
+from PyQt6.QtCore import pyqtSignal, Qt, QStandardPaths
 from typing import List, Dict, Any
 
 class SaveSelectorWidget(QWidget):
@@ -26,6 +27,7 @@ class SaveSelectorWidget(QWidget):
         self.custom_save_path = None
         self.custom_backup_path = None
         self.game_install_path = None
+        self._auto_user_id = ""
         self._load_config()
         self._load_localization()
 
@@ -42,6 +44,7 @@ class SaveSelectorWidget(QWidget):
         self.user_id_label = QLabel(self.loc['labels']['user_id_input'])
         self.user_id_input = QLineEdit()
         self.user_id_input.setPlaceholderText(self.loc['placeholders']['user_id_input'])
+        self.user_id_input.textEdited.connect(self._clear_auto_user_id)
         
         toolbar_layout.addWidget(self.refresh_button)
         toolbar_layout.addWidget(self.select_game_dir_btn)
@@ -208,42 +211,34 @@ class SaveSelectorWidget(QWidget):
         selected_index = selection_model.selectedRows(0)[0]
         id_from_selection = self.model.itemFromIndex(selected_index).data(Qt.ItemDataRole.UserRole + 2)
         
-        # 如果手动输入框为空，则自动填充检测到的ID
-        if not self.user_id_input.text().strip():
-            self.user_id_input.setText(id_from_selection)
+        # Follow the selected account until the user explicitly edits this field.
+        if not self.user_id_input.text().strip() or self._auto_user_id:
+            self.user_id_input.setText(id_from_selection or "")
+            self._auto_user_id = id_from_selection or ""
+
+    def _clear_auto_user_id(self):
+        self._auto_user_id = ""
 
     def _derive_save_path_from_game_dir(self) -> str:
-        """从游戏安装目录推导存档路径。"""
-        if not self.game_install_path:
-            return None
-        
-        game_dir = Path(self.game_install_path)
-        # 如果选的目录本身就含 Saved，说明已经接近存档位置
-        saved_path = game_dir / "Saved" / "SaveGames"
-        if saved_path.exists():
-            return str(saved_path)
-        
-        # 如果选的是游戏根目录（含 OakGame）
-        oak_path = game_dir / "OakGame" / "Binaries" / "Win64" / "Borderlands 4" / "Saved" / "SaveGames"
-        if oak_path.exists():
-            return str(oak_path)
-        
-        # 如果选的是 OakGame 目录
-        bin_path = game_dir / "Binaries" / "Win64" / "Borderlands 4" / "Saved" / "SaveGames"
-        if bin_path.exists():
-            return str(bin_path)
-        
-        # 如果选的是 Win64/Borderlands 4 目录
-        direct_saved = game_dir / "Saved" / "SaveGames"
-        if direct_saved.exists():
-            return str(direct_saved)
+        """Honor an explicit install folder, then use the redirected Documents root."""
+        if self.game_install_path:
+            game_dir = Path(self.game_install_path)
+            for root in (game_dir, *list(game_dir.parents)[:4]):
+                for candidate in (root / "OakGame" / "Saved" / "SaveGames", root / "Saved" / "SaveGames"):
+                    if candidate.is_dir():
+                        return str(candidate)
+
+        documents = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.DocumentsLocation)
+        documents_save = Path(documents) / "My Games" / "Borderlands 4" / "Saved" / "SaveGames"
+        if documents and documents_save.is_dir():
+            return str(documents_save)
         
         return None
 
     def _check_initial_game_dir(self):
         """启动时检查是否需要设定游戏目录。"""
         # 如果已有 custom_save_path 或 game_install_path，不需要提示
-        if self.custom_save_path or self.game_install_path:
+        if self.custom_save_path or self._derive_save_path_from_game_dir():
             return
         
         msg = self.loc.get('dialogs', {}).get('game_dir_needed', 
@@ -332,29 +327,7 @@ class SaveSelectorWidget(QWidget):
         if not file_path:
             return
 
-        path_obj = Path(file_path)
-        # 尝试从路径中回溯获取ID
-        # 结构通常为: .../SaveGames/<ID>/Profiles/client/...
-        inferred_id = ""
-        current_path = path_obj.parent
-        
-        # 防止死循环，最多向上查找5层
-        for _ in range(5):
-            dirname = current_path.name
-            is_valid_format = False
-            if dirname.isdigit() and 10 <= len(dirname) <= 20:
-                is_valid_format = True
-            elif dirname.replace('-', '').replace('_', '').isalnum() and 10 <= len(dirname) <= 50:
-                if dirname.lower() not in ["profiles", "client", "savegames", "saved", "config"]:
-                    is_valid_format = True
-            
-            if is_valid_format:
-                inferred_id = dirname
-                break
-            
-            if current_path.parent == current_path:
-                break
-            current_path = current_path.parent
+        inferred_id = infer_user_id_from_save_path(file_path)
 
         # 优先使用手动输入框的ID (如果用户虽然点了浏览，但已经在输入框填了ID)
         user_id_input = self.user_id_input.text().strip()

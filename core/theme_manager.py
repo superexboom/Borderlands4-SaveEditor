@@ -4,9 +4,7 @@ Handles dark/light theme switching with frosted glass effects.
 """
 
 import sys
-from pathlib import Path
 from PyQt6.QtCore import QSettings
-from PyQt6.QtWidgets import QApplication
 
 from . import resource_loader
 

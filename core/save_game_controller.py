@@ -19,10 +19,32 @@ from . import b_encoder
 import os
 from datetime import datetime
 from . import unlock_logic
-from .unlock_data import CHARACTER_CLASSES
 
 PUBLIC_KEY = bytes((0x35, 0xEC, 0x33, 0x77, 0xF3, 0x5D, 0xB0, 0xEA, 0xBE, 0x6B, 0x83, 0x11, 0x54, 0x03, 0xEB, 0xFB,
                     0x27, 0x25, 0x64, 0x2E, 0xD5, 0x49, 0x06, 0x29, 0x05, 0x78, 0xBD, 0x60, 0xBA, 0x4A, 0xA7, 0x87))
+
+
+def validate_user_id_format(user_id: str) -> Tuple[bool, str]:
+    user_id = str(user_id or "").strip()
+    if not user_id:
+        return False, "User ID cannot be empty"
+    if user_id.isdigit():
+        return (10 <= len(user_id) <= 20, "Valid Steam ID format" if 10 <= len(user_id) <= 20 else "Steam ID should contain 10-20 digits")
+    if user_id.replace('-', '').replace('_', '').isalnum():
+        return (10 <= len(user_id) <= 50, "Valid Epic Games ID format" if 10 <= len(user_id) <= 50 else "Epic Games ID should contain 10-50 characters")
+    return False, "User ID contains invalid characters."
+
+
+def infer_user_id_from_save_path(save_path: Union[str, Path]) -> str:
+    """Return only the account directory anchored by SaveGames/<ID>/Profiles."""
+    parts = Path(save_path).parts
+    for index, part in enumerate(parts[:-2]):
+        if part.casefold() != "savegames" or parts[index + 2].casefold() != "profiles":
+            continue
+        candidate = parts[index + 1]
+        if validate_user_id_format(candidate)[0]:
+            return candidate
+    return ""
 
 
 class SaveGameController:
@@ -119,18 +141,7 @@ class SaveGameController:
         return plain
 
     def validate_user_id(self, user_id: str) -> Tuple[bool, str]:
-        if not user_id or not user_id.strip():
-            return False, "User ID cannot be empty"
-        user_id = user_id.strip()
-        if user_id.isdigit():
-            if len(user_id) < 10: return False, "Steam ID too short (should be 17 digits)"
-            if len(user_id) > 20: return False, "Steam ID too long (should be 17 digits)"
-            return True, "Valid Steam ID format"
-        if user_id.replace('-', '').replace('_', '').isalnum():
-            if len(user_id) < 10: return False, "Epic Games ID too short"
-            if len(user_id) > 50: return False, "Epic Games ID too long"
-            return True, "Valid Epic Games ID format"
-        return False, "User ID contains invalid characters."
+        return validate_user_id_format(user_id)
 
     def decrypt_save(self, file_path: Path, user_id: str, custom_backup_dir: Optional[str] = None) -> Tuple[str, str, str]:
         self.user_id = user_id.strip()
@@ -301,26 +312,20 @@ class SaveGameController:
             if not target_path or not target_path.is_dir():
                 return []
 
-            for id_dir in target_path.iterdir():
-                if id_dir.is_dir() and id_dir.name.isalnum(): # 文件夹名通常是ID
-                    platform_id = id_dir.name
-                    # 遍历ID文件夹内的所有.sav文件
-                    for sub_dir, _, files in os.walk(id_dir):
-                        for file in files:
-                            if file.lower().endswith('.sav'):
-                                full_path = Path(sub_dir) / file
-                                try:
-                                    stat = full_path.stat()
-                                    file_info = {
-                                        "name": full_path.name,
-                                        "id": platform_id,
-                                        "modified": datetime.fromtimestamp(stat.st_mtime).strftime('%Y-%m-%d %H:%M:%S'),
-                                        "size_kb": stat.st_size / 1024,
-                                        "full_path": str(full_path)
-                                    }
-                                    found_files.append(file_info)
-                                except FileNotFoundError:
-                                    continue
+            for full_path in target_path.rglob('*'):
+                if not full_path.is_file() or full_path.suffix.lower() != '.sav':
+                    continue
+                try:
+                    stat = full_path.stat()
+                    found_files.append({
+                        "name": full_path.name,
+                        "id": infer_user_id_from_save_path(full_path),
+                        "modified": datetime.fromtimestamp(stat.st_mtime).strftime('%Y-%m-%d %H:%M:%S'),
+                        "size_kb": stat.st_size / 1024,
+                        "full_path": str(full_path),
+                    })
+                except FileNotFoundError:
+                    continue
         except Exception as e:
             print(f"扫描存档文件夹时出错: {e}")
         
@@ -438,6 +443,8 @@ class SaveGameController:
                 unlock_logic.unlock_vault_powers(data)
             elif preset_name == "unlock_all_hover_drives":
                 unlock_logic.unlock_all_hover_drives(data)
+            elif preset_name == "unlock_all_cosmetics":
+                unlock_logic.unlock_all_cosmetics(data)
             elif preset_name == "unlock_all_specialization":
                 unlock_logic.unlock_all_specialization(data)
             elif preset_name == "unlock_postgame":
@@ -452,6 +459,7 @@ class SaveGameController:
                     unlock_logic.set_max_sdu(data)
                     unlock_logic.unlock_vault_powers(data)
                     unlock_logic.unlock_all_hover_drives(data)
+                    unlock_logic.unlock_all_cosmetics(data)
                 else:
                     unlock_logic.max_ammo(data)
                     unlock_logic.max_currency(data)

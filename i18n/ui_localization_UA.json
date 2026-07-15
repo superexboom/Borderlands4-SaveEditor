@@ -155,7 +155,7 @@
       "character_only_hint": "Лише для збереження персонажа. У Profile кнопки будуть неактивні.",
       "preset_mode_profile": "Тип збереження: Profile. Пресети Profile активні, пресети персонажа вимкнені.",
       "preset_mode_character": "Тип збереження: персонаж. Пресети персонажа активні, пресети Profile вимкнені.",
-      "preset_credit": "Thanks to iyre for preset data! If you like it, support the web save editor: iyre.github.io/bl4-save-tools/"
+      "preset_credit": ""
     },
     "buttons": {
       "apply_changes": "Застосувати зміни персонажа та валюти",
@@ -169,6 +169,7 @@
       "discover_locs": "Виявити всі локації",
       "unlock_safehouses": "Розблокувати всі притулки",
       "unlock_collectibles": "Розблокувати всі колекційні предмети",
+      "unlock_cosmetics": "Розблокувати всю косметику та скіни зброї",
       "complete_challenges": "Завершити всі випробування",
       "complete_achievements": "Завершити всі досягнення",
       "skip_story": "Пропустити сюжетні місії",
@@ -191,8 +192,22 @@
     "columns": {
       "name": "Назва",
       "type": "Тип",
-      "slot": "Контейнер/Слот",
-      "level": "Рівень"
+      "manufacturer": "Виробник",
+      "rarity": "Рідкість",
+      "level": "Рівень",
+      "flags": "Прапорець",
+      "damage": "Шкода",
+      "dps": "Шкода/с",
+      "accuracy": "Точність",
+      "fire_rate": "Швидкострільність",
+      "reload_time": "Перезаряджання",
+      "magazine": "Магазин",
+      "critical_damage": "Крит. шкода",
+      "ammo_cost": "Витрата боєприпасів",
+      "splash_radius": "Радіус вибуху",
+      "ads_time": "Час прицілювання",
+      "equip_time": "Час екіпірування",
+      "serial": "Серійний номер"
     },
     "containers": {
       "Backpack": "Рюкзак",
@@ -232,6 +247,12 @@
       "serial": "Серійний номер",
       "decoded_id": "Декодований ID",
       "button_update": "Оновити обраний предмет"
+    },
+    "actions": {
+      "copy_name": "Копіювати назву",
+      "copy_serial": "Копіювати серійний номер",
+      "copy_decoded": "Копіювати повну розшифровку",
+      "copy_parts": "Копіювати деталі"
     },
     "defaults": {
       "unknown_container": "Невідомий контейнер",
@@ -463,6 +484,7 @@
       "update_weapon": "Оновити зброю",
       "add_to_backpack": "Додати до рюкзака",
       "add_part": "+ Додати частину",
+      "add_skin": "+ Додати скін",
       "confirm_add": "Підтвердити"
     },
     "flags": {
@@ -473,6 +495,19 @@
       "33": "33 (Група 2)",
       "65": "65 (Група 3)",
       "129": "129 (Група 4)"
+    },
+    "stats": {
+      "damage": "Шкода",
+      "dps": "Шкода/с",
+      "accuracy": "Точність",
+      "fire_rate": "Швидкострільність",
+      "reload_time": "Перезаряджання",
+      "magazine": "Магазин",
+      "critical_damage": "Крит. шкода",
+      "ammo_cost": "Витрата боєприпасів",
+      "splash_radius": "Радіус вибуху",
+      "ads_time": "Час прицілювання",
+      "equip_time": "Час екіпірування"
     },
     "dialogs": {
       "error": "Помилка",

@@ -12,6 +12,7 @@ from PyQt6.QtCore import pyqtSignal, Qt
 
 from core import b_encoder
 from core import resource_loader
+from tabs.qt_catalog_picker import ContainedWheelListWidget, ContainedWheelScrollArea
 import lookup
 from core import bl4_functions as bl4f
 
@@ -225,7 +226,7 @@ class QtHeavyWeaponEditorTab(QWidget):
 
     def _create_scrollable_radio_group(self, title):
         group_box = QGroupBox(title)
-        scroll_area = QScrollArea()
+        scroll_area = ContainedWheelScrollArea()
         scroll_area.setMinimumHeight(200)
         scroll_area.setWidgetResizable(True)
         widget_in_scroll = QWidget()
@@ -239,10 +240,10 @@ class QtHeavyWeaponEditorTab(QWidget):
         group_box = QGroupBox(title)
         layout = QGridLayout(group_box)
         
-        avail_list = QListWidget()
+        avail_list = ContainedWheelListWidget()
         avail_list.setMinimumHeight(200)
         avail_list.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
-        sel_list = QListWidget()
+        sel_list = ContainedWheelListWidget()
         sel_list.setMinimumHeight(200)
         sel_list.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         

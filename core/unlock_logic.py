@@ -3,7 +3,8 @@ import copy
 import re
 from .unlock_data import (
     COLLECTIBLES, MISSIONSETS, UNLOCKABLES, LOCATIONS,
-    CHARACTER_CLASSES, MAX_LEVEL, SAFEHOUSE_SILO_LOCATIONS
+    CHARACTER_CLASSES, MAX_LEVEL, SAFEHOUSE_SILO_LOCATIONS,
+    CHARACTER_UNLOCKABLES, STAT_TARGETS, EXPLORATION, POSTGAME
 )
 
 # --- Helper Functions ---
@@ -35,12 +36,49 @@ def merge_profile_unlockable_entries(data, key, prefix=''):
     template = UNLOCKABLES.get(key, {})
     template_entries = template.get('entries', []) if isinstance(template, dict) else []
 
-    merged = set(existing)
+    merged = {entry.lower(): entry for entry in existing if isinstance(entry, str)}
+    prefix = prefix.lower()
     for entry in template_entries:
-        if isinstance(entry, str) and entry.startswith(prefix):
-            merged.add(entry)
+        if isinstance(entry, str) and entry.lower().startswith(prefix):
+            merged[entry.lower()] = entry
 
-    section['entries'] = sorted(list(merged), key=lambda x: x.lower())
+    section['entries'] = sorted(merged.values(), key=str.lower)
+
+def merge_character_unlockable_entries(data, key, prefix=''):
+    unlockables = get_or_create_dict(data, 'unlockables')
+    section = get_or_create_dict(unlockables, key)
+    existing = get_or_create_list(section, 'entries')
+    template_entries = CHARACTER_UNLOCKABLES.get(key, [])
+    merged = {entry.lower(): entry for entry in existing if isinstance(entry, str)}
+    prefix = prefix.lower()
+    for entry in template_entries:
+        if isinstance(entry, str) and entry.lower().startswith(prefix):
+            merged[entry.lower()] = entry
+    section['entries'] = sorted(merged.values(), key=str.lower)
+
+def apply_stat_targets(data, targets):
+    """Merge generated numeric stat targets without reducing existing progress."""
+    parent_paths = {
+        '.'.join(parts[:index])
+        for path in targets
+        for parts in [path.split('.')]
+        for index in range(1, len(parts))
+    }
+    for path, value in targets.items():
+        parts = path.split('.')
+        if (
+            path in parent_paths
+            or len(parts) < 3
+            or parts[0] != 'stats'
+            or not isinstance(value, (int, float))
+        ):
+            continue
+        node = data
+        for part in parts[:-1]:
+            node = get_or_create_dict(node, part)
+        previous = node.get(parts[-1])
+        if not isinstance(previous, (int, float)) or value > previous:
+            node[parts[-1]] = value
 
 # --- Exploration Logic ---
 
@@ -81,13 +119,13 @@ def clear_map_fog(data):
     visit_all_worlds(data)
 
 def visit_all_worlds(data):
-    worldlist = [
+    fallback_worlds = [
         'Intro_P', 'World_P', 'Fortress_Grasslands_P', 'Vault_Grasslands_P',
         'Fortress_Shatteredlands_P', 'Vault_ShatteredLands_P', 'Fortress_Mountains_P',
         'Vault_Mountains_P', 'ElpisElevator_P', 'Elpis_P', 'UpperCity_P',
         'Raid1_P', 'Banjo_P', 'Cello_P', 'Cowbell_P', 'VaultoftheDamned_P'
     ]
-    regionlist = [
+    fallback_regions = [
         'KairosGeneric', 'grasslands_Prison', 'grasslands_RegionA', 'grasslands_RegionB',
         'grasslands_RegionC', 'grasslands_RegionD', 'grasslands_RegionE', 'Grasslands_Fortress',
         'Grasslands_Vault', 'shatteredlands_RegionA', 'shatteredlands_RegionB',
@@ -100,7 +138,8 @@ def visit_all_worlds(data):
         'Cowbell_BloodstainedHollow', 'Cowbell_WindsweptWastes', 'Cowbell_Feuermann',
         'Cowbell_VaultOfTheDamned'
     ]
-    regionlist.sort(key=lambda x: x.lower())
+    worldlist = EXPLORATION.get('worlds') or fallback_worlds
+    regionlist = sorted(EXPLORATION.get('regions') or fallback_regions, key=str.lower)
 
     if is_profile_save(data):
         local = get_profile_local(data)
@@ -170,7 +209,7 @@ def update_stats_counters(data, counters, category='challenge'):
 
 def complete_all_collectibles(data):
     if is_profile_save(data):
-        for key in ['echo_log_challenges', 'sharedprogress_cello']:
+        for key in ['echo_log_challenges', 'sharedprogress_cello', 'sharedprogress_tuba']:
             merge_profile_unlockable_entries(data, key)
         merge_profile_unlockable_entries(data, 'echo_upgrade_challenges', 'echo_upgrade_challenges.collect')
         merge_profile_unlockable_entries(data, 'sharedprogress_cowbell', 'SharedProgress_Cowbell.collectible')
@@ -193,6 +232,15 @@ def complete_all_collectibles(data):
                     cat_dict[k] = v
         else:
             collectibles[category] = values
+
+    apply_stat_targets(
+        data,
+        {
+            key: value
+            for key, value in STAT_TARGETS.get('openworld', {}).items()
+            if 'collectible' in key.lower()
+        },
+    )
             
     # Eridian/Nyriad ECHO logs
     state = get_or_create_dict(data, 'state')
@@ -215,9 +263,11 @@ def unlock_vault_powers(data):
 
 def unlock_postgame(data):
     globals_ = get_or_create_dict(data, 'globals')
-    globals_['highest_unlocked_vault_hunter_level'] = 6
+    globals_['highest_unlocked_vault_hunter_level'] = POSTGAME.get(
+        'highest_unlocked_vault_hunter_level', 6
+    )
     globals_['vault_hunter_level'] = 1
-    
+
     complete_uvh_challenges(data)
     merge_missionsets_with_prefix(data, 'missionset_main_postgame')
 
@@ -571,30 +621,32 @@ def set_max_sdu(data):
 def unlock_all_hover_drives(data):
     if is_profile_save(data):
         merge_profile_unlockable_entries(data, 'unlockable_hoverdrives')
+        merge_profile_unlockable_entries(data, 'unlockable_vehicles')
         return
 
-    unlockables_dict = get_or_create_dict(data, 'unlockables')
-    hover_drives = get_or_create_dict(unlockables_dict, 'unlockable_hoverdrives')
-    existing = get_or_create_list(hover_drives, 'entries')
-    
-    # Generate list (from unlockables.js)
-    manufacturers = [
-        'Borg', 'Daedalus', 'Jakobs', 'Maliwan',
-        'Order', 'Tediore', 'Torgue', 'Vladof'
+    if CHARACTER_UNLOCKABLES:
+        merge_character_unlockable_entries(data, 'unlockable_hoverdrives_character')
+        return
+
+    # Compatibility fallback for source checkouts without generated NCS data.
+    entries = [
+        f"unlockable_hoverdrives_character.{manufacturer}_{index:02d}"
+        for manufacturer in ('Borg', 'Daedalus', 'Jakobs', 'Maliwan', 'Order', 'Tediore', 'Torgue', 'Vladof')
+        for index in range(1, 6)
     ]
-    new_list = []
-    for mfr in manufacturers:
-        for i in range(1, 6):
-            if mfr == 'Jakobs' and (i == 1 or i == 3):
-                new_list.append(f"unlockable_hoverdrives.{mfr.lower()}_{str(i).zfill(2)}")
-            else:
-                new_list.append(f"unlockable_hoverdrives.{mfr}_{str(i).zfill(2)}")
-                
-    merged = set(existing)
-    for item in new_list:
-        merged.add(item)
-        
-    hover_drives['entries'] = sorted(list(merged), key=lambda x: x.lower())
+    unlockables = get_or_create_dict(data, 'unlockables')
+    section = get_or_create_dict(unlockables, 'unlockable_hoverdrives_character')
+    section['entries'] = sorted({*get_or_create_list(section, 'entries'), *entries}, key=str.lower)
+
+def unlock_all_cosmetics(data):
+    if not is_profile_save(data):
+        return
+    for namespace in (
+        'unlockable_darksiren', 'unlockable_echo4', 'unlockable_exosoldier',
+        'unlockable_gravitar', 'unlockable_paladin', 'unlockable_robodealer',
+        'unlockable_weapons',
+    ):
+        merge_profile_unlockable_entries(data, namespace)
 
 # --- Challenge Functions ---
 
@@ -612,6 +664,8 @@ def complete_all_challenges(data):
     complete_manufacturer_challenges(data)
     complete_licensed_parts_challenges(data)
     complete_phosphene_challenges(data)
+    for category in ('challenge', 'dlc_challenges', 'shinygear'):
+        apply_stat_targets(data, STAT_TARGETS.get(category, {}))
 
 def complete_uvh_challenges(data):
     counters = {
@@ -624,6 +678,7 @@ def complete_uvh_challenges(data):
         'uvh_3_finalchallenge': 1, 'uvh_4_finalchallenge': 1, 'uvh_5_finalchallenge': 1,
     }
     update_stats_counters(data, counters)
+    apply_stat_targets(data, POSTGAME.get('stat_targets', {}))
 
 def complete_combat_challenges(data):
     counters = {
@@ -822,6 +877,7 @@ def complete_all_achievements(data):
         '32_zane_hidden': 1, '33_oddman_hidden': 1, '34_dave_hidden': 1,
     }
     update_stats_counters(data, counters, 'achievements')
+    apply_stat_targets(data, STAT_TARGETS.get('achievements', {}))
     merge_missionsets_with_prefix(data, 'missionset_zoneactivity_')
 
 def complete_discovery_achievements(data):
@@ -832,6 +888,14 @@ def complete_discovery_achievements(data):
         '17_discovery_city': 21,
     }
     update_stats_counters(data, counters, 'achievements')
+    apply_stat_targets(
+        data,
+        {
+            key: value
+            for key, value in STAT_TARGETS.get('achievements', {}).items()
+            if '.discovery_' in key
+        },
+    )
 
 def max_currency(data):
     state = get_or_create_dict(data, 'state')

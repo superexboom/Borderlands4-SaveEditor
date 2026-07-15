@@ -1,10 +1,11 @@
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit, QPushButton, QGroupBox, QComboBox, QCheckBox, QListWidget, QMessageBox, QAbstractItemView, QScrollArea, QSpinBox
-from PyQt6.QtCore import pyqtSignal, Qt
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QGroupBox, QComboBox, QCheckBox, QMessageBox, QScrollArea
+from PyQt6.QtCore import pyqtSignal
 import random
-import re
 
 from core import b_encoder
 from core import resource_loader
+
+from .qt_catalog_picker import CatalogPicker
 
 enhancement_data = resource_loader.get_enhancement_data()
 
@@ -152,85 +153,35 @@ class QtEnhancementEditorTab(QWidget):
 
         stacking_group = QGroupBox(self.ui_loc['groups']['perk_stacking'])
         stacking_layout = QVBoxLayout(stacking_group)
-
-        stacking_layout.addWidget(QLabel(self.ui_loc['labels']['selected_stacks']))
-        self.stack_sel_list = QListWidget()
-        self.stack_sel_list.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
-        self.stack_sel_list.setStyleSheet("QListWidget::item { background-color: transparent; }")
-        self.stack_sel_list.setMinimumHeight(200)
-        stacking_layout.addWidget(self.stack_sel_list)
-
-        self.stack_filter_var = QLineEdit()
-        self.stack_filter_var.textChanged.connect(self.build_unified_available)
-        stacking_layout.addWidget(self.stack_filter_var)
-
-        avail_layout = QHBoxLayout()
-        self.stack_avail_list = QListWidget()
-        self.stack_avail_list.setMinimumHeight(200)
-        self.stack_avail_list.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
-        avail_layout.addWidget(self.stack_avail_list)
-        
-        buttons_stack = QVBoxLayout()
-        
-        self.stack_multiplier = QSpinBox()
-        self.stack_multiplier.setRange(1, 999)
-        self.stack_multiplier.setValue(1)
-        buttons_stack.addWidget(self.stack_multiplier)
-        
-        add_stack_btn = QPushButton("»")
-        add_stack_btn.clicked.connect(self.add_selected_stacks)
-        buttons_stack.addWidget(add_stack_btn)
-        
-        remove_stack_btn = QPushButton("«")
-        remove_stack_btn.clicked.connect(self.remove_selected_stacks)
-        buttons_stack.addWidget(remove_stack_btn)
-        
-        clear_stack_btn = QPushButton(self.ui_loc['buttons']['clear'])
-        clear_stack_btn.clicked.connect(self.clear_stacks)
-        buttons_stack.addWidget(clear_stack_btn)
-        
-        avail_layout.addLayout(buttons_stack)
-        stacking_layout.addLayout(avail_layout)
-
+        self.stack_picker = CatalogPicker(
+            stackable=True,
+            search_placeholder=self._pick_text("搜索…", "Search..."),
+            avail_title=self._pick_text("可用（双击添加）", "Available (double-click to add)"),
+            selected_title=self.ui_loc.get('labels', {}).get('selected_stacks', self._pick_text("已选堆叠", "Selected Stacks")),
+            clear_text=self.ui_loc.get('buttons', {}).get('clear', self._pick_text("清空", "Clear")),
+        )
+        self.stack_picker.changed.connect(self.rebuild_output)
+        stacking_layout.addWidget(self.stack_picker)
         main_layout.addWidget(stacking_group)
 
-        # 247 Builder
+        # 247 Builder (secondary stats) with weapon / firmware categories
         builder_247_group = QGroupBox(self.ui_loc['groups']['builder_247'])
-        builder_247_layout = QGridLayout(builder_247_group)
-        filter_247_layout = QHBoxLayout()
-        self.filter_247_var = QLineEdit()
-        self.filter_247_var.textChanged.connect(self.set_247_lists)
-        filter_247_layout.addWidget(self.filter_247_var)
-        builder_247_layout.addLayout(filter_247_layout, 0, 0, 1, 3)
-
-        self.avail_247_list = QListWidget()
-        self.avail_247_list.setMinimumHeight(200)
-        self.avail_247_list.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
-        builder_247_layout.addWidget(self.avail_247_list, 1, 0)
-        
-        buttons_247 = QVBoxLayout()
-        self.stats_multiplier = QSpinBox()
-        self.stats_multiplier.setRange(1, 999)
-        self.stats_multiplier.setValue(1)
-        buttons_247.addWidget(self.stats_multiplier)
-        
-        add_247_btn = QPushButton("»")
-        add_247_btn.clicked.connect(self.add_247)
-        buttons_247.addWidget(add_247_btn)
-        
-        rem_247_btn = QPushButton("«")
-        rem_247_btn.clicked.connect(self.rem_247)
-        buttons_247.addWidget(rem_247_btn)
-        
-        clear_247_btn = QPushButton(self.ui_loc['buttons']['clear'])
-        clear_247_btn.clicked.connect(self.clear_247)
-        buttons_247.addWidget(clear_247_btn)
-        
-        builder_247_layout.addLayout(buttons_247, 1, 1)
-        self.sel_247_list = QListWidget()
-        self.sel_247_list.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
-        self.sel_247_list.setMinimumHeight(200)
-        builder_247_layout.addWidget(self.sel_247_list, 1, 2)
+        builder_247_layout = QVBoxLayout(builder_247_group)
+        self.stat_picker = CatalogPicker(
+            stackable=True,
+            search_placeholder=self._pick_text("搜索…", "Search..."),
+            avail_title=self._pick_text("可用（双击添加）", "Available (double-click to add)"),
+            selected_title=self._pick_text("已选属性", "Selected Stats"),
+            clear_text=self.ui_loc.get('buttons', {}).get('clear', self._pick_text("清空", "Clear")),
+        )
+        self.stat_picker.set_categories([(k, self._cat_label(k)) for k in
+                                         ['all', 'firmware', 'sniper', 'shotgun', 'smg', 'pistol', 'ar', 'gun']])
+        self.stat_picker.set_subcategories([(k, self._sub_label(k)) for k in
+                                            ['all', 'dmg', 'crit', 'firerate', 'acc', 'reload', 'mag',
+                                             'splashdmg', 'splashradius', 'ads', 'se_dmg', 'se_chance', 'equip']])
+        self.stat_picker.changed.connect(self.rebuild_output)
+        self._populate_stat_picker()
+        builder_247_layout.addWidget(self.stat_picker)
         main_layout.addWidget(builder_247_group)
 
         # Special Thanks banner
@@ -262,12 +213,11 @@ class QtEnhancementEditorTab(QWidget):
         if mfg_names:
             self.mfg_sel.setCurrentText(self._(mfg_names[0]))
         self.on_mfg_change()
-        self.set_247_lists()
 
     def on_mfg_change(self, *args):
         self.set_rarities_for_mfg()
         self.set_perk_checkboxes()
-        self.build_unified_available()
+        self._populate_stack_picker()
         self.rebuild_output()
 
     def set_rarities_for_mfg(self):
@@ -300,111 +250,95 @@ class QtEnhancementEditorTab(QWidget):
                 self.perks_box.addWidget(var)
                 self.perk_vars[index] = var
 
-    def build_unified_available(self, *args):
-        self.stack_avail_list.clear()
+    def _pick_text(self, zh, en):
+        return zh if self.current_lang == 'zh-CN' else en
+
+    _CAT_LABELS = {
+        'zh-CN': {'all': '全部', 'firmware': '固件', 'sniper': '狙击枪', 'shotgun': '霰弹枪',
+                  'smg': '冲锋枪', 'pistol': '手枪', 'ar': '突击步枪', 'gun': '通用'},
+        'en': {'all': 'All', 'firmware': 'Firmware', 'sniper': 'Sniper', 'shotgun': 'Shotgun',
+               'smg': 'SMG', 'pistol': 'Pistol', 'ar': 'AR', 'gun': 'Universal'},
+    }
+    _SUB_LABELS = {
+        'zh-CN': {'all': '全部', 'dmg': '伤害', 'crit': '暴击伤害', 'firerate': '射速', 'acc': '精准',
+                  'reload': '装填', 'mag': '弹匣', 'splashdmg': '溅射伤害', 'splashradius': '溅射半径',
+                  'ads': '开镜', 'se_dmg': '状态效果伤害', 'se_chance': '状态效果率', 'equip': '装备速度', 'other': '其他'},
+        'en': {'all': 'All', 'dmg': 'Damage', 'crit': 'Crit DMG', 'firerate': 'Fire Rate', 'acc': 'Accuracy',
+               'reload': 'Reload', 'mag': 'Magazine', 'splashdmg': 'Splash DMG', 'splashradius': 'Splash Radius',
+               'ads': 'ADS', 'se_dmg': 'SE DMG', 'se_chance': 'SE Chance', 'equip': 'Equip', 'other': 'Other'},
+    }
+    _WEAPON_FIRST = {'Sniper': 'sniper', 'Shotgun': 'shotgun', 'SMG': 'smg',
+                     'Pistol': 'pistol', 'AR': 'ar', 'Gun': 'gun'}
+
+    def _cat_label(self, key):
+        m = self._CAT_LABELS['zh-CN'] if self.current_lang == 'zh-CN' else self._CAT_LABELS['en']
+        return m.get(key, key)
+
+    def _sub_label(self, key):
+        m = self._SUB_LABELS['zh-CN'] if self.current_lang == 'zh-CN' else self._SUB_LABELS['en']
+        return m.get(key, key)
+
+    def _stat_subcategory(self, name_en):
+        # 大小写不敏感匹配；多词关键字优先；兼容 CSV 里个别拼写错误
+        n = name_en.lower()
+        checks = [
+            ("crit dmg", "crit"), ("splash dmg", "splashdmg"), ("splash radius", "splashradius"),
+            ("spalsh radius", "splashradius"), ("status effect dmg", "se_dmg"),
+            ("status effect chance", "se_chance"), ("status effect smg", "se_dmg"),
+            ("effect chance", "se_chance"), ("fire rate", "firerate"), ("reload", "reload"),
+            ("mag", "mag"), ("ads", "ads"), ("acc", "acc"), ("equip", "equip"),
+            ("splash", "splashdmg"), ("dmg", "dmg"),
+        ]
+        for kw, key in checks:
+            if kw in n:
+                return key
+        return "other"
+
+    def _classify_247(self, name_en):
+        """首词=武器类型即归对应武器；否则归“固件”。返回 (category, subcategory)。
+        固件是具名整枪词条、没有属性类型，故二级分类留空(None)，不塞进“其他”。"""
+        first = name_en.split(' ', 1)[0] if name_en else ""
+        category = self._WEAPON_FIRST.get(first, "firmware")
+        if category == "firmware":
+            return "firmware", None
+        return category, self._stat_subcategory(name_en)
+
+    def _populate_stat_picker(self):
+        items = []
+        for stat in enhancement_data.get('secondary_247', []):
+            code = stat['code']
+            name_en = stat['name']
+            cat, sub = self._classify_247(name_en)
+            items.append({
+                "key": code,
+                "label": f"[{code}] {self._(name_en)}",
+                "category": cat,
+                "subcategory": sub,
+                "data": {"code": code},
+            })
+        self.stat_picker.set_source(items)
+
+    def _populate_stack_picker(self):
         current_mfg_en = self._get_current_mfg_en_name()
-        if not current_mfg_en: return 
-        query = self.stack_filter_var.text().lower()
-
-        all_perks = []
+        cats = [("all", self._cat_label('all'))]
+        items = []
         for mfg, data in enhancement_data.get('manufacturers', {}).items():
-            if mfg == current_mfg_en: continue
+            if mfg == current_mfg_en:
+                continue
+            cats.append((mfg, self._(mfg)))
             for perk in data.get('perks', []):
-                 if perk.get('index') in [1, 2, 3, 9]:
-                    all_perks.append({'mfg': mfg, 'perk': perk})
-
-        for item in sorted(all_perks, key=lambda x: (x['mfg'], x['perk']['index'])):
-            mfg_name, perk_data = item['mfg'], item['perk']
-            text = f"[{perk_data['index']}] {self._(perk_data['name'])} — {self._(mfg_name)}"
-            if not query or query in text.lower():
-                self.stack_avail_list.addItem(text)
-        
-    def add_selected_stacks(self):
-        multiplier = self.stack_multiplier.value()
-        for item in self.stack_avail_list.selectedItems():
-            stack_name = item.text()
-            
-            existing_item = None
-            for i in range(self.stack_sel_list.count()):
-                sel_item = self.stack_sel_list.item(i)
-                sel_text = sel_item.text()
-                
-                match = re.match(r"\((\d+)\)\s+(.*)", sel_text)
-                if match:
-                    current_count = int(match.group(1))
-                    current_name = match.group(2)
-                else:
-                    current_count = 1
-                    current_name = sel_text
-                
-                if current_name == stack_name:
-                    existing_item = sel_item
-                    break
-            
-            if existing_item:
-                new_count = current_count + multiplier
-                existing_item.setText(f"({new_count}) {stack_name}")
-            else:
-                self.stack_sel_list.addItem(f"({multiplier}) {stack_name}")
-                
-        self.rebuild_output()
-
-    def remove_selected_stacks(self):
-        for item in self.stack_sel_list.selectedItems():
-            self.stack_sel_list.takeItem(self.stack_sel_list.row(item))
-        self.rebuild_output()
-
-    def clear_stacks(self):
-        self.stack_sel_list.clear()
-        self.rebuild_output()
-
-    def set_247_lists(self, *args):
-        self.avail_247_list.clear()
-        query = self.filter_247_var.text().lower()
-        stats = enhancement_data.get('secondary_247', [])
-        for stat in stats:
-            text = f"[{stat['code']}] {self._(stat['name'])}"
-            if not query or query in text.lower():
-                self.avail_247_list.addItem(text)
-
-    def add_247(self):
-        multiplier = self.stats_multiplier.value()
-        for item in self.avail_247_list.selectedItems():
-            stat_name = item.text()
-            
-            existing_item = None
-            for i in range(self.sel_247_list.count()):
-                sel_item = self.sel_247_list.item(i)
-                sel_text = sel_item.text()
-                
-                match = re.match(r"\((\d+)\)\s+(.*)", sel_text)
-                if match:
-                    current_count = int(match.group(1))
-                    current_name = match.group(2)
-                else:
-                    current_count = 1
-                    current_name = sel_text
-                
-                if current_name == stat_name:
-                    existing_item = sel_item
-                    break
-            
-            if existing_item:
-                new_count = current_count + multiplier
-                existing_item.setText(f"({new_count}) {stat_name}")
-            else:
-                self.sel_247_list.addItem(f"({multiplier}) {stat_name}")
-                
-        self.rebuild_output()
-
-    def rem_247(self):
-        for item in self.sel_247_list.selectedItems():
-            self.sel_247_list.takeItem(self.sel_247_list.row(item))
-        self.rebuild_output()
-        
-    def clear_247(self):
-        self.sel_247_list.clear()
-        self.rebuild_output()
+                if perk.get('index') in [1, 2, 3, 9]:
+                    idx = perk['index']
+                    items.append({
+                        "key": f"{mfg}:{idx}",
+                        "label": f"[{idx}] {self._(perk['name'])} \u2014 {self._(mfg)}",
+                        "category": mfg,
+                        "subcategory": None,
+                        "data": {"mfg": mfg, "idx": idx},
+                    })
+        items.sort(key=lambda x: (x['category'], x['data']['idx']))
+        self.stack_picker.set_categories(cats)
+        self.stack_picker.set_source(items)
 
     def rebuild_output(self, *args):
         parts = []
@@ -429,44 +363,23 @@ class QtEnhancementEditorTab(QWidget):
                 parts.append(f"{{{index}}}")
 
         stacked_perks = {}
-        for i in range(self.stack_sel_list.count()):
-            item_text = self.stack_sel_list.item(i).text()
-            match = re.match(r"\((\d+)\)\s+(.*)", item_text)
-            if match:
-                count = int(match.group(1))
-                display_text = match.group(2)
-            else:
-                count = 1
-                display_text = item_text
-                
-            mfg_name_loc = display_text.split('—')[-1].strip()
-            perk_idx = int(display_text[1:display_text.find(']')])
-            mfg_en_stack = self._get_en_name_from_loc(mfg_name_loc, list(enhancement_data['manufacturers'].keys()))
-            if mfg_en_stack:
-                mfg_code_stack = enhancement_data['manufacturers'][mfg_en_stack]['code']
-                if mfg_code_stack not in stacked_perks:
-                    stacked_perks[mfg_code_stack] = []
-                for _ in range(count):
-                    stacked_perks[mfg_code_stack].append(perk_idx)
-        
+        for e in self.stack_picker.entries():
+            mfg_en_stack = e["data"]["mfg"]
+            perk_idx = e["data"]["idx"]
+            mfg_code_stack = enhancement_data['manufacturers'][mfg_en_stack]['code']
+            stacked_perks.setdefault(mfg_code_stack, [])
+            for _ in range(e["count"]):
+                stacked_perks[mfg_code_stack].append(perk_idx)
+
         for code, indices in stacked_perks.items():
-             parts.append(f"{{{code}:[{' '.join(map(str, sorted(indices)))}]}}")
+            parts.append(f"{{{code}:[{' '.join(map(str, sorted(indices)))}]}}")
 
         stats_247 = []
-        for i in range(self.sel_247_list.count()):
-            item_text = self.sel_247_list.item(i).text()
-            match = re.match(r"\((\d+)\)\s+(.*)", item_text)
-            if match:
-                count = int(match.group(1))
-                display_text = match.group(2)
-            else:
-                count = 1
-                display_text = item_text
-            
-            val = int(display_text.split(']')[0][1:])
-            for _ in range(count):
+        for e in self.stat_picker.entries():
+            val = e["data"]["code"]
+            for _ in range(e["count"]):
                 stats_247.append(val)
-                
+
         if stats_247:
             parts.append(f"{{247:[{' '.join(map(str, stats_247))}]}}")
 

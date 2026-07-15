@@ -216,25 +216,26 @@ def get_class_mods_image_path(class_name: str, image_name: str) -> Optional[Path
     """
     return get_image_resource_path(f"class_mods/{class_name}/{image_name}")
 
-def load_all_skill_descriptions() -> Dict[str, Dict[str, str]]:
+def load_all_skill_descriptions() -> Dict[tuple[str, str], Dict[str, str]]:
     """
     加载所有职业的技能描述文件，并整合成一个字典
     使用Skills.csv获取英文名到中文名的映射
 
     Returns:
-        一个以技能英文名为键，包含中英文描述的字典
+        一个以(职业, 技能英文名)为键，包含中英文描述的字典
     """
     all_skills = {}
     characters = ['Amon', 'Vex', 'Harlowe', 'Rafa', 'C4sh']
     
     # 从Skills.csv加载英文名→中文名的映射
     skills_csv = load_class_mods_csv("Skills.csv")
-    skill_name_map = {}  # skill_name_EN -> skill_name_ZH
+    skill_name_map = {}
     for row in skills_csv:
+        class_name = row.get('class_name', '').strip().casefold()
         en_name = row.get('skill_name_EN', '').strip()
         zh_name = row.get('skill_name_ZH', '').strip()
-        if en_name and zh_name:
-            skill_name_map[en_name] = zh_name
+        if class_name and en_name and zh_name:
+            skill_name_map[(class_name, en_name.casefold())] = zh_name
 
     for char in characters:
         en_skills_list = load_class_mods_json(f"{char}_en.json")
@@ -259,37 +260,27 @@ def load_all_skill_descriptions() -> Dict[str, Dict[str, str]]:
             desc_zh = desc_en
             
             # 使用Skills.csv中的映射查找中文名称
-            zh_name_candidate = skill_name_map.get(skill_en_name)
+            skill_key = (char.casefold(), skill_en_name.casefold())
+            zh_name_candidate = skill_name_map.get(skill_key)
             if zh_name_candidate and zh_name_candidate in zh_lookup:
                 desc_zh = zh_lookup[zh_name_candidate].get('description', desc_en)
             # Fallback: Try direct name match (if keys are identical)
             elif skill_en_name in zh_lookup:
                 desc_zh = zh_lookup[skill_en_name].get('description', desc_en)
 
-            all_skills[skill_en_name] = {
+            all_skills[skill_key] = {
                 'en': desc_en,
                 'zh': desc_zh,
                 'type': en_skill_data.get('type', 'N/A')
             }
-            
-            # Also add lower-case key to handle inconsistencies
-            if skill_en_name and skill_en_name.lower() != skill_en_name:
-                all_skills[skill_en_name.lower()] = all_skills[skill_en_name]
 
     return all_skills
 
-def load_enhancement_json(filename: str, use_literal_eval: bool = False) -> Optional[Dict[str, Any]]:
+def get_enhancement_data_path(filename: str) -> Optional[Path]:
     """
-    加载增强功能JSON/文本文件
-    
-    Args:
-        filename: 文件名
-        use_literal_eval: 是否使用ast.literal_eval解析
-        
-    Returns:
-        解析后的数据，失败时返回None
+    获取enhancement目录下数据文件的路径
     """
-    return load_json_resource(f"enhancement/{filename}", use_literal_eval)
+    return get_resource_path(f"enhancement/{filename}")
 
 
 def load_enhancement_csv(filename: str) -> List[Dict[str, str]]:
@@ -365,8 +356,8 @@ def get_enhancement_data() -> Optional[Dict[str, Any]]:
         rarity_map_247 = {}
         rarity_localization = {
             'Common': '普通',
-            'Uncommon': '稀有',
-            'Rare': '特殊',
+            'Uncommon': '罕见',
+            'Rare': '稀有',
             'Epic': '史诗',
             'Legendary': '传奇'
         }
@@ -468,19 +459,6 @@ def get_grenade_data_path(filename: str) -> Optional[Path]:
     return get_resource_path(f"grenade/{filename}")
 
 
-def load_grenade_json(filename: str) -> Optional[Dict[str, Any]]:
-    """
-    加载手雷编辑器JSON文件
-    
-    Args:
-        filename: 文件名
-        
-    Returns:
-        解析后的数据，失败时返回None
-    """
-    return load_json_resource(f"grenade/{filename}")
-
-
 def get_shield_data_path(filename: str) -> Optional[Path]:
     """
     获取护盾数据文件的路径
@@ -492,19 +470,6 @@ def get_shield_data_path(filename: str) -> Optional[Path]:
         文件路径，失败时返回None
     """
     return get_resource_path(f"shield/{filename}")
-
-
-def load_shield_json(filename: str) -> Optional[Dict[str, Any]]:
-    """
-    加载护盾编辑器JSON文件
-    
-    Args:
-        filename: 文件名
-        
-    Returns:
-        解析后的数据，失败时返回None
-    """
-    return load_json_resource(f"shield/{filename}")
 
 
 def get_repkit_data_path(filename: str) -> Optional[Path]:
@@ -520,19 +485,6 @@ def get_repkit_data_path(filename: str) -> Optional[Path]:
     return get_resource_path(f"repkit/{filename}")
 
 
-def load_repkit_json(filename: str) -> Optional[Dict[str, Any]]:
-    """
-    加载修复套件编辑器JSON文件
-    
-    Args:
-        filename: 文件名
-        
-    Returns:
-        解析后的数据，失败时返回None
-    """
-    return load_json_resource(f"repkit/{filename}")
-
-
 def get_heavy_data_path(filename: str) -> Optional[Path]:
     """
     获取重武器数据文件的路径
@@ -546,17 +498,11 @@ def get_heavy_data_path(filename: str) -> Optional[Path]:
     return get_resource_path(f"heavy/{filename}")
 
 
-def load_heavy_json(filename: str) -> Optional[Dict[str, Any]]:
+def load_item_json(filename: str) -> Optional[Dict[str, Any]]:
     """
-    加载重武器编辑器JSON文件
-    
-    Args:
-        filename: 文件名
-        
-    Returns:
-        解析后的数据，失败时返回None
+    加载物品浏览器JSON索引文件。
     """
-    return load_json_resource(f"heavy/{filename}")
+    return load_json_resource(f"item/{filename}")
 
 
 def get_loadout_data_path(filename: str) -> Optional[Path]:
@@ -568,57 +514,3 @@ def get_loadout_data_path(filename: str) -> Optional[Path]:
     exe 同目录下的 loadouts/，不要走 PyInstaller 临时目录。
     """
     return get_resource_path(f"loadout/{filename}")
-
-
-def load_loadout_csv(filename: str) -> List[Dict[str, str]]:
-    """
-    加载loadout目录下的CSV文件。
-    """
-    try:
-        resource_path = get_loadout_data_path(filename)
-        if not resource_path or not resource_path.exists():
-            print(f"Loadout CSV文件不存在: {resource_path}")
-            return []
-        with open(resource_path, 'r', encoding='utf-8-sig', newline='') as f:
-            reader = csv.DictReader(f)
-            return list(reader)
-    except Exception as e:
-        print(f"加载Loadout CSV文件时发生错误 {filename}: {e}")
-        return []
-
-
-# 向后兼容的函数
-def get_builtin_localization() -> Dict[str, str]:
-    """
-    获取内置的本地化数据（作为后备）
-    
-    Returns:
-        本地化数据字典
-    """
-    return {
-        "Class Mod Editor": "职业模组编辑器",
-        "Class": "职业",
-        "Rarity": "稀有度",
-        "Name": "名称",
-        "Random Integer (1–9999)": "随机种子 (1–9999)",
-        "Legendary Additions": "传奇附加",
-        "Available": "可选",
-        "Selected": "已选",
-        "Clear": "清空",
-        "Full String (copy-ready)": "完整代码 (可复制)",
-        "Copy Full String": "复制完整代码",
-        "Skill Catalog": "技能目录",
-        "Icon": "图标",
-        "Skill": "技能",
-        "Codes (order)": "代码 (顺序)",
-        "+Points": "+点数",
-        "Universal Perks": "通用专长",
-        "Search perks...": "搜索专长...",
-        "Only add 1 Firmware": "仅添加1个固件",
-        # Rarity
-        "Common": "普通",
-        "Uncommon": "稀有",
-        "Rare": "特殊",
-        "Epic": "传奇",
-        "Legendary": "史诗",
-    }

@@ -13,6 +13,15 @@ This tool allows you to modify character data, manage inventory items, unlock ga
 
 ---
 
+### What's New in v3.6.0
+- Added fully offline weapon stat resolution for damage, accuracy, fire rate, reload time, magazine size, DPS, critical damage, ammo cost, splash radius, ADS time, and equip time.
+- Added BL4-style weapon hover cards to the Items tab with weapon icons, live stats, and rarity-colored frames, including Pearlescent.
+- Reworked the Weapon Editor and Weapon Generator with searchable part catalogs, persistent weapon selection, live previews, responsive layouts, Pearlescent support, skin tools, and detailed part effect scales.
+- Reworked Class Mod skill and universal perk selection with skill-tree color filters, categorized search, descriptions, and clear selected states.
+- Added self-maintained unlock presets and improved save discovery, user ID detection, and malformed item handling.
+
+---
+
 ### Features
 
 #### Save Management
@@ -74,7 +83,7 @@ This script will automatically handle dependencies, collect required resource fi
 
 1.  Install dependencies:
     ```bash
-    pip install pyinstaller pillow pyyaml pycryptodome PyQt6 pandas
+    pip install pyinstaller pyyaml pycryptodome PyQt6 pandas
     ```
 2.  Run the build script:
     ```bash

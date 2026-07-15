@@ -5,7 +5,6 @@
 import re
 import json
 import csv
-import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -14,14 +13,14 @@ import pandas as pd
 
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
-    QPushButton, QGroupBox, QScrollArea, QMessageBox, QFrame,
-    QGridLayout, QSizePolicy, QSpacerItem, QInputDialog
+    QPushButton, QGroupBox, QScrollArea, QMessageBox, QFrame, QInputDialog
 )
-from PyQt6.QtCore import Qt, pyqtSignal, QSize
-from PyQt6.QtGui import QFont, QIcon, QPixmap
+from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtGui import QIcon
 
 from core import resource_loader
 from core import decoder_logic
+from core import item_display_resolver
 from core import lookup
 from core import bl4_functions as bl4f
 from core.unlock_data import CHARACTER_CLASSES
@@ -456,35 +455,18 @@ class QtLoadoutManagerTab(QWidget):
             sections = header_part.strip().split('|')
             m_id = int(sections[0].strip().split(',')[0])
 
-            parts = self._parse_component_string(component_part)
-            weapon_name = ''
-            for p in parts:
-                if not isinstance(p, dict) or p.get('type') != 'simple':
-                    continue
-                part_id = p.get('id')
-                if not part_id or self.all_weapon_parts_df.empty:
-                    continue
-                part_details = self.all_weapon_parts_df[
-                    (self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == m_id) &
-                    (self.all_weapon_parts_df['Part ID'] == part_id)]
-                if not part_details.empty and part_details.iloc[0]['Part Type'] == 'Barrel':
-                    stat_val = str(part_details.iloc[0]['Stat']) if pd.notna(part_details.iloc[0]['Stat']) else ''
-                    if stat_val:
-                        weapon_name = stat_val.split(',')[0].strip()
-                        if weapon_name.endswith(' Barrel'):
-                            weapon_name = weapon_name[:-len(' Barrel')]
-                        break
-
-            rarity = ''
-            simple_parts = [p for p in parts if isinstance(p, dict) and p.get('type') == 'simple']
-            if simple_parts and 'id' in simple_parts[0] and not self.weapon_rarity_df.empty:
-                rarity_info = self.weapon_rarity_df[
-                    (self.weapon_rarity_df['Manufacturer & Weapon Type ID'] == m_id) &
-                    (self.weapon_rarity_df['Part ID'] == simple_parts[0]['id'])]
-                if not rarity_info.empty:
-                    rarity = rarity_info.iloc[0]['Stat']
-
-            loc_rarity = self.weapon_localization.get(rarity, rarity) if rarity else ''
+            manufacturer, item_type, found = lookup.get_kind_enums(m_id)
+            if not found:
+                return ''
+            display = item_display_resolver.resolve_item_display(
+                m_id,
+                manufacturer,
+                item_type,
+                formatted_str,
+                self.current_lang,
+            )
+            weapon_name = "" if display.get("display_source") == "fallback" else display.get("display_name", "")
+            loc_rarity = display.get("rarity", "")
 
             display_parts = []
             if loc_rarity:

@@ -1,6 +1,5 @@
 import pandas as pd
 from functools import lru_cache
-import random
 import re
 
 from PyQt6.QtWidgets import (
@@ -9,10 +8,10 @@ from PyQt6.QtWidgets import (
     QScrollArea, QMessageBox, QSpinBox
 )
 from PyQt6.QtCore import pyqtSignal, Qt
-from PyQt6.QtGui import QColor
 
 from core import b_encoder
 from core import resource_loader
+from tabs.qt_catalog_picker import ContainedWheelListWidget, ContainedWheelScrollArea
 import lookup
 from core import bl4_functions as bl4f
 
@@ -165,14 +164,14 @@ class QtGrenadeEditorTab(QWidget):
     def _create_scrollable_checkbox_group(self, title): return self._create_scrollable_group(title, QCheckBox)
 
     def _create_scrollable_group(self, title, widget_type):
-        group_box=QGroupBox(title); scroll_area=QScrollArea(); scroll_area.setWidgetResizable(True); container=QWidget()
+        group_box=QGroupBox(title); scroll_area=ContainedWheelScrollArea(); scroll_area.setWidgetResizable(True); container=QWidget()
         scroll_area.setMinimumHeight(200)
         layout=QVBoxLayout(container); scroll_area.setWidget(container); main_layout=QVBoxLayout(group_box); main_layout.addWidget(scroll_area)
         return group_box, layout, []
 
     def _create_list_perk_group(self, title, single_select=False, use_multiplier=False):
         group=QGroupBox(title); layout=QGridLayout(group)
-        avail, sel = QListWidget(), QListWidget()
+        avail, sel = ContainedWheelListWidget(), ContainedWheelListWidget()
         avail.setMinimumHeight(200)
         sel.setMinimumHeight(200)
         if not single_select:

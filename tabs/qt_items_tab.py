@@ -1,400 +1,483 @@
+from html import escape
+from typing import Any, Dict, List, Optional
+
+from PyQt6.QtCore import QModelIndex, Qt, pyqtSignal
+from PyQt6.QtGui import QStandardItem, QStandardItemModel
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit,
-    QPushButton, QGroupBox, QFormLayout, QTreeView, QSplitter, QComboBox,
-    QMessageBox
+    QApplication,
+    QAbstractItemView,
+    QComboBox,
+    QHBoxLayout,
+    QHeaderView,
+    QLabel,
+    QLineEdit,
+    QMenu,
+    QMessageBox,
+    QPushButton,
+    QTreeView,
+    QVBoxLayout,
+    QWidget,
 )
-from PyQt6.QtGui import QStandardItemModel, QStandardItem
-from PyQt6.QtCore import pyqtSignal, Qt, QModelIndex
-from typing import Dict, List, Any, Optional
-from core import resource_loader
+
+from core import item_display_resolver, resource_loader
+
+
+WEAPON_CARD_TYPE_ICONS = {
+    "Pistol": "ico_art_item_card_weap_pistol.png",
+    "Shotgun": "ico_art_item_card_weap_shotgun.png",
+    "SMG": "ico_art_item_card_weap_smg.png",
+    "Assault Rifle": "ico_art_item_card_weap_assault.png",
+    "Sniper": "ico_art_item_card_weap_sniper.png",
+}
+WEAPON_CARD_PRIMARY_STATS = (
+    ("damage", "ico_ui_art_wpn_dmg.png"),
+    ("accuracy", "ico_ui_art_wpn_prmry_accuracy.png"),
+    ("reload_time", "ico_ui_art_wpn_prmry_reload_time.png"),
+    ("fire_rate", "ico_ui_art_wpn_prmry_fire_rate.png"),
+    ("magazine", "ico_ui_art_wpn_prmry_mag_size.png"),
+)
+WEAPON_CARD_SECONDARY_ICONS = {
+    "critical_damage": "ico_ui_art_wpn_scndry_crit_hit_dmg.png",
+    "ammo_cost": "ico_ui_art_wpn_scndry_ammo_per_shot.png",
+    "splash_radius": "ico_ui_art_wpn_scndry_dmg_radius.png",
+}
+WEAPON_CARD_RARITY_COLORS = {
+    "common": "#FFFFFF",
+    "普通": "#FFFFFF",
+    "uncommon": "#209A30",
+    "罕见": "#209A30",
+    "rare": "#0074F9",
+    "稀有": "#0074F9",
+    "epic": "#9747FF",
+    "史诗": "#9747FF",
+    "legendary": "#E0A100",
+    "传奇": "#E0A100",
+    "pearl": "#17B7B5",
+    "珠光": "#17B7B5",
+}
+
+
+def _weapon_card_rarity_color(rarity: Any) -> str:
+    return WEAPON_CARD_RARITY_COLORS.get(str(rarity or "").strip().casefold(), "#78909C")
+
+
+def _secondary_stat_keys(stats: Dict[str, Any]) -> List[str]:
+    return [
+        key
+        for key, visible in (
+            ("critical_damage", stats.get("critical_damage") not in (None, "", 0, 0.0)),
+            ("ammo_cost", (stats.get("ammo_cost") or 0) > 1),
+            ("splash_radius", stats.get("splash_radius") not in (None, "", 0, 0.0)),
+        )
+        if visible
+    ]
+
+
+def weapon_card_html(
+    item: Dict[str, Any],
+    current_lang: str,
+    level_label: str,
+    stat_labels: Optional[Dict[str, str]] = None,
+) -> str:
+    stats = item.get("weapon_stats") or {}
+    weapon_icon = WEAPON_CARD_TYPE_ICONS.get(item.get("type_en", ""))
+    if not stats or not weapon_icon:
+        return ""
+    weapon_icon_width = 120 if item.get("type_en") == "Pistol" else 180
+
+    def image_uri(folder: str, filename: str) -> str:
+        return resource_loader.get_resource_path(f"assets/{folder}/{filename}").as_uri()
+
+    def value(key: str) -> str:
+        formatted = item_display_resolver.format_weapon_stat(key, stats.get(key), current_lang)
+        return escape(formatted or "-")
+
+    primary_cells = "".join(
+        f"<td width='100' align='center' valign='middle'>"
+        f"<img src='{image_uri('item_stats_icon', icon)}' width='36' height='36'><br>"
+        f"<nobr><span style='font-size:18px; color:#eef5f6'>{value(key)}</span></nobr></td>"
+        for key, icon in WEAPON_CARD_PRIMARY_STATS
+    )
+    secondary_keys = _secondary_stat_keys(stats)
+    secondary_cells = "".join(
+        f"<td width='{500 // len(secondary_keys)}' align='center' valign='middle'>"
+        f"<img src='{image_uri('item_stats_icon', WEAPON_CARD_SECONDARY_ICONS[key])}' width='38' height='38'><br>"
+        f"<nobr><span style='font-size:18px; color:#eef5f6'>{value(key)}</span></nobr></td>"
+        for key in secondary_keys
+    )
+    secondary_row = (
+        f"<tr><td colspan='2' bgcolor='#0d2d38'><table width='500' cellspacing='0' cellpadding='5'>"
+        f"<tr>{secondary_cells}</tr></table></td></tr>"
+        if secondary_cells
+        else ""
+    )
+    rarity = item.get("rarity")
+    rarity_color = _weapon_card_rarity_color(rarity)
+    identity = " · ".join(
+        escape(str(part)) for part in (item.get("manufacturer"), item.get("type")) if part
+    )
+    meta_parts = []
+    if identity:
+        meta_parts.append(f"<span style='font-size:13px; color:#c9d4d7'>{identity}</span>")
+    if rarity:
+        meta_parts.append(
+            f"<span style='font-size:13px; font-weight:600; color:{rarity_color}'>{escape(str(rarity))}</span>"
+        )
+    meta = " · ".join(meta_parts)
+    level = escape(str(item.get("level", "")))
+    level_text = f"{level}级" if current_lang == "zh-CN" else f"{escape(level_label)} {level}"
+    dps = item_display_resolver.format_weapon_stat("dps", stats.get("dps"), current_lang)
+    dps_label = (stat_labels or {}).get("dps", "DPS")
+    dps_line = (
+        f"<br><span style='font-size:22px; color:#f3ead1'>{escape(dps)}</span> "
+        f"<span style='font-size:13px; color:#aebfc3'>{escape(dps_label)}</span>"
+        if dps
+        else ""
+    )
+    return (
+        f"<table width='526' cellspacing='0' cellpadding='2' bgcolor='{rarity_color}'>"
+        "<tr><td>"
+        "<table width='520' cellspacing='0' cellpadding='0' bgcolor='#0a222b' "
+        "style=\"font-family:'Microsoft YaHei UI','Segoe UI';\">"
+        f"<tr><td colspan='2' height='3' bgcolor='{rarity_color}'></td></tr>"
+        "<tr><td width='325' valign='top' style='padding:12px'>"
+        f"<span style='font-size:20px; font-weight:600; color:#f3ead1'>{escape(str(item.get('name') or '-'))}</span><br>"
+        f"{meta}{dps_line}"
+        "</td><td width='195' align='right' valign='top' style='padding:8px'>"
+        f"<span style='font-size:18px; color:#e5ecee'>{level_text}</span><br>"
+        f"<img src='{image_uri('item_card_type', weapon_icon)}' width='{weapon_icon_width}'>"
+        "</td></tr>"
+        "<tr><td colspan='2' bgcolor='#103b49'><table width='500' cellspacing='0' cellpadding='6'>"
+        f"<tr>{primary_cells}</tr></table></td></tr>"
+        f"{secondary_row}"
+        f"<tr><td colspan='2' height='2' bgcolor='{rarity_color}'></td></tr>"
+        "</table></td></tr></table>"
+    )
+
 
 class QtItemsTab(QWidget):
     add_item_requested = pyqtSignal(str, str)
-    update_item_requested = pyqtSignal(dict)
+
+    COLUMN_KEYS = [
+        ("name", "name"),
+        ("type", "type"),
+        ("manufacturer", "manufacturer"),
+        ("rarity", "rarity"),
+        ("level", "level"),
+        ("flags", "state_flags"),
+        ("serial", "serial"),
+    ]
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.current_lang = 'zh-CN'
+        self.current_lang = "zh-CN"
         self._load_localization()
+
         self.model = QStandardItemModel()
-        cols = self.loc['columns']
-        self.model.setHorizontalHeaderLabels([cols['name'], cols['type'], cols['slot'], cols['level']])
-        self.item_lookup = {}
+        self.model.setHorizontalHeaderLabels(self._headers())
+        self.item_lookup: Dict[int, Dict[str, Any]] = {}
         self.current_selected_item: Optional[Dict[str, Any]] = None
 
-        self.ui_labels = {}
-        self.ui_buttons = {}
-        self.ui_groups = {}
-        self.ui_placeholders = {}
+        self.ui_labels: Dict[str, QLabel] = {}
+        self.ui_buttons: Dict[str, QPushButton] = {}
+        self.ui_placeholders: Dict[str, QLineEdit] = {}
 
         main_layout = QVBoxLayout(self)
-
-        # --- Top "Add Item" Bar ---
         self._create_add_item_bar(main_layout)
 
-        # --- Main Content ---
-        splitter = QSplitter(Qt.Orientation.Horizontal)
-        # Add splitter with a stretch factor of 1 to make it expand vertically
-        main_layout.addWidget(splitter, 1)
-
-        # Left Pane: Tree View
-        left_pane = QWidget()
-        left_layout = QVBoxLayout(left_pane)
         self.search_entry = QLineEdit()
-        self.search_entry.setPlaceholderText(self.loc['search_placeholder'])
+        self.search_entry.setPlaceholderText(self.loc["search_placeholder"])
         self.search_entry.textChanged.connect(self.filter_tree)
-        left_layout.addWidget(self.search_entry)
+        main_layout.addWidget(self.search_entry)
 
         self.tree_view = QTreeView()
         self.tree_view.setModel(self.model)
+        self.tree_view.setAlternatingRowColors(True)
+        self.tree_view.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.tree_view.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.tree_view.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.tree_view.customContextMenuRequested.connect(self._show_context_menu)
         self.tree_view.selectionModel().selectionChanged.connect(self.on_item_selected)
-        left_layout.addWidget(self.tree_view)
-        splitter.addWidget(left_pane)
+        header = self.tree_view.header()
+        header.setStretchLastSection(False)
+        header.setMinimumSectionSize(60)
+        self.tree_view.horizontalScrollBar().setTracking(False)
+        main_layout.addWidget(self.tree_view, 1)
 
-        # Right Pane: Details
-        right_pane = QWidget()
-        right_layout = QVBoxLayout(right_pane)
-        right_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self._create_details_pane(right_layout)
-        splitter.addWidget(right_pane)
-        
-        splitter.setSizes([600, 400])
+    def _headers(self) -> List[str]:
+        cols = self.loc["columns"]
+        return [cols.get(key, key) for key, _ in self.COLUMN_KEYS]
 
     def _create_add_item_bar(self, layout: QVBoxLayout):
         add_item_frame = QWidget()
         add_item_layout = QHBoxLayout(add_item_frame)
-        
-        self.ui_labels['label_serial'] = QLabel(self.loc['add_item']['label_serial'])
-        add_item_layout.addWidget(self.ui_labels['label_serial'])
-        
+        add_item_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.ui_labels["label_serial"] = QLabel(self.loc["add_item"]["label_serial"])
+        add_item_layout.addWidget(self.ui_labels["label_serial"])
+
         self.add_serial_entry = QLineEdit()
-        self.add_serial_entry.setPlaceholderText(self.loc['add_item']['placeholder_serial'])
-        self.ui_placeholders['add_serial'] = self.add_serial_entry
-        add_item_layout.addWidget(self.add_serial_entry)
+        self.add_serial_entry.setPlaceholderText(self.loc["add_item"]["placeholder_serial"])
+        self.ui_placeholders["add_serial"] = self.add_serial_entry
+        add_item_layout.addWidget(self.add_serial_entry, 1)
+
+        self.ui_labels["label_flag"] = QLabel(self.loc["add_item"]["label_flag"])
+        add_item_layout.addWidget(self.ui_labels["label_flag"])
 
         self.add_flag_combo = QComboBox()
         self._populate_flags()
-        
-        self.ui_labels['label_flag'] = QLabel(self.loc['add_item']['label_flag'])
-        add_item_layout.addWidget(self.ui_labels['label_flag'])
         add_item_layout.addWidget(self.add_flag_combo)
 
-        self.ui_buttons['button_add'] = QPushButton(self.loc['add_item']['button_add'])
-        self.ui_buttons['button_add'].clicked.connect(self._on_add_item_clicked)
-        add_item_layout.addWidget(self.ui_buttons['button_add'])
+        self.ui_buttons["button_add"] = QPushButton(self.loc["add_item"]["button_add"])
+        self.ui_buttons["button_add"].clicked.connect(self._on_add_item_clicked)
+        add_item_layout.addWidget(self.ui_buttons["button_add"])
+
         layout.addWidget(add_item_frame)
 
     def _populate_flags(self):
         self.add_flag_combo.clear()
-        flags = self.loc['add_item']['flags']
-        flag_values = [flags["1"], flags["3"], flags["5"], flags["17"], flags["33"], flags["65"], flags["129"]]
-        self.add_flag_combo.addItems(flag_values)
-
-    def _create_details_pane(self, layout: QVBoxLayout):
-        self.detail_fields: Dict[str, QLineEdit] = {}
-        self.summary_labels: Dict[str, QLabel] = {}
-        self.summary_title_labels: Dict[str, QLabel] = {}
-        self.field_title_labels: Dict[str, QLabel] = {}
-
-        self.ui_groups['group_summary'] = QGroupBox(self.loc['details']['group_summary'])
-        summary_layout = QGridLayout(self.ui_groups['group_summary'])
-        
-        summary_map = {
-            "物品": self.loc['details']['item'],
-            "容器": self.loc['details']['container'],
-            "所在格": self.loc['details']['slot'],
-            "厂商": self.loc['details']['manufacturer'],
-            "类型": self.loc['details']['type']
-        }
-        
-        summary_keys = ["物品", "容器", "所在格", "厂商", "类型"]
-        for i, key in enumerate(summary_keys):
-            row, col = divmod(i, 2)
-            label = QLabel(f"{summary_map[key]}:")
-            self.summary_title_labels[key] = label
-            summary_layout.addWidget(label, row, col * 2)
-            
-            value_label = QLabel("")
-            summary_layout.addWidget(value_label, row, col * 2 + 1)
-            self.summary_labels[key] = value_label
-            
-        layout.addWidget(self.ui_groups['group_summary'])
-
-        self.ui_groups['group_fields'] = QGroupBox(self.loc['details']['group_fields'])
-        fields_layout = QFormLayout(self.ui_groups['group_fields'])
-        
-        fields_map = {
-            "等级": self.loc['details']['level'],
-            "序列": self.loc['details']['serial'],
-            "解码ID": self.loc['details']['decoded_id']
-        }
-        field_keys = ["等级", "序列", "解码ID"]
-        for key in field_keys:
-            line_edit = QLineEdit()
-            if key == "序列":
-                line_edit.setReadOnly(True)
-            self.detail_fields[key] = line_edit
-            
-            label = QLabel(f"{fields_map[key]}:")
-            self.field_title_labels[key] = label
-            fields_layout.addRow(label, line_edit)
-            
-        layout.addWidget(self.ui_groups['group_fields'])
-
-        self.ui_buttons['button_update'] = QPushButton(self.loc['details']['button_update'])
-        self.ui_buttons['button_update'].clicked.connect(self._on_update_item_clicked)
-        layout.addWidget(self.ui_buttons['button_update'])
+        flags = self.loc["add_item"]["flags"]
+        self.add_flag_combo.addItems(
+            [flags["1"], flags["3"], flags["5"], flags["17"], flags["33"], flags["65"], flags["129"]]
+        )
 
     def update_tree(self, items: List[Dict[str, Any]]):
         self.model.clear()
-        cols = self.loc['columns']
-        self.model.setHorizontalHeaderLabels([cols['name'], cols['type'], cols['slot'], cols['level']])
+        self.model.setHorizontalHeaderLabels(self._headers())
         self.item_lookup.clear()
         self.current_selected_item = None
-        self._clear_details()
 
         if not items:
             return
 
-        # 预处理和分组 (容器 -> 类型 -> 物品列表)
-        items_by_container = {}
+        items_by_container: Dict[str, Dict[str, List[Dict[str, Any]]]] = {}
         for i, item in enumerate(items):
             self.item_lookup[i] = item
-            
-            container_raw = item.get('container')
-            if not container_raw:
-                container_name = self.loc['defaults']['unknown_container']
-            else:
-                container_name = self.loc.get('containers', {}).get(container_raw, container_raw)
-            
-            item_type = item.get('type', self.loc['defaults']['unknown_type'])
-            
-            if container_name not in items_by_container:
-                items_by_container[container_name] = {}
-            if item_type not in items_by_container[container_name]:
-                items_by_container[container_name][item_type] = []
-            
-            items_by_container[container_name][item_type].append(item)
+            container_name = self._container_display(item.get("container"))
+            item_type = item.get("type", self.loc["defaults"]["unknown_type"])
+            items_by_container.setdefault(container_name, {}).setdefault(item_type, []).append(item)
 
-        # 填充模型
         root_node = self.model.invisibleRootItem()
         for container_name, types_dict in sorted(items_by_container.items()):
-            container_node = QStandardItem(container_name)
-            container_node.setEditable(False)
+            container_node = self._group_row(container_name)
             root_node.appendRow(container_node)
 
             for item_type, item_list in sorted(types_dict.items()):
-                type_node = QStandardItem(f"{item_type} ({len(item_list)})")
-                type_node.setEditable(False)
-                container_node.appendRow(type_node)
+                type_node = self._group_row(f"{item_type} ({len(item_list)})")
+                container_node[0].appendRow(type_node)
 
-                for item in sorted(item_list, key=lambda x: x.get('name', '')):
-                    slot = item.get('slot', '—')
-                    container_slot_text = f"{container_name}/{slot}" if slot != '—' else container_name
-                    
-                    name_item = QStandardItem(item.get("name", ""))
-                    name_item.setData(item, Qt.ItemDataRole.UserRole) # 存储完整数据
-                    name_item.setEditable(False)
-                    
-                    type_item = QStandardItem(item.get("type", ""))
-                    type_item.setEditable(False)
-                    
-                    container_slot_item = QStandardItem(container_slot_text)
-                    container_slot_item.setEditable(False)
-                    
-                    level_item = QStandardItem(str(item.get("level", "")))
-                    level_item.setEditable(False)
+                for item in sorted(item_list, key=self._slot_sort_key):
+                    type_node[0].appendRow(self._item_row(item, container_name))
 
-                    type_node.appendRow([name_item, type_item, container_slot_item, level_item])
-        
         self.tree_view.expandAll()
+        self._collapse_default_groups()
+        self._resize_columns()
+        if self.search_entry.text():
+            self.filter_tree(self.search_entry.text())
 
-        # 默认折叠 "Lost Loot" 和 "Equipped"
-        containers_loc = self.loc.get('containers', {})
-        collapsed_names = {containers_loc.get('Lost Loot', 'Lost Loot'), 
-                           containers_loc.get('Equipped', 'Equipped')}
-        
+    def _group_row(self, text: str) -> List[QStandardItem]:
+        row = [QStandardItem(text)]
+        row.extend(QStandardItem("") for _ in range(len(self.COLUMN_KEYS) - 1))
+        for item in row:
+            item.setEditable(False)
+        return row
+
+    def _item_row(self, item: Dict[str, Any], container_name: str) -> List[QStandardItem]:
+        row: List[QStandardItem] = []
+        for key, data_key in self.COLUMN_KEYS:
+            value = self._column_value(item, key, data_key, container_name)
+            cell = QStandardItem(value)
+            cell.setEditable(False)
+            row.append(cell)
+        card = self._weapon_card_html(item)
+        for cell in row:
+            cell.setToolTip(card)
+        row[0].setData(item, Qt.ItemDataRole.UserRole)
+        return row
+
+    def _weapon_card_html(self, item: Dict[str, Any]) -> str:
+        return weapon_card_html(item, self.current_lang, self.loc["columns"]["level"], self.loc["columns"])
+
+    @staticmethod
+    def _slot_sort_key(item: Dict[str, Any]):
+        slot = str(item.get("slot", ""))
+        if slot.startswith("slot_"):
+            try:
+                return (0, int(slot.removeprefix("slot_")))
+            except ValueError:
+                pass
+        return (1, str(item.get("name", "")))
+
+    def _column_value(self, item: Dict[str, Any], key: str, data_key: str, container_name: str) -> str:
+        if key == "flags":
+            return self._flag_display(item.get(data_key, ""))
+        return str(item.get(data_key, "") or "")
+
+    def _flag_display(self, flag: Any) -> str:
+        text = self.loc.get("add_item", {}).get("flags", {}).get(str(flag), str(flag or ""))
+        if "(" in text and ")" in text:
+            return text.split("(", 1)[1].split(")", 1)[0]
+        return text
+
+    def _container_display(self, container_raw: Any) -> str:
+        if not container_raw:
+            return self.loc["defaults"]["unknown_container"]
+        return self.loc.get("containers", {}).get(container_raw, str(container_raw))
+
+    def _collapse_default_groups(self):
+        containers_loc = self.loc.get("containers", {})
+        collapsed_names = {
+            containers_loc.get("Lost Loot", "Lost Loot"),
+            containers_loc.get("Equipped", "Equipped"),
+        }
         root = self.model.invisibleRootItem()
         for i in range(root.rowCount()):
             item = root.child(i)
             if item.text() in collapsed_names:
                 self.tree_view.collapse(self.model.indexFromItem(item))
 
+    def _resize_columns(self):
+        header = self.tree_view.header()
+        flexible_columns = []
         for i in range(self.model.columnCount()):
-            self.tree_view.resizeColumnToContents(i)
+            if self.COLUMN_KEYS[i][0] == "serial":
+                header.setSectionResizeMode(i, QHeaderView.ResizeMode.Interactive)
+                self.tree_view.setColumnWidth(i, self.tree_view.fontMetrics().horizontalAdvance("0" * 20) + 20)
+            else:
+                header.setSectionResizeMode(i, QHeaderView.ResizeMode.ResizeToContents)
+                self.tree_view.resizeColumnToContents(i)
+                width = self.tree_view.columnWidth(i) + 30
+                if self.COLUMN_KEYS[i][0] == "name":
+                    width += 40
+                header.setSectionResizeMode(i, QHeaderView.ResizeMode.Interactive)
+                self.tree_view.setColumnWidth(i, width)
+                flexible_columns.append(i)
+        extra = self.tree_view.viewport().width() - sum(self.tree_view.columnWidth(i) for i in range(self.model.columnCount()))
+        if extra > 0 and flexible_columns:
+            add = extra // len(flexible_columns)
+            for i in flexible_columns:
+                self.tree_view.setColumnWidth(i, self.tree_view.columnWidth(i) + add)
 
-    def on_item_selected(self, selected, deselected):
+    def on_item_selected(self, selected, _deselected):
         indexes = selected.indexes()
-        if not indexes:
-            self.current_selected_item = None
-            self._clear_details()
-            return
-        
-        index = indexes[0]
-        # 向上遍历以查找拥有数据的父项
-        parent_index = index
-        while parent_index.isValid():
-            item_data = self.model.data(parent_index, Qt.ItemDataRole.UserRole)
-            if item_data:
-                break
-            parent_index = parent_index.parent()
-        else: # 如果循环完成但未找到数据
-             item_data = self.model.data(index, Qt.ItemDataRole.UserRole)
+        self.current_selected_item = self._item_data_from_index(indexes[0]) if indexes else None
 
-        if not item_data:  # 如果仍然没有数据 (可能选中了容器行)
-            self.current_selected_item = None
-            self._clear_details()
+    def _item_data_from_index(self, index: QModelIndex) -> Optional[Dict[str, Any]]:
+        cursor = index
+        while cursor.isValid():
+            data = self.model.data(cursor.siblingAtColumn(0), Qt.ItemDataRole.UserRole)
+            if data:
+                return data
+            cursor = cursor.parent()
+        return None
+
+    def _show_context_menu(self, pos):
+        item = self._item_data_from_index(self.tree_view.indexAt(pos))
+        if not item:
             return
 
-        self.current_selected_item = item_data
-        self.summary_labels["物品"].setText(item_data.get("name", "N/A"))
-        
-        raw_container = item_data.get("container")
-        container_display = self.loc.get('containers', {}).get(raw_container, raw_container) if raw_container else "N/A"
-        self.summary_labels["容器"].setText(container_display)
-        
-        self.summary_labels["所在格"].setText(str(item_data.get("slot", "—")))
-        self.summary_labels["厂商"].setText(item_data.get("manufacturer", "N/A"))
-        self.summary_labels["类型"].setText(item_data.get("type", "N/A"))
+        actions = self.loc.get("actions", {})
+        menu = QMenu(self)
+        copy_name = menu.addAction(actions.get("copy_name", "Copy name"))
+        copy_serial = menu.addAction(actions.get("copy_serial", "Copy serial"))
+        copy_decoded = menu.addAction(actions.get("copy_decoded", "Copy decoded"))
+        copy_parts = menu.addAction(actions.get("copy_parts", "Copy parts"))
 
-        self.detail_fields["等级"].setText(str(item_data.get("level", "")))
-        self.detail_fields["序列"].setText(item_data.get("serial", ""))
-        self.detail_fields["解码ID"].setText(item_data.get("decoded_parts", ""))
+        selected = menu.exec(self.tree_view.viewport().mapToGlobal(pos))
+        if selected == copy_name:
+            self._copy_text(item.get("name", ""))
+        elif selected == copy_serial:
+            self._copy_text(item.get("serial", ""))
+        elif selected == copy_decoded:
+            self._copy_text(item.get("decoded_full", ""))
+        elif selected == copy_parts:
+            self._copy_text(item.get("decoded_parts", ""))
 
-    def _clear_details(self):
-        for label in self.summary_labels.values():
-            label.setText("")
-        for field in self.detail_fields.values():
-            field.setText("")
+    def _copy_text(self, text: Any):
+        QApplication.clipboard().setText(str(text or ""))
 
     def _load_localization(self):
         filename = resource_loader.get_ui_localization_file(self.current_lang)
         data = resource_loader.load_json_resource(filename)
         if data and "items_tab" in data:
             self.loc = data["items_tab"]
-        else:
-            # Fallback (simplified)
-            self.loc = {
-                "columns": {"name": "Name", "type": "Type", "slot": "Slot", "level": "Level"},
-                "containers": {"Backpack": "Backpack", "Bank": "Bank", "Lost Loot": "Lost Loot", "Equipped": "Equipped"},
-                "search_placeholder": "Search...",
-                "add_item": {
-                    "label_serial": "Serial:", "placeholder_serial": "Enter code...", "label_flag": "Flag:", "button_add": "Add",
-                    "flags": {"1": "1", "3": "3", "5": "5", "17": "17", "33": "33", "65": "65", "129": "129"}
-                },
-                "details": {
-                    "group_summary": "Summary", "group_fields": "Fields", "item": "Item", "container": "Container", 
-                    "slot": "Slot", "manufacturer": "Mfr", "type": "Type", "level": "Level", "serial": "Serial", 
-                    "decoded_id": "Decoded ID", "button_update": "Update"
-                },
-                "defaults": {"unknown_container": "Unknown", "unknown_type": "Unknown"},
-                "dialogs": {
-                    "input_error": "Error", "enter_serial": "Enter serial", "no_selection": "No selection", 
-                    "select_item": "Select item", "error": "Error", "missing_path": "Missing path",
-                    "update_success": "Item updated successfully"
-                }
-            }
+            return
+
+        self.loc = {
+            "columns": {
+                "name": "Name",
+                "type": "Type",
+                "manufacturer": "Manufacturer",
+                "rarity": "Rarity",
+                "level": "Level",
+                "flags": "Flags",
+                "damage": "Damage",
+                "dps": "DPS",
+                "accuracy": "Accuracy",
+                "fire_rate": "Fire Rate",
+                "reload_time": "Reload",
+                "magazine": "Magazine",
+                "critical_damage": "Critical Damage",
+                "ammo_cost": "Ammo Cost",
+                "splash_radius": "Splash Radius",
+                "ads_time": "ADS Time",
+                "equip_time": "Equip Time",
+                "serial": "Serial",
+            },
+            "containers": {"Backpack": "Backpack", "Bank": "Bank", "Lost Loot": "Lost Loot", "Equipped": "Equipped"},
+            "search_placeholder": "Search items...",
+            "add_item": {
+                "label_serial": "Serial:",
+                "placeholder_serial": "Enter code...",
+                "label_flag": "Flag:",
+                "button_add": "Add",
+                "flags": {"1": "1", "3": "3", "5": "5", "17": "17", "33": "33", "65": "65", "129": "129"},
+            },
+            "actions": {
+                "copy_name": "Copy name",
+                "copy_serial": "Copy serial",
+                "copy_decoded": "Copy decoded",
+                "copy_parts": "Copy parts",
+            },
+            "defaults": {"unknown_container": "Unknown", "unknown_type": "Unknown"},
+            "dialogs": {"input_error": "Error", "enter_serial": "Enter serial"},
+        }
 
     def update_language(self, lang):
-        print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
         self.current_lang = lang
         self._load_localization()
-        
-        # Headers
-        cols = self.loc['columns']
-        self.model.setHorizontalHeaderLabels([cols['name'], cols['type'], cols['slot'], cols['level']])
-        
-        # Add Item Bar
-        self.ui_labels['label_serial'].setText(self.loc['add_item']['label_serial'])
-        self.ui_placeholders['add_serial'].setPlaceholderText(self.loc['add_item']['placeholder_serial'])
-        self.ui_labels['label_flag'].setText(self.loc['add_item']['label_flag'])
-        self.ui_buttons['button_add'].setText(self.loc['add_item']['button_add'])
+        self.model.setHorizontalHeaderLabels(self._headers())
+        self.ui_labels["label_serial"].setText(self.loc["add_item"]["label_serial"])
+        self.ui_placeholders["add_serial"].setPlaceholderText(self.loc["add_item"]["placeholder_serial"])
+        self.ui_labels["label_flag"].setText(self.loc["add_item"]["label_flag"])
+        self.ui_buttons["button_add"].setText(self.loc["add_item"]["button_add"])
+        self.search_entry.setPlaceholderText(self.loc["search_placeholder"])
         self._populate_flags()
-        
-        # Search
-        self.search_entry.setPlaceholderText(self.loc['search_placeholder'])
-        
-        # Details
-        self.ui_groups['group_summary'].setTitle(self.loc['details']['group_summary'])
-        self.ui_groups['group_fields'].setTitle(self.loc['details']['group_fields'])
-        
-        summary_map = {
-            "物品": self.loc['details']['item'],
-            "容器": self.loc['details']['container'],
-            "所在格": self.loc['details']['slot'],
-            "厂商": self.loc['details']['manufacturer'],
-            "类型": self.loc['details']['type']
-        }
-        for key, label in self.summary_title_labels.items():
-            label.setText(f"{summary_map[key]}:")
-            
-        fields_map = {
-            "等级": self.loc['details']['level'],
-            "序列": self.loc['details']['serial'],
-            "解码ID": self.loc['details']['decoded_id']
-        }
-        for key, label in self.field_title_labels.items():
-            label.setText(f"{fields_map[key]}:")
-            
-        self.ui_buttons['button_update'].setText(self.loc['details']['button_update'])
-        print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
+        self._resize_columns()
 
     def _on_add_item_clicked(self):
         serial = self.add_serial_entry.text().strip()
         if not serial:
-            QMessageBox.warning(self, self.loc['dialogs']['input_error'], self.loc['dialogs']['enter_serial'])
+            QMessageBox.warning(self, self.loc["dialogs"]["input_error"], self.loc["dialogs"]["enter_serial"])
             return
         flag = self.add_flag_combo.currentText().split(" ")[0]
         self.add_item_requested.emit(serial, flag)
 
-    def _on_update_item_clicked(self):
-        if not self.current_selected_item:
-            QMessageBox.warning(self, self.loc['dialogs']['no_selection'], self.loc['dialogs']['select_item'])
-            return
-
-        # 只收集UI上的新数据，将处理逻辑完全交给主窗口
-        try:
-            level_val = int(self.detail_fields["等级"].text())
-        except ValueError:
-            level_val = 0 # Default or handle error appropriately
-
-        new_data = {
-            "level": level_val,
-            "decoded_parts": self.detail_fields["解码ID"].text(),
-            # 我们不再从UI发送可能过时的序列号
-        }
-
-        # 确保我们有路径和原始数据以供比较
-        payload = {
-            "item_path": self.current_selected_item.get("original_path"),
-            "original_item_data": self.current_selected_item,
-            "new_item_data": new_data,
-            "success_msg": self.loc['dialogs'].get('update_success', 'Item updated successfully')
-        }
-
-        if not payload["item_path"]:
-            QMessageBox.critical(self, self.loc['dialogs']['error'], self.loc['dialogs']['missing_path'])
-            return
-
-        self.update_item_requested.emit(payload)
-    
     def filter_tree(self, text: str):
-        query = text.lower()
+        query = text.lower().strip()
         root = self.model.invisibleRootItem()
 
-        for i in range(root.rowCount()): # 遍历容器
+        for i in range(root.rowCount()):
             container_item = root.child(i)
             container_is_visible = False
-            
-            for j in range(container_item.rowCount()): # 遍历类型
+
+            for j in range(container_item.rowCount()):
                 type_item = container_item.child(j)
                 type_is_visible = False
 
-                for k in range(type_item.rowCount()): # 遍历物品
-                    item_name = type_item.child(k, 0).text().lower()
-                    item_type_col = type_item.child(k, 1).text().lower()
-                    
-                    is_match = query in item_name or query in item_type_col
+                for k in range(type_item.rowCount()):
+                    haystack = self._row_search_text(type_item, k)
+                    is_match = not query or query in haystack
                     self.tree_view.setRowHidden(k, type_item.index(), not is_match)
                     if is_match:
                         type_is_visible = True
@@ -402,5 +485,16 @@ class QtItemsTab(QWidget):
                 self.tree_view.setRowHidden(j, container_item.index(), not type_is_visible)
                 if type_is_visible:
                     container_is_visible = True
-            
+
             self.tree_view.setRowHidden(i, root.index(), not container_is_visible)
+
+    def _row_search_text(self, parent: QStandardItem, row: int) -> str:
+        values = []
+        for col in range(self.model.columnCount()):
+            child = parent.child(row, col)
+            if child:
+                values.append(child.text())
+        data = parent.child(row, 0).data(Qt.ItemDataRole.UserRole) if parent.child(row, 0) else None
+        if data:
+            values.extend([data.get("serial", ""), data.get("decoded_full", ""), data.get("base_name", "")])
+        return " ".join(str(value) for value in values).lower()

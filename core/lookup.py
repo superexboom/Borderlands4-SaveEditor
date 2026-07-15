@@ -110,16 +110,6 @@ ID_MAP = {
 
 REVERSE_ID_MAP = {v: k for k, v in ID_MAP.items()}
 
-def get_item_type_id(manufacturer: str, item_type: str) -> (int, bool):
-    """
-    Looks up the ID for a (Manufacturer/Character, ItemType) combination.
-    Returns the ID and a boolean indicating if it was found.
-    """
-    item_id = ID_MAP.get((manufacturer, item_type))
-    if item_id is None:
-        return 0, False
-    return item_id, True
-
 def get_kind_enums(item_id: int) -> (str, str, bool):
     """
     Looks up the (Manufacturer/Character, ItemType) for a given ID.

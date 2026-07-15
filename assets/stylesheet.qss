@@ -921,6 +921,22 @@ QGroupBox[title="元素2（用于元素切换）"]::title {
     color: #42A5F5;
 }
 
+/* Pearl Stat / 珠光属性 - 珍珠青 */
+QGroupBox[title="Pearl Stat"], QGroupBox[title="珠光属性"] {
+    border-left: 4px solid #80DEEA;
+}
+QGroupBox[title="Pearl Stat"]::title, QGroupBox[title="珠光属性"]::title {
+    color: #B2EBF2;
+}
+
+/* Pearl Elements / 珠光元素 - 淡紫珍珠 */
+QGroupBox[title="Pearl Elements"], QGroupBox[title="珠光元素"] {
+    border-left: 4px solid #CE93D8;
+}
+QGroupBox[title="Pearl Elements"]::title, QGroupBox[title="珠光元素"]::title {
+    color: #E1BEE7;
+}
+
 /* ============================================== */
 /* Navigation Sidebar - Solid Background          */
 /* ============================================== */
@@ -1072,5 +1088,419 @@ QDialogButtonBox QPushButton {
     font-weight: bold;
     color: {accent};
     padding: 5px 0;
+}
+
+/* ============================================== */
+/* Weapon Generator - Frosted Glass Cards          */
+/* 武器生成器 - 毛玻璃卡片布局                       */
+/* ============================================== */
+
+/* Config / Attributes / Parts cards */
+#genConfigCard, #genAttrCard, #genPartsContainer {
+    background-color: {bg_panel};
+    border: 1px solid {border_color};
+    border-radius: 12px;
+}
+
+/* Primary action button (add to backpack) inside config card */
+#genAddButton {
+    background-color: {accent};
+    border: 1px solid {accent_hover};
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+    padding: 6px 18px;
+    min-width: 110px;
+}
+
+#genAddButton:hover {
+    background-color: {accent_hover};
+}
+
+#genAddButton:pressed {
+    background-color: {button_pressed};
+}
+
+/* ============================================== */
+/* Catalog Picker (class-mod / enhancement)        */
+/* 目录 -> 购物车 选择控件                            */
+/* ============================================== */
+
+/* List widgets - frosted glass rows */
+QListWidget {
+    background-color: {bg_input};
+    border: 1px solid {border_color};
+    border-radius: 8px;
+    padding: 4px;
+    outline: none;
+}
+
+QListWidget::item {
+    padding: 6px 8px;
+    border-radius: 6px;
+    color: {text_primary};
+}
+
+QListWidget::item:hover {
+    background-color: {button_hover};
+}
+
+QListWidget::item:selected {
+    background-color: {selection_bg};
+    color: white;
+}
+
+/* Selected cart rows need extra vertical room for inline +/- controls */
+#catalogSelectedList::item {
+    padding: 4px 6px;
+    min-height: 40px;
+}
+
+#catalogSelectedList::item:hover {
+    background-color: {button_hover};
+}
+
+/* Catalog / cart container cards */
+#catalogCard {
+    background-color: {bg_panel};
+    border: 1px solid {border_color};
+    border-radius: 10px;
+}
+
+#catalogColTitle {
+    color: {text_secondary};
+    font-size: 9pt;
+    font-weight: bold;
+}
+
+#catalogCount {
+    color: {accent};
+    font-weight: bold;
+}
+
+#catalogClearBtn {
+    background-color: {button_bg};
+    border: 1px solid {border_color};
+    border-radius: 6px;
+    padding: 3px 12px;
+    color: {text_primary};
+}
+
+#catalogClearBtn:hover {
+    background-color: {button_hover};
+    border: 1px solid {accent};
+}
+
+/* Category filter chips (reuse the element chip look) */
+#catalogChip {
+    background-color: {bg_input};
+    border: 1px solid {border_color};
+    border-radius: 12px;
+    padding: 3px 12px;
+    color: {text_primary};
+    font-weight: bold;
+}
+
+#catalogChip:hover {
+    border: 1px solid {accent};
+}
+
+#catalogChip:checked {
+    background-color: {accent};
+    border: 1px solid {accent_hover};
+    color: white;
+}
+
+/* Selected cart row inline controls */
+#rowStepBtn {
+    background-color: {button_bg};
+    border: 1px solid {border_color};
+    border-radius: 13px;
+    min-width: 26px;
+    max-width: 26px;
+    min-height: 26px;
+    max-height: 26px;
+    padding: 0;
+    margin: 0;
+    color: {text_primary};
+    font-weight: bold;
+}
+
+#rowStepBtn:hover {
+    background-color: {button_hover};
+    border: 1px solid {accent};
+}
+
+#rowCount {
+    color: {text_primary};
+    font-weight: bold;
+    min-height: 26px;
+    padding: 0;
+}
+
+#rowDelBtn {
+    background-color: transparent;
+    border: 1px solid {border_color};
+    border-radius: 13px;
+    min-width: 26px;
+    max-width: 26px;
+    min-height: 26px;
+    max-height: 26px;
+    padding: 0;
+    margin: 0;
+    color: {text_secondary};
+    font-weight: bold;
+}
+
+#rowDelBtn:hover {
+    background-color: #e81123;
+    border: 1px solid #e81123;
+    color: white;
+}
+
+QPushButton#catalogChip[catKey="red"]:checked {
+    background-color: #b94652;
+    border-color: #e06b75;
+}
+
+QPushButton#catalogChip[catKey="green"]:checked {
+    background-color: #31875a;
+    border-color: #62c58a;
+}
+
+QPushButton#catalogChip[catKey="blue"]:checked {
+    background-color: #356fae;
+    border-color: #6aa5e5;
+}
+
+#inlineCatalogList {
+    background-color: {bg_input};
+    border: 1px solid {border_color};
+    border-radius: 7px;
+    padding: 5px;
+}
+
+#inlineCatalogList::item {
+    padding: 2px;
+    margin: 2px 0;
+    border-radius: 6px;
+}
+
+#inlineCatalogList::item:hover {
+    background-color: transparent;
+}
+
+#inlineCatalogRow {
+    background-color: {bg_panel};
+    border: 1px solid {border_color};
+    border-radius: 6px;
+}
+
+#inlineCatalogRow:hover {
+    background-color: {button_hover};
+}
+
+QFrame#inlineCatalogRow[selected="true"] {
+    background-color: {selection_bg};
+    border-color: {accent_hover};
+}
+
+QFrame#inlineCatalogRow[selected="true"] QLabel {
+    color: white;
+}
+
+#inlineCatalogTitle {
+    color: {text_primary};
+    font-weight: bold;
+}
+
+#inlineCatalogDetail {
+    color: {text_secondary};
+    font-size: 8pt;
+}
+
+#inlineCatalogToggle {
+    background-color: {button_bg};
+    border: 1px solid {border_color};
+    border-radius: 16px;
+    padding: 0;
+    color: {text_primary};
+    font-weight: bold;
+}
+
+#inlineCatalogToggle:hover,
+#inlineCatalogToggle:checked {
+    background-color: {accent};
+    border-color: {accent_hover};
+    color: white;
+}
+
+/* Section title inside a card */
+#genSectionTitle {
+    color: {accent};
+    font-size: 11pt;
+    font-weight: bold;
+    padding: 0 2px 2px 2px;
+}
+
+/* Multi-select badge - small pill */
+#multiBadge {
+    background-color: {bg_input};
+    border: 1px solid {border_color};
+    border-radius: 8px;
+    color: {text_secondary};
+    font-size: 8pt;
+    font-weight: bold;
+    padding: 1px 8px;
+}
+
+/* Element / Pearl chip selector - clickable pills */
+#elemChip {
+    background-color: {bg_input};
+    border: 1px solid {border_color};
+    border-radius: 12px;
+    padding: 4px 12px;
+    color: {text_primary};
+    font-weight: bold;
+}
+
+#elemChip:hover {
+    border: 1px solid {accent};
+}
+
+#elemChip:checked {
+    background-color: {accent};
+    border: 1px solid {accent_hover};
+    color: white;
+}
+
+#elemChip:disabled {
+    color: {text_disabled};
+    border: 1px solid {border_color};
+}
+
+/* Inline hint text (e.g. Element 2 dependency note) */
+#genHint {
+    color: {text_secondary};
+    font-size: 8pt;
+    font-weight: normal;
+    padding: 2px 2px 0 2px;
+}
+
+#genPartDetail {
+    background-color: {bg_input};
+    border-left: 2px solid {accent};
+    border-radius: 4px;
+    color: {text_secondary};
+    padding: 5px 7px;
+}
+
+/* Weapon Editor browser and part cards */
+#weaponBrowser {
+    min-height: 220px;
+}
+
+#weaponBrowser::item {
+    min-height: 42px;
+    padding: 0;
+    border-bottom: 1px solid {border_color};
+}
+
+#WeaponBrowserRow {
+    background-color: transparent;
+}
+
+#WeaponBrowserName {
+    color: {text_primary};
+    font-weight: bold;
+}
+
+#WeaponBrowserMeta, #WeaponBrowserStatTitle {
+    color: {text_secondary};
+    font-size: 8pt;
+}
+
+#WeaponBrowserStatValue {
+    color: {text_primary};
+    font-weight: bold;
+}
+
+#selectedWeaponSummary {
+    background-color: {selection_bg};
+    border-left: 3px solid {accent};
+    border-radius: 6px;
+    color: {text_primary};
+    font-weight: bold;
+    padding: 8px 10px;
+}
+
+#PartFrame, #PartGroupFrame {
+    background-color: {bg_panel};
+    border: 1px solid {border_color};
+    border-radius: 8px;
+}
+
+#PartFrame {
+    padding: 5px;
+}
+
+#PartSubFrame {
+    background-color: {bg_input};
+    border-left: 2px solid {border_color};
+    border-radius: 5px;
+}
+
+#PartTypeBadge {
+    background-color: {bg_input};
+    border: 1px solid {border_color};
+    border-radius: 4px;
+    font-weight: bold;
+    padding: 3px 7px;
+}
+
+#PartIdBadge {
+    background-color: {bg_input};
+    border: 1px solid {border_color};
+    border-radius: 4px;
+    color: {text_secondary};
+    padding: 2px 6px;
+}
+
+#PartName {
+    color: {text_primary};
+    font-weight: bold;
+}
+
+#PartDescription {
+    color: {text_primary};
+    padding: 0 3px 3px 3px;
+}
+
+#PartActionButton, #PartDeleteButton {
+    background-color: {button_bg};
+    border: 1px solid {border_color};
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 0;
+}
+
+#PartActionButton:hover {
+    background-color: {button_hover};
+    border-color: {accent};
+}
+
+#PartDeleteButton:hover {
+    background-color: #8b2f3a;
+    border-color: #cf6679;
+}
+
+/* BL4-style weapon card shown by the Item tab. */
+QToolTip {
+    color: #eef5f6;
+    background-color: #0a222b;
+    border: 1px solid #527a83;
+    padding: 0;
+    font-family: "Microsoft YaHei UI", "Segoe UI";
 }
 

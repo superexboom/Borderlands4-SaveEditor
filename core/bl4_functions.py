@@ -1,7 +1,6 @@
 # bl4_functions.py
 
 from typing import Any, Dict, List, Optional, Tuple, Union
-import re
 from . import b_encoder
 
 
@@ -109,6 +108,7 @@ def apply_character_and_currency_changes(data: Dict[str, Any], yaml_data: Dict[s
 
 # ── Item Processing Logic ─────────────────────────────────────────────────────
 from . import decoder_logic
+from . import item_display_resolver
 from . import lookup
 from typing import TypedDict, List
 from .resource_loader import load_json_resource, get_ui_localization_file
@@ -172,6 +172,7 @@ class ProcessedItem(TypedDict):
     serial: str
     decoded_full: str
     decoded_parts: str
+    weapon_stats: Dict[str, Any]
 
 def _walk_for_serials(node: Any, path: List[str]) -> List[Tuple[List[str], Any]]:
     """
@@ -246,7 +247,17 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
             localized_manufacturer = get_localized_string(manufacturer)
             localized_item_type = get_localized_string(item_type)
             
-            item_name = f"{localized_manufacturer} {localized_item_type}"
+            base_item_name = f"{localized_manufacturer} {localized_item_type}"
+            display_info = item_display_resolver.resolve_item_display(
+                item_id,
+                localized_manufacturer,
+                item_type,
+                formatted_str,
+                current_localization_lang,
+            )
+            item_name = display_info.get("display_name") or base_item_name
+            if display_info.get("display_source") == "fallback":
+                item_name = base_item_name
             display_parts = parts_part.strip()
 
             # Determine container and slot from the path
@@ -270,6 +281,7 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
             processed_item: ProcessedItem = {
                 "original_path": path,
                 "name": item_name,
+                "base_name": base_item_name,
                 "type": localized_item_type,
                 "type_en": item_type,
                 "container": container_name,
@@ -278,9 +290,18 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
                 "manufacturer_en": manufacturer,
                 "id": item_id,
                 "level": item_level,
+                "rarity": display_info.get("rarity", ""),
+                "display_source": display_info.get("display_source", ""),
+                "parts_summary": display_info.get("parts_summary", ""),
+                "state_flags": str(item_data.get("state_flags", "")),
                 "serial": serial,
                 "decoded_full": formatted_str,
                 "decoded_parts": display_parts,
+                "weapon_stats": (
+                    item_display_resolver.resolve_weapon_stats(formatted_str)
+                    if item_type in item_display_resolver.WEAPON_TYPES
+                    else {}
+                ),
             }
             all_items.append(processed_item)
 
@@ -387,49 +408,6 @@ def get_yaml_loader():
 
     AnyTagLoader.add_multi_constructor("", _ignore_any)
     return AnyTagLoader
-
-
-def find_node_by_path(yaml_data: Dict[str, Any], path_str: str) -> Optional[Any]:
-    """通过点分隔的路径字符串查找节点，例如 'inventory.backpack'。"""
-    keys = path_str.split('.')
-    node = yaml_data
-    try:
-        for key in keys:
-            # 首先尝试作为字典键
-            if isinstance(node, dict) and key in node:
-                node = node[key]
-            # 如果是列表，而键是数字，则尝试作为索引
-            elif isinstance(node, list) and key.isdigit():
-                node = node[int(key)]
-            # 如果都失败，则路径无效
-            else:
-                return None
-    except (KeyError, IndexError, TypeError):
-        return None
-    return node
-
-
-def find_last_backpack_slot(yaml_data: Dict[str, Any]) -> int:
-    """在背包中找到最后一个或最大的slot ID。"""
-    # 动态查找背包节点
-    backpack_node = find_node_by_path(yaml_data, 'state.inventory.backpack')
-    if backpack_node is None:
-        backpack_node = find_node_by_path(yaml_data, 'inventory.backpack')
-
-    if not isinstance(backpack_node, dict):
-        raise ValueError("在存档中无法找到或访问背包（Backpack）。")
-
-    max_slot = -1
-    slot_pattern = re.compile(r"slot_(\d+)")
-
-    for key in backpack_node.keys():
-        match = slot_pattern.match(key)
-        if match:
-            num = int(match.group(1))
-            if num > max_slot:
-                max_slot = num
-    
-    return max_slot
 
 
 def sync_inventory_item_levels(yaml_data: Dict[str, Any]) -> Tuple[int, int, List[str]]:

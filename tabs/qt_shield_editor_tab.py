@@ -1,9 +1,7 @@
 import pandas as pd
 from functools import lru_cache
-import random
 import re
 
-from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit,
     QPushButton, QGroupBox, QComboBox, QRadioButton, QListWidget, QListWidgetItem,
@@ -13,6 +11,7 @@ from PyQt6.QtCore import pyqtSignal, Qt
 
 from core import b_encoder
 from core import resource_loader
+from tabs.qt_catalog_picker import ContainedWheelListWidget, ContainedWheelScrollArea
 import lookup
 from core import bl4_functions as bl4f
 
@@ -168,7 +167,7 @@ class QtShieldEditorTab(QWidget):
         controls_layout.addStretch(); layout.addWidget(self.base_attrs_group)
 
     def _create_scrollable_radio_group(self, title):
-        group_box = QGroupBox(title); scroll_area = QScrollArea(); scroll_area.setWidgetResizable(True)
+        group_box = QGroupBox(title); scroll_area = ContainedWheelScrollArea(); scroll_area.setWidgetResizable(True)
         scroll_area.setMinimumHeight(200)
         scroll_area.setMaximumHeight(200)
         widget_in_scroll = QWidget(); layout = QVBoxLayout(widget_in_scroll)
@@ -177,7 +176,7 @@ class QtShieldEditorTab(QWidget):
 
     def _create_list_perk_group(self, title, single_select=False, use_multiplier=False):
         group = QGroupBox(title); layout = QGridLayout(group)
-        avail, sel = QListWidget(), QListWidget()
+        avail, sel = ContainedWheelListWidget(), ContainedWheelListWidget()
         avail.setMinimumHeight(200)
         sel.setMinimumHeight(200)
         if not single_select:

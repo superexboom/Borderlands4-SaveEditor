@@ -9,10 +9,7 @@ sys.path.append(str(current_dir))
 
 try:
     from bl4_decoder_py.b4s.b85.decode import decode
-    from bl4_decoder_py.b4s.b85.encode import encode
     from bl4_decoder_py.b4s.serial.deserialize import deserialize
-    from bl4_decoder_py.b4s.serial.serialize import serialize
-    from bl4_decoder_py.b4s.serial.from_string import from_string
     from bl4_decoder_py.b4s.serial.block import Block
     from bl4_decoder_py.b4s.serial_tokenizer.tokenizer import Token
     from bl4_decoder_py.b4s.serial_datatypes.part.part import PartSubType
@@ -95,28 +92,5 @@ def decode_serial_to_string(serial_b85: str) -> (str, list, str or None):
         formatted_string = _format_blocks(blocks)
         return formatted_string, blocks, None
 
-    except (ValueError, IOError, EOFError) as e:
-        return "", [], f"解码过程中发生错误: {e}"
-
-def encode_string_to_serial(decoded_string: str) -> (str, str or None):
-    """
-    Encodes a human-readable string back into a Base85 serial.
-    
-    Args:
-        decoded_string: The human-readable string representation of the item.
-
-    Returns:
-        A tuple containing:
-        - The Base85 encoded serial string.
-        - An error message string if an error occurs, otherwise None.
-    """
-    if not decoded_string:
-        return "", "输入字符串不能为空。"
-    
-    try:
-        blocks = from_string(decoded_string)
-        serialized_data = serialize(blocks)
-        encoded_serial = encode(serialized_data)
-        return encoded_serial, None
     except Exception as e:
-        return "", f"编码过程中发生错误: {e}"
+        return "", [], f"解码过程中发生错误: {e}"
