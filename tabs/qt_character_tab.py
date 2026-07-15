@@ -3,8 +3,9 @@ from PyQt6.QtWidgets import (
     QGroupBox, QFormLayout, QComboBox, QDialog, QDialogButtonBox, QSizePolicy
 )
 from PyQt6.QtCore import pyqtSignal, Qt
+from PyQt6.QtGui import QIntValidator
 from typing import Dict, Any
-from core.unlock_data import CHARACTER_CLASSES
+from core.unlock_data import CHARACTER_CLASSES, VAULT_CARD_TOKENS
 from core import resource_loader
 
 # --- XP Calculation ---
@@ -50,6 +51,8 @@ class QtCharacterTab(QWidget):
         self.ui_groups = {}
         self.world_btns_widgets = [] # store (action, widget)
         self.char_btns_widgets = []
+        self.vault_card_widgets = []
+        self.vault_card_edits = {}
         self.is_profile_save = False
 
         # --- UI元素直接定义为实例属性 ---
@@ -115,6 +118,21 @@ class QtCharacterTab(QWidget):
         
         self.ui_labels['eridium'] = QLabel(self.loc['labels']['eridium'])
         currency_form_layout.addRow(self.ui_labels['eridium'], self.eridium_edit)
+
+        self.character_currency_widgets = [
+            self.ui_labels['money'], self.money_edit,
+            self.ui_labels['eridium'], self.eridium_edit,
+        ]
+        for card in VAULT_CARD_TOKENS:
+            if not isinstance(card, dict) or not isinstance(card.get('currency_key'), str):
+                continue
+            currency_key = card['currency_key']
+            label = QLabel(self._vault_card_label(card))
+            edit = QLineEdit(self)
+            edit.setValidator(QIntValidator(0, 2147483647, edit))
+            currency_form_layout.addRow(label, edit)
+            self.vault_card_edits[currency_key] = edit
+            self.vault_card_widgets.append((card, label, edit))
         
         main_layout.addWidget(self.ui_groups['currency'])
 
@@ -154,6 +172,7 @@ class QtCharacterTab(QWidget):
             ("max_sdu", self.loc['presets']['max_sdu'], "set_max_sdu"),
             ("unlock_vault", self.loc['presets']['unlock_vault'], "unlock_vault_powers"),
             ("unlock_vehicles", self.loc['presets']['unlock_vehicles'], "unlock_all_hover_drives"),
+            ("unlock_vault_cards", self.loc['presets']['unlock_vault_cards'], "unlock_all_vault_card_rewards"),
         ]
         
         for key, label, action in world_buttons:
@@ -182,6 +201,7 @@ class QtCharacterTab(QWidget):
             ("skip_all", self.loc['presets']['skip_all'], "complete_all_missions"),
             ("unlock_specs", self.loc['presets']['unlock_specs'], "unlock_all_specialization"),
             ("unlock_uvhm", self.loc['presets']['unlock_uvhm'], "unlock_postgame"),
+            ("max_ammo", self.loc['presets']['max_ammo'], "max_ammo"),
         ]
         
         for key, label, action in char_buttons:
@@ -242,6 +262,7 @@ class QtCharacterTab(QWidget):
                 "labels": {
                     "name": "Name:", "difficulty": "Difficulty:", "level": "Level:", "xp": "XP:",
                     "spec_level": "Spec Level:", "spec_points": "Spec Points:", "money": "Money:", "eridium": "Eridium:",
+                    "vault_card_tokens": "Vault Card {number} Tokens:",
                     "xp_auto_hint": "Enter your target level to auto-calculate the required XP",
                     "profile_only_hint": "Profile save only. Disabled on character saves.",
                     "character_only_hint": "Character save only. Disabled on profile saves.",
@@ -249,14 +270,14 @@ class QtCharacterTab(QWidget):
                     "preset_mode_character": "Current save type: Character save. Character presets enabled, profile presets disabled.",
                     "preset_credit": ""
                 },
-                "buttons": {"apply_changes": "Apply Changes", "sync_levels": "Sync Item Levels"},
+                "buttons": {"apply_changes": "Apply Changes", "apply_profile_changes": "Apply Profile Currency Changes", "sync_levels": "Sync Item Levels"},
                 "warnings": {"sync_warning": "Warning: May unequip items."},
                 "presets": {"clear_fog": "Clear Fog", "discover_locs": "Discover Locations", "unlock_safehouses": "Unlock Safehouses", 
                             "unlock_collectibles": "Unlock Collectibles", "complete_challenges": "Complete Challenges", 
                             "complete_achievements": "Complete Achievements", "skip_story": "Skip Story", "skip_all": "Skip All Missions",
                             "change_class": "Change Class", "max_level": "Max Level", "max_sdu": "Max SDU", 
                             "unlock_vault": "Unlock Vault", "unlock_vehicles": "Unlock Vehicles", "unlock_cosmetics": "Unlock Cosmetics", "unlock_specs": "Unlock Specs",
-                            "unlock_uvhm": "Unlock UVHM", "unlock_max": "Unlock Max"},
+                            "unlock_uvhm": "Unlock UVHM", "unlock_vault_cards": "Unlock All Vault Card Rewards", "max_ammo": "Refill Ammo", "unlock_max": "Unlock Max"},
                 "dialogs": {"change_class_title": "Change Class", "select_class": "Select Class:"}
             }
 
@@ -275,6 +296,14 @@ class QtCharacterTab(QWidget):
         self.loc["labels"].setdefault("preset_mode_profile", "Current save type: Profile. Profile presets enabled, character presets disabled.")
         self.loc["labels"].setdefault("preset_mode_character", "Current save type: Character save. Character presets enabled, profile presets disabled.")
         self.loc["labels"].setdefault("preset_credit", "")
+        self.loc["labels"].setdefault("vault_card_tokens", "Vault Card {number} Tokens:")
+        self.loc["buttons"].setdefault("apply_profile_changes", "Apply Profile Currency Changes")
+        self.loc["presets"].setdefault("unlock_vault_cards", "Unlock All Vault Card Rewards")
+        self.loc["presets"].setdefault("max_ammo", "Refill Ammo")
+
+    def _vault_card_label(self, card):
+        number = card.get('number', card.get('card_id', ''))
+        return self.loc['labels'].get('vault_card_tokens', 'Vault Card {number} Tokens:').format(number=number)
 
     def update_language(self, lang):
         print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
@@ -297,12 +326,13 @@ class QtCharacterTab(QWidget):
         self.ui_labels['spec_points'].setText(self.loc['labels']['spec_points'])
         self.ui_labels['money'].setText(self.loc['labels']['money'])
         self.ui_labels['eridium'].setText(self.loc['labels']['eridium'])
+        for card, label, _ in self.vault_card_widgets:
+            label.setText(self._vault_card_label(card))
         self.ui_labels['sync_warning'].setText(self.loc['warnings']['sync_warning'])
         self.ui_labels['profile_only_hint'].setText(self.loc['labels']['profile_only_hint'])
         self.ui_labels['character_only_hint'].setText(self.loc['labels']['character_only_hint'])
         
         # Buttons
-        self.ui_buttons['apply_changes'].setText(self.loc['buttons']['apply_changes'])
         self.ui_buttons['sync_levels'].setText(self.loc['buttons']['sync_levels'])
         
         # Dynamic Buttons
@@ -321,6 +351,17 @@ class QtCharacterTab(QWidget):
 
         for _, btn in self.char_btns_widgets:
             btn.setEnabled(not self.is_profile_save)
+
+        self.ui_groups['character_info'].setVisible(not self.is_profile_save)
+        for widget in self.character_currency_widgets:
+            widget.setVisible(not self.is_profile_save)
+        for _, label, edit in self.vault_card_widgets:
+            label.setVisible(self.is_profile_save)
+            edit.setVisible(self.is_profile_save)
+        self.ui_buttons['sync_levels'].setVisible(not self.is_profile_save)
+        self.ui_labels['sync_warning'].setVisible(not self.is_profile_save)
+        apply_key = 'apply_profile_changes' if self.is_profile_save else 'apply_changes'
+        self.ui_buttons['apply_changes'].setText(self.loc['buttons'][apply_key])
 
         if self.is_profile_save:
             mode_text = self.loc['labels']['preset_mode_profile']
@@ -359,6 +400,8 @@ class QtCharacterTab(QWidget):
         self.spec_points_edit.setText(data.get("专精点数", ""))
         self.money_edit.setText(data.get("金钱", ""))
         self.eridium_edit.setText(data.get("镒矿", ""))
+        for currency_key, edit in self.vault_card_edits.items():
+            edit.setText(data.get(currency_key, ""))
 
     def _on_level_changed(self, text: str):
         """When the user edits the level, auto-calculate XP."""
@@ -387,4 +430,6 @@ class QtCharacterTab(QWidget):
             "镒矿": self.eridium_edit.text(),
             "cur_paths": self.cur_paths  # 附加货币路径
         }
+        for currency_key, edit in self.vault_card_edits.items():
+            data_to_apply[currency_key] = edit.text()
         self.character_data_changed.emit(data_to_apply)

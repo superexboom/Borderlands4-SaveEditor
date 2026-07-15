@@ -147,9 +147,10 @@
       "level": "Character Level:",
       "xp": "Character XP:",
       "spec_level": "Spec Level:",
-      "spec_points": "Spec Points:",
+      "spec_points": "Specialization XP:",
       "money": "Money:",
       "eridium": "Eridium:",
+      "vault_card_tokens": "Vault Card {number} Tokens:",
       "xp_auto_hint": "Enter your target level to auto-calculate the required XP",
       "profile_only_hint": "Profile save only. Disabled on character saves.",
       "character_only_hint": "Character save only. Disabled on profile saves.",
@@ -159,6 +160,7 @@
     },
     "buttons": {
       "apply_changes": "Apply Character & Currency Changes",
+      "apply_profile_changes": "Apply Profile Currency Changes",
       "sync_levels": "Sync All Backpack Item Levels to Character Level"
     },
     "warnings": {
@@ -179,8 +181,10 @@
       "max_sdu": "Max SDU",
       "unlock_vault": "Unlock All Vault Gates",
       "unlock_vehicles": "Unlock All Hover Drives",
+      "unlock_vault_cards": "Unlock All Vault Card Rewards",
       "unlock_specs": "Unlock All Specs",
       "unlock_uvhm": "Unlock UVHM",
+      "max_ammo": "Refill Ammo",
       "unlock_max": "Unlock/Maximize Everything"
     },
     "dialogs": {

@@ -17,8 +17,23 @@ from core import resource_loader
 
 from .qt_catalog_picker import InlineCatalogPicker
 
-# Load all skill descriptions at startup
-skill_descriptions = resource_loader.load_all_skill_descriptions()
+# Current NCS uimarkuptextstyle0 FLinearColor values converted to CSS sRGB.
+SKILL_TEXT_STYLES = {
+    'primary': 'color: #EB7300; font-weight: 600;',
+    'secondary': 'color: #2D95CA; font-weight: 600;',
+    'flavor': 'color: #3F769D; font-style: italic;',
+    'fire': 'color: #FF5224;',
+    'shock': 'color: #2F63F9;',
+    'cryo': 'color: #53FBFB;',
+    'corrosive': 'color: #72F800;',
+    'radiation': 'color: #F1FF00;',
+    'kinetic': 'color: #E4D9CE;',
+}
+
+SKILL_IMAGE_TAGS = {
+    'corrosive_icon', 'cryo_icon', 'elemental_icon', 'fire_icon', 'frtn_icon',
+    'kinetic_icon', 'radiation_icon', 'shock_icon', 'wfll_icon',
+}
 
 class QtClassModEditorTab(QWidget):
     add_to_backpack_requested = pyqtSignal(str, str)
@@ -34,7 +49,6 @@ class QtClassModEditorTab(QWidget):
         
         self.ui_loc = self._load_ui_localization()
         self.localization = self._load_localization()  # 仅用于职业/稀有度名称
-        self.skill_descriptions = skill_descriptions
         self.image_cache = {}
         
         # 加载CSV数据
@@ -619,25 +633,34 @@ class QtClassModEditorTab(QWidget):
         flag = self.flag_combo.currentText().split(" ")[0]
         self.add_to_backpack_requested.emit(serial, flag)
 
-    def get_skill_icon(self, skill_name, class_name):
-        # Preserve accented Latin characters (Spanish) for proper icon matching
-        safe_name = re.sub(r"[^a-zA-Z0-9_!áéíóúñÁÉÍÓÚÑ]", "", skill_name.replace("'", "").replace("'", "").replace(" ", "_")).lower()
-        suffix_map = {"Vex": "_1", "Rafa": "_2", "Harlowe": "_3", "Amon": "_4", "C4sh": "_5"}
-        suffix = suffix_map.get(class_name, "")
-        filename = f"{safe_name}{suffix}.png"
-        
-        if filename in self.image_cache:
-            return self.image_cache[filename]
+    def get_skill_icon(self, icon_file, class_name):
+        if not icon_file:
+            return QIcon()
+        cache_key = f"{class_name}/{icon_file}"
+        if cache_key in self.image_cache:
+            return self.image_cache[cache_key]
 
         try:
-            path = resource_loader.get_class_mods_image_path(class_name, filename)
+            path = resource_loader.get_class_mods_image_path(class_name, icon_file)
             if path and Path(path).exists():
                 icon = QIcon(str(path))
-                self.image_cache[filename] = icon
+                self.image_cache[cache_key] = icon
                 return icon
         except Exception as e:
-            print(f"Could not load icon {filename}: {e}")
+            print(f"Could not load icon {icon_file}: {e}")
         return QIcon() # Return empty icon on failure
+
+    @staticmethod
+    def _skill_description_html(value):
+        text = escape(str(value or '')).replace('[newline]', '<br>').replace('\n', '<br>')
+        for tag in SKILL_IMAGE_TAGS:
+            text = text.replace(f'[{tag}]', '')
+        for tag, style in SKILL_TEXT_STYLES.items():
+            text = text.replace(f'[{tag}]', f"<span style='{style}'>")
+            text = text.replace(f'[/{tag}]', '</span>')
+        text = text.replace('[nowrap]', "<span style='white-space: nowrap;'>").replace('[/nowrap]', '</span>')
+        text = text.replace('[glyph]', "<span style='color: #F9F3DE; font-weight: 600;'>").replace('[/glyph]', '</span>')
+        return re.sub(r'\[/?[a-z][a-z0-9_]*\]', '', text, flags=re.IGNORECASE).strip()
 
     def populate_skills(self):
         """填充按三色技能树筛选的单列技能目录。"""
@@ -667,7 +690,6 @@ class QtClassModEditorTab(QWidget):
         for skill_row in sorted(skills_list, key=lambda row: (color_order.get(row.get('tree_color', ''), 9), row.get('skill_name_EN', ''))):
             skill_en = skill_row.get('skill_name_EN', '')
             skill_zh = skill_row.get('skill_name_ZH', '')
-            lookup_name = re.sub(r" [BGR]$", "", skill_en) if current_class_en == "C4sh" else skill_en
             localized_name = skill_zh if self.current_lang == 'zh-CN' and skill_zh else skill_en
             display_name = re.sub(r" [BGR]$", "", localized_name) if current_class_en == "C4sh" else localized_name
 
@@ -677,15 +699,14 @@ class QtClassModEditorTab(QWidget):
                 if code:
                     codes.append(int(code))
 
-            description_info = self.skill_descriptions.get((current_class_en.casefold(), lookup_name.casefold()))
             tooltip_html = ""
-            if description_info:
-                skill_type = self._(description_info.get('type', 'N/A'))
-                if self.current_lang == 'zh-CN':
-                    desc_text = description_info.get('zh', description_info.get('en', 'No description found.'))
-                else:
-                    desc_text = description_info.get('en', 'No description found.')
-                desc_html = escape(desc_text).replace('\n', '<br>')
+            desc_text = self._pick_text(
+                skill_row.get('description_ZH', ''),
+                skill_row.get('description_EN', ''),
+            )
+            if desc_text:
+                skill_type = self._pick_text("被动技能", "Passive") if skill_row.get('skill_type') == 'passive' else skill_row.get('skill_type', '')
+                desc_html = self._skill_description_html(desc_text)
                 tooltip_html = f"""
                     <div style='width: 390px; white-space: normal;'>
                         <p><b>{escape(display_name)}</b></p>
@@ -703,7 +724,7 @@ class QtClassModEditorTab(QWidget):
                 "detail": tree_name,
                 "category": color,
                 "accent": color,
-                "icon": self.get_skill_icon(skill_en, current_class_en),
+                "icon": self.get_skill_icon(skill_row.get('icon_file', ''), current_class_en),
                 "tooltip": tooltip_html,
                 "max_count": len(codes),
                 "search_text": f"{skill_en} {skill_zh} {tree_name} {skill_row.get('skill_internal', '')}",

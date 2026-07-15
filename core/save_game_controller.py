@@ -19,6 +19,7 @@ from . import b_encoder
 import os
 from datetime import datetime
 from . import unlock_logic
+from .unlock_data import VAULT_CARD_TOKENS
 
 PUBLIC_KEY = bytes((0x35, 0xEC, 0x33, 0x77, 0xF3, 0x5D, 0xB0, 0xEA, 0xBE, 0x6B, 0x83, 0x11, 0x54, 0x03, 0xEB, 0xFB,
                     0x27, 0x25, 0x64, 0x2E, 0xD5, 0x49, 0x06, 0x29, 0x05, 0x78, 0xBD, 0x60, 0xBA, 0x4A, 0xA7, 0x87))
@@ -283,6 +284,22 @@ class SaveGameController:
                 except (KeyError, IndexError, TypeError):
                     val = ""
             data[label] = val
+
+        for card in VAULT_CARD_TOKENS:
+            currency_key = card.get("currency_key") if isinstance(card, dict) else None
+            if not isinstance(currency_key, str):
+                continue
+            path = cur_paths.get(currency_key)
+            value = ""
+            if path:
+                try:
+                    node = self.yaml_obj
+                    for part in path:
+                        node = node[part]
+                    value = str(node)
+                except (KeyError, IndexError, TypeError):
+                    pass
+            data[currency_key] = value
         
         return data
 
@@ -445,6 +462,10 @@ class SaveGameController:
                 unlock_logic.unlock_all_hover_drives(data)
             elif preset_name == "unlock_all_cosmetics":
                 unlock_logic.unlock_all_cosmetics(data)
+            elif preset_name == "unlock_all_vault_card_rewards":
+                unlock_logic.unlock_all_vault_card_rewards(data)
+            elif preset_name == "max_ammo":
+                unlock_logic.max_ammo(data)
             elif preset_name == "unlock_all_specialization":
                 unlock_logic.unlock_all_specialization(data)
             elif preset_name == "unlock_postgame":
@@ -460,6 +481,7 @@ class SaveGameController:
                     unlock_logic.unlock_vault_powers(data)
                     unlock_logic.unlock_all_hover_drives(data)
                     unlock_logic.unlock_all_cosmetics(data)
+                    unlock_logic.unlock_all_vault_card_rewards(data)
                 else:
                     unlock_logic.max_ammo(data)
                     unlock_logic.max_currency(data)

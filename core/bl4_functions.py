@@ -2,6 +2,7 @@
 
 from typing import Any, Dict, List, Optional, Tuple, Union
 from . import b_encoder
+from .unlock_data import VAULT_CARD_TOKENS
 
 
 # Helper to find deeply nested dictionary paths
@@ -25,8 +26,12 @@ def _walk_find(node: Any, target_keys: List[str], path: Optional[List[Union[str,
 
 # Locate paths for currencies
 def find_currency_paths(yaml_data: Dict[str, Any]) -> Dict[str, Optional[List[Union[str, int]]]]:
-    """Detects paths for cash and eridium in the save data."""
+    """Detects paths for character and profile currencies in the save data."""
     paths = {"cash": None, "eridium": None}
+    for card in VAULT_CARD_TOKENS:
+        currency_key = card.get("currency_key") if isinstance(card, dict) else None
+        if isinstance(currency_key, str):
+            paths[currency_key] = None
     
     # Priority 1: Check a standard 'currencies' block
     if "currencies" in yaml_data and isinstance(yaml_data["currencies"], dict):
@@ -39,6 +44,13 @@ def find_currency_paths(yaml_data: Dict[str, Any]) -> Dict[str, Optional[List[Un
         paths["cash"] = _walk_find(yaml_data, ["cash", "money"])
     if not paths["eridium"]:
         paths["eridium"] = _walk_find(yaml_data, ["eridium", "vaultcoin"])
+
+    profile_currencies = (
+        yaml_data.get("domains", {}).get("local", {}).get("shared", {}).get("currencies", {})
+    )
+    if isinstance(profile_currencies, dict):
+        for currency_key in paths.keys() - {"cash", "eridium"}:
+            paths[currency_key] = ["domains", "local", "shared", "currencies", currency_key]
         
     return paths
 
@@ -60,6 +72,29 @@ def apply_character_and_currency_changes(data: Dict[str, Any], yaml_data: Dict[s
             return int(str(x).strip())
         except (ValueError, TypeError):
             return 0
+
+    local = yaml_data.get("domains", {}).get("local", {})
+    if isinstance(local, dict) and "shared" in local:
+        updates = []
+        for card in VAULT_CARD_TOKENS:
+            currency_key = card.get("currency_key") if isinstance(card, dict) else None
+            if not isinstance(currency_key, str):
+                continue
+            path = current_paths.get(currency_key)
+            value = str(data.get(currency_key, "")).strip()
+            if not path or not value:
+                continue
+            try:
+                parsed = int(value)
+            except (TypeError, ValueError):
+                return False
+            updates.append((path, min(max(parsed, 0), 2147483647)))
+        try:
+            for path, value in updates:
+                _set_by_path(yaml_data, path, value)
+            return True
+        except (KeyError, IndexError, TypeError):
+            return False
     
     try:
         # Apply name and difficulty
@@ -87,10 +122,18 @@ def apply_character_and_currency_changes(data: Dict[str, Any], yaml_data: Dict[s
             spec_exp = {"type": "Specialization"}
             exp_list.append(spec_exp)
             
-        char_exp["level"] = maybe_int(data.get("角色等级", 0))
+        char_level = maybe_int(data.get("角色等级", 0))
+        char_exp["level"] = char_level
         char_exp["points"] = maybe_int(data.get("角色经验值", 0))
         spec_exp["level"] = maybe_int(data.get("专精等级", 0))
         spec_exp["points"] = maybe_int(data.get("专精点数", 0))
+
+        if char_level > 0:
+            progression = yaml_data.setdefault("progression", {})
+            if isinstance(progression, dict):
+                point_pools = progression.setdefault("point_pools", {})
+                if isinstance(point_pools, dict):
+                    point_pools["characterprogresspoints"] = char_level - 1
 
         # Apply currencies
         for key, label in [("cash", "金钱"), ("eridium", "镒矿")]:

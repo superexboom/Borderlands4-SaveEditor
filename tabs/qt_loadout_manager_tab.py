@@ -236,9 +236,14 @@ class QtLoadoutManagerTab(QWidget):
             self.skills_by_class[class_id].append(skill)
 
         self.skill_lookup = {}
+        self.skills_by_graph = {}
         for skill in self.skills_data:
             key = (skill.get('class_ID', ''), skill.get('skill_name_EN', ''))
             self.skill_lookup[key] = skill
+            graph_key = self._skill_mapping_key(
+                skill.get('class_ID', ''), skill.get('graph_name', ''), skill.get('node_name', '')
+            )
+            self.skills_by_graph[graph_key] = skill
 
         # 加载技能名称映射表
         self._load_skill_name_mapping()
@@ -323,25 +328,37 @@ class QtLoadoutManagerTab(QWidget):
         except (AttributeError, TypeError):
             return ''
 
-    def get_skill_icon(self, skill_name: str, class_name: str) -> QIcon:
+    def get_skill_icon(self, icon_file: str, class_name: str) -> QIcon:
         """获取技能图标"""
-        safe_name = re.sub(r"[^a-zA-Z0-9_!áéíóúñÁÉÍÓÚÑ]", "",
-                           skill_name.replace("'", "").replace("\u2019", "").replace(" ", "_")).lower()
+        if not icon_file:
+            return QIcon()
         class_name = self.CLASS_NAME_ALIASES.get(class_name, class_name)
-        suffix_map = {"Vex": "_1", "Rafa": "_2", "Harlowe": "_3", "Amon": "_4", "C4sh": "_5"}
-        suffix = suffix_map.get(class_name, "")
-        filename = f"{safe_name}{suffix}.png"
-        if filename in self.image_cache:
-            return self.image_cache[filename]
+        cache_key = f"{class_name}/{icon_file}"
+        if cache_key in self.image_cache:
+            return self.image_cache[cache_key]
         try:
-            path = resource_loader.get_class_mods_image_path(class_name, filename)
+            path = resource_loader.get_class_mods_image_path(class_name, icon_file)
             if path and Path(path).exists():
                 icon = QIcon(str(path))
-                self.image_cache[filename] = icon
+                self.image_cache[cache_key] = icon
                 return icon
         except Exception as e:
-            print(f"Could not load icon {filename}: {e}")
+            print(f"Could not load icon {icon_file}: {e}")
         return QIcon()
+
+    def _find_skill_csv_row(self, class_id: str, graph_name: str = '', node_name: str = '', skill_name: str = '') -> dict:
+        if graph_name and node_name:
+            row = self.skills_by_graph.get(self._skill_mapping_key(class_id, graph_name, node_name))
+            if row:
+                return row
+        normalized_name = re.sub(r" [BGR]$", "", skill_name).casefold()
+        for row in self.skills_by_class.get(class_id, []):
+            if graph_name and self._normalize_mapping_text(row.get('graph_name', '')) != self._normalize_mapping_text(graph_name):
+                continue
+            row_name = re.sub(r" [BGR]$", "", row.get('skill_name_EN', '')).casefold()
+            if row_name == normalized_name:
+                return row
+        return {}
 
     def _find_loadout_skill_mapping(self, class_id: str, graph_name: str, skill_name: str) -> dict:
         if graph_name and skill_name:
@@ -370,9 +387,17 @@ class QtLoadoutManagerTab(QWidget):
         mapping_row = self._find_loadout_skill_mapping(class_id, graph_name, skill_name_en)
         if mapping_row:
             mapped_name = mapping_row.get('skill_name_EN', '').strip() or skill_name_en
-            zh_name = mapping_row.get('skill_name_ZH', '').strip()
-            display_name = zh_name if self.current_lang == 'zh-CN' and zh_name else mapped_name
-            icon = self.get_skill_icon(mapped_name, class_name)
+            skill_row = self._find_skill_csv_row(
+                class_id,
+                mapping_row.get('graph_name', ''),
+                mapping_row.get('graph_coord', '') or mapping_row.get('node_name', ''),
+                mapped_name,
+            )
+            display_name = skill_row.get('skill_name_EN', '').strip() or mapped_name
+            zh_name = (skill_row.get('skill_name_ZH', '') or mapping_row.get('skill_name_ZH', '')).strip()
+            if self.current_lang == 'zh-CN' and zh_name:
+                display_name = zh_name
+            icon = self.get_skill_icon(skill_row.get('icon_file', ''), class_name)
             return display_name, icon
 
         mapped_name = self.skill_name_mapping.get(skill_name_en, skill_name_en)
@@ -410,7 +435,7 @@ class QtLoadoutManagerTab(QWidget):
                 display_name = zh_name
             else:
                 display_name = skill_name_en_canonical
-            icon = self.get_skill_icon(skill_name_en_canonical, class_name)
+            icon = self.get_skill_icon(skill_row.get('icon_file', ''), class_name)
         else:
             # 未找到匹配，显示原始名称（或映射后的名称）
             display_name = lookup_name

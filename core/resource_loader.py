@@ -216,66 +216,6 @@ def get_class_mods_image_path(class_name: str, image_name: str) -> Optional[Path
     """
     return get_image_resource_path(f"class_mods/{class_name}/{image_name}")
 
-def load_all_skill_descriptions() -> Dict[tuple[str, str], Dict[str, str]]:
-    """
-    加载所有职业的技能描述文件，并整合成一个字典
-    使用Skills.csv获取英文名到中文名的映射
-
-    Returns:
-        一个以(职业, 技能英文名)为键，包含中英文描述的字典
-    """
-    all_skills = {}
-    characters = ['Amon', 'Vex', 'Harlowe', 'Rafa', 'C4sh']
-    
-    # 从Skills.csv加载英文名→中文名的映射
-    skills_csv = load_class_mods_csv("Skills.csv")
-    skill_name_map = {}
-    for row in skills_csv:
-        class_name = row.get('class_name', '').strip().casefold()
-        en_name = row.get('skill_name_EN', '').strip()
-        zh_name = row.get('skill_name_ZH', '').strip()
-        if class_name and en_name and zh_name:
-            skill_name_map[(class_name, en_name.casefold())] = zh_name
-
-    for char in characters:
-        en_skills_list = load_class_mods_json(f"{char}_en.json")
-        zh_skills_list = load_class_mods_json(f"{char}_zh.json")
-
-        if not en_skills_list:
-            continue
-        
-        # Build ZH lookup map keyed by Chinese Name for robust matching
-        zh_lookup = {}
-        if zh_skills_list:
-            for item in zh_skills_list:
-                if 'name' in item:
-                    zh_lookup[item['name']] = item
-
-        for en_skill_data in en_skills_list:
-            skill_en_name = en_skill_data.get('name')
-            if not skill_en_name:
-                continue
-            
-            desc_en = en_skill_data.get('description', 'No English description.')
-            desc_zh = desc_en
-            
-            # 使用Skills.csv中的映射查找中文名称
-            skill_key = (char.casefold(), skill_en_name.casefold())
-            zh_name_candidate = skill_name_map.get(skill_key)
-            if zh_name_candidate and zh_name_candidate in zh_lookup:
-                desc_zh = zh_lookup[zh_name_candidate].get('description', desc_en)
-            # Fallback: Try direct name match (if keys are identical)
-            elif skill_en_name in zh_lookup:
-                desc_zh = zh_lookup[skill_en_name].get('description', desc_en)
-
-            all_skills[skill_key] = {
-                'en': desc_en,
-                'zh': desc_zh,
-                'type': en_skill_data.get('type', 'N/A')
-            }
-
-    return all_skills
-
 def get_enhancement_data_path(filename: str) -> Optional[Path]:
     """
     获取enhancement目录下数据文件的路径

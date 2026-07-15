@@ -147,9 +147,10 @@
       "level": "角色等级:",
       "xp": "角色经验值:",
       "spec_level": "专精等级:",
-      "spec_points": "专精点数:",
+      "spec_points": "专精经验值:",
       "money": "金钱:",
       "eridium": "镒矿:",
+      "vault_card_tokens": "Vault Card {number} 代币:",
       "xp_auto_hint": "输入你所目标的等级，则可自动化完成经验值计算",
       "profile_only_hint": "仅 Profile 存档可用；普通角色存档会自动灰置。",
       "character_only_hint": "仅普通角色存档可用；Profile 存档会自动灰置。",
@@ -159,6 +160,7 @@
     },
     "buttons": {
       "apply_changes": "应用角色与货币更改",
+      "apply_profile_changes": "应用 Profile 货币更改",
       "sync_levels": "同步背包所有物品等级至当前角色等级"
     },
     "warnings": {
@@ -179,8 +181,10 @@
       "max_sdu": "最大储物格代币",
       "unlock_vault": "解锁所有密藏大门",
       "unlock_vehicles": "解锁所有载具",
+      "unlock_vault_cards": "解锁全部 Vault Card 奖励",
       "unlock_specs": "解锁所有专精",
       "unlock_uvhm": "解锁UVHM",
+      "max_ammo": "补满弹药",
       "unlock_max": "解锁/最大化所有内容"
     },
     "dialogs": {

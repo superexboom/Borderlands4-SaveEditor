@@ -25,8 +25,9 @@ This tool allows you to modify character data, manage inventory items, unlock ga
 - Modify character name and current class.
 - Customize difficulty settings.
 - Edit Character Level and Experience Points (XP).
-- Edit Spec Level and Spec Points.
+- Edit Spec Level and accumulated Specialization XP.
 - Edit Money and Eridium.
+- Edit all currently available Vault Card token balances from a Profile save.
 - One-click synchronization of all backpack item levels to the current character level.
 
 #### Unlocks & Presets
@@ -35,8 +36,9 @@ Provides various one-click unlock functions:
 - Remove map fog, discover all locations, unlock all safehouses.
 - Unlock all collectibles, complete all challenges, complete all achievements.
 - Skip story missions, skip all missions.
-- One-click Max Level (Level 50), Max SDU (Storage Deck Upgrades).
+- One-click Max Level (Level 60), Max SDU (Storage Deck Upgrades), and ammo refill.
 - Unlock Vault gates, unlock all vehicles, unlock all specializations, unlock UVHM mode.
+- Unlock all permanent rewards for every Vault Card discovered from current game data.
 - Unlock/Max Everything.
 
 #### Items & Backpack

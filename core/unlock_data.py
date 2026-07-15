@@ -90,6 +90,18 @@ CHARACTER_UNLOCKABLES = UNLOCK_PRESETS.get("character_unlockables", {})
 STAT_TARGETS = UNLOCK_PRESETS.get("stat_targets", {})
 EXPLORATION = UNLOCK_PRESETS.get("exploration", {})
 POSTGAME = UNLOCK_PRESETS.get("postgame", {})
+PROFILE_EDITABLES = UNLOCK_PRESETS.get("profile_editables", {})
+PROFILE_UNLOCKS = UNLOCK_PRESETS.get("profile_unlocks", {})
+
+VAULT_CARD_TOKENS = PROFILE_EDITABLES.get("vault_card_tokens", [])
+if not isinstance(VAULT_CARD_TOKENS, list) or not VAULT_CARD_TOKENS:
+    VAULT_CARD_TOKENS = [
+        {"card_id": f"VaultCard{number:02d}", "currency_key": f"vaultcard{number:02d}_tokens", "number": number}
+        for number in range(1, 4)
+    ]
+
+VAULT_CARD_PURCHASES = PROFILE_UNLOCKS.get("vault_card_purchases", [])
+VAULT_CARD_REWARD_UNLOCKABLES = PROFILE_UNLOCKS.get("vault_card_reward_unlockables", {})
 
 # The generated NCS snapshot supersedes the stale shared unlock lists. Keep the
 # compressed blobs above as a compatibility fallback for source checkouts that

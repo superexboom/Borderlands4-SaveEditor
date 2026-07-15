@@ -4,7 +4,8 @@ import re
 from .unlock_data import (
     COLLECTIBLES, MISSIONSETS, UNLOCKABLES, LOCATIONS,
     CHARACTER_CLASSES, MAX_LEVEL, SAFEHOUSE_SILO_LOCATIONS,
-    CHARACTER_UNLOCKABLES, STAT_TARGETS, EXPLORATION, POSTGAME
+    CHARACTER_UNLOCKABLES, STAT_TARGETS, EXPLORATION, POSTGAME,
+    VAULT_CARD_PURCHASES, VAULT_CARD_REWARD_UNLOCKABLES
 )
 
 # --- Helper Functions ---
@@ -263,10 +264,12 @@ def unlock_vault_powers(data):
 
 def unlock_postgame(data):
     globals_ = get_or_create_dict(data, 'globals')
-    globals_['highest_unlocked_vault_hunter_level'] = POSTGAME.get(
-        'highest_unlocked_vault_hunter_level', 6
-    )
-    globals_['vault_hunter_level'] = 1
+    target = POSTGAME.get('highest_unlocked_vault_hunter_level', 7)
+    previous_highest = globals_.get('highest_unlocked_vault_hunter_level', 0)
+    highest = max(previous_highest if isinstance(previous_highest, int) else 0, target)
+    current = globals_.get('vault_hunter_level', 1)
+    globals_['highest_unlocked_vault_hunter_level'] = highest
+    globals_['vault_hunter_level'] = min(max(current if isinstance(current, int) else 1, 1), highest)
 
     complete_uvh_challenges(data)
     merge_missionsets_with_prefix(data, 'missionset_main_postgame')
@@ -648,6 +651,31 @@ def unlock_all_cosmetics(data):
     ):
         merge_profile_unlockable_entries(data, namespace)
 
+def unlock_all_vault_card_rewards(data):
+    if not is_profile_save(data):
+        return
+
+    local = get_profile_local(data)
+    unlockables = get_or_create_dict(local, 'unlockables')
+    for namespace, entries in VAULT_CARD_REWARD_UNLOCKABLES.items():
+        if not isinstance(namespace, str) or not isinstance(entries, list):
+            continue
+        existing = get_or_create_list(get_or_create_dict(unlockables, namespace), 'entries')
+        merged = {entry.lower(): entry for entry in existing if isinstance(entry, str)}
+        for entry in entries:
+            if isinstance(entry, str):
+                merged[entry.lower()] = entry
+        get_or_create_dict(unlockables, namespace)['entries'] = sorted(merged.values(), key=str.lower)
+
+    dlc_data = get_or_create_dict(data, 'oak.ui.dlc_data')
+    ui_dlc_data = get_or_create_dict(dlc_data, 'ui_dlc_data')
+    existing = get_or_create_list(ui_dlc_data, 'vaultcard_purchases')
+    merged = {entry.lower(): entry for entry in existing if isinstance(entry, str)}
+    for entry in VAULT_CARD_PURCHASES:
+        if isinstance(entry, str):
+            merged[entry.lower()] = entry
+    ui_dlc_data['vaultcard_purchases'] = sorted(merged.values(), key=str.lower)
+
 # --- Challenge Functions ---
 
 def complete_all_challenges(data):
@@ -905,11 +933,12 @@ def max_currency(data):
 
 def max_ammo(data):
     state = get_or_create_dict(data, 'state')
-    state['ammo'] = {
+    ammo = get_or_create_dict(state, 'ammo')
+    ammo.update({
         'assaultrifle': 1260,
         'pistol': 900,
         'shotgun': 220,
         'smg': 1620,
         'sniper': 190,
         'repkit': 10,
-    }
+    })
