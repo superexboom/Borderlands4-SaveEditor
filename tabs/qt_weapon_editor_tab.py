@@ -34,6 +34,21 @@ _ROW_PEARL_BG = (
     "stop:1.00 #F06292)"
 )
 
+# Fraction of the rarity color kept after compositing it over black. The row
+# fill is this darkened tone — the "second layer dark bg" that keeps the hue
+# readable as rarity while white text on top stays legible.
+# 稀有度色叠加在黑底上后保留的亮度比例。行填充采用此暗化色调——即"第二层
+# 暗色背景"，既保留可辨识的稀有度色相，又使其上的白色文字保持清晰。
+_ROW_FILL_DARKEN = 0.42
+
+
+def _darken_hex(hex_color, factor):
+    """Composite #RRGGBB over black at the given keep-factor (0..1)."""
+    h = hex_color.lstrip('#')
+    r, g, b = (int(h[i:i + 2], 16) for i in (0, 2, 4))
+    return "#%02x%02x%02x" % (round(r * factor), round(g * factor), round(b * factor))
+
+
 # Weapon-type icon per type_en, reusing the game-extracted art the Item tab
 # already ships (assets/item_card_type/).
 # 按 type_en 对应的武器类型图标，复用物品标签页已内置的游戏提取美术资源。
@@ -839,9 +854,14 @@ class WeaponEditorTab(QtWidgets.QWidget):
         # 稀有度底衬：整行以层级色填充（珠光级为虹彩渐变），武器类型图标置于
         # 左侧。子标签背景透明，使填充读作一条完整色带。
         if rarity == "Pearl":
-            fill = _ROW_PEARL_BG
+            fill = re.sub(
+                r'#[0-9A-Fa-f]{6}',
+                lambda m: _darken_hex(m.group(0), _ROW_FILL_DARKEN),
+                _ROW_PEARL_BG,
+            )
         else:
-            fill = _ROW_RARITY_COLORS.get(rarity, "transparent")
+            base = _ROW_RARITY_COLORS.get(rarity)
+            fill = _darken_hex(base, _ROW_FILL_DARKEN) if base else "transparent"
         if fill != "transparent":
             row.setStyleSheet(
                 f"#WeaponBrowserRow {{ background: {fill}; border-radius: 6px; }}"
