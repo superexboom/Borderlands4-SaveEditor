@@ -276,7 +276,6 @@ class MainWindow(QMainWindow):
 
         self.setWindowFlag(Qt.WindowType.FramelessWindowHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        self.old_pos = None
 
         self.controller = SaveGameController()
         self.is_nav_bar_expanded = True
@@ -395,8 +394,21 @@ class MainWindow(QMainWindow):
             }
 
     def mousePressEvent(self, event):
+        """Drag the frameless window via the compositor, not manual geometry.
+
+        startSystemMove() lets the window manager move the window, which stays
+        smooth under Wayland (and X11); the old approach tracked globalPosition
+        deltas in mouseMoveEvent and re-issued move(), which lags and tears when
+        the compositor owns window placement.
+        通过合成器拖动无边框窗口，而非手动计算几何位置。startSystemMove() 交由
+        窗口管理器移动窗口，在 Wayland（及 X11）下保持流畅；旧做法在
+        mouseMoveEvent 中跟踪 globalPosition 增量并反复调用 move()，当窗口位置
+        由合成器掌控时会卡顿、撕裂。
+        """
         if event.button() == Qt.MouseButton.LeftButton and self.header_bar.underMouse():
-            self.old_pos = event.globalPosition().toPoint()
+            handle = self.windowHandle()
+            if handle is not None:
+                handle.startSystemMove()
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
@@ -421,16 +433,6 @@ class MainWindow(QMainWindow):
             
             central.setMask(bitmap)
 
-    def mouseMoveEvent(self, event):
-        if self.old_pos is not None and event.buttons() == Qt.MouseButton.LeftButton:
-            delta = event.globalPosition().toPoint() - self.old_pos
-            self.move(self.x() + delta.x(), self.y() + delta.y())
-            self.old_pos = event.globalPosition().toPoint()
-
-    def mouseReleaseEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
-            self.old_pos = None
-            
     def _create_actions(self):
         self.open_action = QAction(self.loc['menu']['open_selector'], self)
         self.open_action.triggered.connect(self.browse_and_open_save)
