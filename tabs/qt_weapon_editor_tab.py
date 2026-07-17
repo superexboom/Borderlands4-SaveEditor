@@ -11,6 +11,41 @@ from core import item_display_resolver
 from core import resource_loader
 from tabs.qt_catalog_picker import CatalogPicker, ContainedWheelListWidget, ContainedWheelScrollArea
 
+
+# Rarity tier fills for the backpack row underlay. Keys match the base rarity
+# emitted by _get_rarity_and_weapon_name (the weapon_rarity_df "Stat" value).
+# 背包行底衬的稀有度层级填充色。键名与 _get_rarity_and_weapon_name 返回的
+# 基础稀有度（weapon_rarity_df 的 "Stat" 值）一致。
+_ROW_RARITY_COLORS = {
+    "Common":    "#9E9E9E",
+    "Uncommon":  "#4CAF50",
+    "Rare":      "#2196F3",
+    "Epic":      "#9C27B0",
+    "Legendary": "#FF9800",
+    "Pearl":     "#00E5FF",  # Pearlescent — one tier above Legendary in BL4
+}
+
+# Pearlescent uses a repeating iridescent gradient instead of a flat fill.
+# 珠光级使用重复虹彩渐变，而非扁平填充。
+_ROW_PEARL_BG = (
+    "qlineargradient(x1:0, y1:0, x2:1, y2:0, "
+    "stop:0.00 #FF8A65, stop:0.17 #4DD0E1, stop:0.34 #F06292, "
+    "stop:0.50 #FFEE58, stop:0.67 #FF8A65, stop:0.84 #4DD0E1, "
+    "stop:1.00 #F06292)"
+)
+
+# Weapon-type icon per type_en, reusing the game-extracted art the Item tab
+# already ships (assets/item_card_type/).
+# 按 type_en 对应的武器类型图标，复用物品标签页已内置的游戏提取美术资源。
+_ROW_WEAPON_ICONS = {
+    "Pistol":        "ico_art_item_card_weap_pistol.png",
+    "Shotgun":       "ico_art_item_card_weap_shotgun.png",
+    "SMG":           "ico_art_item_card_weap_smg.png",
+    "Assault Rifle": "ico_art_item_card_weap_assault.png",
+    "Sniper":        "ico_art_item_card_weap_sniper.png",
+}
+
+
 class WeaponEditorTab(QtWidgets.QWidget):
     add_to_backpack_requested = QtCore.pyqtSignal(str, str)
     update_item_requested = QtCore.pyqtSignal(dict)
@@ -794,12 +829,42 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.main_app.log("Forcing parts list refresh..."); self.parse_and_display_weapon(decoded_str)
         QtWidgets.QMessageBox.information(self, self.get_localized_string("success"), self.get_localized_string("parts_refresh_success"))
 
-    def _weapon_browser_row(self, title, detail, decoded_str):
+    def _weapon_browser_row(self, title, detail, decoded_str, rarity=None, type_en=None):
         row = QtWidgets.QWidget()
         row.setObjectName("WeaponBrowserRow")
+
+        # Rarity underlay: the whole row is filled with the tier color (or the
+        # iridescent gradient for Pearl), with the weapon-type icon on the left.
+        # Child labels are painted transparent so the fill reads as one band.
+        # 稀有度底衬：整行以层级色填充（珠光级为虹彩渐变），武器类型图标置于
+        # 左侧。子标签背景透明，使填充读作一条完整色带。
+        if rarity == "Pearl":
+            fill = _ROW_PEARL_BG
+        else:
+            fill = _ROW_RARITY_COLORS.get(rarity, "transparent")
+        if fill != "transparent":
+            row.setStyleSheet(
+                f"#WeaponBrowserRow {{ background: {fill}; border-radius: 6px; }}"
+                f"#WeaponBrowserRow QLabel {{ background: transparent; }}"
+            )
+
         row_layout = QtWidgets.QHBoxLayout(row)
         row_layout.setContentsMargins(10, 5, 10, 5)
         row_layout.setSpacing(12)
+
+        icon_rel = _ROW_WEAPON_ICONS.get(type_en or "")
+        if icon_rel:
+            icon_path = resource_loader.get_resource_path(f"assets/item_card_type/{icon_rel}")
+            if icon_path and icon_path.exists():
+                icon_label = QtWidgets.QLabel()
+                icon_label.setFixedSize(44, 44)
+                icon_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+                icon_label.setPixmap(QtGui.QPixmap(str(icon_path)).scaled(
+                    40, 40,
+                    QtCore.Qt.AspectRatioMode.KeepAspectRatio,
+                    QtCore.Qt.TransformationMode.SmoothTransformation,
+                ))
+                row_layout.addWidget(icon_label)
 
         text_layout = QtWidgets.QVBoxLayout()
         text_layout.setContentsMargins(0, 0, 0, 0)
@@ -854,7 +919,8 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 header, component = weapon.get('decoded_full', '').split('||', 1)
                 m_id = int(header.strip().split('|')[0].strip().split(',')[0])
                 parsed_components = self._parse_component_string(component)
-                _, name, _, _ = self._get_rarity_and_weapon_name(parsed_components, m_id, weapon.get('decoded_full', ''))
+                display_rarity, name, _, _ = self._get_rarity_and_weapon_name(parsed_components, m_id, weapon.get('decoded_full', ''))
+                base_rarity = str(display_rarity).split(' - ')[0]
                 w_name = self.get_localized_string(name, name)
                 disp_name = f"{weapon.get('manufacturer', '未知')} {weapon.get('type', '未知物品')} ({w_name})" if w_name not in ["N/A", "Unknown", "未知"] else f"{weapon.get('manufacturer', '未知')} {weapon.get('type', '未知物品')}"
                 detail = f"{self.get_localized_string('level_label')} {weapon.get('level', 'N/A')}  ·  {self.get_localized_string('slot_label')} {weapon.get('slot', 'N/A').replace('slot_', '')}"
@@ -866,7 +932,10 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 self.backpack_items_list.addItem(item)
                 self.backpack_items_list.setItemWidget(
                     item,
-                    self._weapon_browser_row(disp_name, detail, weapon.get('decoded_full', '')),
+                    self._weapon_browser_row(
+                        disp_name, detail, weapon.get('decoded_full', ''),
+                        rarity=base_rarity, type_en=weapon.get('type_en', ''),
+                    ),
                 )
 
             except Exception as e:
