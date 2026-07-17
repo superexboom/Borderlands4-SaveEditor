@@ -791,9 +791,18 @@ class MainWindow(QMainWindow):
                     return
 
     def update_action_states(self):
-        is_editor_active = self.content_stack.currentIndex() > 0
-        self.save_action.setEnabled(is_editor_active)
-        self.save_as_action.setEnabled(is_editor_active)
+        """Enable Save / Save As only while a save is actually loaded.
+
+        Keyed off the loaded save rather than the current tab index: any
+        editor tab could be reached from the nav bar before opening a file,
+        which lit both actions up while encrypt_and_save() silently returned.
+        仅在存档确实已加载时才启用"保存"/"另存为"。以已加载的存档为准而非
+        当前标签页索引：未打开存档时也能通过导航栏切换到编辑器标签页，
+        那样会点亮这两个操作，而 encrypt_and_save() 只会静默返回。
+        """
+        has_save = self.controller.yaml_obj is not None
+        self.save_action.setEnabled(has_save)
+        self.save_as_action.setEnabled(has_save)
 
     @pyqtSlot()
     def scan_for_saves(self):
