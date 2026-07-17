@@ -348,13 +348,7 @@ class MainWindow(QMainWindow):
         # If saved language differs from default (zh-CN), sync backend + all tabs
         if self.current_language != 'zh-CN':
             bl4f.set_language(self.current_language)
-            for tab in [
-                self.selector_page, self.character_tab, self.items_tab,
-                self.converter_tab, self.yaml_editor_tab, self.class_mod_tab,
-                self.enhancement_tab, self.weapon_editor_tab,
-                self.weapon_generator_tab, self.grenade_tab, self.shield_tab,
-                self.repkit_tab, self.heavy_weapon_tab, self.loadout_manager_tab
-            ]:
+            for tab in self._all_content_tabs():
                 if hasattr(tab, 'update_language'):
                     tab.update_language(self.current_language)
             self.update_ui_text()
@@ -804,6 +798,18 @@ class MainWindow(QMainWindow):
         self.save_action.setEnabled(has_save)
         self.save_as_action.setEnabled(has_save)
 
+    def _all_content_tabs(self):
+        """Every widget currently in the content stack, in nav order.
+
+        The stack is the single source of truth for the tab set, so callers
+        that need to touch every tab (e.g. language sync) iterate this instead
+        of a hand-maintained literal that can drift when tabs are added.
+        内容堆栈中的所有部件（按导航顺序）。堆栈本身即标签页集合的唯一来源，
+        需要遍历全部标签页的调用方（如语言同步）改用它，而非另行维护、
+        增删标签页时容易失步的字面量列表。
+        """
+        return [self.content_stack.widget(i) for i in range(self.content_stack.count())]
+
     @pyqtSlot()
     def scan_for_saves(self):
         custom_path = self.selector_page.get_custom_save_path()
@@ -1062,13 +1068,7 @@ class MainWindow(QMainWindow):
         self.update_ui_text()
         
         # Update tabs
-        tabs_to_update = [
-            self.grenade_tab, self.shield_tab, self.repkit_tab, self.heavy_weapon_tab, 
-            self.weapon_editor_tab, self.weapon_generator_tab,
-            self.character_tab, self.selector_page, self.items_tab, self.converter_tab,
-            self.yaml_editor_tab, self.class_mod_tab, self.enhancement_tab,
-            self.loadout_manager_tab
-        ]
+        tabs_to_update = self._all_content_tabs()
         for tab in tabs_to_update:
             if hasattr(tab, 'update_language'):
                 print(f"DEBUG: Updating language for tab {tab.__class__.__name__}")
