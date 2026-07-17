@@ -1,4 +1,3 @@
-import io
 from bl4_decoder_py.b4s.serial.block import Block
 from bl4_decoder_py.b4s.serial_datatypes.part.read import read_part
 from bl4_decoder_py.b4s.serial_datatypes.varbit.read import read_varbit

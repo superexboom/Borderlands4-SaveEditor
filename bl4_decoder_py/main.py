@@ -1,5 +1,4 @@
 import sys
-import re
 from bl4_decoder_py.b4s.b85.decode import decode
 from bl4_decoder_py.b4s.b85.encode import encode
 from bl4_decoder_py.b4s.serial.deserialize import deserialize
