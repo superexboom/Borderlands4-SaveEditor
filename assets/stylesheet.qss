@@ -1504,3 +1504,57 @@ QToolTip {
     font-family: "Microsoft YaHei UI", "Segoe UI";
 }
 
+/* File dialogs (non-native Qt fallback) — theme every sub-widget so the
+   Open/Find windows stay opaque and legible, not see-through. */
+/* 文件对话框（非原生 Qt 回退）——为每个子控件设置样式，
+   使打开/查找窗口保持不透明且清晰可读，而非透明穿透。 */
+QFileDialog {
+    background-color: {dropdown_bg};
+    color: {text_primary};
+}
+
+QFileDialog QWidget {
+    color: {text_primary};
+}
+
+QFileDialog QListView,
+QFileDialog QTreeView,
+QFileDialog QListView::viewport,
+QFileDialog QTreeView::viewport {
+    background-color: {dropdown_bg};
+    color: {text_primary};
+}
+
+QFileDialog QListView::item:selected,
+QFileDialog QTreeView::item:selected {
+    background-color: {selection_bg};
+    color: white;
+}
+
+/* "Look in" path bar, sidebar toolbuttons, and the file-name combo */
+/* “查找范围”路径栏、侧边栏工具按钮以及文件名下拉框 */
+QFileDialog QComboBox,
+QFileDialog QLineEdit {
+    background-color: {bg_input};
+    color: {text_primary};
+}
+
+QFileDialog QToolButton {
+    background-color: {button_bg};
+    color: {text_primary};
+    border: 1px solid {border_color};
+    border-radius: 4px;
+    padding: 4px;
+}
+
+QFileDialog QToolButton:hover {
+    background-color: {button_hover};
+}
+
+/* Generic list views elsewhere in the app, same reasoning */
+/* 应用内其他位置的通用列表视图，原理相同 */
+QListView {
+    background-color: {bg_panel};
+    color: {text_primary};
+}
+
