@@ -382,7 +382,8 @@
     },
     "legendary": {
       "title": "Легендарное дополнение",
-      "clear": "Очистить"
+      "clear": "Очистить",
+      "search_placeholder": "Поиск…"
     },
     "output": {
       "title": "Десериализация",
@@ -423,6 +424,23 @@
     "special_thanks": {
       "title": "Special Thanks",
       "content": "Дизайн и данные этой страницы вдохновлены @Mattmab и @Whiteshark\nЕсли вам нравится этот дизайн, посетите save-editor.be и попробуйте их веб-версию"
+    },
+    "perk_filters": {
+      "all": "Все",
+      "weapon": "Оружие",
+      "skill": "Навык",
+      "element": "Стихия",
+      "defense": "Защита",
+      "utility": "Утилита",
+      "firmware": "Прошивка",
+      "other": "Другое"
+    },
+    "skill_trees": {
+      "red": "Красный",
+      "green": "Зелёный",
+      "blue": "Синий",
+      "all_skills": "Все навыки",
+      "passive": "Пассивный"
     }
   },
   "enhancement_tab": {
@@ -464,6 +482,12 @@
     "special_thanks": {
       "title": "Special Thanks",
       "content": "Дизайн и данные этой страницы вдохновлены @Mattmab и @Whiteshark\nЕсли вам нравится этот дизайн, посетите save-editor.be и попробуйте их веб-версию"
+    },
+    "picker": {
+      "search_placeholder": "Поиск…",
+      "available": "Доступно (двойной клик)",
+      "selected_stacks": "Выбранные стопки",
+      "selected_stats": "Выбранные характеристики"
     }
   },
   "weapon_editor_tab": {

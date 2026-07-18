@@ -155,9 +155,9 @@ class QtEnhancementEditorTab(QWidget):
         stacking_layout = QVBoxLayout(stacking_group)
         self.stack_picker = CatalogPicker(
             stackable=True,
-            search_placeholder=self._pick_text("搜索…", "Search..."),
-            avail_title=self._pick_text("可用（双击添加）", "Available (double-click to add)"),
-            selected_title=self.ui_loc.get('labels', {}).get('selected_stacks', self._pick_text("已选堆叠", "Selected Stacks")),
+            search_placeholder=self._loc('picker', 'search_placeholder', "Search..."),
+            avail_title=self._loc('picker', 'available', "Available (double-click to add)"),
+            selected_title=self._loc('picker', 'selected_stacks', "Selected Stacks"),
             clear_text=self.ui_loc.get('buttons', {}).get('clear', self._pick_text("清空", "Clear")),
         )
         self.stack_picker.changed.connect(self.rebuild_output)
@@ -169,9 +169,9 @@ class QtEnhancementEditorTab(QWidget):
         builder_247_layout = QVBoxLayout(builder_247_group)
         self.stat_picker = CatalogPicker(
             stackable=True,
-            search_placeholder=self._pick_text("搜索…", "Search..."),
-            avail_title=self._pick_text("可用（双击添加）", "Available (double-click to add)"),
-            selected_title=self._pick_text("已选属性", "Selected Stats"),
+            search_placeholder=self._loc('picker', 'search_placeholder', "Search..."),
+            avail_title=self._loc('picker', 'available', "Available (double-click to add)"),
+            selected_title=self._loc('picker', 'selected_stats', "Selected Stats"),
             clear_text=self.ui_loc.get('buttons', {}).get('clear', self._pick_text("清空", "Clear")),
         )
         self.stat_picker.set_categories([(k, self._cat_label(k)) for k in
@@ -253,11 +253,26 @@ class QtEnhancementEditorTab(QWidget):
     def _pick_text(self, zh, en):
         return zh if self.current_lang == 'zh-CN' else en
 
+    def _loc(self, section, key, en, **fmt):
+        """Active-language read of enhancement_tab.<section>.<key> with an
+        English fallback (never Chinese/raw key), then format.
+        按当前语言读取 enhancement_tab.<section>.<key>，缺失回退英文再格式化。"""
+        text = self.ui_loc.get(section, {}).get(key) or en
+        return text.format(**fmt) if fmt else text
+
+    # Category/subcategory filter taxonomies, co-located with the filter logic.
+    # All four languages so RU/UA get their own labels rather than English.
+    # 分类/子分类筛选taxonomy，与筛选逻辑同处一处。四种语言齐备，使 RU/UA
+    # 获得各自标签而非英文。
     _CAT_LABELS = {
         'zh-CN': {'all': '全部', 'firmware': '固件', 'sniper': '狙击枪', 'shotgun': '霰弹枪',
                   'smg': '冲锋枪', 'pistol': '手枪', 'ar': '突击步枪', 'gun': '通用'},
         'en': {'all': 'All', 'firmware': 'Firmware', 'sniper': 'Sniper', 'shotgun': 'Shotgun',
                'smg': 'SMG', 'pistol': 'Pistol', 'ar': 'AR', 'gun': 'Universal'},
+        'ru': {'all': 'Все', 'firmware': 'Прошивка', 'sniper': 'Снайперская', 'shotgun': 'Дробовик',
+               'smg': 'ПП', 'pistol': 'Пистолет', 'ar': 'Автомат', 'gun': 'Универсальный'},
+        'ua': {'all': 'Усі', 'firmware': 'Прошивка', 'sniper': 'Снайперська', 'shotgun': 'Дробовик',
+               'smg': 'ПП', 'pistol': 'Пістолет', 'ar': 'Автомат', 'gun': 'Універсальний'},
     }
     _SUB_LABELS = {
         'zh-CN': {'all': '全部', 'dmg': '伤害', 'crit': '暴击伤害', 'firerate': '射速', 'acc': '精准',
@@ -266,17 +281,25 @@ class QtEnhancementEditorTab(QWidget):
         'en': {'all': 'All', 'dmg': 'Damage', 'crit': 'Crit DMG', 'firerate': 'Fire Rate', 'acc': 'Accuracy',
                'reload': 'Reload', 'mag': 'Magazine', 'splashdmg': 'Splash DMG', 'splashradius': 'Splash Radius',
                'ads': 'ADS', 'se_dmg': 'SE DMG', 'se_chance': 'SE Chance', 'equip': 'Equip', 'other': 'Other'},
+        'ru': {'all': 'Все', 'dmg': 'Урон', 'crit': 'Крит. урон', 'firerate': 'Скорострельность', 'acc': 'Точность',
+               'reload': 'Перезарядка', 'mag': 'Магазин', 'splashdmg': 'Урон по площади', 'splashradius': 'Радиус поражения',
+               'ads': 'Прицел', 'se_dmg': 'Урон статуса', 'se_chance': 'Шанс статуса', 'equip': 'Снаряжение', 'other': 'Другое'},
+        'ua': {'all': 'Усі', 'dmg': 'Урон', 'crit': 'Крит. урон', 'firerate': 'Скорострільність', 'acc': 'Точність',
+               'reload': 'Перезарядка', 'mag': 'Магазин', 'splashdmg': 'Урон по площі', 'splashradius': 'Радіус ураження',
+               'ads': 'Приціл', 'se_dmg': 'Урон статусу', 'se_chance': 'Шанс статусу', 'equip': 'Спорядження', 'other': 'Інше'},
     }
     _WEAPON_FIRST = {'Sniper': 'sniper', 'Shotgun': 'shotgun', 'SMG': 'smg',
                      'Pistol': 'pistol', 'AR': 'ar', 'Gun': 'gun'}
+    # Maps runtime language codes to the label-dict keys above.
+    _LABEL_LANG = {'zh-CN': 'zh-CN', 'en-US': 'en', 'ru': 'ru', 'ua': 'ua'}
 
     def _cat_label(self, key):
-        m = self._CAT_LABELS['zh-CN'] if self.current_lang == 'zh-CN' else self._CAT_LABELS['en']
-        return m.get(key, key)
+        m = self._CAT_LABELS.get(self._LABEL_LANG.get(self.current_lang, 'en'), self._CAT_LABELS['en'])
+        return m.get(key, self._CAT_LABELS['en'].get(key, key))
 
     def _sub_label(self, key):
-        m = self._SUB_LABELS['zh-CN'] if self.current_lang == 'zh-CN' else self._SUB_LABELS['en']
-        return m.get(key, key)
+        m = self._SUB_LABELS.get(self._LABEL_LANG.get(self.current_lang, 'en'), self._SUB_LABELS['en'])
+        return m.get(key, self._SUB_LABELS['en'].get(key, key))
 
     def _stat_subcategory(self, name_en):
         # 大小写不敏感匹配；多词关键字优先；兼容 CSV 里个别拼写错误

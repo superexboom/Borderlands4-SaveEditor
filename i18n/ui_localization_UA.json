@@ -382,7 +382,8 @@
     },
     "legendary": {
       "title": "Легендарний додаток",
-      "clear": "Очистити"
+      "clear": "Очистити",
+      "search_placeholder": "Пошук…"
     },
     "output": {
       "title": "Десеріалізація",
@@ -423,6 +424,23 @@
     "special_thanks": {
       "title": "Special Thanks",
       "content": "Дизайн та дані цієї сторінки натхненні @Mattmab та @Whiteshark\nЯкщо вам подобається цей дизайн, відвідайте save-editor.be та спробуйте їхню веб-версію"
+    },
+    "perk_filters": {
+      "all": "Усі",
+      "weapon": "Зброя",
+      "skill": "Навичка",
+      "element": "Стихія",
+      "defense": "Захист",
+      "utility": "Утиліта",
+      "firmware": "Прошивка",
+      "other": "Інше"
+    },
+    "skill_trees": {
+      "red": "Червоний",
+      "green": "Зелений",
+      "blue": "Синій",
+      "all_skills": "Усі навички",
+      "passive": "Пасивний"
     }
   },
   "enhancement_tab": {
@@ -464,6 +482,12 @@
     "special_thanks": {
       "title": "Special Thanks",
       "content": "Дизайн та дані цієї сторінки натхненні @Mattmab та @Whiteshark\nЯкщо вам подобається цей дизайн, відвідайте save-editor.be та спробуйте їхню веб-версію"
+    },
+    "picker": {
+      "search_placeholder": "Пошук…",
+      "available": "Доступно (подвійний клік)",
+      "selected_stacks": "Вибрані стоси",
+      "selected_stats": "Вибрані характеристики"
     }
   },
   "weapon_editor_tab": {

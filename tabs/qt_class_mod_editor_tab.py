@@ -118,7 +118,20 @@ class QtClassModEditorTab(QWidget):
         return text
 
     def _pick_text(self, zh, en):
+        # Two-language picker retained only for CSV columns that ship just
+        # zh/en data (e.g. tree_name_ZH/EN); RU/UA legitimately fall back to en
+        # there because no RU/UA data exists. UI chrome uses _loc instead.
+        # 仅保留用于只有 zh/en 数据的 CSV 列（如 tree_name_ZH/EN）的双语选择器；
+        # 那里 RU/UA 合理回退到英文，因不存在 RU/UA 数据。界面文字改用 _loc。
         return zh if self.current_lang == 'zh-CN' else en
+
+    def _loc(self, section, key, en, **fmt):
+        """Read class_mod_tab.<section>.<key> for the active language with an
+        English fallback (never Chinese/raw key), then format. All four
+        languages resolve from the JSON.
+        按当前语言读取 class_mod_tab.<section>.<key>，缺失时回退英文，再格式化。"""
+        text = self.ui_loc.get(section, {}).get(key) or en
+        return text.format(**fmt) if fmt else text
 
     def _load_csv_data(self):
         """加载所有CSV数据"""
@@ -271,7 +284,7 @@ class QtClassModEditorTab(QWidget):
 
         self.leg_picker = InlineCatalogPicker(
             stackable=False,
-            search_placeholder=self._pick_text("搜索…", "Search..."),
+            search_placeholder=self._loc('legendary', 'search_placeholder', "Search..."),
             clear_text=self.ui_loc['legendary'].get('clear', self._pick_text("清空", "Clear")),
         )
         self.leg_picker.changed.connect(self.update_string)
@@ -553,14 +566,14 @@ class QtClassModEditorTab(QWidget):
     def populate_perks(self):
         """填充可筛选的通用专长目录。"""
         categories = [
-            ("all", self._pick_text("全部", "All")),
-            ("weapon", self._pick_text("武器", "Weapon")),
-            ("skill", self._pick_text("技能", "Skill")),
-            ("element", self._pick_text("元素", "Element")),
-            ("defense", self._pick_text("生存", "Defense")),
-            ("utility", self._pick_text("通用", "Utility")),
-            ("firmware", self._pick_text("固件", "Firmware")),
-            ("other", self._pick_text("其他", "Other")),
+            ("all", self._loc('perk_filters', 'all', "All")),
+            ("weapon", self._loc('perk_filters', 'weapon', "Weapon")),
+            ("skill", self._loc('perk_filters', 'skill', "Skill")),
+            ("element", self._loc('perk_filters', 'element', "Element")),
+            ("defense", self._loc('perk_filters', 'defense', "Defense")),
+            ("utility", self._loc('perk_filters', 'utility', "Utility")),
+            ("firmware", self._loc('perk_filters', 'firmware', "Firmware")),
+            ("other", self._loc('perk_filters', 'other', "Other")),
         ]
         self.perk_picker.set_categories(categories, columns=4)
         items = []
@@ -648,11 +661,11 @@ class QtClassModEditorTab(QWidget):
             if color:
                 tree_names[color] = self._pick_text(row.get('tree_name_ZH', ''), row.get('tree_name_EN', ''))
         color_labels = {
-            "red": self._pick_text("红", "Red"),
-            "green": self._pick_text("绿", "Green"),
-            "blue": self._pick_text("蓝", "Blue"),
+            "red": self._loc('skill_trees', 'red', "Red"),
+            "green": self._loc('skill_trees', 'green', "Green"),
+            "blue": self._loc('skill_trees', 'blue', "Blue"),
         }
-        categories = [("all", self._pick_text("全部技能", "All Skills"))]
+        categories = [("all", self._loc('skill_trees', 'all_skills', "All Skills"))]
         for color in ("red", "green", "blue"):
             name = tree_names.get(color, color_labels[color])
             categories.append((color, f"{color_labels[color]} · {name}"))
@@ -678,7 +691,7 @@ class QtClassModEditorTab(QWidget):
                 skill_row.get('description_EN', ''),
             )
             if desc_text:
-                skill_type = self._pick_text("被动技能", "Passive") if skill_row.get('skill_type') == 'passive' else skill_row.get('skill_type', '')
+                skill_type = self._loc('skill_trees', 'passive', "Passive") if skill_row.get('skill_type') == 'passive' else skill_row.get('skill_type', '')
                 desc_html = self._skill_description_html(desc_text)
                 tooltip_html = f"""
                     <div style='width: 390px; white-space: normal;'>

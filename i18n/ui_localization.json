@@ -382,7 +382,8 @@
     },
     "legendary": {
       "title": "传奇附加",
-      "clear": "清空"
+      "clear": "清空",
+      "search_placeholder": "搜索…"
     },
     "output": {
       "title": "Deserialize",
@@ -423,6 +424,23 @@
     "special_thanks": {
       "title": "Special Thanks",
       "content": "本页面的设计灵感及数据来源于 @Mattmab 及 @Whiteshark\n如果你也喜欢这个设计，可以前往 save-editor.be 试试他们的网页版"
+    },
+    "perk_filters": {
+      "all": "全部",
+      "weapon": "武器",
+      "skill": "技能",
+      "element": "元素",
+      "defense": "生存",
+      "utility": "通用",
+      "firmware": "固件",
+      "other": "其他"
+    },
+    "skill_trees": {
+      "red": "红",
+      "green": "绿",
+      "blue": "蓝",
+      "all_skills": "全部技能",
+      "passive": "被动技能"
     }
   },
   "enhancement_tab": {
@@ -464,6 +482,12 @@
     "special_thanks": {
       "title": "Special Thanks",
       "content": "本页面的设计灵感及数据来源于 @Mattmab 及 @Whiteshark\n如果你也喜欢这个设计，可以前往 save-editor.be 试试他们的网页版"
+    },
+    "picker": {
+      "search_placeholder": "搜索…",
+      "available": "可用（双击添加）",
+      "selected_stacks": "已选堆叠",
+      "selected_stats": "已选属性"
     }
   },
   "weapon_editor_tab": {

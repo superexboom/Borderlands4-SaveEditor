@@ -382,7 +382,8 @@
     },
     "legendary": {
       "title": "Legendary Addition",
-      "clear": "Clear"
+      "clear": "Clear",
+      "search_placeholder": "Search..."
     },
     "output": {
       "title": "Deserialize",
@@ -423,6 +424,23 @@
     "special_thanks": {
       "title": "Special Thanks",
       "content": "The design inspiration and data for this page come from @Mattmab and @Whiteshark\nIf you like this design, visit save-editor.be to try their web version"
+    },
+    "perk_filters": {
+      "all": "All",
+      "weapon": "Weapon",
+      "skill": "Skill",
+      "element": "Element",
+      "defense": "Defense",
+      "utility": "Utility",
+      "firmware": "Firmware",
+      "other": "Other"
+    },
+    "skill_trees": {
+      "red": "Red",
+      "green": "Green",
+      "blue": "Blue",
+      "all_skills": "All Skills",
+      "passive": "Passive"
     }
   },
   "enhancement_tab": {
@@ -464,6 +482,12 @@
     "special_thanks": {
       "title": "Special Thanks",
       "content": "The design inspiration and data for this page come from @Mattmab and @Whiteshark\nIf you like this design, visit save-editor.be to try their web version"
+    },
+    "picker": {
+      "search_placeholder": "Search...",
+      "available": "Available (double-click to add)",
+      "selected_stacks": "Selected Stacks",
+      "selected_stats": "Selected Stats"
     }
   },
   "weapon_editor_tab": {

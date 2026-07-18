@@ -32,3 +32,37 @@ read awkwardly.
 | catalog.all | All | Все | Усі |
 | catalog.all_manufacturers | All Manufacturers | Все производители | Усі виробники |
 | catalog.all_weapon_types | All Weapon Types | Все типы оружия | Усі типи зброї |
+
+## class_mod_tab
+
+| key | en | ru (review) | ua (review) |
+|---|---|---|---|
+| perk_filters.all | All | Все | Усі |
+| perk_filters.weapon | Weapon | Оружие | Зброя |
+| perk_filters.skill | Skill | Навык | Навичка |
+| perk_filters.element | Element | Стихия | Стихія |
+| perk_filters.defense | Defense | Защита | Захист |
+| perk_filters.utility | Utility | Утилита | Утиліта |
+| perk_filters.firmware | Firmware | Прошивка | Прошивка |
+| perk_filters.other | Other | Другое | Інше |
+| skill_trees.red | Red | Красный | Червоний |
+| skill_trees.green | Green | Зелёный | Зелений |
+| skill_trees.blue | Blue | Синий | Синій |
+| skill_trees.all_skills | All Skills | Все навыки | Усі навички |
+| skill_trees.passive | Passive | Пассивный | Пасивний |
+| legendary.search_placeholder | Search... | Поиск… | Пошук… |
+
+## enhancement_tab
+
+Category (`_CAT_LABELS`) and stat (`_SUB_LABELS`) filter taxonomies now carry
+ru/ua in-code (co-located with the filter logic). Picker chrome added under
+`enhancement_tab.picker`:
+
+| key | en | ru (review) | ua (review) |
+|---|---|---|---|
+| picker.search_placeholder | Search... | Поиск… | Пошук… |
+| picker.available | Available (double-click to add) | Доступно (двойной клик) | Доступно (подвійний клік) |
+| picker.selected_stacks | Selected Stacks | Выбранные стопки | Вибрані стоси |
+| picker.selected_stats | Selected Stats | Выбранные характеристики | Вибрані характеристики |
+| _CAT_LABELS.* | All/Firmware/Sniper/Shotgun/SMG/Pistol/AR/Universal | Все/Прошивка/Снайперская/Дробовик/ПП/Пистолет/Автомат/Универсальный | Усі/Прошивка/Снайперська/Дробовик/ПП/Пістолет/Автомат/Універсальний |
+| _SUB_LABELS.* | Damage/Crit DMG/Fire Rate/Accuracy/Reload/Magazine/Splash DMG/Splash Radius/ADS/SE DMG/SE Chance/Equip/Other | Урон/Крит. урон/Скорострельность/Точность/Перезарядка/Магазин/Урон по площади/Радиус поражения/Прицел/Урон статуса/Шанс статуса/Снаряжение/Другое | Урон/Крит. урон/Скорострільність/Точність/Перезарядка/Магазин/Урон по площі/Радіус ураження/Приціл/Урон статусу/Шанс статусу/Спорядження/Інше |
