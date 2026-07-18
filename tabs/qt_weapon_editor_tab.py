@@ -47,7 +47,7 @@ _ROW_INNER_RADIUS = 6
 # 渐变绘制，倾斜使色带无论行宽都约在水平线上方 20° 走向。
 _PEARL_PALETTE = ("#FF8A65", "#4DD0E1", "#F06292", "#FFEE58")
 _PEARL_BAND_DEG = 20      # band tilt above horizontal
-_PEARL_BAND_PERIOD = 46   # px for one full 4-colour cycle along the gradient
+_PEARL_BAND_PERIOD = 20   # px for one full 4-colour cycle along the gradient
 
 # Weapon-type icon per type_en. These are dark plates with the weapon shape
 # punched out as transparent holes, so over the rarity fill the weapon takes
@@ -117,39 +117,42 @@ class _RarityRow(QtWidgets.QWidget):
         p = QtGui.QPainter(self)
         p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing)
 
-        # 1. rarity fill (border + hole-reveal layer)
+        # 1. rarity fill (border + weapon-hole reveal layer)
         outer = QtCore.QRectF(0, 0, w, h)
         fill = _pearl_brush(w, h) if self._is_pearl else QtGui.QBrush(QtGui.QColor(self._rarity_color))
         p.setPen(QtCore.Qt.PenStyle.NoPen)
         p.setBrush(fill)
         p.drawRoundedRect(outer, _ROW_OUTER_RADIUS, _ROW_OUTER_RADIUS)
 
-        # 2. single dark plate, inset so the fill rims it
-        inner = QtCore.QRectF(inset, inset, w - 2 * inset, h - 2 * inset)
-        p.setBrush(_ROW_PLATE_COLOR)
-        p.drawRoundedRect(inner, _ROW_INNER_RADIUS, _ROW_INNER_RADIUS)
-
-        # 3. punch the weapon shape out of the plate to reveal the rarity fill.
-        #    The icon is a dark plate with the weapon transparent; its inverse
-        #    alpha (opaque where the weapon is) erases the plate there.
+        # 2. build the dark plate on its own layer with the weapon cut out, then
+        #    lay it over the rarity fill. Cutting on a separate layer (rather
+        #    than erasing the composited surface) means the weapon hole reveals
+        #    the rarity fill beneath, not the widget's background.
+        pw, ph = w - 2 * inset, h - 2 * inset
+        plate = QtGui.QPixmap(pw, ph)
+        plate.fill(QtCore.Qt.GlobalColor.transparent)
+        pp = QtGui.QPainter(plate)
+        pp.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing)
+        pp.setPen(QtCore.Qt.PenStyle.NoPen)
+        pp.setBrush(_ROW_PLATE_COLOR)
+        pp.drawRoundedRect(QtCore.QRectF(0, 0, pw, ph), _ROW_INNER_RADIUS, _ROW_INNER_RADIUS)
         if self._icon is not None and not self._icon.isNull():
-            side = h - 2 * inset - 4
+            side = ph - 4
             icon = self._icon.scaled(
                 side, side,
                 QtCore.Qt.AspectRatioMode.KeepAspectRatio,
                 QtCore.Qt.TransformationMode.SmoothTransformation,
             )
-            eraser = QtGui.QPixmap(icon.size())
-            eraser.fill(QtGui.QColor(0, 0, 0, 255))
-            ep = QtGui.QPainter(eraser)
-            ep.setCompositionMode(QtGui.QPainter.CompositionMode.CompositionMode_DestinationOut)
-            ep.drawPixmap(0, 0, icon)
-            ep.end()
-            x = inset + 6
-            y = inset + (h - 2 * inset - icon.height()) / 2
-            p.setCompositionMode(QtGui.QPainter.CompositionMode.CompositionMode_DestinationOut)
-            p.drawPixmap(int(x), int(y), eraser)
-            p.setCompositionMode(QtGui.QPainter.CompositionMode.CompositionMode_SourceOver)
+            # Icon is a dark plate with the weapon transparent. Source mode
+            # replaces the plate pixels inside the icon rect with the icon's
+            # own alpha: the dark surround stays, the weapon becomes a
+            # transparent gap that reveals the rarity fill beneath.
+            ix = 6
+            iy = (ph - icon.height()) / 2
+            pp.setCompositionMode(QtGui.QPainter.CompositionMode.CompositionMode_Source)
+            pp.drawPixmap(int(ix), int(iy), icon)
+        pp.end()
+        p.drawPixmap(inset, inset, plate)
         p.end()
 
 
