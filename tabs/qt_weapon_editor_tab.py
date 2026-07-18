@@ -367,7 +367,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         bp_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("load_from_backpack")))
         self.weapon_search = QtWidgets.QLineEdit()
         self.weapon_search.setClearButtonEnabled(True)
-        self.weapon_search.setPlaceholderText("搜索名称、厂商、类型、等级或槽位" if self.current_lang == "zh-CN" else "Search name, manufacturer, type, level, or slot")
+        self.weapon_search.setPlaceholderText(self._loc('labels', 'search_weapon_placeholder', "Search name, manufacturer, type, level, or slot"))
         self.weapon_search.textChanged.connect(self._filter_backpack_items)
         bp_layout.addWidget(self.weapon_search)
         self.backpack_items_list = ContainedWheelListWidget()
@@ -488,7 +488,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.refresh_parts_btn.setObjectName("PartActionButton")
         self.refresh_parts_btn.setIcon(self.style().standardIcon(QtWidgets.QStyle.StandardPixmap.SP_BrowserReload))
         self.refresh_parts_btn.setFixedSize(34, 34)
-        self.refresh_parts_btn.setToolTip("刷新部件" if self.current_lang == "zh-CN" else "Refresh parts")
+        self.refresh_parts_btn.setToolTip(self._loc('tooltips', 'refresh_parts', "Refresh parts"))
         parts_header_layout.addWidget(self.refresh_parts_btn, 0, 1, QtCore.Qt.AlignmentFlag.AlignRight)
         self.add_part_btn = QtWidgets.QPushButton(self.get_localized_string("add_part")); self.add_part_btn.setMinimumWidth(100)
         parts_header_layout.addWidget(self.add_part_btn, 0, 2, QtCore.Qt.AlignmentFlag.AlignRight)
@@ -518,6 +518,17 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.refresh_parts_btn.clicked.connect(self.force_refresh_parts)
         self.add_part_btn.clicked.connect(self.open_add_part_window)
         self.add_skin_btn.clicked.connect(lambda: self.open_select_skin_window(None))
+
+    def _loc(self, section, key, en, **fmt):
+        """Read weapon_editor_tab.<section>.<key> for the active language,
+        falling back to the English literal (never Chinese or a raw key), then
+        apply any format params. Used for strings that were previously inline
+        zh-CN/else conditionals, so all four languages resolve from the JSON.
+        按当前语言读取 weapon_editor_tab.<section>.<key>，缺失时回退到英文字面量
+        （绝不显示中文或原始键），再套用格式参数。用于此前内联的 zh-CN/else
+        条件字符串，使四种语言均从 JSON 解析。"""
+        text = self.ui_localization.get(section, {}).get(key) or en
+        return text.format(**fmt) if fmt else text
 
     def get_localized_string(self, key, default=''):
         # Check UI localization first (flattened check or mapped)
@@ -826,7 +837,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         part_id = part_info.get('id'); info = {'type': "未知", 'str': "", 'stat': "无属性变化"}
         is_skin, is_elemental = (part_info.get('type') == 'skin'), (part_info.get('type') == 'elemental')
         if is_skin:
-            if not (d := self.skin_df[self.skin_df['Skin_ID'].str.lower() == str(part_id).lower()]).empty: info.update({'type': self.get_localized_string("Skin"), 'str': d.iloc[0][self.skin_stat_col], 'stat': "外观配件" if self.current_lang == "zh-CN" else "Cosmetic part"})
+            if not (d := self.skin_df[self.skin_df['Skin_ID'].str.lower() == str(part_id).lower()]).empty: info.update({'type': self.get_localized_string("Skin"), 'str': d.iloc[0][self.skin_stat_col], 'stat': self._loc('parts', 'cosmetic_part', "Cosmetic part")})
         elif is_elemental:
             if not (d := self.elemental_df[self.elemental_df['Part_ID'] == part_info['sub_id']]).empty:
                 row = d.iloc[0]
@@ -837,7 +848,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 info.update({
                     'type': self.get_localized_string(self._elemental_part_type(row)),
                     'str': row[self.elemental_stat_col],
-                    'stat': ("元素配置" if self.current_lang == "zh-CN" else "Element configuration") if no_change else description,
+                    'stat': self._loc('parts', 'element_config', "Element configuration") if no_change else description,
                 })
         else:
             d = self.all_weapon_parts_df[(self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == m_id) & (self.all_weapon_parts_df['Part ID'] == part_id)]
@@ -849,7 +860,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 )
                 info.update({
                     'type': self.get_localized_string(row['Part Type']),
-                    'str': name or (("未命名枪管" if self.current_lang == "zh-CN" else "Unnamed Barrel") if str(row['Part Type']) == "Barrel" else ""),
+                    'str': name or (self._loc('parts', 'unnamed_barrel', "Unnamed Barrel") if str(row['Part Type']) == "Barrel" else ""),
                     'stat': description,
                 })
         display_text = f"  {part_id}  " if not is_elemental else f"  {part_info['id']}:{part_info['sub_id']}  "
@@ -883,9 +894,9 @@ class WeaponEditorTab(QtWidgets.QWidget):
         toggle_btn = QtWidgets.QPushButton("▾"); toggle_btn.setObjectName("PartActionButton"); toggle_btn.setFixedSize(28, 28)
         toggle_btn.clicked.connect(lambda checked, b=toggle_btn, c=content: self._toggle_group_visibility(b, c))
         if group_id == 1:
-            group_title = f"元素配置组 · {len(part_info.get('sub_ids', []))} 个配件" if self.current_lang == "zh-CN" else f"Element Configuration Group · {len(part_info.get('sub_ids', []))} parts"
+            group_title = self._loc('parts', 'element_group', "Element Configuration Group · {n} parts", n=len(part_info.get('sub_ids', [])))
         else:
-            group_title = f"授权配件组 · {mfg_name} · {len(part_info.get('sub_ids', []))} 个配件" if self.current_lang == "zh-CN" else f"Licensed Part Group · {mfg_name} · {len(part_info.get('sub_ids', []))} parts"
+            group_title = self._loc('parts', 'licensed_group', "Licensed Part Group · {mfg} · {n} parts", mfg=mfg_name, n=len(part_info.get('sub_ids', [])))
         title_label = QtWidgets.QLabel(group_title); title_label.setObjectName("PartName")
         header_layout.addWidget(toggle_btn, 0, 0); header_layout.addWidget(title_label, 0, 1)
         header_layout.setColumnStretch(1, 1)
@@ -909,7 +920,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
                     )
                     p_type = self.get_localized_string(self._elemental_part_type(row))
                     p_str = str(row[self.elemental_stat_col])
-                    p_stat = ("元素配置" if self.current_lang == "zh-CN" else "Element configuration") if description in {"无属性变化", "No stat changes"} else description
+                    p_stat = self._loc('parts', 'element_config', "Element configuration") if description in {"无属性变化", "No stat changes"} else description
             else:
                 d = self.all_weapon_parts_df[(self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == group_id) & (self.all_weapon_parts_df['Part ID'] == sub_id)]
                 if not d.empty:
@@ -919,7 +930,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
                         group_id, sub_id, self.serial_decoded_entry.text(), self.current_lang, str(row['Part Type'])
                     )
                     p_type = self.get_localized_string(row['Part Type'])
-                    p_str = name or (("未命名枪管" if self.current_lang == "zh-CN" else "Unnamed Barrel") if str(row['Part Type']) == "Barrel" else "")
+                    p_str = name or (self._loc('parts', 'unnamed_barrel', "Unnamed Barrel") if str(row['Part Type']) == "Barrel" else "")
                     p_stat = description
             name_label = QtWidgets.QLabel(" · ".join(value for value in (p_type, p_str) if value)); name_label.setObjectName("PartName"); name_label.setWordWrap(True)
             stat_label = QtWidgets.QLabel(str(p_stat)); stat_label.setObjectName("PartDescription"); stat_label.setWordWrap(True)
@@ -934,11 +945,11 @@ class WeaponEditorTab(QtWidgets.QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(5)
         if is_skin:
-            edit_btn = QtWidgets.QPushButton("✎"); edit_btn.setToolTip("更换皮肤" if self.current_lang == "zh-CN" else "Change skin"); edit_btn.clicked.connect(partial(self.open_select_skin_window, index)); layout.addWidget(edit_btn)
+            edit_btn = QtWidgets.QPushButton("✎"); edit_btn.setToolTip(self._loc('tooltips', 'change_skin', "Change skin")); edit_btn.clicked.connect(partial(self.open_select_skin_window, index)); layout.addWidget(edit_btn)
         else:
-            up_btn = QtWidgets.QPushButton("↑"); up_btn.setToolTip("上移" if self.current_lang == "zh-CN" else "Move up"); up_btn.clicked.connect(partial(self.move_part, index, -1)); layout.addWidget(up_btn)
-            down_btn = QtWidgets.QPushButton("↓"); down_btn.setToolTip("下移" if self.current_lang == "zh-CN" else "Move down"); down_btn.clicked.connect(partial(self.move_part, index, 1)); layout.addWidget(down_btn)
-        del_btn = QtWidgets.QPushButton("✕"); del_btn.setObjectName("PartDeleteButton"); del_btn.setToolTip("移除" if self.current_lang == "zh-CN" else "Remove"); del_btn.clicked.connect(partial(self.delete_part, index)); layout.addWidget(del_btn)
+            up_btn = QtWidgets.QPushButton("↑"); up_btn.setToolTip(self._loc('tooltips', 'move_up', "Move up")); up_btn.clicked.connect(partial(self.move_part, index, -1)); layout.addWidget(up_btn)
+            down_btn = QtWidgets.QPushButton("↓"); down_btn.setToolTip(self._loc('tooltips', 'move_down', "Move down")); down_btn.clicked.connect(partial(self.move_part, index, 1)); layout.addWidget(down_btn)
+        del_btn = QtWidgets.QPushButton("✕"); del_btn.setObjectName("PartDeleteButton"); del_btn.setToolTip(self._loc('tooltips', 'remove_part', "Remove")); del_btn.clicked.connect(partial(self.delete_part, index)); layout.addWidget(del_btn)
         for button in frame.findChildren(QtWidgets.QPushButton):
             if button.objectName() != "PartDeleteButton": button.setObjectName("PartActionButton")
             button.setFixedSize(30, 30)
@@ -1108,12 +1119,11 @@ class WeaponEditorTab(QtWidgets.QWidget):
                     weapon = candidate
                     break
         if not weapon:
-            self.selected_weapon_summary.setText("当前未选择背包武器" if self.current_lang == "zh-CN" else "No backpack weapon selected")
+            self.selected_weapon_summary.setText(self._loc('summary', 'none_selected', "No backpack weapon selected"))
             return
         name = weapon.get("name") or weapon.get("manufacturer") or "Weapon"
         self.selected_weapon_summary.setText(
-            f"当前选择 · {name} · Lv.{weapon.get('level', 'N/A')}" if self.current_lang == "zh-CN"
-            else f"Selected · {name} · Lv.{weapon.get('level', 'N/A')}"
+            self._loc('summary', 'selected', "Selected · {name} · Lv.{level}", name=name, level=weapon.get('level', 'N/A'))
         )
 
     def update_weapon(self):
@@ -1170,22 +1180,22 @@ class WeaponEditorTab(QtWidgets.QWidget):
 
         picker = CatalogPicker(
             stackable=True,
-            search_placeholder="搜索部件名称、效果、厂商或类型" if self.current_lang == "zh-CN" else "Search part name, effect, manufacturer, or type",
-            avail_title="可用部件" if self.current_lang == "zh-CN" else "Available Parts",
-            selected_title="已选部件" if self.current_lang == "zh-CN" else "Selected Parts",
-            clear_text="清空" if self.current_lang == "zh-CN" else "Clear",
+            search_placeholder=self._loc('catalog', 'search_part', "Search part name, effect, manufacturer, or type"),
+            avail_title=self._loc('catalog', 'available_parts', "Available Parts"),
+            selected_title=self._loc('catalog', 'selected_parts', "Selected Parts"),
+            clear_text=self._loc('catalog', 'clear', "Clear"),
         )
         source, part_types, manufacturers, weapon_types = self._add_part_catalog_items()
         picker.set_categories(
-            [("all", "全部" if self.current_lang == "zh-CN" else "All"), *[(value, self.get_localized_string(value)) for value in part_types]],
+            [("all", self._loc('catalog', 'all', "All")), *[(value, self.get_localized_string(value)) for value in part_types]],
             columns=5,
         )
         picker.set_subcategories(
-            [("all", "全部厂商" if self.current_lang == "zh-CN" else "All Manufacturers"), *[(value, self.get_localized_string(value)) for value in manufacturers]],
+            [("all", self._loc('catalog', 'all_manufacturers', "All Manufacturers")), *[(value, self.get_localized_string(value)) for value in manufacturers]],
             columns=6,
         )
         picker.set_third_categories(
-            [("all", "全部武器类型" if self.current_lang == "zh-CN" else "All Weapon Types"), *[(value, self.get_localized_string(value)) for value in weapon_types]],
+            [("all", self._loc('catalog', 'all_weapon_types', "All Weapon Types")), *[(value, self.get_localized_string(value)) for value in weapon_types]],
             columns=6,
         )
         picker.set_source(source)
@@ -1221,7 +1231,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
             description = item_display_resolver.format_weapon_part_description(
                 item_id, part_id, preview_serial, self.current_lang, part_type
             )
-            name = name or (("未命名枪管" if self.current_lang == "zh-CN" else "Unnamed Barrel") if part_type == "Barrel" else "")
+            name = name or (self._loc('parts', 'unnamed_barrel', "Unnamed Barrel") if part_type == "Barrel" else "")
             detail = " · ".join(value for value in (name, description) if value)
             metadata = " / ".join(self.get_localized_string(value) for value in (manufacturer, weapon_type, part_type))
             label = f"{detail}  [{metadata}]"

@@ -482,7 +482,8 @@
       "parts_list": "Parts List",
       "parse_serial_to_show_parts": "Parts will appear here after parsing weapon serial...",
       "level_label": "Level",
-      "slot_label": "Slot"
+      "slot_label": "Slot",
+      "search_weapon_placeholder": "Search name, manufacturer, type, level, or slot"
     },
     "buttons": {
       "update_weapon": "Update Weapon",
@@ -545,6 +546,34 @@
       "element_switch": "Element Switch",
       "pearl_stat": "Pearl Stat",
       "pearl_elements": "Pearl Elements"
+    },
+    "tooltips": {
+      "refresh_parts": "Refresh parts",
+      "change_skin": "Change skin",
+      "move_up": "Move up",
+      "move_down": "Move down",
+      "remove_part": "Remove"
+    },
+    "parts": {
+      "cosmetic_part": "Cosmetic part",
+      "element_config": "Element configuration",
+      "unnamed_barrel": "Unnamed Barrel",
+      "element_group": "Element Configuration Group · {n} parts",
+      "licensed_group": "Licensed Part Group · {mfg} · {n} parts"
+    },
+    "summary": {
+      "none_selected": "No backpack weapon selected",
+      "selected": "Selected · {name} · Lv.{level}",
+      "fallback_name": "Weapon"
+    },
+    "catalog": {
+      "search_part": "Search part name, effect, manufacturer, or type",
+      "available_parts": "Available Parts",
+      "selected_parts": "Selected Parts",
+      "clear": "Clear",
+      "all": "All",
+      "all_manufacturers": "All Manufacturers",
+      "all_weapon_types": "All Weapon Types"
     }
   },
   "weapon_gen_tab": {

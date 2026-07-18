@@ -482,7 +482,8 @@
       "parts_list": "部件列表",
       "parse_serial_to_show_parts": "解析武器序列后将在此处显示部件...",
       "level_label": "等级",
-      "slot_label": "所在格"
+      "slot_label": "所在格",
+      "search_weapon_placeholder": "搜索名称、厂商、类型、等级或槽位"
     },
     "buttons": {
       "update_weapon": "更新武器",
@@ -545,6 +546,34 @@
       "element_switch": "元素切换",
       "pearl_stat": "珠光属性",
       "pearl_elements": "珠光元素"
+    },
+    "tooltips": {
+      "refresh_parts": "刷新部件",
+      "change_skin": "更换皮肤",
+      "move_up": "上移",
+      "move_down": "下移",
+      "remove_part": "移除"
+    },
+    "parts": {
+      "cosmetic_part": "外观配件",
+      "element_config": "元素配置",
+      "unnamed_barrel": "未命名枪管",
+      "element_group": "元素配置组 · {n} 个配件",
+      "licensed_group": "授权配件组 · {mfg} · {n} 个配件"
+    },
+    "summary": {
+      "none_selected": "当前未选择背包武器",
+      "selected": "当前选择 · {name} · Lv.{level}",
+      "fallback_name": "武器"
+    },
+    "catalog": {
+      "search_part": "搜索部件名称、效果、厂商或类型",
+      "available_parts": "可用部件",
+      "selected_parts": "已选部件",
+      "clear": "清空",
+      "all": "全部",
+      "all_manufacturers": "全部厂商",
+      "all_weapon_types": "全部武器类型"
     }
   },
   "weapon_gen_tab": {

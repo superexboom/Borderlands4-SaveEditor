@@ -482,7 +482,8 @@
       "parts_list": "Список частин",
       "parse_serial_to_show_parts": "Частини з'являться тут після парсингу серійного номера...",
       "level_label": "Рівень",
-      "slot_label": "Слот"
+      "slot_label": "Слот",
+      "search_weapon_placeholder": "Пошук за іменем, виробником, типом, рівнем або слотом"
     },
     "buttons": {
       "update_weapon": "Оновити зброю",
@@ -545,6 +546,34 @@
       "element_switch": "Перемикання стихій",
       "pearl_stat": "Pearl Stat",
       "pearl_elements": "Pearl Elements"
+    },
+    "tooltips": {
+      "refresh_parts": "Оновити деталі",
+      "change_skin": "Змінити вигляд",
+      "move_up": "Вгору",
+      "move_down": "Вниз",
+      "remove_part": "Видалити"
+    },
+    "parts": {
+      "cosmetic_part": "Косметична деталь",
+      "element_config": "Налаштування стихії",
+      "unnamed_barrel": "Безіменний ствол",
+      "element_group": "Група налаштування стихії · {n} дет.",
+      "licensed_group": "Група ліцензов. деталей · {mfg} · {n} дет."
+    },
+    "summary": {
+      "none_selected": "Зброю з рюкзака не вибрано",
+      "selected": "Вибрано · {name} · Рів.{level}",
+      "fallback_name": "Зброя"
+    },
+    "catalog": {
+      "search_part": "Пошук за назвою, ефектом, виробником або типом",
+      "available_parts": "Доступні деталі",
+      "selected_parts": "Вибрані деталі",
+      "clear": "Очистити",
+      "all": "Усі",
+      "all_manufacturers": "Усі виробники",
+      "all_weapon_types": "Усі типи зброї"
     }
   },
   "weapon_gen_tab": {
