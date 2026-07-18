@@ -262,7 +262,7 @@ class QtEnhancementEditorTab(QWidget):
 
     # Category/subcategory filter taxonomies, co-located with the filter logic.
     # All four languages so RU/UA get their own labels rather than English.
-    # 分类/子分类筛选taxonomy，与筛选逻辑同处一处。四种语言齐备，使 RU/UA
+    # 分类/子分类筛选归类表，与筛选逻辑同处一处。四种语言齐备，使 RU/UA
     # 获得各自标签而非英文。
     _CAT_LABELS = {
         'zh-CN': {'all': '全部', 'firmware': '固件', 'sniper': '狙击枪', 'shotgun': '霰弹枪',

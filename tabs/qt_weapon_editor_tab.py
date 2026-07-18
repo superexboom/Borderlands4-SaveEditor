@@ -65,11 +65,26 @@ _ROW_WEAPON_ICONS = {
     "SMG":           "assets/icons/smg.png",
     "Sniper":        "assets/icons/sniper.png",
     "Shotgun":       "assets/icons/shotgun.png",
-    "Ordnance":      "assets/icons/ordnance.png",
 }
 
+# Icons are read-only and shared across every row; cache the QPixmap per type so
+# rebuilding the backpack list doesn't re-stat and re-decode the same few PNGs
+# once per weapon.
+# 图标为只读且被所有行共享；按类型缓存 QPixmap，使重建背包列表时不必为每把
+# 武器重复读取并解码同几张 PNG。
+_ICON_CACHE = {}
 
-def _pearl_brush(width, height):
+
+def _weapon_icon(type_en):
+    """Cached weapon-type icon QPixmap for type_en, or None if there is none."""
+    if type_en not in _ICON_CACHE:
+        rel = _ROW_WEAPON_ICONS.get(type_en or "")
+        path = resource_loader.get_resource_path(rel) if rel else None
+        _ICON_CACHE[type_en] = QtGui.QPixmap(str(path)) if path and path.exists() else None
+    return _ICON_CACHE[type_en]
+
+
+def _pearl_brush():
     """Repeating Pearl gradient whose bands run ~20° above horizontal.
 
     Uses logical (pixel) coordinates with a fixed period and RepeatSpread so
@@ -108,13 +123,7 @@ class _RarityRow(QtWidgets.QWidget):
         super().__init__(parent)
         self._is_pearl = rarity == "Pearl"
         self._rarity_color = _ROW_RARITY_COLORS.get(rarity)
-        self._icon = None
-        icon_rel = _ROW_WEAPON_ICONS.get(type_en or "")
-        if self._rarity_color or self._is_pearl:
-            icon_path = resource_loader.get_resource_path(icon_rel) if icon_rel else None
-            if icon_path and icon_path.exists():
-                self._icon = QtGui.QPixmap(str(icon_path))
-        self.icon_span = 0  # left content margin the layout must reserve; set on first paint
+        self._icon = _weapon_icon(type_en) if (self._rarity_color or self._is_pearl) else None
 
     def paintEvent(self, event):
         if not (self._rarity_color or self._is_pearl):
@@ -126,7 +135,7 @@ class _RarityRow(QtWidgets.QWidget):
 
         # 1. rarity fill (border + weapon-hole reveal layer)
         outer = QtCore.QRectF(0, 0, w, h)
-        fill = _pearl_brush(w, h) if self._is_pearl else QtGui.QBrush(QtGui.QColor(self._rarity_color))
+        fill = _pearl_brush() if self._is_pearl else QtGui.QBrush(QtGui.QColor(self._rarity_color))
         p.setPen(QtCore.Qt.PenStyle.NoPen)
         p.setBrush(fill)
         p.drawRoundedRect(outer, _ROW_OUTER_RADIUS, _ROW_OUTER_RADIUS)
@@ -1015,6 +1024,9 @@ class WeaponEditorTab(QtWidgets.QWidget):
         if legendary:
             leg_label = QtWidgets.QLabel(f"({legendary})")
             leg_label.setObjectName("WeaponBrowserLegendary")
+            # Tooltip so the (often long, especially RU/UA) legendary name is
+            # recoverable when it clips in the narrow card column.
+            leg_label.setToolTip(f"({legendary})")
             color = _ROW_RARITY_COLORS.get(rarity, "#cccccc")
             leg_label.setStyleSheet(f"color: {color}; font-style: italic; background: transparent;")
             outer.addWidget(leg_label)
