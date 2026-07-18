@@ -8,6 +8,7 @@ from functools import partial
 
 from core import bl4_functions as bl4f
 from core import b_encoder
+from core import decoder_logic
 from core import item_display_resolver
 from core import resource_loader
 from tabs.qt_catalog_picker import CatalogPicker, ContainedWheelListWidget, ContainedWheelScrollArea
@@ -599,7 +600,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
             self.is_handling_change = False
             return
 
-        decoded_str, _, err = bl4f.decode_serial_to_string(text)
+        decoded_str, _, err = decoder_logic.decode_serial_to_string(text)
         if not err:
             self.serial_decoded_entry.blockSignals(True)
             self.serial_decoded_entry.setText(decoded_str)
