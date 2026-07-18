@@ -47,7 +47,7 @@ class QtHeavyWeaponEditorTab(QWidget):
 
         if self.df_main is None:
             layout = QVBoxLayout(self)
-            layout.addWidget(QLabel(self.ui_loc.get('dialogs', {}).get('load_error', "Error: Heavy weapon data unable to load.")))
+            layout.addWidget(QLabel(self.ui_loc.get('dialogs', {}).get('load_error', "错误: 重武器数据(heavy weapon data)无法加载。")))
             return
 
         self.mfg_ids = [282, 273, 275, 289]

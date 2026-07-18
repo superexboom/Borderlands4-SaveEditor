@@ -32,7 +32,7 @@ def load_repkit_data(lang='zh-CN'):
             
         return df_main, df_mfg, localization
     except Exception as e:
-        QMessageBox.critical(None, "Data Load Failed", f"Could not load or parse the repair kit data file: {e}")
+        QMessageBox.critical(None, "加载数据失败", f"无法加载或解析修复套件数据文件: {e}")
         return None, None, None
 
 class QtRepkitEditorTab(QWidget):
@@ -48,7 +48,7 @@ class QtRepkitEditorTab(QWidget):
 
         if self.df_main is None or self.df_mfg is None:
             layout = QVBoxLayout(self)
-            layout.addWidget(QLabel(self.ui_loc.get('dialogs', {}).get('load_error', "Error: Repkit data unable to load.")))
+            layout.addWidget(QLabel(self.ui_loc.get('dialogs', {}).get('load_error', "错误: 修复套件数据(repkit data)无法加载。")))
             return
 
         # 初始化变量

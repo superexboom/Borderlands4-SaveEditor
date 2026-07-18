@@ -43,7 +43,7 @@ class QtGrenadeEditorTab(QWidget):
         self._load_ui_localization()
 
         if self.df_main is None:
-            layout = QVBoxLayout(self); layout.addWidget(QLabel(self.ui_loc.get('dialogs', {}).get('load_error', "Error: Grenade data unable to load."))); return
+            layout = QVBoxLayout(self); layout.addWidget(QLabel(self.ui_loc.get('dialogs', {}).get('load_error', "错误: 手雷数据(grenade data)无法加载。"))); return
 
         self.mfg_ids = [263, 267, 270, 272, 278, 291, 298, 311]
         self.mfg_perk_widgets = []

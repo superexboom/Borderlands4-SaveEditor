@@ -42,7 +42,7 @@ class QtShieldEditorTab(QWidget):
         self._load_ui_localization()
 
         if self.df_main is None:
-            layout = QVBoxLayout(self); layout.addWidget(QLabel(self.ui_loc.get('dialogs', {}).get('load_error', "Error: Shield data unable to load."))); return
+            layout = QVBoxLayout(self); layout.addWidget(QLabel(self.ui_loc.get('dialogs', {}).get('load_error', "错误: 护盾数据(shield data)无法加载。"))); return
 
         self.mfg_ids = [279, 283, 287, 293, 300, 306, 312, 321]
         # Hardcode types for logic, but localize for display
