@@ -1075,7 +1075,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 self.backpack_items_list.setItemWidget(item, row_widget)
 
             except Exception as e:
-                self.main_app.log(f"在处理背包武器时发生严重错误。序列号: {weapon.get('serial', '未知')}，错误: {e}")
+                self.main_app.log(f"Critical error processing backpack weapon. Serial: {weapon.get('serial', 'Unknown')}, error: {e}")
         self._filter_backpack_items(self.weapon_search.text())
         self._select_current_backpack_item()
 

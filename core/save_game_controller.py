@@ -344,7 +344,7 @@ class SaveGameController:
                 except FileNotFoundError:
                     continue
         except Exception as e:
-            print(f"扫描存档文件夹时出错: {e}")
+            print(f"Error scanning save folders: {e}")
         
         return sorted(found_files, key=lambda x: x['modified'], reverse=True)
 
