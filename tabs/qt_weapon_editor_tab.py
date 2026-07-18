@@ -57,7 +57,10 @@ _STAT_CARD_ABBR = {
 # 渐变绘制，倾斜使色带无论行宽都约在水平线上方 20° 走向。
 _PEARL_PALETTE = ("#FF8A65", "#4DD0E1", "#F06292", "#FFEE58")
 _PEARL_BAND_DEG = 20      # band tilt above horizontal
-_PEARL_BAND_PERIOD = 140  # px for one full 4-colour cycle along the gradient
+_PEARL_BAND_PERIOD = 120  # px for one full 4-colour cycle along the gradient
+_PEARL_PHASE = 0.5        # 0..1 shift of the bands along the vector, so teal
+                          # (not gold) lands at the left edge under the weapon —
+                          # keeps Pearl from reading gold like Legendary
 
 # Weapon-type icon per type_en. These are dark plates with the weapon shape
 # punched out as transparent holes, so over the rarity fill the weapon takes
@@ -86,7 +89,9 @@ def _pearl_brush(width, height):
     """
     ang = math.radians(_PEARL_BAND_DEG - 90.0)
     ux, uy = math.cos(ang), math.sin(ang)
-    grad = QtGui.QLinearGradient(0.0, 0.0, ux * _PEARL_BAND_PERIOD, uy * _PEARL_BAND_PERIOD)
+    off = _PEARL_PHASE * _PEARL_BAND_PERIOD  # phase shift along the vector
+    sx, sy = -off * ux, -off * uy
+    grad = QtGui.QLinearGradient(sx, sy, sx + ux * _PEARL_BAND_PERIOD, sy + uy * _PEARL_BAND_PERIOD)
     grad.setCoordinateMode(QtGui.QGradient.CoordinateMode.LogicalMode)
     grad.setSpread(QtGui.QGradient.Spread.RepeatSpread)
     n = len(_PEARL_PALETTE)
