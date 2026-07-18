@@ -599,6 +599,13 @@
       "all": "全部",
       "all_manufacturers": "全部厂商",
       "all_weapon_types": "全部武器类型"
+    },
+    "stat_short": {
+      "damage": "伤害",
+      "accuracy": "精度",
+      "fire_rate": "射速",
+      "reload_time": "装填",
+      "magazine": "弹匣"
     }
   },
   "weapon_gen_tab": {

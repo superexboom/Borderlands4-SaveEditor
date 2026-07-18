@@ -41,15 +41,6 @@ _ROW_OUTER_RADIUS = 8
 _ROW_INNER_RADIUS = 6
 _ROW_ICON_MAX = 50  # cap the weapon icon so it stays reasonable on taller cards
 
-# Shorter stat-column headers for the narrow browser card, only where the full
-# English localized name overflows a column. "Reload Time" -> "Reload"; the
-# rest fit, and the Chinese names are short, so those are left untouched.
-# 窄浏览卡片的较短属性列标题，仅用于英文完整名溢出列宽处。"Reload Time" →
-# "Reload"；其余可容纳，中文名较短，均保持不变。
-_STAT_CARD_ABBR = {
-    "reload_time": "Reload",
-}
-
 # Pearlescent iridescent fill: the in-game Pearl palette (orange, teal,
 # magenta, gold). Painted as a repeating gradient with a fixed pixel period,
 # tilted so the bands run ~20° above horizontal regardless of row width.
@@ -1028,10 +1019,9 @@ class WeaponEditorTab(QtWidgets.QWidget):
             stat_layout = QtWidgets.QVBoxLayout()
             stat_layout.setContentsMargins(0, 0, 0, 0)
             stat_layout.setSpacing(0)
-            if self.current_lang == "zh-CN":
-                title_text = stat_titles.get(key, key.replace('_', ' ').title())
-            else:
-                title_text = _STAT_CARD_ABBR.get(key, stat_titles.get(key, key))
+            # Short, per-language stat header that fits the narrow card column
+            # (full localized names like RU "Скорострельность" overflow it).
+            title_text = self._loc('stat_short', key, stat_titles.get(key, key.replace('_', ' ').title()))
             title_label = QtWidgets.QLabel(title_text)
             title_label.setObjectName("WeaponBrowserStatTitle")
             title_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)

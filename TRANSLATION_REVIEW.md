@@ -79,3 +79,16 @@ ru/ua in-code (co-located with the filter logic). Picker chrome added under
 _Note: weapon_generator `SECTION_TITLES` already shipped all four languages
 in-code (no change needed). Its dialog fallbacks and the encode-error raise
 were Englished (diagnostics)._
+
+## weapon_editor_tab.stat_short (narrow backpack-card stat headers)
+
+Short forms that fit the ~57px card column (full localized names like RU
+"Скорострельность" overflow it).
+
+| key | en | ru (review) | ua (review) |
+|---|---|---|---|
+| damage | Dmg | Урон | Урон |
+| accuracy | Acc | Точн. | Точн. |
+| fire_rate | RoF | Скор. | Швидк. |
+| reload_time | Reload | Перез. | Перез. |
+| magazine | Magazine | Магазин | Магазин |

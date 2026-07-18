@@ -599,6 +599,13 @@
       "all": "Все",
       "all_manufacturers": "Все производители",
       "all_weapon_types": "Все типы оружия"
+    },
+    "stat_short": {
+      "damage": "Урон",
+      "accuracy": "Точн.",
+      "fire_rate": "Скор.",
+      "reload_time": "Перез.",
+      "magazine": "Магазин"
     }
   },
   "weapon_gen_tab": {

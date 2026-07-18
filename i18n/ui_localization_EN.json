@@ -599,6 +599,13 @@
       "all": "All",
       "all_manufacturers": "All Manufacturers",
       "all_weapon_types": "All Weapon Types"
+    },
+    "stat_short": {
+      "damage": "Dmg",
+      "accuracy": "Acc",
+      "fire_rate": "RoF",
+      "reload_time": "Reload",
+      "magazine": "Magazine"
     }
   },
   "weapon_gen_tab": {
