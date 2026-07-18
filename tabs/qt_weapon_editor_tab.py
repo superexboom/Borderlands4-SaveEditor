@@ -948,10 +948,22 @@ class WeaponEditorTab(QtWidgets.QWidget):
         return frame
 
     def move_part(self, index, direction):
-        if not 0 <= index < len(self.parts_data): return
-        new_index = index + direction
-        if not 0 <= new_index < len(self.parts_data): return
-        self.parts_data.insert(new_index, self.parts_data.pop(index)); self.regenerate_ui_and_serial()
+        # parts_data interleaves whitespace separators with part dicts, so a raw
+        # index±1 step often lands on a separator and moves nothing visible —
+        # which is why moving a part took several clicks. Step over separators to
+        # the adjacent real part and swap the two, so one click moves one part.
+        # parts_data 中部件字典与空白分隔符交替，因此 index±1 的原始步进常落在
+        # 分隔符上、视觉上毫无移动——这正是移动部件需点击多次的原因。跳过分隔符
+        # 找到相邻的真实部件并交换二者，使一次点击移动一个部件。
+        if not (0 <= index < len(self.parts_data)) or not isinstance(self.parts_data[index], dict):
+            return
+        target = index + direction
+        while 0 <= target < len(self.parts_data) and not isinstance(self.parts_data[target], dict):
+            target += direction
+        if not 0 <= target < len(self.parts_data):
+            return
+        self.parts_data[index], self.parts_data[target] = self.parts_data[target], self.parts_data[index]
+        self.regenerate_ui_and_serial()
 
     def delete_part(self, index):
         if 0 <= index < len(self.parts_data):
