@@ -840,6 +840,12 @@
       "load_success": "配置 {slot} 已加载到内存。\n请点击主界面「保存」按钮写入存档。",
       "name_prompt_title": "为配置命名",
       "name_prompt_msg": "请输入当前配置的名称（取消则使用默认名称）:"
+    },
+    "decode": {
+      "unknown": "未知",
+      "decode_failed": "解码失败",
+      "unknown_item": "未知物品",
+      "decode_error": "解码错误"
     }
   }
 }

@@ -297,7 +297,7 @@ class QtWeaponGeneratorTab(QWidget):
         return lang_map.get(key, self.SECTION_TITLES['en-US'].get(key, key))
 
     def _handle_error(self, message):
-        err_title = self.ui_loc.get('dialogs', {}).get('error_title', "错误") if self.ui_loc else "错误"
+        err_title = self.ui_loc.get('dialogs', {}).get('error_title', "Error") if self.ui_loc else "Error"
         error_label = QLabel(f"{err_title}: {message}")
         error_label.setStyleSheet("color: red;")
         error_label.setWordWrap(True)
@@ -964,7 +964,7 @@ class QtWeaponGeneratorTab(QWidget):
             component_str = " ".join(parts_list)
             full_decoded_str = f"{header} {component_str} |"
             encoded_serial, err = b_encoder.encode_to_base85(full_decoded_str)
-            if err: raise ValueError(f"编码失败: {err}")
+            if err: raise ValueError(f"Encoding failed: {err}")
             
             self.serial_decoded_entry.setText(full_decoded_str)
             self.serial_b85_entry.setText(encoded_serial)
@@ -983,8 +983,8 @@ class QtWeaponGeneratorTab(QWidget):
     def _on_add_to_backpack(self):
         serial = self.serial_b85_entry.text()
         if not serial:
-            QMessageBox.warning(self, self.ui_loc.get('dialogs', {}).get('no_serial_title', "无序列号"), 
-                                self.ui_loc.get('dialogs', {}).get('gen_first', "请先生成一个武器。"))
+            QMessageBox.warning(self, self.ui_loc.get('dialogs', {}).get('no_serial_title', "No serial"), 
+                                self.ui_loc.get('dialogs', {}).get('gen_first', "Please generate a weapon first."))
             return
         
         flag = self.flag_combo.currentText().split(" ")[0]

@@ -840,6 +840,12 @@
       "load_success": "Loadout {slot} loaded into memory.\nClick 'Save' in the main window to write to save file.",
       "name_prompt_title": "Name This Loadout",
       "name_prompt_msg": "Enter a name for this loadout (Cancel for default name):"
+    },
+    "decode": {
+      "unknown": "Unknown",
+      "decode_failed": "Decode failed",
+      "unknown_item": "Unknown item",
+      "decode_error": "Decode error"
     }
   }
 }

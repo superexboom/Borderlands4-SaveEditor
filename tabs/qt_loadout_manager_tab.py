@@ -924,7 +924,7 @@ class QtLoadoutManagerTab(QWidget):
         for graph in skill_graphs:
             graph_name = graph.get('name', '')
             for node in graph.get('nodes', []):
-                name = node.get('name', '未知')
+                name = node.get('name') or self._t('decode', 'unknown')
                 pts = node.get('points_spent', 0)
                 is_activated = node.get('is_activated', False)
 
@@ -960,14 +960,14 @@ class QtLoadoutManagerTab(QWidget):
         try:
             formatted_str, _, err = decoder_logic.decode_serial_to_string(serial)
             if err:
-                return f"[解码失败: {err}]"
+                return f"[{self._t('decode', 'decode_failed')}: {err}]"
             if '||' not in formatted_str:
-                return "[未知物品]"
+                return f"[{self._t('decode', 'unknown_item')}]"
             header_part, _ = formatted_str.split('||', 1)
             id_section = header_part.strip().split('|')[0]
             id_part = id_section.strip().split(',')
             if len(id_part) < 4:
-                return "[未知物品]"
+                return f"[{self._t('decode', 'unknown_item')}]"
             item_id = int(id_part[0].strip())
             manufacturer, item_type, found = lookup.get_kind_enums(item_id)
             if not found:
@@ -976,7 +976,7 @@ class QtLoadoutManagerTab(QWidget):
             loc_type = bl4f.get_localized_string(item_type)
             return f"{loc_mfr} {loc_type}"
         except Exception:
-            return "[解码错误]"
+            return f"[{self._t('decode', 'decode_error')}]"
 
     def _create_equipped_row(self, slot_name: str, item_name: str, serial: str) -> QWidget:
         row = QFrame()

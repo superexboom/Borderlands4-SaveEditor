@@ -66,3 +66,16 @@ ru/ua in-code (co-located with the filter logic). Picker chrome added under
 | picker.selected_stats | Selected Stats | Выбранные характеристики | Вибрані характеристики |
 | _CAT_LABELS.* | All/Firmware/Sniper/Shotgun/SMG/Pistol/AR/Universal | Все/Прошивка/Снайперская/Дробовик/ПП/Пистолет/Автомат/Универсальный | Усі/Прошивка/Снайперська/Дробовик/ПП/Пістолет/Автомат/Універсальний |
 | _SUB_LABELS.* | Damage/Crit DMG/Fire Rate/Accuracy/Reload/Magazine/Splash DMG/Splash Radius/ADS/SE DMG/SE Chance/Equip/Other | Урон/Крит. урон/Скорострельность/Точность/Перезарядка/Магазин/Урон по площади/Радиус поражения/Прицел/Урон статуса/Шанс статуса/Снаряжение/Другое | Урон/Крит. урон/Скорострільність/Точність/Перезарядка/Магазин/Урон по площі/Радіус ураження/Приціл/Урон статусу/Шанс статусу/Спорядження/Інше |
+
+## loadout_tab.decode (item-name fallbacks on decode failure)
+
+| key | en | ru (review) | ua (review) |
+|---|---|---|---|
+| unknown | Unknown | Неизвестно | Невідомо |
+| decode_failed | Decode failed | Ошибка декодирования | Помилка декодування |
+| unknown_item | Unknown item | Неизвестный предмет | Невідомий предмет |
+| decode_error | Decode error | Ошибка декодирования | Помилка декодування |
+
+_Note: weapon_generator `SECTION_TITLES` already shipped all four languages
+in-code (no change needed). Its dialog fallbacks and the encode-error raise
+were Englished (diagnostics)._
