@@ -249,7 +249,6 @@ class QtWeaponGeneratorTab(QWidget):
             full_loc = resource_loader.load_json_resource(loc_file) or {}
             self.ui_loc = full_loc.get("weapon_gen_tab", {})
             editor_loc = full_loc.get("weapon_editor_tab", {})
-            self.flags_loc = editor_loc.get("flags", {})
             self.stats_loc = editor_loc.get("stats", {})
 
         except Exception as e:
@@ -377,14 +376,9 @@ class QtWeaponGeneratorTab(QWidget):
 
         # Flag 选择 + 添加到背包（并入配置卡片右侧，取代原底部操作条）
         self.flag_combo = NoScrollComboBox()
-        if self.flags_loc:
-            flag_values = [self.flags_loc.get(k, f"{k} (Unknown)") for k in ["1", "3", "5", "17", "33", "65", "129"]]
-            self.flag_combo.addItems(flag_values)
-            self.flag_combo.setCurrentText(self.flags_loc.get("3", "3 (收藏)"))
-        else:
-            flag_values = ["1 (普通)", "3 (收藏)", "5 (垃圾)", "17 (编组1)", "33 (编组2)", "65 (编组3)", "129 (编组4)"]
-            self.flag_combo.addItems(flag_values)
-            self.flag_combo.setCurrentText("3 (收藏)")
+        flags = resource_loader.get_flag_labels(self.current_lang)
+        self.flag_combo.addItems([flags[k] for k in ("1", "3", "5", "17", "33", "65", "129")])
+        self.flag_combo.setCurrentText(flags["3"])
         add_to_backpack_btn = QPushButton(self.get_localized_string("add_to_backpack"))
         add_to_backpack_btn.setObjectName("genAddButton")
         config_grid.addWidget(QLabel(self.get_localized_string("select_flag")), 0, 4)

@@ -416,12 +416,8 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.flag_combo = QtWidgets.QComboBox()
         
         # Load flags from UI localization
-        flags = self.ui_localization.get('flags', {})
-        if flags:
-            flag_options = [flags.get(k, f"{k} (Unknown)") for k in ["1", "3", "5", "17", "33", "65", "129"]]
-            self.flag_combo.addItems(flag_options)
-        else:
-            self.flag_combo.addItems(["1 (普通)", "3 (收藏)", "5 (垃圾)", "17 (编组1)", "33 (编组2)", "65 (编组3)", "129 (编组4)"])
+        flags = resource_loader.get_flag_labels(self.current_lang)
+        self.flag_combo.addItems([flags[k] for k in ("1", "3", "5", "17", "33", "65", "129")])
             
         act_layout.addWidget(self.update_weapon_btn, 0, 0)
         act_layout.addWidget(self.add_to_backpack_btn, 0, 1)

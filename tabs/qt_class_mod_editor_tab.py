@@ -307,35 +307,8 @@ class QtClassModEditorTab(QWidget):
 
     def _populate_flags(self):
         self.flag_combo.clear()
-        # Try to load from shared flags location if available, or fallback
-        # We loaded 'flags' in weapon_editor_tab, let's check if we can access similar structure
-        # In __init__, we loaded self.ui_loc.
-        # Let's assume main window passes a common flags dict or we load it from weapon_editor_tab section or define it here.
-        # Since we don't have "flags" in class_mod_tab json usually, we can try to load "weapon_editor_tab"->"flags" for consistency
-        # or just define localized strings here based on self.current_lang.
-        
-        flags_map = {
-            "1": "1 (Common)" if self.current_lang == 'en-US' else "1 (普通)",
-            "3": "3 (Favorites)" if self.current_lang == 'en-US' else "3 (收藏)",
-            "5": "5 (Trash)" if self.current_lang == 'en-US' else "5 (垃圾)",
-            "17": "17 (Group 1)" if self.current_lang == 'en-US' else "17 (编组1)",
-            "33": "33 (Group 2)" if self.current_lang == 'en-US' else "33 (编组2)",
-            "65": "65 (Group 3)" if self.current_lang == 'en-US' else "65 (编组3)",
-            "129": "129 (Group 4)" if self.current_lang == 'en-US' else "129 (编组4)"
-        }
-        
-        # If we loaded flags_loc (we didn't in this file), we could use it.
-        # Let's check if we can load it.
-        try:
-            loc_file = resource_loader.get_ui_localization_file(self.current_lang)
-            full_loc = resource_loader.load_json_resource(loc_file) or {}
-            flags_loc = full_loc.get("weapon_editor_tab", {}).get("flags", {})
-            if flags_loc:
-                flags_map = {k: flags_loc.get(k, v) for k, v in flags_map.items()}
-        except:
-            pass
-
-        flag_values = [flags_map["1"], flags_map["3"], flags_map["5"], flags_map["17"], flags_map["33"], flags_map["65"], flags_map["129"]]
+        flags_map = resource_loader.get_flag_labels(self.current_lang)
+        flag_values = [flags_map[k] for k in ("1", "3", "5", "17", "33", "65", "129")]
         self.flag_combo.addItems(flag_values)
         # Set default to Favorites
         for i in range(self.flag_combo.count()):
