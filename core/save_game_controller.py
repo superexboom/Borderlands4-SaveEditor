@@ -150,7 +150,7 @@ class SaveGameController:
 
         is_valid, validation_msg = self.validate_user_id(self.user_id)
         if not is_valid:
-            raise ValueError(f"Invalid user ID: {validation_msg}")
+            raise ValueError(f"无效的用户ID: {validation_msg}")
 
         enc_data = self.save_path.read_bytes()
 
@@ -189,11 +189,11 @@ class SaveGameController:
             return plain_data.decode(errors="ignore"), platform_id, backup_path.name
         else:
             # 如果两种方法都失败，则抛出详细错误
-            error_msg = ("Failed to decrypt the save file. This usually means:\n"
-                         "1. Wrong user ID - make sure you are using the correct Epic Games or Steam user ID\n"
-                         "2. Corrupted save file - the save file may be damaged\n"
-                         "3. Wrong save file - this may not be a valid BL4 save file\n\n"
-                         f"Error details: {error}")
+            error_msg = ("解密存档文件失败。这通常意味着:\n"
+                         "1. 错误的用户ID - 请确保您使用的是正确的Epic Games或Steam用户ID\n"
+                         "2. 损坏的存档文件 - 存档文件可能已损坏\n"
+                         "3. 错误的存档文件 - 这可能不是一个有效的BL4存档文件\n\n"
+                         f"错误详情: {error}")
             raise ValueError(error_msg)
 
     def encrypt_save(self, yaml_string: str) -> bytes:
@@ -314,7 +314,7 @@ class SaveGameController:
     def sync_inventory_levels(self) -> Tuple[int, int, List[str]]:
         """同步背包物品等级到角色等级。"""
         if not self.yaml_obj:
-            return 0, 0, ["Save not loaded"]
+            return 0, 0, ["存档未加载"]
         
         return bl4f.sync_inventory_item_levels(self.yaml_obj)
 
@@ -344,7 +344,7 @@ class SaveGameController:
                 except FileNotFoundError:
                     continue
         except Exception as e:
-            print(f"Error scanning save folders: {e}")
+            print(f"扫描存档文件夹时出错: {e}")
         
         return sorted(found_files, key=lambda x: x['modified'], reverse=True)
 
@@ -354,7 +354,7 @@ class SaveGameController:
         返回一个表示操作结果的字符串消息。
         """
         if not self.yaml_obj:
-            raise ValueError("Save not loaded; cannot update item.")
+            raise ValueError("存档未加载，无法更新物品。")
         
         try:
             # 在YAML对象中定位到物品节点
@@ -387,18 +387,18 @@ class SaveGameController:
                 new_level = new_level_int
                 full_decoded_str = original_item_data.get("decoded_full", "")
                 if not full_decoded_str:
-                    raise ValueError("Cannot update: original item is missing 'decoded_full' data.")
+                    raise ValueError("无法更新，原始物品缺少'decoded_full'信息。")
                 
                 updated_decoded_str = bl4f.update_level_in_decoded_str(full_decoded_str, new_level)
                 if not updated_decoded_str:
-                    raise ValueError("Could not update the level in the decoded string.")
+                    raise ValueError("无法在解码字符串中更新等级。")
                 
                 new_serial, err = b_encoder.encode_to_base85(updated_decoded_str, new_level=new_level)
                 if err:
-                    raise ValueError(f"Re-encoding from new level failed: {err}")
+                    raise ValueError(f"从新等级重新编码失败: {err}")
                 
                 item_node['serial'] = new_serial
-                return f"Successfully re-encoded item from new level {new_level}."
+                return f"成功从新等级 {new_level} 重新编码物品。"
 
             # 优先级2: 解码ID改变，需要重编码
             elif decoded_id_str and decoded_id_str != original_item_data.get("decoded_parts"):
@@ -407,22 +407,22 @@ class SaveGameController:
                 
                 new_serial, err = b_encoder.encode_to_base85(reconstructed_full_str)
                 if err:
-                    raise ValueError(f"Re-encoding from decoded ID failed: {err}")
+                    raise ValueError(f"从解码ID重新编码失败: {err}")
                 
                 item_node['serial'] = new_serial
-                return "Successfully re-encoded item from decoded ID."
+                return "成功从解码ID重新编码物品。"
             
             # 如果没有重编码，只更新序列号
             else:
                 new_serial = new_item_data.get("serial")
                 if new_serial and new_serial != item_node.get('serial'):
                     item_node['serial'] = new_serial
-                    return "Successfully updated item serial number."
+                    return "成功更新物品序列号。"
 
-            return "No changes detected."
+            return "未检测到任何更改。"
 
         except (KeyError, IndexError) as e:
-            raise ValueError(f"Item path not found in save: {item_path} ({e})")
+            raise ValueError(f"在存档中找不到物品路径: {item_path} ({e})")
 
     def apply_unlock_preset(self, preset_name: str, params: Dict[str, Any] = None) -> bool:
         if not self.yaml_obj:

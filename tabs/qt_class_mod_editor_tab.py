@@ -188,7 +188,7 @@ class QtClassModEditorTab(QWidget):
         try:
             return resource_loader.load_class_mods_json("class_localization.json") or {}
         except Exception as e:
-            print(f"Failed to load localization file: {e}")
+            print(f"加载本地化文件失败: {e}")
             return {}
 
     def _load_ui_localization(self, lang=None):

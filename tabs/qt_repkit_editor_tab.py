@@ -27,7 +27,7 @@ def load_repkit_data(lang='zh-CN'):
         if lang == 'zh-CN':
             localization = resource_loader.load_json_resource('repkit/Repkit_localization_zh-CN.json')
             if not localization:
-                print("Warning: failed to load Repkit_localization_zh-CN.json")
+                print("警告: 无法加载Repkit_localization_zh-CN.json")
                 localization = {}
             
         return df_main, df_mfg, localization

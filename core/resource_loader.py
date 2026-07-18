@@ -173,13 +173,13 @@ def get_image_resource_path(relative_path: Union[str, Path]) -> Optional[Path]:
         resource_path = get_resource_path(relative_path)
         
         if not resource_path.exists():
-            print(f"Image resource not found: {resource_path}")
+            print(f"图片资源不存在: {resource_path}")
             return None
             
         return resource_path
         
     except Exception as e:
-        print(f"Failed to resolve image resource path {relative_path}: {e}")
+        print(f"获取图片资源路径失败 {relative_path}: {e}")
         return None
 
 def get_class_mods_data_path(filename: str) -> Optional[Path]:
@@ -220,13 +220,13 @@ def load_class_mods_csv(filename: str) -> List[Dict[str, str]]:
     try:
         resource_path = get_resource_path(f"class_mods/{filename}")
         if not resource_path.exists():
-            print(f"CSV file not found: {resource_path}")
+            print(f"CSV文件不存在: {resource_path}")
             return []
         with open(resource_path, 'r', encoding='utf-8-sig', newline='') as f:
             reader = csv.DictReader(f)
             return list(reader)
     except Exception as e:
-        print(f"Error loading CSV file {filename}: {e}")
+        print(f"加载CSV文件时发生错误 {filename}: {e}")
         return []
 
 def get_class_mods_image_path(class_name: str, image_name: str) -> Optional[Path]:
@@ -262,13 +262,13 @@ def load_enhancement_csv(filename: str) -> List[Dict[str, str]]:
     try:
         resource_path = get_resource_path(f"enhancement/{filename}")
         if not resource_path.exists():
-            print(f"Enhancement CSV file not found: {resource_path}")
+            print(f"Enhancement CSV文件不存在: {resource_path}")
             return []
         with open(resource_path, 'r', encoding='utf-8-sig', newline='') as f:
             reader = csv.DictReader(f)
             return list(reader)
     except Exception as e:
-        print(f"Error loading Enhancement CSV file {filename}: {e}")
+        print(f"加载Enhancement CSV文件时发生错误 {filename}: {e}")
         return []
 
 
@@ -286,7 +286,7 @@ def get_enhancement_data() -> Optional[Dict[str, Any]]:
         rarity_csv = load_enhancement_csv("Enhancement_rarity.csv")
         
         if not manufacturers_csv or not perks_csv or not rarity_csv:
-            print("Failed to load Enhancement CSV file")
+            print("Enhancement CSV文件加载失败")
             return None
         
         # 构建英文名到中文名的映射表
@@ -385,7 +385,7 @@ def get_enhancement_data() -> Optional[Dict[str, Any]]:
         }
         
     except Exception as e:
-        print(f"Error building Enhancement data: {e}")
+        print(f"构建Enhancement数据时发生错误: {e}")
         return None
 
 def get_weapon_data_path(filename: str) -> Optional[Path]:

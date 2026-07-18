@@ -210,7 +210,7 @@ class QtLoadoutManagerTab(QWidget):
             self.all_weapon_parts_df = pd.read_csv(get_path('all_weapon_part.csv'))
             self.weapon_rarity_df = pd.read_csv(get_path('weapon_rarity.csv'))
         except Exception as e:
-            print(f"Loadout: failed to load weapon CSV data: {e}")
+            print(f"Loadout: 加载武器CSV数据失败: {e}")
             self.all_weapon_parts_df = pd.DataFrame()
             self.weapon_rarity_df = pd.DataFrame()
 
@@ -302,11 +302,11 @@ class QtLoadoutManagerTab(QWidget):
                             if raw_name and mapped_name:
                                 self.skill_name_mapping[raw_name] = mapped_name
                 total = len(self.skill_name_mapping_by_graph) or len(self.skill_name_mapping)
-                print(f"Loadout: loaded {total} skill name mappings")
+                print(f"Loadout: 已加载 {total} 条技能名称映射")
             else:
-                print(f"Loadout: mapping file not found: {mapping_path}")
+                print(f"Loadout: 映射表不存在 {mapping_path}")
         except Exception as e:
-            print(f"Loadout: failed to load skill name mapping: {e}")
+            print(f"Loadout: 加载技能名称映射表失败: {e}")
             self.skill_name_mapping = {}
             self.skill_name_mapping_by_graph = {}
             self.skill_name_mapping_by_class = {}
@@ -402,7 +402,7 @@ class QtLoadoutManagerTab(QWidget):
 
         mapped_name = self.skill_name_mapping.get(skill_name_en, skill_name_en)
         if mapped_name != original_name:
-            print(f"Loadout: skill name mapping '{original_name}' -> '{mapped_name}'")
+            print(f"Loadout: 技能名称映射 '{original_name}' -> '{mapped_name}'")
         
         lookup_name = mapped_name
         display_name = lookup_name
@@ -500,7 +500,7 @@ class QtLoadoutManagerTab(QWidget):
                 display_parts.append(weapon_name)
             return ' '.join(display_parts) if display_parts else ''
         except Exception as e:
-            print(f"Loadout: weapon name parse failed: {e}")
+            print(f"Loadout: 武器名称解析失败: {e}")
             return ''
 
     # ══════════════════════════════════════════════════════════════════
@@ -529,7 +529,7 @@ class QtLoadoutManagerTab(QWidget):
                     with open(fp, 'r', encoding='utf-8') as f:
                         self._saved_loadouts[slot] = json.load(f)
                 except Exception as e:
-                    print(f"Loadout: failed to read slot {slot} config: {e}")
+                    print(f"Loadout: 读取槽位 {slot} 配置失败: {e}")
 
     # ══════════════════════════════════════════════════════════════════
     # UI 构建

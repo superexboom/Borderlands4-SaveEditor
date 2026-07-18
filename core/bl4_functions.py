@@ -265,7 +265,7 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
         except Exception as e:
             # This is a hard guard against a C-level crash in the decoder
             # We log it and move on, preventing a full application crash.
-            print(f"Critical decode error, serial: {serial}, error: {e}")
+            print(f"严重解码错误，序列号: {serial}, 错误: {e}")
             continue
         
         split_marker = "||"
