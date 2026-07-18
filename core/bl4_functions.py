@@ -308,14 +308,14 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
             slot_key = "—" # Default for items without a slot, like lost loot
 
             if "lostloot" in path:
-                container_name = "丢失物品"
+                container_name = "Lost Loot"
             elif "equipped_inventory" in path or "equipped" in path:
                 container_name = "Equipped"
             elif "inventory" in path and "backpack" in path:
                 container_name = "Backpack"
 
             # Only find a slot_key if not in lost loot
-            if container_name != "丢失物品":
+            if container_name != "Lost Loot":
                 for p_part in reversed(path):
                     if p_part.startswith("slot_"):
                         slot_key = p_part

@@ -221,7 +221,8 @@
       "Lost Loot": "丢失物品",
       "丢失物品": "丢失物品",
       "Equipped": "装备中",
-      "装备中": "装备中"
+      "装备中": "装备中",
+      "Unknown": "未知"
     },
     "search_placeholder": "搜索物品...",
     "add_item": {
