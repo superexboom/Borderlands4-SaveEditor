@@ -39,6 +39,16 @@ _ROW_PLATE_COLOR = QtGui.QColor(16, 22, 27, 240)
 _ROW_PLATE_INSET = 2
 _ROW_OUTER_RADIUS = 8
 _ROW_INNER_RADIUS = 6
+_ROW_ICON_MAX = 50  # cap the weapon icon so it stays reasonable on taller cards
+
+# Shorter stat-column headers for the narrow browser card, only where the full
+# English localized name overflows a column. "Reload Time" -> "Reload"; the
+# rest fit, and the Chinese names are short, so those are left untouched.
+# 窄浏览卡片的较短属性列标题，仅用于英文完整名溢出列宽处。"Reload Time" →
+# "Reload"；其余可容纳，中文名较短，均保持不变。
+_STAT_CARD_ABBR = {
+    "reload_time": "Reload",
+}
 
 # Pearlescent iridescent fill: the in-game Pearl palette (orange, teal,
 # magenta, gold). Painted as a repeating gradient with a fixed pixel period,
@@ -137,7 +147,7 @@ class _RarityRow(QtWidgets.QWidget):
         pp.setBrush(_ROW_PLATE_COLOR)
         pp.drawRoundedRect(QtCore.QRectF(0, 0, pw, ph), _ROW_INNER_RADIUS, _ROW_INNER_RADIUS)
         if self._icon is not None and not self._icon.isNull():
-            side = ph - 4
+            side = min(ph - 4, _ROW_ICON_MAX)
             icon = self._icon.scaled(
                 side, side,
                 QtCore.Qt.AspectRatioMode.KeepAspectRatio,
@@ -338,16 +348,15 @@ class WeaponEditorTab(QtWidgets.QWidget):
         
         self.main_layout.addWidget(self.content_widget)
 
-        scroll_area = QtWidgets.QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        content_layout.addWidget(scroll_area)
+        # Horizontal split: backpack browser as a tall vertical card column on
+        # the left, the editor (serial / actions / meta / parts) scrollable on
+        # the right. Draggable divider so the user can rebalance.
+        # 水平分割：左侧为高的垂直卡片列（背包浏览器），右侧为可滚动的编辑器
+        # （序列 / 操作 / 元数据 / 部件）。分隔条可拖动以重新分配空间。
+        splitter = QtWidgets.QSplitter(QtCore.Qt.Orientation.Horizontal)
+        content_layout.addWidget(splitter)
 
-        main_frame = QtWidgets.QFrame()
-        scroll_area.setWidget(main_frame)
-        layout = QtWidgets.QGridLayout(main_frame)
-        layout.setColumnStretch(0, 1)
-        layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)  # Align all items to top
-
+        # --- Left column: backpack browser ---
         bp_frame = QtWidgets.QFrame(); bp_frame.setObjectName("InnerFrame")
         bp_layout = QtWidgets.QVBoxLayout(bp_frame)
         bp_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("load_from_backpack")))
@@ -358,18 +367,32 @@ class WeaponEditorTab(QtWidgets.QWidget):
         bp_layout.addWidget(self.weapon_search)
         self.backpack_items_list = ContainedWheelListWidget()
         self.backpack_items_list.setObjectName("weaponBrowser")
-        self.backpack_items_list.setMinimumHeight(220)
-        self.backpack_items_list.setMaximumHeight(300)
+        self.backpack_items_list.setMinimumWidth(300)
         self.backpack_items_list.itemActivated.connect(lambda item: self.load_weapon_data(item.data(QtCore.Qt.ItemDataRole.UserRole)))
         self.backpack_items_list.itemClicked.connect(lambda item: self.load_weapon_data(item.data(QtCore.Qt.ItemDataRole.UserRole)))
-        bp_layout.addWidget(self.backpack_items_list)
+        bp_layout.addWidget(self.backpack_items_list, 1)  # fills the column height
         self.selected_weapon_summary = QtWidgets.QLabel()
         self.selected_weapon_summary.setObjectName("selectedWeaponSummary")
         self.selected_weapon_summary.setWordWrap(True)
         self._update_selected_weapon_summary()
         bp_layout.addWidget(self.selected_weapon_summary)
-        layout.addWidget(bp_frame, 0, 0, QtCore.Qt.AlignmentFlag.AlignTop)
-        
+        splitter.addWidget(bp_frame)
+
+        # --- Right: scrollable editor ---
+        scroll_area = QtWidgets.QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        splitter.addWidget(scroll_area)
+
+        main_frame = QtWidgets.QFrame()
+        scroll_area.setWidget(main_frame)
+        layout = QtWidgets.QGridLayout(main_frame)
+        layout.setColumnStretch(0, 1)
+        layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)  # Align all items to top
+
+        splitter.setStretchFactor(0, 0)  # left column keeps its width
+        splitter.setStretchFactor(1, 1)  # editor absorbs extra space
+        splitter.setSizes([380, 820])
+
         s_frame = QtWidgets.QFrame(); s_frame.setObjectName("InnerFrame")
         s_layout = QtWidgets.QGridLayout(s_frame)
         s_layout.setColumnStretch(1, 1)
@@ -379,7 +402,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         s_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("serial_decoded")), 1, 0)
         self.serial_decoded_entry = QtWidgets.QLineEdit()
         s_layout.addWidget(self.serial_decoded_entry, 1, 1)
-        layout.addWidget(s_frame, 1, 0)
+        layout.addWidget(s_frame, 0, 0)
 
         act_frame = QtWidgets.QFrame()
         act_layout = QtWidgets.QGridLayout(act_frame)
@@ -398,7 +421,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         act_layout.addWidget(self.update_weapon_btn, 0, 0)
         act_layout.addWidget(self.add_to_backpack_btn, 0, 1)
         act_layout.addWidget(self.flag_combo, 0, 2)
-        layout.addWidget(act_frame, 2, 0)
+        layout.addWidget(act_frame, 1, 0)
         
         editor_frame = QtWidgets.QFrame(); editor_frame.setObjectName("InnerFrame")
         editor_layout = QtWidgets.QGridLayout(editor_frame)
@@ -451,7 +474,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
             stats_layout.setColumnStretch(column, 1)
             self.weapon_stat_value_labels[key] = value
         editor_layout.addLayout(stats_layout, 3, 0, 1, 5)
-        layout.addWidget(editor_frame, 3, 0)
+        layout.addWidget(editor_frame, 2, 0)
         
         parts_frame = QtWidgets.QFrame(); parts_frame.setObjectName("InnerFrame")
         parts_layout = QtWidgets.QVBoxLayout(parts_frame)
@@ -479,7 +502,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.parts_list_layout.setContentsMargins(0, 0, 0, 0)
         self.parts_list_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("parse_serial_to_show_parts")))
         parts_layout.addWidget(parts_list_content)
-        layout.addWidget(parts_frame, 4, 0, QtCore.Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(parts_frame, 3, 0, QtCore.Qt.AlignmentFlag.AlignTop)
         main_frame.setLayout(layout) # Set the grid layout to the main frame
         
         self.serial_b85_entry.textChanged.connect(self.handle_b85_change)
@@ -948,50 +971,66 @@ class WeaponEditorTab(QtWidgets.QWidget):
         QtWidgets.QMessageBox.information(self, self.get_localized_string("success"), self.get_localized_string("parts_refresh_success"))
 
     def _weapon_browser_row(self, title, detail, decoded_str, rarity=None, type_en=None):
-        # One dark plate over a rarity fill: the fill rims the plate as a
-        # border and shows through the weapon shape punched out of the plate
-        # (see _RarityRow). Text/stats sit on the plate, clear of the icon.
-        # 覆于稀有度填充上的单块暗色板：填充沿板缘成边框，并透过从板中镂空的
-        # 武器形状显现（见 _RarityRow）。文字/属性置于板上，避开图标区域。
+        # Vertical card for the left-column browser: name, the legendary title
+        # (the parenthetical) on its own line to save width, level·slot, then
+        # the five stats as a distinct-column strip below. _RarityRow paints
+        # the rarity plate, border and punched weapon icon behind it.
+        # 左列浏览器的垂直卡片：名称、单独一行的传奇标题（括号内容，以节省宽度）、
+        # 等级·槽位，下方为五项属性的独立列条。_RarityRow 在其后绘制稀有度
+        # 色板、边框与镂空武器图标。
         row = _RarityRow(rarity, type_en)
         row.setObjectName("WeaponBrowserRow")
-        has_icon = row._icon is not None
-        left = 68 if has_icon else 14
+        left = 66 if row._icon is not None else 12
 
-        row_layout = QtWidgets.QHBoxLayout(row)
-        row_layout.setContentsMargins(left, _ROW_PLATE_INSET + 4, 14, _ROW_PLATE_INSET + 4)
-        row_layout.setSpacing(12)
+        outer = QtWidgets.QVBoxLayout(row)
+        outer.setContentsMargins(left, _ROW_PLATE_INSET + 4, 10, _ROW_PLATE_INSET + 4)
+        outer.setSpacing(0)
 
-        text_layout = QtWidgets.QVBoxLayout()
-        text_layout.setContentsMargins(0, 0, 0, 0)
-        text_layout.setSpacing(2)
-        name_label = QtWidgets.QLabel(title)
+        # Split "Mfg Type (Legendary)" so the parenthetical drops to its own line.
+        m = re.match(r'^(.*?)\s*\(([^()]*)\)\s*$', title)
+        base_name, legendary = (m.group(1), m.group(2)) if m else (title, None)
+
+        name_label = QtWidgets.QLabel(base_name)
         name_label.setObjectName("WeaponBrowserName")
         name_label.setToolTip(title)
         name_label.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
+        outer.addWidget(name_label)
+
+        if legendary:
+            leg_label = QtWidgets.QLabel(f"({legendary})")
+            leg_label.setObjectName("WeaponBrowserLegendary")
+            color = _ROW_RARITY_COLORS.get(rarity, "#cccccc")
+            leg_label.setStyleSheet(f"color: {color}; font-style: italic; background: transparent;")
+            outer.addWidget(leg_label)
+
         detail_label = QtWidgets.QLabel(detail)
         detail_label.setObjectName("WeaponBrowserMeta")
-        text_layout.addWidget(name_label)
-        text_layout.addWidget(detail_label)
-        row_layout.addLayout(text_layout, 1)
+        outer.addWidget(detail_label)
 
         stats = item_display_resolver.resolve_weapon_stats(decoded_str) if decoded_str else {}
         stat_titles = self.ui_localization.get('stats', {})
+        stat_strip = QtWidgets.QHBoxLayout()
+        stat_strip.setContentsMargins(0, 4, 0, 0)
+        stat_strip.setSpacing(6)
         for key in ("damage", "accuracy", "fire_rate", "reload_time", "magazine"):
             stat_layout = QtWidgets.QVBoxLayout()
             stat_layout.setContentsMargins(0, 0, 0, 0)
-            stat_layout.setSpacing(1)
-            title_label = QtWidgets.QLabel(stat_titles.get(key, key.replace('_', ' ').title()))
+            stat_layout.setSpacing(0)
+            if self.current_lang == "zh-CN":
+                title_text = stat_titles.get(key, key.replace('_', ' ').title())
+            else:
+                title_text = _STAT_CARD_ABBR.get(key, stat_titles.get(key, key))
+            title_label = QtWidgets.QLabel(title_text)
             title_label.setObjectName("WeaponBrowserStatTitle")
             title_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
             value = item_display_resolver.format_weapon_stat(key, stats.get(key), self.current_lang) or "—"
             value_label = QtWidgets.QLabel(value)
             value_label.setObjectName("WeaponBrowserStatValue")
             value_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-            value_label.setMinimumWidth(66)
             stat_layout.addWidget(title_label)
             stat_layout.addWidget(value_label)
-            row_layout.addLayout(stat_layout)
+            stat_strip.addLayout(stat_layout, 1)
+        outer.addLayout(stat_strip)
         return row
 
     def refresh_backpack_items(self):
@@ -1024,15 +1063,15 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 item.setData(QtCore.Qt.ItemDataRole.UserRole, weapon)
                 item.setData(QtCore.Qt.ItemDataRole.UserRole + 1, f"{weapon.get('name', '')} {disp_name} {detail}".lower())
                 item.setToolTip(f"{disp_name} · {detail}")
-                item.setSizeHint(QtCore.QSize(0, 62))
-                self.backpack_items_list.addItem(item)
-                self.backpack_items_list.setItemWidget(
-                    item,
-                    self._weapon_browser_row(
-                        disp_name, detail, weapon.get('decoded_full', ''),
-                        rarity=base_rarity, type_en=weapon.get('type_en', ''),
-                    ),
+                row_widget = self._weapon_browser_row(
+                    disp_name, detail, weapon.get('decoded_full', ''),
+                    rarity=base_rarity, type_en=weapon.get('type_en', ''),
                 )
+                # Size each item to its card — cards with a legendary line are
+                # taller than those without. 每张卡片按其内容定高（含传奇行者更高）。
+                item.setSizeHint(QtCore.QSize(0, row_widget.sizeHint().height()))
+                self.backpack_items_list.addItem(item)
+                self.backpack_items_list.setItemWidget(item, row_widget)
 
             except Exception as e:
                 self.main_app.log(f"在处理背包武器时发生严重错误。序列号: {weapon.get('serial', '未知')}，错误: {e}")
