@@ -5,6 +5,22 @@ import itertools
 import os
 from pathlib import Path
 
+# Force UTF-8 stdio so the app's bilingual (Chinese) log prints don't crash a
+# frozen Windows build, whose default cp1252 codepage can't encode them. In a
+# windowed exe stdout/stderr may be None, so route those to the null device.
+# 强制 UTF-8 标准输出，使应用的双语（中文）日志打印不会导致冻结的 Windows
+# 版本崩溃（其默认 cp1252 代码页无法编码中文）。在窗口化 exe 中 stdout/stderr
+# 可能为 None，故将其重定向到空设备。
+for _stream_name in ("stdout", "stderr"):
+    _stream = getattr(sys, _stream_name, None)
+    if _stream is None:
+        setattr(sys, _stream_name, open(os.devnull, "w", encoding="utf-8"))
+    else:
+        try:
+            _stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError):
+            pass
+
 VERSION = "3.6.1"
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
