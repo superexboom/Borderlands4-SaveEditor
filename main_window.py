@@ -434,7 +434,7 @@ class MainWindow(QMainWindow):
         # Apply rounded corner mask to central widget to clip all child widgets including blur effect
         central = self.centralWidget()
         if central:
-            from PyQt6.QtGui import QBitmap, QPainter
+            from PyQt6.QtGui import QBitmap
             corner_radius = 20
             
             bitmap = QBitmap(central.width(), central.height())

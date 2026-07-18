@@ -5,7 +5,7 @@ import re
 
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit,
-    QPushButton, QGroupBox, QComboBox, QRadioButton, QListWidget, QListWidgetItem,
+    QPushButton, QGroupBox, QComboBox, QRadioButton, QListWidgetItem,
     QScrollArea, QMessageBox, QAbstractItemView, QSpinBox
 )
 from PyQt6.QtCore import pyqtSignal, Qt

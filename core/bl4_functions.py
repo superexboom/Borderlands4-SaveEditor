@@ -153,7 +153,7 @@ def apply_character_and_currency_changes(data: Dict[str, Any], yaml_data: Dict[s
 from . import decoder_logic
 from . import item_display_resolver
 from . import lookup
-from typing import TypedDict, List
+from typing import TypedDict
 from .resource_loader import load_json_resource, get_ui_localization_file
 
 # 全局本地化缓存
