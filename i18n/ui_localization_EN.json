@@ -653,7 +653,8 @@
       "success": "Success",
       "copied": "Copied to clipboard.",
       "no_valid_code": "No valid code",
-      "gen_first": "Please generate a valid serial first."
+      "gen_first": "Please generate a valid serial first.",
+      "error": "Error"
     }
   },
   "shield_tab": {
@@ -691,7 +692,8 @@
       "success": "Success",
       "copied": "Copied to clipboard.",
       "no_valid_code": "No valid code",
-      "gen_first": "Please generate a valid serial first."
+      "gen_first": "Please generate a valid serial first.",
+      "error": "Error"
     }
   },
   "repkit_tab": {
@@ -730,7 +732,8 @@
       "gen_first": "Please generate a valid serial first.",
       "load_fail_title": "Data Load Failed",
       "path_error": "Unable to find Repkit CSV file path.",
-      "parse_error": "Unable to load or parse Repkit data file: {error}"
+      "parse_error": "Unable to load or parse Repkit data file: {error}",
+      "error": "Error"
     }
   },
   "sync_errors": {
@@ -774,7 +777,8 @@
       "success": "Success",
       "copied": "Copied to clipboard.",
       "no_valid_code": "No valid code",
-      "gen_first": "Please generate a valid serial first."
+      "gen_first": "Please generate a valid serial first.",
+      "error": "Error"
     }
   },
   "loadout_tab": {

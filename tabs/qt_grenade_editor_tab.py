@@ -43,7 +43,7 @@ class QtGrenadeEditorTab(QWidget):
         self._load_ui_localization()
 
         if self.df_main is None:
-            layout = QVBoxLayout(self); layout.addWidget(QLabel(self.ui_loc.get('dialogs', {}).get('load_error', "错误: 手雷数据(grenade data)无法加载。"))); return
+            layout = QVBoxLayout(self); layout.addWidget(QLabel(self.ui_loc.get('dialogs', {}).get('load_error', "Error: Grenade data unable to load."))); return
 
         self.mfg_ids = [263, 267, 270, 272, 278, 291, 298, 311]
         self.mfg_perk_widgets = []
@@ -361,7 +361,9 @@ class QtGrenadeEditorTab(QWidget):
 
             final_str = " ".join(main_parts) + " " + " ".join(skill_parts) + " |"
             self.raw_output_edit.setText(final_str)
-            encoded, err = b_encoder.encode_to_base85(final_str); self.b85_output_edit.setText(encoded if not err else f"错误: {err}")
+            encoded, err = b_encoder.encode_to_base85(final_str)
+            self._encode_error = bool(err)
+            self.b85_output_edit.setText(f"{self.ui_loc.get('dialogs', {}).get('error', 'Error')}: {err}" if err else encoded)
         except Exception as e: print(f"Rebuild error: {e}")
 
     def _move_selected_items(self, src, dest, single, multiplier_box=None):
@@ -427,7 +429,7 @@ class QtGrenadeEditorTab(QWidget):
         
     def _add_to_backpack(self):
         serial = self.b85_output_edit.text()
-        if not serial or "Error" in serial or "错误" in serial: QMessageBox.warning(self, self.ui_loc['dialogs']['no_valid_code'], self.ui_loc['dialogs']['gen_first']); return
+        if not serial or getattr(self, '_encode_error', False): QMessageBox.warning(self, self.ui_loc['dialogs']['no_valid_code'], self.ui_loc['dialogs']['gen_first']); return
         self.add_to_backpack_requested.emit(serial, self.flag_combo.currentText().split(" ")[0])
 
     def set_character_level(self, level: str):

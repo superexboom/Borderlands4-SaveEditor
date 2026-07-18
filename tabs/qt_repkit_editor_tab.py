@@ -32,7 +32,7 @@ def load_repkit_data(lang='zh-CN'):
             
         return df_main, df_mfg, localization
     except Exception as e:
-        QMessageBox.critical(None, "加载数据失败", f"无法加载或解析修复套件数据文件: {e}")
+        QMessageBox.critical(None, "Data Load Failed", f"Could not load or parse the repair kit data file: {e}")
         return None, None, None
 
 class QtRepkitEditorTab(QWidget):
@@ -48,7 +48,7 @@ class QtRepkitEditorTab(QWidget):
 
         if self.df_main is None or self.df_mfg is None:
             layout = QVBoxLayout(self)
-            layout.addWidget(QLabel(self.ui_loc.get('dialogs', {}).get('load_error', "错误: 修复套件数据(repkit data)无法加载。")))
+            layout.addWidget(QLabel(self.ui_loc.get('dialogs', {}).get('load_error', "Error: Repkit data unable to load.")))
             return
 
         # 初始化变量
@@ -426,8 +426,9 @@ class QtRepkitEditorTab(QWidget):
         self.raw_output_edit.setText(final_string)
         
         encoded_serial, err = b_encoder.encode_to_base85(final_string)
+        self._encode_error = bool(err)
         if err:
-            self.b85_output_edit.setText(f"错误: {err}")
+            self.b85_output_edit.setText(f"{self.ui_loc.get('dialogs', {}).get('error', 'Error')}: {err}")
         else:
             self.b85_output_edit.setText(encoded_serial)
 
@@ -533,7 +534,7 @@ class QtRepkitEditorTab(QWidget):
         
     def _add_to_backpack(self):
         serial = self.b85_output_edit.text()
-        if not serial or "错误" in serial:
+        if not serial or getattr(self, '_encode_error', False):
             QMessageBox.warning(self, self.ui_loc['dialogs']['no_valid_code'], self.ui_loc['dialogs']['gen_first'])
             return
         self.add_to_backpack_requested.emit(serial, self.flag_combo.currentText().split(" ")[0])

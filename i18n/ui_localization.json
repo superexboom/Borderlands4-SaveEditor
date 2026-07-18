@@ -653,7 +653,8 @@
       "success": "成功",
       "copied": "已复制到剪贴板。",
       "no_valid_code": "无有效代码",
-      "gen_first": "请先生成一个有效的序列号。"
+      "gen_first": "请先生成一个有效的序列号。",
+      "error": "错误"
     }
   },
   "shield_tab": {
@@ -691,7 +692,8 @@
       "success": "成功",
       "copied": "已复制到剪贴板。",
       "no_valid_code": "无有效代码",
-      "gen_first": "请先生成一个有效的序列号。"
+      "gen_first": "请先生成一个有效的序列号。",
+      "error": "错误"
     }
   },
   "repkit_tab": {
@@ -730,7 +732,8 @@
       "gen_first": "请先生成一个有效的序列号。",
       "load_fail_title": "加载数据失败",
       "path_error": "无法找到修复套件CSV文件路径。",
-      "parse_error": "无法加载或解析修复套件数据文件: {error}"
+      "parse_error": "无法加载或解析修复套件数据文件: {error}",
+      "error": "错误"
     }
   },
   "sync_errors": {
@@ -774,7 +777,8 @@
       "success": "成功",
       "copied": "已复制到剪贴板。",
       "no_valid_code": "无有效代码",
-      "gen_first": "请先生成一个有效的序列号。"
+      "gen_first": "请先生成一个有效的序列号。",
+      "error": "错误"
     }
   },
   "loadout_tab": {

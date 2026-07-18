@@ -47,7 +47,7 @@ class QtHeavyWeaponEditorTab(QWidget):
 
         if self.df_main is None:
             layout = QVBoxLayout(self)
-            layout.addWidget(QLabel(self.ui_loc.get('dialogs', {}).get('load_error', "错误: 重武器数据(heavy weapon data)无法加载。")))
+            layout.addWidget(QLabel(self.ui_loc.get('dialogs', {}).get('load_error', "Error: Heavy weapon data unable to load.")))
             return
 
         self.mfg_ids = [282, 273, 275, 289]
@@ -482,7 +482,8 @@ class QtHeavyWeaponEditorTab(QWidget):
         self.raw_output_edit.setText(final_string)
         
         encoded, err = b_encoder.encode_to_base85(final_string)
-        self.b85_output_edit.setText(encoded if not err else f"错误: {err}")
+        self._encode_error = bool(err)
+        self.b85_output_edit.setText(f"{self.ui_loc.get('dialogs', {}).get('error', 'Error')}: {err}" if err else encoded)
 
     def _move_selected_items(self, source_list, dest_list, multiplier_box=None):
         count_val = multiplier_box.value() if multiplier_box else 1
@@ -533,7 +534,7 @@ class QtHeavyWeaponEditorTab(QWidget):
         
     def _add_to_backpack(self):
         serial = self.b85_output_edit.text()
-        if not serial or "错误" in serial:
+        if not serial or getattr(self, '_encode_error', False):
             QMessageBox.warning(self, self.ui_loc['dialogs']['no_valid_code'], self.ui_loc['dialogs']['gen_first'])
             return
         flag = self.flag_combo.currentText().split(" ")[0]
