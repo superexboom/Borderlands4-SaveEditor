@@ -47,7 +47,7 @@ _ROW_INNER_RADIUS = 6
 # 渐变绘制，倾斜使色带无论行宽都约在水平线上方 20° 走向。
 _PEARL_PALETTE = ("#FF8A65", "#4DD0E1", "#F06292", "#FFEE58")
 _PEARL_BAND_DEG = 20      # band tilt above horizontal
-_PEARL_BAND_PERIOD = 20   # px for one full 4-colour cycle along the gradient
+_PEARL_BAND_PERIOD = 140  # px for one full 4-colour cycle along the gradient
 
 # Weapon-type icon per type_en. These are dark plates with the weapon shape
 # punched out as transparent holes, so over the rarity fill the weapon takes
@@ -146,11 +146,19 @@ class _RarityRow(QtWidgets.QWidget):
             # Icon is a dark plate with the weapon transparent. Source mode
             # replaces the plate pixels inside the icon rect with the icon's
             # own alpha: the dark surround stays, the weapon becomes a
-            # transparent gap that reveals the rarity fill beneath.
+            # transparent gap that reveals the rarity fill beneath. Clip to a
+            # rounded rect so the icon art's corner-bracket flourishes fall
+            # outside and stay dark — only the central weapon reveals rarity.
             ix = 6
             iy = (ph - icon.height()) / 2
+            icon_rect = QtCore.QRectF(ix, iy, icon.width(), icon.height())
+            clip = QtGui.QPainterPath()
+            clip.addRoundedRect(icon_rect, icon.width() * 0.30, icon.height() * 0.30)
+            pp.save()
+            pp.setClipPath(clip)
             pp.setCompositionMode(QtGui.QPainter.CompositionMode.CompositionMode_Source)
             pp.drawPixmap(int(ix), int(iy), icon)
+            pp.restore()
         pp.end()
         p.drawPixmap(inset, inset, plate)
         p.end()
