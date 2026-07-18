@@ -1,5 +1,6 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 import pandas as pd
+import math
 import random
 import re
 import sys
@@ -34,27 +35,19 @@ _ROW_RARITY_COLORS = {
 # 覆于稀有度填充之上的暗色板：约 94% 不透明，使少许稀有度色透出（与图标
 # α≈240 的内部一致），并内缩数像素，使填充色沿边缘形成边框。让各等级的
 # 行文字均保持清晰。
-_ROW_PLATE_RGBA = "rgba(16, 22, 27, 240)"
+_ROW_PLATE_COLOR = QtGui.QColor(16, 22, 27, 240)
 _ROW_PLATE_INSET = 2
+_ROW_OUTER_RADIUS = 8
+_ROW_INNER_RADIUS = 6
 
 # Pearlescent iridescent fill: the in-game Pearl palette (orange, teal,
-# magenta, gold) as a slightly-off-vertical gradient with tight repeating
-# bands. Built per-width so the bands stay tight on a wide row.
-# 珠光虹彩填充：游戏内 Pearl 色板（橙、青、洋红、金），略偏垂直、色带紧密
-# 重复的渐变。按宽度生成，使宽行上的色带保持紧密。
+# magenta, gold). Painted as a repeating gradient with a fixed pixel period,
+# tilted so the bands run ~20° above horizontal regardless of row width.
+# 珠光虹彩填充：游戏内 Pearl 色板（橙、青、洋红、金）。以固定像素周期的重复
+# 渐变绘制，倾斜使色带无论行宽都约在水平线上方 20° 走向。
 _PEARL_PALETTE = ("#FF8A65", "#4DD0E1", "#F06292", "#FFEE58")
-
-
-def _pearl_gradient(cycles=6):
-    """Slightly-off-vertical repeating Pearl gradient with `cycles` band sets."""
-    steps = []
-    total = cycles * len(_PEARL_PALETTE)
-    for i in range(total + 1):
-        pos = i / total
-        color = _PEARL_PALETTE[i % len(_PEARL_PALETTE)]
-        steps.append(f"stop:{pos:.4f} {color}")
-    return "qlineargradient(x1:0, y1:0, x2:0.14, y2:1, " + ", ".join(steps) + ")"
-
+_PEARL_BAND_DEG = 20      # band tilt above horizontal
+_PEARL_BAND_PERIOD = 46   # px for one full 4-colour cycle along the gradient
 
 # Weapon-type icon per type_en. These are dark plates with the weapon shape
 # punched out as transparent holes, so over the rarity fill the weapon takes
@@ -69,6 +62,95 @@ _ROW_WEAPON_ICONS = {
     "Shotgun":       "assets/icons/shotgun.png",
     "Ordnance":      "assets/icons/ordnance.png",
 }
+
+
+def _pearl_brush(width, height):
+    """Repeating Pearl gradient whose bands run ~20° above horizontal.
+
+    Uses logical (pixel) coordinates with a fixed period and RepeatSpread so
+    the bands stay tight and consistent on a wide row. The gradient vector is
+    perpendicular to the bands (band angle − 90°).
+    重复珠光渐变，色带约在水平线上方 20° 走向。采用逻辑（像素）坐标、固定
+    周期与 RepeatSpread，使宽行上色带保持紧密一致；渐变向量垂直于色带
+    （色带角度 − 90°）。
+    """
+    ang = math.radians(_PEARL_BAND_DEG - 90.0)
+    ux, uy = math.cos(ang), math.sin(ang)
+    grad = QtGui.QLinearGradient(0.0, 0.0, ux * _PEARL_BAND_PERIOD, uy * _PEARL_BAND_PERIOD)
+    grad.setCoordinateMode(QtGui.QGradient.CoordinateMode.LogicalMode)
+    grad.setSpread(QtGui.QGradient.Spread.RepeatSpread)
+    n = len(_PEARL_PALETTE)
+    for i in range(n + 1):
+        grad.setColorAt(i / n, QtGui.QColor(_PEARL_PALETTE[i % n]))
+    return QtGui.QBrush(grad)
+
+
+class _RarityRow(QtWidgets.QWidget):
+    """Backpack row painted as one dark plate over a rarity fill.
+
+    The rarity fill (flat tier color, or the Pearl gradient) shows as the
+    border around the inset plate and through the weapon shape, which is
+    punched out of the single dark plate so the weapon reads in the tier
+    color. Text/stat labels are child widgets laid over the plate.
+    背包行绘制为覆于稀有度填充上的单块暗色板。稀有度填充（扁平层级色或珠光
+    渐变）在内缩色板四周显现为边框，并透过从单块暗色板中镂空的武器形状显现，
+    使武器呈现层级色。文字/属性标签为覆于色板之上的子部件。
+    """
+
+    def __init__(self, rarity, type_en, parent=None):
+        super().__init__(parent)
+        self._is_pearl = rarity == "Pearl"
+        self._rarity_color = _ROW_RARITY_COLORS.get(rarity)
+        self._icon = None
+        icon_rel = _ROW_WEAPON_ICONS.get(type_en or "")
+        if self._rarity_color or self._is_pearl:
+            icon_path = resource_loader.get_resource_path(icon_rel) if icon_rel else None
+            if icon_path and icon_path.exists():
+                self._icon = QtGui.QPixmap(str(icon_path))
+        self.icon_span = 0  # left content margin the layout must reserve; set on first paint
+
+    def paintEvent(self, event):
+        if not (self._rarity_color or self._is_pearl):
+            return
+        w, h = self.width(), self.height()
+        inset = _ROW_PLATE_INSET
+        p = QtGui.QPainter(self)
+        p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing)
+
+        # 1. rarity fill (border + hole-reveal layer)
+        outer = QtCore.QRectF(0, 0, w, h)
+        fill = _pearl_brush(w, h) if self._is_pearl else QtGui.QBrush(QtGui.QColor(self._rarity_color))
+        p.setPen(QtCore.Qt.PenStyle.NoPen)
+        p.setBrush(fill)
+        p.drawRoundedRect(outer, _ROW_OUTER_RADIUS, _ROW_OUTER_RADIUS)
+
+        # 2. single dark plate, inset so the fill rims it
+        inner = QtCore.QRectF(inset, inset, w - 2 * inset, h - 2 * inset)
+        p.setBrush(_ROW_PLATE_COLOR)
+        p.drawRoundedRect(inner, _ROW_INNER_RADIUS, _ROW_INNER_RADIUS)
+
+        # 3. punch the weapon shape out of the plate to reveal the rarity fill.
+        #    The icon is a dark plate with the weapon transparent; its inverse
+        #    alpha (opaque where the weapon is) erases the plate there.
+        if self._icon is not None and not self._icon.isNull():
+            side = h - 2 * inset - 4
+            icon = self._icon.scaled(
+                side, side,
+                QtCore.Qt.AspectRatioMode.KeepAspectRatio,
+                QtCore.Qt.TransformationMode.SmoothTransformation,
+            )
+            eraser = QtGui.QPixmap(icon.size())
+            eraser.fill(QtGui.QColor(0, 0, 0, 255))
+            ep = QtGui.QPainter(eraser)
+            ep.setCompositionMode(QtGui.QPainter.CompositionMode.CompositionMode_DestinationOut)
+            ep.drawPixmap(0, 0, icon)
+            ep.end()
+            x = inset + 6
+            y = inset + (h - 2 * inset - icon.height()) / 2
+            p.setCompositionMode(QtGui.QPainter.CompositionMode.CompositionMode_DestinationOut)
+            p.drawPixmap(int(x), int(y), eraser)
+            p.setCompositionMode(QtGui.QPainter.CompositionMode.CompositionMode_SourceOver)
+        p.end()
 
 
 class WeaponEditorTab(QtWidgets.QWidget):
@@ -855,70 +937,19 @@ class WeaponEditorTab(QtWidgets.QWidget):
         QtWidgets.QMessageBox.information(self, self.get_localized_string("success"), self.get_localized_string("parts_refresh_success"))
 
     def _weapon_browser_row(self, title, detail, decoded_str, rarity=None, type_en=None):
-        # Layered rarity treatment (mirrors the WeaponCard tile):
-        #   1. row background = rarity fill — flat tier color, or the iridescent
-        #      Pearl gradient. This shows as the border and through the icon holes.
-        #   2. a ~94%-opaque dark plate, inset a couple px, holds the text/stats
-        #      so the rarity fill rims it as a thin border.
-        #   3. the weapon-type icon is a dark plate with the weapon punched out,
-        #      sitting directly on the rarity fill so the weapon takes the tier
-        #      color while its plate stays flush-dark with the text plate.
-        # 分层稀有度处理（呼应 WeaponCard 贴片）：1. 行背景=稀有度填充（扁平
-        # 层级色或珠光虹彩渐变），显现为边框并透过图标镂空；2. 约 94% 不透明
-        # 的暗色板内缩数像素承载文字/属性，使填充色沿边缘成细框；3. 武器类型
-        # 图标为镂空暗色板，直接置于稀有度填充上，武器取层级色，板体与文字板
-        # 齐平深色。
-        row = QtWidgets.QWidget()
+        # One dark plate over a rarity fill: the fill rims the plate as a
+        # border and shows through the weapon shape punched out of the plate
+        # (see _RarityRow). Text/stats sit on the plate, clear of the icon.
+        # 覆于稀有度填充上的单块暗色板：填充沿板缘成边框，并透过从板中镂空的
+        # 武器形状显现（见 _RarityRow）。文字/属性置于板上，避开图标区域。
+        row = _RarityRow(rarity, type_en)
         row.setObjectName("WeaponBrowserRow")
-        if rarity == "Pearl":
-            fill = _pearl_gradient()
-        else:
-            fill = _ROW_RARITY_COLORS.get(rarity)
-        inset = _ROW_PLATE_INSET
-        row.setStyleSheet(
-            f"#WeaponBrowserRow {{ background: {fill or 'transparent'}; border-radius: 8px; }}"
-        )
+        has_icon = row._icon is not None
+        left = 68 if has_icon else 14
 
         row_layout = QtWidgets.QHBoxLayout(row)
-        row_layout.setContentsMargins(inset, inset, inset, inset)
-        row_layout.setSpacing(0)
-
-        # Icon cell: rarity-fill background, weapon-hole plate on top.
-        icon_rel = _ROW_WEAPON_ICONS.get(type_en or "")
-        icon_path = resource_loader.get_resource_path(icon_rel) if icon_rel else None
-        if fill and icon_path and icon_path.exists():
-            icon_label = QtWidgets.QLabel()
-            icon_label.setObjectName("WeaponRowIcon")
-            icon_label.setFixedWidth(54)
-            icon_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-            icon_label.setStyleSheet(
-                f"#WeaponRowIcon {{ background: {fill};"
-                f" border-top-left-radius: 6px; border-bottom-left-radius: 6px; }}"
-            )
-            icon_label.setPixmap(QtGui.QPixmap(str(icon_path)).scaled(
-                50, 50,
-                QtCore.Qt.AspectRatioMode.KeepAspectRatio,
-                QtCore.Qt.TransformationMode.SmoothTransformation,
-            ))
-            row_layout.addWidget(icon_label)
-            plate_left_radius = 0
-        else:
-            plate_left_radius = 6
-
-        # Dark plate: carries the text + stats, legible on any tier.
-        plate = QtWidgets.QWidget()
-        plate.setObjectName("WeaponRowPlate")
-        plate_bg = _ROW_PLATE_RGBA if fill else "transparent"
-        plate.setStyleSheet(
-            f"#WeaponRowPlate {{ background: {plate_bg};"
-            f" border-top-left-radius: {plate_left_radius}px;"
-            f" border-bottom-left-radius: {plate_left_radius}px;"
-            f" border-top-right-radius: 6px; border-bottom-right-radius: 6px; }}"
-            f"#WeaponRowPlate QLabel {{ background: transparent; }}"
-        )
-        plate_layout = QtWidgets.QHBoxLayout(plate)
-        plate_layout.setContentsMargins(12, 5, 12, 5)
-        plate_layout.setSpacing(12)
+        row_layout.setContentsMargins(left, _ROW_PLATE_INSET + 4, 14, _ROW_PLATE_INSET + 4)
+        row_layout.setSpacing(12)
 
         text_layout = QtWidgets.QVBoxLayout()
         text_layout.setContentsMargins(0, 0, 0, 0)
@@ -931,7 +962,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         detail_label.setObjectName("WeaponBrowserMeta")
         text_layout.addWidget(name_label)
         text_layout.addWidget(detail_label)
-        plate_layout.addLayout(text_layout, 1)
+        row_layout.addLayout(text_layout, 1)
 
         stats = item_display_resolver.resolve_weapon_stats(decoded_str) if decoded_str else {}
         stat_titles = self.ui_localization.get('stats', {})
@@ -949,9 +980,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
             value_label.setMinimumWidth(66)
             stat_layout.addWidget(title_label)
             stat_layout.addWidget(value_label)
-            plate_layout.addLayout(stat_layout)
-
-        row_layout.addWidget(plate, 1)
+            row_layout.addLayout(stat_layout)
         return row
 
     def refresh_backpack_items(self):
