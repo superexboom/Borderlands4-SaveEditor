@@ -7,17 +7,228 @@ from functools import partial
 
 from core import bl4_functions as bl4f
 from core import b_encoder
+from core import decoder_logic
 from core import item_display_resolver
 from core import resource_loader
 from tabs.qt_catalog_picker import CatalogPicker, ContainedWheelListWidget, ContainedWheelScrollArea
 
+
+class PartDragHandle(QtWidgets.QLabel):
+    def __init__(self, list_widget, tooltip, parent=None):
+        super().__init__("⋮⋮", parent)
+        self._list_widget = list_widget
+        self._press_pos = None
+        self._source_item = None
+        self.setObjectName("PartDragHandle")
+        self.setToolTip(tooltip)
+        self.setCursor(QtCore.Qt.CursorShape.OpenHandCursor)
+
+    def mousePressEvent(self, event):
+        if event.button() == QtCore.Qt.MouseButton.LeftButton:
+            self._press_pos = event.position().toPoint()
+            viewport_pos = self._list_widget.viewport().mapFromGlobal(event.globalPosition().toPoint())
+            self._source_item = self._list_widget.itemAt(viewport_pos)
+            self.setCursor(QtCore.Qt.CursorShape.ClosedHandCursor)
+            event.accept()
+            return
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self._press_pos is not None and event.buttons() & QtCore.Qt.MouseButton.LeftButton:
+            if (event.position().toPoint() - self._press_pos).manhattanLength() >= QtWidgets.QApplication.startDragDistance():
+                if item := self._source_item:
+                    self._list_widget.setCurrentItem(item)
+                    self._press_pos = None
+                    self._source_item = None
+                    self._list_widget.startDrag(QtCore.Qt.DropAction.MoveAction)
+                    self.setCursor(QtCore.Qt.CursorShape.OpenHandCursor)
+                event.accept()
+                return
+        super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        self._press_pos = None
+        self._source_item = None
+        self.setCursor(QtCore.Qt.CursorShape.OpenHandCursor)
+        super().mouseReleaseEvent(event)
+
+
+class PartOrderListWidget(ContainedWheelListWidget):
+    orderDropped = QtCore.pyqtSignal()
+    INSERT_INDICATOR_HEIGHT = 20
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._drop_indicator_y = None
+        self._drag_global_pos = None
+        self._outer_scroll_timer = QtCore.QTimer(self)
+        self._outer_scroll_timer.setInterval(30)
+        self._outer_scroll_timer.timeout.connect(self._scroll_outer)
+        self._height_sync_timer = QtCore.QTimer(self)
+        self._height_sync_timer.setSingleShot(True)
+        self._height_sync_timer.timeout.connect(self.sync_content_height)
+        self.setObjectName("partsOrderList")
+        self.setDragDropMode(QtWidgets.QAbstractItemView.DragDropMode.InternalMove)
+        self.setDefaultDropAction(QtCore.Qt.DropAction.MoveAction)
+        self.setDragDropOverwriteMode(False)
+        self.setDropIndicatorShown(False)
+        self.setAutoScroll(False)
+        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed)
+
+    def sync_content_height(self):
+        compact = self.viewport().width() < 340
+        button_width, button_spacing = (30, 1) if compact else (34, 3)
+        action_size_changed = False
+        for actions in self.findChildren(QtWidgets.QFrame, "PartActionFrame"):
+            buttons = actions.findChildren(QtWidgets.QPushButton)
+            for button in buttons:
+                if button.width() != button_width:
+                    button.setFixedWidth(button_width)
+                    action_size_changed = True
+            actions.layout().setSpacing(button_spacing)
+            width = len(buttons) * button_width + max(0, len(buttons) - 1) * button_spacing
+            if actions.width() != width:
+                actions.setFixedWidth(width)
+                action_size_changed = True
+        self.doItemsLayout()
+        for row in range(self.count()):
+            item = self.item(row)
+            widget = self.itemWidget(item)
+            if widget is None:
+                continue
+            if layout := widget.layout():
+                layout.invalidate()
+            width = max(1, self.visualItemRect(item).width())
+            height = widget.heightForWidth(width) if widget.hasHeightForWidth() else widget.sizeHint().height()
+            item.setSizeHint(QtCore.QSize(0, max(68, height + 4)))
+        self.doItemsLayout()
+        rows_height = sum(max(0, self.sizeHintForRow(row)) for row in range(self.count()))
+        rows_height += max(0, self.count() - 1) * self.spacing()
+        self.setFixedHeight(max(72, rows_height + self.frameWidth() * 2 + 2))
+        self.updateGeometry()
+        if action_size_changed:
+            self._height_sync_timer.start(0)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if event.oldSize().width() != event.size().width():
+            self._height_sync_timer.start(0)
+
+    def _outer_scroll_area(self):
+        parent = self.parentWidget()
+        while parent is not None:
+            if isinstance(parent, QtWidgets.QScrollArea):
+                return parent
+            parent = parent.parentWidget()
+        return None
+
+    def wheelEvent(self, event):
+        outer = self._outer_scroll_area()
+        delta = event.pixelDelta().y()
+        if not delta:
+            delta = int(event.angleDelta().y() / 120 * max(20, outer.verticalScrollBar().singleStep() * 3)) if outer else 0
+        if outer is None or not delta:
+            event.ignore()
+            return
+        bar = outer.verticalScrollBar()
+        bar.setValue(bar.value() - delta)
+        event.accept()
+
+    @staticmethod
+    def _refresh_property(widget, name, value):
+        if widget is None or widget.property(name) == value:
+            return
+        widget.setProperty(name, value)
+        highlighted = bool(widget.property("selected"))
+        for badge in widget.findChildren(QtWidgets.QLabel, "PartTypeBadge"):
+            color = badge.property("partColor")
+            if color:
+                badge.setStyleSheet(f"border-color: {color};" + ("" if highlighted else f" color: {color};"))
+        for child in (widget, *widget.findChildren(QtWidgets.QWidget)):
+            child.style().unpolish(child)
+            child.style().polish(child)
+        widget.update()
+
+    def _set_drop_indicator(self, pos):
+        item = self.itemAt(pos)
+        if item is None:
+            y = self.visualItemRect(self.item(self.count() - 1)).bottom() + 1 if self.count() else 0
+        else:
+            rect = self.visualItemRect(item)
+            y = rect.top() if pos.y() < rect.center().y() else rect.bottom() + 1
+        if y != self._drop_indicator_y:
+            self._drop_indicator_y = y
+            self.viewport().update()
+
+    def _clear_drag_feedback(self):
+        self._outer_scroll_timer.stop()
+        self._drag_global_pos = None
+        self._drop_indicator_y = None
+        self.viewport().update()
+
+    def _scroll_outer(self):
+        outer = self._outer_scroll_area()
+        if outer is None or self._drag_global_pos is None:
+            return
+        viewport = outer.viewport()
+        pos = viewport.mapFromGlobal(self._drag_global_pos)
+        margin = min(64, max(32, viewport.height() // 8))
+        bar = outer.verticalScrollBar()
+        old_value = bar.value()
+        if pos.y() < margin:
+            bar.setValue(old_value - max(20, bar.singleStep() * 2))
+        elif pos.y() > viewport.height() - margin:
+            bar.setValue(old_value + max(20, bar.singleStep() * 2))
+        if bar.value() != old_value:
+            self._set_drop_indicator(self.viewport().mapFromGlobal(self._drag_global_pos))
+
+    def dragEnterEvent(self, event):
+        super().dragEnterEvent(event)
+        if event.isAccepted():
+            self._drag_global_pos = self.viewport().mapToGlobal(event.position().toPoint())
+            self._set_drop_indicator(event.position().toPoint())
+            self._outer_scroll_timer.start()
+
+    def dragMoveEvent(self, event):
+        super().dragMoveEvent(event)
+        if event.isAccepted():
+            self._drag_global_pos = self.viewport().mapToGlobal(event.position().toPoint())
+            self._set_drop_indicator(event.position().toPoint())
+
+    def dragLeaveEvent(self, event):
+        self._clear_drag_feedback()
+        super().dragLeaveEvent(event)
+
+    def dropEvent(self, event):
+        super().dropEvent(event)
+        self._clear_drag_feedback()
+        if event.isAccepted():
+            self.orderDropped.emit()
+
+    def paintEvent(self, event):
+        super().paintEvent(event)
+        if self._drop_indicator_y is None:
+            return
+        height = self.INSERT_INDICATOR_HEIGHT
+        top = max(2, min(self.viewport().height() - height - 2, self._drop_indicator_y - height // 2))
+        rect = QtCore.QRect(6, top, max(0, self.viewport().width() - 12), height)
+        fill = QtGui.QColor("#4a90e2"); fill.setAlpha(220)
+        border = QtGui.QColor("#a8d5ff")
+        painter = QtGui.QPainter(self.viewport())
+        painter.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing)
+        painter.setBrush(fill)
+        painter.setPen(QtGui.QPen(border, 2))
+        painter.drawRoundedRect(rect, 4, 4)
+
 class WeaponEditorTab(QtWidgets.QWidget):
     add_to_backpack_requested = QtCore.pyqtSignal(str, str)
     update_item_requested = QtCore.pyqtSignal(dict)
+    WEAPON_BROWSER_ROW_HEIGHT = 112
     
-    # Part type color mapping based on QSS stylesheet
+    # Colors are keyed by stable raw part types, never translated display text.
     PART_TYPE_COLORS = {
-        # English
         "Barrel": "#B0BEC5",
         "Barrel Accessory": "#90A4AE",
         "Body": "#BCAAA4",
@@ -38,40 +249,29 @@ class WeaponEditorTab(QtWidgets.QWidget):
         "Underbarrel Element Switch": "#EF9A9A",
         "Pearl Elements": "#80CBC4",
         "Pearl Stat": "#CE93D8",
-        "Element": "#EF9A9A",
         "Skin": "#FFEA00",
         "Rarity": "#B39DDB",
         "Legendary": "#FF8A65",
-        # Chinese
-        "枪管": "#B0BEC5",
-        "枪管附件": "#90A4AE",
-        "枪身": "#BCAAA4",
-        "枪身附属": "#A1887F",
-        "前握把": "#9CCC65",
-        "后握把/枪托": "#AED581",
-        "弹匣": "#FFB300",
-        "弹匣附件": "#FFCA28",
-        "厂商授权部件": "#9FA8DA",
-        "瞄准镜": "#4DD0E1",
-        "瞄准镜附件": "#26C6DA",
-        "属性修改组件": "#F06292",
-        "下挂": "#BCAAA4",
-        "下挂附件": "#A1887F",
-        "元素": "#EF9A9A",
-        "常规元素": "#EF9A9A",
-        "元素切换": "#EF9A9A",
-        "元素下挂切换": "#EF9A9A",
-        "珠光元素": "#80CBC4",
-        "珠光属性": "#CE93D8",
-        "皮肤": "#FFEA00",
-        "稀有度": "#B39DDB",
-        "传奇": "#FF8A65",
-        # Russian
-        "Стихия": "#EF9A9A",
-        "Скин": "#FFEA00",
-        # Ukrainian  
-        "Стихія": "#EF9A9A",
-        "Скін": "#FFEA00",
+    }
+
+    TAXONOMY_KEYS = {
+        "Body": "body", "Body Accessory": "body_accessory",
+        "Barrel": "barrel", "Barrel Accessory": "barrel_accessory",
+        "Manufacturer Part": "manufacturer_part", "Tediore Payload": "tediore_payload",
+        "Tediore Throw Reload": "tediore_throw_reload", "Magazine": "magazine",
+        "Magazine Accessory": "magazine_accessory", "Scope": "scope",
+        "Scope Accessory": "scope_accessory", "Grip": "grip",
+        "Underbarrel": "underbarrel", "Underbarrel Accessory": "underbarrel_accessory",
+        "Foregrip": "foregrip", "Borg Magazine Adapter": "borg_magazine_adapter",
+        "Special Element Set": "special_element_set", "Stat Modifier": "stat_modifier",
+        "Elemental": "elemental", "Element": "element", "Element Switch": "element_switch",
+        "Underbarrel Element Switch": "underbarrel_element_switch",
+        "Pearl Elements": "pearl_elements", "Pearl Stat": "pearl_stat",
+        "Skin": "skin", "Rarity": "rarity", "Common": "common",
+        "Uncommon": "uncommon", "Rare": "rare", "Epic": "epic",
+        "Legendary": "legendary", "Pearl": "pearl",
+        "Assault Rifle": "assault_rifle", "Pistol": "pistol", "Shotgun": "shotgun",
+        "SMG": "smg", "Sniper": "sniper",
     }
 
     def __init__(self, main_app):
@@ -99,6 +299,9 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.create_widgets()
 
     def load_data(self, lang='zh-CN'):
+        loc_file = resource_loader.get_ui_localization_file(lang)
+        full_loc = resource_loader.load_json_resource(loc_file) or {}
+        self.ui_localization = full_loc.get("weapon_editor_tab", {})
         try:
             suffix = "_EN" if lang in ['en-US', 'ru', 'ua'] else ""
 
@@ -125,19 +328,22 @@ class WeaponEditorTab(QtWidgets.QWidget):
             if lang == 'zh-CN':
                 self.weapon_localization = resource_loader.load_weapon_json('weapon_localization_zh-CN.json') or {}
             
-            # Load UI localization
-            loc_file = resource_loader.get_ui_localization_file(lang)
-            full_loc = resource_loader.load_json_resource(loc_file) or {}
-            self.ui_localization = full_loc.get("weapon_editor_tab", {})
-            
             # Re-enable if data loaded successfully (in case it was disabled previously)
             self.setEnabled(True)
             
         except FileNotFoundError as e:
-            QtWidgets.QMessageBox.critical(self, "Error", f"Missing required file: {e}")
+            QtWidgets.QMessageBox.critical(
+                self,
+                self._loc('dialogs', 'error', "Error"),
+                self._loc('dialogs', 'missing_required_file', "Missing required file: {error}", error=e),
+            )
             self.setEnabled(False)
         except Exception as e:
-            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred while loading data: {e}")
+            QtWidgets.QMessageBox.critical(
+                self,
+                self._loc('dialogs', 'error', "Error"),
+                self._loc('dialogs', 'data_load_error', "An error occurred while loading data: {error}", error=e),
+            )
             self.setEnabled(False)
 
     def update_language(self, lang):
@@ -185,9 +391,12 @@ class WeaponEditorTab(QtWidgets.QWidget):
         
         self.main_layout.addWidget(self.content_widget)
 
+        splitter = QtWidgets.QSplitter(QtCore.Qt.Orientation.Horizontal)
+        splitter.setChildrenCollapsible(False)
+        content_layout.addWidget(splitter)
+
         scroll_area = QtWidgets.QScrollArea()
         scroll_area.setWidgetResizable(True)
-        content_layout.addWidget(scroll_area)
 
         main_frame = QtWidgets.QFrame()
         scroll_area.setWidget(main_frame)
@@ -196,26 +405,34 @@ class WeaponEditorTab(QtWidgets.QWidget):
         layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)  # Align all items to top
 
         bp_frame = QtWidgets.QFrame(); bp_frame.setObjectName("InnerFrame")
+        bp_frame.setMinimumWidth(280)
         bp_layout = QtWidgets.QVBoxLayout(bp_frame)
         bp_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("load_from_backpack")))
         self.weapon_search = QtWidgets.QLineEdit()
         self.weapon_search.setClearButtonEnabled(True)
-        self.weapon_search.setPlaceholderText("搜索名称、厂商、类型、等级或槽位" if self.current_lang == "zh-CN" else "Search name, manufacturer, type, level, or slot")
+        self.weapon_search.setPlaceholderText(self._loc('labels', 'search_weapon_placeholder', "Search name, manufacturer, type, level, or slot"))
         self.weapon_search.textChanged.connect(self._filter_backpack_items)
         bp_layout.addWidget(self.weapon_search)
         self.backpack_items_list = ContainedWheelListWidget()
         self.backpack_items_list.setObjectName("weaponBrowser")
         self.backpack_items_list.setMinimumHeight(220)
-        self.backpack_items_list.setMaximumHeight(300)
+        self.backpack_items_list.setUniformItemSizes(True)
+        self.backpack_items_list.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollMode.ScrollPerPixel)
+        self.backpack_items_list.verticalScrollBar().setSingleStep(20)
         self.backpack_items_list.itemActivated.connect(lambda item: self.load_weapon_data(item.data(QtCore.Qt.ItemDataRole.UserRole)))
         self.backpack_items_list.itemClicked.connect(lambda item: self.load_weapon_data(item.data(QtCore.Qt.ItemDataRole.UserRole)))
-        bp_layout.addWidget(self.backpack_items_list)
+        self.backpack_items_list.currentItemChanged.connect(self._sync_weapon_browser_selection)
+        bp_layout.addWidget(self.backpack_items_list, 1)
         self.selected_weapon_summary = QtWidgets.QLabel()
         self.selected_weapon_summary.setObjectName("selectedWeaponSummary")
         self.selected_weapon_summary.setWordWrap(True)
         self._update_selected_weapon_summary()
         bp_layout.addWidget(self.selected_weapon_summary)
-        layout.addWidget(bp_frame, 0, 0, QtCore.Qt.AlignmentFlag.AlignTop)
+        splitter.addWidget(bp_frame)
+        splitter.addWidget(scroll_area)
+        splitter.setStretchFactor(0, 0)
+        splitter.setStretchFactor(1, 1)
+        splitter.setSizes([320, 1040])
         
         s_frame = QtWidgets.QFrame(); s_frame.setObjectName("InnerFrame")
         s_layout = QtWidgets.QGridLayout(s_frame)
@@ -226,7 +443,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         s_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("serial_decoded")), 1, 0)
         self.serial_decoded_entry = QtWidgets.QLineEdit()
         s_layout.addWidget(self.serial_decoded_entry, 1, 1)
-        layout.addWidget(s_frame, 1, 0)
+        layout.addWidget(s_frame, 0, 0)
 
         act_frame = QtWidgets.QFrame()
         act_layout = QtWidgets.QGridLayout(act_frame)
@@ -235,17 +452,13 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.flag_combo = QtWidgets.QComboBox()
         
         # Load flags from UI localization
-        flags = self.ui_localization.get('flags', {})
-        if flags:
-            flag_options = [flags.get(k, f"{k} (Unknown)") for k in ["1", "3", "5", "17", "33", "65", "129"]]
-            self.flag_combo.addItems(flag_options)
-        else:
-            self.flag_combo.addItems(["1 (普通)", "3 (收藏)", "5 (垃圾)", "17 (编组1)", "33 (编组2)", "65 (编组3)", "129 (编组4)"])
+        flags = resource_loader.get_flag_labels(self.current_lang)
+        self.flag_combo.addItems([flags[k] for k in ("1", "3", "5", "17", "33", "65", "129")])
             
         act_layout.addWidget(self.update_weapon_btn, 0, 0)
         act_layout.addWidget(self.add_to_backpack_btn, 0, 1)
         act_layout.addWidget(self.flag_combo, 0, 2)
-        layout.addWidget(act_frame, 2, 0)
+        layout.addWidget(act_frame, 1, 0)
         
         editor_frame = QtWidgets.QFrame(); editor_frame.setObjectName("InnerFrame")
         editor_layout = QtWidgets.QGridLayout(editor_frame)
@@ -298,7 +511,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
             stats_layout.setColumnStretch(column, 1)
             self.weapon_stat_value_labels[key] = value
         editor_layout.addLayout(stats_layout, 3, 0, 1, 5)
-        layout.addWidget(editor_frame, 3, 0)
+        layout.addWidget(editor_frame, 2, 0)
         
         parts_frame = QtWidgets.QFrame(); parts_frame.setObjectName("InnerFrame")
         parts_layout = QtWidgets.QVBoxLayout(parts_frame)
@@ -311,7 +524,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.refresh_parts_btn.setObjectName("PartActionButton")
         self.refresh_parts_btn.setIcon(self.style().standardIcon(QtWidgets.QStyle.StandardPixmap.SP_BrowserReload))
         self.refresh_parts_btn.setFixedSize(34, 34)
-        self.refresh_parts_btn.setToolTip("刷新部件" if self.current_lang == "zh-CN" else "Refresh parts")
+        self.refresh_parts_btn.setToolTip(self._loc('tooltips', 'refresh_parts', "Refresh parts"))
         parts_header_layout.addWidget(self.refresh_parts_btn, 0, 1, QtCore.Qt.AlignmentFlag.AlignRight)
         self.add_part_btn = QtWidgets.QPushButton(self.get_localized_string("add_part")); self.add_part_btn.setMinimumWidth(100)
         parts_header_layout.addWidget(self.add_part_btn, 0, 2, QtCore.Qt.AlignmentFlag.AlignRight)
@@ -319,14 +532,12 @@ class WeaponEditorTab(QtWidgets.QWidget):
         parts_header_layout.addWidget(self.add_skin_btn, 0, 3, QtCore.Qt.AlignmentFlag.AlignRight)
         parts_layout.addWidget(parts_header_frame)
         
-        # Parts list container - no independent scroll, uses page scroll
-        parts_list_content = QtWidgets.QWidget()
-        self.parts_list_layout = QtWidgets.QVBoxLayout(parts_list_content)
-        self.parts_list_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
-        self.parts_list_layout.setContentsMargins(0, 0, 0, 0)
-        self.parts_list_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("parse_serial_to_show_parts")))
-        parts_layout.addWidget(parts_list_content)
-        layout.addWidget(parts_frame, 4, 0, QtCore.Qt.AlignmentFlag.AlignTop)
+        self.parts_list_widget = PartOrderListWidget()
+        self.parts_list_widget.currentItemChanged.connect(self._sync_part_row_selection)
+        self.parts_list_widget.orderDropped.connect(self._apply_part_list_order)
+        parts_layout.addWidget(self.parts_list_widget)
+        self._set_parts_placeholder(self.get_localized_string("parse_serial_to_show_parts"))
+        layout.addWidget(parts_frame, 3, 0, QtCore.Qt.AlignmentFlag.AlignTop)
         main_frame.setLayout(layout) # Set the grid layout to the main frame
         
         self.serial_b85_entry.textChanged.connect(self.handle_b85_change)
@@ -342,72 +553,27 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.add_part_btn.clicked.connect(self.open_add_part_window)
         self.add_skin_btn.clicked.connect(lambda: self.open_select_skin_window(None))
 
+    def _loc(self, section, key, en, **fmt):
+        """Read weapon_editor_tab.<section>.<key> for the active language,
+        falling back to the English literal (never Chinese or a raw key), then
+        apply any format params. Used for strings that were previously inline
+        zh-CN/else conditionals, so all four languages resolve from the JSON.
+        按当前语言读取 weapon_editor_tab.<section>.<key>，缺失时回退到英文字面量
+        （绝不显示中文或原始键），再套用格式参数。用于此前内联的 zh-CN/else
+        条件字符串，使四种语言均从 JSON 解析。"""
+        text = self.ui_localization.get(section, {}).get(key) or en
+        return text.format(**fmt) if fmt else text
+
     def get_localized_string(self, key, default=''):
-        # Check UI localization first (flattened check or mapped)
-        # We map keys to sections in ui_localization
-        if not self.ui_localization:
-             return self.weapon_localization.get(key, default or key)
-             
-        # Map common keys to UI structure
-        ui_map = {
-            # Labels
-            "load_from_backpack": self.ui_localization.get('labels', {}).get('load_from_backpack'),
-            "decrypt_save_to_show_weapons": self.ui_localization.get('labels', {}).get('decrypt_save_to_show_weapons'),
-            "serial_b85": self.ui_localization.get('labels', {}).get('serial_b85'),
-            "serial_decoded": self.ui_localization.get('labels', {}).get('serial_decoded'),
-            "manufacturer": self.ui_localization.get('labels', {}).get('manufacturer'),
-            "weapon_type": self.ui_localization.get('labels', {}).get('weapon_type'),
-            "rarity": self.ui_localization.get('labels', {}).get('rarity'),
-            "level": self.ui_localization.get('labels', {}).get('level'),
-            "seed": self.ui_localization.get('labels', {}).get('seed'),
-            "weapon_name_label": self.ui_localization.get('labels', {}).get('weapon_name_label'),
-            "weapon_parts": self.ui_localization.get('labels', {}).get('weapon_parts'),
-            "parts_list": self.ui_localization.get('labels', {}).get('parts_list'),
-            "parse_serial_to_show_parts": self.ui_localization.get('labels', {}).get('parse_serial_to_show_parts'),
-            "level_label": self.ui_localization.get('labels', {}).get('level_label'),
-            "slot_label": self.ui_localization.get('labels', {}).get('slot_label'),
-            
-            # Buttons
-            "update_weapon": self.ui_localization.get('buttons', {}).get('update_weapon'),
-            "add_to_backpack": self.ui_localization.get('buttons', {}).get('add_to_backpack'),
-            "add_part": self.ui_localization.get('buttons', {}).get('add_part'),
-            "add_skin": self.ui_localization.get('buttons', {}).get('add_skin'),
-            "confirm_add": self.ui_localization.get('buttons', {}).get('confirm_add'),
-            
-            # Dialogs/Messages
-            "error": self.ui_localization.get('dialogs', {}).get('error'),
-            "no_weapons_in_backpack": self.ui_localization.get('dialogs', {}).get('no_weapons_in_backpack'),
-            "no_valid_decoded_data": self.ui_localization.get('dialogs', {}).get('no_valid_decoded_data'),
-            "parse_error": self.ui_localization.get('dialogs', {}).get('parse_error'),
-            "parse_weapon_error": self.ui_localization.get('dialogs', {}).get('parse_weapon_error'),
-            "parts_not_found": self.ui_localization.get('dialogs', {}).get('parts_not_found'),
-            "no_selection": self.ui_localization.get('dialogs', {}).get('no_selection'),
-            "select_weapon_first": self.ui_localization.get('dialogs', {}).get('select_weapon_first'),
-            "encoding_fail": self.ui_localization.get('dialogs', {}).get('encoding_fail'),
-            "cannot_reencode_serial": self.ui_localization.get('dialogs', {}).get('cannot_reencode_serial'),
-            "cannot_encode_serial": self.ui_localization.get('dialogs', {}).get('cannot_encode_serial'),
-            "success": self.ui_localization.get('dialogs', {}).get('success'),
-            "no_input": self.ui_localization.get('dialogs', {}).get('no_input'),
-            "serial_empty": self.ui_localization.get('dialogs', {}).get('serial_empty'),
-            "no_weapon": self.ui_localization.get('dialogs', {}).get('no_weapon'),
-            "load_weapon_first": self.ui_localization.get('dialogs', {}).get('load_weapon_first'),
-            "add_part_title": self.ui_localization.get('dialogs', {}).get('add_part_title'),
-            "select_parts_to_add": self.ui_localization.get('dialogs', {}).get('select_parts_to_add'),
-            "cannot_determine_mfg": self.ui_localization.get('dialogs', {}).get('cannot_determine_mfg'),
-            "Select Skin": self.ui_localization.get('dialogs', {}).get('select_skin_title'),
-            "Select a skin to apply": self.ui_localization.get('dialogs', {}).get('select_skin_msg'),
-            "update_success": self.ui_localization.get('dialogs', {}).get('update_success'),
-            
-            # Misc
-            "Skin": self.ui_localization.get('misc', {}).get('skin'),
-            "Elemental": self.ui_localization.get('misc', {}).get('elemental'),
-            "elements": self.ui_localization.get('misc', {}).get('elements'),
-            "element_switch": self.ui_localization.get('misc', {}).get('element_switch'),
-        }
-        
-        if key in ui_map and ui_map[key]:
-            return ui_map[key]
-            
+        taxonomy_key = self.TAXONOMY_KEYS.get(str(key))
+        if taxonomy_key:
+            value = self.ui_localization.get('taxonomy', {}).get(taxonomy_key)
+            if value:
+                return value
+        for section in ('labels', 'buttons', 'dialogs', 'misc'):
+            value = self.ui_localization.get(section, {}).get(key)
+            if value:
+                return value
         return self.weapon_localization.get(key, default or key)
 
     def handle_b85_change(self, text):
@@ -420,7 +586,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
             self.is_handling_change = False
             return
 
-        decoded_str, _, err = bl4f.decode_serial_to_string(text)
+        decoded_str, _, err = decoder_logic.decode_serial_to_string(text)
         if not err:
             self.serial_decoded_entry.blockSignals(True)
             self.serial_decoded_entry.setText(decoded_str)
@@ -526,17 +692,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.weapon_name_label.setText(self.weapon_name_label_str)
         self._update_weapon_stats("")
 
-        while self.parts_list_layout.count():
-            item = self.parts_list_layout.takeAt(0)
-            if (widget := item.widget()):
-                widget.deleteLater()
-            elif (layout := item.layout()):
-                while layout.count():
-                    sub_item = layout.takeAt(0)
-                    if (sub_widget := sub_item.widget()):
-                        sub_widget.deleteLater()
-
-        self.parts_list_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("parse_serial_to_show_parts")))
+        self._set_parts_placeholder(self.get_localized_string("parse_serial_to_show_parts"))
         self.serial_b85_entry.setReadOnly(False); self.update_weapon_btn.setEnabled(False)
         self.selected_weapon_path, self.parts_data, self.rarity_part = None, [], None
         self._select_current_backpack_item()
@@ -626,41 +782,98 @@ class WeaponEditorTab(QtWidgets.QWidget):
             label.setText(item_display_resolver.format_weapon_stat(key, stats.get(key), self.current_lang) or "—")
 
     def display_parts(self, manufacturer_id):
-        while self.parts_list_layout.count():
-            item = self.parts_list_layout.takeAt(0)
-            if (widget := item.widget()):
-                widget.deleteLater()
-            elif (layout := item.layout()):
-                while layout.count():
-                    sub_item = layout.takeAt(0)
-                    if (sub_widget := sub_item.widget()):
-                        sub_widget.deleteLater()
-
+        self.parts_list_widget.clear()
         if not self.parts_data:
-            self.parts_list_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("parts_not_found"))); return
+            self._set_parts_placeholder(self.get_localized_string("parts_not_found")); return
         for i, part_info in enumerate(self.parts_data):
             if isinstance(part_info, str): continue
             frame = self._create_collapsible_part_frame(part_info, i) if part_info.get('type') == 'group' else self._create_simple_part_frame(part_info, manufacturer_id, i)
-            if frame: self.parts_list_layout.addWidget(frame)
+            if frame:
+                frame.setCursor(QtCore.Qt.CursorShape.OpenHandCursor)
+                frame.setToolTip(self._loc('tooltips', 'drag_part', "Drag to reorder"))
+                item = QtWidgets.QListWidgetItem()
+                item.setFlags(item.flags() & ~QtCore.Qt.ItemFlag.ItemIsDropEnabled)
+                item.setData(QtCore.Qt.ItemDataRole.UserRole, i)
+                item.setData(QtCore.Qt.ItemDataRole.UserRole + 1, id(part_info))
+                name_label = frame.findChild(QtWidgets.QLabel, "PartName")
+                item.setData(QtCore.Qt.ItemDataRole.AccessibleTextRole, name_label.text() if name_label else str(part_info.get('id', '')))
+                item.setSizeHint(QtCore.QSize(0, max(68, frame.sizeHint().height() + 4)))
+                self.parts_list_widget.addItem(item)
+                self.parts_list_widget.setItemWidget(item, frame)
+        self.parts_list_widget.sync_content_height()
+
+    def _set_parts_placeholder(self, text):
+        self.parts_list_widget.clear()
+        item = QtWidgets.QListWidgetItem(text)
+        item.setFlags(item.flags() & ~(QtCore.Qt.ItemFlag.ItemIsDragEnabled | QtCore.Qt.ItemFlag.ItemIsDropEnabled))
+        self.parts_list_widget.addItem(item)
+        self.parts_list_widget.sync_content_height()
+
+    @staticmethod
+    def _set_row_selected(list_widget, item, selected):
+        row = list_widget.itemWidget(item) if item else None
+        PartOrderListWidget._refresh_property(row, "selected", selected)
+
+    def _sync_part_row_selection(self, current, previous):
+        self._set_row_selected(self.parts_list_widget, previous, False)
+        self._set_row_selected(self.parts_list_widget, current, True)
+
+    def _apply_part_list_order(self):
+        slots = [index for index, part in enumerate(self.parts_data) if isinstance(part, dict)]
+        order = [self.parts_list_widget.item(row).data(QtCore.Qt.ItemDataRole.UserRole) for row in range(self.parts_list_widget.count())]
+        if len(order) != len(slots) or any(not isinstance(index, int) for index in order):
+            self.display_parts(self._current_manufacturer_id())
+            return
+        moved_id = self.parts_list_widget.currentItem().data(QtCore.Qt.ItemDataRole.UserRole + 1) if self.parts_list_widget.currentItem() else None
+        ordered_parts = [self.parts_data[index] for index in order]
+        for slot, part in zip(slots, ordered_parts):
+            self.parts_data[slot] = part
+        self.regenerate_ui_and_serial()
+        self._select_part_row(moved_id)
+
+    def _current_manufacturer_id(self):
+        try:
+            return int(self.serial_decoded_entry.text().split('||', 1)[0].strip().split('|')[0].split(',')[0])
+        except (ValueError, IndexError):
+            return 0
+
+    def _select_part_row(self, object_id):
+        if object_id is None:
+            return
+        for row in range(self.parts_list_widget.count()):
+            item = self.parts_list_widget.item(row)
+            if item.data(QtCore.Qt.ItemDataRole.UserRole + 1) == object_id:
+                self.parts_list_widget.setCurrentItem(item)
+                if outer := self.parts_list_widget._outer_scroll_area():
+                    outer.ensureWidgetVisible(self.parts_list_widget.itemWidget(item), 0, 80)
+                return
 
     def _create_simple_part_frame(self, part_info, m_id, index):
         frame = QtWidgets.QFrame(); frame.setObjectName('PartFrame')
-        layout = QtWidgets.QVBoxLayout(frame); layout.setSpacing(5)
-        part_id = part_info.get('id'); info = {'type': "未知", 'str': "", 'stat': "无属性变化"}
+        layout = QtWidgets.QVBoxLayout(frame); layout.setSpacing(3); layout.setContentsMargins(1, 4, 1, 4)
+        part_id = part_info.get('id')
+        info = {
+            'type': self._loc('parts', 'unknown', "Unknown"),
+            'raw_type': "Unknown",
+            'str': "",
+            'stat': self._loc('parts', 'no_stat_changes', "No stat changes"),
+        }
         is_skin, is_elemental = (part_info.get('type') == 'skin'), (part_info.get('type') == 'elemental')
         if is_skin:
-            if not (d := self.skin_df[self.skin_df['Skin_ID'].str.lower() == str(part_id).lower()]).empty: info.update({'type': self.get_localized_string("Skin"), 'str': d.iloc[0][self.skin_stat_col], 'stat': "外观配件" if self.current_lang == "zh-CN" else "Cosmetic part"})
+            if not (d := self.skin_df[self.skin_df['Skin_ID'].str.lower() == str(part_id).lower()]).empty: info.update({'type': self.get_localized_string("Skin"), 'raw_type': "Skin", 'str': d.iloc[0][self.skin_stat_col], 'stat': self._loc('parts', 'cosmetic_part', "Cosmetic part")})
         elif is_elemental:
             if not (d := self.elemental_df[self.elemental_df['Part_ID'] == part_info['sub_id']]).empty:
                 row = d.iloc[0]
+                raw_type = self._elemental_part_type(row)
                 description = item_display_resolver.format_weapon_part_description(
                     1, str(part_info['sub_id']), self.serial_decoded_entry.text(), self.current_lang, "Elemental"
                 )
                 no_change = description in {"无属性变化", "No stat changes"}
                 info.update({
-                    'type': self.get_localized_string(self._elemental_part_type(row)),
+                    'type': self.get_localized_string(raw_type),
+                    'raw_type': raw_type,
                     'str': row[self.elemental_stat_col],
-                    'stat': ("元素配置" if self.current_lang == "zh-CN" else "Element configuration") if no_change else description,
+                    'stat': self._loc('parts', 'element_config', "Element configuration") if no_change else description,
                 })
         else:
             d = self.all_weapon_parts_df[(self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == m_id) & (self.all_weapon_parts_df['Part ID'] == part_id)]
@@ -672,14 +885,17 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 )
                 info.update({
                     'type': self.get_localized_string(row['Part Type']),
-                    'str': name or (("未命名枪管" if self.current_lang == "zh-CN" else "Unnamed Barrel") if str(row['Part Type']) == "Barrel" else ""),
+                    'raw_type': str(row['Part Type']),
+                    'str': name or (self._loc('parts', 'unnamed_barrel', "Unnamed Barrel") if str(row['Part Type']) == "Barrel" else ""),
                     'stat': description,
                 })
         display_text = f"  {part_id}  " if not is_elemental else f"  {part_info['id']}:{part_info['sub_id']}  "
         header = QtWidgets.QHBoxLayout()
         id_label = QtWidgets.QLabel(display_text); id_label.setObjectName("PartIdBadge")
-        type_color = self.PART_TYPE_COLORS.get(info['type'], "#e0e0e0")
-        type_label = QtWidgets.QLabel(info['type']); type_label.setObjectName("PartTypeBadge"); type_label.setStyleSheet(f"color: {type_color}; border-color: {type_color};")
+        type_color = self.PART_TYPE_COLORS.get(info['raw_type'], "#e0e0e0")
+        type_label = QtWidgets.QLabel(info['type']); type_label.setObjectName("PartTypeBadge"); type_label.setProperty("partColor", type_color); type_label.setStyleSheet(f"color: {type_color}; border-color: {type_color};"); type_label.setWordWrap(True)
+        drag_label = PartDragHandle(self.parts_list_widget, self._loc('tooltips', 'drag_part', "Drag to reorder"))
+        header.addWidget(drag_label)
         header.addWidget(type_label)
         if info['str']:
             name_label = QtWidgets.QLabel(str(info['str'])); name_label.setObjectName("PartName"); name_label.setWordWrap(True)
@@ -695,9 +911,10 @@ class WeaponEditorTab(QtWidgets.QWidget):
     def _create_collapsible_part_frame(self, part_info, index):
         container = QtWidgets.QFrame(); container.setObjectName('PartGroupFrame')
         container_layout = QtWidgets.QVBoxLayout(container); container_layout.setSpacing(0); container_layout.setContentsMargins(0,0,0,0)
-        header, content = QtWidgets.QFrame(), QtWidgets.QFrame(); content.setVisible(True)
+        header, content = QtWidgets.QFrame(), QtWidgets.QFrame()
         header_layout, content_layout = QtWidgets.QGridLayout(header), QtWidgets.QVBoxLayout(content)
-        group_id = part_info.get('id', 0); mfg_name = "未知厂商"
+        group_id = part_info.get('id', 0)
+        mfg_name = self._loc('parts', 'unknown_manufacturer', "Unknown Manufacturer")
         if group_id != 1:
             try:
                 mfg_name = self.get_localized_string(self.all_weapon_parts_df[self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == group_id].iloc[0]['Manufacturer'])
@@ -706,20 +923,23 @@ class WeaponEditorTab(QtWidgets.QWidget):
         toggle_btn = QtWidgets.QPushButton("▾"); toggle_btn.setObjectName("PartActionButton"); toggle_btn.setFixedSize(28, 28)
         toggle_btn.clicked.connect(lambda checked, b=toggle_btn, c=content: self._toggle_group_visibility(b, c))
         if group_id == 1:
-            group_title = f"元素配置组 · {len(part_info.get('sub_ids', []))} 个配件" if self.current_lang == "zh-CN" else f"Element Configuration Group · {len(part_info.get('sub_ids', []))} parts"
+            group_title = self._loc('parts', 'element_group', "Element Configuration Group · {n} parts", n=len(part_info.get('sub_ids', [])))
         else:
-            group_title = f"授权配件组 · {mfg_name} · {len(part_info.get('sub_ids', []))} 个配件" if self.current_lang == "zh-CN" else f"Licensed Part Group · {mfg_name} · {len(part_info.get('sub_ids', []))} parts"
-        title_label = QtWidgets.QLabel(group_title); title_label.setObjectName("PartName")
-        header_layout.addWidget(toggle_btn, 0, 0); header_layout.addWidget(title_label, 0, 1)
-        header_layout.setColumnStretch(1, 1)
+            group_title = self._loc('parts', 'licensed_group', "Licensed Part Group · {mfg} · {n} parts", mfg=mfg_name, n=len(part_info.get('sub_ids', [])))
+        title_label = QtWidgets.QLabel(group_title); title_label.setObjectName("PartName"); title_label.setWordWrap(True)
+        drag_label = PartDragHandle(self.parts_list_widget, self._loc('tooltips', 'drag_part', "Drag to reorder"))
+        header_layout.addWidget(drag_label, 0, 0); header_layout.addWidget(toggle_btn, 0, 1); header_layout.addWidget(title_label, 0, 2)
+        header_layout.setColumnStretch(2, 1)
         action_buttons = self._add_action_buttons(index)
-        header_layout.addWidget(action_buttons, 0, 2, QtCore.Qt.AlignmentFlag.AlignRight)
+        header_layout.addWidget(action_buttons, 0, 3, QtCore.Qt.AlignmentFlag.AlignRight)
         for sub_id in part_info.get('sub_ids', []):
             sub_frame = QtWidgets.QFrame(); sub_frame.setObjectName("PartSubFrame")
             sub_layout = QtWidgets.QGridLayout(sub_frame); sub_layout.setColumnStretch(1, 1)
             id_label = QtWidgets.QLabel(f"  {sub_id}  "); id_label.setObjectName("PartIdBadge")
             sub_layout.addWidget(id_label, 0, 0)
-            p_type, p_str, p_stat = "未知", "", "无属性变化"
+            p_type = self._loc('parts', 'unknown', "Unknown")
+            p_str = ""
+            p_stat = self._loc('parts', 'no_stat_changes', "No stat changes")
             if group_id == 1:
                 d = self.elemental_df[
                     (self.elemental_df['Elemental_ID'] == group_id)
@@ -732,7 +952,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
                     )
                     p_type = self.get_localized_string(self._elemental_part_type(row))
                     p_str = str(row[self.elemental_stat_col])
-                    p_stat = ("元素配置" if self.current_lang == "zh-CN" else "Element configuration") if description in {"无属性变化", "No stat changes"} else description
+                    p_stat = self._loc('parts', 'element_config', "Element configuration") if description in {"无属性变化", "No stat changes"} else description
             else:
                 d = self.all_weapon_parts_df[(self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == group_id) & (self.all_weapon_parts_df['Part ID'] == sub_id)]
                 if not d.empty:
@@ -742,7 +962,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
                         group_id, sub_id, self.serial_decoded_entry.text(), self.current_lang, str(row['Part Type'])
                     )
                     p_type = self.get_localized_string(row['Part Type'])
-                    p_str = name or (("未命名枪管" if self.current_lang == "zh-CN" else "Unnamed Barrel") if str(row['Part Type']) == "Barrel" else "")
+                    p_str = name or (self._loc('parts', 'unnamed_barrel', "Unnamed Barrel") if str(row['Part Type']) == "Barrel" else "")
                     p_stat = description
             name_label = QtWidgets.QLabel(" · ".join(value for value in (p_type, p_str) if value)); name_label.setObjectName("PartName"); name_label.setWordWrap(True)
             stat_label = QtWidgets.QLabel(str(p_stat)); stat_label.setObjectName("PartDescription"); stat_label.setWordWrap(True)
@@ -753,25 +973,45 @@ class WeaponEditorTab(QtWidgets.QWidget):
         
     def _add_action_buttons(self, index, is_skin=False):
         frame = QtWidgets.QFrame()
+        frame.setObjectName("PartActionFrame")
         layout = QtWidgets.QHBoxLayout(frame)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(5)
+        layout.setSpacing(3)
         if is_skin:
-            edit_btn = QtWidgets.QPushButton("✎"); edit_btn.setToolTip("更换皮肤" if self.current_lang == "zh-CN" else "Change skin"); edit_btn.clicked.connect(partial(self.open_select_skin_window, index)); layout.addWidget(edit_btn)
+            edit_btn = QtWidgets.QPushButton("✎"); edit_btn.setToolTip(self._loc('tooltips', 'change_skin', "Change skin")); edit_btn.clicked.connect(partial(self.open_select_skin_window, index)); layout.addWidget(edit_btn)
         else:
-            up_btn = QtWidgets.QPushButton("↑"); up_btn.setToolTip("上移" if self.current_lang == "zh-CN" else "Move up"); up_btn.clicked.connect(partial(self.move_part, index, -1)); layout.addWidget(up_btn)
-            down_btn = QtWidgets.QPushButton("↓"); down_btn.setToolTip("下移" if self.current_lang == "zh-CN" else "Move down"); down_btn.clicked.connect(partial(self.move_part, index, 1)); layout.addWidget(down_btn)
-        del_btn = QtWidgets.QPushButton("✕"); del_btn.setObjectName("PartDeleteButton"); del_btn.setToolTip("移除" if self.current_lang == "zh-CN" else "Remove"); del_btn.clicked.connect(partial(self.delete_part, index)); layout.addWidget(del_btn)
-        for button in frame.findChildren(QtWidgets.QPushButton):
+            up_btn = QtWidgets.QPushButton(); up_btn.setIcon(self.style().standardIcon(QtWidgets.QStyle.StandardPixmap.SP_ArrowUp)); up_btn.setToolTip(self._loc('tooltips', 'move_up', "Move up")); up_btn.clicked.connect(partial(self.move_part, index, -1)); layout.addWidget(up_btn)
+            down_btn = QtWidgets.QPushButton(); down_btn.setIcon(self.style().standardIcon(QtWidgets.QStyle.StandardPixmap.SP_ArrowDown)); down_btn.setToolTip(self._loc('tooltips', 'move_down', "Move down")); down_btn.clicked.connect(partial(self.move_part, index, 1)); layout.addWidget(down_btn)
+        del_btn = QtWidgets.QPushButton(); del_btn.setIcon(self.style().standardIcon(QtWidgets.QStyle.StandardPixmap.SP_DialogCloseButton)); del_btn.setObjectName("PartDeleteButton"); del_btn.setToolTip(self._loc('tooltips', 'remove_part', "Remove")); del_btn.clicked.connect(partial(self.delete_part, index)); layout.addWidget(del_btn)
+        buttons = frame.findChildren(QtWidgets.QPushButton)
+        for button in buttons:
             if button.objectName() != "PartDeleteButton": button.setObjectName("PartActionButton")
-            button.setFixedSize(30, 30)
+            button.setFixedSize(34, 34)
+            button.setIconSize(QtCore.QSize(18, 18))
+            button.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+            button.setAccessibleName(button.toolTip())
+        frame.setFixedSize(len(buttons) * 34 + max(0, len(buttons) - 1) * layout.spacing(), 34)
         return frame
 
     def move_part(self, index, direction):
-        if not 0 <= index < len(self.parts_data): return
-        new_index = index + direction
-        if not 0 <= new_index < len(self.parts_data): return
-        self.parts_data.insert(new_index, self.parts_data.pop(index)); self.regenerate_ui_and_serial()
+        # parts_data interleaves whitespace separators with part dicts, so a raw
+        # index±1 step often lands on a separator and moves nothing visible —
+        # which is why moving a part took several clicks. Step over separators to
+        # the adjacent real part and swap the two, so one click moves one part.
+        # parts_data 中部件字典与空白分隔符交替，因此 index±1 的原始步进常落在
+        # 分隔符上、视觉上毫无移动——这正是移动部件需点击多次的原因。跳过分隔符
+        # 找到相邻的真实部件并交换二者，使一次点击移动一个部件。
+        if not (0 <= index < len(self.parts_data)) or not isinstance(self.parts_data[index], dict):
+            return
+        target = index + direction
+        while 0 <= target < len(self.parts_data) and not isinstance(self.parts_data[target], dict):
+            target += direction
+        if not 0 <= target < len(self.parts_data):
+            return
+        moved_id = id(self.parts_data[index])
+        self.parts_data[index], self.parts_data[target] = self.parts_data[target], self.parts_data[index]
+        self.regenerate_ui_and_serial()
+        self._select_part_row(moved_id)
 
     def delete_part(self, index):
         if 0 <= index < len(self.parts_data):
@@ -797,41 +1037,45 @@ class WeaponEditorTab(QtWidgets.QWidget):
     def _weapon_browser_row(self, title, detail, decoded_str):
         row = QtWidgets.QWidget()
         row.setObjectName("WeaponBrowserRow")
-        row_layout = QtWidgets.QHBoxLayout(row)
-        row_layout.setContentsMargins(10, 5, 10, 5)
-        row_layout.setSpacing(12)
+        row.setFixedHeight(self.WEAPON_BROWSER_ROW_HEIGHT)
+        row_layout = QtWidgets.QVBoxLayout(row)
+        row_layout.setContentsMargins(10, 7, 10, 7)
+        row_layout.setSpacing(5)
 
-        text_layout = QtWidgets.QVBoxLayout()
-        text_layout.setContentsMargins(0, 0, 0, 0)
-        text_layout.setSpacing(2)
         name_label = QtWidgets.QLabel(title)
         name_label.setObjectName("WeaponBrowserName")
         name_label.setToolTip(title)
         name_label.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         detail_label = QtWidgets.QLabel(detail)
         detail_label.setObjectName("WeaponBrowserMeta")
-        text_layout.addWidget(name_label)
-        text_layout.addWidget(detail_label)
-        row_layout.addLayout(text_layout, 1)
+        detail_label.setToolTip(detail)
+        row_layout.addWidget(name_label)
+        row_layout.addWidget(detail_label)
 
         stats = item_display_resolver.resolve_weapon_stats(decoded_str) if decoded_str else {}
         stat_titles = self.ui_localization.get('stats', {})
-        for key in ("damage", "accuracy", "fire_rate", "reload_time", "magazine"):
-            stat_layout = QtWidgets.QVBoxLayout()
-            stat_layout.setContentsMargins(0, 0, 0, 0)
-            stat_layout.setSpacing(1)
+        stats_layout = QtWidgets.QGridLayout()
+        stats_layout.setContentsMargins(0, 2, 0, 0)
+        stats_layout.setHorizontalSpacing(4)
+        stats_layout.setVerticalSpacing(1)
+        for column, key in enumerate(("damage", "accuracy", "fire_rate", "reload_time", "magazine")):
             title_label = QtWidgets.QLabel(stat_titles.get(key, key.replace('_', ' ').title()))
             title_label.setObjectName("WeaponBrowserStatTitle")
             title_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+            title_label.setWordWrap(True)
             value = item_display_resolver.format_weapon_stat(key, stats.get(key), self.current_lang) or "—"
             value_label = QtWidgets.QLabel(value)
             value_label.setObjectName("WeaponBrowserStatValue")
             value_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-            value_label.setMinimumWidth(66)
-            stat_layout.addWidget(title_label)
-            stat_layout.addWidget(value_label)
-            row_layout.addLayout(stat_layout)
+            stats_layout.addWidget(title_label, 0, column)
+            stats_layout.addWidget(value_label, 1, column)
+            stats_layout.setColumnStretch(column, 1)
+        row_layout.addLayout(stats_layout)
         return row
+
+    def _sync_weapon_browser_selection(self, current, previous):
+        self._set_row_selected(self.backpack_items_list, previous, False)
+        self._set_row_selected(self.backpack_items_list, current, True)
 
     def refresh_backpack_items(self):
         self.backpack_items_list.clear()
@@ -856,21 +1100,23 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 parsed_components = self._parse_component_string(component)
                 _, name, _, _ = self._get_rarity_and_weapon_name(parsed_components, m_id, weapon.get('decoded_full', ''))
                 w_name = self.get_localized_string(name, name)
-                disp_name = f"{weapon.get('manufacturer', '未知')} {weapon.get('type', '未知物品')} ({w_name})" if w_name not in ["N/A", "Unknown", "未知"] else f"{weapon.get('manufacturer', '未知')} {weapon.get('type', '未知物品')}"
+                unknown = self._loc('parts', 'unknown', "Unknown")
+                manufacturer = weapon.get('manufacturer') or unknown
+                weapon_type = weapon.get('type') or self._loc('parts', 'unknown_item', "Unknown Item")
+                unknown_names = {"N/A", "Unknown", "未知", "Неизвестно", "Невідомо", unknown}
+                disp_name = f"{manufacturer} {weapon_type} ({w_name})" if w_name not in unknown_names else f"{manufacturer} {weapon_type}"
                 detail = f"{self.get_localized_string('level_label')} {weapon.get('level', 'N/A')}  ·  {self.get_localized_string('slot_label')} {weapon.get('slot', 'N/A').replace('slot_', '')}"
                 item = QtWidgets.QListWidgetItem()
                 item.setData(QtCore.Qt.ItemDataRole.UserRole, weapon)
                 item.setData(QtCore.Qt.ItemDataRole.UserRole + 1, f"{weapon.get('name', '')} {disp_name} {detail}".lower())
                 item.setToolTip(f"{disp_name} · {detail}")
-                item.setSizeHint(QtCore.QSize(0, 62))
+                row_widget = self._weapon_browser_row(disp_name, detail, weapon.get('decoded_full', ''))
+                item.setSizeHint(QtCore.QSize(0, self.WEAPON_BROWSER_ROW_HEIGHT))
                 self.backpack_items_list.addItem(item)
-                self.backpack_items_list.setItemWidget(
-                    item,
-                    self._weapon_browser_row(disp_name, detail, weapon.get('decoded_full', '')),
-                )
+                self.backpack_items_list.setItemWidget(item, row_widget)
 
             except Exception as e:
-                self.main_app.log(f"在处理背包武器时发生严重错误。序列号: {weapon.get('serial', '未知')}，错误: {e}")
+                self.main_app.log(f"Weapon browser item failed: serial={weapon.get('serial', 'unknown')}, error={e}")
         self._filter_backpack_items(self.weapon_search.text())
         self._select_current_backpack_item()
 
@@ -903,12 +1149,11 @@ class WeaponEditorTab(QtWidgets.QWidget):
                     weapon = candidate
                     break
         if not weapon:
-            self.selected_weapon_summary.setText("当前未选择背包武器" if self.current_lang == "zh-CN" else "No backpack weapon selected")
+            self.selected_weapon_summary.setText(self._loc('summary', 'none_selected', "No backpack weapon selected"))
             return
-        name = weapon.get("name") or weapon.get("manufacturer") or "Weapon"
+        name = weapon.get("name") or weapon.get("manufacturer") or self._loc('summary', 'fallback_name', "Weapon")
         self.selected_weapon_summary.setText(
-            f"当前选择 · {name} · Lv.{weapon.get('level', 'N/A')}" if self.current_lang == "zh-CN"
-            else f"Selected · {name} · Lv.{weapon.get('level', 'N/A')}"
+            self._loc('summary', 'selected', "Selected · {name} · Lv.{level}", name=name, level=weapon.get('level', 'N/A'))
         )
 
     def update_weapon(self):
@@ -965,23 +1210,23 @@ class WeaponEditorTab(QtWidgets.QWidget):
 
         picker = CatalogPicker(
             stackable=True,
-            search_placeholder="搜索部件名称、效果、厂商或类型" if self.current_lang == "zh-CN" else "Search part name, effect, manufacturer, or type",
-            avail_title="可用部件" if self.current_lang == "zh-CN" else "Available Parts",
-            selected_title="已选部件" if self.current_lang == "zh-CN" else "Selected Parts",
-            clear_text="清空" if self.current_lang == "zh-CN" else "Clear",
+            search_placeholder=self._loc('catalog', 'search_part', "Search part name, effect, manufacturer, or type"),
+            avail_title=self._loc('catalog', 'available_parts', "Available Parts"),
+            selected_title=self._loc('catalog', 'selected_parts', "Selected Parts"),
+            clear_text=self._loc('catalog', 'clear', "Clear"),
         )
         source, part_types, manufacturers, weapon_types = self._add_part_catalog_items()
         picker.set_categories(
-            [("all", "全部" if self.current_lang == "zh-CN" else "All"), *[(value, self.get_localized_string(value)) for value in part_types]],
-            columns=5,
+            [("all", self._loc('catalog', 'all', "All")), *[(value, self.get_localized_string(value)) for value in part_types]],
+            columns=3,
         )
         picker.set_subcategories(
-            [("all", "全部厂商" if self.current_lang == "zh-CN" else "All Manufacturers"), *[(value, self.get_localized_string(value)) for value in manufacturers]],
-            columns=6,
+            [("all", self._loc('catalog', 'all_manufacturers', "All Manufacturers")), *[(value, self.get_localized_string(value)) for value in manufacturers]],
+            columns=4,
         )
         picker.set_third_categories(
-            [("all", "全部武器类型" if self.current_lang == "zh-CN" else "All Weapon Types"), *[(value, self.get_localized_string(value)) for value in weapon_types]],
-            columns=6,
+            [("all", self._loc('catalog', 'all_weapon_types', "All Weapon Types")), *[(value, self.get_localized_string(value)) for value in weapon_types]],
+            columns=3,
         )
         picker.set_source(source)
         layout.addWidget(picker, 1)
@@ -1016,7 +1261,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
             description = item_display_resolver.format_weapon_part_description(
                 item_id, part_id, preview_serial, self.current_lang, part_type
             )
-            name = name or (("未命名枪管" if self.current_lang == "zh-CN" else "Unnamed Barrel") if part_type == "Barrel" else "")
+            name = name or (self._loc('parts', 'unnamed_barrel', "Unnamed Barrel") if part_type == "Barrel" else "")
             detail = " · ".join(value for value in (name, description) if value)
             metadata = " / ".join(self.get_localized_string(value) for value in (manufacturer, weapon_type, part_type))
             label = f"{detail}  [{metadata}]"
@@ -1113,9 +1358,9 @@ class WeaponEditorTab(QtWidgets.QWidget):
         if not self.serial_decoded_entry.text():
             QtWidgets.QMessageBox.warning(self, self.get_localized_string("no_weapon"), self.get_localized_string("load_weapon_first"))
             return
-        win = QtWidgets.QDialog(self); win.setWindowTitle(self.get_localized_string("Select Skin"))
+        win = QtWidgets.QDialog(self); win.setWindowTitle(self.get_localized_string("select_skin_title"))
         win.setMinimumSize(400, 500); win.setModal(True)
-        layout = QtWidgets.QVBoxLayout(win); layout.addWidget(QtWidgets.QLabel(self.get_localized_string("Select a skin to apply")))
+        layout = QtWidgets.QVBoxLayout(win); layout.addWidget(QtWidgets.QLabel(self.get_localized_string("select_skin_msg")))
         scroll_area = ContainedWheelScrollArea(); scroll_area.setWidgetResizable(True)
         scroll_content = QtWidgets.QWidget(); scroll_layout = QtWidgets.QVBoxLayout(scroll_content)
         for _, row in self.skin_df.iterrows():
@@ -1128,6 +1373,9 @@ class WeaponEditorTab(QtWidgets.QWidget):
         is_visible = not content_frame.isVisible()
         content_frame.setVisible(is_visible)
         button.setText("▾" if is_visible else "▸")
+        container = content_frame.parentWidget()
+        container.updateGeometry()
+        self.parts_list_widget.sync_content_height()
 
     def update_skin(self, part_index, new_skin_id, window):
         is_text_id = isinstance(new_skin_id, str) and not new_skin_id.isdigit()
@@ -1144,7 +1392,11 @@ class WeaponEditorTab(QtWidgets.QWidget):
             )
         if target_index is not None and 0 <= target_index < len(self.parts_data):
             if not isinstance(self.parts_data[target_index], dict) or self.parts_data[target_index].get('type') != 'skin':
-                QtWidgets.QMessageBox.critical(self, "Error", "The selected part is not a skin part.")
+                QtWidgets.QMessageBox.critical(
+                    self,
+                    self._loc('dialogs', 'error', "Error"),
+                    self._loc('dialogs', 'invalid_skin_part', "The selected part is not a skin part."),
+                )
                 window.close()
                 return
             self.parts_data[target_index] = skin

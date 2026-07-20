@@ -1410,6 +1410,14 @@ QFrame#inlineCatalogRow[selected="true"] QLabel {
     background-color: transparent;
 }
 
+QWidget#WeaponBrowserRow[selected="true"] {
+    background-color: {selection_bg};
+}
+
+QWidget#WeaponBrowserRow[selected="true"] QLabel {
+    color: {text_primary};
+}
+
 #WeaponBrowserName {
     color: {text_primary};
     font-weight: bold;
@@ -1440,8 +1448,29 @@ QFrame#inlineCatalogRow[selected="true"] QLabel {
     border-radius: 8px;
 }
 
-#PartFrame {
-    padding: 5px;
+#PartFrame[selected="true"], #PartGroupFrame[selected="true"] {
+    background-color: {selection_bg};
+    border: 2px solid {accent};
+}
+
+#PartFrame[selected="true"] QLabel, #PartGroupFrame[selected="true"] QLabel {
+    color: {text_primary};
+}
+
+#partsOrderList {
+    background-color: transparent;
+}
+
+#partsOrderList::item {
+    padding: 2px 0;
+    border: none;
+    background-color: transparent;
+}
+
+#PartDragHandle {
+    color: {text_secondary};
+    font-size: 16px;
+    padding: 0 2px;
 }
 
 #PartSubFrame {
@@ -1473,7 +1502,7 @@ QFrame#inlineCatalogRow[selected="true"] QLabel {
 
 #PartDescription {
     color: {text_primary};
-    padding: 0 3px 3px 3px;
+    padding: 0 2px;
 }
 
 #PartActionButton, #PartDeleteButton {

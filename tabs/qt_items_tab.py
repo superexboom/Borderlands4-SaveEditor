@@ -203,6 +203,7 @@ class QtItemsTab(QWidget):
         header.setMinimumSectionSize(60)
         self.tree_view.horizontalScrollBar().setTracking(False)
         main_layout.addWidget(self.tree_view, 1)
+        self._resize_columns()
 
     def _headers(self) -> List[str]:
         cols = self.loc["columns"]
@@ -246,6 +247,7 @@ class QtItemsTab(QWidget):
         self.model.setHorizontalHeaderLabels(self._headers())
         self.item_lookup.clear()
         self.current_selected_item = None
+        self._resize_columns()
 
         if not items:
             return
@@ -271,7 +273,6 @@ class QtItemsTab(QWidget):
 
         self.tree_view.expandAll()
         self._collapse_default_groups()
-        self._resize_columns()
         if self.search_entry.text():
             self.filter_tree(self.search_entry.text())
 
@@ -338,25 +339,15 @@ class QtItemsTab(QWidget):
 
     def _resize_columns(self):
         header = self.tree_view.header()
-        flexible_columns = []
         for i in range(self.model.columnCount()):
-            if self.COLUMN_KEYS[i][0] == "serial":
+            key = self.COLUMN_KEYS[i][0]
+            if key == "serial":
                 header.setSectionResizeMode(i, QHeaderView.ResizeMode.Interactive)
                 self.tree_view.setColumnWidth(i, self.tree_view.fontMetrics().horizontalAdvance("0" * 20) + 20)
+            elif key == "name":
+                header.setSectionResizeMode(i, QHeaderView.ResizeMode.Stretch)
             else:
                 header.setSectionResizeMode(i, QHeaderView.ResizeMode.ResizeToContents)
-                self.tree_view.resizeColumnToContents(i)
-                width = self.tree_view.columnWidth(i) + 30
-                if self.COLUMN_KEYS[i][0] == "name":
-                    width += 40
-                header.setSectionResizeMode(i, QHeaderView.ResizeMode.Interactive)
-                self.tree_view.setColumnWidth(i, width)
-                flexible_columns.append(i)
-        extra = self.tree_view.viewport().width() - sum(self.tree_view.columnWidth(i) for i in range(self.model.columnCount()))
-        if extra > 0 and flexible_columns:
-            add = extra // len(flexible_columns)
-            for i in flexible_columns:
-                self.tree_view.setColumnWidth(i, self.tree_view.columnWidth(i) + add)
 
     def on_item_selected(self, selected, _deselected):
         indexes = selected.indexes()
