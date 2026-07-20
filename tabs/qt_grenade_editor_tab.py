@@ -12,7 +12,7 @@ from PyQt6.QtCore import pyqtSignal, Qt
 from core import b_encoder
 from core import resource_loader
 from tabs.qt_catalog_picker import ContainedWheelListWidget, ContainedWheelScrollArea
-import lookup
+from core import lookup
 from core import bl4_functions as bl4f
 
 @lru_cache(maxsize=None)
@@ -59,7 +59,6 @@ class QtGrenadeEditorTab(QWidget):
         loc_file = resource_loader.get_ui_localization_file(self.current_lang)
         full_loc = resource_loader.load_json_resource(loc_file) or {}
         self.ui_loc = full_loc.get("grenade_tab", {})
-        self.flags_loc = full_loc.get("weapon_editor_tab", {}).get("flags", {})
 
     def update_language(self, lang):
         print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
@@ -362,7 +361,9 @@ class QtGrenadeEditorTab(QWidget):
 
             final_str = " ".join(main_parts) + " " + " ".join(skill_parts) + " |"
             self.raw_output_edit.setText(final_str)
-            encoded, err = b_encoder.encode_to_base85(final_str); self.b85_output_edit.setText(encoded if not err else f"错误: {err}")
+            encoded, err = b_encoder.encode_to_base85(final_str)
+            self._encode_error = bool(err)
+            self.b85_output_edit.setText(f"{self.ui_loc.get('dialogs', {}).get('error', 'Error')}: {err}" if err else encoded)
         except Exception as e: print(f"Rebuild error: {e}")
 
     def _move_selected_items(self, src, dest, single, multiplier_box=None):
@@ -416,20 +417,8 @@ class QtGrenadeEditorTab(QWidget):
     def _populate_flags(self):
         self.flag_combo.clear()
         
-        flags_map = {
-            "1": "1 (Common)" if self.current_lang == 'en-US' else "1 (普通)",
-            "3": "3 (Favorites)" if self.current_lang == 'en-US' else "3 (收藏)",
-            "5": "5 (Trash)" if self.current_lang == 'en-US' else "5 (垃圾)",
-            "17": "17 (Group 1)" if self.current_lang == 'en-US' else "17 (编组1)",
-            "33": "33 (Group 2)" if self.current_lang == 'en-US' else "33 (编组2)",
-            "65": "65 (Group 3)" if self.current_lang == 'en-US' else "65 (编组3)",
-            "129": "129 (Group 4)" if self.current_lang == 'en-US' else "129 (编组4)"
-        }
-        
-        if self.flags_loc:
-            flags_map = {k: self.flags_loc.get(k, v) for k, v in flags_map.items()}
-
-        flag_values = [flags_map["1"], flags_map["3"], flags_map["5"], flags_map["17"], flags_map["33"], flags_map["65"], flags_map["129"]]
+        flags_map = resource_loader.get_flag_labels(self.current_lang)
+        flag_values = [flags_map[k] for k in ("1", "3", "5", "17", "33", "65", "129")]
         self.flag_combo.addItems(flag_values)
         for i in range(self.flag_combo.count()):
             if flags_map["3"] == self.flag_combo.itemText(i):
@@ -440,7 +429,7 @@ class QtGrenadeEditorTab(QWidget):
         
     def _add_to_backpack(self):
         serial = self.b85_output_edit.text()
-        if not serial or "Error" in serial or "错误" in serial: QMessageBox.warning(self, self.ui_loc['dialogs']['no_valid_code'], self.ui_loc['dialogs']['gen_first']); return
+        if not serial or getattr(self, '_encode_error', False): QMessageBox.warning(self, self.ui_loc['dialogs']['no_valid_code'], self.ui_loc['dialogs']['gen_first']); return
         self.add_to_backpack_requested.emit(serial, self.flag_combo.currentText().split(" ")[0])
 
     def set_character_level(self, level: str):

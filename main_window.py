@@ -5,12 +5,28 @@ import itertools
 import os
 from pathlib import Path
 
+# Force UTF-8 stdio so the app's bilingual (Chinese) log prints don't crash a
+# frozen Windows build, whose default cp1252 codepage can't encode them. In a
+# windowed exe stdout/stderr may be None, so route those to the null device.
+# 强制 UTF-8 标准输出，使应用的双语（中文）日志打印不会导致冻结的 Windows
+# 版本崩溃（其默认 cp1252 代码页无法编码中文）。在窗口化 exe 中 stdout/stderr
+# 可能为 None，故将其重定向到空设备。
+for _stream_name in ("stdout", "stderr"):
+    _stream = getattr(sys, _stream_name, None)
+    if _stream is None:
+        setattr(sys, _stream_name, open(os.devnull, "w", encoding="utf-8"))
+    else:
+        try:
+            _stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError):
+            pass
+
 VERSION = "3.6.1"
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QMessageBox, QFileDialog,
     QStackedWidget, QButtonGroup, QSizeGrip, QInputDialog,
-    QMenu, QGraphicsBlurEffect, QStackedLayout
+    QMenu, QGraphicsBlurEffect, QStackedLayout, QSizePolicy
 )
 from PyQt6.QtGui import QAction, QIcon, QPixmap, QPainter
 from PyQt6.QtCore import pyqtSlot, QPropertyAnimation, QEasingCurve, Qt, QTimer, QObject, QThread, pyqtSignal
@@ -276,7 +292,6 @@ class MainWindow(QMainWindow):
 
         self.setWindowFlag(Qt.WindowType.FramelessWindowHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        self.old_pos = None
 
         self.controller = SaveGameController()
         self.is_nav_bar_expanded = True
@@ -348,13 +363,7 @@ class MainWindow(QMainWindow):
         # If saved language differs from default (zh-CN), sync backend + all tabs
         if self.current_language != 'zh-CN':
             bl4f.set_language(self.current_language)
-            for tab in [
-                self.selector_page, self.character_tab, self.items_tab,
-                self.converter_tab, self.yaml_editor_tab, self.class_mod_tab,
-                self.enhancement_tab, self.weapon_editor_tab,
-                self.weapon_generator_tab, self.grenade_tab, self.shield_tab,
-                self.repkit_tab, self.heavy_weapon_tab, self.loadout_manager_tab
-            ]:
+            for tab in self._all_content_tabs():
                 if hasattr(tab, 'update_language'):
                     tab.update_language(self.current_language)
             self.update_ui_text()
@@ -401,8 +410,11 @@ class MainWindow(QMainWindow):
             }
 
     def mousePressEvent(self, event):
+        """Let Windows move the frameless window through its native drag path."""
         if event.button() == Qt.MouseButton.LeftButton and self.header_bar.underMouse():
-            self.old_pos = event.globalPosition().toPoint()
+            handle = self.windowHandle()
+            if handle is not None:
+                handle.startSystemMove()
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
@@ -427,16 +439,6 @@ class MainWindow(QMainWindow):
             
             central.setMask(bitmap)
 
-    def mouseMoveEvent(self, event):
-        if self.old_pos is not None and event.buttons() == Qt.MouseButton.LeftButton:
-            delta = event.globalPosition().toPoint() - self.old_pos
-            self.move(self.x() + delta.x(), self.y() + delta.y())
-            self.old_pos = event.globalPosition().toPoint()
-
-    def mouseReleaseEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
-            self.old_pos = None
-            
     def _create_actions(self):
         self.open_action = QAction(self.loc['menu']['open_selector'], self)
         self.open_action.triggered.connect(self.browse_and_open_save)
@@ -485,15 +487,18 @@ class MainWindow(QMainWindow):
         
         title_label = QLabel(self.loc['header']['title'])
         title_label.setObjectName("titleLabel")
+        title_label.setWordWrap(True)
+        title_label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
         
         subtitle_label = QLabel(self.loc['subtitle'])
         subtitle_label.setObjectName("subtitleLabel")
+        subtitle_label.setWordWrap(True)
+        subtitle_label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
         
         title_vbox.addWidget(title_label)
         title_vbox.addWidget(subtitle_label)
 
-        header_layout.addLayout(title_vbox)
-        header_layout.addStretch()
+        header_layout.addLayout(title_vbox, 1)
 
         self.open_button = QPushButton(self.loc['header']['open'])
         self.open_button.clicked.connect(self.open_action.trigger)
@@ -697,7 +702,7 @@ class MainWindow(QMainWindow):
             self,
             self.loc['header']['open'], 
             initial_path,
-            "Borderlands 4 Save (*.sav);;All Files (*.*)"
+            self.loc['dialogs'].get('save_filter', "Borderlands 4 Saves (*.sav);;All Files (*.*)")
         )
 
         if not file_path:
@@ -770,8 +775,10 @@ class MainWindow(QMainWindow):
                 # 如果是尝试过一次（且不是因为ID为空导致的验证错误），或者ID本身就不为空但失败了
                 if (not first_attempt) or (current_user_id and str(e) != "User ID cannot be empty"):
                      # 简化错误信息显示，只显示第一行关键信息
-                    err_lines = str(e).split('\n')
-                    short_err = err_lines[0] if err_lines else str(e)
+                    short_err = self.loc['dialogs'].get(
+                        'decrypt_failed_reason',
+                        "The save could not be decrypted with the current user ID.",
+                    )
                     
                     dialog_title = self.loc['dialogs']['decrypt_failed']
                     dialog_msg = self.loc['dialogs']['decrypt_failed_msg'].format(user_id=current_user_id, error=short_err)
@@ -791,9 +798,14 @@ class MainWindow(QMainWindow):
                     return
 
     def update_action_states(self):
-        is_editor_active = self.content_stack.currentIndex() > 0
-        self.save_action.setEnabled(is_editor_active)
-        self.save_as_action.setEnabled(is_editor_active)
+        has_save = self.controller.yaml_obj is not None
+        self.save_action.setEnabled(has_save)
+        self.save_as_action.setEnabled(has_save)
+        self.save_button.setEnabled(has_save)
+        self.save_as_button.setEnabled(has_save)
+
+    def _all_content_tabs(self):
+        return [self.content_stack.widget(i) for i in range(self.content_stack.count())]
 
     @pyqtSlot()
     def scan_for_saves(self):
@@ -837,7 +849,7 @@ class MainWindow(QMainWindow):
         self.log("Main window: Finished refreshing all tabs.")
 
     def log(self, message, force_popup=False):
-        self.status_label.setText(message)
+        print(message)
         if force_popup:
             QMessageBox.critical(self, self.loc['dialogs']['critical'], str(message))
 
@@ -1011,11 +1023,16 @@ class MainWindow(QMainWindow):
             
     @pyqtSlot(bool)
     def encrypt_and_save(self, save_as=False):
-        if not self.controller.yaml_obj: return
+        if self.controller.yaml_obj is None: return
         
         path_to_save = self.controller.save_path
         if save_as or not path_to_save:
-            path, _ = QFileDialog.getSaveFileName(self, self.loc['dialogs']['save_encrypted_title'], str(path_to_save), "BL4 存档 (*.sav)")
+            path, _ = QFileDialog.getSaveFileName(
+                self,
+                self.loc['dialogs']['save_encrypted_title'],
+                str(path_to_save),
+                self.loc['dialogs'].get('save_filter', "Borderlands 4 Saves (*.sav);;All Files (*.*)"),
+            )
             if not path: return
             path_to_save = Path(path)
         
@@ -1053,14 +1070,7 @@ class MainWindow(QMainWindow):
         self.update_ui_text()
         
         # Update tabs
-        tabs_to_update = [
-            self.grenade_tab, self.shield_tab, self.repkit_tab, self.heavy_weapon_tab, 
-            self.weapon_editor_tab, self.weapon_generator_tab,
-            self.character_tab, self.selector_page, self.items_tab, self.converter_tab,
-            self.yaml_editor_tab, self.class_mod_tab, self.enhancement_tab,
-            self.loadout_manager_tab
-        ]
-        for tab in tabs_to_update:
+        for tab in self._all_content_tabs():
             if hasattr(tab, 'update_language'):
                 print(f"DEBUG: Updating language for tab {tab.__class__.__name__}")
                 try:

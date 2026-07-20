@@ -6,9 +6,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import pyqtSignal, QTimer, Qt, QObject, QThread
 
-import decoder_logic
-from core import b_encoder
-from core import resource_loader
+from core import b_encoder, decoder_logic, resource_loader
 
 class BatchConverterWorker(QObject):
     """后台工作线程，用于批量转换"""
@@ -296,7 +294,12 @@ class QtConverterTab(QWidget):
             QMessageBox.warning(self, self.loc['dialogs']['no_content'], self.loc['dialogs']['no_export'])
             return
         
-        filepath, _ = QFileDialog.getSaveFileName(self, self.loc['dialogs']['export_batch_title'], "", "Text Files (*.txt);;All Files (*)")
+        filepath, _ = QFileDialog.getSaveFileName(
+            self,
+            self.loc['dialogs']['export_batch_title'],
+            "",
+            self.loc['dialogs'].get('text_filter', "Text Files (*.txt);;All Files (*)"),
+        )
         if filepath:
             try:
                 with open(filepath, 'w', encoding='utf-8') as f:
@@ -549,7 +552,8 @@ class QtConverterTab(QWidget):
         }
 
     def update_iterator_status(self, message):
-        self.iterator_status_label.setText(f"Status: {message}") # Simplified as message often comes localized or as data
+        template = self.loc['labels'].get('status_message', "Status: {message}")
+        self.iterator_status_label.setText(template.format(message=message))
 
     def finalize_iterator_processing(self, result_text):
         self.iterator_output.setText(result_text)
@@ -572,7 +576,11 @@ class QtConverterTab(QWidget):
         ext = ".yaml" if is_yaml else ".txt"
         title = self.loc['dialogs']['export_yaml'] if is_yaml else self.loc['dialogs']['export_txt_title']
         
-        filepath, _ = QFileDialog.getSaveFileName(self, title, "", f"{title}(*{ext});;All Files (*)")
+        filter_key = 'yaml_filter' if is_yaml else 'text_filter'
+        fallback_filter = f"{'YAML' if is_yaml else 'Text'} Files (*{ext});;All Files (*)"
+        filepath, _ = QFileDialog.getSaveFileName(
+            self, title, "", self.loc['dialogs'].get(filter_key, fallback_filter)
+        )
         if filepath:
             if not is_yaml:
                 reply = QMessageBox.question(self, self.loc['dialogs']['export_opts'], self.loc['dialogs']['only_base85'], 

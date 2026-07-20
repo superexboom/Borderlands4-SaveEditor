@@ -26,6 +26,7 @@
     },
     "dialogs": {
       "folder_name_warning": "Имя выбранной папки должно быть 'SaveGames'.",
+      "save_filter": "Сохранения Borderlands 4 (*.sav);;Все файлы (*.*)",
       "success": "Успешно",
       "warning": "Внимание",
       "game_dir_needed_title": "Указать папку игры",
@@ -81,11 +82,13 @@
       "cancel": "Отмена",
       "change_bg_title": "Выберите Фоновое Изображение",
       "image_files": "Файлы Изображений",
+      "save_filter": "Сохранения Borderlands 4 (*.sav);;Все файлы (*.*)",
       "clear_bg_prompt": "Хотите очистить пользовательский фон или выбрать новый?\nYes: Очистить\nNo: Выбрать Новый\nCancel: Отмена",
       "clear_bg_title": "Очистить Фон",
       "decrypt_success": "Сохранение расшифровано!\nПлатформа: {platform}\nБэкап создан: {backup_name}",
       "decrypt_failed": "Ошибка расшифровки",
       "decrypt_failed_msg": "Не удалось расшифровать с ID '{user_id}'.\n({error})\n\nПожалуйста, введите правильный 64-битный ID:",
+      "decrypt_failed_reason": "Не удалось расшифровать сохранение с текущим ID пользователя.",
       "user_id_needed": "Требуется User ID",
       "enter_user_id": "Введите 64-битный ID (Epic/Steam ID) для этого сохранения:",
       "open_cancelled": "Открытие сохранения отменено.",
@@ -221,7 +224,8 @@
       "Lost Loot": "Потерянное",
       "丢失物品": "Потерянное",
       "Equipped": "Экипировано",
-      "装备中­": "Экипировано"
+      "装备中": "Экипировано",
+      "Unknown": "Неизвестно"
     },
     "search_placeholder": "Поиск предметов...",
     "add_item": {
@@ -307,7 +311,8 @@
       "generated_result": "Сгенерированный результат:",
       "special_combo_input": "Ввод комбинации:",
       "status_generating": "Статус: Генерация...",
-      "status_gen_complete": "Статус: Генерация завершена!"
+      "status_gen_complete": "Статус: Генерация завершена!",
+      "status_message": "Статус: {message}"
     },
     "placeholders": {
       "base85": "Введите Base85 код, например: @Ug#2fK2...",
@@ -346,6 +351,8 @@
       "no_content": "Нет контента",
       "no_export": "Нет результатов для экспорта.",
       "export_batch_title": "Экспорт пакетных результатов",
+      "text_filter": "Текстовые файлы (*.txt);;Все файлы (*)",
+      "yaml_filter": "Файлы YAML (*.yaml);;Все файлы (*)",
       "success": "Успешно",
       "export_success": "Результаты экспортированы в:\n{path}",
       "export_fail": "Ошибка экспорта",
@@ -382,7 +389,8 @@
     },
     "legendary": {
       "title": "Легендарное дополнение",
-      "clear": "Очистить"
+      "clear": "Очистить",
+      "search_placeholder": "Поиск…"
     },
     "output": {
       "title": "Десериализация",
@@ -423,6 +431,23 @@
     "special_thanks": {
       "title": "Special Thanks",
       "content": "Дизайн и данные этой страницы вдохновлены @Mattmab и @Whiteshark\nЕсли вам нравится этот дизайн, посетите save-editor.be и попробуйте их веб-версию"
+    },
+    "perk_filters": {
+      "all": "Все",
+      "weapon": "Оружие",
+      "skill": "Навык",
+      "element": "Стихия",
+      "defense": "Защита",
+      "utility": "Утилита",
+      "firmware": "Прошивка",
+      "other": "Другое"
+    },
+    "skill_trees": {
+      "red": "Красный",
+      "green": "Зелёный",
+      "blue": "Синий",
+      "all_skills": "Все навыки",
+      "passive": "Пассивный"
     }
   },
   "enhancement_tab": {
@@ -464,6 +489,38 @@
     "special_thanks": {
       "title": "Special Thanks",
       "content": "Дизайн и данные этой страницы вдохновлены @Mattmab и @Whiteshark\nЕсли вам нравится этот дизайн, посетите save-editor.be и попробуйте их веб-версию"
+    },
+    "picker": {
+      "search_placeholder": "Поиск…",
+      "available": "Доступно (двойной клик)",
+      "selected_stacks": "Выбранные стопки",
+      "selected_stats": "Выбранные характеристики"
+    },
+    "categories": {
+      "all": "Все",
+      "firmware": "Прошивка",
+      "sniper": "Снайперская",
+      "shotgun": "Дробовик",
+      "smg": "ПП",
+      "pistol": "Пистолет",
+      "ar": "Автомат",
+      "gun": "Универсальный"
+    },
+    "subcategories": {
+      "all": "Все",
+      "dmg": "Урон",
+      "crit": "Крит. урон",
+      "firerate": "Скорострельность",
+      "acc": "Точность",
+      "reload": "Перезарядка",
+      "mag": "Магазин",
+      "splashdmg": "Урон по площади",
+      "splashradius": "Радиус поражения",
+      "ads": "Прицел",
+      "se_dmg": "Урон статуса",
+      "se_chance": "Шанс статуса",
+      "equip": "Снаряжение",
+      "other": "Другое"
     }
   },
   "weapon_editor_tab": {
@@ -482,7 +539,8 @@
       "parts_list": "Список частей",
       "parse_serial_to_show_parts": "Части появятся здесь после парсинга серийного номера...",
       "level_label": "Уровень",
-      "slot_label": "Слот"
+      "slot_label": "Слот",
+      "search_weapon_placeholder": "Поиск по имени, производителю, типу, уровню или слоту"
     },
     "buttons": {
       "update_weapon": "Обновить оружие",
@@ -536,6 +594,9 @@
       "select_skin_title": "Выбор скина",
       "select_skin_msg": "Выберите скин для применения",
       "update_success": "Оружие успешно обновлено.",
+      "missing_required_file": "Отсутствует обязательный файл: {error}",
+      "data_load_error": "Ошибка загрузки данных: {error}",
+      "invalid_skin_part": "Выбранная часть не является скином.",
       "parts_refresh_success": "Список частей обновлен."
     },
     "misc": {
@@ -543,8 +604,81 @@
       "elemental": "Стихия",
       "elements": "Стихии",
       "element_switch": "Переключение стихий",
-      "pearl_stat": "Pearl Stat",
-      "pearl_elements": "Pearl Elements"
+      "underbarrel_element_switch": "Смена стихии подствольника",
+      "pearl_stat": "Жемчужный параметр",
+      "pearl_elements": "Жемчужные стихии"
+    },
+    "taxonomy": {
+      "body": "Корпус",
+      "body_accessory": "Аксессуар корпуса",
+      "barrel": "Ствол",
+      "barrel_accessory": "Аксессуар ствола",
+      "manufacturer_part": "Деталь производителя",
+      "tediore_payload": "Заряд Tediore",
+      "tediore_throw_reload": "Бросковая перезарядка",
+      "magazine": "Магазин",
+      "magazine_accessory": "Аксессуар магазина",
+      "scope": "Прицел",
+      "scope_accessory": "Аксессуар прицела",
+      "grip": "Рукоять / приклад",
+      "underbarrel": "Подствольник",
+      "underbarrel_accessory": "Аксессуар подствольника",
+      "foregrip": "Передняя рукоять",
+      "borg_magazine_adapter": "Адаптер магазина Borg",
+      "special_element_set": "Особый набор стихий",
+      "stat_modifier": "Модификатор параметров",
+      "elemental": "Стихии",
+      "element": "Обычная стихия",
+      "element_switch": "Смена стихии",
+      "underbarrel_element_switch": "Смена стихии подствольника",
+      "pearl_elements": "Жемчужные стихии",
+      "pearl_stat": "Жемчужный параметр",
+      "skin": "Скин",
+      "rarity": "Редкость",
+      "common": "Обычное",
+      "uncommon": "Необычное",
+      "rare": "Редкое",
+      "epic": "Эпическое",
+      "legendary": "Легендарное",
+      "pearl": "Жемчужное",
+      "assault_rifle": "Автомат",
+      "pistol": "Пистолет",
+      "shotgun": "Дробовик",
+      "smg": "ПП",
+      "sniper": "Снайперская"
+    },
+    "tooltips": {
+      "refresh_parts": "Обновить детали",
+      "change_skin": "Сменить облик",
+      "move_up": "Вверх",
+      "move_down": "Вниз",
+      "drag_part": "Перетащите для изменения порядка",
+      "remove_part": "Удалить"
+    },
+    "parts": {
+      "cosmetic_part": "Косметическая деталь",
+      "element_config": "Настройка стихии",
+      "unnamed_barrel": "Безымянный ствол",
+      "unknown": "Неизвестно",
+      "unknown_item": "Неизвестный предмет",
+      "unknown_manufacturer": "Неизвестный производитель",
+      "no_stat_changes": "Без изменений характеристик",
+      "element_group": "Группа настройки стихии · {n} дет.",
+      "licensed_group": "Группа лицензир. деталей · {mfg} · {n} дет."
+    },
+    "summary": {
+      "none_selected": "Оружие из рюкзака не выбрано",
+      "selected": "Выбрано · {name} · Ур.{level}",
+      "fallback_name": "Оружие"
+    },
+    "catalog": {
+      "search_part": "Поиск по названию, эффекту, производителю или типу",
+      "available_parts": "Доступные детали",
+      "selected_parts": "Выбранные детали",
+      "clear": "Очистить",
+      "all": "Все",
+      "all_manufacturers": "Все производители",
+      "all_weapon_types": "Все типы оружия"
     }
   },
   "weapon_gen_tab": {
@@ -559,6 +693,16 @@
     },
     "buttons": {
       "add_to_backpack": "Добавить в рюкзак"
+    },
+    "sections": {
+      "config": "Конфигурация",
+      "attributes": "Редкость / Элементы",
+      "parts": "Детали оружия",
+      "multi": "Мульти",
+      "pearl_stat": "Жемчужный стат",
+      "pearl_elements": "Жемчужные элементы",
+      "elem2_hint": "Переключение стихии подствольника появится после выбора соответствующей детали.",
+      "need_elem1": "Сначала выберите Стихию 1"
     },
     "dialogs": {
       "error_title": "Ошибка",
@@ -600,7 +744,8 @@
       "success": "Успешно",
       "copied": "Скопировано в буфер обмена.",
       "no_valid_code": "Нет валидного кода",
-      "gen_first": "Пожалуйста, сначала сгенерируйте валидный серийный номер."
+      "gen_first": "Пожалуйста, сначала сгенерируйте валидный серийный номер.",
+      "error": "Ошибка"
     }
   },
   "shield_tab": {
@@ -638,7 +783,8 @@
       "success": "Успешно",
       "copied": "Скопировано в буфер обмена.",
       "no_valid_code": "Нет валидного кода",
-      "gen_first": "Пожалуйста, сначала сгенерируйте валидный серийный номер."
+      "gen_first": "Пожалуйста, сначала сгенерируйте валидный серийный номер.",
+      "error": "Ошибка"
     }
   },
   "repkit_tab": {
@@ -677,7 +823,8 @@
       "gen_first": "Пожалуйста, сначала сгенерируйте валидный серийный номер.",
       "load_fail_title": "Сбой загрузки данных",
       "path_error": "Не найден путь к CSV файлу ремкомплектов.",
-      "parse_error": "Не удается загрузить или разобрать файл данных ремкомплекта: {error}"
+      "parse_error": "Не удается загрузить или разобрать файл данных ремкомплекта: {error}",
+      "error": "Ошибка"
     }
   },
   "sync_errors": {
@@ -721,7 +868,8 @@
       "success": "Успешно",
       "copied": "Скопировано в буфер обмена.",
       "no_valid_code": "Нет валидного кода",
-      "gen_first": "Пожалуйста, сначала сгенерируйте валидный серийный номер."
+      "gen_first": "Пожалуйста, сначала сгенерируйте валидный серийный номер.",
+      "error": "Ошибка"
     }
   },
   "loadout_tab": {
@@ -783,6 +931,12 @@
       "load_success": "Набор {slot} загружен в память.\nНажмите 'Сохранить' в главном окне для записи.",
       "name_prompt_title": "Назвать набор",
       "name_prompt_msg": "Введите название набора (Отмена — имя по умолчанию):"
+    },
+    "decode": {
+      "unknown": "Неизвестно",
+      "decode_failed": "Ошибка декодирования",
+      "unknown_item": "Неизвестный предмет",
+      "decode_error": "Ошибка декодирования"
     }
   }
 }

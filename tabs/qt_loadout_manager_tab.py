@@ -138,6 +138,12 @@ class QtLoadoutManagerTab(QWidget):
                     "no_items": "当前没有装备任何物品", "open_first": "请先打开存档",
                     "no_equipped_data": "未找到已装备物品数据",
                 },
+                "decode": {
+                    "unknown": "未知",
+                    "decode_failed": "解码失败",
+                    "unknown_item": "未知物品",
+                    "decode_error": "解码错误",
+                },
                 "notice": "",
                 "dialogs": {},
             }
@@ -228,9 +234,17 @@ class QtLoadoutManagerTab(QWidget):
     def _load_skills_csv_data(self):
         """加载 class_mods/Skills.csv 并按 class_ID 索引"""
         self.skills_data = resource_loader.load_class_mods_csv("Skills.csv")
+        self.class_ids = dict(self.CLASS_IDS)
+        self.class_names_by_identifier = {}
         self.skills_by_class = {}
         for skill in self.skills_data:
             class_id = skill.get('class_ID', '')
+            class_name = skill.get('class_name', '').strip()
+            class_identifier = skill.get('class_identifier', '').strip().casefold()
+            if class_id.isdigit() and class_name:
+                self.class_ids[class_name] = int(class_id)
+                if class_identifier:
+                    self.class_names_by_identifier[class_identifier] = class_name
             if class_id not in self.skills_by_class:
                 self.skills_by_class[class_id] = []
             self.skills_by_class[class_id].append(skill)
@@ -321,6 +335,9 @@ class QtLoadoutManagerTab(QWidget):
         try:
             state = self.yaml_data.get('state', self.yaml_data)
             class_raw = state.get('class', '')
+            discovered_name = self.class_names_by_identifier.get(str(class_raw).casefold())
+            if discovered_name:
+                return self.CLASS_NAME_ALIASES.get(discovered_name, discovered_name)
             class_key = class_raw.replace('Char_', '') if class_raw.startswith('Char_') else class_raw
             char_info = CHARACTER_CLASSES.get(class_key, {})
             class_name = char_info.get('name', class_key)
@@ -908,7 +925,7 @@ class QtLoadoutManagerTab(QWidget):
     def _display_skill_graphs(self, skill_graphs: list):
         """通用：将 skill_graphs 列表显示到技能面板（仅显示已激活技能）"""
         class_name = self._get_character_class_name()
-        class_id = str(self.CLASS_IDS.get(class_name, 0))
+        class_id = str(self.class_ids.get(class_name, 0))
 
         found_any = False
         cat_label = QLabel(self._t('labels', 'activated_skills'))
@@ -924,7 +941,7 @@ class QtLoadoutManagerTab(QWidget):
         for graph in skill_graphs:
             graph_name = graph.get('name', '')
             for node in graph.get('nodes', []):
-                name = node.get('name', '未知')
+                name = node.get('name') or self._t('decode', 'unknown')
                 pts = node.get('points_spent', 0)
                 is_activated = node.get('is_activated', False)
 
@@ -960,14 +977,14 @@ class QtLoadoutManagerTab(QWidget):
         try:
             formatted_str, _, err = decoder_logic.decode_serial_to_string(serial)
             if err:
-                return f"[解码失败: {err}]"
+                return f"[{self._t('decode', 'decode_failed')}: {err}]"
             if '||' not in formatted_str:
-                return "[未知物品]"
+                return f"[{self._t('decode', 'unknown_item')}]"
             header_part, _ = formatted_str.split('||', 1)
             id_section = header_part.strip().split('|')[0]
             id_part = id_section.strip().split(',')
             if len(id_part) < 4:
-                return "[未知物品]"
+                return f"[{self._t('decode', 'unknown_item')}]"
             item_id = int(id_part[0].strip())
             manufacturer, item_type, found = lookup.get_kind_enums(item_id)
             if not found:
@@ -976,7 +993,7 @@ class QtLoadoutManagerTab(QWidget):
             loc_type = bl4f.get_localized_string(item_type)
             return f"{loc_mfr} {loc_type}"
         except Exception:
-            return "[解码错误]"
+            return f"[{self._t('decode', 'decode_error')}]"
 
     def _create_equipped_row(self, slot_name: str, item_name: str, serial: str) -> QWidget:
         row = QFrame()

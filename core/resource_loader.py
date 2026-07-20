@@ -29,6 +29,32 @@ def get_ui_localization_file(lang: str) -> str:
     }
     return mapping.get(lang, 'i18n/ui_localization_EN.json')
 
+
+# Item flag labels are identical across every editor tab; keep one localized
+# source instead of a copy-pasted bilingual map per tab. The English values are
+# the fallback used only if the localization JSON fails to load.
+# 物品标记标签在每个编辑器标签页中都相同；集中维护单一本地化来源，而非在每个
+# 标签页复制双语映射。英文值仅在本地化 JSON 加载失败时作为回退。
+_FLAG_KEYS = ("1", "3", "5", "17", "33", "65", "129")
+_FLAG_FALLBACK_EN = {
+    "1": "1 (Normal)", "3": "3 (Favorite)", "5": "5 (Junk)",
+    "17": "17 (Group 1)", "33": "33 (Group 2)", "65": "65 (Group 3)",
+    "129": "129 (Group 4)",
+}
+
+
+def get_flag_labels(lang: str) -> dict:
+    """Localized {code: label} flag map shared by all editor tabs.
+
+    Reads weapon_editor_tab.flags from the language's UI localization (all four
+    languages ship these) and falls back to English per-key on any miss.
+    所有编辑器标签页共用的本地化标记映射；读取该语言 UI 本地化中的
+    weapon_editor_tab.flags（四种语言均已提供），缺失项按键回退到英文。
+    """
+    full = load_json_resource(get_ui_localization_file(lang)) or {}
+    flags = full.get("weapon_editor_tab", {}).get("flags", {}) or {}
+    return {k: flags.get(k, _FLAG_FALLBACK_EN[k]) for k in _FLAG_KEYS}
+
 def get_resource_path(relative_path: Union[str, Path]) -> Path:
     """
     获取资源的绝对路径，支持PyInstaller打包环境

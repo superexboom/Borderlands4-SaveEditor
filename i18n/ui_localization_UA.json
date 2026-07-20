@@ -26,6 +26,7 @@
     },
     "dialogs": {
       "folder_name_warning": "Назва обраної папки має бути 'SaveGames'.",
+      "save_filter": "Збереження Borderlands 4 (*.sav);;Усі файли (*.*)",
       "success": "Успіх",
       "warning": "Попередження",
       "game_dir_needed_title": "Вказати папку гри",
@@ -81,11 +82,13 @@
       "cancel": "Скасувати",
       "change_bg_title": "Виберіть Фонове Зображення",
       "image_files": "Файли Зображень",
+      "save_filter": "Збереження Borderlands 4 (*.sav);;Усі файли (*.*)",
       "clear_bg_prompt": "Хочете очистити користувацький фон або вибрати новий?\nYes: Очистити\nNo: Вибрати Новий\nCancel: Скасувати",
       "clear_bg_title": "Очистити Фон",
       "decrypt_success": "Збереження розшифровано!\nПлатформа: {platform}\nРезервну копію створено: {backup_name}",
       "decrypt_failed": "Помилка розшифровки",
       "decrypt_failed_msg": "Не вдалося розшифрувати з ID '{user_id}'.\n({error})\n\nБудь ласка, введіть правильний 64-бітний ID:",
+      "decrypt_failed_reason": "Не вдалося розшифрувати збереження з поточним ID користувача.",
       "user_id_needed": "Потрібен User ID",
       "enter_user_id": "Введіть 64-бітний ID (Epic/Steam ID) для цього збереження:",
       "open_cancelled": "Відкриття збереження скасовано.",
@@ -221,7 +224,8 @@
       "Lost Loot": "Втрачене",
       "丢失物品": "Втрачене",
       "Equipped": "Екіпіровано",
-      "装备中­": "Екіпіровано"
+      "装备中": "Екіпіровано",
+      "Unknown": "Невідомо"
     },
     "search_placeholder": "Пошук предметів...",
     "add_item": {
@@ -307,7 +311,8 @@
       "generated_result": "Згенерований результат:",
       "special_combo_input": "Введення комбінації:",
       "status_generating": "Статус: Генерація...",
-      "status_gen_complete": "Статус: Генерацію завершено!"
+      "status_gen_complete": "Статус: Генерацію завершено!",
+      "status_message": "Статус: {message}"
     },
     "placeholders": {
       "base85": "Введіть Base85 код, наприклад: @Ug#2fK2...",
@@ -346,6 +351,8 @@
       "no_content": "Немає контенту",
       "no_export": "Немає результатів для експорту.",
       "export_batch_title": "Експорт пакетних результатів",
+      "text_filter": "Текстові файли (*.txt);;Усі файли (*)",
+      "yaml_filter": "Файли YAML (*.yaml);;Усі файли (*)",
       "success": "Успіх",
       "export_success": "Результати експортовано у:\n{path}",
       "export_fail": "Помилка експорту",
@@ -382,7 +389,8 @@
     },
     "legendary": {
       "title": "Легендарний додаток",
-      "clear": "Очистити"
+      "clear": "Очистити",
+      "search_placeholder": "Пошук…"
     },
     "output": {
       "title": "Десеріалізація",
@@ -423,6 +431,23 @@
     "special_thanks": {
       "title": "Special Thanks",
       "content": "Дизайн та дані цієї сторінки натхненні @Mattmab та @Whiteshark\nЯкщо вам подобається цей дизайн, відвідайте save-editor.be та спробуйте їхню веб-версію"
+    },
+    "perk_filters": {
+      "all": "Усі",
+      "weapon": "Зброя",
+      "skill": "Навичка",
+      "element": "Стихія",
+      "defense": "Захист",
+      "utility": "Утиліта",
+      "firmware": "Прошивка",
+      "other": "Інше"
+    },
+    "skill_trees": {
+      "red": "Червоний",
+      "green": "Зелений",
+      "blue": "Синій",
+      "all_skills": "Усі навички",
+      "passive": "Пасивний"
     }
   },
   "enhancement_tab": {
@@ -464,6 +489,38 @@
     "special_thanks": {
       "title": "Special Thanks",
       "content": "Дизайн та дані цієї сторінки натхненні @Mattmab та @Whiteshark\nЯкщо вам подобається цей дизайн, відвідайте save-editor.be та спробуйте їхню веб-версію"
+    },
+    "picker": {
+      "search_placeholder": "Пошук…",
+      "available": "Доступно (подвійний клік)",
+      "selected_stacks": "Вибрані стоси",
+      "selected_stats": "Вибрані характеристики"
+    },
+    "categories": {
+      "all": "Усі",
+      "firmware": "Прошивка",
+      "sniper": "Снайперська",
+      "shotgun": "Дробовик",
+      "smg": "ПП",
+      "pistol": "Пістолет",
+      "ar": "Автомат",
+      "gun": "Універсальний"
+    },
+    "subcategories": {
+      "all": "Усі",
+      "dmg": "Урон",
+      "crit": "Крит. урон",
+      "firerate": "Скорострільність",
+      "acc": "Точність",
+      "reload": "Перезарядка",
+      "mag": "Магазин",
+      "splashdmg": "Урон по площі",
+      "splashradius": "Радіус ураження",
+      "ads": "Приціл",
+      "se_dmg": "Урон статусу",
+      "se_chance": "Шанс статусу",
+      "equip": "Спорядження",
+      "other": "Інше"
     }
   },
   "weapon_editor_tab": {
@@ -482,7 +539,8 @@
       "parts_list": "Список частин",
       "parse_serial_to_show_parts": "Частини з'являться тут після парсингу серійного номера...",
       "level_label": "Рівень",
-      "slot_label": "Слот"
+      "slot_label": "Слот",
+      "search_weapon_placeholder": "Пошук за іменем, виробником, типом, рівнем або слотом"
     },
     "buttons": {
       "update_weapon": "Оновити зброю",
@@ -536,6 +594,9 @@
       "select_skin_title": "Вибір скіна",
       "select_skin_msg": "Оберіть скін для застосування",
       "update_success": "Зброю успішно оновлено.",
+      "missing_required_file": "Відсутній необхідний файл: {error}",
+      "data_load_error": "Помилка завантаження даних: {error}",
+      "invalid_skin_part": "Вибрана частина не є скіном.",
       "parts_refresh_success": "Список частин оновлено."
     },
     "misc": {
@@ -543,8 +604,81 @@
       "elemental": "Стихія",
       "elements": "Стихії",
       "element_switch": "Перемикання стихій",
-      "pearl_stat": "Pearl Stat",
-      "pearl_elements": "Pearl Elements"
+      "underbarrel_element_switch": "Зміна стихії підствольника",
+      "pearl_stat": "Перлинний параметр",
+      "pearl_elements": "Перлинні стихії"
+    },
+    "taxonomy": {
+      "body": "Корпус",
+      "body_accessory": "Аксесуар корпуса",
+      "barrel": "Ствол",
+      "barrel_accessory": "Аксесуар ствола",
+      "manufacturer_part": "Деталь виробника",
+      "tediore_payload": "Заряд Tediore",
+      "tediore_throw_reload": "Кидкова перезарядка",
+      "magazine": "Магазин",
+      "magazine_accessory": "Аксесуар магазина",
+      "scope": "Приціл",
+      "scope_accessory": "Аксесуар прицілу",
+      "grip": "Руків'я / приклад",
+      "underbarrel": "Підствольник",
+      "underbarrel_accessory": "Аксесуар підствольника",
+      "foregrip": "Переднє руків'я",
+      "borg_magazine_adapter": "Адаптер магазина Borg",
+      "special_element_set": "Особливий набір стихій",
+      "stat_modifier": "Модифікатор параметрів",
+      "elemental": "Стихії",
+      "element": "Звичайна стихія",
+      "element_switch": "Зміна стихії",
+      "underbarrel_element_switch": "Зміна стихії підствольника",
+      "pearl_elements": "Перлинні стихії",
+      "pearl_stat": "Перлинний параметр",
+      "skin": "Скін",
+      "rarity": "Рідкість",
+      "common": "Звичайне",
+      "uncommon": "Незвичайне",
+      "rare": "Рідкісне",
+      "epic": "Епічне",
+      "legendary": "Легендарне",
+      "pearl": "Перлинне",
+      "assault_rifle": "Автомат",
+      "pistol": "Пістолет",
+      "shotgun": "Дробовик",
+      "smg": "ПП",
+      "sniper": "Снайперська"
+    },
+    "tooltips": {
+      "refresh_parts": "Оновити деталі",
+      "change_skin": "Змінити вигляд",
+      "move_up": "Вгору",
+      "move_down": "Вниз",
+      "drag_part": "Перетягніть, щоб змінити порядок",
+      "remove_part": "Видалити"
+    },
+    "parts": {
+      "cosmetic_part": "Косметична деталь",
+      "element_config": "Налаштування стихії",
+      "unnamed_barrel": "Безіменний ствол",
+      "unknown": "Невідомо",
+      "unknown_item": "Невідомий предмет",
+      "unknown_manufacturer": "Невідомий виробник",
+      "no_stat_changes": "Без змін характеристик",
+      "element_group": "Група налаштування стихії · {n} дет.",
+      "licensed_group": "Група ліцензов. деталей · {mfg} · {n} дет."
+    },
+    "summary": {
+      "none_selected": "Зброю з рюкзака не вибрано",
+      "selected": "Вибрано · {name} · Рів.{level}",
+      "fallback_name": "Зброя"
+    },
+    "catalog": {
+      "search_part": "Пошук за назвою, ефектом, виробником або типом",
+      "available_parts": "Доступні деталі",
+      "selected_parts": "Вибрані деталі",
+      "clear": "Очистити",
+      "all": "Усі",
+      "all_manufacturers": "Усі виробники",
+      "all_weapon_types": "Усі типи зброї"
     }
   },
   "weapon_gen_tab": {
@@ -559,6 +693,16 @@
     },
     "buttons": {
       "add_to_backpack": "Додати до рюкзака"
+    },
+    "sections": {
+      "config": "Конфігурація",
+      "attributes": "Рідкість / Елементи",
+      "parts": "Деталі зброї",
+      "multi": "Мульті",
+      "pearl_stat": "Перлинний стат",
+      "pearl_elements": "Перлинні елементи",
+      "elem2_hint": "Перемикання стихії підствольника з’явиться після вибору відповідної деталі.",
+      "need_elem1": "Спочатку виберіть Стихію 1"
     },
     "dialogs": {
       "error_title": "Помилка",
@@ -600,7 +744,8 @@
       "success": "Успіх",
       "copied": "Скопійовано в буфер обміну.",
       "no_valid_code": "Немає дійсного коду",
-      "gen_first": "Будь ласка, спочатку згенеруйте дійсний серійний номер."
+      "gen_first": "Будь ласка, спочатку згенеруйте дійсний серійний номер.",
+      "error": "Помилка"
     }
   },
   "shield_tab": {
@@ -638,7 +783,8 @@
       "success": "Успіх",
       "copied": "Скопійовано в буфер обміну.",
       "no_valid_code": "Немає дійсного коду",
-      "gen_first": "Будь ласка, спочатку згенеруйте дійсний серійний номер."
+      "gen_first": "Будь ласка, спочатку згенеруйте дійсний серійний номер.",
+      "error": "Помилка"
     }
   },
   "repkit_tab": {
@@ -677,7 +823,8 @@
       "gen_first": "Будь ласка, спочатку згенеруйте дійсний серійний номер.",
       "load_fail_title": "Збій завантаження даних",
       "path_error": "Не знайдено шлях до CSV файлу ремкомплектів.",
-      "parse_error": "Не вдається завантажити або розібрати файл даних ремкомплекту: {error}"
+      "parse_error": "Не вдається завантажити або розібрати файл даних ремкомплекту: {error}",
+      "error": "Помилка"
     }
   },
   "sync_errors": {
@@ -721,7 +868,8 @@
       "success": "Успіх",
       "copied": "Скопійовано в буфер обміну.",
       "no_valid_code": "Немає дійсного коду",
-      "gen_first": "Будь ласка, спочатку згенеруйте дійсний серійний номер."
+      "gen_first": "Будь ласка, спочатку згенеруйте дійсний серійний номер.",
+      "error": "Помилка"
     }
   },
   "loadout_tab": {
@@ -783,6 +931,12 @@
       "load_success": "Набір {slot} завантажено в пам'ять.\nНатисніть 'Зберегти' в головному вікні для запису.",
       "name_prompt_title": "Назвати набір",
       "name_prompt_msg": "Введіть назву набору (Скасувати — ім'я за замовчуванням):"
+    },
+    "decode": {
+      "unknown": "Невідомо",
+      "decode_failed": "Помилка декодування",
+      "unknown_item": "Невідомий предмет",
+      "decode_error": "Помилка декодування"
     }
   }
 }

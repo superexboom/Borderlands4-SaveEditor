@@ -26,6 +26,7 @@
     },
     "dialogs": {
       "folder_name_warning": "所选文件夹名称必须为 'SaveGames'。",
+      "save_filter": "Borderlands 4 存档 (*.sav);;所有文件 (*.*)",
       "success": "成功",
       "warning": "警告",
       "game_dir_needed_title": "设置游戏目录",
@@ -81,11 +82,13 @@
       "cancel": "取消",
       "change_bg_title": "选择背景图片",
       "image_files": "图片文件",
+      "save_filter": "Borderlands 4 存档 (*.sav);;所有文件 (*.*)",
       "clear_bg_prompt": "是否要清除自定义背景或选择新背景？\nYes: 清除\nNo: 选择新背景\nCancel: 取消",
       "clear_bg_title": "清除背景",
       "decrypt_success": "存档文件解密成功！\n平台: {platform}\n备份已创建: {backup_name}",
       "decrypt_failed": "解密失败",
       "decrypt_failed_msg": "无法使用ID '{user_id}' 解密。\n({error})\n\n请输入正确的64位ID:",
+      "decrypt_failed_reason": "无法使用当前用户 ID 解密该存档。",
       "user_id_needed": "需要用户ID",
       "enter_user_id": "请输入此存档对应的64位ID (Epic/Steam ID):",
       "open_cancelled": "已取消打开存档。",
@@ -221,7 +224,8 @@
       "Lost Loot": "丢失物品",
       "丢失物品": "丢失物品",
       "Equipped": "装备中",
-      "装备中": "装备中"
+      "装备中": "装备中",
+      "Unknown": "未知"
     },
     "search_placeholder": "搜索物品...",
     "add_item": {
@@ -307,7 +311,8 @@
       "generated_result": "生成结果:",
       "special_combo_input": "组合输入:",
       "status_generating": "状态: 正在生成...",
-      "status_gen_complete": "状态: 生成完成!"
+      "status_gen_complete": "状态: 生成完成!",
+      "status_message": "状态：{message}"
     },
     "placeholders": {
       "base85": "输入Base85编码，例如: @Ug#2fK2...",
@@ -327,7 +332,7 @@
       "gen_writing": "正在生成并写入..."
     },
     "checkboxes": {
-      "special_format": "启用特殊格式 {基础值:变量}",
+      "special_format": "启用特殊格式 {base:var}",
       "skin_mode": "启用武器皮肤模式",
       "combo_mode": "启用排列组合模式",
       "special_combo": "特殊组合 {AAA:B} -> {AAA:[... B]}",
@@ -346,6 +351,8 @@
       "no_content": "无内容",
       "no_export": "没有可导出的结果。",
       "export_batch_title": "导出批量结果",
+      "text_filter": "文本文件 (*.txt);;所有文件 (*)",
+      "yaml_filter": "YAML 文件 (*.yaml);;所有文件 (*)",
       "success": "成功",
       "export_success": "结果已成功导出到:\n{path}",
       "export_fail": "导出失败",
@@ -382,7 +389,8 @@
     },
     "legendary": {
       "title": "传奇附加",
-      "clear": "清空"
+      "clear": "清空",
+      "search_placeholder": "搜索…"
     },
     "output": {
       "title": "Deserialize",
@@ -423,6 +431,23 @@
     "special_thanks": {
       "title": "Special Thanks",
       "content": "本页面的设计灵感及数据来源于 @Mattmab 及 @Whiteshark\n如果你也喜欢这个设计，可以前往 save-editor.be 试试他们的网页版"
+    },
+    "perk_filters": {
+      "all": "全部",
+      "weapon": "武器",
+      "skill": "技能",
+      "element": "元素",
+      "defense": "生存",
+      "utility": "通用",
+      "firmware": "固件",
+      "other": "其他"
+    },
+    "skill_trees": {
+      "red": "红",
+      "green": "绿",
+      "blue": "蓝",
+      "all_skills": "全部技能",
+      "passive": "被动技能"
     }
   },
   "enhancement_tab": {
@@ -464,6 +489,38 @@
     "special_thanks": {
       "title": "Special Thanks",
       "content": "本页面的设计灵感及数据来源于 @Mattmab 及 @Whiteshark\n如果你也喜欢这个设计，可以前往 save-editor.be 试试他们的网页版"
+    },
+    "picker": {
+      "search_placeholder": "搜索…",
+      "available": "可用（双击添加）",
+      "selected_stacks": "已选堆叠",
+      "selected_stats": "已选属性"
+    },
+    "categories": {
+      "all": "全部",
+      "firmware": "固件",
+      "sniper": "狙击枪",
+      "shotgun": "霰弹枪",
+      "smg": "冲锋枪",
+      "pistol": "手枪",
+      "ar": "突击步枪",
+      "gun": "通用"
+    },
+    "subcategories": {
+      "all": "全部",
+      "dmg": "伤害",
+      "crit": "暴击伤害",
+      "firerate": "射速",
+      "acc": "精准",
+      "reload": "装填",
+      "mag": "弹匣",
+      "splashdmg": "溅射伤害",
+      "splashradius": "溅射半径",
+      "ads": "开镜",
+      "se_dmg": "状态效果伤害",
+      "se_chance": "状态效果率",
+      "equip": "装备速度",
+      "other": "其他"
     }
   },
   "weapon_editor_tab": {
@@ -482,7 +539,8 @@
       "parts_list": "部件列表",
       "parse_serial_to_show_parts": "解析武器序列后将在此处显示部件...",
       "level_label": "等级",
-      "slot_label": "所在格"
+      "slot_label": "所在格",
+      "search_weapon_placeholder": "搜索名称、厂商、类型、等级或槽位"
     },
     "buttons": {
       "update_weapon": "更新武器",
@@ -536,6 +594,9 @@
       "select_skin_title": "选择皮肤",
       "select_skin_msg": "选择要应用的皮肤",
       "update_success": "武器更新成功。",
+      "missing_required_file": "缺少必要文件：{error}",
+      "data_load_error": "加载数据时发生错误：{error}",
+      "invalid_skin_part": "所选部件不是皮肤部件。",
       "parts_refresh_success": "部件列表已刷新。"
     },
     "misc": {
@@ -543,8 +604,81 @@
       "elemental": "元素",
       "elements": "元素",
       "element_switch": "元素切换",
+      "underbarrel_element_switch": "元素下挂切换",
       "pearl_stat": "珠光属性",
       "pearl_elements": "珠光元素"
+    },
+    "taxonomy": {
+      "body": "枪身",
+      "body_accessory": "枪身附属",
+      "barrel": "枪管",
+      "barrel_accessory": "枪管附件",
+      "manufacturer_part": "厂商授权部件",
+      "tediore_payload": "泰迪尔投掷载荷",
+      "tediore_throw_reload": "泰迪尔投掷换弹参数",
+      "magazine": "弹匣",
+      "magazine_accessory": "弹匣附件",
+      "scope": "瞄准镜",
+      "scope_accessory": "瞄准镜附件",
+      "grip": "后握把/枪托",
+      "underbarrel": "下挂",
+      "underbarrel_accessory": "下挂附件",
+      "foregrip": "前握把",
+      "borg_magazine_adapter": "开颅者枪管弹匣适配",
+      "special_element_set": "特殊元素组合",
+      "stat_modifier": "属性修改组件",
+      "elemental": "元素",
+      "element": "常规元素",
+      "element_switch": "元素切换",
+      "underbarrel_element_switch": "元素下挂切换",
+      "pearl_elements": "珠光元素",
+      "pearl_stat": "珠光属性",
+      "skin": "皮肤",
+      "rarity": "稀有度",
+      "common": "普通",
+      "uncommon": "罕见",
+      "rare": "稀有",
+      "epic": "史诗",
+      "legendary": "传奇",
+      "pearl": "珠光",
+      "assault_rifle": "突击步枪",
+      "pistol": "手枪",
+      "shotgun": "霰弹枪",
+      "smg": "冲锋枪",
+      "sniper": "狙击枪"
+    },
+    "tooltips": {
+      "refresh_parts": "刷新部件",
+      "change_skin": "更换皮肤",
+      "move_up": "上移",
+      "move_down": "下移",
+      "drag_part": "拖动以调整顺序",
+      "remove_part": "移除"
+    },
+    "parts": {
+      "cosmetic_part": "外观配件",
+      "element_config": "元素配置",
+      "unnamed_barrel": "未命名枪管",
+      "unknown": "未知",
+      "unknown_item": "未知物品",
+      "unknown_manufacturer": "未知厂商",
+      "no_stat_changes": "无属性变化",
+      "element_group": "元素配置组 · {n} 个配件",
+      "licensed_group": "授权配件组 · {mfg} · {n} 个配件"
+    },
+    "summary": {
+      "none_selected": "当前未选择背包武器",
+      "selected": "当前选择 · {name} · Lv.{level}",
+      "fallback_name": "武器"
+    },
+    "catalog": {
+      "search_part": "搜索部件名称、效果、厂商或类型",
+      "available_parts": "可用部件",
+      "selected_parts": "已选部件",
+      "clear": "清空",
+      "all": "全部",
+      "all_manufacturers": "全部厂商",
+      "all_weapon_types": "全部武器类型"
     }
   },
   "weapon_gen_tab": {
@@ -559,6 +693,16 @@
     },
     "buttons": {
       "add_to_backpack": "添加到背包"
+    },
+    "sections": {
+      "config": "武器配置",
+      "attributes": "稀有度 / 元素",
+      "parts": "武器部件",
+      "multi": "可多选",
+      "pearl_stat": "珠光属性",
+      "pearl_elements": "珠光元素",
+      "elem2_hint": "下挂元素切换需选择相关部件后才会显示",
+      "need_elem1": "需先选择元素1"
     },
     "dialogs": {
       "error_title": "错误",
@@ -600,7 +744,8 @@
       "success": "成功",
       "copied": "已复制到剪贴板。",
       "no_valid_code": "无有效代码",
-      "gen_first": "请先生成一个有效的序列号。"
+      "gen_first": "请先生成一个有效的序列号。",
+      "error": "错误"
     }
   },
   "shield_tab": {
@@ -638,7 +783,8 @@
       "success": "成功",
       "copied": "已复制到剪贴板。",
       "no_valid_code": "无有效代码",
-      "gen_first": "请先生成一个有效的序列号。"
+      "gen_first": "请先生成一个有效的序列号。",
+      "error": "错误"
     }
   },
   "repkit_tab": {
@@ -677,7 +823,8 @@
       "gen_first": "请先生成一个有效的序列号。",
       "load_fail_title": "加载数据失败",
       "path_error": "无法找到修复套件CSV文件路径。",
-      "parse_error": "无法加载或解析修复套件数据文件: {error}"
+      "parse_error": "无法加载或解析修复套件数据文件: {error}",
+      "error": "错误"
     }
   },
   "sync_errors": {
@@ -721,7 +868,8 @@
       "success": "成功",
       "copied": "已复制到剪贴板。",
       "no_valid_code": "无有效代码",
-      "gen_first": "请先生成一个有效的序列号。"
+      "gen_first": "请先生成一个有效的序列号。",
+      "error": "错误"
     }
   },
   "loadout_tab": {
@@ -783,6 +931,12 @@
       "load_success": "配置 {slot} 已加载到内存。\n请点击主界面「保存」按钮写入存档。",
       "name_prompt_title": "为配置命名",
       "name_prompt_msg": "请输入当前配置的名称（取消则使用默认名称）:"
+    },
+    "decode": {
+      "unknown": "未知",
+      "decode_failed": "解码失败",
+      "unknown_item": "未知物品",
+      "decode_error": "解码错误"
     }
   }
 }

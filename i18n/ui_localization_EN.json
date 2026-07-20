@@ -26,6 +26,7 @@
     },
     "dialogs": {
       "folder_name_warning": "Selected folder must be named 'SaveGames'.",
+      "save_filter": "Borderlands 4 Saves (*.sav);;All Files (*.*)",
       "success": "Success",
       "warning": "Warning",
       "game_dir_needed_title": "Set Game Directory",
@@ -81,11 +82,13 @@
       "cancel": "Cancel",
       "change_bg_title": "Select Background Image",
       "image_files": "Image Files",
+      "save_filter": "Borderlands 4 Saves (*.sav);;All Files (*.*)",
       "clear_bg_prompt": "Do you want to clear the custom background or select a new one?\nYes: Clear\nNo: Select New\nCancel: Do Nothing",
       "clear_bg_title": "Clear Background",
       "decrypt_success": "Save file decrypted successfully!\nPlatform: {platform}\nBackup created: {backup_name}",
       "decrypt_failed": "Decryption Failed",
       "decrypt_failed_msg": "Unable to decrypt using ID '{user_id}'.\n({error})\n\nPlease enter the correct 64-bit ID:",
+      "decrypt_failed_reason": "The save could not be decrypted with the current user ID.",
       "user_id_needed": "User ID Required",
       "enter_user_id": "Please enter the 64-bit ID (Epic/Steam ID) for this save:",
       "open_cancelled": "Open save cancelled.",
@@ -221,7 +224,8 @@
       "Lost Loot": "Lost Loot",
       "丢失物品": "Lost Loot",
       "Equipped": "Equipped",
-      "装备中": "Equipped"
+      "装备中": "Equipped",
+      "Unknown": "Unknown"
     },
     "search_placeholder": "Search items...",
     "add_item": {
@@ -307,7 +311,8 @@
       "generated_result": "Generated Result:",
       "special_combo_input": "Combo Input:",
       "status_generating": "Status: Generating...",
-      "status_gen_complete": "Status: Generation complete!"
+      "status_gen_complete": "Status: Generation complete!",
+      "status_message": "Status: {message}"
     },
     "placeholders": {
       "base85": "Enter Base85 code, e.g.: @Ug#2fK2...",
@@ -346,6 +351,8 @@
       "no_content": "No Content",
       "no_export": "No results to export.",
       "export_batch_title": "Export Batch Results",
+      "text_filter": "Text Files (*.txt);;All Files (*)",
+      "yaml_filter": "YAML Files (*.yaml);;All Files (*)",
       "success": "Success",
       "export_success": "Results successfully exported to:\n{path}",
       "export_fail": "Export Failed",
@@ -382,7 +389,8 @@
     },
     "legendary": {
       "title": "Legendary Addition",
-      "clear": "Clear"
+      "clear": "Clear",
+      "search_placeholder": "Search..."
     },
     "output": {
       "title": "Deserialize",
@@ -423,6 +431,23 @@
     "special_thanks": {
       "title": "Special Thanks",
       "content": "The design inspiration and data for this page come from @Mattmab and @Whiteshark\nIf you like this design, visit save-editor.be to try their web version"
+    },
+    "perk_filters": {
+      "all": "All",
+      "weapon": "Weapon",
+      "skill": "Skill",
+      "element": "Element",
+      "defense": "Defense",
+      "utility": "Utility",
+      "firmware": "Firmware",
+      "other": "Other"
+    },
+    "skill_trees": {
+      "red": "Red",
+      "green": "Green",
+      "blue": "Blue",
+      "all_skills": "All Skills",
+      "passive": "Passive"
     }
   },
   "enhancement_tab": {
@@ -464,6 +489,38 @@
     "special_thanks": {
       "title": "Special Thanks",
       "content": "The design inspiration and data for this page come from @Mattmab and @Whiteshark\nIf you like this design, visit save-editor.be to try their web version"
+    },
+    "picker": {
+      "search_placeholder": "Search...",
+      "available": "Available (double-click to add)",
+      "selected_stacks": "Selected Stacks",
+      "selected_stats": "Selected Stats"
+    },
+    "categories": {
+      "all": "All",
+      "firmware": "Firmware",
+      "sniper": "Sniper",
+      "shotgun": "Shotgun",
+      "smg": "SMG",
+      "pistol": "Pistol",
+      "ar": "AR",
+      "gun": "Universal"
+    },
+    "subcategories": {
+      "all": "All",
+      "dmg": "Damage",
+      "crit": "Crit DMG",
+      "firerate": "Fire Rate",
+      "acc": "Accuracy",
+      "reload": "Reload",
+      "mag": "Magazine",
+      "splashdmg": "Splash DMG",
+      "splashradius": "Splash Radius",
+      "ads": "ADS",
+      "se_dmg": "SE DMG",
+      "se_chance": "SE Chance",
+      "equip": "Equip",
+      "other": "Other"
     }
   },
   "weapon_editor_tab": {
@@ -482,7 +539,8 @@
       "parts_list": "Parts List",
       "parse_serial_to_show_parts": "Parts will appear here after parsing weapon serial...",
       "level_label": "Level",
-      "slot_label": "Slot"
+      "slot_label": "Slot",
+      "search_weapon_placeholder": "Search name, manufacturer, type, level, or slot"
     },
     "buttons": {
       "update_weapon": "Update Weapon",
@@ -536,6 +594,9 @@
       "select_skin_title": "Select Skin",
       "select_skin_msg": "Select skin to apply",
       "update_success": "Weapon updated successfully.",
+      "missing_required_file": "Missing required file: {error}",
+      "data_load_error": "An error occurred while loading data: {error}",
+      "invalid_skin_part": "The selected part is not a skin part.",
       "parts_refresh_success": "Parts list refreshed."
     },
     "misc": {
@@ -543,8 +604,81 @@
       "elemental": "Elemental",
       "elements": "Elements",
       "element_switch": "Element Switch",
+      "underbarrel_element_switch": "Underbarrel Element Switch",
       "pearl_stat": "Pearl Stat",
       "pearl_elements": "Pearl Elements"
+    },
+    "taxonomy": {
+      "body": "Body",
+      "body_accessory": "Body Accessory",
+      "barrel": "Barrel",
+      "barrel_accessory": "Barrel Accessory",
+      "manufacturer_part": "Manufacturer Part",
+      "tediore_payload": "Tediore Payload",
+      "tediore_throw_reload": "Tediore Throw Reload",
+      "magazine": "Magazine",
+      "magazine_accessory": "Magazine Accessory",
+      "scope": "Scope",
+      "scope_accessory": "Scope Accessory",
+      "grip": "Grip / Stock",
+      "underbarrel": "Underbarrel",
+      "underbarrel_accessory": "Underbarrel Accessory",
+      "foregrip": "Foregrip",
+      "borg_magazine_adapter": "Borg Magazine Adapter",
+      "special_element_set": "Special Element Set",
+      "stat_modifier": "Stat Modifier",
+      "elemental": "Elemental",
+      "element": "Element",
+      "element_switch": "Element Switch",
+      "underbarrel_element_switch": "Underbarrel Element Switch",
+      "pearl_elements": "Pearl Elements",
+      "pearl_stat": "Pearl Stat",
+      "skin": "Skin",
+      "rarity": "Rarity",
+      "common": "Common",
+      "uncommon": "Uncommon",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary",
+      "pearl": "Pearl",
+      "assault_rifle": "Assault Rifle",
+      "pistol": "Pistol",
+      "shotgun": "Shotgun",
+      "smg": "SMG",
+      "sniper": "Sniper"
+    },
+    "tooltips": {
+      "refresh_parts": "Refresh parts",
+      "change_skin": "Change skin",
+      "move_up": "Move up",
+      "move_down": "Move down",
+      "drag_part": "Drag to reorder",
+      "remove_part": "Remove"
+    },
+    "parts": {
+      "cosmetic_part": "Cosmetic part",
+      "element_config": "Element configuration",
+      "unnamed_barrel": "Unnamed Barrel",
+      "unknown": "Unknown",
+      "unknown_item": "Unknown Item",
+      "unknown_manufacturer": "Unknown Manufacturer",
+      "no_stat_changes": "No stat changes",
+      "element_group": "Element Configuration Group · {n} parts",
+      "licensed_group": "Licensed Part Group · {mfg} · {n} parts"
+    },
+    "summary": {
+      "none_selected": "No backpack weapon selected",
+      "selected": "Selected · {name} · Lv.{level}",
+      "fallback_name": "Weapon"
+    },
+    "catalog": {
+      "search_part": "Search part name, effect, manufacturer, or type",
+      "available_parts": "Available Parts",
+      "selected_parts": "Selected Parts",
+      "clear": "Clear",
+      "all": "All",
+      "all_manufacturers": "All Manufacturers",
+      "all_weapon_types": "All Weapon Types"
     }
   },
   "weapon_gen_tab": {
@@ -559,6 +693,16 @@
     },
     "buttons": {
       "add_to_backpack": "Add to Backpack"
+    },
+    "sections": {
+      "config": "Weapon Config",
+      "attributes": "Rarity / Elements",
+      "parts": "Weapon Parts",
+      "multi": "Multi",
+      "pearl_stat": "Pearl Stat",
+      "pearl_elements": "Pearl Elements",
+      "elem2_hint": "Underbarrel element switch appears after selecting the related part.",
+      "need_elem1": "Select Element 1 first"
     },
     "dialogs": {
       "error_title": "Error",
@@ -600,7 +744,8 @@
       "success": "Success",
       "copied": "Copied to clipboard.",
       "no_valid_code": "No valid code",
-      "gen_first": "Please generate a valid serial first."
+      "gen_first": "Please generate a valid serial first.",
+      "error": "Error"
     }
   },
   "shield_tab": {
@@ -638,7 +783,8 @@
       "success": "Success",
       "copied": "Copied to clipboard.",
       "no_valid_code": "No valid code",
-      "gen_first": "Please generate a valid serial first."
+      "gen_first": "Please generate a valid serial first.",
+      "error": "Error"
     }
   },
   "repkit_tab": {
@@ -677,7 +823,8 @@
       "gen_first": "Please generate a valid serial first.",
       "load_fail_title": "Data Load Failed",
       "path_error": "Unable to find Repkit CSV file path.",
-      "parse_error": "Unable to load or parse Repkit data file: {error}"
+      "parse_error": "Unable to load or parse Repkit data file: {error}",
+      "error": "Error"
     }
   },
   "sync_errors": {
@@ -721,7 +868,8 @@
       "success": "Success",
       "copied": "Copied to clipboard.",
       "no_valid_code": "No valid code",
-      "gen_first": "Please generate a valid serial first."
+      "gen_first": "Please generate a valid serial first.",
+      "error": "Error"
     }
   },
   "loadout_tab": {
@@ -783,6 +931,12 @@
       "load_success": "Loadout {slot} loaded into memory.\nClick 'Save' in the main window to write to save file.",
       "name_prompt_title": "Name This Loadout",
       "name_prompt_msg": "Enter a name for this loadout (Cancel for default name):"
+    },
+    "decode": {
+      "unknown": "Unknown",
+      "decode_failed": "Decode failed",
+      "unknown_item": "Unknown item",
+      "decode_error": "Decode error"
     }
   }
 }
