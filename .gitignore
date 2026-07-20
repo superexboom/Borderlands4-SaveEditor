@@ -43,3 +43,4 @@ config.json
 xp_calc.py
 CsvMergeAutomationPlan.md
 ItemIdPartOverview.md
+tests/

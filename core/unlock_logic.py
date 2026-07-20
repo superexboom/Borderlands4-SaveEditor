@@ -5,7 +5,7 @@ from .unlock_data import (
     COLLECTIBLES, MISSIONSETS, UNLOCKABLES, LOCATIONS,
     CHARACTER_CLASSES, MAX_LEVEL, SAFEHOUSE_SILO_LOCATIONS,
     CHARACTER_UNLOCKABLES, STAT_TARGETS, EXPLORATION, POSTGAME,
-    VAULT_CARD_PURCHASES, VAULT_CARD_REWARD_UNLOCKABLES
+    PROFILE_UNLOCKABLES, VAULT_CARD_PURCHASES, VAULT_CARD_REWARD_UNLOCKABLES
 )
 
 # --- Helper Functions ---
@@ -644,11 +644,9 @@ def unlock_all_hover_drives(data):
 def unlock_all_cosmetics(data):
     if not is_profile_save(data):
         return
-    for namespace in (
-        'unlockable_darksiren', 'unlockable_echo4', 'unlockable_exosoldier',
-        'unlockable_gravitar', 'unlockable_paladin', 'unlockable_robodealer',
-        'unlockable_weapons',
-    ):
+    for namespace in PROFILE_UNLOCKABLES:
+        if not namespace.startswith('unlockable_') or namespace in {'unlockable_hoverdrives', 'unlockable_vehicles'}:
+            continue
         merge_profile_unlockable_entries(data, namespace)
 
 def unlock_all_vault_card_rewards(data):

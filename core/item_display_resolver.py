@@ -30,7 +30,7 @@ RARITY_ZH = {
     "Pearl": "珠光",
     "pearl": "珠光",
 }
-CLASSMOD_RARITY_CODES = {
+CLASSMOD_RARITY_FALLBACK = {
     254: {"217": "Common", "218": "Uncommon", "219": "Rare", "220": "Epic"},
     255: {"70": "Common", "69": "Uncommon", "68": "Rare", "67": "Epic"},
     256: {"66": "Common", "67": "Uncommon", "68": "Rare", "69": "Epic"},
@@ -138,6 +138,28 @@ def _item_index() -> dict[str, Any]:
     return resource_loader.load_item_json("item_name_index.json") or {}
 
 
+@lru_cache(maxsize=1)
+def classmod_rarity_codes() -> dict[int, dict[str, str]]:
+    codes = {item_id: dict(values) for item_id, values in CLASSMOD_RARITY_FALLBACK.items()}
+    for key, ref in (_item_index().get("part_refs") or {}).items():
+        if ref.get("category") != "inv_comp":
+            continue
+        item_id, separator, part_id = str(key).partition(":")
+        match = re.search(r"comp_\d+_(common|uncommon|rare|epic)$", str(ref.get("part", "")), re.IGNORECASE)
+        if separator and item_id.isdigit() and part_id and match:
+            codes.setdefault(int(item_id), {})[part_id] = match.group(1).title()
+    return codes
+
+
+def classmod_rarity_code(item_id: int | str, rarity: str) -> str:
+    try:
+        values = classmod_rarity_codes().get(int(item_id), {})
+    except (TypeError, ValueError):
+        return ""
+    rarity = str(rarity or "").casefold()
+    return next((part_id for part_id, name in values.items() if name.casefold() == rarity), "")
+
+
 @lru_cache(maxsize=8)
 def _weapon_parts(lang: str) -> list[dict[str, str]]:
     filename = "all_weapon_part.csv" if _lang_is_zh(lang) else "all_weapon_part_EN.csv"
@@ -161,6 +183,18 @@ def _rows_by_file(filename: str) -> list[dict[str, str]]:
         "class_mods": resource_loader.get_class_mods_data_path,
     }.get(folder)
     return _read_csv(getter(name)) if getter else []
+
+
+@lru_cache(maxsize=64)
+def dynamic_item_kind(item_id: int) -> tuple[str, str] | None:
+    prefix = f"{item_id}:"
+    refs = (_item_index().get("part_refs") or {})
+    if not any(key.startswith(prefix) and str(ref.get("parent", "")).startswith("classmod_") for key, ref in refs.items()):
+        return None
+    for row in _rows_by_file("class_mods/Class_rarity_name.csv"):
+        if row.get("class_ID", "").strip() == str(item_id) and row.get("class_name", "").strip():
+            return row["class_name"].strip(), "Class Mod"
+    return "Unknown", "Class Mod"
 
 
 def _csv_rows_for_type(item_type: str) -> list[dict[str, str]]:
@@ -384,6 +418,10 @@ WEAPON_PART_STAT_LABELS = {
     "ElementalPower": ("元素伤害", "Elemental Damage"),
     "ADSProficiency": ("瞄准时间", "ADS Time"),
     "DamageRadius": ("爆炸范围", "Splash Radius"),
+    "SplashDamage": ("溅射伤害", "Splash Damage"),
+    "MeleeDamage": ("近战伤害", "Melee Damage"),
+    "ProjectileSpeed": ("弹丸速度", "Projectile Speed"),
+    "ThrowDamage": ("投掷伤害", "Thrown Damage"),
 }
 WEAPON_PART_ATTRIBUTE_LABELS = {
     "weapon_damage": ("伤害", "Damage"),
@@ -731,6 +769,31 @@ def _adapter_description(ref: dict[str, Any], lang: str) -> tuple[list[str], set
     return [], set()
 
 
+def _base_value_description(ref: dict[str, Any], lang: str) -> list[str]:
+    labels = {
+        "damage_value": ("基础伤害", "Base Damage", ""),
+        "firerate_value": ("基础射速", "Base Fire Rate", "/s"),
+        "accuracy_value": ("基础精准值", "Base Accuracy", ""),
+        "spread_value": ("基础扩散值", "Base Spread", ""),
+        "damageradius_value": ("爆炸范围", "Splash Radius", "cm"),
+        "projectilespershot_value": ("弹丸数", "Projectiles", "/发" if _lang_is_zh(lang) else "/shot"),
+    }
+    lines: list[str] = []
+    for base_ref in ref.get("weapon_base_value_refs", []):
+        for key, raw in (base_ref.get("values") or {}).items():
+            label = labels.get(str(key).lower())
+            if not label:
+                continue
+            try:
+                value = float(raw)
+            except (TypeError, ValueError):
+                continue
+            if value <= 0 or (str(key).lower() == "projectilespershot_value" and value <= 1):
+                continue
+            lines.append(f"{_part_label(label[:2], lang)} {_part_number(value)}{label[2]}")
+    return list(dict.fromkeys(lines))
+
+
 def _part_behavior_text(ref: dict[str, Any], index: dict[str, Any], lang: str) -> str:
     key = "zh" if _lang_is_zh(lang) else "en"
     for uistat_id in [*ref.get("uistats_include", []), *ref.get("uistats", [])]:
@@ -897,6 +960,8 @@ def format_weapon_part_description(
     lines.extend(stat_lines)
     lines.extend(effect_lines)
     lines.extend(_format_part_operations(operations))
+    if not lines:
+        lines.extend(_base_value_description(ref, lang))
 
     tags = {str(tag).lower() for tag in ref.get("weapon_tags", [])}
     part_name = str(ref.get("part") or "").lower()
@@ -1384,7 +1449,7 @@ def _weapon_name(item_id: int, components: list[dict[str, Any]], ids: list[str],
 def _rarity_from_csv(item_id: int, ids: list[str], item_type: str, lang: str) -> str:
     if item_type == "Class Mod":
         for part_id in ids:
-            rarity = CLASSMOD_RARITY_CODES.get(item_id, {}).get(part_id)
+            rarity = classmod_rarity_codes().get(item_id, {}).get(part_id)
             if rarity:
                 return _rarity_text(rarity, lang)
     if item_type in WEAPON_TYPES:

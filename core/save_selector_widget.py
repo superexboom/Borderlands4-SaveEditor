@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit,
-    QTreeView, QAbstractItemView, QHeaderView, QFileDialog, QMessageBox
+    QTreeView, QAbstractItemView, QHeaderView, QFileDialog, QMessageBox, QSizePolicy
 )
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 from PyQt6.QtCore import pyqtSignal, Qt, QStandardPaths
@@ -35,7 +35,9 @@ class SaveSelectorWidget(QWidget):
         layout = QVBoxLayout(self)
         
         # --- Top Toolbar ---
-        toolbar_layout = QHBoxLayout()
+        toolbar_layout = QVBoxLayout()
+        directory_layout = QHBoxLayout()
+        user_id_layout = QHBoxLayout()
         self.refresh_button = QPushButton(self.loc['buttons']['refresh'])
         self.select_game_dir_btn = QPushButton(self.loc['buttons'].get('select_game_dir', 'Set Game Directory'))
         self.select_save_folder_btn = QPushButton(self.loc['buttons']['select_save_folder'])
@@ -46,13 +48,15 @@ class SaveSelectorWidget(QWidget):
         self.user_id_input.setPlaceholderText(self.loc['placeholders']['user_id_input'])
         self.user_id_input.textEdited.connect(self._clear_auto_user_id)
         
-        toolbar_layout.addWidget(self.refresh_button)
-        toolbar_layout.addWidget(self.select_game_dir_btn)
-        toolbar_layout.addWidget(self.select_save_folder_btn)
-        toolbar_layout.addWidget(self.select_backup_folder_btn)
-        toolbar_layout.addStretch()
-        toolbar_layout.addWidget(self.user_id_label)
-        toolbar_layout.addWidget(self.user_id_input)
+        directory_layout.addWidget(self.refresh_button)
+        directory_layout.addWidget(self.select_game_dir_btn)
+        directory_layout.addWidget(self.select_save_folder_btn)
+        directory_layout.addWidget(self.select_backup_folder_btn)
+        directory_layout.addStretch()
+        user_id_layout.addWidget(self.user_id_label)
+        user_id_layout.addWidget(self.user_id_input, 1)
+        toolbar_layout.addLayout(directory_layout)
+        toolbar_layout.addLayout(user_id_layout)
         layout.addLayout(toolbar_layout)
         
         # --- Path Info Labels (Optional, but good for UX) ---
@@ -60,6 +64,9 @@ class SaveSelectorWidget(QWidget):
         self.game_dir_label = QLabel()
         self.save_path_label = QLabel()
         self.backup_path_label = QLabel()
+        for label in (self.game_dir_label, self.save_path_label, self.backup_path_label):
+            label.setWordWrap(True)
+            label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
         self._update_path_labels()
         self.path_info_layout.addWidget(self.game_dir_label)
         self.path_info_layout.addWidget(self.save_path_label)
@@ -321,7 +328,7 @@ class SaveSelectorWidget(QWidget):
             self,
             self.loc['buttons']['open'], # 使用 Open 按钮的文本作为标题
             initial_path,
-            "Borderlands 4 Save (*.sav);;All Files (*.*)"
+            self.loc['dialogs'].get('save_filter', "Borderlands 4 Saves (*.sav);;All Files (*.*)")
         )
 
         if not file_path:

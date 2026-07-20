@@ -13,7 +13,7 @@ from PyQt6.QtWidgets import QToolTip
 from PyQt6.QtCore import pyqtSignal
 
 from core import b_encoder
-from core import resource_loader
+from core import item_display_resolver, resource_loader
 
 from .qt_catalog_picker import InlineCatalogPicker
 
@@ -118,7 +118,20 @@ class QtClassModEditorTab(QWidget):
         return text
 
     def _pick_text(self, zh, en):
+        # Two-language picker retained only for CSV columns that ship just
+        # zh/en data (e.g. tree_name_ZH/EN); RU/UA legitimately fall back to en
+        # there because no RU/UA data exists. UI chrome uses _loc instead.
+        # 仅保留用于只有 zh/en 数据的 CSV 列（如 tree_name_ZH/EN）的双语选择器；
+        # 那里 RU/UA 合理回退到英文，因不存在 RU/UA 数据。界面文字改用 _loc。
         return zh if self.current_lang == 'zh-CN' else en
+
+    def _loc(self, section, key, en, **fmt):
+        """Read class_mod_tab.<section>.<key> for the active language with an
+        English fallback (never Chinese/raw key), then format. All four
+        languages resolve from the JSON.
+        按当前语言读取 class_mod_tab.<section>.<key>，缺失时回退英文，再格式化。"""
+        text = self.ui_loc.get(section, {}).get(key) or en
+        return text.format(**fmt) if fmt else text
 
     def _load_csv_data(self):
         """加载所有CSV数据"""
@@ -132,6 +145,17 @@ class QtClassModEditorTab(QWidget):
     
     def _build_data_indexes(self):
         """构建数据索引以加速查找"""
+        discovered_classes = {}
+        for row in [*self.names_data, *self.skills_data]:
+            class_id = str(row.get('class_ID', '')).strip()
+            class_name = str(row.get('class_name', '')).strip()
+            if class_id.isdigit() and class_name:
+                discovered_classes[class_name] = int(class_id)
+        if discovered_classes:
+            known = [name for name in type(self).CLASS_NAMES if name in discovered_classes]
+            self.CLASS_NAMES = known + [name for name in discovered_classes if name not in known]
+            self.CLASS_IDS = {**type(self).CLASS_IDS, **discovered_classes}
+
         # 按class_ID索引技能
         self.skills_by_class = {}
         for skill in self.skills_data:
@@ -271,7 +295,7 @@ class QtClassModEditorTab(QWidget):
 
         self.leg_picker = InlineCatalogPicker(
             stackable=False,
-            search_placeholder=self._pick_text("搜索…", "Search..."),
+            search_placeholder=self._loc('legendary', 'search_placeholder', "Search..."),
             clear_text=self.ui_loc['legendary'].get('clear', self._pick_text("清空", "Clear")),
         )
         self.leg_picker.changed.connect(self.update_string)
@@ -307,35 +331,8 @@ class QtClassModEditorTab(QWidget):
 
     def _populate_flags(self):
         self.flag_combo.clear()
-        # Try to load from shared flags location if available, or fallback
-        # We loaded 'flags' in weapon_editor_tab, let's check if we can access similar structure
-        # In __init__, we loaded self.ui_loc.
-        # Let's assume main window passes a common flags dict or we load it from weapon_editor_tab section or define it here.
-        # Since we don't have "flags" in class_mod_tab json usually, we can try to load "weapon_editor_tab"->"flags" for consistency
-        # or just define localized strings here based on self.current_lang.
-        
-        flags_map = {
-            "1": "1 (Common)" if self.current_lang == 'en-US' else "1 (普通)",
-            "3": "3 (Favorites)" if self.current_lang == 'en-US' else "3 (收藏)",
-            "5": "5 (Trash)" if self.current_lang == 'en-US' else "5 (垃圾)",
-            "17": "17 (Group 1)" if self.current_lang == 'en-US' else "17 (编组1)",
-            "33": "33 (Group 2)" if self.current_lang == 'en-US' else "33 (编组2)",
-            "65": "65 (Group 3)" if self.current_lang == 'en-US' else "65 (编组3)",
-            "129": "129 (Group 4)" if self.current_lang == 'en-US' else "129 (编组4)"
-        }
-        
-        # If we loaded flags_loc (we didn't in this file), we could use it.
-        # Let's check if we can load it.
-        try:
-            loc_file = resource_loader.get_ui_localization_file(self.current_lang)
-            full_loc = resource_loader.load_json_resource(loc_file) or {}
-            flags_loc = full_loc.get("weapon_editor_tab", {}).get("flags", {})
-            if flags_loc:
-                flags_map = {k: flags_loc.get(k, v) for k, v in flags_map.items()}
-        except:
-            pass
-
-        flag_values = [flags_map["1"], flags_map["3"], flags_map["5"], flags_map["17"], flags_map["33"], flags_map["65"], flags_map["129"]]
+        flags_map = resource_loader.get_flag_labels(self.current_lang)
+        flag_values = [flags_map[k] for k in ("1", "3", "5", "17", "33", "65", "129")]
         self.flag_combo.addItems(flag_values)
         # Set default to Favorites
         for i in range(self.flag_combo.count()):
@@ -477,14 +474,7 @@ class QtClassModEditorTab(QWidget):
                 if current_class_en == "Harlowe": 
                     name_chunk += " {27}"
             else:
-                PER_CLASS_RARITIES = {
-                    "Vex": {"Common": 217, "Uncommon": 218, "Rare": 219, "Epic": 220},
-                    "Rafa": {"Common": 66, "Uncommon": 67, "Rare": 68, "Epic": 69},
-                    "Harlowe": {"Common": 224, "Uncommon": 223, "Rare": 222, "Epic": 221},
-                    "Amon": {"Common": 70, "Uncommon": 69, "Rare": 68, "Epic": 67},
-                    "C4sh": {"Common": 52, "Uncommon": 53, "Rare": 54, "Epic": 55}
-                }
-                rarity_code_val = PER_CLASS_RARITIES.get(current_class_en, {}).get(rarity_en, "")
+                rarity_code_val = item_display_resolver.classmod_rarity_code(current_class_id, rarity_en)
             rarity_chunk = f"{{{rarity_code_val}}}" if rarity_code_val else ""
 
             # 传奇附加
@@ -521,11 +511,13 @@ class QtClassModEditorTab(QWidget):
             self.full_string_output.setText(full_string)
 
             encoded_serial, error = b_encoder.encode_to_base85(full_string)
+            self._encode_error = bool(error)
             if error:
                 self.base85_output.setText(self.ui_loc['dialogs']['coding_error'].format(error=error))
             else:
                 self.base85_output.setText(encoded_serial)
         except Exception as e:
+            self._encode_error = True
             import traceback
             traceback.print_exc()
             self.full_string_output.setText(self.ui_loc['dialogs']['gen_error'].format(error=e))
@@ -580,14 +572,14 @@ class QtClassModEditorTab(QWidget):
     def populate_perks(self):
         """填充可筛选的通用专长目录。"""
         categories = [
-            ("all", self._pick_text("全部", "All")),
-            ("weapon", self._pick_text("武器", "Weapon")),
-            ("skill", self._pick_text("技能", "Skill")),
-            ("element", self._pick_text("元素", "Element")),
-            ("defense", self._pick_text("生存", "Defense")),
-            ("utility", self._pick_text("通用", "Utility")),
-            ("firmware", self._pick_text("固件", "Firmware")),
-            ("other", self._pick_text("其他", "Other")),
+            ("all", self._loc('perk_filters', 'all', "All")),
+            ("weapon", self._loc('perk_filters', 'weapon', "Weapon")),
+            ("skill", self._loc('perk_filters', 'skill', "Skill")),
+            ("element", self._loc('perk_filters', 'element', "Element")),
+            ("defense", self._loc('perk_filters', 'defense', "Defense")),
+            ("utility", self._loc('perk_filters', 'utility', "Utility")),
+            ("firmware", self._loc('perk_filters', 'firmware', "Firmware")),
+            ("other", self._loc('perk_filters', 'other', "Other")),
         ]
         self.perk_picker.set_categories(categories, columns=4)
         items = []
@@ -626,7 +618,7 @@ class QtClassModEditorTab(QWidget):
 
     def _add_to_backpack(self):
         serial = self.base85_output.text()
-        if not serial or "Error" in serial or "错误" in serial:
+        if not serial or getattr(self, '_encode_error', False):
             QMessageBox.warning(self, self.ui_loc['dialogs']['no_data'], self.ui_loc['dialogs']['no_valid_base85'])
             return
         
@@ -675,15 +667,15 @@ class QtClassModEditorTab(QWidget):
             if color:
                 tree_names[color] = self._pick_text(row.get('tree_name_ZH', ''), row.get('tree_name_EN', ''))
         color_labels = {
-            "red": self._pick_text("红", "Red"),
-            "green": self._pick_text("绿", "Green"),
-            "blue": self._pick_text("蓝", "Blue"),
+            "red": self._loc('skill_trees', 'red', "Red"),
+            "green": self._loc('skill_trees', 'green', "Green"),
+            "blue": self._loc('skill_trees', 'blue', "Blue"),
         }
-        categories = [("all", self._pick_text("全部技能", "All Skills"))]
+        categories = [("all", self._loc('skill_trees', 'all_skills', "All Skills"))]
         for color in ("red", "green", "blue"):
             name = tree_names.get(color, color_labels[color])
             categories.append((color, f"{color_labels[color]} · {name}"))
-        self.skill_picker.set_categories(categories, columns=4)
+        self.skill_picker.set_categories(categories, columns=2)
 
         items = []
         color_order = {"red": 0, "green": 1, "blue": 2}
@@ -705,7 +697,7 @@ class QtClassModEditorTab(QWidget):
                 skill_row.get('description_EN', ''),
             )
             if desc_text:
-                skill_type = self._pick_text("被动技能", "Passive") if skill_row.get('skill_type') == 'passive' else skill_row.get('skill_type', '')
+                skill_type = self._loc('skill_trees', 'passive', "Passive") if skill_row.get('skill_type') == 'passive' else skill_row.get('skill_type', '')
                 desc_html = self._skill_description_html(desc_text)
                 tooltip_html = f"""
                     <div style='width: 390px; white-space: normal;'>

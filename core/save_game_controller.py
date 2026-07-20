@@ -145,32 +145,34 @@ class SaveGameController:
         return validate_user_id_format(user_id)
 
     def decrypt_save(self, file_path: Path, user_id: str, custom_backup_dir: Optional[str] = None) -> Tuple[str, str, str]:
-        self.user_id = user_id.strip()
-        self.save_path = file_path
+        file_path = Path(file_path)
+        candidate_user_id = user_id.strip()
 
-        is_valid, validation_msg = self.validate_user_id(self.user_id)
+        is_valid, validation_msg = self.validate_user_id(candidate_user_id)
         if not is_valid:
-            raise ValueError(f"无效的用户ID: {validation_msg}")
+            raise ValueError(validation_msg)
 
-        enc_data = self.save_path.read_bytes()
+        enc_data = file_path.read_bytes()
 
         # 尝试解密
         plain_data, platform_id, error = (None, None, None)
         try:
             # 尝试Epic
-            plain_data = self._try_once(self._key_epic(self.user_id), enc_data, True)
+            plain_data = self._try_once(self._key_epic(candidate_user_id), enc_data, True)
             platform_id = "epic"
         except Exception as e:
             error = e
             try:
                 # 尝试Steam
-                plain_data = self._try_once(self._key_steam(self.user_id), enc_data, False)
+                plain_data = self._try_once(self._key_steam(candidate_user_id), enc_data, False)
                 platform_id = "steam"
                 error = None 
             except Exception as e2:
                 error = e2
 
         if plain_data is not None and platform_id:
+            yaml_obj = yaml.load(plain_data, Loader=self._get_yaml_loader())
+
             # 解密成功后创建备份
             ts = datetime.now().strftime("%Y-%m-%d-%H%M%S")
             
@@ -178,23 +180,20 @@ class SaveGameController:
                 backup_name = f"{file_path.name}.{ts}.bak"
                 backup_path = Path(custom_backup_dir) / backup_name
             else:
-                backup_path = self.save_path.with_suffix(f".{ts}.bak")
+                backup_path = file_path.with_suffix(f".{ts}.bak")
             
             backup_path.write_bytes(enc_data)
 
+            # Commit only after validation, decrypt, YAML parsing, and backup succeed.
+            self.user_id = candidate_user_id
+            self.save_path = file_path
             self.platform = platform_id
-            self.yaml_obj = yaml.load(plain_data, Loader=self._get_yaml_loader())
+            self.yaml_obj = yaml_obj
             
             # 返回YAML内容、平台和备份文件名
             return plain_data.decode(errors="ignore"), platform_id, backup_path.name
         else:
-            # 如果两种方法都失败，则抛出详细错误
-            error_msg = ("解密存档文件失败。这通常意味着:\n"
-                         "1. 错误的用户ID - 请确保您使用的是正确的Epic Games或Steam用户ID\n"
-                         "2. 损坏的存档文件 - 存档文件可能已损坏\n"
-                         "3. 错误的存档文件 - 这可能不是一个有效的BL4存档文件\n\n"
-                         f"错误详情: {error}")
-            raise ValueError(error_msg)
+            raise ValueError(f"Decryption failed: {error}")
 
     def encrypt_save(self, yaml_string: str) -> bytes:
         if not self.platform or not self.user_id:

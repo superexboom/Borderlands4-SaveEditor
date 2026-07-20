@@ -1,12 +1,4 @@
 # -*- coding: utf-8 -*-
-import sys
-from pathlib import Path
-
-# Add the parent directory of 'bl4_decoder_py' to the system path
-# This allows importing modules from it, assuming a standard structure
-current_dir = Path(__file__).resolve().parent
-sys.path.append(str(current_dir))
-
 try:
     from bl4_decoder_py.b4s.b85.decode import decode
     from bl4_decoder_py.b4s.serial.deserialize import deserialize

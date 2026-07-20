@@ -154,32 +154,11 @@ class QtWeaponGeneratorTab(QWidget):
         "Underbarrel Accessory": 3
     }
 
-    # 分区标题 / 徽标 / 提示文案（覆盖四种语言，缺失时回退英文）
-    SECTION_TITLES = {
-        'zh-CN': {
-            'config': '武器配置', 'attributes': '稀有度 / 元素', 'parts': '武器部件', 'multi': '可多选',
-            'pearl_stat': '珠光属性', 'pearl_elements': '珠光元素',
-            'elem2_hint': '下挂元素切换需选择相关部件后才会显示',
-            'need_elem1': '需先选择元素1',
-        },
-        'en-US': {
-            'config': 'Weapon Config', 'attributes': 'Rarity / Elements', 'parts': 'Weapon Parts', 'multi': 'Multi',
-            'pearl_stat': 'Pearl Stat', 'pearl_elements': 'Pearl Elements',
-            'elem2_hint': 'Underbarrel element switch appears after selecting the related part.',
-            'need_elem1': 'Select Element 1 first',
-        },
-        'ru': {
-            'config': 'Конфигурация', 'attributes': 'Редкость / Элементы', 'parts': 'Детали оружия', 'multi': 'Мульти',
-            'pearl_stat': 'Жемчужный стат', 'pearl_elements': 'Жемчужные элементы',
-            'elem2_hint': 'Переключение стихии подствольника появится после выбора соответствующей детали.',
-            'need_elem1': 'Сначала выберите Стихию 1',
-        },
-        'ua': {
-            'config': 'Конфігурація', 'attributes': 'Рідкість / Елементи', 'parts': 'Деталі зброї', 'multi': 'Мульті',
-            'pearl_stat': 'Перлинний стат', 'pearl_elements': 'Перлинні елементи',
-            'elem2_hint': 'Перемикання стихії підствольника з’явиться після вибору відповідної деталі.',
-            'need_elem1': 'Спочатку виберіть Стихію 1',
-        },
+    _SECTION_FALLBACKS = {
+        'config': 'Weapon Config', 'attributes': 'Rarity / Elements', 'parts': 'Weapon Parts', 'multi': 'Multi',
+        'pearl_stat': 'Pearl Stat', 'pearl_elements': 'Pearl Elements',
+        'elem2_hint': 'Underbarrel element switch appears after selecting the related part.',
+        'need_elem1': 'Select Element 1 first',
     }
 
     def __init__(self, parent=None):
@@ -206,6 +185,10 @@ class QtWeaponGeneratorTab(QWidget):
         self.create_widgets()
 
     def load_data(self, lang='zh-CN'):
+        loc_file = resource_loader.get_ui_localization_file(lang)
+        full_loc = resource_loader.load_json_resource(loc_file) or {}
+        self.ui_loc = full_loc.get("weapon_gen_tab", {})
+        self.stats_loc = full_loc.get("weapon_editor_tab", {}).get("stats", {})
         try:
             suffix = "_EN" if lang in ['en-US', 'ru', 'ua'] else ""
             
@@ -232,7 +215,9 @@ class QtWeaponGeneratorTab(QWidget):
             # But resource_loader.get_weapon_data_path calls get_resource_path.
             
             if not all(paths.values()) or not all(p.exists() for p in paths.values()):
-                raise FileNotFoundError("One or more weapon CSV file paths not found.")
+                raise FileNotFoundError(
+                    self.ui_loc.get('dialogs', {}).get('file_not_found', "One or more weapon CSV file paths not found.")
+                )
 
             self.all_weapon_parts_df = pd.read_csv(paths["all_parts"])
             self.all_weapon_parts_df['Part ID'] = self.all_weapon_parts_df['Part ID'].astype('Int64').astype(str).replace('<NA>', '')
@@ -245,15 +230,9 @@ class QtWeaponGeneratorTab(QWidget):
             if lang == 'zh-CN':
                 self.weapon_localization = resource_loader.load_weapon_json('weapon_localization_zh-CN.json') or {}
             
-            loc_file = resource_loader.get_ui_localization_file(lang)
-            full_loc = resource_loader.load_json_resource(loc_file) or {}
-            self.ui_loc = full_loc.get("weapon_gen_tab", {})
-            editor_loc = full_loc.get("weapon_editor_tab", {})
-            self.flags_loc = editor_loc.get("flags", {})
-            self.stats_loc = editor_loc.get("stats", {})
-
         except Exception as e:
-            self._handle_error(f"Error loading data: {e}")
+            template = self.ui_loc.get('dialogs', {}).get('load_error', "Error loading data: {error}")
+            self._handle_error(template.format(error=e))
 
     def update_language(self, lang):
         print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
@@ -294,12 +273,10 @@ class QtWeaponGeneratorTab(QWidget):
 
     def _section_text(self, key):
         """获取分区标题/徽标/提示文案，按当前语言回退到英文。"""
-        lang_map = self.SECTION_TITLES.get(self.current_lang) or self.SECTION_TITLES['en-US']
-        return lang_map.get(key, self.SECTION_TITLES['en-US'].get(key, key))
+        return self.ui_loc.get('sections', {}).get(key) or self._SECTION_FALLBACKS.get(key, key)
 
     def _handle_error(self, message):
-        err_title = self.ui_loc.get('dialogs', {}).get('error_title', "错误") if self.ui_loc else "错误"
-        error_label = QLabel(f"{err_title}: {message}")
+        error_label = QLabel(message)
         error_label.setStyleSheet("color: red;")
         error_label.setWordWrap(True)
         
@@ -377,14 +354,9 @@ class QtWeaponGeneratorTab(QWidget):
 
         # Flag 选择 + 添加到背包（并入配置卡片右侧，取代原底部操作条）
         self.flag_combo = NoScrollComboBox()
-        if self.flags_loc:
-            flag_values = [self.flags_loc.get(k, f"{k} (Unknown)") for k in ["1", "3", "5", "17", "33", "65", "129"]]
-            self.flag_combo.addItems(flag_values)
-            self.flag_combo.setCurrentText(self.flags_loc.get("3", "3 (收藏)"))
-        else:
-            flag_values = ["1 (普通)", "3 (收藏)", "5 (垃圾)", "17 (编组1)", "33 (编组2)", "65 (编组3)", "129 (编组4)"]
-            self.flag_combo.addItems(flag_values)
-            self.flag_combo.setCurrentText("3 (收藏)")
+        flags = resource_loader.get_flag_labels(self.current_lang)
+        self.flag_combo.addItems([flags[k] for k in ("1", "3", "5", "17", "33", "65", "129")])
+        self.flag_combo.setCurrentText(flags["3"])
         add_to_backpack_btn = QPushButton(self.get_localized_string("add_to_backpack"))
         add_to_backpack_btn.setObjectName("genAddButton")
         config_grid.addWidget(QLabel(self.get_localized_string("select_flag")), 0, 4)
@@ -970,13 +942,18 @@ class QtWeaponGeneratorTab(QWidget):
             component_str = " ".join(parts_list)
             full_decoded_str = f"{header} {component_str} |"
             encoded_serial, err = b_encoder.encode_to_base85(full_decoded_str)
-            if err: raise ValueError(f"编码失败: {err}")
+            self._encode_error = bool(err)
+            if err:
+                self.serial_b85_entry.clear()
+                raise ValueError(err)
             
             self.serial_decoded_entry.setText(full_decoded_str)
             self.serial_b85_entry.setText(encoded_serial)
             self._update_weapon_stats(full_decoded_str)
             self._refresh_part_descriptions(full_decoded_str)
         except Exception as e:
+            self._encode_error = True
+            self.serial_b85_entry.clear()
             # Maybe log this to a status bar in the future
             print(f"Weapon generation error: {e}")
             self._update_weapon_stats("")
@@ -988,9 +965,9 @@ class QtWeaponGeneratorTab(QWidget):
 
     def _on_add_to_backpack(self):
         serial = self.serial_b85_entry.text()
-        if not serial:
-            QMessageBox.warning(self, self.ui_loc.get('dialogs', {}).get('no_serial_title', "无序列号"), 
-                                self.ui_loc.get('dialogs', {}).get('gen_first', "请先生成一个武器。"))
+        if not serial or getattr(self, '_encode_error', False):
+            QMessageBox.warning(self, self.ui_loc.get('dialogs', {}).get('no_serial_title', "No serial"),
+                                self.ui_loc.get('dialogs', {}).get('gen_first', "Please generate a weapon first."))
             return
         
         flag = self.flag_combo.currentText().split(" ")[0]

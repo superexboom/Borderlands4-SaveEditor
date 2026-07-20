@@ -18,6 +18,15 @@ def collect_data_files(folder: str, suffixes: tuple[str, ...]) -> list[tuple[str
     return files
 
 
+classmod_files = collect_data_files('class_mods', ('.csv', '.json'))
+for class_dir in sorted((BASE_DIR / 'class_mods').iterdir()):
+    if class_dir.is_dir():
+        classmod_files.extend(
+            (str(file_path), f'class_mods/{class_dir.name}')
+            for file_path in sorted(class_dir.glob('*.png'))
+        )
+
+
 # 动态收集enhancement目录下的所有.csv和.json文件
 enhancement_files = collect_data_files('enhancement', ('.csv', '.json'))
         
@@ -66,15 +75,7 @@ a = Analysis(
     [r'{str(BASE_DIR / "main_window.py")}'],
     pathex=[r'{str(BASE_DIR)}'],
     binaries=[],
-    datas=[
-        (r'{str(BASE_DIR / "class_mods" / "*.json")}', 'class_mods'),
-        (r'{str(BASE_DIR / "class_mods" / "*.csv")}', 'class_mods'),
-        (r'{str(BASE_DIR / "class_mods" / "Amon" / "*.png")}', 'class_mods/Amon'),
-        (r'{str(BASE_DIR / "class_mods" / "C4sh" / "*.png")}', 'class_mods/C4sh'),
-        (r'{str(BASE_DIR / "class_mods" / "Harlowe" / "*.png")}', 'class_mods/Harlowe'),
-        (r'{str(BASE_DIR / "class_mods" / "Rafa" / "*.png")}', 'class_mods/Rafa'),
-        (r'{str(BASE_DIR / "class_mods" / "Vex" / "*.png")}', 'class_mods/Vex'),
-    ] + {enhancement_files} + {weapon_files} + {grenade_files} + {shield_files} + {repkit_files} + {heavy_files} + {loadout_files} + {item_files} + {i18n_files} + {core_data_files} + {assets_files},
+    datas={classmod_files} + {enhancement_files} + {weapon_files} + {grenade_files} + {shield_files} + {repkit_files} + {heavy_files} + {loadout_files} + {item_files} + {i18n_files} + {core_data_files} + {assets_files},
     hiddenimports=[
         'pandas',
         'yaml',
