@@ -7,7 +7,7 @@ from .qt_converter_tab import QtConverterTab
 from .qt_yaml_editor_tab import QtYamlEditorTab
 from .qt_class_mod_editor_tab import QtClassModEditorTab
 from .qt_enhancement_editor_tab import QtEnhancementEditorTab
-from .qt_weapon_editor_tab import WeaponEditorTab
+from .qt_weapon_editor_tab import QtWeaponEditorTab
 from .qt_weapon_generator_tab import QtWeaponGeneratorTab
 from .qt_grenade_editor_tab import QtGrenadeEditorTab
 from .qt_shield_editor_tab import QtShieldEditorTab
@@ -22,7 +22,7 @@ __all__ = [
     'QtYamlEditorTab',
     'QtClassModEditorTab',
     'QtEnhancementEditorTab',
-    'WeaponEditorTab',
+    'QtWeaponEditorTab',
     'QtWeaponGeneratorTab',
     'QtGrenadeEditorTab',
     'QtShieldEditorTab',

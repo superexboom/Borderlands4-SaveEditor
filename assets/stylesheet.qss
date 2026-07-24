@@ -1395,45 +1395,47 @@ QFrame#inlineCatalogRow[selected="true"] QLabel {
     padding: 5px 7px;
 }
 
-/* Weapon Editor browser and part cards */
-#weaponBrowser {
+/* Backpack browser — shared by weapon, grenade, shield, repkit,
+   class mod, and heavy-weapon editors. Per-editor row content is set
+   by each tab's row-builder; styling lives here in one place. */
+#itemBrowser {
     min-height: 220px;
 }
 
-#weaponBrowser::item {
+#itemBrowser::item {
     min-height: 42px;
     padding: 0;
     border-bottom: 1px solid {border_color};
 }
 
-#WeaponBrowserRow {
+#ItemBrowserRow {
     background-color: transparent;
 }
 
-QWidget#WeaponBrowserRow[selected="true"] {
+QWidget#ItemBrowserRow[selected="true"] {
     background-color: {selection_bg};
 }
 
-QWidget#WeaponBrowserRow[selected="true"] QLabel {
+QWidget#ItemBrowserRow[selected="true"] QLabel {
     color: {text_primary};
 }
 
-#WeaponBrowserName {
+#ItemBrowserName {
     color: {text_primary};
     font-weight: bold;
 }
 
-#WeaponBrowserMeta, #WeaponBrowserStatTitle {
+#ItemBrowserMeta, #ItemBrowserStatTitle {
     color: {text_secondary};
     font-size: 8pt;
 }
 
-#WeaponBrowserStatValue {
+#ItemBrowserStatValue {
     color: {text_primary};
     font-weight: bold;
 }
 
-#selectedWeaponSummary {
+#selectedItemSummary {
     background-color: {selection_bg};
     border-left: 3px solid {accent};
     border-radius: 6px;

@@ -11,6 +11,15 @@ from core import decoder_logic
 from core import item_display_resolver
 from core import resource_loader
 from tabs.qt_catalog_picker import CatalogPicker, ContainedWheelListWidget, ContainedWheelScrollArea
+from tabs.qt_item_browser import ItemBrowser, ROW_HEIGHT
+from tabs.qt_editor_shared import (
+    Token,
+    TokenOrderedState,
+    log_editor,
+    make_header_getter,
+    parse_component_string_with_skin,
+    parse_component_tokens_with_skin,
+)
 
 
 class PartDragHandle(QtWidgets.QLabel):
@@ -222,12 +231,21 @@ class PartOrderListWidget(ContainedWheelListWidget):
         painter.setPen(QtGui.QPen(border, 2))
         painter.drawRoundedRect(rect, 4, 4)
 
-class WeaponEditorTab(QtWidgets.QWidget):
+class QtWeaponEditorTab(QtWidgets.QWidget):
     add_to_backpack_requested = QtCore.pyqtSignal(str, str)
     update_item_requested = QtCore.pyqtSignal(dict)
-    WEAPON_BROWSER_ROW_HEIGHT = 112
-    
+    # Backpack items whose type_en matches one of these are shown in the
+    # weapon browser. Frozen set so the filter predicate doesn't rebuild
+    # a literal on every backpack item.
+    _WEAPON_TYPES = frozenset({"Pistol", "Shotgun", "SMG", "Assault Rifle", "Sniper"})
+
+    # log_editor tag routed through the shared logger (parity with the other
+    # editor tabs — grenade, shield, repkit, heavy, class-mod, enhancement).
+    _LOG_TAG = "weapon"
+
     # Colors are keyed by stable raw part types, never translated display text.
+    # Weapon-local rather than shared: no other editor has a comparable per-
+    # part-type color scheme, so a class constant here beats an import.
     PART_TYPE_COLORS = {
         "Barrel": "#B0BEC5",
         "Barrel Accessory": "#90A4AE",
@@ -277,9 +295,19 @@ class WeaponEditorTab(QtWidgets.QWidget):
     def __init__(self, main_app):
         super().__init__()
         self.main_app = main_app
-        self.selected_weapon_path = None
+        self.selected_item_path = None
         self.parts_data = []
         self.rarity_part = None
+        # TokenOrderedState of the currently-loaded weapon, bound to level /
+        # seed / rarity / part widgets by ``_bind_token_state_widgets``. Empty
+        # until ``_load_weapon_item`` runs. Every structural mutation
+        # (move / delete / add / skin / DnD reorder) keeps the state in sync
+        # with parts_data via the ``state.move`` / ``state.insert`` /
+        # ``state.remove`` / ``state.reorder_subset`` helpers, so
+        # ``regenerate_ui_and_serial`` always routes through
+        # ``state.render()`` — the token stream is the single source of
+        # truth for the emitted serial.
+        self._token_state = TokenOrderedState([])
         
         self.all_weapon_parts_df = None
         self.elemental_df = None
@@ -287,7 +315,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.weapon_rarity_df = None
         self.weapon_localization = {}
         
-        self.is_handling_change = False
+        self._is_loading = False
         self.current_lang = 'zh-CN'
         
         # Main layout
@@ -296,13 +324,16 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.content_widget = None
 
         self.load_data(self.current_lang)
-        self.create_widgets()
+        self._build_ui()
 
     def load_data(self, lang='zh-CN'):
         loc_file = resource_loader.get_ui_localization_file(lang)
         full_loc = resource_loader.load_json_resource(loc_file) or {}
         self.ui_localization = full_loc.get("weapon_editor_tab", {})
         try:
+            # Weapon CSVs ship in per-language variants named `<base>_EN.csv`
+            # for non-Chinese locales; fall back to the base file if the
+            # variant is missing so a partial dataset still loads.
             suffix = "_EN" if lang in ['en-US', 'ru', 'ua'] else ""
 
             # Helper to get path with fallback
@@ -347,21 +378,21 @@ class WeaponEditorTab(QtWidgets.QWidget):
             self.setEnabled(False)
 
     def update_language(self, lang):
-        print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
+        log_editor(self.main_app, self._LOG_TAG, f"Updating language for {self.__class__.__name__} to {lang}...")
         self.current_lang = lang
         self.load_data(lang)
         
         # Save current state
         current_decoded = self.serial_decoded_entry.text() if hasattr(self, 'serial_decoded_entry') else ""
         current_flag_idx = self.flag_combo.currentIndex() if hasattr(self, 'flag_combo') else 0
-        current_weapon_path = self.selected_weapon_path
+        current_weapon_path = self.selected_item_path
         
         # Clean up internal state
         self.parts_data = []
         self.rarity_part = None
-        self.selected_weapon_path = current_weapon_path
+        self.selected_item_path = current_weapon_path
         
-        self.create_widgets()
+        self._build_ui()
         self.refresh_backpack_items()
         
         # Restore state
@@ -372,9 +403,9 @@ class WeaponEditorTab(QtWidgets.QWidget):
         if current_decoded:
              self.serial_decoded_entry.setText(current_decoded) # Set text first so it's available if parse fails
              self.parse_and_display_weapon(current_decoded)
-        print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
+        log_editor(self.main_app, self._LOG_TAG, f"Finished updating language for {self.__class__.__name__}.")
 
-    def create_widgets(self):
+    def _build_ui(self):
         # Clean up old content
         while self.main_layout.count():
             item = self.main_layout.takeAt(0)
@@ -404,31 +435,20 @@ class WeaponEditorTab(QtWidgets.QWidget):
         layout.setColumnStretch(0, 1)
         layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)  # Align all items to top
 
-        bp_frame = QtWidgets.QFrame(); bp_frame.setObjectName("InnerFrame")
-        bp_frame.setMinimumWidth(280)
-        bp_layout = QtWidgets.QVBoxLayout(bp_frame)
-        bp_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("load_from_backpack")))
-        self.weapon_search = QtWidgets.QLineEdit()
-        self.weapon_search.setClearButtonEnabled(True)
-        self.weapon_search.setPlaceholderText(self._loc('labels', 'search_weapon_placeholder', "Search name, manufacturer, type, level, or slot"))
-        self.weapon_search.textChanged.connect(self._filter_backpack_items)
-        bp_layout.addWidget(self.weapon_search)
-        self.backpack_items_list = ContainedWheelListWidget()
-        self.backpack_items_list.setObjectName("weaponBrowser")
-        self.backpack_items_list.setMinimumHeight(220)
-        self.backpack_items_list.setUniformItemSizes(True)
-        self.backpack_items_list.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollMode.ScrollPerPixel)
-        self.backpack_items_list.verticalScrollBar().setSingleStep(20)
-        self.backpack_items_list.itemActivated.connect(lambda item: self.load_weapon_data(item.data(QtCore.Qt.ItemDataRole.UserRole)))
-        self.backpack_items_list.itemClicked.connect(lambda item: self.load_weapon_data(item.data(QtCore.Qt.ItemDataRole.UserRole)))
-        self.backpack_items_list.currentItemChanged.connect(self._sync_weapon_browser_selection)
-        bp_layout.addWidget(self.backpack_items_list, 1)
-        self.selected_weapon_summary = QtWidgets.QLabel()
-        self.selected_weapon_summary.setObjectName("selectedWeaponSummary")
-        self.selected_weapon_summary.setWordWrap(True)
-        self._update_selected_weapon_summary()
-        bp_layout.addWidget(self.selected_weapon_summary)
-        splitter.addWidget(bp_frame)
+        self.backpack_browser = ItemBrowser(
+            main_app=self.main_app,
+            item_filter=self._is_weapon_item,
+            row_builder=self._weapon_browser_row,
+            header_label=self.get_localized_string("load_from_backpack"),
+            search_placeholder=self._loc('labels', 'search_weapon_placeholder',
+                                        "Search name, manufacturer, type, level, or slot"),
+            empty_placeholder=self.get_localized_string("no_weapons_in_backpack"),
+            no_save_placeholder=self.get_localized_string("decrypt_save_to_show_weapons"),
+            summary_formatter=self._summarize_weapon,
+            summary_none_text=self._loc('summary', 'none_selected', "No backpack weapon selected"),
+        )
+        self.backpack_browser.item_selected.connect(self._load_weapon_item)
+        splitter.addWidget(self.backpack_browser)
         splitter.addWidget(scroll_area)
         splitter.setStretchFactor(0, 0)
         splitter.setStretchFactor(1, 1)
@@ -577,13 +597,13 @@ class WeaponEditorTab(QtWidgets.QWidget):
         return self.weapon_localization.get(key, default or key)
 
     def handle_b85_change(self, text):
-        if self.is_handling_change or not self.serial_b85_entry.hasFocus():
+        if self._is_loading or not self.serial_b85_entry.hasFocus():
             return
 
-        self.is_handling_change = True
+        self._is_loading = True
         if not text:
             self.clear_all_fields()
-            self.is_handling_change = False
+            self._is_loading = False
             return
 
         decoded_str, _, err = decoder_logic.decode_serial_to_string(text)
@@ -596,7 +616,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
             self.update_weapon_btn.setEnabled(True)
         else:
             self.serial_decoded_entry.clear()
-        self.is_handling_change = False
+        self._is_loading = False
 
     def handle_decoded_change(self, text):
         if not self.serial_decoded_entry.hasFocus():
@@ -669,23 +689,8 @@ class WeaponEditorTab(QtWidgets.QWidget):
                     weapon_name = display["display_name"]
         return display_rarity, weapon_name, rarity_part, remaining_parts
 
-    def _parse_component_string(self, component_str):
-        components, last_index = [], 0
-        for match in re.finditer(r'\{(\d+)(?::(\d+|\[[\d\s]+\]))?\}|\"c\",\s*(?:(\d+)|\"([^\"]+)\")', component_str):
-            components.append(component_str[last_index:match.start()])
-            part_data = {'raw': match.group(0)}
-            if match.group(3): part_data.update({'type': 'skin', 'id': int(match.group(3))})
-            elif match.group(4): part_data.update({'type': 'skin', 'id': match.group(4)})
-            else:
-                outer_id, inner = int(match.group(1)), match.group(2)
-                if inner: part_data.update({'type': 'group', 'id': outer_id, 'sub_ids': [int(sid) for sid in inner.strip('[]').split()]} if '[' in inner else {'type': 'elemental', 'id': outer_id, 'sub_id': int(inner)})
-                else: part_data.update({'type': 'simple', 'id': outer_id})
-            components.append(part_data); last_index = match.end()
-        components.append(component_str[last_index:])
-        return [c for c in components if c]
-
     def clear_all_fields(self, clear_b85=True):
-        self.is_handling_change = True
+        self._is_loading = True
         if clear_b85: self.serial_b85_entry.clear()
         self.serial_decoded_entry.clear(); self.manufacturer_entry.clear(); self.item_type_entry.clear()
         self.rarity_combo.setCurrentIndex(-1); self.level_entry.clear(); self.seed_entry.clear()
@@ -694,13 +699,13 @@ class WeaponEditorTab(QtWidgets.QWidget):
 
         self._set_parts_placeholder(self.get_localized_string("parse_serial_to_show_parts"))
         self.serial_b85_entry.setReadOnly(False); self.update_weapon_btn.setEnabled(False)
-        self.selected_weapon_path, self.parts_data, self.rarity_part = None, [], None
-        self._select_current_backpack_item()
-        self._update_selected_weapon_summary()
-        self.is_handling_change = False
+        self.selected_item_path, self.parts_data, self.rarity_part = None, [], None
+        self._token_state = TokenOrderedState([])
+        self.backpack_browser.clear_selection()
+        self._is_loading = False
 
     def update_decoded_from_ui(self):
-        if self.is_handling_change: return
+        if self._is_loading: return
         current_decoded = self.serial_decoded_entry.text()
         if not current_decoded: return
         try:
@@ -721,39 +726,135 @@ class WeaponEditorTab(QtWidgets.QWidget):
                         self.rarity_part['id'], self.rarity_part['raw'] = new_id, f"{{{new_id}}}"
 
             if self.serial_decoded_entry.text() != updated_str: self.serial_decoded_entry.setText(updated_str)
-        except Exception as e: self.main_app.log(f"Error in update_decoded_from_ui: {e}")
+        except Exception as e: log_editor(self.main_app, self._LOG_TAG, f"Error in update_decoded_from_ui: {e}")
 
     def randomize_seed(self): self.seed_entry.setText(str(random.randint(100, 9999)))
-    def load_weapon_data(self, weapon_data):
+    def _load_weapon_item(self, weapon_data):
+        """Populate editor fields from a decoded weapon in the backpack.
+
+        Weapon-specific differences from the 5 sibling ``_load_XX_item``
+        loaders:
+          - full serial is written into ``serial_b85_entry`` and
+            ``serial_decoded_entry`` (weapon has a serial-text UI; the others
+            build the serial purely from widget state)
+          - part parsing runs via ``parse_and_display_weapon`` (weapon carries
+            structured parts with types/rarity chips, not a fixed set of
+            radios/lists)
+          - no dedicated ``_is_loading`` flag beyond the shared one: the same
+            attribute doubles as the guard on the two serial entries and
+            covers the rebuild-cascade window
+
+        Token-state wiring: parse the item into a ``TokenOrderedState`` and
+        BIND widgets to their tokens — the header token at index 0 to a getter
+        that rebuilds the header from ``level_entry`` / ``seed_entry``
+        (preserving the source seed unless the user edited it), and each
+        typed part token to a getter that reads the matching
+        ``self.rarity_part`` / ``self.parts_data`` dict.
+        ``regenerate_ui_and_serial`` then always routes through
+        ``state.render()``: the load-then-regen no-edit path stays byte-
+        identical to source across the 29 pristine weapons, and structural
+        mutations (move / delete / add / skin swap / DnD reorder) keep
+        state in sync surgically via ``state.move`` / ``state.insert`` /
+        ``state.remove`` / ``state.reorder_subset``.
+        """
         if not weapon_data:
             return
-        self.main_app.log(f"Loading weapon: {weapon_data.get('name')}")
-        self.selected_weapon_path = weapon_data.get("original_path")
-        self._select_current_backpack_item()
-        self._update_selected_weapon_summary(weapon_data)
-        self.is_handling_change = True
+        log_editor(self.main_app, self._LOG_TAG, f"Loading weapon: {weapon_data.get('name')}")
+        self.selected_item_path = weapon_data.get("original_path")
+        self.backpack_browser.set_selected_path(self.selected_item_path)
+
+        raw_decoded = weapon_data.get('decoded_full', '')
+        self._token_state = self.backpack_browser.token_state_for(weapon_data, skin=True)
+        # Drift check now lives in ItemBrowser.render_from_state — passing
+        # expected_raw=<source> logs any tokenizer regression and falls back
+        # to the source string, keeping the 29-weapon byte-identity pin safe.
+        decoded_str = self.backpack_browser.render_from_state(
+            self._token_state, expected_raw=raw_decoded,
+        )
+
+        self._is_loading = True
         self.serial_b85_entry.setText(weapon_data.get('serial', ''))
-        decoded_str = weapon_data.get('decoded_full', '')
         self.serial_decoded_entry.setText(decoded_str)
-        self.is_handling_change = False
+        self._is_loading = False
         if not decoded_str:
             QtWidgets.QMessageBox.critical(self, self.get_localized_string("error"), self.get_localized_string("no_valid_decoded_data")); return
+        # parse_and_display_weapon populates self.rarity_part / self.parts_data
+        # and (at its tail) calls _bind_token_state_widgets so the closures
+        # over those dicts stay live — no separate re-bind pass needed here.
         self.parse_and_display_weapon(decoded_str)
         self.serial_b85_entry.setReadOnly(True); self.update_weapon_btn.setEnabled(True)
+
+    def _make_header_getter(self, header_raw):
+        """Header-token-0 getter for weapon. Thin wrapper around the shared
+        ``make_header_getter`` so ``_bind_token_state_widgets`` keeps a stable
+        callable name; both level and seed widgets flow through and the
+        seed_getter is live (weapon has its own seed field, unlike the four
+        sibling tabs that pass ``seed_getter=None`` to preserve source seed).
+        """
+        return make_header_getter(
+            header_raw,
+            level_getter=lambda: self.level_entry.text(),
+            seed_getter=lambda: self.seed_entry.text(),
+        )
+
+    def _bind_token_state_widgets(self):
+        """Attach getters to ``self._token_state`` tokens so ``state.render()``
+        reflects current widget / part-dict values.
+
+        - Index 0 (header raw) → rebuild header from mfg_id + level + seed.
+        - Every typed token (kind != 'raw') → return the matching part
+          dict's ``raw`` string. Order: ``self.rarity_part`` first (if any),
+          then every dict in ``self.parts_data`` in order.
+        - Raw whitespace / delimiter tokens between typed tokens stay
+          unbound so their source text is preserved verbatim.
+
+        The getters close over the DICTS, not their positions, so an in-place
+        mutation (``update_decoded_from_ui`` rewriting ``rarity_part['raw']``)
+        surfaces on the next render. Structural mutations — add / remove /
+        reorder / replace — invalidate the token→dict mapping, so the
+        mutation entry points (``move_part`` / ``delete_part`` /
+        ``_apply_part_list_order`` / ``add_selected_parts`` / ``update_skin``)
+        keep the state in sync via ``state.move`` / ``state.insert`` /
+        ``state.remove`` / ``state.reorder_subset`` and then call this method
+        to re-attach fresh closures over the current ``parts_data`` dicts.
+        """
+        if not self._token_state.tokens:
+            return
+        # Reset any bindings from a prior load — a fresh weapon must not carry
+        # stale closures over the previous weapon's part dicts.
+        self._token_state.clear_bindings()
+        self._token_state.bind(0, self._make_header_getter(self._token_state.tokens[0].raw))
+        typed_dicts = [self.rarity_part] if self.rarity_part else []
+        typed_dicts.extend(p for p in self.parts_data if isinstance(p, dict))
+        dict_iter = iter(typed_dicts)
+        for idx, tok in enumerate(self._token_state.tokens):
+            if tok.kind == 'raw':
+                continue
+            try:
+                part = next(dict_iter)
+            except StopIteration:
+                log_editor(
+                    self.main_app, self._LOG_TAG,
+                    f"_bind_token_state_widgets: more typed tokens ({sum(1 for t in self._token_state.tokens if t.kind != 'raw')}) "
+                    f"than widget dicts ({len(typed_dicts)}); token at idx={idx} left unbound",
+                )
+                break
+            self._token_state.bind(idx, (lambda p=part: p.get('raw')))
 
     def parse_and_display_weapon(self, decoded_str):
         try:
             header_part, component_part = decoded_str.split('||', 1)
             sections = header_part.strip().split('|')
-            m_id, level = int(sections[0].strip().split(',')[0]), int(sections[0].strip().split(',')[3])
+            header_fields = sections[0].strip().split(',')
+            m_id, level = int(header_fields[0]), int(header_fields[3])
             m_info = self.all_weapon_parts_df[self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == m_id].iloc[0]
-            self.is_handling_change = True
+            self._is_loading = True
             self.manufacturer_entry.setText(self.get_localized_string(m_info['Manufacturer']))
             self.item_type_entry.setText(self.get_localized_string(m_info['Weapon Type']))
             self.level_entry.setText(str(level))
             self.seed_entry.setText(sections[1].strip().split(',')[1].strip() if len(sections) > 1 and len(sections[1].strip().split(',')) > 1 else "")
             
-            temp_parts = self._parse_component_string(component_part)
+            temp_parts = parse_component_string_with_skin(component_part)
             display_rarity, weapon_name, self.rarity_part, remaining_parts = self._get_rarity_and_weapon_name(temp_parts, m_id, decoded_str)
             
             rarity_parts = display_rarity.split(' - ')
@@ -769,10 +870,19 @@ class WeaponEditorTab(QtWidgets.QWidget):
             self.weapon_name_label.setText(f"{self.weapon_name_label_str} {weapon_name}")
             self._update_weapon_stats(decoded_str)
             self.parts_data = remaining_parts; self.display_parts(m_id)
-            self.is_handling_change = False
+            # parts_data / rarity_part are fresh dicts, so any prior bindings
+            # closing over the previous set are stale. Re-parse the token
+            # state from decoded_str (idempotent under a correct tokenizer —
+            # _load_weapon_item's expected_raw drift-check catches regressions)
+            # and re-bind so state.render() closes over the fresh dicts.
+            self._token_state = self.backpack_browser.token_state_for(
+                {'decoded_full': decoded_str}, skin=True,
+            )
+            self._bind_token_state_widgets()
+            self._is_loading = False
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, self.get_localized_string("parse_error"), f"{self.get_localized_string('parse_weapon_error')}: {e}")
-            self.main_app.log(f"Error parsing weapon: {e}"); self.clear_all_fields()
+            log_editor(self.main_app, self._LOG_TAG, f"Error parsing weapon: {e}"); self.clear_all_fields()
 
     def _update_weapon_stats(self, decoded_str):
         if not hasattr(self, 'weapon_stat_value_labels'):
@@ -825,13 +935,49 @@ class WeaponEditorTab(QtWidgets.QWidget):
             self.display_parts(self._current_manufacturer_id())
             return
         moved_id = self.parts_list_widget.currentItem().data(QtCore.Qt.ItemDataRole.UserRole + 1) if self.parts_list_widget.currentItem() else None
+
+        # Mutate parts_data (existing behaviour): parts_data[slots[k]] receives
+        # the dict originally at parts_data[order[k]].
         ordered_parts = [self.parts_data[index] for index in order]
         for slot, part in zip(slots, ordered_parts):
             self.parts_data[slot] = part
+
+        # Mirror the same permutation into the token state so state.render()
+        # emits parts in the new user-chosen order. Parts-typed tokens
+        # (non-raw, and non-rarity if present) map 1:1 to parts_data dicts in
+        # order, so the permutation on parts_data lifts to a permutation on
+        # parts_typed_indices.
+        parts_typed_indices = self._parts_typed_state_indices()
+        if len(parts_typed_indices) == len(slots):
+            slot_to_pos = {slot: k for k, slot in enumerate(slots)}
+            permutation = [slot_to_pos[order[k]] for k in range(len(order))]
+            self._token_state.reorder_subset(parts_typed_indices, permutation)
+        else:
+            log_editor(
+                self.main_app, self._LOG_TAG,
+                f"_apply_part_list_order: parts_typed_indices ({len(parts_typed_indices)}) "
+                f"!= slots ({len(slots)}) — token state not reordered, output may drift from DnD result",
+            )
+
         self.regenerate_ui_and_serial()
         self._select_part_row(moved_id)
 
+    def _parts_typed_state_indices(self):
+        """Return state.tokens indices of the parts_data-mapped typed tokens
+        in order.
+
+        Skips the rarity-part slot (typed_indices[0] when a ``rarity_part``
+        exists — rarity lives in state but not in ``parts_data``). Returns an
+        empty list when the state is empty so callers can gate on length
+        without a None guard.
+        """
+        typed_indices = [i for i, tok in enumerate(self._token_state.tokens) if tok.kind != 'raw']
+        return typed_indices[1:] if self.rarity_part else typed_indices
+
     def _current_manufacturer_id(self):
+        # Weapon reads its mfg id off the live decoded_entry text rather than
+        # a shared helper: peer editors decode from cached serial state, but
+        # weapon's decoded entry is always the truth-source here.
         try:
             return int(self.serial_decoded_entry.text().split('||', 1)[0].strip().split('|')[0].split(',')[0])
         except (ValueError, IndexError):
@@ -1009,50 +1155,186 @@ class WeaponEditorTab(QtWidgets.QWidget):
         if not 0 <= target < len(self.parts_data):
             return
         moved_id = id(self.parts_data[index])
+
+        # Compute the state-side swap BEFORE mutating parts_data (both indices
+        # need the CURRENT dict-position mapping, not the post-swap one).
+        dict_positions = [i for i, p in enumerate(self.parts_data) if isinstance(p, dict)]
+        parts_typed_indices = self._parts_typed_state_indices()
+        state_pair = None
+        if len(parts_typed_indices) == len(dict_positions):
+            src_k = dict_positions.index(index)
+            dst_k = dict_positions.index(target)
+            i_src, i_dst = parts_typed_indices[src_k], parts_typed_indices[dst_k]
+            # subset order doesn't matter; permutation [1, 0] swaps whichever
+            # two positions we pass in.
+            state_pair = (min(i_src, i_dst), max(i_src, i_dst))
+        else:
+            log_editor(
+                self.main_app, self._LOG_TAG,
+                f"move_part: parts_typed_indices ({len(parts_typed_indices)}) "
+                f"!= dict_positions ({len(dict_positions)}) — token state not moved, output may drift from widget order",
+            )
+
         self.parts_data[index], self.parts_data[target] = self.parts_data[target], self.parts_data[index]
+        if state_pair is not None:
+            self._token_state.reorder_subset(list(state_pair), [1, 0])
+
         self.regenerate_ui_and_serial()
         self._select_part_row(moved_id)
 
     def delete_part(self, index):
-        if 0 <= index < len(self.parts_data):
-            self.parts_data.pop(index); self.regenerate_ui_and_serial()
+        if not (0 <= index < len(self.parts_data)):
+            return
+        part = self.parts_data[index]
+
+        # Locate the matching typed token in state BEFORE mutating parts_data.
+        # Typed-dicts order = [rarity_part?, *parts_data dicts]; identity match
+        # avoids collisions between value-equal dicts (elemental groups can
+        # share sub-ids in principle).
+        state_idx = None
+        if isinstance(part, dict):
+            typed_dicts = ([self.rarity_part] if self.rarity_part else []) + [
+                p for p in self.parts_data if isinstance(p, dict)
+            ]
+            typed_indices = [i for i, tok in enumerate(self._token_state.tokens) if tok.kind != 'raw']
+            for k, td in enumerate(typed_dicts):
+                if td is part and k < len(typed_indices):
+                    state_idx = typed_indices[k]
+                    break
+
+        self.parts_data.pop(index)
+
+        # Remove the typed token PLUS one adjacent raw whitespace token so the
+        # rendered stream doesn't accumulate double spaces on repeated deletes
+        # (the previous widget-splice path collapsed \s{2,} via regex; the
+        # token-stream analog is to keep exactly one separator per gap by
+        # dropping one on delete). Prefer the trailing raw so head padding
+        # after "||" survives; fall back to the leading raw when we deleted
+        # the last typed token. Higher index popped first so the lower index
+        # doesn't shift.
+        if state_idx is not None:
+            tokens = self._token_state.tokens
+            # Only collapse whitespace-only raw tokens — never touch a raw that
+            # carries a section delimiter like '|' (parts/skin separator) or
+            # '||' (header/components separator). Deleting the last non-skin
+            # part would otherwise strip the '|' and corrupt the serial.
+            trailing_ok = (
+                state_idx + 1 < len(tokens)
+                and tokens[state_idx + 1].kind == 'raw'
+                and not tokens[state_idx + 1].raw.strip()
+            )
+            leading_ok = (
+                state_idx > 0
+                and tokens[state_idx - 1].kind == 'raw'
+                and not tokens[state_idx - 1].raw.strip()
+            )
+            if trailing_ok:
+                self._token_state.remove(state_idx + 1)
+                self._token_state.remove(state_idx)
+            elif leading_ok:
+                self._token_state.remove(state_idx)
+                self._token_state.remove(state_idx - 1)
+            else:
+                self._token_state.remove(state_idx)
+
+        self._bind_token_state_widgets()
+        self.regenerate_ui_and_serial()
 
     def regenerate_ui_and_serial(self):
+        """Rebuild the decoded serial and re-encode to b85.
+
+        Always routes through ``state.render()``. Every mutation entry point
+        (``move_part`` / ``delete_part`` / ``_apply_part_list_order`` /
+        ``add_selected_parts`` / ``update_skin``) keeps ``_token_state`` in
+        sync with ``parts_data`` via the ``state.move`` / ``state.insert`` /
+        ``state.remove`` / ``state.reorder_subset`` helpers, so the token
+        stream is authoritative. The load-then-regen no-edit path and the
+        mutation path emit through the same code, so byte-identical
+        round-trip holds on both.
+        """
         current_decoded = self.serial_decoded_entry.text()
         if '||' not in current_decoded: return
         header_part, _ = current_decoded.split('||', 1)
         try: m_id = int(header_part.strip().split('|')[0].strip().split(',')[0])
         except (ValueError, IndexError): return
-        new_component_list = ([self.rarity_part['raw']] if self.rarity_part else []) + [p['raw'] if isinstance(p, dict) else p for p in self.parts_data]
-        new_component_str = re.sub(r'\s{2,}', ' ', " ".join(new_component_list).strip())
-        self.serial_decoded_entry.setText(f"{header_part.strip()}|| {new_component_str}")
+        if not self._token_state.tokens:
+            # No state yet (e.g. cleared) — nothing to render. Regenerate is
+            # only called from mutation entry points that require a loaded
+            # weapon, so hitting this guard indicates a caller bug we prefer
+            # to no-op silently rather than trash the serial field.
+            return
+
+        new_decoded = self.backpack_browser.render_from_state(self._token_state)
+        self.serial_decoded_entry.setText(new_decoded)
+        new_b85, err = b_encoder.encode_to_base85(new_decoded)
+        if not err:
+            self.serial_b85_entry.blockSignals(True)
+            self.serial_b85_entry.setText(new_b85)
+            self.serial_b85_entry.blockSignals(False)
         self.display_parts(m_id)
 
     def force_refresh_parts(self):
         if not (decoded_str := self.serial_decoded_entry.text()):
             QtWidgets.QMessageBox.warning(self, self.get_localized_string("no_input"), self.get_localized_string("serial_empty")); return
-        self.main_app.log("Forcing parts list refresh..."); self.parse_and_display_weapon(decoded_str)
+        log_editor(self.main_app, self._LOG_TAG, "Forcing parts list refresh..."); self.parse_and_display_weapon(decoded_str)
         QtWidgets.QMessageBox.information(self, self.get_localized_string("success"), self.get_localized_string("parts_refresh_success"))
 
-    def _weapon_browser_row(self, title, detail, decoded_str):
+    @classmethod
+    def _is_weapon_item(cls, item):
+        return item.get("type_en") in cls._WEAPON_TYPES and "Backpack" in (item.get("container") or "")
+
+    def _derive_weapon_display(self, weapon):
+        """Resolve ``weapon`` into ``(display_name, detail)`` strings for the
+        browser row. Separates parse/localize/format from row-widget
+        construction so ``_weapon_browser_row`` matches the tighter shape used
+        by every peer editor.
+        """
+        header, component = weapon.get('decoded_full', '').split('||', 1)
+        m_id = int(header.strip().split('|')[0].strip().split(',')[0])
+        parsed_components = parse_component_string_with_skin(component)
+        _, name, _, _ = self._get_rarity_and_weapon_name(parsed_components, m_id, weapon.get('decoded_full', ''))
+        w_name = self.get_localized_string(name, name)
+        unknown = self._loc('parts', 'unknown', "Unknown")
+        manufacturer = weapon.get('manufacturer') or unknown
+        weapon_type = weapon.get('type') or self._loc('parts', 'unknown_item', "Unknown Item")
+        unknown_names = {"N/A", "Unknown", "未知", "Неизвестно", "Невідомо", unknown}
+        display_name = (
+            f"{manufacturer} {weapon_type} ({w_name})"
+            if w_name not in unknown_names else f"{manufacturer} {weapon_type}"
+        )
+        detail = (
+            f"{self.get_localized_string('level_label')} {weapon.get('level', 'N/A')}"
+            f"  ·  {self.get_localized_string('slot_label')} {weapon.get('slot', 'N/A').replace('slot_', '')}"
+        )
+        return display_name, detail
+
+    def _weapon_browser_row(self, weapon):
+        """Build the vertical-card row for a weapon in the browser.
+
+        Returns ``(display_name, detail, row_widget)`` — the ItemBrowser
+        drops the widget into the list item and uses the strings for tooltips
+        and search-blob composition.
+        """
+        disp_name, detail = self._derive_weapon_display(weapon)
+
         row = QtWidgets.QWidget()
-        row.setObjectName("WeaponBrowserRow")
-        row.setFixedHeight(self.WEAPON_BROWSER_ROW_HEIGHT)
+        row.setObjectName("ItemBrowserRow")
+        row.setFixedHeight(ROW_HEIGHT)
         row_layout = QtWidgets.QVBoxLayout(row)
         row_layout.setContentsMargins(10, 7, 10, 7)
         row_layout.setSpacing(5)
 
-        name_label = QtWidgets.QLabel(title)
-        name_label.setObjectName("WeaponBrowserName")
-        name_label.setToolTip(title)
+        name_label = QtWidgets.QLabel(disp_name)
+        name_label.setObjectName("ItemBrowserName")
+        name_label.setToolTip(disp_name)
         name_label.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
         detail_label = QtWidgets.QLabel(detail)
-        detail_label.setObjectName("WeaponBrowserMeta")
+        detail_label.setObjectName("ItemBrowserMeta")
         detail_label.setToolTip(detail)
         row_layout.addWidget(name_label)
         row_layout.addWidget(detail_label)
 
-        stats = item_display_resolver.resolve_weapon_stats(decoded_str) if decoded_str else {}
+        stats = item_display_resolver.resolve_weapon_stats(weapon.get('decoded_full', '')) or {}
         stat_titles = self.ui_localization.get('stats', {})
         stats_layout = QtWidgets.QGridLayout()
         stats_layout.setContentsMargins(0, 2, 0, 0)
@@ -1060,104 +1342,31 @@ class WeaponEditorTab(QtWidgets.QWidget):
         stats_layout.setVerticalSpacing(1)
         for column, key in enumerate(("damage", "accuracy", "fire_rate", "reload_time", "magazine")):
             title_label = QtWidgets.QLabel(stat_titles.get(key, key.replace('_', ' ').title()))
-            title_label.setObjectName("WeaponBrowserStatTitle")
+            title_label.setObjectName("ItemBrowserStatTitle")
             title_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
             title_label.setWordWrap(True)
             value = item_display_resolver.format_weapon_stat(key, stats.get(key), self.current_lang) or "—"
             value_label = QtWidgets.QLabel(value)
-            value_label.setObjectName("WeaponBrowserStatValue")
+            value_label.setObjectName("ItemBrowserStatValue")
             value_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
             stats_layout.addWidget(title_label, 0, column)
             stats_layout.addWidget(value_label, 1, column)
             stats_layout.setColumnStretch(column, 1)
         row_layout.addLayout(stats_layout)
-        return row
+        return disp_name, detail, row
 
-    def _sync_weapon_browser_selection(self, current, previous):
-        self._set_row_selected(self.backpack_items_list, previous, False)
-        self._set_row_selected(self.backpack_items_list, current, True)
-
-    def refresh_backpack_items(self):
-        self.backpack_items_list.clear()
-        if self.main_app.controller.yaml_obj is None or not (items := self.main_app.controller.get_all_items()):
-            self.backpack_items_list.addItem(self.get_localized_string("decrypt_save_to_show_weapons"))
-            self.backpack_items_list.setEnabled(False)
-            return
-        
-        weapon_types = {"Pistol", "Shotgun", "SMG", "Assault Rifle", "Sniper"}
-        filtered = [i for i in items if i.get("type_en") in weapon_types and "Backpack" in i.get("container", "")]
-        if not filtered:
-            self.backpack_items_list.addItem(self.get_localized_string("no_weapons_in_backpack"))
-            self.backpack_items_list.setEnabled(False)
-            return
-
-        self.backpack_items_list.setEnabled(True)
-
-        for weapon in filtered:
-            try:
-                header, component = weapon.get('decoded_full', '').split('||', 1)
-                m_id = int(header.strip().split('|')[0].strip().split(',')[0])
-                parsed_components = self._parse_component_string(component)
-                _, name, _, _ = self._get_rarity_and_weapon_name(parsed_components, m_id, weapon.get('decoded_full', ''))
-                w_name = self.get_localized_string(name, name)
-                unknown = self._loc('parts', 'unknown', "Unknown")
-                manufacturer = weapon.get('manufacturer') or unknown
-                weapon_type = weapon.get('type') or self._loc('parts', 'unknown_item', "Unknown Item")
-                unknown_names = {"N/A", "Unknown", "未知", "Неизвестно", "Невідомо", unknown}
-                disp_name = f"{manufacturer} {weapon_type} ({w_name})" if w_name not in unknown_names else f"{manufacturer} {weapon_type}"
-                detail = f"{self.get_localized_string('level_label')} {weapon.get('level', 'N/A')}  ·  {self.get_localized_string('slot_label')} {weapon.get('slot', 'N/A').replace('slot_', '')}"
-                item = QtWidgets.QListWidgetItem()
-                item.setData(QtCore.Qt.ItemDataRole.UserRole, weapon)
-                item.setData(QtCore.Qt.ItemDataRole.UserRole + 1, f"{weapon.get('name', '')} {disp_name} {detail}".lower())
-                item.setToolTip(f"{disp_name} · {detail}")
-                row_widget = self._weapon_browser_row(disp_name, detail, weapon.get('decoded_full', ''))
-                item.setSizeHint(QtCore.QSize(0, self.WEAPON_BROWSER_ROW_HEIGHT))
-                self.backpack_items_list.addItem(item)
-                self.backpack_items_list.setItemWidget(item, row_widget)
-
-            except Exception as e:
-                self.main_app.log(f"Weapon browser item failed: serial={weapon.get('serial', 'unknown')}, error={e}")
-        self._filter_backpack_items(self.weapon_search.text())
-        self._select_current_backpack_item()
-
-    def _filter_backpack_items(self, query):
-        query = query.strip().lower()
-        for row in range(self.backpack_items_list.count()):
-            item = self.backpack_items_list.item(row)
-            search_text = item.data(QtCore.Qt.ItemDataRole.UserRole + 1) or item.text().lower()
-            item.setHidden(bool(query and query not in search_text))
-
-    def _select_current_backpack_item(self):
-        if not hasattr(self, "backpack_items_list"):
-            return
-        self.backpack_items_list.clearSelection()
-        for row in range(self.backpack_items_list.count()):
-            item = self.backpack_items_list.item(row)
-            weapon = item.data(QtCore.Qt.ItemDataRole.UserRole)
-            if weapon and weapon.get("original_path") == self.selected_weapon_path:
-                self.backpack_items_list.setCurrentItem(item)
-                self.backpack_items_list.scrollToItem(item, QtWidgets.QAbstractItemView.ScrollHint.PositionAtCenter)
-                return
-
-    def _update_selected_weapon_summary(self, weapon=None):
-        if not hasattr(self, "selected_weapon_summary"):
-            return
-        if weapon is None and hasattr(self, "backpack_items_list"):
-            for row in range(self.backpack_items_list.count()):
-                candidate = self.backpack_items_list.item(row).data(QtCore.Qt.ItemDataRole.UserRole)
-                if candidate and candidate.get("original_path") == self.selected_weapon_path:
-                    weapon = candidate
-                    break
-        if not weapon:
-            self.selected_weapon_summary.setText(self._loc('summary', 'none_selected', "No backpack weapon selected"))
-            return
+    def _summarize_weapon(self, weapon):
         name = weapon.get("name") or weapon.get("manufacturer") or self._loc('summary', 'fallback_name', "Weapon")
-        self.selected_weapon_summary.setText(
-            self._loc('summary', 'selected', "Selected · {name} · Lv.{level}", name=name, level=weapon.get('level', 'N/A'))
+        return self._loc(
+            'summary', 'selected', "Selected · {name} · Lv.{level}",
+            name=name, level=weapon.get('level', 'N/A'),
         )
 
+    def refresh_backpack_items(self):
+        self.backpack_browser.refresh()
+
     def update_weapon(self):
-        if not self.selected_weapon_path:
+        if not self.selected_item_path:
             QtWidgets.QMessageBox.warning(self, self.get_localized_string("no_selection"), self.get_localized_string("select_weapon_first"))
             return
 
@@ -1170,7 +1379,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         # 我们假设原始数据没有改变，只更新序列号
         # original_item_data 和 new_item_data 可以是部分数据
         payload = {
-            'item_path': self.selected_weapon_path,
+            'item_path': self.selected_item_path,
             'original_item_data': {}, # 留空，让controller自行处理
             'new_item_data': {'serial': new_serial},
             'success_msg': self.get_localized_string('update_success')
@@ -1331,27 +1540,59 @@ class WeaponEditorTab(QtWidgets.QWidget):
         if not new_parts_list:
             return window.close()
 
-        new_part_data = self._parse_component_string(" ".join(new_parts_list))
+        joined_new = " ".join(new_parts_list)
+        new_part_data = parse_component_string_with_skin(joined_new)
 
-        # Find the last non-skin part index to insert after
+        # Compute the state insertion point BEFORE mutating parts_data — the
+        # calculation uses the CURRENT typed-dicts-to-state-tokens mapping.
+        # Target: just after the last non-skin typed token so appended parts
+        # come before the skin section (parity with parts_data insertion).
+        typed_dicts_pre = ([self.rarity_part] if self.rarity_part else []) + [
+            p for p in self.parts_data if isinstance(p, dict)
+        ]
+        typed_indices_pre = [i for i, tok in enumerate(self._token_state.tokens) if tok.kind != 'raw']
+        state_insert_at = 1  # default: after header
+        for k, d in enumerate(typed_dicts_pre):
+            if k >= len(typed_indices_pre):
+                break
+            if d.get('type') != 'skin':
+                state_insert_at = typed_indices_pre[k] + 1
+
+        # Find the last non-skin part index to insert after (parts_data side)
         insertion_index = len(self.parts_data)
         for i in range(len(self.parts_data) - 1, -1, -1):
             part = self.parts_data[i]
             if isinstance(part, dict) and part.get('type') != 'skin':
                 insertion_index = i + 1
                 break
-        
+
         # Insert a space if needed before adding new parts
         if insertion_index > 0:
             prev_item = self.parts_data[insertion_index - 1]
             if (isinstance(prev_item, dict)) or (isinstance(prev_item, str) and prev_item.strip()):
                 self.parts_data.insert(insertion_index, ' ')
                 insertion_index += 1
-        
+
         self.parts_data[insertion_index:insertion_index] = new_part_data
-        
+
+        # Tokenize the fragment with a leading space so the first new typed
+        # token has a raw separator between it and whatever preceded it in
+        # state; internal separators between the new parts come from the
+        # " ".join above. Insert one token at a time so the state's own
+        # binding re-key pass runs per insert (bindings on shifted tokens
+        # follow them intact — inherited from ``TokenOrderedState.insert``).
+        new_tokens = parse_component_tokens_with_skin(" " + joined_new)
+        for offset, tok in enumerate(new_tokens):
+            self._token_state.insert(state_insert_at + offset, tok)
+
+        # Fresh dicts entered parts_data at state_insert_at..; the pre-existing
+        # bindings past that point still close over the correct dicts (dict
+        # identity unchanged for pre-existing parts), but the newly-inserted
+        # typed tokens have no binding. A full rebind covers both — cheaper
+        # in code than an incremental one and guaranteed correct.
+        self._bind_token_state_widgets()
         self.regenerate_ui_and_serial()
-        self.main_app.log(f"Added {len(new_part_data)} new part(s).")
+        log_editor(self.main_app, self._LOG_TAG, f"Added {len(new_part_data)} new part(s).")
         window.close()
 
     def open_select_skin_window(self, part_index):
@@ -1399,12 +1640,31 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 )
                 window.close()
                 return
+            # In-place replacement: dict identity changes, so the existing
+            # binding still closes over the OLD skin dict. Re-binding after
+            # the swap updates the closure to the new dict — the state token
+            # slot / kind stay the same, so no state.tokens mutation needed.
             self.parts_data[target_index] = skin
         else:
+            # Append path: skin dict + '|' separator go on the end of
+            # parts_data. State needs a matching quoted token (bound to the
+            # new skin dict via _bind_token_state_widgets) plus a raw '|'
+            # token. skin['raw'] already carries a leading space, so no extra
+            # padding is needed between the previous token and the skin.
             self.parts_data.append(skin)
             self.parts_data.append('|')
+            self._token_state.insert(
+                len(self._token_state.tokens),
+                Token(raw=skin['raw'], kind='quoted',
+                      value=skin['id'] if isinstance(skin['id'], int) else None),
+            )
+            self._token_state.insert(
+                len(self._token_state.tokens),
+                Token(raw=' |', kind='raw'),
+            )
+        self._bind_token_state_widgets()
         self.regenerate_ui_and_serial()
-        self.main_app.log(f"Weapon skin updated to ID: {new_skin_id}")
+        log_editor(self.main_app, self._LOG_TAG, f"Weapon skin updated to ID: {new_skin_id}")
         window.close()
 
 if __name__ == '__main__':
@@ -1424,7 +1684,7 @@ if __name__ == '__main__':
     main_win.setWindowTitle("QT Weapon Editor Test")
     main_win.setGeometry(100, 100, 1024, 768)
     layout = QtWidgets.QVBoxLayout(main_win)
-    editor = WeaponEditorTab(mock_app)
+    editor = QtWeaponEditorTab(mock_app)
     layout.addWidget(editor)
     main_win.show()
     sys.exit(app.exec())

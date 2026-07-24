@@ -69,6 +69,8 @@ class CategoryChipBar(QWidget):
             if w is not None:
                 w.setParent(None)
                 w.deleteLater()
+        # Reset column stretch from any previous build so the new equal-width
+        # calculation is not thrown off by leftover stretch factors.
         # 清掉上一轮构建残留的列拉伸，避免影响新的等宽计算
         for c in range(64):
             self._grid.setColumnStretch(c, 0)
@@ -76,6 +78,10 @@ class CategoryChipBar(QWidget):
     def set_categories(self, categories, columns=None):
         """categories: list of (key, label). First one is auto-selected.
 
+        Chips laid out in a fixed column count with equal column widths
+        (equal stretch + horizontal Expanding on the chip fills each cell).
+        Multiple filter rows with the same columns line up cleanly across
+        rows instead of interleaving.
         芯片按固定列数排布，且每列等宽（等拉伸 + 芯片横向 Expanding 填满单元格）。
         这样同一 columns 的多个筛选条彼此列宽一致，横竖都对齐，不再犬牙交错。
         """
@@ -218,17 +224,17 @@ class CatalogPicker(QWidget):
         root.addWidget(self.search)
 
         self.cat_bar = CategoryChipBar()
-        self.cat_bar.changed.connect(lambda *_: self._refilter())
+        self.cat_bar.changed.connect(self._refilter)
         self.cat_bar.hide()
         root.addWidget(self.cat_bar)
 
         self.sub_bar = CategoryChipBar()
-        self.sub_bar.changed.connect(lambda *_: self._refilter())
+        self.sub_bar.changed.connect(self._refilter)
         self.sub_bar.hide()
         root.addWidget(self.sub_bar)
 
         self.third_bar = CategoryChipBar()
-        self.third_bar.changed.connect(lambda *_: self._refilter())
+        self.third_bar.changed.connect(self._refilter)
         self.third_bar.hide()
         root.addWidget(self.third_bar)
 
@@ -312,11 +318,12 @@ class CatalogPicker(QWidget):
     # Filtering
     # ------------------------------------------------------------------ #
     def _refilter(self, *args):
+        # *args to accept signal args uniformly across textChanged / chip callbacks
         self.avail.clear()
         cat = self.cat_bar.current_key() if not self.cat_bar.isHidden() else None
         sub = self.sub_bar.current_key() if not self.sub_bar.isHidden() else None
         third = self.third_bar.current_key() if not self.third_bar.isHidden() else None
-        query = self.search.text().lower().strip()
+        query = self.search.text().casefold().strip()
         for it in self._source:
             if cat not in (None, "all") and it.get("category") != cat:
                 continue
@@ -324,7 +331,7 @@ class CatalogPicker(QWidget):
                 continue
             if third not in (None, "all") and it.get("tertiary") != third:
                 continue
-            if query and query not in str(it.get("label", "")).lower():
+            if query and query not in str(it.get("label", "")).casefold():
                 continue
             lwi = QListWidgetItem(it.get("label", ""))
             lwi.setData(Qt.ItemDataRole.UserRole, it)
@@ -357,17 +364,17 @@ class CatalogPicker(QWidget):
         self.selected.setItemWidget(lwi, row)
         self._selected_keys[key] = lwi
         row.countChanged.connect(self.changed.emit)
+        # Defer removal to the next event-loop tick so the button's own click
+        # slot is not destroyed mid-invocation (Qt crash if we delete inline).
         # 延迟到下一轮事件循环再删除，避免在按钮自身点击槽内销毁其宿主控件导致崩溃
         row.removed.connect(lambda k=key: QTimer.singleShot(0, lambda: self._remove_key(k)))
-        self._update_count()
-        self.changed.emit()
+        self._notify_changed()
 
     def _remove_key(self, key):
         lwi = self._selected_keys.pop(key, None)
         if lwi is not None:
             self.selected.takeItem(self.selected.row(lwi))
-        self._update_count()
-        self.changed.emit()
+        self._notify_changed()
 
     def remove_key(self, key):
         if key in self._selected_keys:
@@ -378,6 +385,13 @@ class CatalogPicker(QWidget):
             return
         self.selected.clear()
         self._selected_keys = {}
+        self._notify_changed()
+
+    def _notify_changed(self):
+        """Update the count label and emit ``changed``. Shared tail for
+        add/remove/clear mutations. Sibling InlineCatalogPicker also refilters
+        here; this variant does not, because CatalogPicker's available list is
+        driven by category chips + search, not selection state."""
         self._update_count()
         self.changed.emit()
 
@@ -591,6 +605,7 @@ class InlineCatalogPicker(QWidget):
         self._update_count()
 
     def _refilter(self, *args):
+        # *args to accept signal args uniformly across textChanged / chip callbacks
         self.list.clear()
         category = self.cat_bar.current_key() if not self.cat_bar.isHidden() else None
         query = self.search.text().casefold().strip()
@@ -609,6 +624,9 @@ class InlineCatalogPicker(QWidget):
             self.list.setItemWidget(list_item, row)
 
     def _set_count(self, key, count):
+        # Called mid-render from row's countChanged; must NOT _refilter (would
+        # tear down the row widget that just emitted the signal). Sibling
+        # mutators go through _notify_changed which does refilter.
         if count > 0:
             self._counts[key] = count
         else:
@@ -616,27 +634,51 @@ class InlineCatalogPicker(QWidget):
         self._update_count()
         self.changed.emit()
 
-    def add_item(self, item, count=1):
-        maximum = max(1, int(item.get("max_count", 99)))
-        self._counts[item["key"]] = min(maximum, self._counts.get(item["key"], 0) + count)
+    def _notify_changed(self):
+        """Refilter + update count + emit ``changed``.
+
+        Shared tail for mutations that add/remove/clear entries. Do NOT call
+        from ``_set_count`` — that fires mid-row-render and refiltering would
+        destroy the widget that just emitted the count-change signal.
+        """
         self._refilter()
         self._update_count()
         self.changed.emit()
 
+    def add_item(self, item, count=1):
+        maximum = max(1, int(item.get("max_count", 99)))
+        self._counts[item["key"]] = min(maximum, self._counts.get(item["key"], 0) + count)
+        self._notify_changed()
+
+    def set_entry_count(self, key, count):
+        """Set an entry's count to an absolute value, respecting its max_count.
+        Programmatic callers (like a backpack reverse-parser) use this to
+        restore a saved state without needing to compute deltas.
+        """
+        source_item = next((s for s in self._source if s.get("key") == key), None)
+        if source_item is None:
+            return
+        maximum = max(1, int(source_item.get("max_count", 99)))
+        clamped = max(0, min(maximum, int(count)))
+        current = self._counts.get(key, 0)
+        if clamped == current:
+            return
+        if clamped == 0:
+            self._counts.pop(key, None)
+        else:
+            self._counts[key] = clamped
+        self._notify_changed()
+
     def remove_key(self, key):
         if key in self._counts:
             self._counts.pop(key)
-            self._refilter()
-            self._update_count()
-            self.changed.emit()
+            self._notify_changed()
 
     def clear(self):
         if not self._counts:
             return
         self._counts.clear()
-        self._refilter()
-        self._update_count()
-        self.changed.emit()
+        self._notify_changed()
 
     def entries(self):
         return [

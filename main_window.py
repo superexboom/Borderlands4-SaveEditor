@@ -40,7 +40,7 @@ from tabs import (
     QtCharacterTab, QtItemsTab, QtWeaponGeneratorTab, QtConverterTab,
     QtClassModEditorTab, QtHeavyWeaponEditorTab, QtShieldEditorTab,
     QtGrenadeEditorTab, QtRepkitEditorTab, QtYamlEditorTab,
-    QtEnhancementEditorTab, WeaponEditorTab as QtWeaponEditorTab,
+    QtEnhancementEditorTab, QtWeaponEditorTab,
     QtLoadoutManagerTab
 )
 
