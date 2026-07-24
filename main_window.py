@@ -274,6 +274,31 @@ class BatchAddWorker(QObject):
 
 
 class MainWindow(QMainWindow):
+    # Editor tabs that host an ItemBrowser and expose refresh_backpack_items().
+    # Every editor built on the shared browser goes here so refresh_all_tabs
+    # picks it up automatically.
+    _BROWSER_EDITOR_TAB_ATTRS = (
+        "weapon_editor_tab", "grenade_tab", "shield_tab",
+        "repkit_tab", "heavy_weapon_tab", "class_mod_tab",
+        "enhancement_tab",
+    )
+
+    # Editor tabs that consume the character level via set_character_level().
+    # weapon_editor_tab intentionally omitted — it has no character-level field.
+    _LEVEL_SYNC_TAB_ATTRS = (
+        "class_mod_tab", "enhancement_tab",
+        "grenade_tab", "shield_tab", "repkit_tab",
+        "heavy_weapon_tab", "weapon_generator_tab",
+    )
+
+    # Localization keys under loc['tabs'], one per nav button in display order.
+    # Referenced by update_ui_text to relabel the nav bar on language change.
+    _TAB_KEYS = (
+        'select_save', 'character', 'items', 'converter', 'yaml_editor',
+        'class_mod', 'enhancement', 'weapon_editor', 'weapon_generator',
+        'grenade', 'shield', 'repkit', 'heavy_weapon', 'loadout_manager',
+    )
+
     def __init__(self):
         super().__init__()
         from PyQt6.QtCore import QSettings
@@ -620,45 +645,54 @@ class MainWindow(QMainWindow):
         self.yaml_editor_tab.yaml_text_changed.connect(self.handle_yaml_update)
         self.add_tab(self.yaml_editor_tab, self.loc['tabs']['yaml_editor'], "📄")
 
-        self.class_mod_tab = QtClassModEditorTab()
-        self.class_mod_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
+        self.class_mod_tab = QtClassModEditorTab(main_app=self)
+        self._connect_editor_signals(self.class_mod_tab)
         self.add_tab(self.class_mod_tab, self.loc['tabs']['class_mod'], "🌟")
 
-        self.enhancement_tab = QtEnhancementEditorTab()
-        self.enhancement_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
+        self.enhancement_tab = QtEnhancementEditorTab(main_app=self)
+        self._connect_editor_signals(self.enhancement_tab)
         self.add_tab(self.enhancement_tab, self.loc['tabs']['enhancement'], "✨")
 
-        self.weapon_editor_tab = QtWeaponEditorTab(self)
-        self.weapon_editor_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
-        self.weapon_editor_tab.update_item_requested.connect(self.handle_update_item)
+        self.weapon_editor_tab = QtWeaponEditorTab(main_app=self)
+        self._connect_editor_signals(self.weapon_editor_tab)
         self.add_tab(self.weapon_editor_tab, self.loc['tabs']['weapon_editor'], "🔧")
 
         self.weapon_generator_tab = QtWeaponGeneratorTab()
         self.weapon_generator_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
         self.add_tab(self.weapon_generator_tab, self.loc['tabs']['weapon_generator'], "🔫")
 
-        self.grenade_tab = QtGrenadeEditorTab()
-        self.grenade_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
+        self.grenade_tab = QtGrenadeEditorTab(main_app=self)
+        self._connect_editor_signals(self.grenade_tab)
         self.add_tab(self.grenade_tab, self.loc['tabs']['grenade'], "💣")
 
-        self.shield_tab = QtShieldEditorTab()
-        self.shield_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
+        self.shield_tab = QtShieldEditorTab(main_app=self)
+        self._connect_editor_signals(self.shield_tab)
         self.add_tab(self.shield_tab, self.loc['tabs']['shield'], "🛡️")
 
-        self.repkit_tab = QtRepkitEditorTab()
-        self.repkit_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
+        self.repkit_tab = QtRepkitEditorTab(main_app=self)
+        self._connect_editor_signals(self.repkit_tab)
         self.add_tab(self.repkit_tab, self.loc['tabs']['repkit'], "🛠️")
 
-        self.heavy_weapon_tab = QtHeavyWeaponEditorTab()
-        self.heavy_weapon_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
+        self.heavy_weapon_tab = QtHeavyWeaponEditorTab(main_app=self)
+        self._connect_editor_signals(self.heavy_weapon_tab)
         self.add_tab(self.heavy_weapon_tab, self.loc['tabs']['heavy_weapon'], "🚀")
 
-        self.loadout_manager_tab = QtLoadoutManagerTab()
-        self.add_tab(self.loadout_manager_tab, self.loc['tabs'].get('loadout_manager', '配置管理'), "📋")
+        self.loadout_manager_tab = QtLoadoutManagerTab(main_app=self)
+        self.add_tab(self.loadout_manager_tab, self.loc['tabs']['loadout_manager'], "📋")
 
 
         if self.nav_button_group.buttons():
             self.nav_button_group.buttons()[0].click()
+
+    def _connect_editor_signals(self, tab):
+        """Wire the seven editor tabs' shared signals: ``add_to_backpack_requested``
+        → ``handle_add_to_backpack`` and ``update_item_requested`` →
+        ``handle_update_item``. Uses ``hasattr`` for duck-typing so a tab that
+        doesn't declare one of the signals is skipped cleanly."""
+        if hasattr(tab, "add_to_backpack_requested"):
+            tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
+        if hasattr(tab, "update_item_requested"):
+            tab.update_item_requested.connect(self.handle_update_item)
 
     def add_tab(self, widget: QWidget, text: str, icon_char: str):
         index = self.content_stack.addWidget(widget)
@@ -823,21 +857,21 @@ class MainWindow(QMainWindow):
             # 同步角色等级到所有编辑器Tab的默认等级
             char_level = char_data.get("角色等级", "") if char_data else ""
             if char_level:
-                level_sync_tabs = [
-                    self.class_mod_tab, self.enhancement_tab,
-                    self.grenade_tab, self.shield_tab, self.repkit_tab,
-                    self.heavy_weapon_tab, self.weapon_generator_tab,
-                ]
-                for tab in level_sync_tabs:
-                    if hasattr(tab, 'set_character_level'):
+                for tab_attr in self._LEVEL_SYNC_TAB_ATTRS:
+                    tab = getattr(self, tab_attr, None)
+                    if tab and hasattr(tab, "set_character_level"):
                         tab.set_character_level(char_level)
                 self.log(f"  - Character level ({char_level}) synced to editor tabs.")
             self.items_tab.update_tree(self.controller.get_all_items())
             self.log("  - Items tab refreshed.")
-            if hasattr(self, 'weapon_editor_tab'):
-                self.log("  - Refreshing weapon editor tab...")
-                self.weapon_editor_tab.refresh_backpack_items()
-                self.log("  - Weapon editor tab refreshed.")
+            # Every editor tab that hosts a backpack browser exposes
+            # refresh_backpack_items(); duck-typing means adding a new editor
+            # is a one-line change to _BROWSER_EDITOR_TAB_ATTRS.
+            for tab_attr in self._BROWSER_EDITOR_TAB_ATTRS:
+                tab = getattr(self, tab_attr, None)
+                if tab and hasattr(tab, "refresh_backpack_items"):
+                    self.log(f"  - Refreshing {tab_attr}...")
+                    tab.refresh_backpack_items()
             self.yaml_editor_tab.set_yaml_text(self.controller.get_yaml_string())
             self.log("  - YAML editor tab refreshed.")
             if hasattr(self, 'loadout_manager_tab'):
@@ -1057,32 +1091,32 @@ class MainWindow(QMainWindow):
         if self.current_language == lang_code:
             return
 
-        print(f"DEBUG: change_language started. New: {lang_code}")
+        self.log(f"change_language started. New: {lang_code}")
         self.current_language = lang_code
         self._settings.setValue('language', lang_code)
-        
+
         # Update backend localization
         bl4f.set_language(self.current_language)
 
         self.lang_button.setText(self._get_lang_button_text())
-        
+
         self._load_localization()
         self.update_ui_text()
-        
+
         # Update tabs
         for tab in self._all_content_tabs():
             if hasattr(tab, 'update_language'):
-                print(f"DEBUG: Updating language for tab {tab.__class__.__name__}")
+                self.log(f"Updating language for tab {tab.__class__.__name__}")
                 try:
                     tab.update_language(self.current_language)
-                    print(f"DEBUG: Updated language for tab {tab.__class__.__name__}")
+                    self.log(f"Updated language for tab {tab.__class__.__name__}")
                 except Exception as e:
-                    print(f"DEBUG: Error updating language for tab {tab.__class__.__name__}: {e}")
-        
+                    self.log(f"Error updating language for tab {tab.__class__.__name__}: {e}")
+
         # Refresh all tabs to re-fetch items with new localization
         self.refresh_all_tabs()
-        
-        print("DEBUG: change_language finished")
+
+        self.log("change_language finished")
         
     def update_ui_text(self):
         if getattr(self.controller, 'save_path', None):
@@ -1104,13 +1138,7 @@ class MainWindow(QMainWindow):
         self.bg_button.setToolTip(self.loc.get('header', {}).get('change_bg', 'Change Background'))
         
         # Update tab titles
-        tab_keys = [
-            'select_save', 'character', 'items', 'converter', 'yaml_editor',
-            'class_mod', 'enhancement', 'weapon_editor', 'weapon_generator',
-            'grenade', 'shield', 'repkit', 'heavy_weapon', 'loadout_manager'
-        ]
-
-        for i, key in enumerate(tab_keys):
+        for i, key in enumerate(self._TAB_KEYS):
             button = self.nav_button_group.button(i)
             if button:
                 icon_char = button.property("iconChar")
@@ -1128,7 +1156,7 @@ class MainWindow(QMainWindow):
         if stylesheet:
             self.setStyleSheet(stylesheet)
         else:
-            print("Warning: stylesheet.qss not found or failed to load.")
+            self.log("Warning: stylesheet.qss not found or failed to load.")
 
     def toggle_theme(self):
         """Toggle between dark and light themes."""

@@ -4,7 +4,9 @@
     "Legendary": "传奇",
     "Rare": "稀有",
     "Uncommon": "罕见",
-	"Rarity": "稀有度",
-	"Legendary Perk": "传奇技能",
-	"Perk": "技能"
+    "Rarity": "稀有度",
+    "Legendary Perk": "传奇技能",
+    "Perk": "技能",
+    "Energy": "能量",
+    "Armor": "护甲"
 }

@@ -1535,3 +1535,180 @@ QToolTip {
     font-family: "Microsoft YaHei UI", "Segoe UI";
 }
 
+/* Shield energy/armor "type mismatch" placeholder shown when the current
+   manufacturer doesn't match the side being viewed. Set inline was the
+   previous approach; hoisted here for consistency with the class-mod /
+   enhancement / loadout QSS migrations. */
+#shieldTypePlaceholderLabel {
+    font-size: 14px;
+    font-weight: bold;
+    color: #888;
+    padding: 20px;
+}
+
+/* "Special Thanks" banner shared by class-mod and enhancement editors.
+   Object names are set on the QLabel in the tabs' _build_ui / _rebuild_ui
+   so styling is not duplicated inline. */
+#classModThanksBanner,
+#enhancementThanksBanner {
+    background-color: rgba(0, 150, 136, 0.08);
+    border: 1px solid rgba(0, 150, 136, 0.30);
+    border-radius: 6px;
+    color: #4dd0c8;
+    font-size: 13px;
+    padding: 8px 12px;
+    margin-top: 8px;
+}
+
+/* ============================================== */
+/* Loadout Manager Tab                            */
+/* Object names / property selectors mirror the   */
+/* Python widget names in qt_loadout_manager_tab. */
+/* ============================================== */
+
+#loadoutReadSaveButton {
+    background-color: rgba(76, 175, 80, 0.3);
+    border: 1px solid rgba(76, 175, 80, 0.5);
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+#loadoutReadSaveButton:hover {
+    background-color: rgba(76, 175, 80, 0.5);
+    color: white;
+}
+
+#loadoutNotice {
+    background-color: rgba(255, 152, 0, 0.12);
+    border: 1px solid rgba(255, 152, 0, 0.35);
+    border-radius: 6px;
+    color: #e65100;
+    font-size: 11px;
+    padding: 8px 10px;
+    margin-bottom: 4px;
+}
+
+#loadoutConfigName {
+    font-size: 12px;
+    font-style: italic;
+    padding-left: 8px;
+}
+
+#loadoutEquippedRow {
+    background-color: rgba(128, 128, 128, 0.05);
+    border: 1px solid rgba(128, 128, 128, 0.1);
+    border-radius: 6px;
+    padding: 4px;
+}
+
+#loadoutEquippedRow QLabel { font-size: 12px; }
+#loadoutEquippedRow QLabel#loadoutSlotLabel { font-weight: bold; }
+/* Serial line-edit inside the equipped row. font-family stays inline in
+   the Python side (Qt style sheets don't inherit application font-family
+   reliably for QLineEdit — see qt_loadout_manager_tab). */
+#loadoutEquippedRow QLineEdit {
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 11px;
+}
+
+#loadoutSkillRow {
+    background-color: rgba(128, 128, 128, 0.05);
+    border: 1px solid rgba(128, 128, 128, 0.1);
+    border-radius: 5px;
+}
+
+#loadoutSkillRow QLabel { font-size: 12px; }
+
+/* Slot state driven by the "state" dynamic property — empty (default),
+   saved, active. Style order matters: the more specific attribute
+   selectors must follow the base rule so they win. */
+#loadoutSlotButton {
+    background-color: rgba(128, 128, 128, 0.06);
+    border: 1px solid rgba(128, 128, 128, 0.12);
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+#loadoutSlotButton:hover {
+    background-color: rgba(128, 128, 128, 0.12);
+}
+
+#loadoutSlotButton[state="saved"] {
+    background-color: rgba(76, 175, 80, 0.15);
+    border: 1px solid rgba(76, 175, 80, 0.5);
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+#loadoutSlotButton[state="saved"]:hover {
+    background-color: rgba(76, 175, 80, 0.3);
+}
+
+#loadoutSlotButton[state="active"] {
+    background-color: rgba(33, 150, 243, 0.6);
+    color: white;
+    border: 2px solid #2196F3;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#loadoutActionSave {
+    background-color: rgba(33, 150, 243, 0.25);
+    border: 1px solid rgba(33, 150, 243, 0.5);
+    border-radius: 6px;
+    padding: 7px 18px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+#loadoutActionSave:hover {
+    background-color: rgba(33, 150, 243, 0.45);
+    color: white;
+}
+
+#loadoutActionLoad {
+    background-color: rgba(255, 152, 0, 0.25);
+    border: 1px solid rgba(255, 152, 0, 0.5);
+    border-radius: 6px;
+    padding: 7px 18px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+#loadoutActionLoad:hover {
+    background-color: rgba(255, 152, 0, 0.45);
+    color: white;
+}
+
+/* Grey centred placeholder — shared by the equipped, skills, and
+   dynamic add_placeholder QLabels. */
+#loadoutPlaceholder {
+    color: #888;
+    font-size: 13px;
+    padding: 20px;
+}
+
+/* "Activated skills" section header shown above each skill list. */
+#loadoutSkillSectionHeader {
+    font-size: 13px;
+    font-weight: bold;
+    padding: 6px 0 2px 0;
+}
+
+/* Skill row status label — kind driven by dynamic property. */
+#loadoutSkillStatus[kind="points"] {
+    color: #64b5f6;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+#loadoutSkillStatus[kind="activated"] {
+    color: #4caf50;
+    font-size: 12px;
+    font-weight: bold;
+}
+

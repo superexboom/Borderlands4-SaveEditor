@@ -15,7 +15,7 @@ from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QGroupBox, QScrollArea, QMessageBox, QFrame, QInputDialog
 )
-from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtCore import Qt, QSize, QEvent
 from PyQt6.QtGui import QIcon
 
 from core import resource_loader
@@ -24,9 +24,12 @@ from core import item_display_resolver
 from core import lookup
 from core import bl4_functions as bl4f
 from core.unlock_data import CHARACTER_CLASSES
+from tabs.qt_editor_shared import C4SH_TREE_SUFFIX_RE, load_tab_ui_loc, log_editor
 
 
 # ── 武器槽位 (0-3) — 需要解析真实名称 ────────────────────────────────
+# Subset of _ALL_SLOT_KEYS (defined on the class body below) — kept as a set
+# for O(1) membership checks in WEAPON_SLOT_KEYS filters.
 WEAPON_SLOT_KEYS = {'slot_0', 'slot_1', 'slot_2', 'slot_3'}
 
 # SDU graph 名称，用于划定边界
@@ -37,6 +40,38 @@ _SLOT_FALLBACK = {
     'slot_0': '武器1', 'slot_1': '武器2', 'slot_2': '武器3', 'slot_3': '武器4',
     'slot_4': '护盾', 'slot_5': '重武器/手雷', 'slot_6': '修复套件',
     'slot_7': '强化模组', 'slot_8': '职业模组',
+}
+
+# Catastrophic i18n-load fallback. Only used when load_tab_ui_loc returns {} —
+# every shipped ui_localization*.json has a loadout_tab section, so hitting
+# this dict means the JSON itself failed to load. Chinese matches what
+# ships in loadout_tab.json and this only fires on catastrophic load
+# failure, so no localization work is worth the churn.
+_LOC_FALLBACK: dict = {
+    "groups": {"equipped": "已装备物品", "loadout": "配置方案", "skills": "技能配置"},
+    "slots": _SLOT_FALLBACK,
+    "buttons": {"read_save": "读取当前存档配置", "save_loadout": "保存配置",
+                "load_loadout": "加载配置到存档"},
+    "labels": {"activated_skills": "已激活技能", "points_suffix": " 点",
+               "activated": "已激活", "config_name": "配置名称:",
+               "default_config_name": "槽位 {slot}"},
+    "placeholders": {
+        "empty_slot": "该槽位无已保存配置\n点击「读取当前存档配置」查看当前装备",
+        "empty_slot_skills": "该槽位无已保存配置",
+        "open_save_first": "请先打开存档并点击「读取当前存档配置」",
+        "no_equipped": "配置中无装备数据", "no_skills": "配置中无技能数据",
+        "no_data": "暂无技能数据", "no_activated": "暂无已激活技能",
+        "no_items": "当前没有装备任何物品", "open_first": "请先打开存档",
+        "no_equipped_data": "未找到已装备物品数据",
+    },
+    "decode": {
+        "unknown": "未知",
+        "decode_failed": "解码失败",
+        "unknown_item": "未知物品",
+        "decode_error": "解码错误",
+    },
+    "notice": "",
+    "dialogs": {},
 }
 
 
@@ -72,14 +107,29 @@ def _replace_skill_graphs(graphs: list, new_skill_graphs: list) -> list:
 
 
 class QtLoadoutManagerTab(QWidget):
-    """配置管理器标签页 (with full i18n support)"""
+    """配置管理器标签页"""
+
+    # Log tag for shared log_editor calls — matches the peer editor tabs.
+    _LOG_TAG = "loadout"
 
     # CLASS_IDS mirrors QtClassModEditorTab for icon lookup
     CLASS_IDS = {'Amon': 255, 'Harlowe': 259, 'Rafa': 256, 'Vex': 254, 'C4sh': 404, 'C4SH': 404}
     CLASS_NAME_ALIASES = {'C4SH': 'C4sh'}
 
-    def __init__(self, parent=None):
+    # Every equipped-inventory slot key the tab ever iterates over. Extracted
+    # here so the tuple is defined in exactly one place (previously duplicated
+    # in _refresh_equipped_display_from_yaml and _on_save_loadout).
+    _ALL_SLOT_KEYS = (
+        'slot_0', 'slot_1', 'slot_2', 'slot_3',
+        'slot_4', 'slot_5', 'slot_6', 'slot_7', 'slot_8',
+    )
+
+    # Number of saved-loadout slots surfaced in the tab (1..N inclusive).
+    _SAVED_SLOT_COUNT = 6
+
+    def __init__(self, main_app=None, parent=None):
         super().__init__(parent)
+        self.main_app = main_app
         self.yaml_data = None
         self.current_loadout_index = 1
         self.save_file_path = None       # 当前存档文件路径
@@ -89,11 +139,16 @@ class QtLoadoutManagerTab(QWidget):
         self._manual_read_active = False # 是否处于手动读取状态
 
         # 每个槽位已保存配置内容缓存 {slot_index: loadout_dict or None}
-        self._saved_loadouts = {i: None for i in range(1, 7)}
+        self._saved_loadouts = {i: None for i in range(1, self._SAVED_SLOT_COUNT + 1)}
+        # Last save_name scanned into _saved_loadouts. Used to dedup redundant
+        # scans between set_data (called by MainWindow on save open) and
+        # _on_read_save_clicked (defensive re-scan on manual read).
+        self._last_scanned_save_name = None
 
-        # Load i18n data
-        self.loc = {}
-        self._load_localization()
+        # Load i18n data — shared helper across editor tabs; fall back to
+        # the module-level _LOC_FALLBACK dict only on catastrophic JSON load
+        # failure (all shipped ui_localization files carry loadout_tab).
+        self.loc = load_tab_ui_loc("loadout_tab", self.current_lang) or _LOC_FALLBACK
 
         # 加载武器 CSV 数据
         self._load_weapon_csv_data()
@@ -107,47 +162,6 @@ class QtLoadoutManagerTab(QWidget):
     # ══════════════════════════════════════════════════════════════════
     # i18n 本地化
     # ══════════════════════════════════════════════════════════════════
-    def _load_localization(self):
-        """根据当前语言加载 loadout_tab 本地化数据"""
-        lang_map = {
-            'zh-CN': "i18n/ui_localization.json",
-            'en-US': "i18n/ui_localization_EN.json",
-            'ru': "i18n/ui_localization_RU.json",
-            'ua': "i18n/ui_localization_UA.json",
-        }
-        filename = lang_map.get(self.current_lang, "i18n/ui_localization_EN.json")
-        data = resource_loader.load_json_resource(filename)
-        if data and "loadout_tab" in data:
-            self.loc = data["loadout_tab"]
-        else:
-            # Fallback (Chinese)
-            self.loc = {
-                "groups": {"equipped": "已装备物品", "loadout": "配置方案", "skills": "技能配置"},
-                "slots": _SLOT_FALLBACK,
-                "buttons": {"read_save": "读取当前存档配置", "save_loadout": "保存配置",
-                            "load_loadout": "加载配置到存档"},
-                "labels": {"activated_skills": "已激活技能", "points_suffix": " 点",
-                           "activated": "已激活", "config_name": "配置名称:",
-                           "default_config_name": "槽位 {slot}"},
-                "placeholders": {
-                    "empty_slot": "该槽位无已保存配置\n点击「读取当前存档配置」查看当前装备",
-                    "empty_slot_skills": "该槽位无已保存配置",
-                    "open_save_first": "请先打开存档并点击「读取当前存档配置」",
-                    "no_equipped": "配置中无装备数据", "no_skills": "配置中无技能数据",
-                    "no_data": "暂无技能数据", "no_activated": "暂无已激活技能",
-                    "no_items": "当前没有装备任何物品", "open_first": "请先打开存档",
-                    "no_equipped_data": "未找到已装备物品数据",
-                },
-                "decode": {
-                    "unknown": "未知",
-                    "decode_failed": "解码失败",
-                    "unknown_item": "未知物品",
-                    "decode_error": "解码错误",
-                },
-                "notice": "",
-                "dialogs": {},
-            }
-
     def _t(self, section: str, key: str, **kwargs) -> str:
         """Convenience helper: loc[section][key].format(**kwargs) with fallback."""
         val = self.loc.get(section, {}).get(key, key)
@@ -165,7 +179,7 @@ class QtLoadoutManagerTab(QWidget):
     def update_language(self, lang_code: str):
         """Called by MainWindow when language changes. Reload i18n and refresh UI."""
         self.current_lang = lang_code
-        self._load_localization()
+        self.loc = load_tab_ui_loc("loadout_tab", self.current_lang) or _LOC_FALLBACK
         self._load_weapon_localization()
         self._refresh_ui_text()
 
@@ -205,18 +219,12 @@ class QtLoadoutManagerTab(QWidget):
     def _load_weapon_csv_data(self):
         """加载 weapon_rarity.csv, all_weapon_part.csv"""
         try:
-            suffix = ""
-            def get_path(base_name):
-                name_with_suffix = base_name.replace('.csv', f'{suffix}.csv')
-                path = resource_loader.get_weapon_data_path(name_with_suffix)
-                if path and path.exists():
-                    return path
-                return resource_loader.get_weapon_data_path(base_name)
-
-            self.all_weapon_parts_df = pd.read_csv(get_path('all_weapon_part.csv'))
-            self.weapon_rarity_df = pd.read_csv(get_path('weapon_rarity.csv'))
+            self.all_weapon_parts_df = pd.read_csv(
+                resource_loader.get_weapon_data_path('all_weapon_part.csv'))
+            self.weapon_rarity_df = pd.read_csv(
+                resource_loader.get_weapon_data_path('weapon_rarity.csv'))
         except Exception as e:
-            print(f"Loadout: 加载武器CSV数据失败: {e}")
+            log_editor(self.main_app, self._LOG_TAG, f"Loadout: 加载武器CSV数据失败: {e}")
             self.all_weapon_parts_df = pd.DataFrame()
             self.weapon_rarity_df = pd.DataFrame()
 
@@ -234,7 +242,10 @@ class QtLoadoutManagerTab(QWidget):
     def _load_skills_csv_data(self):
         """加载 class_mods/Skills.csv 并按 class_ID 索引"""
         self.skills_data = resource_loader.load_class_mods_csv("Skills.csv")
-        self.class_ids = dict(self.CLASS_IDS)
+        # Instance copy of CLASS_IDS extended with any classes discovered from
+        # Skills.csv. Renamed from class_ids to avoid case-only collision with
+        # the CLASS_IDS class attribute.
+        self.class_id_by_name = dict(self.CLASS_IDS)
         self.class_names_by_identifier = {}
         self.skills_by_class = {}
         for skill in self.skills_data:
@@ -242,7 +253,7 @@ class QtLoadoutManagerTab(QWidget):
             class_name = skill.get('class_name', '').strip()
             class_identifier = skill.get('class_identifier', '').strip().casefold()
             if class_id.isdigit() and class_name:
-                self.class_ids[class_name] = int(class_id)
+                self.class_id_by_name[class_name] = int(class_id)
                 if class_identifier:
                     self.class_names_by_identifier[class_identifier] = class_name
             if class_id not in self.skills_by_class:
@@ -290,8 +301,13 @@ class QtLoadoutManagerTab(QWidget):
                 with open(mapping_path, 'r', encoding='utf-8-sig') as f:
                     reader = csv.DictReader(f)
                     fieldnames = set(reader.fieldnames or [])
-                    for row in reader:
-                        if {'class_id', 'graph_name', 'node_name', 'middle_name', 'skill_name_EN'}.issubset(fieldnames):
+                    # New-vs-legacy format is decided by the header, which is
+                    # row-invariant — branch once instead of per row.
+                    is_new_format = {
+                        'class_id', 'graph_name', 'node_name', 'middle_name', 'skill_name_EN'
+                    }.issubset(fieldnames)
+                    if is_new_format:
+                        for row in reader:
                             class_id = row.get('class_id', '').strip()
                             graph_name = row.get('graph_name', '').strip()
                             node_name = row.get('node_name', '').strip()
@@ -310,17 +326,18 @@ class QtLoadoutManagerTab(QWidget):
                                         self._skill_mapping_class_key(class_id, lookup_name)
                                     ] = row
                                     self.skill_name_mapping.setdefault(lookup_name, mapped_name)
-                        else:
+                    else:
+                        for row in reader:
                             raw_name = row.get('raw_display_name', '').strip()
                             mapped_name = row.get('skill_name_EN', '').strip()
                             if raw_name and mapped_name:
                                 self.skill_name_mapping[raw_name] = mapped_name
                 total = len(self.skill_name_mapping_by_graph) or len(self.skill_name_mapping)
-                print(f"Loadout: 已加载 {total} 条技能名称映射")
+                log_editor(self.main_app, self._LOG_TAG, f"Loadout: 已加载 {total} 条技能名称映射")
             else:
-                print(f"Loadout: 映射表不存在 {mapping_path}")
+                log_editor(self.main_app, self._LOG_TAG, f"Loadout: 映射表不存在 {mapping_path}")
         except Exception as e:
-            print(f"Loadout: 加载技能名称映射表失败: {e}")
+            log_editor(self.main_app, self._LOG_TAG, f"Loadout: 加载技能名称映射表失败: {e}")
             self.skill_name_mapping = {}
             self.skill_name_mapping_by_graph = {}
             self.skill_name_mapping_by_class = {}
@@ -360,7 +377,7 @@ class QtLoadoutManagerTab(QWidget):
                 self.image_cache[cache_key] = icon
                 return icon
         except Exception as e:
-            print(f"Could not load icon {icon_file}: {e}")
+            log_editor(self.main_app, self._LOG_TAG, f"Could not load icon {icon_file}: {e}")
         return QIcon()
 
     def _find_skill_csv_row(self, class_id: str, graph_name: str = '', node_name: str = '', skill_name: str = '') -> dict:
@@ -368,11 +385,11 @@ class QtLoadoutManagerTab(QWidget):
             row = self.skills_by_graph.get(self._skill_mapping_key(class_id, graph_name, node_name))
             if row:
                 return row
-        normalized_name = re.sub(r" [BGR]$", "", skill_name).casefold()
+        normalized_name = C4SH_TREE_SUFFIX_RE.sub("", skill_name).casefold()
         for row in self.skills_by_class.get(class_id, []):
             if graph_name and self._normalize_mapping_text(row.get('graph_name', '')) != self._normalize_mapping_text(graph_name):
                 continue
-            row_name = re.sub(r" [BGR]$", "", row.get('skill_name_EN', '')).casefold()
+            row_name = C4SH_TREE_SUFFIX_RE.sub("", row.get('skill_name_EN', '')).casefold()
             if row_name == normalized_name:
                 return row
         return {}
@@ -417,14 +434,23 @@ class QtLoadoutManagerTab(QWidget):
             icon = self.get_skill_icon(skill_row.get('icon_file', ''), class_name)
             return display_name, icon
 
-        mapped_name = self.skill_name_mapping.get(skill_name_en, skill_name_en)
+        return self._resolve_skill_via_legacy_lookup(class_id, original_name, class_name)
+
+    def _resolve_skill_via_legacy_lookup(self, class_id: str, original_name: str,
+                                         class_name: str) -> tuple:
+        """Legacy Skills.csv path: hit the flat name-map, then exact-match, then
+        fuzzy substring-match against ``skills_by_class``. Split out of
+        ``_get_skill_display_info`` — the graph-based mapping route above
+        handles the majority of skills; this is only reached when that misses."""
+        mapped_name = self.skill_name_mapping.get(original_name, original_name)
         if mapped_name != original_name:
-            print(f"Loadout: 技能名称映射 '{original_name}' -> '{mapped_name}'")
-        
+            log_editor(self.main_app, self._LOG_TAG,
+                       f"Loadout: 技能名称映射 '{original_name}' -> '{mapped_name}'")
+
         lookup_name = mapped_name
         display_name = lookup_name
         icon = QIcon()
-        
+
         # Step 2: 在 Skills.csv 中查找
         skill_row = self.skill_lookup.get((class_id, lookup_name))
         if not skill_row:
@@ -432,18 +458,18 @@ class QtLoadoutManagerTab(QWidget):
             # 精确匹配（不区分大小写）
             for row in candidates:
                 en_name = row.get('skill_name_EN', '')
-                if en_name.lower() == lookup_name.lower():
+                if en_name.casefold() == lookup_name.casefold():
                     skill_row = row
                     break
             # 模糊匹配
             if not skill_row:
+                lookup_fold = lookup_name.casefold()
                 for row in candidates:
-                    en_name = row.get('skill_name_EN', '')
-                    if (lookup_name.lower() in en_name.lower()
-                            or en_name.lower() in lookup_name.lower()):
+                    en_fold = row.get('skill_name_EN', '').casefold()
+                    if lookup_fold in en_fold or en_fold in lookup_fold:
                         skill_row = row
                         break
-        
+
         # Step 3: 获取显示名称和图标
         if skill_row:
             skill_name_en_canonical = skill_row.get('skill_name_EN', lookup_name)
@@ -456,46 +482,58 @@ class QtLoadoutManagerTab(QWidget):
         else:
             # 未找到匹配，显示原始名称（或映射后的名称）
             display_name = lookup_name
-            
+
         return display_name, icon
 
-    # ══════════════════════════════════════════════════════════════════
-    # 武器名称解析
-    # ══════════════════════════════════════════════════════════════════
-    def _parse_component_string(self, component_str):
-        """解析武器部件字符串"""
-        components, last_index = [], 0
-        for match in re.finditer(r'\{(\d+)(?::(\d+|\[[\d\s]+\]))?\}|\"c\",\s*(?:(\d+)|\"([^\"]+)\")', component_str):
-            components.append(component_str[last_index:match.start()])
-            part_data = {'raw': match.group(0)}
-            if match.group(3):
-                part_data.update({'type': 'skin', 'id': int(match.group(3))})
-            elif match.group(4):
-                part_data.update({'type': 'skin', 'id': match.group(4)})
-            else:
-                outer_id, inner = int(match.group(1)), match.group(2)
-                if inner:
-                    if '[' in inner:
-                        part_data.update({'type': 'group', 'id': outer_id,
-                                          'sub_ids': [int(sid) for sid in inner.strip('[]').split()]})
-                    else:
-                        part_data.update({'type': 'elemental', 'id': outer_id, 'sub_id': int(inner)})
-                else:
-                    part_data.update({'type': 'simple', 'id': outer_id})
-            components.append(part_data)
-            last_index = match.end()
-        components.append(component_str[last_index:])
-        return [c for c in components if c]
+    @staticmethod
+    def _parse_header_mfg_id(formatted_str: str) -> int | None:
+        """Extract the manufacturer ID from a decoded ``header||body`` string.
+
+        Both ``_get_weapon_real_name`` and ``_decode_item_name`` need the same
+        ``split('||')[0].strip().split('|')[0].strip().split(',')[0]`` walk;
+        keeping it here avoids parallel implementations drifting.
+        """
+        try:
+            if '||' not in formatted_str:
+                return None
+            header_part, _ = formatted_str.split('||', 1)
+            return int(header_part.strip().split('|')[0].strip().split(',')[0])
+        except (ValueError, IndexError):
+            return None
+
+    def _iter_equipped_items(self, equipped_data):
+        """Yield ``(slot_key, item_dict)`` for every populated slot in the
+        equipped_inventory payload. Shared by ``_refresh_equipped_display_from_yaml``
+        and ``_on_save_loadout`` — both need the same list-or-dict unwrap dance."""
+        for slot_key in self._ALL_SLOT_KEYS:
+            if slot_key not in equipped_data:
+                continue
+            item_list = equipped_data[slot_key]
+            if isinstance(item_list, list) and len(item_list) > 0:
+                yield slot_key, item_list[0]
+            elif isinstance(item_list, dict):
+                yield slot_key, item_list
+
+    def _display_name_for_slot(self, slot_key: str, serial: str) -> str:
+        """Weapon slots try the full manufacturer/rarity resolver first, then
+        fall back to the plain mfg+type name. Non-weapon slots skip straight to
+        the fallback. Shared by ``_display_loadout_data`` and
+        ``_refresh_equipped_display_from_yaml``."""
+        if slot_key in WEAPON_SLOT_KEYS:
+            name = self._get_weapon_real_name(serial)
+            if name:
+                return name
+        return self._decode_item_name(serial)
 
     def _get_weapon_real_name(self, serial: str) -> str:
         """解码 serial 获取武器真实名称"""
         try:
             formatted_str, _, err = decoder_logic.decode_serial_to_string(serial)
-            if err or '||' not in formatted_str:
+            if err:
                 return ''
-            header_part, component_part = formatted_str.split('||', 1)
-            sections = header_part.strip().split('|')
-            m_id = int(sections[0].strip().split(',')[0])
+            m_id = self._parse_header_mfg_id(formatted_str)
+            if m_id is None:
+                return ''
 
             manufacturer, item_type, found = lookup.get_kind_enums(m_id)
             if not found:
@@ -517,7 +555,7 @@ class QtLoadoutManagerTab(QWidget):
                 display_parts.append(weapon_name)
             return ' '.join(display_parts) if display_parts else ''
         except Exception as e:
-            print(f"Loadout: 武器名称解析失败: {e}")
+            log_editor(self.main_app, self._LOG_TAG, f"Loadout: 武器名称解析失败: {e}")
             return ''
 
     # ══════════════════════════════════════════════════════════════════
@@ -533,20 +571,22 @@ class QtLoadoutManagerTab(QWidget):
 
     def _scan_saved_loadouts(self):
         """扫描当前存档对应的已保存配置"""
-        self._saved_loadouts = {i: None for i in range(1, 7)}
+        self._saved_loadouts = {i: None for i in range(1, self._SAVED_SLOT_COUNT + 1)}
+        self._last_scanned_save_name = self.save_name
         if not self.save_name:
             return
         loadout_dir = self._get_loadout_dir()
         if not loadout_dir.exists():
             return
-        for slot in range(1, 7):
+        for slot in range(1, self._SAVED_SLOT_COUNT + 1):
             fp = loadout_dir / f"loadout_{self.save_name}_{slot}.json"
             if fp.exists():
                 try:
                     with open(fp, 'r', encoding='utf-8') as f:
                         self._saved_loadouts[slot] = json.load(f)
                 except Exception as e:
-                    print(f"Loadout: 读取槽位 {slot} 配置失败: {e}")
+                    log_editor(self.main_app, self._LOG_TAG,
+                               f"Loadout: 读取槽位 {slot} 配置失败: {e}")
 
     # ══════════════════════════════════════════════════════════════════
     # UI 构建
@@ -569,29 +609,21 @@ class QtLoadoutManagerTab(QWidget):
         layout.setContentsMargins(10, 15, 10, 10)
 
         self.read_save_button = QPushButton(self._t('buttons', 'read_save'))
-        self.read_save_button.setStyleSheet("""
-            QPushButton {
-                background-color: rgba(76, 175, 80, 0.3);
-                border: 1px solid rgba(76, 175, 80, 0.5); border-radius: 6px;
-                padding: 8px 16px; font-size: 13px; font-weight: bold;
-            }
-            QPushButton:hover { background-color: rgba(76, 175, 80, 0.5); color: white; }
-        """)
+        self.read_save_button.setObjectName("loadoutReadSaveButton")
         self.read_save_button.clicked.connect(self._on_read_save_clicked)
         layout.addWidget(self.read_save_button)
 
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QFrame.Shape.NoFrame)
-        scroll.setStyleSheet("QScrollArea { background: transparent; }")
+        # Transparency inherited from the base QScrollArea rule in stylesheet.qss.
         self.equipped_container = QWidget()
-        self.equipped_container.setStyleSheet("background: transparent;")
         self.equipped_layout = QVBoxLayout(self.equipped_container)
         self.equipped_layout.setSpacing(6)
         self.equipped_layout.setContentsMargins(0, 0, 0, 0)
         self.equipped_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.equipped_placeholder = QLabel(self._t('placeholders', 'open_save_first'))
-        self.equipped_placeholder.setStyleSheet("color: #888; font-size: 13px; padding: 20px;")
+        self.equipped_placeholder.setObjectName("loadoutPlaceholder")
         self.equipped_placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.equipped_layout.addWidget(self.equipped_placeholder)
         scroll.setWidget(self.equipped_container)
@@ -612,35 +644,35 @@ class QtLoadoutManagerTab(QWidget):
         btn_row = QHBoxLayout()
         btn_row.setSpacing(6)
         self.loadout_buttons = []
-        for i in range(1, 7):
+        for i in range(1, self._SAVED_SLOT_COUNT + 1):
             btn = QPushButton(str(i))
+            btn.setObjectName("loadoutSlotButton")
             btn.setFixedSize(42, 36)
             btn.setCheckable(True)
-            btn.setStyleSheet(self._loadout_btn_style(False, False))
+            btn.setProperty("state", "empty")
             btn.clicked.connect(lambda checked, idx=i: self._on_loadout_selected(idx))
             self.loadout_buttons.append(btn)
             btn_row.addWidget(btn)
 
         # Config name label (shows name of the saved config next to slots)
         self.config_name_label = QLabel("")
-        self.config_name_label.setStyleSheet(
-            "font-size: 12px; font-style: italic; padding-left: 8px;")
+        self.config_name_label.setObjectName("loadoutConfigName")
         btn_row.addWidget(self.config_name_label)
 
         self.loadout_buttons[0].setChecked(True)
-        self.loadout_buttons[0].setStyleSheet(self._loadout_btn_style(True, False))
+        self.loadout_buttons[0].setProperty("state", "active")
         btn_row.addStretch()
         loadout_layout.addLayout(btn_row)
 
         action_row = QHBoxLayout()
         action_row.setSpacing(8)
         self.save_loadout_btn = QPushButton(self._t('buttons', 'save_loadout'))
-        self.save_loadout_btn.setStyleSheet(self._action_btn_style("#2196F3"))
+        self.save_loadout_btn.setObjectName("loadoutActionSave")
         self.save_loadout_btn.clicked.connect(self._on_save_loadout)
         action_row.addWidget(self.save_loadout_btn)
 
         self.load_loadout_btn = QPushButton(self._t('buttons', 'load_loadout'))
-        self.load_loadout_btn.setStyleSheet(self._action_btn_style("#FF9800"))
+        self.load_loadout_btn.setObjectName("loadoutActionLoad")
         self.load_loadout_btn.clicked.connect(self._on_load_loadout)
         action_row.addWidget(self.load_loadout_btn)
         action_row.addStretch()
@@ -653,18 +685,8 @@ class QtLoadoutManagerTab(QWidget):
 
         # Notification bar
         self.notice_label = QLabel(self.loc.get('notice', ''))
+        self.notice_label.setObjectName("loadoutNotice")
         self.notice_label.setWordWrap(True)
-        self.notice_label.setStyleSheet("""
-            QLabel {
-                background-color: rgba(255, 152, 0, 0.12);
-                border: 1px solid rgba(255, 152, 0, 0.35);
-                border-radius: 6px;
-                color: #e65100;
-                font-size: 11px;
-                padding: 8px 10px;
-                margin-bottom: 4px;
-            }
-        """)
         if not self.loc.get('notice', ''):
             self.notice_label.setVisible(False)
         skill_outer.addWidget(self.notice_label)
@@ -672,69 +694,20 @@ class QtLoadoutManagerTab(QWidget):
         skill_scroll = QScrollArea()
         skill_scroll.setWidgetResizable(True)
         skill_scroll.setFrameShape(QFrame.Shape.NoFrame)
-        skill_scroll.setStyleSheet("QScrollArea { background: transparent; }")
+        # Transparency inherited from the base QScrollArea rule in stylesheet.qss.
         self.skills_container = QWidget()
-        self.skills_container.setStyleSheet("background: transparent;")
         self.skills_layout = QVBoxLayout(self.skills_container)
         self.skills_layout.setSpacing(4)
         self.skills_layout.setContentsMargins(0, 0, 0, 0)
         self.skills_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.skills_placeholder = QLabel(self._t('placeholders', 'no_data'))
-        self.skills_placeholder.setStyleSheet("color: #888; font-size: 13px; padding: 20px;")
+        self.skills_placeholder.setObjectName("loadoutPlaceholder")
         self.skills_placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.skills_layout.addWidget(self.skills_placeholder)
         skill_scroll.setWidget(self.skills_container)
         skill_outer.addWidget(skill_scroll)
         layout.addWidget(self.skill_group, stretch=1)
         return panel
-
-    # ══════════════════════════════════════════════════════════════════
-    # 样式
-    # ══════════════════════════════════════════════════════════════════
-    @staticmethod
-    def _loadout_btn_style(active: bool, has_saved: bool) -> str:
-        if active:
-            return """
-                QPushButton {
-                    background-color: rgba(33, 150, 243, 0.6); color: white;
-                    border: 2px solid #2196F3; border-radius: 6px;
-                    font-size: 14px; font-weight: bold;
-                }
-            """
-        if has_saved:
-            return """
-                QPushButton {
-                    background-color: rgba(76, 175, 80, 0.15);
-                    border: 1px solid rgba(76, 175, 80, 0.5); border-radius: 6px;
-                    font-size: 14px;
-                }
-                QPushButton:hover {
-                    background-color: rgba(76, 175, 80, 0.3);
-                }
-            """
-        return """
-            QPushButton {
-                background-color: rgba(128,128,128,0.06);
-                border: 1px solid rgba(128,128,128,0.12); border-radius: 6px;
-                font-size: 14px;
-            }
-            QPushButton:hover {
-                background-color: rgba(128,128,128,0.12);
-            }
-        """
-
-    @staticmethod
-    def _action_btn_style(color: str) -> str:
-        return f"""
-            QPushButton {{
-                background-color: rgba({_hex_to_rgb(color)}, 0.25);
-                border: 1px solid rgba({_hex_to_rgb(color)}, 0.5); border-radius: 6px;
-                padding: 7px 18px; font-size: 13px; font-weight: bold;
-            }}
-            QPushButton:hover {{
-                background-color: rgba({_hex_to_rgb(color)}, 0.45); color: white;
-            }}
-        """
 
     # ══════════════════════════════════════════════════════════════════
     # 回调
@@ -748,13 +721,24 @@ class QtLoadoutManagerTab(QWidget):
         self._display_slot_content(index)
 
     def _update_loadout_button_styles(self):
-        """刷新所有槽位按钮样式"""
+        """Refresh slot-button state property so QSS attribute selectors
+        (#loadoutSlotButton[state="..."]) pick the correct look. Qt only
+        re-evaluates dynamic-property selectors after unpolish/polish."""
         for i, btn in enumerate(self.loadout_buttons):
             slot = i + 1
             is_active = (slot == self.current_loadout_index)
             has_saved = self._saved_loadouts.get(slot) is not None
             btn.setChecked(is_active)
-            btn.setStyleSheet(self._loadout_btn_style(is_active, has_saved))
+            if is_active:
+                state = "active"
+            elif has_saved:
+                state = "saved"
+            else:
+                state = "empty"
+            if btn.property("state") != state:
+                btn.setProperty("state", state)
+                btn.style().unpolish(btn)
+                btn.style().polish(btn)
 
     def _update_slot_button_labels(self):
         """Update slot button text with config names (if saved) or slot number."""
@@ -786,6 +770,14 @@ class QtLoadoutManagerTab(QWidget):
                                 self._t('dialogs', 'hint'),
                                 self._t('dialogs', 'open_save_first'))
             return
+        # Defensive re-scan: guards against stale _saved_loadouts when the
+        # user switched save files without triggering set_data (or set_data
+        # ran with no save_file_path). Deduped via _last_scanned_save_name
+        # so the common set_data → click sequence doesn't double-scan.
+        if self.save_name and self.save_name != self._last_scanned_save_name:
+            self._scan_saved_loadouts()
+            self._update_loadout_button_styles()
+            self._update_slot_button_labels()
         self._manual_read_active = True
         self._refresh_equipped_display_from_yaml()
         self._refresh_skills_display_from_yaml()
@@ -844,12 +836,7 @@ class QtLoadoutManagerTab(QWidget):
                 if not serial:
                     continue
                 slot_name = self._t_slot(slot_key)
-                if slot_key in WEAPON_SLOT_KEYS:
-                    item_name = self._get_weapon_real_name(serial)
-                    if not item_name:
-                        item_name = self._decode_item_name(serial)
-                else:
-                    item_name = self._decode_item_name(serial)
+                item_name = self._display_name_for_slot(slot_key, serial)
                 row = self._create_equipped_row(slot_name, item_name, serial)
                 self.equipped_layout.addWidget(row)
             self.equipped_layout.addStretch()
@@ -879,28 +866,13 @@ class QtLoadoutManagerTab(QWidget):
             return
 
         found_any = False
-        for slot_key in ['slot_0', 'slot_1', 'slot_2', 'slot_3', 'slot_4',
-                         'slot_5', 'slot_6', 'slot_7', 'slot_8']:
-            if slot_key not in equipped_data:
-                continue
-            slot_name = self._t_slot(slot_key)
-            item_list = equipped_data[slot_key]
-            if isinstance(item_list, list) and len(item_list) > 0:
-                item = item_list[0]
-            elif isinstance(item_list, dict):
-                item = item_list
-            else:
-                continue
+        for slot_key, item in self._iter_equipped_items(equipped_data):
             serial = item.get('serial', '')
             if not serial:
                 continue
             found_any = True
-            if slot_key in WEAPON_SLOT_KEYS:
-                item_name = self._get_weapon_real_name(serial)
-                if not item_name:
-                    item_name = self._decode_item_name(serial)
-            else:
-                item_name = self._decode_item_name(serial)
+            slot_name = self._t_slot(slot_key)
+            item_name = self._display_name_for_slot(slot_key, serial)
             row = self._create_equipped_row(slot_name, item_name, serial)
             self.equipped_layout.addWidget(row)
 
@@ -925,14 +897,11 @@ class QtLoadoutManagerTab(QWidget):
     def _display_skill_graphs(self, skill_graphs: list):
         """通用：将 skill_graphs 列表显示到技能面板（仅显示已激活技能）"""
         class_name = self._get_character_class_name()
-        class_id = str(self.class_ids.get(class_name, 0))
+        class_id = str(self.class_id_by_name.get(class_name, 0))
 
         found_any = False
         cat_label = QLabel(self._t('labels', 'activated_skills'))
-        cat_label.setStyleSheet("""
-            font-size: 13px; font-weight: bold;
-            padding: 6px 0 2px 0;
-        """)
+        cat_label.setObjectName("loadoutSkillSectionHeader")
         self.skills_layout.addWidget(cat_label)
 
         pts_suffix = self._t('labels', 'points_suffix')
@@ -945,16 +914,15 @@ class QtLoadoutManagerTab(QWidget):
                 pts = node.get('points_spent', 0)
                 is_activated = node.get('is_activated', False)
 
+                if not (pts and pts > 0) and not is_activated:
+                    continue
+                found_any = True
+                display_name, icon = self._get_skill_display_info(name, class_name, class_id, graph_name)
                 if pts and pts > 0:
-                    found_any = True
-                    display_name, icon = self._get_skill_display_info(name, class_name, class_id, graph_name)
-                    row = self._create_skill_row(display_name, f"{pts}{pts_suffix}", "#64b5f6", icon)
-                    self.skills_layout.addWidget(row)
-                elif is_activated:
-                    found_any = True
-                    display_name, icon = self._get_skill_display_info(name, class_name, class_id, graph_name)
-                    row = self._create_skill_row(display_name, activated_text, "#4caf50", icon)
-                    self.skills_layout.addWidget(row)
+                    row = self._create_skill_row(display_name, f"{pts}{pts_suffix}", "points", icon)
+                else:
+                    row = self._create_skill_row(display_name, activated_text, "activated", icon)
+                self.skills_layout.addWidget(row)
 
         if not found_any:
             self._add_placeholder(self.skills_layout, self._t('placeholders', 'no_activated'))
@@ -978,14 +946,9 @@ class QtLoadoutManagerTab(QWidget):
             formatted_str, _, err = decoder_logic.decode_serial_to_string(serial)
             if err:
                 return f"[{self._t('decode', 'decode_failed')}: {err}]"
-            if '||' not in formatted_str:
+            item_id = self._parse_header_mfg_id(formatted_str)
+            if item_id is None:
                 return f"[{self._t('decode', 'unknown_item')}]"
-            header_part, _ = formatted_str.split('||', 1)
-            id_section = header_part.strip().split('|')[0]
-            id_part = id_section.strip().split(',')
-            if len(id_part) < 4:
-                return f"[{self._t('decode', 'unknown_item')}]"
-            item_id = int(id_part[0].strip())
             manufacturer, item_type, found = lookup.get_kind_enums(item_id)
             if not found:
                 return f"[ID: {item_id}]"
@@ -997,13 +960,7 @@ class QtLoadoutManagerTab(QWidget):
 
     def _create_equipped_row(self, slot_name: str, item_name: str, serial: str) -> QWidget:
         row = QFrame()
-        row.setStyleSheet("""
-            QFrame {
-                background-color: rgba(128,128,128,0.05);
-                border: 1px solid rgba(128,128,128,0.1);
-                border-radius: 6px; padding: 4px;
-            }
-        """)
+        row.setObjectName("loadoutEquippedRow")
         row_layout = QVBoxLayout(row)
         row_layout.setContentsMargins(8, 6, 8, 6)
         row_layout.setSpacing(3)
@@ -1011,40 +968,50 @@ class QtLoadoutManagerTab(QWidget):
         header_layout = QHBoxLayout()
         header_layout.setSpacing(8)
         slot_label = QLabel(slot_name)
-        slot_label.setStyleSheet("font-size: 12px; font-weight: bold;")
+        slot_label.setObjectName("loadoutSlotLabel")
         slot_label.setFixedWidth(90)
         slot_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         header_layout.addWidget(slot_label)
         name_label = QLabel(item_name)
-        name_label.setStyleSheet("font-size: 12px;")
         header_layout.addWidget(name_label)
         header_layout.addStretch()
         row_layout.addLayout(header_layout)
 
         serial_edit = QLineEdit(serial)
         serial_edit.setReadOnly(True)
-        serial_edit.setStyleSheet("""
-            QLineEdit {
-                border-radius: 4px;
-                padding: 3px 6px; font-size: 11px; font-family: Consolas, monospace;
-            }
-        """)
+        # font-family kept inline: Qt style sheets don't inherit application
+        # font-family reliably for QLineEdit and we want a monospace serial.
+        # border-radius / padding / font-size are hoisted to stylesheet.qss
+        # under the parent #loadoutEquippedRow QLineEdit selector.
+        serial_edit.setStyleSheet("QLineEdit { font-family: Consolas, monospace; }")
         serial_edit.setFixedHeight(26)
-        serial_edit.mousePressEvent = lambda e, se=serial_edit: se.selectAll() \
-            if e.button() == Qt.MouseButton.LeftButton and e.type().value == 4 else None
+        # Left-click selects the whole serial for easy copy — installed on the
+        # tab (self) so we don't reassign QLineEdit.mousePressEvent per row.
+        serial_edit.setProperty("loadoutSelectOnClick", True)
+        serial_edit.installEventFilter(self)
         row_layout.addWidget(serial_edit)
         return row
 
-    def _create_skill_row(self, name: str, status_text: str, color: str,
+    def eventFilter(self, obj, event):
+        """Select-all-on-left-click for serial QLineEdits tagged with the
+        ``loadoutSelectOnClick`` dynamic property. Preferred over per-row
+        ``mousePressEvent = lambda`` reassignment (which reads as a
+        monkey-patch and doesn't compose with future event overrides)."""
+        if (isinstance(obj, QLineEdit)
+                and obj.property("loadoutSelectOnClick")
+                and event.type() == QEvent.Type.MouseButtonPress
+                and event.button() == Qt.MouseButton.LeftButton):
+            obj.selectAll()
+        return super().eventFilter(obj, event)
+
+    def _create_skill_row(self, name: str, status_text: str, kind: str,
                           icon: QIcon = None) -> QFrame:
+        """Build one skill row. ``kind`` is a dynamic-property value driving
+        the status label's colour via QSS (#loadoutSkillStatus[kind="..."]):
+        "points" for spent-points skills, "activated" for zero-point activated."""
         row = QFrame()
+        row.setObjectName("loadoutSkillRow")
         row.setFixedHeight(36)
-        row.setStyleSheet("""
-            QFrame {
-                background-color: rgba(128,128,128,0.05);
-                border: 1px solid rgba(128,128,128,0.1); border-radius: 5px;
-            }
-        """)
         row_layout = QHBoxLayout(row)
         row_layout.setContentsMargins(8, 2, 10, 2)
         row_layout.setSpacing(6)
@@ -1057,12 +1024,12 @@ class QtLoadoutManagerTab(QWidget):
             row_layout.addWidget(icon_label)
 
         name_label = QLabel(name)
-        name_label.setStyleSheet("font-size: 12px;")
         row_layout.addWidget(name_label)
         row_layout.addStretch()
 
         status_label = QLabel(status_text)
-        status_label.setStyleSheet(f"color: {color}; font-size: 12px; font-weight: bold;")
+        status_label.setObjectName("loadoutSkillStatus")
+        status_label.setProperty("kind", kind)
         row_layout.addWidget(status_label)
         return row
 
@@ -1098,24 +1065,15 @@ class QtLoadoutManagerTab(QWidget):
 
         # 收集装备
         equipped_data = self._get_equipped_data() or {}
-        equipped_items = []
-        for slot_key in ['slot_0', 'slot_1', 'slot_2', 'slot_3', 'slot_4',
-                         'slot_5', 'slot_6', 'slot_7', 'slot_8']:
-            if slot_key not in equipped_data:
-                continue
-            item_list = equipped_data[slot_key]
-            if isinstance(item_list, list) and len(item_list) > 0:
-                item = item_list[0]
-            elif isinstance(item_list, dict):
-                item = item_list
-            else:
-                continue
-            equipped_items.append({
+        equipped_items = [
+            {
                 'slot': slot_key,
                 'serial': item.get('serial', ''),
                 'flags': item.get('flags', None),
                 'state_flags': item.get('state_flags', 1),
-            })
+            }
+            for slot_key, item in self._iter_equipped_items(equipped_data)
+        ]
 
         # 收集技能 graphs（actionskills ~ sdu 之前的全部）
         progression = self.yaml_data.get('progression', {})
@@ -1236,12 +1194,6 @@ class QtLoadoutManagerTab(QWidget):
     @staticmethod
     def _add_placeholder(layout, text: str):
         label = QLabel(text)
-        label.setStyleSheet("color: #888; font-size: 13px; padding: 20px;")
+        label.setObjectName("loadoutPlaceholder")
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(label)
-
-
-def _hex_to_rgb(hex_color: str) -> str:
-    hex_color = hex_color.lstrip('#')
-    r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
-    return f"{r}, {g}, {b}"
