@@ -56,7 +56,13 @@
       "save_as": "另存为..."
     },
     "status": {
-      "welcome": "欢迎使用无主之地4存档编辑器"
+      "welcome": "欢迎使用无主之地4存档编辑器",
+      "autosave": "自动保存",
+      "autosave_tip": "停止修改约30秒后自动写盘（原子写入，旧文件轮转为 .prev.bak）",
+      "autosaved": "已自动保存 {time}",
+      "autosave_failed": "自动保存失败，请手动保存",
+      "recovered": "已恢复未保存的修改（尚未写盘）",
+      "item_not_found": "未找到对应物品"
     },
     "tabs": {
       "select_save": "选择存档",
@@ -120,7 +126,9 @@
       "iter_fail_msg": "未能成功添加任何物品。失败 {count} 个。",
       "save_encrypted_title": "保存加密存档",
       "save_saved": "存档已保存到:\n{path}",
-      "encrypt_failed": "加密失败"
+      "encrypt_failed": "加密失败",
+      "recover_title": "恢复未保存的修改",
+      "recover_msg": "检测到上次有未保存的修改（可能因意外退出残留）。是否恢复？"
     },
     "worker": {
       "no_data": "未生成任何数据。",
@@ -368,15 +376,78 @@
   "yaml_tab": {
     "tree_headers": {
       "key": "键",
-      "value": "值"
+      "value": "值",
+      "note": "备注"
     },
     "buttons": {
       "yaml_view": "YAML视图",
-      "tree_view": "树状视图"
+      "tree_view": "树状",
+      "source_view": "源码",
+      "split_view": "分屏",
+      "diff": "变更对比"
+    },
+    "search": {
+      "placeholder": "搜索键或值…",
+      "count": "{current}/{total}"
+    },
+    "inspector": {
+      "path": "当前节点",
+      "no_selection": "未选择节点",
+      "serial_title": "Serial 解码预览",
+      "ops_title": "节点操作",
+      "open_in_editor": "在物品编辑器中打开",
+      "pinned": "常用路径：",
+      "level": "等级",
+      "type": "类型",
+      "manufacturer": "制造商",
+      "container": "位置",
+      "slot": "槽位",
+      "unresolved": "未识别"
+    },
+    "ops": {
+      "set_value": "修改值",
+      "rename": "重命名键",
+      "add_child": "添加子节点",
+      "delete": "删除",
+      "duplicate": "复制节点",
+      "copy_path": "复制路径",
+      "copy_value": "复制值",
+      "range_delete": "批量删除槽位范围…"
     },
     "dialogs": {
       "yaml_error": "YAML错误",
-      "parse_error": "无法解析YAML: {error}"
+      "parse_error": "无法解析YAML: {error}",
+      "add_child_title": "添加子节点",
+      "child_key": "键名：",
+      "child_type": "类型：",
+      "range_delete_title": "批量删除背包槽位",
+      "range_from": "起始槽位：",
+      "range_to": "结束槽位：",
+      "range_preview": "将删除 {count} 个物品（slot_{from} ~ slot_{to}）",
+      "range_none": "该范围内没有物品",
+      "range_confirm": "删除",
+      "delete_confirm": "确认删除 {count} 个节点？",
+      "error": "错误",
+      "delete": "删除"
+    },
+    "types": {
+      "str": "字符串",
+      "int": "整数",
+      "float": "小数",
+      "bool": "布尔",
+      "null": "null",
+      "dict": "对象",
+      "list": "列表"
+    },
+    "status": {
+      "valid": "YAML 有效",
+      "invalid": "YAML 无效：{error}",
+      "nodes": "共 {count} 个节点",
+      "modified": "● {count} 处未保存修改",
+      "object_items": "对象 · {count} 项",
+      "list_items": "列表 · {count} 项",
+      "flags_bits": "位 {bits}",
+      "serial_ok": "已解码 · Lv{level} {name}"
     }
   },
   "class_mod_tab": {

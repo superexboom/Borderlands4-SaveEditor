@@ -1,5 +1,6 @@
 import random
 import re
+from collections import Counter
 from html import escape
 from pathlib import Path
 
@@ -16,6 +17,17 @@ from core import b_encoder
 from core import item_display_resolver, resource_loader
 
 from .qt_catalog_picker import InlineCatalogPicker
+from .qt_serial_import import (
+    SerialSourceBar,
+    build_header,
+    choose_backpack_item,
+    decode_base85,
+    parse_components,
+    prompt_base85,
+    select_flag_value,
+    source_texts,
+    split_decoded,
+)
 
 # Current NCS uimarkuptextstyle0 FLinearColor values converted to CSS sRGB.
 SKILL_TEXT_STYLES = {
@@ -42,10 +54,20 @@ class QtClassModEditorTab(QWidget):
     CLASS_IDS = {'Amon': 255, 'Harlowe': 259, 'Rafa': 256, 'Vex': 254, 'C4sh': 404}
     CLASS_NAMES = ['Amon', 'Harlowe', 'Rafa', 'Vex', 'C4sh']  # 保持顺序一致
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, main_app=None):
         super().__init__(parent)
+        self.main_app = main_app or (parent if hasattr(parent, 'controller') else None)
         self.current_lang = 'zh-CN'
         self._character_level = "50"
+        self._imported = False
+        self._import_header = None
+        self._import_seed = None
+        self._import_unknown_tokens = []
+        self._import_unknown_perks = []
+        self._import_skill_codes = {}
+        self._import_skill_counts = {}
+        self._import_source_name = ""
+        self._loading_import = False
         
         self.ui_loc = self._load_ui_localization()
         self.localization = self._load_localization()  # 仅用于职业/稀有度名称
@@ -76,7 +98,8 @@ class QtClassModEditorTab(QWidget):
         self.scroll_area.setWidget(container)
         
         self.container_layout = QVBoxLayout(container)
-        
+
+        self._create_source_bar()
         self._create_top_controls()
         self._create_legendary_group()
         self._create_output_group()
@@ -105,6 +128,7 @@ class QtClassModEditorTab(QWidget):
 
         self.populate_initial_data()
         self._connect_signals()
+        self._set_source_label()
         
     def _(self, text, class_name=None):
         """
@@ -132,6 +156,29 @@ class QtClassModEditorTab(QWidget):
         按当前语言读取 class_mod_tab.<section>.<key>，缺失时回退英文，再格式化。"""
         text = self.ui_loc.get(section, {}).get(key) or en
         return text.format(**fmt) if fmt else text
+
+    def _create_source_bar(self):
+        source = source_texts(self.current_lang)
+        self.source_bar = SerialSourceBar(
+            new_text=source['new_source'],
+            backpack_text=source['backpack'],
+            base85_text=source['base85'],
+            reset_text=source['reset'],
+        )
+        self.source_bar.backpack_requested.connect(self._choose_backpack_copy)
+        self.source_bar.base85_requested.connect(self._prompt_base85_copy)
+        self.source_bar.reset_requested.connect(self._reset_import)
+        self.container_layout.addWidget(self.source_bar)
+
+    def _set_source_label(self):
+        source = source_texts(self.current_lang)
+        if self._imported:
+            text = source['imported'].format(name=self._import_source_name or 'Class Mod')
+        else:
+            text = source['new_source']
+        self.source_bar.set_source(text, imported=self._imported)
+        if hasattr(self, 'add_to_pack_btn'):
+            self.add_to_pack_btn.setText(self.ui_loc['output']['add_to_backpack'])
 
     def _load_csv_data(self):
         """加载所有CSV数据"""
@@ -225,6 +272,9 @@ class QtClassModEditorTab(QWidget):
 
     def update_language(self, lang):
         print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
+        imported = self.full_string_output.text() if self._imported and hasattr(self, 'full_string_output') else ""
+        import_name = self._import_source_name
+        import_flag = self.flag_combo.currentText().split(" ")[0] if self._imported and hasattr(self, 'flag_combo') else None
         self.current_lang = lang
         self.ui_loc = self._load_ui_localization(lang)
         self.localization = self._load_localization(lang)
@@ -233,8 +283,11 @@ class QtClassModEditorTab(QWidget):
         curr_seed = self.seed_edit.text() if hasattr(self, 'seed_edit') else ""
         
         self._rebuild_ui()
-        
-        if curr_seed and hasattr(self, 'seed_edit'): self.seed_edit.setText(curr_seed)
+
+        if imported:
+            self._load_decoded_copy(imported, source_name=import_name, state_flags=import_flag, show_error=False)
+        elif curr_seed and hasattr(self, 'seed_edit'):
+            self.seed_edit.setText(curr_seed)
         
         print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
 
@@ -313,9 +366,9 @@ class QtClassModEditorTab(QWidget):
         self.base85_output.setReadOnly(True)
         layout.addWidget(self.base85_output, 0, 1)
         
-        add_to_pack_btn = QPushButton(self.ui_loc['output']['add_to_backpack'])
-        add_to_pack_btn.clicked.connect(self._add_to_backpack)
-        layout.addWidget(add_to_pack_btn, 0, 2)
+        self.add_to_pack_btn = QPushButton(self.ui_loc['output']['add_to_backpack'])
+        self.add_to_pack_btn.clicked.connect(self._add_to_backpack)
+        layout.addWidget(self.add_to_pack_btn, 0, 2)
 
         # Full String
         layout.addWidget(QLabel(self.ui_loc['output']['deserialize']), 1, 0)
@@ -406,6 +459,238 @@ class QtClassModEditorTab(QWidget):
     def generate_random_seed(self):
         self.seed_edit.setText(str(random.randint(1, 9999)))
 
+    def _inventory_items(self):
+        if not self.main_app:
+            return []
+        if hasattr(self.main_app, 'get_items_snapshot'):
+            return self.main_app.get_items_snapshot()
+        controller = getattr(self.main_app, 'controller', None)
+        return controller.get_all_items() if controller and controller.yaml_obj else []
+
+    def _choose_backpack_copy(self):
+        source = source_texts(self.current_lang)
+        items = self._inventory_items()
+        if not items:
+            QMessageBox.information(self, source['backpack_title'], source['no_save'])
+            return
+        item = choose_backpack_item(
+            self,
+            items,
+            lambda value: value.get('type_en') == 'Class Mod'
+            and value.get('container') == 'Backpack',
+            title=source['backpack_title'],
+            search_placeholder=source['search'],
+        )
+        if item:
+            self._load_decoded_copy(
+                item.get('decoded_full', ''),
+                source_name=item.get('name') or item.get('base_name') or 'Class Mod',
+                state_flags=item.get('state_flags'),
+            )
+
+    def _prompt_base85_copy(self):
+        source = source_texts(self.current_lang)
+        serial = prompt_base85(
+            self,
+            title=source['base85_title'],
+            label=source['base85_label'],
+        )
+        if not serial:
+            return
+        try:
+            decoded = decode_base85(serial)
+        except ValueError as exc:
+            QMessageBox.warning(self, source['import_error'], str(exc))
+            return
+        self._load_decoded_copy(decoded, source_name='Base85')
+
+    def _reset_import(self):
+        self._imported = False
+        self._import_header = None
+        self._import_seed = None
+        self._import_unknown_tokens = []
+        self._import_unknown_perks = []
+        self._import_skill_codes = {}
+        self._import_skill_counts = {}
+        self._import_source_name = ''
+        self.class_combo.setEnabled(True)
+        self.level_edit.setText(self._character_level)
+        self.generate_random_seed()
+        self._set_flag(None)
+        self._set_source_label()
+        self.update_string()
+
+    def _set_flag(self, value):
+        select_flag_value(self.flag_combo, value)
+
+    @staticmethod
+    def _component_text(token):
+        if token['type'] == 'simple':
+            return f"{{{token['id']}}}"
+        if token['type'] == 'single':
+            return f"{{{token['id']}:{token['value']}}}"
+        if token['type'] == 'group':
+            values = ' '.join(map(str, token['children']))
+            return f"{{{token['id']}:[{values}]}}"
+        return f'"{token["value"]}"'
+
+    @staticmethod
+    def _set_picker_count(picker, key, count):
+        item = next((entry for entry in picker._source if str(entry.get('key')) == str(key)), None)
+        if item and count > 0:
+            picker.add_item(item, count=count)
+
+    def open_item_serial(self, item: dict):
+        """公开入口：从 YAML 编辑器/物品快照跳转加载一件物品（用解码串）。类型不符时抛 ValueError。"""
+        flags = item.get('state_flags')
+        try:
+            flags = int(str(flags).strip()) if str(flags).strip() else None
+        except ValueError:
+            flags = None
+        self._load_decoded_copy(item.get('decoded_full', ''),
+                                source_name=item.get('name', 'Backpack'),
+                                state_flags=flags, show_error=True)
+
+    def _load_decoded_copy(self, decoded, *, source_name, state_flags=None, show_error=True):
+        try:
+            header = split_decoded(decoded)
+            class_en = next((name for name, code in self.CLASS_IDS.items() if code == header['mfg_id']), None)
+            if not class_en:
+                raise ValueError(source_texts(self.current_lang)['wrong_type'])
+
+            class_id = str(header['mfg_id'])
+            tokens = list(parse_components(header['component']))
+            simple_positions = [(index, token['id']) for index, token in enumerate(tokens)
+                                if token['type'] == 'simple']
+
+            rarity_by_code = {}
+            for rarity in ('Common', 'Uncommon', 'Rare', 'Epic'):
+                code = item_display_resolver.classmod_rarity_code(class_id, rarity)
+                if str(code).isdigit():
+                    rarity_by_code[int(code)] = rarity
+            for row in self.legendary_map_data:
+                if str(row.get('class_ID', '')) == class_id and str(row.get('item_card_ID', '')).isdigit():
+                    rarity_by_code[int(row['item_card_ID'])] = 'Legendary'
+
+            rarity_pos = next(((index, rarity_by_code[code]) for index, code in simple_positions
+                               if code in rarity_by_code), None)
+            if not rarity_pos:
+                raise ValueError('Class Mod rarity is not recognized.')
+            rarity_index, rarity_en = rarity_pos
+            rarity_key = 'legendary' if rarity_en == 'Legendary' else 'normal'
+            name_rows = self.names_by_class_rarity.get((class_id, rarity_key), [])
+            names_by_code = {int(row['name_code']): row for row in name_rows
+                             if str(row.get('name_code', '')).isdigit()}
+            name_pos = next(((index, code) for index, code in simple_positions
+                             if index > rarity_index and code in names_by_code), None)
+            if not name_pos:
+                raise ValueError('Class Mod name is not recognized.')
+            name_index, name_code = name_pos
+
+            skill_counts = {}
+            source_skill_codes = {}
+            skill_codes = set()
+            for row in self.skills_by_class.get(class_id, []):
+                codes = [int(row[f'skill_ID_{i}']) for i in range(1, 6)
+                         if str(row.get(f'skill_ID_{i}', '')).isdigit()]
+                skill_codes.update(codes)
+                source_codes = [code for _index, code in simple_positions if code in codes]
+                count = min(len(codes), len(source_codes))
+                if count:
+                    key = row.get('skill_key') or f"{class_id}:{codes[0]}"
+                    skill_counts[key] = count
+                    source_skill_codes[key] = source_codes
+
+            known_numeric_perks = {int(key) for key in self.perks_by_id if str(key).isdigit()}
+            known_path_perks = {str(key) for key in self.perks_by_id if not str(key).isdigit()}
+            perk_counts = Counter()
+            path_counts = Counter()
+            unknown_perks = []
+            unknown_tokens = []
+            legendary_extras = Counter()
+
+            for index, token in enumerate(tokens):
+                token_type = token['type']
+                if token_type == 'simple':
+                    code = token['id']
+                    if index in (rarity_index, name_index):
+                        continue
+                    if rarity_en == 'Legendary' and code in names_by_code:
+                        legendary_extras[code] += 1
+                    elif code in skill_codes:
+                        continue
+                    elif class_en == 'Harlowe' and rarity_en == 'Legendary' and code == 27:
+                        continue
+                    else:
+                        unknown_tokens.append(self._component_text(token))
+                elif token_type == 'group' and token['id'] == 234:
+                    for code in token['children']:
+                        if code in known_numeric_perks:
+                            perk_counts[str(code)] += 1
+                        else:
+                            unknown_perks.append(str(code))
+                elif token_type == 'single' and token['id'] == 234:
+                    if token['value'] in known_numeric_perks:
+                        perk_counts[str(token['value'])] += 1
+                    else:
+                        unknown_perks.append(str(token['value']))
+                elif token_type == 'quoted' and token['value'] in known_path_perks:
+                    path_counts[token['value']] += 1
+                else:
+                    unknown_tokens.append(self._component_text(token))
+
+            self._loading_import = True
+            self._imported = True
+            self._import_header = header
+            self._import_seed = header['seed']
+            self._import_unknown_tokens = unknown_tokens
+            self._import_unknown_perks = unknown_perks
+            self._import_skill_codes = source_skill_codes
+            self._import_skill_counts = dict(skill_counts)
+            self._import_source_name = source_name
+
+            self.class_combo.blockSignals(True)
+            self.class_combo.setCurrentText(self._(class_en))
+            self.class_combo.blockSignals(False)
+            self.on_class_change()
+
+            self.rarity_combo.blockSignals(True)
+            self.rarity_combo.setCurrentText(self._(rarity_en))
+            self.rarity_combo.blockSignals(False)
+            self.on_rarity_change()
+
+            display_name = next((text for text, code in self.name_code_map.items() if code == name_code), None)
+            if not display_name:
+                raise ValueError('Class Mod name is unavailable in the current catalog.')
+            self.name_combo.blockSignals(True)
+            self.name_combo.setCurrentText(display_name)
+            self.name_combo.blockSignals(False)
+            self.on_name_change()
+
+            self.level_edit.setText(str(header['level']))
+            self.seed_edit.setText(str(header['seed']))
+            self.leg_picker.clear()
+            self.skill_picker.clear()
+            self.perk_picker.clear()
+            for code, count in legendary_extras.items():
+                self._set_picker_count(self.leg_picker, code, count)
+            for key, count in skill_counts.items():
+                self._set_picker_count(self.skill_picker, key, count)
+            for key, count in (perk_counts + path_counts).items():
+                self._set_picker_count(self.perk_picker, key, count)
+            self._set_flag(state_flags)
+            self.class_combo.setEnabled(False)
+        except Exception as exc:
+            if show_error:
+                QMessageBox.warning(self, source_texts(self.current_lang)['import_error'], str(exc))
+            return False
+        finally:
+            self._loading_import = False
+
+        self._set_source_label()
+        self.update_string()
+        return True
+
     def populate_names(self):
         """填充名称列表 - 使用CSV数据源"""
         self.name_combo.blockSignals(True)
@@ -447,6 +732,8 @@ class QtClassModEditorTab(QWidget):
 
     def update_string(self, *args):
         """生成序列化字符串 - 使用CSV数据源"""
+        if self._loading_import:
+            return
         if not self.names_data or not self.name_combo.currentText():
             self.full_string_output.setText("...")
             self.base85_output.setText("...")
@@ -458,7 +745,15 @@ class QtClassModEditorTab(QWidget):
             
             level_val = self.level_edit.text() if hasattr(self, 'level_edit') else self._character_level
             if not level_val: level_val = self._character_level
-            header = f"{self.CLASS_IDS[current_class_en]}, 0, 1, {level_val}| 2, {self.seed_edit.text()}||"
+            if self._imported:
+                header = build_header(
+                    self._import_header,
+                    mfg_id=self.CLASS_IDS[current_class_en],
+                    level=level_val,
+                    seed=self.seed_edit.text(),
+                ) + "||"
+            else:
+                header = f"{self.CLASS_IDS[current_class_en]}, 0, 1, {level_val}| 2, {self.seed_edit.text()}||"
             
             rarity_en = self._get_english_key(self.rarity_combo.currentText())
             name_code = self.name_code_map.get(self.name_combo.currentText(), 0)
@@ -484,11 +779,14 @@ class QtClassModEditorTab(QWidget):
             skill_chunks = []
             for entry in self.skill_picker.entries():
                 codes = entry["data"]["codes"]
-                skill_chunks.extend([f"{{{code}}}" for code in codes[:entry["count"]]])
+                selected_codes = codes[:entry["count"]]
+                if self._imported and self._import_skill_counts.get(entry['key']) == entry['count']:
+                    selected_codes = self._import_skill_codes.get(entry['key'], selected_codes)
+                skill_chunks.extend([f"{{{code}}}" for code in selected_codes])
             skills_chunk = " ".join(skill_chunks)
             
             # Perks - numeric IDs go into 234; GB path IDs are emitted as standalone quoted fields.
-            perk_codes = []
+            perk_codes = list(self._import_unknown_perks) if self._imported else []
             special_perk_codes = []
             for e in self.perk_picker.entries():
                 perk_id = e["data"]["perk_id"]
@@ -505,7 +803,10 @@ class QtClassModEditorTab(QWidget):
             perks_chunk = f" {{234:[{ ' '.join(perk_codes) }]}}" if perk_codes else ""
             special_perks_chunk = " ".join(special_perk_codes)
 
-            parts = [header, rarity_chunk, name_chunk, leg_extras_chunk, skills_chunk, perks_chunk, special_perks_chunk]
+            parts = [header, rarity_chunk, name_chunk, leg_extras_chunk, skills_chunk, perks_chunk,
+                     special_perks_chunk]
+            if self._imported:
+                parts.extend(self._import_unknown_tokens)
             full_string = " ".join(p for p in parts if p).replace("  ", " ").strip() + "|"
             
             self.full_string_output.setText(full_string)
@@ -727,5 +1028,5 @@ class QtClassModEditorTab(QWidget):
     def set_character_level(self, level: str):
         """设置角色等级，更新默认等级显示。"""
         self._character_level = level if level else "50"
-        if hasattr(self, 'level_edit'):
+        if hasattr(self, 'level_edit') and not self._imported:
             self.level_edit.setText(self._character_level)

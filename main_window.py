@@ -21,12 +21,12 @@ for _stream_name in ("stdout", "stderr"):
         except (AttributeError, ValueError):
             pass
 
-VERSION = "3.7.0"
+VERSION = "3.8.0"
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QMessageBox, QFileDialog,
     QStackedWidget, QButtonGroup, QSizeGrip, QInputDialog,
-    QMenu, QGraphicsBlurEffect, QStackedLayout, QSizePolicy
+    QMenu, QGraphicsBlurEffect, QStackedLayout, QSizePolicy, QCheckBox
 )
 from PyQt6.QtGui import QAction, QIcon, QPixmap, QPainter
 from PyQt6.QtCore import pyqtSlot, QPropertyAnimation, QEasingCurve, Qt, QTimer, QObject, QThread, pyqtSignal
@@ -294,6 +294,8 @@ class MainWindow(QMainWindow):
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
 
         self.controller = SaveGameController()
+        self._items_snapshot = None
+        self._dirty_item_views = {"items", "weapon", "yaml"}
         self.is_nav_bar_expanded = True
         self.nav_bar_width_expanded = 150
         self.nav_bar_width_collapsed = 60
@@ -355,10 +357,13 @@ class MainWindow(QMainWindow):
         footer_layout.addStretch()
         root_layout.addWidget(self.footer)
 
+        self._init_autosave(footer_layout)
+
         self.size_grip = QSizeGrip(self)
         self.size_grip.setFixedSize(20, 20)
         
         self._add_tabs()
+        self.content_stack.currentChanged.connect(self._refresh_inventory_view)
 
         # If saved language differs from default (zh-CN), sync backend + all tabs
         if self.current_language != 'zh-CN':
@@ -616,15 +621,18 @@ class MainWindow(QMainWindow):
         self.converter_tab.iterator_add_to_backpack_requested.connect(self.handle_iterator_add_to_backpack)
         self.add_tab(self.converter_tab, self.loc['tabs']['converter'], "🔧")
 
-        self.yaml_editor_tab = QtYamlEditorTab()
+        self.yaml_editor_tab = QtYamlEditorTab(self)
         self.yaml_editor_tab.yaml_text_changed.connect(self.handle_yaml_update)
+        self.yaml_editor_tab.structure_changed.connect(self.handle_yaml_structure_changed)
+        self.yaml_editor_tab.open_item_requested.connect(self.handle_open_item_from_yaml)
+        self.yaml_editor_tab.apply_theme(self.theme_manager.is_dark())
         self.add_tab(self.yaml_editor_tab, self.loc['tabs']['yaml_editor'], "📄")
 
-        self.class_mod_tab = QtClassModEditorTab()
+        self.class_mod_tab = QtClassModEditorTab(main_app=self)
         self.class_mod_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
         self.add_tab(self.class_mod_tab, self.loc['tabs']['class_mod'], "🌟")
 
-        self.enhancement_tab = QtEnhancementEditorTab()
+        self.enhancement_tab = QtEnhancementEditorTab(main_app=self)
         self.enhancement_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
         self.add_tab(self.enhancement_tab, self.loc['tabs']['enhancement'], "✨")
 
@@ -637,19 +645,19 @@ class MainWindow(QMainWindow):
         self.weapon_generator_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
         self.add_tab(self.weapon_generator_tab, self.loc['tabs']['weapon_generator'], "🔫")
 
-        self.grenade_tab = QtGrenadeEditorTab()
+        self.grenade_tab = QtGrenadeEditorTab(main_app=self)
         self.grenade_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
         self.add_tab(self.grenade_tab, self.loc['tabs']['grenade'], "💣")
 
-        self.shield_tab = QtShieldEditorTab()
+        self.shield_tab = QtShieldEditorTab(main_app=self)
         self.shield_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
         self.add_tab(self.shield_tab, self.loc['tabs']['shield'], "🛡️")
 
-        self.repkit_tab = QtRepkitEditorTab()
+        self.repkit_tab = QtRepkitEditorTab(main_app=self)
         self.repkit_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
         self.add_tab(self.repkit_tab, self.loc['tabs']['repkit'], "🛠️")
 
-        self.heavy_weapon_tab = QtHeavyWeaponEditorTab()
+        self.heavy_weapon_tab = QtHeavyWeaponEditorTab(main_app=self)
         self.heavy_weapon_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
         self.add_tab(self.heavy_weapon_tab, self.loc['tabs']['heavy_weapon'], "🚀")
 
@@ -672,6 +680,7 @@ class MainWindow(QMainWindow):
     def switch_to_tab(self, index: int):
         if 0 <= index < self.content_stack.count():
             self.content_stack.setCurrentIndex(index)
+            self._refresh_inventory_view(index)
             
             # The button group `idClicked` signal is connected to `handle_nav_click`,
             # which already calls `setCurrentIndex`. To avoid recursion and redundant calls,
@@ -685,7 +694,32 @@ class MainWindow(QMainWindow):
     @pyqtSlot(int)
     def handle_nav_click(self, index: int):
         self.content_stack.setCurrentIndex(index)
+        self._refresh_inventory_view(index)
         self.update_action_states()
+
+    def invalidate_items_snapshot(self):
+        self._items_snapshot = None
+        self._dirty_item_views.update(("items", "weapon", "yaml"))
+
+    def get_items_snapshot(self):
+        if self._items_snapshot is None:
+            self._items_snapshot = self.controller.get_all_items() if self.controller.yaml_obj else []
+        return self._items_snapshot
+
+    def _refresh_inventory_view(self, index):
+        if not hasattr(self, "content_stack") or not (0 <= index < self.content_stack.count()):
+            return
+        current = self.content_stack.widget(index)
+        if current is getattr(self, "items_tab", None) and "items" in self._dirty_item_views:
+            self.items_tab.update_tree(self.get_items_snapshot())
+            self._dirty_item_views.discard("items")
+        elif current is getattr(self, "weapon_editor_tab", None) and "weapon" in self._dirty_item_views:
+            self.weapon_editor_tab.refresh_backpack_items(self.get_items_snapshot())
+            self._dirty_item_views.discard("weapon")
+        elif current is getattr(self, "yaml_editor_tab", None) and "yaml" in self._dirty_item_views:
+            if self.controller.yaml_obj:
+                self.yaml_editor_tab.sync_from_controller()
+            self._dirty_item_views.discard("yaml")
 
     def browse_and_open_save(self):
         """
@@ -759,10 +793,11 @@ class MainWindow(QMainWindow):
                 _, platform, backup_name = self.controller.decrypt_save(file_path, current_user_id, custom_backup_path)
                 
                 # Success
-                QMessageBox.information(self, self.loc['dialogs']['success'], 
+                QMessageBox.information(self, self.loc['dialogs']['success'],
                                         self.loc['dialogs']['decrypt_success'].format(platform=platform.upper(), backup_name=backup_name))
                 self.setWindowTitle(f"{self.loc['window_title']} V{VERSION} - {file_path.name}")
-                
+
+                self._maybe_restore_recovery(file_path)
                 QTimer.singleShot(0, self.refresh_all_tabs)
                 self.switch_to_tab(1)  # Switch to character tab
                 return # Break loop and exit
@@ -813,10 +848,12 @@ class MainWindow(QMainWindow):
         saves = self.controller.scan_save_folders(custom_path)
         self.selector_page.update_view(saves)
 
-    def refresh_all_tabs(self):
+    def refresh_all_tabs(self, *, invalidate_items=True):
         if not self.controller.yaml_obj: return
         self.log("Main window: Starting to refresh all tabs.")
         try:
+            if invalidate_items:
+                self.invalidate_items_snapshot()
             char_data = self.controller.get_character_data()
             self.character_tab.update_fields(char_data)
             self.log("  - Character tab refreshed.")
@@ -832,26 +869,160 @@ class MainWindow(QMainWindow):
                     if hasattr(tab, 'set_character_level'):
                         tab.set_character_level(char_level)
                 self.log(f"  - Character level ({char_level}) synced to editor tabs.")
-            self.items_tab.update_tree(self.controller.get_all_items())
-            self.log("  - Items tab refreshed.")
-            if hasattr(self, 'weapon_editor_tab'):
-                self.log("  - Refreshing weapon editor tab...")
-                self.weapon_editor_tab.refresh_backpack_items()
-                self.log("  - Weapon editor tab refreshed.")
-            self.yaml_editor_tab.set_yaml_text(self.controller.get_yaml_string())
+            self.yaml_editor_tab.sync_from_controller()
+            self._dirty_item_views.discard("yaml")
             self.log("  - YAML editor tab refreshed.")
             if hasattr(self, 'loadout_manager_tab'):
                 save_path = str(self.controller.save_path) if self.controller.save_path else None
-                self.loadout_manager_tab.set_data(self.controller.yaml_obj, save_path)
+                self.loadout_manager_tab.set_data(self.controller.yaml_obj, save_path,
+                                                  dirty_callback=self.controller.mark_dirty)
                 self.log("  - Loadout manager tab data set.")
         except Exception as e:
             self.log(f"CRITICAL: An exception occurred during refresh_all_tabs: {e}", force_popup=True)
+        self._refresh_inventory_view(self.content_stack.currentIndex())
         self.log("Main window: Finished refreshing all tabs.")
 
     def log(self, message, force_popup=False):
         print(message)
         if force_popup:
             QMessageBox.critical(self, self.loc['dialogs']['critical'], str(message))
+
+    # ------------------------------------------------------------------
+    # 自动保存：脏标记驱动 + 静默期防抖 + 原子写盘 + 崩溃恢复副本
+    # ------------------------------------------------------------------
+    def _init_autosave(self, footer_layout):
+        self._autosave_suspend = 0
+        self.autosave_enabled = self._settings.value('autosave_enabled', True, type=bool)
+        self.autosave_interval_ms = max(5, int(self._settings.value('autosave_interval_sec', 30, type=int))) * 1000
+        self.recover_interval_ms = 5000
+
+        self._autosave_timer = QTimer(self)
+        self._autosave_timer.setSingleShot(True)
+        self._autosave_timer.timeout.connect(self._perform_autosave)
+        self._recover_timer = QTimer(self)
+        self._recover_timer.setSingleShot(True)
+        self._recover_timer.timeout.connect(self._write_recovery)
+
+        self.autosave_checkbox = QCheckBox(self.loc['status'].get('autosave', "自动保存"))
+        self.autosave_checkbox.setChecked(self.autosave_enabled)
+        self.autosave_checkbox.setToolTip(self.loc['status'].get('autosave_tip', "停止修改约30秒后自动写盘（原子写入，旧文件轮转为 .prev.bak）"))
+        self.autosave_checkbox.toggled.connect(self._toggle_autosave)
+        footer_layout.addWidget(self.autosave_checkbox)
+
+        self.controller.add_dirty_listener(self._on_controller_dirty)
+
+    def _toggle_autosave(self, on):
+        self.autosave_enabled = on
+        self._settings.setValue('autosave_enabled', on)
+        if not on:
+            self._autosave_timer.stop()
+            self._recover_timer.stop()
+        elif self.controller.dirty:
+            self._on_controller_dirty()
+
+    def _suspend_autosave(self, suspend: bool):
+        """后台 worker（批量添加/迭代器）运行期间挂起自动保存，避免序列化中间态。"""
+        self._autosave_suspend = max(0, self._autosave_suspend + (1 if suspend else -1))
+        if not suspend and self._autosave_suspend == 0 and self.controller.dirty:
+            self._on_controller_dirty()
+
+    def _on_controller_dirty(self):
+        if not self.autosave_enabled:
+            return
+        # 静默期防抖：持续修改只会在停手后触发一次
+        self._autosave_timer.start(self.autosave_interval_ms)
+        self._recover_timer.start(self.recover_interval_ms)
+
+    def _recovery_path(self, save_path=None) -> Path | None:
+        save_path = save_path or self.controller.save_path
+        if not save_path:
+            return None
+        sp = Path(save_path)
+        return sp.with_name(sp.name + ".recover")
+
+    def _write_recovery(self):
+        """轻量保险：把当前 YAML 明文写入 .recover，崩溃后可恢复。"""
+        if not self.controller.dirty or self.controller.yaml_obj is None:
+            return
+        if self._autosave_suspend > 0:
+            self._recover_timer.start(self.recover_interval_ms)
+            return
+        rp = self._recovery_path()
+        if rp is None:
+            return
+        try:
+            tmp = rp.with_name(rp.name + ".tmp")
+            tmp.write_text(self.controller.get_yaml_string(), encoding="utf-8")
+            os.replace(tmp, rp)
+        except Exception as e:
+            self.log(f"Recovery write failed: {e}")
+
+    def _remove_recovery(self, save_path=None):
+        rp = self._recovery_path(save_path)
+        if rp and rp.exists():
+            try:
+                rp.unlink()
+            except OSError:
+                pass
+
+    def _perform_autosave(self):
+        if not self.controller.dirty or self.controller.yaml_obj is None:
+            return
+        if self._autosave_suspend > 0:
+            # worker 还在跑，稍后重试
+            self._autosave_timer.start(self.recover_interval_ms)
+            return
+        if not self.controller.save_path:
+            return
+        # 内容摘要与上次写盘一致 → 无实际变化，直接标干净，不重复写盘
+        if self.controller.is_content_saved():
+            self.controller.mark_clean()
+            self._remove_recovery()
+            return
+        try:
+            target = self.controller.save_to_disk()
+            self._remove_recovery()
+            self.status_label.setText(
+                self.loc['status'].get('autosaved', "已自动保存 {time}").format(
+                    time=time.strftime("%H:%M:%S")))
+            self.log(f"Auto-saved to {target}")
+        except Exception as e:
+            self.log(f"Auto-save failed: {e}")
+            self.status_label.setText(self.loc['status'].get('autosave_failed', "自动保存失败，请手动保存"))
+            # 失败则稍后重试，避免静默丢数据
+            self._autosave_timer.start(self.recover_interval_ms)
+
+    def _maybe_restore_recovery(self, file_path: Path):
+        """打开存档时：若存在更新的 .recover（上次崩溃/异常退出残留），询问是否恢复。"""
+        rp = Path(str(file_path) + ".recover")
+        try:
+            if not rp.exists() or rp.stat().st_mtime <= file_path.stat().st_mtime:
+                if rp.exists():
+                    rp.unlink()
+                return
+        except OSError:
+            return
+        reply = QMessageBox.question(
+            self,
+            self.loc['dialogs'].get('recover_title', "恢复未保存的修改"),
+            self.loc['dialogs'].get('recover_msg', "检测到上次有未保存的修改（可能因意外退出残留）。是否恢复？"),
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.Yes)
+        if reply == QMessageBox.StandardButton.Yes:
+            try:
+                text = rp.read_text(encoding="utf-8")
+                if self.controller.update_yaml_object(text):
+                    self.status_label.setText(self.loc['status'].get('recovered', "已恢复未保存的修改（尚未写盘）"))
+                    return
+            except Exception as e:
+                self.log(f"Recovery restore failed: {e}")
+        self._remove_recovery()
+
+    def closeEvent(self, event):
+        # 退出时若有未保存修改，确保恢复副本是最新的
+        if self.controller.dirty and self.controller.yaml_obj is not None:
+            self._write_recovery()
+        super().closeEvent(event)
 
     @pyqtSlot(str, str)
     def handle_add_to_backpack(self, serial_input: str, flag: str):
@@ -873,7 +1044,8 @@ class MainWindow(QMainWindow):
             path = self.controller.add_item_to_backpack(final_serial, flag)
             if path:
                 QMessageBox.information(self, self.loc['dialogs']['success'], self.loc['dialogs']['add_success'])
-                self.refresh_all_tabs()
+                self.invalidate_items_snapshot()
+                self._refresh_inventory_view(self.content_stack.currentIndex())
             else:
                 QMessageBox.critical(self, self.loc['dialogs']['error'], self.loc['dialogs']['add_fail'])
 
@@ -895,7 +1067,8 @@ class MainWindow(QMainWindow):
             )
             final_msg = payload.get("success_msg", msg)
             QMessageBox.information(self, self.loc['dialogs']['success'], final_msg)
-            self.refresh_all_tabs()
+            self.invalidate_items_snapshot()
+            self._refresh_inventory_view(self.content_stack.currentIndex())
         except Exception as e:
             # Catch potential crashes from C-extensions and show an error dialog
             self.log(self.loc['dialogs']['update_error'].format(error=e), force_popup=True)
@@ -942,8 +1115,66 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot(str)
     def handle_yaml_update(self, yaml_string: str):
+        """源码编辑回写：只更新对象 + 轻量刷新，不再全量刷新所有 tab。"""
         if self.controller.update_yaml_object(yaml_string):
-            self.refresh_all_tabs()
+            self.invalidate_items_snapshot()
+            try:
+                self.character_tab.update_fields(self.controller.get_character_data())
+            except Exception:
+                pass
+            self._refresh_inventory_view(self.content_stack.currentIndex())
+
+    @pyqtSlot()
+    def handle_yaml_structure_changed(self):
+        """YAML 树编辑后的联动：失效物品快照 + 轻量刷新当前视图。"""
+        self.invalidate_items_snapshot()
+        try:
+            self.character_tab.update_fields(self.controller.get_character_data())
+        except Exception:
+            pass
+        self._refresh_inventory_view(self.content_stack.currentIndex())
+
+    @pyqtSlot(dict)
+    def handle_open_item_from_yaml(self, item: dict):
+        """从 YAML 编辑器跳转：按物品类型路由到对应编辑器 tab，失败回退物品总览。"""
+        if not item:
+            return
+        from core.item_display_resolver import WEAPON_TYPES
+        type_en = (item.get('type_en') or '').strip()
+        route = {
+            'Heavy Weapon': 'heavy_weapon_tab',
+            'Shield': 'shield_tab',
+            'Grenade': 'grenade_tab',
+            'Repkit': 'repkit_tab',
+            'Class Mod': 'class_mod_tab',
+            'Enhancement': 'enhancement_tab',
+        }
+        try:
+            if type_en in WEAPON_TYPES:
+                self.weapon_editor_tab.refresh_backpack_items(self.get_items_snapshot())
+                self._dirty_item_views.discard("weapon")
+                self._switch_to_widget(self.weapon_editor_tab)
+                self.weapon_editor_tab.load_weapon_data(item)
+                return
+            tab = getattr(self, route.get(type_en, ''), None)
+            if tab is not None and hasattr(tab, 'open_item_serial'):
+                self._switch_to_widget(tab)
+                tab.open_item_serial(item)
+                return
+        except Exception as e:
+            self.log(f"Open item in editor failed, fallback to items tab: {e}")
+        # 回退：物品总览页选中
+        self.items_tab.update_tree(self.get_items_snapshot())
+        self._dirty_item_views.discard("items")
+        self._switch_to_widget(self.items_tab)
+        if not self.items_tab.select_item_by_path(item.get("original_path")):
+            self.status_label.setText(self.loc['status'].get('item_not_found', "未找到对应物品"))
+
+    def _switch_to_widget(self, widget):
+        index = self.content_stack.indexOf(widget)
+        if index >= 0:
+            self.switch_to_tab(index)
+
 
     @pyqtSlot(list, str)
     def handle_batch_add(self, lines: list, flag: str):
@@ -963,10 +1194,12 @@ class MainWindow(QMainWindow):
         self.batch_add_worker.finished.connect(self.batch_add_thread.quit)
         self.batch_add_worker.finished.connect(self.batch_add_worker.deleteLater)
         self.batch_add_thread.finished.connect(self.batch_add_thread.deleteLater)
-        
+
+        self._suspend_autosave(True)
         self.batch_add_thread.start()
 
     def on_batch_add_finished(self, success_count, fail_count):
+        self._suspend_autosave(False)
         self.converter_tab.finalize_batch_add(success_count, fail_count)
         if success_count > 0:
             QMessageBox.information(self, self.loc['dialogs']['batch_complete'], 
@@ -991,6 +1224,9 @@ class MainWindow(QMainWindow):
         self.iterator_worker.status_update.connect(self.converter_tab.update_iterator_status)
 
         if add_to_backpack:
+            self._suspend_autosave(True)
+
+        if add_to_backpack:
             self.iterator_worker.finished_add_to_backpack.connect(self.on_iterator_add_finished)
         else:
             self.iterator_worker.finished_generation.connect(self.converter_tab.finalize_iterator_processing)
@@ -1012,6 +1248,7 @@ class MainWindow(QMainWindow):
         self._start_iterator_worker(params, add_to_backpack=True)
 
     def on_iterator_add_finished(self, success, fail):
+        self._suspend_autosave(False)
         self.converter_tab.finalize_iterator_add_to_backpack(success, fail)
         if success > 0:
             QMessageBox.information(self, self.loc['dialogs']['iter_complete'], 
@@ -1024,8 +1261,9 @@ class MainWindow(QMainWindow):
     @pyqtSlot(bool)
     def encrypt_and_save(self, save_as=False):
         if self.controller.yaml_obj is None: return
-        
-        path_to_save = self.controller.save_path
+
+        original_save_path = self.controller.save_path
+        path_to_save = original_save_path
         if save_as or not path_to_save:
             path, _ = QFileDialog.getSaveFileName(
                 self,
@@ -1035,12 +1273,19 @@ class MainWindow(QMainWindow):
             )
             if not path: return
             path_to_save = Path(path)
-        
+
         try:
-            data = self.controller.encrypt_save(self.controller.get_yaml_string())
-            path_to_save.write_bytes(data)
-            QMessageBox.information(self, self.loc['dialogs']['success'], 
-                                    self.loc['dialogs']['save_saved'].format(path=path_to_save))
+            # 原子写入（临时文件 + os.replace，旧文件轮转为 .prev.bak）
+            saved_path = self.controller.save_to_disk(path_to_save)
+            if save_as or original_save_path is None:
+                self._remove_recovery(original_save_path)
+                self.controller.save_path = saved_path
+                self.setWindowTitle(f"{self.loc['window_title']} V{VERSION} - {saved_path.name}")
+            self._autosave_timer.stop()
+            self._recover_timer.stop()
+            self._remove_recovery()
+            QMessageBox.information(self, self.loc['dialogs']['success'],
+                                    self.loc['dialogs']['save_saved'].format(path=saved_path))
         except Exception as e:
             QMessageBox.critical(self, self.loc['dialogs']['encrypt_failed'], str(e))
 
@@ -1063,6 +1308,7 @@ class MainWindow(QMainWindow):
         
         # Update backend localization
         bl4f.set_language(self.current_language)
+        self.invalidate_items_snapshot()
 
         self.lang_button.setText(self._get_lang_button_text())
         
@@ -1080,7 +1326,7 @@ class MainWindow(QMainWindow):
                     print(f"DEBUG: Error updating language for tab {tab.__class__.__name__}: {e}")
         
         # Refresh all tabs to re-fetch items with new localization
-        self.refresh_all_tabs()
+        self.refresh_all_tabs(invalidate_items=False)
         
         print("DEBUG: change_language finished")
         
@@ -1135,6 +1381,8 @@ class MainWindow(QMainWindow):
         self.theme_manager.toggle_theme()
         self._apply_themed_stylesheet()
         self._update_theme_button()
+        if hasattr(self, 'yaml_editor_tab'):
+            self.yaml_editor_tab.apply_theme(self.theme_manager.is_dark())
 
     def _get_theme_tooltip(self):
         """Get the tooltip text for the theme button."""

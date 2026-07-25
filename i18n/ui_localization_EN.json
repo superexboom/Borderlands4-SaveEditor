@@ -56,7 +56,13 @@
       "save_as": "Save As..."
     },
     "status": {
-      "welcome": "Welcome to Borderlands 4 Save Editor"
+      "welcome": "Welcome to Borderlands 4 Save Editor",
+      "autosave": "Auto-save",
+      "autosave_tip": "Writes to disk ~30s after you stop editing (atomic write; previous file rotated to .prev.bak)",
+      "autosaved": "Auto-saved at {time}",
+      "autosave_failed": "Auto-save failed, please save manually",
+      "recovered": "Unsaved changes restored (not written yet)",
+      "item_not_found": "Item not found"
     },
     "tabs": {
       "select_save": "Select Save",
@@ -120,7 +126,9 @@
       "iter_fail_msg": "Failed to add any items. Failed count: {count}.",
       "save_encrypted_title": "Save Encrypted File",
       "save_saved": "Save file saved to:\n{path}",
-      "encrypt_failed": "Encryption Failed"
+      "encrypt_failed": "Encryption Failed",
+      "recover_title": "Recover unsaved changes",
+      "recover_msg": "Unsaved changes from a previous session were detected (possibly left by an unexpected exit). Restore them?"
     },
     "worker": {
       "no_data": "No data generated.",
@@ -368,15 +376,78 @@
   "yaml_tab": {
     "tree_headers": {
       "key": "Key",
-      "value": "Value"
+      "value": "Value",
+      "note": "Note"
     },
     "buttons": {
       "yaml_view": "YAML View",
-      "tree_view": "Tree View"
+      "tree_view": "Tree",
+      "source_view": "Source",
+      "split_view": "Split",
+      "diff": "Changes"
+    },
+    "search": {
+      "placeholder": "Search keys or values…",
+      "count": "{current}/{total}"
+    },
+    "inspector": {
+      "path": "Current node",
+      "no_selection": "No node selected",
+      "serial_title": "Serial decode preview",
+      "ops_title": "Node operations",
+      "open_in_editor": "Open in item editor",
+      "pinned": "Pinned paths:",
+      "level": "Level",
+      "type": "Type",
+      "manufacturer": "Manufacturer",
+      "container": "Container",
+      "slot": "Slot",
+      "unresolved": "Unresolved"
+    },
+    "ops": {
+      "set_value": "Set value",
+      "rename": "Rename key",
+      "add_child": "Add child",
+      "delete": "Delete",
+      "duplicate": "Duplicate",
+      "copy_path": "Copy path",
+      "copy_value": "Copy value",
+      "range_delete": "Delete slot range…"
     },
     "dialogs": {
       "yaml_error": "YAML Error",
-      "parse_error": "Unable to parse YAML: {error}"
+      "parse_error": "Parse Error: {error}",
+      "add_child_title": "Add child node",
+      "child_key": "Key:",
+      "child_type": "Type:",
+      "range_delete_title": "Delete backpack slot range",
+      "range_from": "From slot:",
+      "range_to": "To slot:",
+      "range_preview": "Will delete {count} item(s) (slot_{from} ~ slot_{to})",
+      "range_none": "No items in this range",
+      "range_confirm": "Delete",
+      "delete_confirm": "Delete {count} node(s)?",
+      "error": "Error",
+      "delete": "Delete"
+    },
+    "types": {
+      "str": "String",
+      "int": "Integer",
+      "float": "Float",
+      "bool": "Boolean",
+      "null": "null",
+      "dict": "Object",
+      "list": "List"
+    },
+    "status": {
+      "valid": "YAML valid",
+      "invalid": "YAML invalid: {error}",
+      "nodes": "{count} nodes",
+      "modified": "● {count} unsaved change(s)",
+      "object_items": "object · {count}",
+      "list_items": "list · {count}",
+      "flags_bits": "bits {bits}",
+      "serial_ok": "Decoded · Lv{level} {name}"
     }
   },
   "class_mod_tab": {

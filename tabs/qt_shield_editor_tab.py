@@ -12,6 +12,17 @@ from PyQt6.QtCore import pyqtSignal, Qt
 from core import b_encoder
 from core import resource_loader
 from tabs.qt_catalog_picker import ContainedWheelListWidget, ContainedWheelScrollArea
+from tabs.qt_serial_import import (
+    SerialSourceBar,
+    build_header,
+    choose_backpack_item,
+    decode_base85,
+    parse_components,
+    prompt_base85,
+    select_flag_value,
+    source_texts,
+    split_decoded,
+)
 from core import lookup
 from core import bl4_functions as bl4f
 
@@ -33,10 +44,19 @@ def load_shield_data(lang='zh-CN'):
 class QtShieldEditorTab(QWidget):
     add_to_backpack_requested = pyqtSignal(str, str)
 
-    def __init__(self, parent=None):
+    def __init__(self, main_app=None, parent=None):
         super().__init__(parent)
+        self.main_app = main_app
         self.current_lang = 'zh-CN'
         self._character_level = "50"
+        self._loading_import = False
+        self._imported_copy = False
+        self._source_seed = 306
+        self._source_header = None
+        self._source_name = ""
+        self._source_model_present = False
+        self._preserved_tokens = []
+        self._preserved_children = {246: [], 248: [], 237: []}
         self.df_main, self.df_mfg, self.localization = load_shield_data(self.current_lang)
         
         self._load_ui_localization()
@@ -61,6 +81,9 @@ class QtShieldEditorTab(QWidget):
 
     def update_language(self, lang):
         print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
+        imported_serial = self.b85_output_edit.text() if getattr(self, '_imported_copy', False) else ""
+        imported_name = getattr(self, '_source_name', '')
+        imported_flag = self.flag_combo.currentText().split(" ")[0] if hasattr(self, 'flag_combo') else None
         self.current_lang = lang
         self.df_main, self.df_mfg, self.localization = load_shield_data(lang)
         
@@ -106,7 +129,15 @@ class QtShieldEditorTab(QWidget):
         self.mfg_combo.blockSignals(True)
         self.populate_initial_data()
         self.mfg_combo.blockSignals(False)
-        self.on_mfg_change()
+        if imported_serial:
+            try:
+                self._load_serial_copy(imported_serial, name=imported_name, state_flags=imported_flag)
+            except ValueError as exc:
+                print(f"DEBUG: Failed to restore imported shield after language change: {exc}")
+                self._reset_import_source()
+        else:
+            self.on_mfg_change()
+            self._update_source_bar()
         print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
 
     def _(self, text): return self.localization.get(str(text), str(text))
@@ -116,6 +147,7 @@ class QtShieldEditorTab(QWidget):
         scroll = QScrollArea(); scroll.setWidgetResizable(True); main_layout.addWidget(scroll)
         container = QWidget(); scroll.setWidget(container); layout = QVBoxLayout(container)
 
+        self._create_source_bar(layout)
         self._create_output_group(layout)
         self._create_top_controls(layout)
 
@@ -131,6 +163,20 @@ class QtShieldEditorTab(QWidget):
         perks_layout.addWidget(self.legendary_group, 1, 0, 1, 2); perks_layout.addWidget(self.energy_group, 2, 0, 1, 2)
         perks_layout.addWidget(self.armor_group, 3, 0, 1, 2); perks_layout.addWidget(self.universal_group, 4, 0, 1, 2)
         layout.addWidget(self.perks_group)
+
+    def _create_source_bar(self, layout):
+        texts = source_texts(self.current_lang)
+        self.source_bar = SerialSourceBar(
+            new_text=texts['new_source'],
+            backpack_text=texts['backpack'],
+            base85_text=texts['base85'],
+            reset_text=texts['reset'],
+        )
+        self.source_bar.backpack_requested.connect(self._import_from_backpack)
+        self.source_bar.base85_requested.connect(self._import_from_base85)
+        self.source_bar.reset_requested.connect(self._reset_import_source)
+        self.source_bar.backpack_btn.setEnabled(self.main_app is not None)
+        layout.addWidget(self.source_bar)
 
     def _create_output_group(self, layout):
         self.output_group = QGroupBox(self.ui_loc['groups']['output']); grid = QGridLayout(self.output_group)
@@ -368,17 +414,248 @@ class QtShieldEditorTab(QWidget):
         
         self.rebuild_output()
 
+    def _update_source_bar(self):
+        if not hasattr(self, 'source_bar'):
+            return
+        texts = source_texts(self.current_lang)
+        self.source_bar.backpack_btn.setText(texts['backpack'])
+        self.source_bar.base85_btn.setText(texts['base85'])
+        self.source_bar.reset_btn.setText(texts['reset'])
+        if self._imported_copy:
+            name = self._source_name or "Base85"
+            self.source_bar.set_source(texts['imported'].format(name=name), imported=True)
+        else:
+            self.source_bar.set_source(texts['new_source'], imported=False)
+        self.mfg_combo.setEnabled(not self._imported_copy)
+
+    def _import_from_backpack(self):
+        if self.main_app is None or not hasattr(self.main_app, 'get_items_snapshot'):
+            texts = source_texts(self.current_lang)
+            QMessageBox.warning(self, texts['import_error'], texts['no_save'])
+            return
+        item = choose_backpack_item(
+            self,
+            self.main_app.get_items_snapshot(),
+            lambda value: value.get('type_en') == 'Shield' and value.get('container') == 'Backpack',
+            title=source_texts(self.current_lang)['backpack_title'],
+            search_placeholder=source_texts(self.current_lang)['search'],
+        )
+        if not item:
+            return
+        try:
+            self._load_serial_copy(
+                item.get('serial', ''),
+                name=item.get('name') or 'Shield',
+                state_flags=item.get('state_flags'),
+            )
+        except ValueError as exc:
+            self._reset_import_source()
+            QMessageBox.warning(self, source_texts(self.current_lang)['import_error'], str(exc))
+
+    def _import_from_base85(self):
+        texts = source_texts(self.current_lang)
+        serial = prompt_base85(self, title=texts['base85_title'], label=texts['base85_label'])
+        if not serial:
+            return
+        try:
+            self._load_serial_copy(serial, name="Base85")
+        except ValueError as exc:
+            self._reset_import_source()
+            QMessageBox.warning(self, texts['import_error'], str(exc))
+
+    def open_item_serial(self, item: dict):
+        """公开入口：从 YAML 编辑器/物品快照跳转加载一件物品。类型不符时抛 ValueError。"""
+        flags = item.get('state_flags')
+        try:
+            flags = int(str(flags).strip()) if str(flags).strip() else None
+        except ValueError:
+            flags = None
+        self._load_serial_copy(item.get('serial', ''), name=item.get('name', ''), state_flags=flags)
+
+    def _load_serial_copy(self, serial, *, name="", state_flags=None):
+        parsed = split_decoded(decode_base85(serial))
+        if parsed['mfg_id'] not in self.mfg_ids:
+            raise ValueError(source_texts(self.current_lang)['wrong_type'])
+
+        self._loading_import = True
+        try:
+            self._imported_copy = True
+            self._source_seed = parsed['seed']
+            self._source_header = parsed
+            self._source_name = name
+            self._source_model_present = False
+            self._preserved_tokens = []
+            self._preserved_children = {246: [], 248: [], 237: []}
+
+            mfg_index = next(
+                (i for i in range(self.mfg_combo.count())
+                 if self.mfg_combo.itemText(i).rstrip().endswith(f" - {parsed['mfg_id']}")),
+                -1,
+            )
+            if mfg_index < 0:
+                raise ValueError(source_texts(self.current_lang)['wrong_type'])
+            self.mfg_combo.setCurrentIndex(mfg_index)
+            self.on_mfg_change()
+            self.level_edit.setText(str(parsed['level']))
+            self.rarity_combo.setCurrentIndex(-1)
+
+            self._clear_import_widgets()
+
+            rarity_ids = {
+                int(self.rarity_combo.itemData(i)): i
+                for i in range(self.rarity_combo.count())
+                if self.rarity_combo.itemData(i) is not None
+            }
+            elements = {
+                int(widget.property('part_id')): widget
+                for widget in self.element_widgets if widget.property('part_id')
+            }
+            firmware = {
+                int(widget.property('part_id')): widget
+                for widget in self.firmware_widgets if widget.property('part_id')
+            }
+            universal = self._available_items_by_id(self.universal_avail_list)
+            energy = self._available_items_by_id(self.energy_avail_list)
+            armor = self._available_items_by_id(self.armor_avail_list)
+            legendary = {
+                tuple(map(int, self.legendary_avail_list.item(i).data(Qt.ItemDataRole.UserRole))):
+                    self.legendary_avail_list.item(i)
+                for i in range(self.legendary_avail_list.count())
+            }
+
+            for token in parse_components(parsed['component']):
+                self._apply_import_token(
+                    token,
+                    parsed['mfg_id'],
+                    rarity_ids,
+                    elements,
+                    firmware,
+                    universal,
+                    energy,
+                    armor,
+                    legendary,
+                )
+            self._set_flag_value(state_flags)
+        finally:
+            self._loading_import = False
+
+        self._update_source_bar()
+        self.rebuild_output()
+        if self._encode_error:
+            raise ValueError("The imported shield could not be rebuilt.")
+
+    @staticmethod
+    def _available_items_by_id(list_widget):
+        return {
+            int(list_widget.item(i).data(Qt.ItemDataRole.UserRole)): list_widget.item(i)
+            for i in range(list_widget.count())
+        }
+
+    def _apply_import_token(self, token, mfg_id, rarity_ids, elements,
+                            firmware, universal, energy, armor, legendary):
+        token_type = token['type']
+        if token_type == 'quoted':
+            self._preserved_tokens.append(f'"{token["value"]}"')
+            return
+        if token_type == 'simple':
+            part_id = token['id']
+            model_id = self.mfg_model_map.get(mfg_id)
+            if part_id in rarity_ids:
+                self.rarity_combo.setCurrentIndex(rarity_ids[part_id])
+            elif model_id is not None and part_id == int(model_id):
+                self._source_model_present = True
+            elif (part_id, mfg_id) in legendary:
+                self.legendary_sel_list.addItem(legendary[(part_id, mfg_id)].clone())
+            else:
+                self._preserved_tokens.append(f"{{{part_id}}}")
+            return
+
+        parent_id = token['id']
+        children = token['children'] if token_type == 'group' else [token['value']]
+        unknown = []
+        shield_type = self.mfg_type_map_base.get(mfg_id)
+        for part_id in children:
+            if parent_id == 246:
+                if part_id in elements:
+                    elements[part_id].setChecked(True)
+                elif part_id in firmware:
+                    firmware[part_id].setChecked(True)
+                elif part_id in universal:
+                    self.universal_sel_list.addItem(universal[part_id].clone())
+                else:
+                    self._preserved_children[246].append(part_id)
+            elif parent_id == 248:
+                if shield_type == 'Energy' and part_id in energy:
+                    self.energy_sel_list.addItem(energy[part_id].clone())
+                else:
+                    self._preserved_children[248].append(part_id)
+            elif parent_id == 237:
+                if shield_type == 'Armor' and part_id in armor:
+                    self.armor_sel_list.addItem(armor[part_id].clone())
+                else:
+                    self._preserved_children[237].append(part_id)
+            elif (part_id, parent_id) in legendary:
+                self.legendary_sel_list.addItem(legendary[(part_id, parent_id)].clone())
+            else:
+                unknown.append(part_id)
+        if unknown:
+            values = ' '.join(map(str, unknown))
+            self._preserved_tokens.append(
+                f"{{{parent_id}:{unknown[0]}}}" if len(unknown) == 1 else f"{{{parent_id}:[{values}]}}"
+            )
+
+    def _set_flag_value(self, value):
+        select_flag_value(self.flag_combo, value)
+
+    def _clear_import_widgets(self):
+        for widgets in (self.element_widgets, self.firmware_widgets):
+            none_radio = next((widget for widget in widgets if not widget.property('part_id')), None)
+            if none_radio:
+                none_radio.setChecked(True)
+        self.legendary_sel_list.clear()
+        self.energy_sel_list.clear()
+        self.armor_sel_list.clear()
+        self.universal_sel_list.clear()
+
+    def _reset_import_source(self):
+        self._loading_import = True
+        try:
+            self._imported_copy = False
+            self._source_seed = 306
+            self._source_header = None
+            self._source_name = ""
+            self._source_model_present = False
+            self._preserved_tokens = []
+            self._preserved_children = {246: [], 248: [], 237: []}
+            self.mfg_combo.setEnabled(True)
+            self.level_edit.setText(self._character_level)
+            self.on_mfg_change()
+            self._clear_import_widgets()
+            self._populate_flags()
+        finally:
+            self._loading_import = False
+        self._update_source_bar()
+        self.rebuild_output()
+
     def rebuild_output(self, *args):
+        if self._loading_import:
+            return
         try:
             mfg_id = int(self.mfg_combo.currentText().split(' - ')[-1]); level = self.level_edit.text(); rarity_id = self.rarity_combo.currentData()
-            main_parts = [f"{mfg_id}, 0, 1, {level}| 2, 306||"]; skill_parts = []; secondary = {}
+            header = (
+                build_header(self._source_header, mfg_id=mfg_id, level=level, seed=self._source_seed)
+                if self._imported_copy and self._source_header
+                else f"{mfg_id}, 0, 1, {level}| 2, {self._source_seed}"
+            )
+            main_parts = [f"{header}||"]; skill_parts = []; secondary = {}
             if rarity_id: skill_parts.append(f"{{{rarity_id}}}")
             
             leg_items = [self.legendary_sel_list.item(i) for i in range(self.legendary_sel_list.count())]
-            if not leg_items:
-                if mfg_id in self.mfg_model_map:
-                    skill_parts.append(f"{{{self.mfg_model_map[mfg_id]}}}")
-            else:
+            if self._imported_copy and self._source_model_present:
+                skill_parts.append(f"{{{self.mfg_model_map[mfg_id]}}}")
+            elif not leg_items and mfg_id in self.mfg_model_map:
+                skill_parts.append(f"{{{self.mfg_model_map[mfg_id]}}}")
+            if leg_items:
                 other_mfg_perks = {}
                 for it in leg_items:
                     # Handle (count) prefix (though typically 1 for legendary if not multiplied)
@@ -421,6 +698,11 @@ class QtShieldEditorTab(QWidget):
                         part_val = item.data(Qt.ItemDataRole.UserRole)
                         for _ in range(count):
                             secondary[pid].append(part_val)
+
+            if self._imported_copy:
+                skill_parts.extend(self._preserved_tokens)
+                for parent_id, children in self._preserved_children.items():
+                    secondary.setdefault(parent_id, []).extend(children)
 
             for k, v in secondary.items():
                 if v: 

@@ -362,7 +362,13 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.selected_weapon_path = current_weapon_path
         
         self.create_widgets()
-        self.refresh_backpack_items()
+        content_stack = getattr(self.main_app, "content_stack", None)
+        if content_stack is None or content_stack.currentWidget() is self:
+            self.refresh_backpack_items()
+            if hasattr(self.main_app, "_dirty_item_views"):
+                self.main_app._dirty_item_views.discard("weapon")
+        elif hasattr(self.main_app, "_dirty_item_views"):
+            self.main_app._dirty_item_views.add("weapon")
         
         # Restore state
         if hasattr(self, 'flag_combo') and self.flag_combo.count() > current_flag_idx:
@@ -1077,9 +1083,13 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self._set_row_selected(self.backpack_items_list, previous, False)
         self._set_row_selected(self.backpack_items_list, current, True)
 
-    def refresh_backpack_items(self):
+    def refresh_backpack_items(self, items=None):
         self.backpack_items_list.clear()
-        if self.main_app.controller.yaml_obj is None or not (items := self.main_app.controller.get_all_items()):
+        if items is None and hasattr(self.main_app, "get_items_snapshot"):
+            items = self.main_app.get_items_snapshot()
+        elif items is None:
+            items = self.main_app.controller.get_all_items()
+        if self.main_app.controller.yaml_obj is None or not items:
             self.backpack_items_list.addItem(self.get_localized_string("decrypt_save_to_show_weapons"))
             self.backpack_items_list.setEnabled(False)
             return
@@ -1382,7 +1392,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         skin = {
             'type': 'skin',
             'id': new_skin_id if is_text_id else int(new_skin_id),
-            'raw': f' "c", "{new_skin_id}"' if is_text_id else f' "c", {int(new_skin_id)}',
+            'raw': f'"c", "{new_skin_id}"' if is_text_id else f'"c", {int(new_skin_id)}',
         }
         target_index = part_index
         if target_index is None:

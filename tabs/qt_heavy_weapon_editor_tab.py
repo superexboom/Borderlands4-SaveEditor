@@ -6,13 +6,17 @@ import re
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit,
     QPushButton, QGroupBox, QComboBox, QRadioButton, QListWidgetItem,
-    QScrollArea, QMessageBox, QAbstractItemView, QSpinBox
+    QScrollArea, QMessageBox, QAbstractItemView, QSpinBox, QButtonGroup
 )
 from PyQt6.QtCore import pyqtSignal, Qt
 
 from core import b_encoder
 from core import resource_loader
 from tabs.qt_catalog_picker import ContainedWheelListWidget, ContainedWheelScrollArea
+from tabs.qt_serial_import import (
+    SerialSourceBar, build_header, choose_backpack_item, decode_base85,
+    parse_components, prompt_base85, select_flag_value, source_texts, split_decoded,
+)
 from core import lookup
 from core import bl4_functions as bl4f
 
@@ -37,10 +41,16 @@ def load_heavy_weapon_data(lang='zh-CN'):
 class QtHeavyWeaponEditorTab(QWidget):
     add_to_backpack_requested = pyqtSignal(str, str)
 
-    def __init__(self, parent=None):
+    def __init__(self, main_app=None, parent=None):
         super().__init__(parent)
+        self.main_app = main_app
         self.current_lang = 'zh-CN'
         self._character_level = "50"
+        self._is_loading = False
+        self._imported = False
+        self._import_header = None
+        self._import_unknown_tokens = []
+        self._import_source_name = ""
         self.df_main, self.df_mfg, self.localization = load_heavy_weapon_data(self.current_lang)
         
         self._load_ui_localization()
@@ -65,6 +75,9 @@ class QtHeavyWeaponEditorTab(QWidget):
         self.ui_loc = full_loc.get("heavy_weapon_tab", {})
 
     def update_language(self, lang):
+        restore_serial = self.b85_output_edit.text() if getattr(self, '_imported', False) else ""
+        restore_source = self._import_source_name
+        restore_flag = self.flag_combo.currentText().split(" ")[0] if hasattr(self, 'flag_combo') else "3"
         print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
         self.current_lang = lang
         self.df_main, self.df_mfg, self.localization = load_heavy_weapon_data(lang)
@@ -101,6 +114,7 @@ class QtHeavyWeaponEditorTab(QWidget):
         
         self.barrel_acc_clear_btn.setText(self.ui_loc.get('buttons', {}).get('clear', 'Clear'))
         self.body_acc_clear_btn.setText(self.ui_loc.get('buttons', {}).get('clear', 'Clear'))
+        self._update_source_bar_texts()
         
         self._populate_flags()
 
@@ -112,6 +126,8 @@ class QtHeavyWeaponEditorTab(QWidget):
         self.mfg_combo.blockSignals(False)
         self.rarity_combo.blockSignals(False)
         self.on_mfg_change()
+        if restore_serial:
+            self._load_serial_copy(restore_serial, restore_source, restore_flag)
         print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
 
     def _rebuild_and_connect(self, frame_layout, widget_list):
@@ -134,6 +150,17 @@ class QtHeavyWeaponEditorTab(QWidget):
         container = QWidget()
         scroll_area.setWidget(container)
         main_layout = QVBoxLayout(container)
+
+        self.source_bar = SerialSourceBar(
+            new_text=self._source_text('new'),
+            backpack_text=self._source_text('backpack'),
+            base85_text=self._source_text('base85'),
+            reset_text=self._source_text('reset'),
+        )
+        self.source_bar.backpack_requested.connect(self._import_from_backpack)
+        self.source_bar.base85_requested.connect(self._import_from_base85)
+        self.source_bar.reset_requested.connect(self._reset_import_source)
+        main_layout.addWidget(self.source_bar)
         
         # --- Top Output ---
         self._create_output_group(main_layout)
@@ -326,11 +353,23 @@ class QtHeavyWeaponEditorTab(QWidget):
         while frame_layout.count():
             child = frame_layout.takeAt(0)
             if child.widget():
+                child.widget().setAutoExclusive(False)
+                child.widget().setParent(None)
                 child.widget().deleteLater()
         widget_list.clear()
 
+        group_name = 'barrel' if widget_list is self.barrel_widgets else 'element' if widget_list is self.element_widgets else 'firmware'
+        old_group = getattr(self, f'_{group_name}_button_group', None)
+        if old_group:
+            old_group.deleteLater()
+        button_group = QButtonGroup(self)
+        button_group.setExclusive(True)
+        setattr(self, f'_{group_name}_button_group', button_group)
+
         none_rb = QRadioButton(self.ui_loc['misc']['none'])
         none_rb.setChecked(True)
+        button_group.addButton(none_rb)
+        setattr(self, f'_{group_name}_none_rb', none_rb)
         frame_layout.addWidget(none_rb)
         widget_list.append(none_rb)
 
@@ -345,6 +384,7 @@ class QtHeavyWeaponEditorTab(QWidget):
                 part_id = f"{int(row['Heavy_perk_main_ID'])}:{part_id}"
             
             rb.setProperty("part_id", part_id)
+            button_group.addButton(rb)
             frame_layout.addWidget(rb)
             widget_list.append(rb)
         frame_layout.addStretch()
@@ -445,11 +485,16 @@ class QtHeavyWeaponEditorTab(QWidget):
                 self.body_acc_avail_list.addItem(item)
 
     def rebuild_output(self, *args):
+        if self._is_loading:
+            return
         mfg_id = int(self.mfg_combo.currentText().split(' - ')[-1])
         level = self.level_edit.text()
         rarity_id = self.rarity_combo.currentData()
         
-        main_parts = [f"{mfg_id}, 0, 1, {level}| 2, {random.randint(100,9999)}||"]
+        if self._imported and self._import_header:
+            main_parts = [f"{build_header(self._import_header, level=level)}||"]
+        else:
+            main_parts = [f"{mfg_id}, 0, 1, {level}| 2, {random.randint(100,9999)}||"]
         skill_parts = []
         
         if rarity_id: skill_parts.append(f"{{{rarity_id}}}")
@@ -477,6 +522,9 @@ class QtHeavyWeaponEditorTab(QWidget):
                 part_id = item.data(Qt.ItemDataRole.UserRole)
                 for _ in range(count):
                     skill_parts.append(f"{{{part_id}}}")
+
+        if self._imported:
+            skill_parts.extend(self._import_unknown_tokens)
 
         final_string = " ".join(main_parts) + " " + " ".join(skill_parts) + " |"
         self.raw_output_edit.setText(final_string)
@@ -550,8 +598,194 @@ class QtHeavyWeaponEditorTab(QWidget):
             if flags_map["3"] == self.flag_combo.itemText(i):
                 self.flag_combo.setCurrentIndex(i)
 
+    def _source_text(self, key):
+        return source_texts(self.current_lang)[{'new': 'new_source', 'copy': 'imported'}.get(key, key)]
+
+    def _update_source_bar_texts(self):
+        if not hasattr(self, 'source_bar'):
+            return
+        self.source_bar.backpack_btn.setText(self._source_text('backpack'))
+        self.source_bar.base85_btn.setText(self._source_text('base85'))
+        self.source_bar.reset_btn.setText(self._source_text('reset'))
+        text = self._source_text('copy').format(name=self._import_source_name) if self._imported else self._source_text('new')
+        self.source_bar.set_source(text, imported=self._imported)
+
+    def _import_from_backpack(self):
+        texts = source_texts(self.current_lang)
+        if not self.main_app or not hasattr(self.main_app, 'get_items_snapshot'):
+            QMessageBox.warning(self, texts['import_error'], texts['no_save'])
+            return
+        item = choose_backpack_item(
+            self,
+            self.main_app.get_items_snapshot(),
+            lambda candidate: candidate.get('container') == 'Backpack'
+            and (candidate.get('type_en') == 'Heavy Weapon' or candidate.get('id') in self.mfg_ids),
+            title=texts['backpack_title'],
+            search_placeholder=texts['search'],
+        )
+        if item:
+            self._load_serial_copy(item.get('serial', ''), item.get('name') or 'Heavy Weapon', item.get('state_flags'))
+
+    def _import_from_base85(self):
+        texts = source_texts(self.current_lang)
+        serial = prompt_base85(self, title=texts['base85_title'], label=texts['base85_label'])
+        if serial:
+            self._load_serial_copy(serial, 'Base85')
+
+    def open_item_serial(self, item: dict):
+        """公开入口：从 YAML 编辑器/物品快照跳转加载一件物品。类型不符时抛 ValueError。"""
+        flags = item.get('state_flags')
+        try:
+            flags = int(str(flags).strip()) if str(flags).strip() else None
+        except ValueError:
+            flags = None
+        self._load_serial_copy(item.get('serial', ''), source_name=item.get('name', 'Backpack'),
+                               state_flags=flags)
+
+    def _load_serial_copy(self, serial, source_name='Base85', state_flags=None):
+        texts = source_texts(self.current_lang)
+        try:
+            decoded = decode_base85(serial)
+            header = split_decoded(decoded)
+            if header['mfg_id'] not in self.mfg_ids:
+                raise ValueError(texts['wrong_type'])
+            component = header['component']
+            self._is_loading = True
+            self._imported = True
+            self._import_header = header
+            self._import_unknown_tokens = []
+            self._import_source_name = source_name
+
+            index = self.mfg_combo.findText(str(header['mfg_id']), Qt.MatchFlag.MatchEndsWith)
+            if index < 0:
+                raise ValueError(texts['wrong_type'])
+            self.mfg_combo.setEnabled(True)
+            self.mfg_combo.blockSignals(True)
+            self.mfg_combo.setCurrentIndex(index)
+            self.mfg_combo.blockSignals(False)
+            self.on_mfg_change()
+            self.mfg_combo.setEnabled(False)
+            self.level_edit.setText(str(header['level']))
+            self._clear_import_widgets()
+            self._apply_imported_components(component)
+            self._set_flag_value(state_flags)
+            self.source_bar.set_source(self._source_text('copy').format(name=source_name), imported=True)
+        except Exception as exc:
+            self._reset_import_source()
+            QMessageBox.warning(self, texts['import_error'], str(exc))
+            return False
+        finally:
+            self._is_loading = False
+        self.rebuild_output()
+        return True
+
+    def _clear_import_widgets(self):
+        for name in ('barrel', 'element', 'firmware'):
+            none_radio = getattr(self, f'_{name}_none_rb', None)
+            if none_radio:
+                none_radio.setChecked(True)
+        self.barrel_acc_sel_list.clear()
+        self.body_acc_sel_list.clear()
+
+    def _apply_imported_components(self, component):
+        mfg_id = self._current_mfg_id()
+        rarity_ids = {int(self.rarity_combo.itemData(i)) for i in range(self.rarity_combo.count()) if self.rarity_combo.itemData(i) is not None}
+        body_rows = self.df_mfg[(self.df_mfg['Manufacturer ID'] == mfg_id) & (self.df_mfg['Part_type'] == 'Body')]
+        body_id = int(body_rows.iloc[0]['Part_ID']) if not body_rows.empty else None
+        barrel = {int(rb.property('part_id')): rb for rb in self.barrel_widgets if rb.property('part_id') is not None}
+        element = {str(rb.property('part_id')): rb for rb in self.element_widgets if rb.property('part_id') is not None}
+        firmware = {str(rb.property('part_id')): rb for rb in self.firmware_widgets if rb.property('part_id') is not None}
+        barrel_acc = self._list_lookup(self.barrel_acc_avail_list)
+        body_acc = self._list_lookup(self.body_acc_avail_list)
+
+        for token in parse_components(component):
+            kind = token['type']
+            if kind == 'simple':
+                part_id = token['id']
+                if part_id in rarity_ids:
+                    self._set_combo_data(self.rarity_combo, part_id)
+                elif part_id == body_id:
+                    continue
+                elif part_id in barrel:
+                    barrel[part_id].setChecked(True)
+                elif part_id in barrel_acc:
+                    self._stack_selected(self.barrel_acc_sel_list, barrel_acc[part_id])
+                elif part_id in body_acc:
+                    self._stack_selected(self.body_acc_sel_list, body_acc[part_id])
+                else:
+                    self._import_unknown_tokens.append(f"{{{part_id}}}")
+                continue
+
+            if kind in ('single', 'group'):
+                parent = token['id']
+                children = [token['value']] if kind == 'single' else token['children']
+                unknown = []
+                options = element if parent == 1 else firmware if parent == 244 else {}
+                for child in children:
+                    radio = options.get(f'{parent}:{child}')
+                    if radio:
+                        radio.setChecked(True)
+                    else:
+                        unknown.append(child)
+                if unknown:
+                    self._import_unknown_tokens.append(self._format_group(parent, unknown))
+                continue
+
+            self._import_unknown_tokens.append(f'"{token["value"]}"')
+
+    def _reset_import_source(self):
+        self._is_loading = True
+        self._imported = False
+        self._import_header = None
+        self._import_unknown_tokens = []
+        self._import_source_name = ""
+        if hasattr(self, 'mfg_combo'):
+            self.mfg_combo.setEnabled(True)
+            self.level_edit.setText(self._character_level)
+            self.on_mfg_change()
+            self._clear_import_widgets()
+            self._set_flag_value(None)
+        if hasattr(self, 'source_bar'):
+            self.source_bar.set_source(self._source_text('new'), imported=False)
+        self._is_loading = False
+        if hasattr(self, 'mfg_combo'):
+            self.rebuild_output()
+
+    def _current_mfg_id(self):
+        return int(self.mfg_combo.currentText().split(' - ')[-1])
+
+    @staticmethod
+    def _set_combo_data(combo, value):
+        for index in range(combo.count()):
+            if combo.itemData(index) is not None and int(combo.itemData(index)) == int(value):
+                combo.setCurrentIndex(index)
+                return True
+        return False
+
+    @staticmethod
+    def _list_lookup(list_widget):
+        return {int(list_widget.item(i).data(Qt.ItemDataRole.UserRole)): list_widget.item(i) for i in range(list_widget.count())}
+
+    @staticmethod
+    def _stack_selected(dest, source):
+        data = source.data(Qt.ItemDataRole.UserRole)
+        for index in range(dest.count()):
+            current = dest.item(index)
+            if current.data(Qt.ItemDataRole.UserRole) == data:
+                match = re.match(r"\((\d+)\)\s+(.*)", current.text())
+                current.setText(f"({int(match.group(1)) + 1 if match else 2}) {match.group(2) if match else current.text()}")
+                return
+        dest.addItem(source.clone())
+
+    @staticmethod
+    def _format_group(parent, children):
+        return f"{{{parent}:{children[0]}}}" if len(children) == 1 else f"{{{parent}:[{' '.join(map(str, children))}]}}"
+
+    def _set_flag_value(self, value):
+        select_flag_value(self.flag_combo, value)
+
     def set_character_level(self, level: str):
         """设置角色等级，更新默认等级显示。"""
         self._character_level = level if level else "50"
-        if hasattr(self, 'level_edit'):
+        if hasattr(self, 'level_edit') and not self._imported:
             self.level_edit.setText(self._character_level)

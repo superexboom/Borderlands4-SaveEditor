@@ -56,7 +56,13 @@
       "save_as": "Зберегти як..."
     },
     "status": {
-      "welcome": "Ласкаво просимо до редактора збережень Borderlands 4"
+      "welcome": "Ласкаво просимо до редактора збережень Borderlands 4",
+      "autosave": "Автозбереження",
+      "autosave_tip": "Запис на диск через ~30 с після правок (атомарно; попередній файл → .prev.bak)",
+      "autosaved": "Автозбережено о {time}",
+      "autosave_failed": "Автозбереження не вдалося, збережіть вручну",
+      "recovered": "Незбережені зміни відновлено (ще не записано)",
+      "item_not_found": "Предмет не знайдено"
     },
     "tabs": {
       "select_save": "Вибір збереження",
@@ -120,7 +126,9 @@
       "iter_fail_msg": "Не вдалося додати жодного предмета. Помилок: {count}.",
       "save_encrypted_title": "Збереження зашифрованого файлу",
       "save_saved": "Файл збереження записано у:\n{path}",
-      "encrypt_failed": "Помилка шифрування"
+      "encrypt_failed": "Помилка шифрування",
+      "recover_title": "Відновити незбережені зміни",
+      "recover_msg": "Виявлено незбережені зміни минулої сесії (можливо, після аварійного виходу). Відновити?"
     },
     "worker": {
       "no_data": "Дані не згенеровано.",
@@ -368,15 +376,78 @@
   "yaml_tab": {
     "tree_headers": {
       "key": "Ключ",
-      "value": "Значення"
+      "value": "Значення",
+      "note": "Примітка"
     },
     "buttons": {
-      "yaml_view": "Перегляд YAML",
-      "tree_view": "Деревоподібний перегляд"
+      "yaml_view": "YAML",
+      "tree_view": "Дерево",
+      "source_view": "Код",
+      "split_view": "Обидва",
+      "diff": "Зміни"
+    },
+    "search": {
+      "placeholder": "Пошук ключів чи значень…",
+      "count": "{current}/{total}"
+    },
+    "inspector": {
+      "path": "Поточний вузол",
+      "no_selection": "Вузол не вибрано",
+      "serial_title": "Розшифрування серійника",
+      "ops_title": "Операції",
+      "open_in_editor": "Відкрити в редакторі предметів",
+      "pinned": "Часті шляхи:",
+      "level": "Рівень",
+      "type": "Тип",
+      "manufacturer": "Виробник",
+      "container": "Місце",
+      "slot": "Слот",
+      "unresolved": "Не розпізнано"
+    },
+    "ops": {
+      "set_value": "Змінити",
+      "rename": "Перейменувати",
+      "add_child": "Додати вузол",
+      "delete": "Видалити",
+      "duplicate": "Дублювати",
+      "copy_path": "Копіювати шлях",
+      "copy_value": "Копіювати значення",
+      "range_delete": "Видалити діапазон слотів…"
     },
     "dialogs": {
       "yaml_error": "Помилка YAML",
-      "parse_error": "Не вдалося розібрати YAML: {error}"
+      "parse_error": "Помилка розбору: {error}",
+      "add_child_title": "Додати вузол",
+      "child_key": "Ключ:",
+      "child_type": "Тип:",
+      "range_delete_title": "Видалення діапазону слотів рюкзака",
+      "range_from": "Зі слота:",
+      "range_to": "До слота:",
+      "range_preview": "Буде видалено предметів: {count} (slot_{from} ~ slot_{to})",
+      "range_none": "У цьому діапазоні немає предметів",
+      "range_confirm": "Видалити",
+      "delete_confirm": "Видалити вузлів: {count}?",
+      "error": "Помилка",
+      "delete": "Видалити"
+    },
+    "types": {
+      "str": "Рядок",
+      "int": "Ціле",
+      "float": "Дробове",
+      "bool": "Логічне",
+      "null": "null",
+      "dict": "Об'єкт",
+      "list": "Список"
+    },
+    "status": {
+      "valid": "YAML коректний",
+      "invalid": "YAML некоректний: {error}",
+      "nodes": "Вузлів: {count}",
+      "modified": "● Незбережених змін: {count}",
+      "object_items": "об'єкт · {count}",
+      "list_items": "список · {count}",
+      "flags_bits": "біти {bits}",
+      "serial_ok": "Розшифровано · Lv{level} {name}"
     }
   },
   "class_mod_tab": {

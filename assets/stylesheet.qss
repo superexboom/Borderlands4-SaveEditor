@@ -158,6 +158,27 @@ QPushButton:disabled {
     color: {text_disabled};
 }
 
+/* Compact source selector used by the non-weapon item editors. */
+#SerialSourceBar {
+    background-color: {bg_panel};
+    border: 1px solid {border_color};
+    border-radius: 8px;
+}
+
+#SerialSourceBar:hover {
+    border-color: {accent};
+}
+
+#SerialSourceLabel {
+    color: {text_secondary};
+    padding: 0 4px;
+}
+
+#SerialSourceBar QPushButton {
+    padding: 5px 10px;
+    min-height: 24px;
+}
+
 /* Input Fields ---------------------------------------------------------- */
 QLineEdit {
     background-color: {bg_input};

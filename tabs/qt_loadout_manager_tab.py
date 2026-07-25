@@ -81,6 +81,7 @@ class QtLoadoutManagerTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.yaml_data = None
+        self._dirty_callback = None
         self.current_loadout_index = 1
         self.save_file_path = None       # 当前存档文件路径
         self.save_name = None            # 存档文件名（不含后缀）
@@ -793,11 +794,12 @@ class QtLoadoutManagerTab(QWidget):
     # ══════════════════════════════════════════════════════════════════
     # set_data — 由 MainWindow 调用
     # ══════════════════════════════════════════════════════════════════
-    def set_data(self, yaml_data, save_file_path=None):
+    def set_data(self, yaml_data, save_file_path=None, dirty_callback=None):
         """由 MainWindow 调用，传入 YAML 数据和存档路径。
-        切换存档时重置全部状态。
+        切换存档时重置全部状态。dirty_callback：直接改写 yaml_data 后通知主窗口置脏。
         """
         self.yaml_data = yaml_data
+        self._dirty_callback = dirty_callback
         self._manual_read_active = False
 
         if save_file_path:
@@ -1030,8 +1032,7 @@ class QtLoadoutManagerTab(QWidget):
             }
         """)
         serial_edit.setFixedHeight(26)
-        serial_edit.mousePressEvent = lambda e, se=serial_edit: se.selectAll() \
-            if e.button() == Qt.MouseButton.LeftButton and e.type().value == 4 else None
+        serial_edit.mouseDoubleClickEvent = lambda _event, edit=serial_edit: edit.selectAll()
         row_layout.addWidget(serial_edit)
         return row
 
@@ -1219,6 +1220,13 @@ class QtLoadoutManagerTab(QWidget):
                 self,
                 self._t('dialogs', 'success'),
                 self._t('dialogs', 'load_success', slot=idx))
+
+        # 通知主窗口：yaml_data 已被直接改写（脏标记 → 自动保存/按需刷新）
+        if getattr(self, '_dirty_callback', None):
+            try:
+                self._dirty_callback()
+            except Exception:
+                pass
 
         # 刷新显示
         self._display_slot_content(idx)

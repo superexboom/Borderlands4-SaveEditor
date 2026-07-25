@@ -20,6 +20,7 @@ This tool allows you to modify character data, manage inventory items, unlock ga
 - Supports 64-bit ID decryption and encryption for Steam and Epic platforms.
 - Supports opening, saving, and "save as" for `.sav` files.
 - Automatically backs up original save files.
+- Provides change-driven auto-save with atomic writes, previous-version rotation, and crash recovery.
 
 #### Character Editing
 - Modify character name and current class.
@@ -60,13 +61,14 @@ Features dedicated tabs for deep customization of various gear types:
 - **Shield**: Customize manufacturer, level, rarity, shield type (Energy/Armor), and perks.
 - **Repkit**: Customize prefix, resistances, firmware, and perks.
 - **Heavy Weapon**: Customize barrel, element, firmware, attachments, etc.
+- Non-weapon editors can load an existing backpack item or Base85 serial as an editable copy while keeping manufacturer/class identity locked for safe regeneration.
 - All generators support direct "Add to Backpack" or "Copy Serial".
 
 #### Converter & Advanced Tools
 - **Code Converter**: Supports conversion between Base85 encoding and Deserialized data.
 - **Batch Processing**: Batch convert codes and batch import lists of codes into the backpack.
 - **Iterator Generator**: Supports batch generating item sequences by setting value ranges (e.g., generating all skins, iterating through all part combinations).
-- **YAML Editor**: Provides tree view and text view to directly edit the raw YAML data structure of the save file, suitable for advanced users.
+- **YAML Editor**: Provides editable lazy tree, source, and split views with search, inline validation, undo/redo, change highlighting, serial previews, item-editor routing, and backpack slot-range deletion.
 
 ---
 

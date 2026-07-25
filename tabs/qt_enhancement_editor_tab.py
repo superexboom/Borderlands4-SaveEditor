@@ -1,21 +1,42 @@
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QGroupBox, QComboBox, QCheckBox, QMessageBox, QScrollArea
 from PyQt6.QtCore import pyqtSignal
 import random
+from collections import Counter
 
 from core import b_encoder
 from core import resource_loader
 
 from .qt_catalog_picker import CatalogPicker
+from .qt_serial_import import (
+    SerialSourceBar,
+    build_header,
+    choose_backpack_item,
+    decode_base85,
+    parse_components,
+    prompt_base85,
+    select_flag_value,
+    source_texts,
+    split_decoded,
+)
 
 enhancement_data = resource_loader.get_enhancement_data()
 
 class QtEnhancementEditorTab(QWidget):
     add_to_backpack_requested = pyqtSignal(str, str)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, main_app=None):
         super().__init__(parent)
+        self.main_app = main_app or (parent if hasattr(parent, 'controller') else None)
         self.current_lang = 'zh-CN'
         self._character_level = "50"
+        self._imported = False
+        self._import_header = None
+        self._import_seed = None
+        self._import_unknown_tokens = []
+        self._import_unknown_stats = []
+        self._import_unknown_stacks = {}
+        self._import_source_name = ''
+        self._loading_import = False
         self.localization_data = self._load_game_localization()
         self.ui_loc = self._load_ui_localization()
         self.perk_vars = {}
@@ -46,12 +67,18 @@ class QtEnhancementEditorTab(QWidget):
 
     def update_language(self, lang):
         print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
+        imported = self.raw_output_var.text() if self._imported and hasattr(self, 'raw_output_var') else ''
+        import_name = self._import_source_name
+        import_flag = self.flag_var.currentText().split(' ')[0] if self._imported and hasattr(self, 'flag_var') else None
         self.current_lang = lang
         self.ui_loc = self._load_ui_localization(lang)
         self.localization_data = self._load_game_localization(lang)
         
         self._build_ui()
         self.populate_initial_data()
+
+        if imported:
+            self._load_decoded_copy(imported, source_name=import_name, state_flags=import_flag, show_error=False)
         
         print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
 
@@ -87,6 +114,18 @@ class QtEnhancementEditorTab(QWidget):
         container = QWidget()
         scroll_area.setWidget(container)
         main_layout = QVBoxLayout(container)
+
+        source = source_texts(self.current_lang)
+        self.source_bar = SerialSourceBar(
+            new_text=source['new_source'],
+            backpack_text=source['backpack'],
+            base85_text=source['base85'],
+            reset_text=source['reset'],
+        )
+        self.source_bar.backpack_requested.connect(self._choose_backpack_copy)
+        self.source_bar.base85_requested.connect(self._prompt_base85_copy)
+        self.source_bar.reset_requested.connect(self._reset_import)
+        main_layout.addWidget(self.source_bar)
 
         # Outputs
         raw_output_group = QGroupBox(self.ui_loc['groups']['output'])
@@ -206,6 +245,215 @@ class QtEnhancementEditorTab(QWidget):
             main_layout.addWidget(thanks_label)
 
         main_layout.addStretch()
+        self._set_source_label()
+
+    def _set_source_label(self):
+        source = source_texts(self.current_lang)
+        if self._imported:
+            text = source['imported'].format(name=self._import_source_name or 'Enhancement')
+        else:
+            text = source['new_source']
+        self.source_bar.set_source(text, imported=self._imported)
+        self.add_to_backpack_btn.setText(self.ui_loc['buttons']['add_to_backpack'])
+
+    def _inventory_items(self):
+        if not self.main_app:
+            return []
+        if hasattr(self.main_app, 'get_items_snapshot'):
+            return self.main_app.get_items_snapshot()
+        controller = getattr(self.main_app, 'controller', None)
+        return controller.get_all_items() if controller and controller.yaml_obj else []
+
+    def _choose_backpack_copy(self):
+        source = source_texts(self.current_lang)
+        items = self._inventory_items()
+        if not items:
+            QMessageBox.information(self, source['backpack_title'], source['no_save'])
+            return
+        item = choose_backpack_item(
+            self,
+            items,
+            lambda value: value.get('type_en') == 'Enhancement'
+            and value.get('container') == 'Backpack',
+            title=source['backpack_title'],
+            search_placeholder=source['search'],
+        )
+        if item:
+            self._load_decoded_copy(
+                item.get('decoded_full', ''),
+                source_name=item.get('name') or item.get('base_name') or 'Enhancement',
+                state_flags=item.get('state_flags'),
+            )
+
+    def _prompt_base85_copy(self):
+        source = source_texts(self.current_lang)
+        serial = prompt_base85(
+            self,
+            title=source['base85_title'],
+            label=source['base85_label'],
+        )
+        if not serial:
+            return
+        try:
+            decoded = decode_base85(serial)
+        except ValueError as exc:
+            QMessageBox.warning(self, source['import_error'], str(exc))
+            return
+        self._load_decoded_copy(decoded, source_name='Base85')
+
+    def _reset_import(self):
+        self._imported = False
+        self._import_header = None
+        self._import_seed = None
+        self._import_unknown_tokens = []
+        self._import_unknown_stats = []
+        self._import_unknown_stacks = {}
+        self._import_source_name = ''
+        self.mfg_sel.setEnabled(True)
+        self.level_edit.setText(self._character_level)
+        self.rnd_seed = random.randint(1000, 9999)
+        self._set_flag(None)
+        self._set_source_label()
+        self.rebuild_output()
+
+    def _set_flag(self, value):
+        select_flag_value(self.flag_var, value)
+
+    @staticmethod
+    def _component_text(token):
+        if token['type'] == 'simple':
+            return f"{{{token['id']}}}"
+        if token['type'] == 'single':
+            return f"{{{token['id']}:{token['value']}}}"
+        if token['type'] == 'group':
+            values = ' '.join(map(str, token['children']))
+            return f"{{{token['id']}:[{values}]}}"
+        return f'"{token["value"]}"'
+
+    @staticmethod
+    def _add_picker_count(picker, key, count):
+        item = next((entry for entry in picker._source if str(entry.get('key')) == str(key)), None)
+        if item and count > 0:
+            picker.add_item(item, count=count)
+
+    def open_item_serial(self, item: dict):
+        """公开入口：从 YAML 编辑器/物品快照跳转加载一件物品（用解码串）。类型不符时抛 ValueError。"""
+        flags = item.get('state_flags')
+        try:
+            flags = int(str(flags).strip()) if str(flags).strip() else None
+        except ValueError:
+            flags = None
+        self._load_decoded_copy(item.get('decoded_full', ''),
+                                source_name=item.get('name', 'Backpack'),
+                                state_flags=flags, show_error=True)
+
+    def _load_decoded_copy(self, decoded, *, source_name, state_flags=None, show_error=True):
+        try:
+            header = split_decoded(decoded)
+            mfg_en = next((name for name, data in enhancement_data['manufacturers'].items()
+                           if data.get('code') == header['mfg_id']), None)
+            if not mfg_en:
+                raise ValueError(source_texts(self.current_lang)['wrong_type'])
+
+            tokens = list(parse_components(header['component']))
+            rarity_by_code = {int(code): name for name, code in
+                              enhancement_data['manufacturers'][mfg_en]['rarities'].items()}
+            rarity_by_247 = {int(code): name for name, code in enhancement_data['rarity_map_247'].items()}
+            rarity_en = next((rarity_by_code[token['id']] for token in tokens
+                              if token['type'] == 'simple' and token['id'] in rarity_by_code), None)
+            if rarity_en is None:
+                rarity_en = next((rarity_by_247[token['value']] for token in tokens
+                                  if token['type'] == 'single' and token['id'] == 247
+                                  and token['value'] in rarity_by_247), None)
+            if rarity_en is None:
+                raise ValueError('Enhancement rarity is not recognized.')
+
+            known_stats = {int(item['code']) for item in enhancement_data.get('secondary_247', [])}
+            mfg_by_code = {int(data['code']): name for name, data in enhancement_data['manufacturers'].items()}
+            known_stack_keys = {
+                (int(data['code']), int(perk['index']))
+                for name, data in enhancement_data['manufacturers'].items() if name != mfg_en
+                for perk in data.get('perks', []) if perk.get('index') in (1, 2, 3, 9)
+            }
+            known_perks = {int(perk['index']) for perk in
+                           enhancement_data['manufacturers'][mfg_en].get('perks', [])}
+            perk_ids = set()
+            stats = Counter()
+            stacks = Counter()
+            unknown_stats = []
+            unknown_stacks = {}
+            unknown_tokens = []
+
+            for token in tokens:
+                token_type = token['type']
+                if token_type == 'simple':
+                    if token['id'] in rarity_by_code:
+                        continue
+                    if token['id'] in known_perks:
+                        perk_ids.add(token['id'])
+                    else:
+                        unknown_tokens.append(self._component_text(token))
+                elif token_type == 'single' and token['id'] == 247:
+                    if token['value'] in rarity_by_247:
+                        continue
+                    if token['value'] in known_stats:
+                        stats[token['value']] += 1
+                    else:
+                        unknown_tokens.append(self._component_text(token))
+                elif token_type == 'group' and token['id'] == 247:
+                    for code in token['children']:
+                        if code in known_stats:
+                            stats[code] += 1
+                        else:
+                            unknown_stats.append(code)
+                elif token_type == 'group' and token['id'] in mfg_by_code:
+                    for code in token['children']:
+                        if (token['id'], code) in known_stack_keys:
+                            stacks[(token['id'], code)] += 1
+                        else:
+                            unknown_stacks.setdefault(token['id'], []).append(code)
+                else:
+                    unknown_tokens.append(self._component_text(token))
+
+            self._loading_import = True
+            self._imported = True
+            self._import_header = header
+            self._import_seed = header['seed']
+            self._import_unknown_tokens = unknown_tokens
+            self._import_unknown_stats = unknown_stats
+            self._import_unknown_stacks = unknown_stacks
+            self._import_source_name = source_name
+
+            self.mfg_sel.blockSignals(True)
+            self.mfg_sel.setCurrentText(self._(mfg_en))
+            self.mfg_sel.blockSignals(False)
+            self.on_mfg_change()
+            self.rarity_sel.blockSignals(True)
+            self.rarity_sel.setCurrentText(self._(rarity_en))
+            self.rarity_sel.blockSignals(False)
+            self.level_edit.setText(str(header['level']))
+            for index, checkbox in self.perk_vars.items():
+                checkbox.blockSignals(True)
+                checkbox.setChecked(index in perk_ids)
+                checkbox.blockSignals(False)
+            self.stack_picker.clear()
+            self.stat_picker.clear()
+            for (parent, code), count in stacks.items():
+                self._add_picker_count(self.stack_picker, f"{mfg_by_code[parent]}:{code}", count)
+            for code, count in stats.items():
+                self._add_picker_count(self.stat_picker, code, count)
+            self._set_flag(state_flags)
+            self.mfg_sel.setEnabled(False)
+        except Exception as exc:
+            if show_error:
+                QMessageBox.warning(self, source_texts(self.current_lang)['import_error'], str(exc))
+            return False
+        finally:
+            self._loading_import = False
+
+        self._set_source_label()
+        self.rebuild_output()
+        return True
 
     def populate_initial_data(self):
         mfg_names = sorted(enhancement_data.get('manufacturers', {}).keys())
@@ -341,6 +589,8 @@ class QtEnhancementEditorTab(QWidget):
         self.stack_picker.set_source(items)
 
     def rebuild_output(self, *args):
+        if self._loading_import:
+            return
         parts = []
         mfg_en = self._get_current_mfg_en_name()
         if not mfg_en: return
@@ -349,7 +599,16 @@ class QtEnhancementEditorTab(QWidget):
         level_val = self.level_edit.text() if hasattr(self, 'level_edit') else self._character_level
         if not level_val: level_val = self._character_level
         
-        parts.append(f"{mfg_code}, 0, 1, {level_val}| 2, {self.rnd_seed}||")
+        seed = self._import_seed if self._imported else self.rnd_seed
+        if self._imported:
+            parts.append(build_header(
+                self._import_header,
+                mfg_id=mfg_code,
+                level=level_val,
+                seed=seed,
+            ) + "||")
+        else:
+            parts.append(f"{mfg_code}, 0, 1, {level_val}| 2, {seed}||")
         rarity_en = self._get_current_rarity_en_name()
         if not rarity_en: return
         rarity_code = enhancement_data['manufacturers'][mfg_en]['rarities'][rarity_en]
@@ -371,10 +630,14 @@ class QtEnhancementEditorTab(QWidget):
             for _ in range(e["count"]):
                 stacked_perks[mfg_code_stack].append(perk_idx)
 
+        if self._imported:
+            for code, indices in self._import_unknown_stacks.items():
+                stacked_perks.setdefault(code, []).extend(indices)
+
         for code, indices in stacked_perks.items():
             parts.append(f"{{{code}:[{' '.join(map(str, sorted(indices)))}]}}")
 
-        stats_247 = []
+        stats_247 = list(self._import_unknown_stats) if self._imported else []
         for e in self.stat_picker.entries():
             val = e["data"]["code"]
             for _ in range(e["count"]):
@@ -382,6 +645,9 @@ class QtEnhancementEditorTab(QWidget):
 
         if stats_247:
             parts.append(f"{{247:[{' '.join(map(str, stats_247))}]}}")
+
+        if self._imported:
+            parts.extend(self._import_unknown_tokens)
 
         full_string = " ".join(parts).replace("  ", " ").strip() + "|"
         self.raw_output_var.setText(full_string)
@@ -424,5 +690,5 @@ class QtEnhancementEditorTab(QWidget):
     def set_character_level(self, level: str):
         """设置角色等级，更新默认等级显示。"""
         self._character_level = level if level else "50"
-        if hasattr(self, 'level_edit'):
+        if hasattr(self, 'level_edit') and not self._imported:
             self.level_edit.setText(self._character_level)

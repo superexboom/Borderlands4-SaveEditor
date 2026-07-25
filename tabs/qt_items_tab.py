@@ -353,6 +353,38 @@ class QtItemsTab(QWidget):
         indexes = selected.indexes()
         self.current_selected_item = self._item_data_from_index(indexes[0]) if indexes else None
 
+    def select_item_by_path(self, original_path) -> bool:
+        """按 YAML 原始路径定位并选中物品行（供 YAML 编辑器跳转）。返回是否找到。"""
+        target = tuple(str(p) for p in (original_path or []))
+        if not target:
+            return False
+
+        def walk(parent_item: QStandardItem) -> Optional[QModelIndex]:
+            for row in range(parent_item.rowCount()):
+                child = parent_item.child(row, 0)
+                if child is None:
+                    continue
+                data = child.data(Qt.ItemDataRole.UserRole)
+                if isinstance(data, dict):
+                    item_path = tuple(str(p) for p in (data.get("original_path") or []))
+                    if item_path == target:
+                        return child.index()
+                found = walk(child)
+                if found is not None and found.isValid():
+                    return found
+            return None
+
+        index = walk(self.model.invisibleRootItem())
+        if index is None or not index.isValid():
+            return False
+        parent = index.parent()
+        while parent.isValid():
+            self.tree_view.expand(parent)
+            parent = parent.parent()
+        self.tree_view.setCurrentIndex(index)
+        self.tree_view.scrollTo(index, QAbstractItemView.ScrollHint.PositionAtCenter)
+        return True
+
     def _item_data_from_index(self, index: QModelIndex) -> Optional[Dict[str, Any]]:
         cursor = index
         while cursor.isValid():

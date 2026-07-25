@@ -56,7 +56,13 @@
       "save_as": "Сохранить как..."
     },
     "status": {
-      "welcome": "Добро пожаловать в редактор сохранений Borderlands 4"
+      "welcome": "Добро пожаловать в редактор сохранений Borderlands 4",
+      "autosave": "Автосохранение",
+      "autosave_tip": "Запись на диск через ~30 с после правок (атомарно; прежний файл → .prev.bak)",
+      "autosaved": "Автосохранено в {time}",
+      "autosave_failed": "Автосохранение не удалось, сохраните вручную",
+      "recovered": "Несохранённые изменения восстановлены (ещё не записаны)",
+      "item_not_found": "Предмет не найден"
     },
     "tabs": {
       "select_save": "Выбор сохранения",
@@ -120,7 +126,9 @@
       "iter_fail_msg": "Не удалось добавить ни одного предмета. Ошибок: {count}.",
       "save_encrypted_title": "Сохранение зашифрованного файла",
       "save_saved": "Файл сохранения записан в:\n{path}",
-      "encrypt_failed": "Ошибка шифрования"
+      "encrypt_failed": "Ошибка шифрования",
+      "recover_title": "Восстановить несохранённые изменения",
+      "recover_msg": "Обнаружены несохранённые изменения прошлой сессии (возможно, после аварийного выхода). Восстановить?"
     },
     "worker": {
       "no_data": "Нет сгенерированных данных.",
@@ -368,15 +376,78 @@
   "yaml_tab": {
     "tree_headers": {
       "key": "Ключ",
-      "value": "Значение"
+      "value": "Значение",
+      "note": "Примечание"
     },
     "buttons": {
-      "yaml_view": "Просмотр YAML",
-      "tree_view": "Древовидный просмотр"
+      "yaml_view": "YAML",
+      "tree_view": "Дерево",
+      "source_view": "Код",
+      "split_view": "Оба",
+      "diff": "Изменения"
+    },
+    "search": {
+      "placeholder": "Поиск по ключам и значениям…",
+      "count": "{current}/{total}"
+    },
+    "inspector": {
+      "path": "Текущий узел",
+      "no_selection": "Узел не выбран",
+      "serial_title": "Расшифровка серийника",
+      "ops_title": "Операции",
+      "open_in_editor": "Открыть в редакторе предметов",
+      "pinned": "Частые пути:",
+      "level": "Уровень",
+      "type": "Тип",
+      "manufacturer": "Производитель",
+      "container": "Место",
+      "slot": "Слот",
+      "unresolved": "Не распознано"
+    },
+    "ops": {
+      "set_value": "Изменить",
+      "rename": "Переименовать",
+      "add_child": "Добавить узел",
+      "delete": "Удалить",
+      "duplicate": "Дублировать",
+      "copy_path": "Копировать путь",
+      "copy_value": "Копировать значение",
+      "range_delete": "Удалить диапазон слотов…"
     },
     "dialogs": {
       "yaml_error": "Ошибка YAML",
-      "parse_error": "Не удалось разобрать YAML: {error}"
+      "parse_error": "Ошибка разбора: {error}",
+      "add_child_title": "Добавить узел",
+      "child_key": "Ключ:",
+      "child_type": "Тип:",
+      "range_delete_title": "Удаление диапазона слотов рюкзака",
+      "range_from": "Со слота:",
+      "range_to": "По слот:",
+      "range_preview": "Будет удалено предметов: {count} (slot_{from} ~ slot_{to})",
+      "range_none": "В этом диапазоне нет предметов",
+      "range_confirm": "Удалить",
+      "delete_confirm": "Удалить узлов: {count}?",
+      "error": "Ошибка",
+      "delete": "Удалить"
+    },
+    "types": {
+      "str": "Строка",
+      "int": "Целое",
+      "float": "Дробное",
+      "bool": "Логическое",
+      "null": "null",
+      "dict": "Объект",
+      "list": "Список"
+    },
+    "status": {
+      "valid": "YAML корректен",
+      "invalid": "YAML некорректен: {error}",
+      "nodes": "Узлов: {count}",
+      "modified": "● Несохранённых изменений: {count}",
+      "object_items": "объект · {count}",
+      "list_items": "список · {count}",
+      "flags_bits": "биты {bits}",
+      "serial_ok": "Расшифрован · Lv{level} {name}"
     }
   },
   "class_mod_tab": {
