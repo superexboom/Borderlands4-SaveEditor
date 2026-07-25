@@ -66,8 +66,7 @@
       "yaml_editor": "YAML 编辑器",
       "class_mod": "职业模组",
       "enhancement": "强化模组",
-      "weapon_editor": "武器编辑器",
-      "weapon_generator": "武器生成器",
+      "weapons": "武器",
       "grenade": "手雷",
       "shield": "护盾",
       "repkit": "修复套件",
@@ -664,7 +663,9 @@
       "unknown_manufacturer": "未知厂商",
       "no_stat_changes": "无属性变化",
       "element_group": "元素配置组 · {n} 个配件",
-      "licensed_group": "授权配件组 · {mfg} · {n} 个配件"
+      "licensed_group": "授权配件组 · {mfg} · {n} 个配件",
+      "cross_mfg_same_type": "─── 跨厂商（同类武器）───",
+      "cross_mfg_other_type": "─── 跨厂商（其他武器类型）───"
     },
     "summary": {
       "none_selected": "当前未选择背包武器",

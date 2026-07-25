@@ -37,10 +37,10 @@ from core import bl4_functions as bl4f
 from core import SaveGameController, SaveSelectorWidget, ThemeManager, infer_user_id_from_save_path
 
 from tabs import (
-    QtCharacterTab, QtItemsTab, QtWeaponGeneratorTab, QtConverterTab,
+    QtCharacterTab, QtItemsTab, QtConverterTab,
     QtClassModEditorTab, QtHeavyWeaponEditorTab, QtShieldEditorTab,
     QtGrenadeEditorTab, QtRepkitEditorTab, QtYamlEditorTab,
-    QtEnhancementEditorTab, QtWeaponEditorTab,
+    QtEnhancementEditorTab, QtWeaponsTab,
     QtLoadoutManagerTab
 )
 
@@ -278,24 +278,24 @@ class MainWindow(QMainWindow):
     # Every editor built on the shared browser goes here so refresh_all_tabs
     # picks it up automatically.
     _BROWSER_EDITOR_TAB_ATTRS = (
-        "weapon_editor_tab", "grenade_tab", "shield_tab",
+        "weapons_tab", "grenade_tab", "shield_tab",
         "repkit_tab", "heavy_weapon_tab", "class_mod_tab",
         "enhancement_tab",
     )
 
     # Editor tabs that consume the character level via set_character_level().
-    # weapon_editor_tab intentionally omitted — it has no character-level field.
+    # weapons_tab consumes it too (fresh-mode level_edit seed default).
     _LEVEL_SYNC_TAB_ATTRS = (
         "class_mod_tab", "enhancement_tab",
         "grenade_tab", "shield_tab", "repkit_tab",
-        "heavy_weapon_tab", "weapon_generator_tab",
+        "heavy_weapon_tab", "weapons_tab",
     )
 
     # Localization keys under loc['tabs'], one per nav button in display order.
     # Referenced by update_ui_text to relabel the nav bar on language change.
     _TAB_KEYS = (
         'select_save', 'character', 'items', 'converter', 'yaml_editor',
-        'class_mod', 'enhancement', 'weapon_editor', 'weapon_generator',
+        'class_mod', 'enhancement', 'weapons',
         'grenade', 'shield', 'repkit', 'heavy_weapon', 'loadout_manager',
     )
 
@@ -418,8 +418,8 @@ class MainWindow(QMainWindow):
                 "tabs": {
                     "select_save": "Select Save", "character": "Character", "items": "Items", 
                     "converter": "Converter", "yaml_editor": "YAML", "class_mod": "Class Mod", 
-                    "enhancement": "Enhancement", "weapon_editor": "Weapon Edit", 
-                    "weapon_generator": "Weapon Gen", "grenade": "Grenade", "shield": "Shield", 
+                    "enhancement": "Enhancement", "weapons": "Weapons",
+                    "grenade": "Grenade", "shield": "Shield",
                     "repkit": "RepKit", "heavy_weapon": "Heavy", "loadout_manager": "Loadout"
                 },
                 "dialogs": {
@@ -653,13 +653,9 @@ class MainWindow(QMainWindow):
         self._connect_editor_signals(self.enhancement_tab)
         self.add_tab(self.enhancement_tab, self.loc['tabs']['enhancement'], "✨")
 
-        self.weapon_editor_tab = QtWeaponEditorTab(main_app=self)
-        self._connect_editor_signals(self.weapon_editor_tab)
-        self.add_tab(self.weapon_editor_tab, self.loc['tabs']['weapon_editor'], "🔧")
-
-        self.weapon_generator_tab = QtWeaponGeneratorTab()
-        self.weapon_generator_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
-        self.add_tab(self.weapon_generator_tab, self.loc['tabs']['weapon_generator'], "🔫")
+        self.weapons_tab = QtWeaponsTab(main_app=self)
+        self._connect_editor_signals(self.weapons_tab)
+        self.add_tab(self.weapons_tab, self.loc['tabs']['weapons'], "🔫")
 
         self.grenade_tab = QtGrenadeEditorTab(main_app=self)
         self._connect_editor_signals(self.grenade_tab)
@@ -688,11 +684,21 @@ class MainWindow(QMainWindow):
         """Wire the seven editor tabs' shared signals: ``add_to_backpack_requested``
         → ``handle_add_to_backpack`` and ``update_item_requested`` →
         ``handle_update_item``. Uses ``hasattr`` for duck-typing so a tab that
-        doesn't declare one of the signals is skipped cleanly."""
+        doesn't declare one of the signals is skipped cleanly.
+
+        Also wires each tab's browser ``item_delete_requested`` (from the
+        shared ``ItemBrowser`` right-click menu) → ``handle_delete_item``.
+        Every editor tab that owns a browser exposes it as ``self.browser``
+        per the sibling-tab naming convention.
+        """
         if hasattr(tab, "add_to_backpack_requested"):
             tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
         if hasattr(tab, "update_item_requested"):
             tab.update_item_requested.connect(self.handle_update_item)
+        # Connect to the tab-level re-emit (not the browser's signal directly)
+        # so language-switch _build_ui rebuilds don't orphan the connection.
+        if hasattr(tab, "item_delete_requested"):
+            tab.item_delete_requested.connect(self.handle_delete_item)
 
     def add_tab(self, widget: QWidget, text: str, icon_char: str):
         index = self.content_stack.addWidget(widget)
@@ -914,6 +920,28 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.log(self.loc['dialogs']['add_error'].format(error=e), force_popup=True)
     
+    @pyqtSlot(list)
+    def handle_delete_item(self, item_path: list):
+        """Remove the item at ``item_path`` from the loaded save and refresh
+        every tab so browsers repopulate. Confirmation was collected by the
+        row's ✕-button; success is signaled by the row disappearing on the
+        next refresh (no popup). Only failures raise a dialog."""
+        if not self.controller.yaml_obj:
+            QMessageBox.warning(self, self.loc['dialogs']['no_save'], self.loc['dialogs']['load_save_first'])
+            return
+        try:
+            removed = self.controller.remove_item(item_path)
+        except Exception as e:
+            self.log(self.loc['dialogs']['update_error'].format(error=e), force_popup=True)
+            return
+        if removed:
+            self.refresh_all_tabs()
+        else:
+            QMessageBox.warning(
+                self, self.loc['dialogs']['error'],
+                self.loc['dialogs'].get('item_delete_failed', "Item could not be removed (already gone?)."),
+            )
+
     @pyqtSlot(dict)
     def handle_update_item(self, payload: dict):
         if not self.controller.yaml_obj:

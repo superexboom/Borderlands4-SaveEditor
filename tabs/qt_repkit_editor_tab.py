@@ -65,6 +65,9 @@ def load_repkit_data(lang='zh-CN'):
 class QtRepkitEditorTab(QWidget):
     add_to_backpack_requested = pyqtSignal(str, str)
     update_item_requested = pyqtSignal(dict)
+    # Re-emit from ``self.browser.item_delete_requested`` — connected inside
+    # _build_ui after browser creation so it survives language-switch rebuilds.
+    item_delete_requested = pyqtSignal(list)
 
     _LOG_TAG = "repkit"
 
@@ -240,6 +243,9 @@ class QtRepkitEditorTab(QWidget):
             summary_formatter=self._summarize_repkit,
             summary_none_text=self.ui_loc.get('summary', {}).get('none_selected', 'No backpack repkit selected'),
         )
+        # Re-emit so main_window can wire once to a signal that survives
+        # _build_ui rebuilds (browser gets recreated on language switch).
+        self.browser.item_delete_requested.connect(self.item_delete_requested.emit)
         self.browser.item_selected.connect(self._load_repkit_item)
         splitter.addWidget(self.browser)
 

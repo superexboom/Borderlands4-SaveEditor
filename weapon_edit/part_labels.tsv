@@ -1,0 +1,2091 @@
+# BL4 Weapons Tab — Dropdown Label Reference
+# Edit the `label` column to change how each Weapon-Part option appears
+# in the tab's dropdowns. TAB-separated. Blank lines and lines starting
+# with # are ignored. The loader keys off (mfg_id, part_id, part_type);
+# do NOT edit the first four columns.
+#
+# Element and Skin labels are NOT overridable here — they render straight
+# from elemental.csv / skin.csv in the current UI language so a snapshot
+# in one language doesn't force-render into other-language sessions.
+#
+# Sections:
+#   [weapon]  — one row per (mfg_id, part_id, part_type) in all_weapon_part.csv
+
+# section	mfg_id	part_id	part_type	label
+
+[weapon]
+weapon	13	1	Body	1 - (base)	# Daedalus Assault Rifle
+weapon	13	2	Body Accessory	2 - Reload ×0.928	# Daedalus Assault Rifle
+weapon	13	3	Body Accessory	3 - Reload ×0.928	# Daedalus Assault Rifle
+weapon	13	4	Body Accessory	4 - Sprd ×0.921	# Daedalus Assault Rifle
+weapon	13	5	Body Accessory	5 - No stat changes	# Daedalus Assault Rifle
+weapon	13	6	Barrel	6 - Spec-Tec, 1352 Dmg, 78% Acc, 6.8/s FR	# Daedalus Assault Rifle
+weapon	13	7	Barrel	7 - F.A.N.G., 1584 Dmg, 84% Acc, 5.5/s FR	# Daedalus Assault Rifle
+weapon	13	8	Barrel	8 - Oscar Mike, 1204 Dmg, 76% Acc, 6.8/s FR	# Daedalus Assault Rifle
+weapon	13	9	Barrel Accessory	9 - Dmg ×1.075	# Daedalus Assault Rifle
+weapon	13	10	Barrel Accessory	10 - Crit Dmg +20%	# Daedalus Assault Rifle
+weapon	13	11	Barrel Accessory	11 - Sprd ×0.921	# Daedalus Assault Rifle
+weapon	13	12	Barrel Accessory	12 - Sprd ×0.921	# Daedalus Assault Rifle
+weapon	13	13	Barrel Accessory	13 - Dmg ×1.075	# Daedalus Assault Rifle
+weapon	13	14	Barrel Accessory	14 - Sprd ×0.921	# Daedalus Assault Rifle
+weapon	13	15	Barrel Accessory	15 - FR ×1.05	# Daedalus Assault Rifle
+weapon	13	16	Barrel Accessory	16 - FR ×1.05	# Daedalus Assault Rifle
+weapon	13	17	Manufacturer Part	17 - Jak, Crit Dmg +10%, Crits Ric to nearby enemies	# Daedalus Assault Rifle
+weapon	13	18	Tediore Payload	18 - Ted Throw, Throws a Gun on Reload	# Daedalus Assault Rifle
+weapon	13	20	Tediore Payload	20 - Ted Shooting, Shoots enemies until it is out of Ammo	# Daedalus Assault Rifle
+weapon	13	21	Tediore Payload	21 - Ted MIRV, Thrown Gun spawns 4 Nades on impact	# Daedalus Assault Rifle
+weapon	13	22	Tediore Payload	22 - Ted Combo Thrown Gun can be shot to increase the explosion's Dmg	# Daedalus Assault Rifle
+weapon	13	23	Manufacturer Part	23 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Daedalus Assault Rifle
+weapon	13	24	Magazine	24 - Base 28, Reload 2.1s	# Daedalus Assault Rifle
+weapon	13	25	Magazine	25 - Base 36, Reload 2.6s	# Daedalus Assault Rifle
+weapon	13	26	Magazine	26 - Tor-lic., Base 20, Reload 2s, Dmg ×1.3, FR ×0.85, Recl ×1.3, Sway ×1.15	# Daedalus Assault Rifle
+weapon	13	27	Magazine	27 - COV Mag, ~50 shots→OH, Cool 0.25/s, Cool Del 3s, OH Repair 4.3s, Dmg ×1.1, Sprd ×1.4, Recl ×1.1, Sway ×1.25, Acc Res ×2.25	# Daedalus Assault Rifle
+weapon	13	28	Magazine	28 - Rip, Borg-lic., Base 44, Reload 3s, Charge 1s, Dmg ×1.05, FR ×1.1, Sprd ×0.95, Recl ×1.05, Acc Res ×1.9	# Daedalus Assault Rifle
+weapon	13	29	Manufacturer Part	29 - Tor, Splash R 100cm	# Daedalus Assault Rifle
+weapon	13	30	Tediore Throw Reload	30 - Throwload 2s, Reload@ 75%	# Daedalus Assault Rifle
+weapon	13	31	Tediore Throw Reload	31 - Throwload 2s, Reload@ 75%	# Daedalus Assault Rifle
+weapon	13	32	Manufacturer Part	32 - Tor, Splash R 100cm	# Daedalus Assault Rifle
+weapon	13	33	Tediore Throw Reload	33 - Throwload 2s, Reload@ 75%	# Daedalus Assault Rifle
+weapon	13	34	Tediore Throw Reload	34 - Throwload 2s, Reload@ 75%	# Daedalus Assault Rifle
+weapon	13	35	Tediore Throw Reload	35 - Throwload 2s, Reload@ 75%	# Daedalus Assault Rifle
+weapon	13	36	Body	36 - (base)	# Daedalus Assault Rifle
+weapon	13	37	Scope	37 - ADS FOV ×0.333, ADS Time 0.281s	# Daedalus Assault Rifle
+weapon	13	38	Scope	38 - ADS FOV ×0.4, ADS Time 0.281s	# Daedalus Assault Rifle
+weapon	13	39	Scope	39 - ADS FOV ×0.5, ADS Time 0.281s	# Daedalus Assault Rifle
+weapon	13	40	Scope	40 - ADS FOV ×0.667, ADS Time 0.281s	# Daedalus Assault Rifle
+weapon	13	41	Scope	41 - ADS FOV ×0.75, ADS Time 0.281s	# Daedalus Assault Rifle
+weapon	13	42	Scope Accessory	42 - FR ×1.05	# Daedalus Assault Rifle
+weapon	13	43	Scope Accessory	43 - Dmg ×1.075	# Daedalus Assault Rifle
+weapon	13	44	Scope Accessory	44 - FR ×1.05	# Daedalus Assault Rifle
+weapon	13	45	Scope Accessory	45 - Dmg ×1.075	# Daedalus Assault Rifle
+weapon	13	46	Scope Accessory	46 - ADS Time ×0.77	# Daedalus Assault Rifle
+weapon	13	47	Scope Accessory	47 - Crit Dmg +20%	# Daedalus Assault Rifle
+weapon	13	48	Scope Accessory	48 - ADS Time ×0.77	# Daedalus Assault Rifle
+weapon	13	49	Scope Accessory	49 - Crit Dmg +20%	# Daedalus Assault Rifle
+weapon	13	50	Grip	50 - Thrown Thrust 2	# Daedalus Assault Rifle
+weapon	13	51	Grip	51 - Thrown Dmg ×1.5	# Daedalus Assault Rifle
+weapon	13	52	Grip	52 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Daedalus Assault Rifle
+weapon	13	53	Grip	53 - Dmg ×1.075	# Daedalus Assault Rifle
+weapon	13	54	Grip	54 - FR ×1.05	# Daedalus Assault Rifle
+weapon	13	55	Grip	55 - Reload ×0.928	# Daedalus Assault Rifle
+weapon	13	56	Grip	56 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Daedalus Assault Rifle
+weapon	13	57	Barrel	57 - Bloody Lumberjack, 3591 Dmg, 82% Acc, 4.0/s FR, 2/shot	# Daedalus Assault Rifle
+weapon	13	58	Underbarrel	58 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Daedalus Assault Rifle
+weapon	13	59	Underbarrel	59 - Atlas, Proj 5/shot, Base Acc 2, Base Sprd 4, Base FR 4/s, Tracker Darts that work for {dur}s	# Daedalus Assault Rifle
+weapon	13	60	Underbarrel	60 - Switch btwn 2 configured elements	# Daedalus Assault Rifle
+weapon	13	61	Underbarrel	61 - Shotgun, Proj 8/shot (alt mode), Mag Cap 6 (alt mode), Shotgun Dmg {dmg}x{projectiles} Dmg per shot	# Daedalus Assault Rifle
+weapon	13	62	Underbarrel	62 - Micro, Splash R 200cm (alt mode), Mag Cap 15 (alt mode), Rocket Dmg {dmg} Dmg per shot	# Daedalus Assault Rifle
+weapon	13	63	Underbarrel	63 - Grenade Launcher, Splash R 400cm (alt mode), Mag Cap 3 (alt mode), Grenade that deals {dmg} Dmg	# Daedalus Assault Rifle
+weapon	13	64	Foregrip	64 - Dmg ×1.075	# Daedalus Assault Rifle
+weapon	13	65	Foregrip	65 - FR ×1.05	# Daedalus Assault Rifle
+weapon	13	66	Foregrip	66 - Sprd ×0.921	# Daedalus Assault Rifle
+weapon	13	67	Underbarrel	67 - Duty called, I answered, we hung out. Duty's awesome!, Mag Cap 3 (alt mode)	# Daedalus Assault Rifle
+weapon	13	68	Manufacturer Part	68 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Daedalus Assault Rifle
+weapon	13	69	Manufacturer Part	69 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Daedalus Assault Rifle
+weapon	13	70	Manufacturer Part	70 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Daedalus Assault Rifle
+weapon	13	71	Manufacturer Part	71 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Daedalus Assault Rifle
+weapon	13	75	Underbarrel	75 - Today's weather is cloudy with a chance of SICK, Charge 1.5s (alt mode)	# Daedalus Assault Rifle
+weapon	13	76	Underbarrel	76 - Star Helix, No stat changes	# Daedalus Assault Rifle
+weapon	13	77	Barrel	77 - Star Helix, 2112 Dmg, 78% Acc, 4.7/s FR	# Daedalus Assault Rifle
+weapon	13	78	Manufacturer Part	78 - Hyp, Zoom to enable Gun Shlds	# Daedalus Assault Rifle
+weapon	13	79	Manufacturer Part	79 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Daedalus Assault Rifle
+weapon	13	80	Manufacturer Part	80 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Daedalus Assault Rifle
+weapon	13	81	Manufacturer Part	81 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Daedalus Assault Rifle
+weapon	13	82	Barrel	82 - Mercredi, 3169 Dmg, 78% Acc, 7.1/s FR	# Daedalus Assault Rifle
+weapon	13	89	Underbarrel	89 - Atlas, Splash R 350cm (alt mode)	# Daedalus Assault Rifle
+weapon	13	90	Underbarrel	90 - Atlas, Proj 5/shot, Base Acc 2, Base Sprd 4, Base FR 4/s	# Daedalus Assault Rifle
+weapon	13	86	Barrel	86 - Hard Dark, 3169 Dmg, 73% Acc, 4.8/s FR, 2/shot, 30cm Splash	# Daedalus Assault Rifle
+weapon	2	1	Barrel	1 - Zipper, 1637 Dmg, 75% Acc, 6.2/s FR	# Daedalus Pistol
+weapon	2	2	Body	2 - (base)	# Daedalus Pistol
+weapon	2	3	Body Accessory	3 - Reload ×0.928	# Daedalus Pistol
+weapon	2	4	Body Accessory	4 - Reload ×0.928	# Daedalus Pistol
+weapon	2	5	Body Accessory	5 - Sprd ×0.921	# Daedalus Pistol
+weapon	2	6	Body Accessory	6 - No stat changes	# Daedalus Pistol
+weapon	2	7	Barrel	7 - S23, 1637 Dmg, 75% Acc, 6.0/s FR	# Daedalus Pistol
+weapon	2	8	Barrel	8 - Bonn-91, 1690 Dmg, 85% Acc, 5.8/s FR	# Daedalus Pistol
+weapon	2	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Daedalus Pistol
+weapon	2	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Daedalus Pistol
+weapon	2	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Daedalus Pistol
+weapon	2	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Daedalus Pistol
+weapon	2	13	Magazine	13 - Base 16, Reload 2s, Dmg ×1.075	# Daedalus Pistol
+weapon	2	14	Magazine	14 - Base 20, Reload 2.7s, Dmg ×1.125	# Daedalus Pistol
+weapon	2	15	Magazine	15 - Tor-lic., Base 12, Reload 2.4s, Dmg ×1.6, FR ×0.825, Sprd ×0.8, Recl ×1.3, Acc Res ×1.9	# Daedalus Pistol
+weapon	2	16	Magazine	16 - CoV, ~25 shots→OH, Cool 0.2/s, Cool Del 2.25s, OH Repair 3.5s, Dmg ×1.095, Sprd ×1.4, Recl ×1.4, Sway ×1.15	# Daedalus Pistol
+weapon	2	17	Magazine	17 - Rip, Borg-lic., Base 28, Reload 1.75s, Charge 1s	# Daedalus Pistol
+weapon	2	18	Manufacturer Part	18 - Tor, Splash R 100cm, Projectile Speed ×0.85	# Daedalus Pistol
+weapon	2	19	Manufacturer Part	19 - Tor, Splash R 100cm	# Daedalus Pistol
+weapon	2	20	Tediore Throw Reload	20 - Throwload 2s, Reload@ 75%	# Daedalus Pistol
+weapon	2	21	Tediore Throw Reload	21 - Throwload 2s, Reload@ 28%	# Daedalus Pistol
+weapon	2	22	Tediore Throw Reload	22 - Throwload 2s, Reload@ 28%	# Daedalus Pistol
+weapon	2	23	Tediore Throw Reload	23 - Throwload 3s, Reload@ 68%	# Daedalus Pistol
+weapon	2	24	Tediore Throw Reload	24 - Throwload 3s, Reload@ 50%	# Daedalus Pistol
+weapon	2	25	Scope	25 - ADS FOV ×0.75, ADS Time 0.128s	# Daedalus Pistol
+weapon	2	26	Scope	26 - ADS FOV ×0.667, ADS Time 0.128s	# Daedalus Pistol
+weapon	2	27	Scope	27 - ADS FOV ×0.5, ADS Time 0.128s	# Daedalus Pistol
+weapon	2	28	Scope	28 - ADS FOV ×0.333, ADS Time 0.128s	# Daedalus Pistol
+weapon	2	29	Scope	29 - ADS FOV ×0.4, ADS Time 0.128s	# Daedalus Pistol
+weapon	2	30	Scope Accessory	30 - Dmg ×1.075	# Daedalus Pistol
+weapon	2	31	Scope Accessory	31 - Reload ×0.928	# Daedalus Pistol
+weapon	2	32	Scope Accessory	32 - ADS Time ×0.77	# Daedalus Pistol
+weapon	2	33	Scope Accessory	33 - Crit Dmg +20%	# Daedalus Pistol
+weapon	2	34	Scope Accessory	34 - Dmg ×1.075	# Daedalus Pistol
+weapon	2	35	Scope Accessory	35 - Reload ×0.928	# Daedalus Pistol
+weapon	2	36	Scope Accessory	36 - ADS Time ×0.77	# Daedalus Pistol
+weapon	2	37	Scope Accessory	37 - Crit Dmg +20%	# Daedalus Pistol
+weapon	2	38	Grip	38 - Thrown Thrust 2	# Daedalus Pistol
+weapon	2	39	Grip	39 - Thrown Dmg ×1.5	# Daedalus Pistol
+weapon	2	40	Grip	40 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Daedalus Pistol
+weapon	2	41	Grip	41 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Daedalus Pistol
+weapon	2	42	Grip	42 - Dmg ×1.075	# Daedalus Pistol
+weapon	2	43	Grip	43 - FR ×1.05	# Daedalus Pistol
+weapon	2	44	Grip	44 - Reload ×0.928	# Daedalus Pistol
+weapon	2	45	Underbarrel	45 - Switch btwn 2 configured elements	# Daedalus Pistol
+weapon	2	46	Underbarrel	46 - Atlas, Splash R 350cm (alt mode), Reload 1.75s, Dmg ×0.938, FR ×0.525, Tracker Nades that work for {dur}s	# Daedalus Pistol
+weapon	2	47	Underbarrel	47 - Tactical Knife Launcher, Mag Cap 5 (alt mode), Reload 1.75s, Dmg ×0.938, FR ×0.525, Knife that deals {dmg} Dmg per shot	# Daedalus Pistol
+weapon	2	48	Underbarrel	48 - Taser, Splash R 50cm (alt mode), Reload 1.75s, Dmg ×0.938, FR ×0.525, Taser Dart that deals {dmg} Dmg/s to a nearby enemy	# Daedalus Pistol
+weapon	2	49	Foregrip	49 - FR ×1.05	# Daedalus Pistol
+weapon	2	50	Foregrip	50 - Sprd ×0.921	# Daedalus Pistol
+weapon	2	51	Manufacturer Part	51 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Daedalus Pistol
+weapon	2	52	Manufacturer Part	52 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Daedalus Pistol
+weapon	2	53	Manufacturer Part	53 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Daedalus Pistol
+weapon	2	57	Borg Magazine Adapter	57 - Mag Cap 28, Reload 1.75s, Dmg ×0.938, FR ×0.525	# Daedalus Pistol
+weapon	2	58	Borg Magazine Adapter	58 - Mag Cap 28, Reload 1.75s, Dmg ×0.938, FR ×0.425	# Daedalus Pistol
+weapon	2	60	Barrel Accessory	60 - Dmg ×1.075	# Daedalus Pistol
+weapon	2	61	Barrel Accessory	61 - Sprd ×0.921	# Daedalus Pistol
+weapon	2	62	Barrel Accessory	62 - FR ×1.05	# Daedalus Pistol
+weapon	2	63	Barrel Accessory	63 - FR ×1.05	# Daedalus Pistol
+weapon	2	64	Barrel Accessory	64 - Dmg ×1.075	# Daedalus Pistol
+weapon	2	65	Barrel Accessory	65 - Crit Dmg +20%	# Daedalus Pistol
+weapon	2	66	Barrel Accessory	66 - Sprd ×0.921	# Daedalus Pistol
+weapon	2	67	Barrel Accessory	67 - Sprd ×0.921	# Daedalus Pistol
+weapon	2	68	Manufacturer Part	68 - Jak, Crits Ric to nearby enemies	# Daedalus Pistol
+weapon	2	69	Tediore Payload	69 - Ted Throw, Throws a Gun on Reload	# Daedalus Pistol
+weapon	2	70	Tediore Payload	70 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Daedalus Pistol
+weapon	2	71	Tediore Payload	71 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Daedalus Pistol
+weapon	2	72	Tediore Payload	72 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Daedalus Pistol
+weapon	2	73	Manufacturer Part	73 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Daedalus Pistol
+weapon	2	74	Underbarrel	74 - Atlas, Reload 1.75s, Dmg ×0.938, FR ×0.525, Tracker Darts that work for {dur}s	# Daedalus Pistol
+weapon	2	75	Underbarrel	75 - Demolition Charge, Splash R 350cm (alt mode), Reload 1.75s, Dmg ×0.938, FR ×0.525, timed explosives, each dealing {dmg}x{projectiles} Dmg	# Daedalus Pistol
+weapon	2	76	Foregrip	76 - Dmg ×1.075	# Daedalus Pistol
+weapon	2	77	Manufacturer Part	77 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Daedalus Pistol
+weapon	2	78	Barrel	78 - Rangefinder, 1922 Dmg, 85% Acc, 5.5/s FR, 50cm Splash	# Daedalus Pistol
+weapon	2	79	Barrel	79 - Soul Survivor, 1690 Dmg, 81% Acc, 12.0/s FR	# Daedalus Pistol
+weapon	2	82	Manufacturer Part	82 - Soul Survivor, Splash R 100cm, Projectile Speed ×0.85	# Daedalus Pistol
+weapon	2	81	Manufacturer Part	81 - Soul Survivor, Splash R 100cm	# Daedalus Pistol
+weapon	8	2	Body	2 - (base)	# Daedalus Shotgun
+weapon	8	3	Body Accessory	3 - Reload ×0.928	# Daedalus Shotgun
+weapon	8	4	Body Accessory	4 - Reload ×0.928	# Daedalus Shotgun
+weapon	8	5	Body Accessory	5 - Sprd ×0.921	# Daedalus Shotgun
+weapon	8	6	Body Accessory	6 - No stat changes	# Daedalus Shotgun
+weapon	8	7	Barrel	7 - Caliburn, 627x6 Dmg, 55% Acc, 4.2/s FR	# Daedalus Shotgun
+weapon	8	8	Barrel	8 - Durendal, 1023x4 Dmg, 65% Acc, 3.5/s FR	# Daedalus Shotgun
+weapon	8	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Daedalus Shotgun
+weapon	8	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Daedalus Shotgun
+weapon	8	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Daedalus Shotgun
+weapon	8	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Daedalus Shotgun
+weapon	8	13	Magazine	13 - Rip, Borg-lic., Base 12, Reload 2.1s, Charge 1s, Dmg ×0.988, FR ×1.25	# Daedalus Shotgun
+weapon	8	14	Magazine	14 - CoV, ~10 shots→OH, Cool 0.2/s, Cool Del 2.9s, OH Repair 3.5s, Dmg ×1.062, Sprd ×1.2, Recl ×1.2	# Daedalus Shotgun
+weapon	8	15	Magazine	15 - Tor-lic., Base 6, Reload 2.2s, Dmg ×1.4, FR ×0.85	# Daedalus Shotgun
+weapon	8	16	Magazine	16 - Base 8, Reload 2s	# Daedalus Shotgun
+weapon	8	17	Magazine	17 - Base 10, Reload 2.4s, Dmg ×0.988	# Daedalus Shotgun
+weapon	8	18	Tediore Throw Reload	18 - Throwload 2s, Reload@ 75%	# Daedalus Shotgun
+weapon	8	19	Tediore Throw Reload	19 - Throwload 2s, Reload@ 75%	# Daedalus Shotgun
+weapon	8	20	Tediore Throw Reload	20 - Throwload 2s, Reload@ 75%	# Daedalus Shotgun
+weapon	8	21	Tediore Throw Reload	21 - Throwload 3s, Reload@ 75%	# Daedalus Shotgun
+weapon	8	22	Tediore Throw Reload	22 - Throwload 3s, Reload@ 75%	# Daedalus Shotgun
+weapon	8	23	Scope	23 - ADS FOV ×0.75, ADS Time 0.17s	# Daedalus Shotgun
+weapon	8	24	Scope	24 - ADS FOV ×0.667, ADS Time 0.17s	# Daedalus Shotgun
+weapon	8	25	Scope	25 - ADS FOV ×0.5, ADS Time 0.17s	# Daedalus Shotgun
+weapon	8	26	Scope	26 - ADS FOV ×0.4, ADS Time 0.17s	# Daedalus Shotgun
+weapon	8	27	Scope	27 - ADS FOV ×0.333, ADS Time 0.17s	# Daedalus Shotgun
+weapon	8	28	Scope Accessory	28 - Dmg ×1.075	# Daedalus Shotgun
+weapon	8	29	Scope Accessory	29 - Reload ×0.928	# Daedalus Shotgun
+weapon	8	30	Scope Accessory	30 - ADS Time ×0.77	# Daedalus Shotgun
+weapon	8	31	Scope Accessory	31 - Crit Dmg +20%	# Daedalus Shotgun
+weapon	8	32	Scope Accessory	32 - Dmg ×1.075	# Daedalus Shotgun
+weapon	8	33	Scope Accessory	33 - Reload ×0.928	# Daedalus Shotgun
+weapon	8	34	Scope Accessory	34 - ADS Time ×0.77	# Daedalus Shotgun
+weapon	8	35	Scope Accessory	35 - Crit Dmg +20%	# Daedalus Shotgun
+weapon	8	36	Grip	36 - Thrown Dmg ×1.5	# Daedalus Shotgun
+weapon	8	37	Grip	37 - Thrown Thrust 2	# Daedalus Shotgun
+weapon	8	38	Grip	38 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Daedalus Shotgun
+weapon	8	39	Grip	39 - Dmg ×1.075	# Daedalus Shotgun
+weapon	8	40	Grip	40 - FR ×1.05	# Daedalus Shotgun
+weapon	8	41	Grip	41 - Reload ×0.928	# Daedalus Shotgun
+weapon	8	42	Grip	42 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Daedalus Shotgun
+weapon	8	43	Underbarrel	43 - Gravity Harpoon, Splash R 500cm (alt mode), Harpoon that deals {dmg} Dmg	# Daedalus Shotgun
+weapon	8	44	Underbarrel	44 - Switch btwn 2 configured elements	# Daedalus Shotgun
+weapon	8	45	Underbarrel	45 - Micro, Mag Cap 12 (alt mode), Rocket that deals {dmg} Dmg	# Daedalus Shotgun
+weapon	8	46	Underbarrel	46 - Atlas, Proj 5/shot, Base Acc 2, Base Sprd 3, Base FR 2/s, Tracker Darts that work for {dur}s	# Daedalus Shotgun
+weapon	8	47	Foregrip	47 - Dmg ×1.075	# Daedalus Shotgun
+weapon	8	48	Foregrip	48 - Sprd ×0.921	# Daedalus Shotgun
+weapon	8	49	Foregrip	49 - FR ×1.05	# Daedalus Shotgun
+weapon	8	50	Underbarrel	50 - Proxy Mine Launcher, Splash R 450cm (alt mode), Mag Cap 3 (alt mode), Launches a Mine that deals {dmg} Dmg	# Daedalus Shotgun
+weapon	8	51	Underbarrel	51 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Daedalus Shotgun
+weapon	8	52	Barrel	52 - Bod, 627x5 Dmg, 67% Acc, 4.2/s FR	# Daedalus Shotgun
+weapon	8	54	Barrel	54 - Acey May, 660x14 Dmg, 65% Acc, 2.0/s FR	# Daedalus Shotgun
+weapon	8	56	Underbarrel	56 - Missilaser, Splash R 50cm (alt mode), Mag Cap 24 (alt mode)	# Daedalus Shotgun
+weapon	8	57	Barrel	57 - Missilaser, 3961 Dmg, 68% Acc, 3.0/s FR	# Daedalus Shotgun
+weapon	8	61	Barrel Accessory	61 - Dmg ×1.075	# Daedalus Shotgun
+weapon	8	62	Barrel Accessory	62 - Sprd ×0.921	# Daedalus Shotgun
+weapon	8	63	Barrel Accessory	63 - FR ×1.05	# Daedalus Shotgun
+weapon	8	64	Barrel Accessory	64 - FR ×1.05	# Daedalus Shotgun
+weapon	8	65	Barrel Accessory	65 - Dmg ×1.075	# Daedalus Shotgun
+weapon	8	66	Barrel Accessory	66 - Reload ×0.928	# Daedalus Shotgun
+weapon	8	67	Barrel Accessory	67 - Sprd ×0.921	# Daedalus Shotgun
+weapon	8	68	Barrel Accessory	68 - Sprd ×0.921	# Daedalus Shotgun
+weapon	8	69	Manufacturer Part	69 - Jak, Crits Ric to nearby enemies	# Daedalus Shotgun
+weapon	8	70	Tediore Payload	70 - Ted Throw, Throws a Gun on Reload	# Daedalus Shotgun
+weapon	8	71	Tediore Payload	71 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Daedalus Shotgun
+weapon	8	72	Tediore Payload	72 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Daedalus Shotgun
+weapon	8	73	Tediore Payload	73 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Daedalus Shotgun
+weapon	8	74	Manufacturer Part	74 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Daedalus Shotgun
+weapon	8	75	Manufacturer Part	75 - Tor, Splash R 100cm	# Daedalus Shotgun
+weapon	8	76	Manufacturer Part	76 - Tor, Splash R 100cm	# Daedalus Shotgun
+weapon	8	77	Manufacturer Part	77 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Daedalus Shotgun
+weapon	8	78	Manufacturer Part	78 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Daedalus Shotgun
+weapon	8	79	Manufacturer Part	79 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Daedalus Shotgun
+weapon	8	80	Manufacturer Part	80 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Daedalus Shotgun
+weapon	8	60	Barrel	60 - Swan Song, 1023x4 Dmg, 65% Acc, 3.5/s FR	# Daedalus Shotgun
+weapon	8	81	Foregrip	81 - Swan Song, Burst Count 6 (alt mode)	# Daedalus Shotgun
+weapon	20	3	Body Accessory	3 - Reload ×0.928	# Daedalus SMG
+weapon	20	4	Body Accessory	4 - Reload ×0.928	# Daedalus SMG
+weapon	20	5	Body Accessory	5 - Sprd ×0.921	# Daedalus SMG
+weapon	20	6	Body Accessory	6 - No stat changes	# Daedalus SMG
+weapon	20	7	Barrel	7 - GCX, 1817 Dmg, 73% Acc, 6.7/s FR	# Daedalus SMG
+weapon	20	8	Barrel	8 - Painter, 1977 Dmg, 79% Acc, 6.0/s FR	# Daedalus SMG
+weapon	20	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Daedalus SMG
+weapon	20	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Daedalus SMG
+weapon	20	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Daedalus SMG
+weapon	20	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Daedalus SMG
+weapon	20	13	Magazine	13 - Base 22, Reload 2.25s	# Daedalus SMG
+weapon	20	14	Magazine	14 - Base 28, Reload 2.6s, Dmg ×0.95	# Daedalus SMG
+weapon	20	15	Magazine	15 - Tor-lic., Base 18, Reload 2.8s, Dmg ×1.34, FR ×0.9, Sprd ×0.9, Recl ×1.25, Acc Res ×1.9	# Daedalus SMG
+weapon	20	16	Magazine	16 - CoV, ~33.3 shots→OH, Cool 0.2/s, Cool Del 2.6s, OH Repair 4s, Dmg ×1.04, Sprd ×1.4, Recl ×1.4, Sway ×1.05, Acc Res ×2.15	# Daedalus SMG
+weapon	20	17	Magazine	17 - Rip, Borg-lic., Base 32, Reload 3.3s, Charge 1s	# Daedalus SMG
+weapon	20	18	Manufacturer Part	18 - Tor, Splash R 100cm	# Daedalus SMG
+weapon	20	19	Manufacturer Part	19 - Tor, Splash R 100cm	# Daedalus SMG
+weapon	20	20	Tediore Throw Reload	20 - Throwload 2s, Reload@ 75%	# Daedalus SMG
+weapon	20	21	Tediore Throw Reload	21 - Throwload 1.6s, Reload@ 75%	# Daedalus SMG
+weapon	20	22	Tediore Throw Reload	22 - Throwload 1.6s, Reload@ 75%	# Daedalus SMG
+weapon	20	23	Tediore Throw Reload	23 - Throwload 3s, Reload@ 75%	# Daedalus SMG
+weapon	20	24	Tediore Throw Reload	24 - Throwload 3s, Reload@ 75%	# Daedalus SMG
+weapon	20	25	Scope	25 - ADS FOV ×0.333, ADS Time 0.145s	# Daedalus SMG
+weapon	20	26	Scope	26 - ADS FOV ×0.4, ADS Time 0.145s	# Daedalus SMG
+weapon	20	27	Scope	27 - ADS FOV ×0.667, ADS Time 0.145s	# Daedalus SMG
+weapon	20	28	Scope	28 - ADS FOV ×0.5, ADS Time 0.145s	# Daedalus SMG
+weapon	20	29	Scope	29 - ADS FOV ×0.75, ADS Time 0.145s	# Daedalus SMG
+weapon	20	30	Scope Accessory	30 - Dmg ×1.075	# Daedalus SMG
+weapon	20	31	Scope Accessory	31 - Dmg ×1.075	# Daedalus SMG
+weapon	20	32	Scope Accessory	32 - Dmg ×1.075	# Daedalus SMG
+weapon	20	33	Scope Accessory	33 - Reload ×0.928	# Daedalus SMG
+weapon	20	34	Scope Accessory	34 - Dmg ×1.075	# Daedalus SMG
+weapon	20	35	Scope Accessory	35 - Reload ×0.928	# Daedalus SMG
+weapon	20	36	Scope Accessory	36 - ADS Time ×0.77	# Daedalus SMG
+weapon	20	37	Scope Accessory	37 - Crit Dmg +20%, ADS FOV ×0.333	# Daedalus SMG
+weapon	20	38	Scope Accessory	38 - ADS Time ×0.77	# Daedalus SMG
+weapon	20	39	Scope Accessory	39 - Crit Dmg +20%, ADS FOV ×0.333	# Daedalus SMG
+weapon	20	40	Grip	40 - Thrown Dmg ×1.5	# Daedalus SMG
+weapon	20	41	Grip	41 - Thrown Thrust 2	# Daedalus SMG
+weapon	20	42	Grip	42 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Daedalus SMG
+weapon	20	43	Grip	43 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Daedalus SMG
+weapon	20	44	Grip	44 - Dmg ×1.075	# Daedalus SMG
+weapon	20	45	Grip	45 - FR ×1.05	# Daedalus SMG
+weapon	20	46	Grip	46 - Reload ×0.928	# Daedalus SMG
+weapon	20	47	Underbarrel	47 - Switch btwn 2 configured elements	# Daedalus SMG
+weapon	20	48	Underbarrel	48 - Shotgun, Proj 5/shot (alt mode), Mag Cap 8 (alt mode), Shotgun that deals {dmg}x{projectiles} Dmg	# Daedalus SMG
+weapon	20	49	Underbarrel	49 - Overcharge, Burst Count 6 (alt mode), Burst Delay 0.15s (alt mode), Sway ×1.25 (alt mode), Recl ×1.35 (alt mode), Mode Switch Time ×0.9, Mode Switch Time ×0.9 (alt mode), Increases Burst Count to 6 and FR to {firerate}	# Daedalus SMG
+weapon	20	50	Underbarrel	50 - Atlas, Proj 4/shot, Base Acc 2, Base Sprd 4, Base FR 4/s, Tracker Darts that work for {dur}s	# Daedalus SMG
+weapon	20	51	Foregrip	51 - FR ×1.05	# Daedalus SMG
+weapon	20	52	Foregrip	52 - Dmg ×1.075	# Daedalus SMG
+weapon	20	53	Foregrip	53 - Sprd ×0.921	# Daedalus SMG
+weapon	20	54	Underbarrel	54 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Daedalus SMG
+weapon	20	55	Manufacturer Part	55 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Daedalus SMG
+weapon	20	56	Manufacturer Part	56 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Daedalus SMG
+weapon	20	57	Manufacturer Part	57 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Daedalus SMG
+weapon	20	58	Manufacturer Part	58 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Daedalus SMG
+weapon	20	60	Barrel	60 - Luty Madlad, 1056 Dmg, 78% Acc, 22.0/s FR	# Daedalus SMG
+weapon	20	62	Body	62 - (base)	# Daedalus SMG
+weapon	20	64	Barrel	64 - Darkbeast, 1796x2 Dmg, 71% Acc, 6.7/s FR, 2/shot	# Daedalus SMG
+weapon	20	66	Borg Magazine Adapter	66 - Mag Cap 32, Reload 3.3s, Dmg ×1.075, FR ×0.85	# Daedalus SMG
+weapon	20	67	Borg Magazine Adapter	67 - Mag Cap 32, Reload 3.3s, Dmg ×1.075, FR ×0.838	# Daedalus SMG
+weapon	20	69	Barrel	69 - Dae SMG, 1796x2 Dmg, 71% Acc, 6.7/s FR, 2/shot	# Daedalus SMG
+weapon	20	79	Underbarrel	79 - Grenade Launcher, Splash R 300cm (alt mode), Launches a Grenade that deals {dmg} Dmg	# Daedalus SMG
+weapon	20	80	Barrel Accessory	80 - Dmg ×1.075	# Daedalus SMG
+weapon	20	81	Barrel Accessory	81 - Crit Dmg +20%	# Daedalus SMG
+weapon	20	82	Barrel Accessory	82 - Sprd ×0.921	# Daedalus SMG
+weapon	20	83	Barrel Accessory	83 - Sprd ×0.921	# Daedalus SMG
+weapon	20	84	Barrel Accessory	84 - Dmg ×1.075	# Daedalus SMG
+weapon	20	85	Barrel Accessory	85 - Sprd ×0.921	# Daedalus SMG
+weapon	20	86	Barrel Accessory	86 - FR ×1.05	# Daedalus SMG
+weapon	20	87	Barrel Accessory	87 - FR ×1.05	# Daedalus SMG
+weapon	20	88	Manufacturer Part	88 - Jak, Crits Ric to nearby enemies	# Daedalus SMG
+weapon	20	89	Tediore Payload	89 - Ted Throw, Throws a Gun on Reload	# Daedalus SMG
+weapon	20	90	Tediore Payload	90 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Daedalus SMG
+weapon	20	91	Tediore Payload	91 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Daedalus SMG
+weapon	20	92	Tediore Payload	92 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Daedalus SMG
+weapon	20	93	Manufacturer Part	93 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Daedalus SMG
+weapon	20	1	Barrel	1 - Prowler, 3063 Dmg, 71% Acc, 5.3/s FR, 5cm Splash	# Daedalus SMG
+weapon	20	71	Barrel	71 - Screwstonian, 3433 Dmg, 79% Acc, 5.9/s FR, 50cm Splash	# Daedalus SMG
+weapon	20	59	Barrel	59 - Raiden, 2640 Dmg, 71% Acc, 6.7/s FR, 2/shot	# Daedalus SMG
+weapon	27	2	Body	2 - (base)	# Jakobs Assault Rifle
+weapon	27	3	Body Accessory	3 - Reload ×0.94	# Jakobs Assault Rifle
+weapon	27	4	Body Accessory	4 - FR ×1.05	# Jakobs Assault Rifle
+weapon	27	5	Body Accessory	5 - Sprd ×0.914	# Jakobs Assault Rifle
+weapon	27	6	Body Accessory	6 - Crit Dmg +23%	# Jakobs Assault Rifle
+weapon	27	7	Barrel	7 - Karkadann, 3063 Dmg, 77% Acc, 6.5/s FR, +20% Crit	# Jakobs Assault Rifle
+weapon	27	8	Barrel	8 - Rougarou, 3591 Dmg, 76% Acc, 4.8/s FR, +20% Crit	# Jakobs Assault Rifle
+weapon	27	9	Barrel Accessory	9 - Dmg ×1.075	# Jakobs Assault Rifle
+weapon	27	10	Barrel Accessory	10 - Crit Dmg +23%	# Jakobs Assault Rifle
+weapon	27	11	Barrel Accessory	11 - Sprd ×0.914	# Jakobs Assault Rifle
+weapon	27	12	Barrel Accessory	12 - Sprd ×0.914	# Jakobs Assault Rifle
+weapon	27	13	Barrel Accessory	13 - Dmg ×1.075	# Jakobs Assault Rifle
+weapon	27	14	Barrel Accessory	14 - Sprd ×0.914	# Jakobs Assault Rifle
+weapon	27	15	Barrel Accessory	15 - FR ×1.05	# Jakobs Assault Rifle
+weapon	27	16	Barrel Accessory	16 - FR ×1.05	# Jakobs Assault Rifle
+weapon	27	17	Tediore Payload	17 - Ted Throw, Throws a Gun on Reload	# Jakobs Assault Rifle
+weapon	27	18	Tediore Payload	18 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Jakobs Assault Rifle
+weapon	27	19	Tediore Payload	19 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Jakobs Assault Rifle
+weapon	27	20	Tediore Payload	20 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Jakobs Assault Rifle
+weapon	27	21	Manufacturer Part	21 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Jakobs Assault Rifle
+weapon	27	22	Manufacturer Part	22 - Hyp, Zoom to enable Gun Shlds	# Jakobs Assault Rifle
+weapon	27	23	Manufacturer Part	23 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Jakobs Assault Rifle
+weapon	27	24	Manufacturer Part	24 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Jakobs Assault Rifle
+weapon	27	25	Magazine	25 - Base 14, Reload 2.5s, Dmg ×0.9	# Jakobs Assault Rifle
+weapon	27	26	Magazine	26 - Base 18, Reload 2.7s, Dmg ×0.85, FR ×1.1	# Jakobs Assault Rifle
+weapon	27	27	Magazine	27 - Tor-lic., Base 16, Reload 2.6s, Dmg ×0.85, FR ×0.8, Sprd ×1.1, Acc Res ×2.1	# Jakobs Assault Rifle
+weapon	27	28	Magazine	28 - CoV, ~16.7 shots→OH, Cool 0.2/s, Cool Del 3s, OH Repair 4s, Dmg ×0.838, Sprd ×1.4, Recl ×1.2	# Jakobs Assault Rifle
+weapon	27	29	Magazine	29 - Rip, Borg-lic., Base 24, Reload 2s, Charge 1s, Dmg ×0.6, FR ×1.25	# Jakobs Assault Rifle
+weapon	27	30	Manufacturer Part	30 - Tor, Splash R 100cm	# Jakobs Assault Rifle
+weapon	27	31	Manufacturer Part	31 - Tor, Splash R 100cm	# Jakobs Assault Rifle
+weapon	27	32	Tediore Throw Reload	32 - Throwload 2s, Reload@ 75%	# Jakobs Assault Rifle
+weapon	27	33	Tediore Throw Reload	33 - Throwload 2s, Reload@ 75%	# Jakobs Assault Rifle
+weapon	27	34	Tediore Throw Reload	34 - Throwload 2s, Reload@ 75%	# Jakobs Assault Rifle
+weapon	27	35	Tediore Throw Reload	35 - Throwload 2s, Reload@ 75%	# Jakobs Assault Rifle
+weapon	27	36	Tediore Throw Reload	36 - Throwload 2s, Reload@ 75%	# Jakobs Assault Rifle
+weapon	27	37	Scope	37 - ADS FOV ×0.75, ADS Time 0.33s	# Jakobs Assault Rifle
+weapon	27	38	Scope	38 - ADS FOV ×0.5, ADS Time 0.33s	# Jakobs Assault Rifle
+weapon	27	39	Scope	39 - ADS FOV ×0.5, ADS Time 0.33s	# Jakobs Assault Rifle
+weapon	27	40	Scope	40 - ADS FOV ×0.286, ADS Time 0.33s	# Jakobs Assault Rifle
+weapon	27	41	Scope	41 - ADS FOV ×0.25, ADS Time 0.33s	# Jakobs Assault Rifle
+weapon	27	42	Scope Accessory	42 - Dmg ×1.075	# Jakobs Assault Rifle
+weapon	27	43	Scope Accessory	43 - Reload ×0.94	# Jakobs Assault Rifle
+weapon	27	44	Scope Accessory	44 - ADS Time ×0.8	# Jakobs Assault Rifle
+weapon	27	45	Scope Accessory	45 - Crit Dmg +23%	# Jakobs Assault Rifle
+weapon	27	46	Scope Accessory	46 - Dmg ×1.075	# Jakobs Assault Rifle
+weapon	27	47	Scope Accessory	47 - Reload ×0.94	# Jakobs Assault Rifle
+weapon	27	48	Grip	48 - Thrown Dmg ×1.5	# Jakobs Assault Rifle
+weapon	27	49	Grip	49 - Thrown Thrust 2	# Jakobs Assault Rifle
+weapon	27	50	Grip	50 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Jakobs Assault Rifle
+weapon	27	51	Grip	51 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Jakobs Assault Rifle
+weapon	27	52	Grip	52 - Dmg ×1.075	# Jakobs Assault Rifle
+weapon	27	53	Grip	53 - Crit Dmg +23%	# Jakobs Assault Rifle
+weapon	27	54	Grip	54 - Reload ×0.94	# Jakobs Assault Rifle
+weapon	27	55	Underbarrel	55 - Underbarrel Shotgun, Proj 8/shot (alt mode), Mag Cap 3 (alt mode), Shotgun that deals {dmg}x{projectiles} Dmg per shot	# Jakobs Assault Rifle
+weapon	27	56	Underbarrel	56 - Double Flintlocks, Splash R 10cm (alt mode), Mag Cap 1 (alt mode), Charge 0.275s (alt mode), twin Musket Barrels that deal {dmg}x2 Dmg	# Jakobs Assault Rifle
+weapon	27	57	Underbarrel	57 - Hand Crank, Base Acc 6, Base Sprd 3, Base FR 7/s, Base Dmg 22, Use a hand crank to fire Full Auto	# Jakobs Assault Rifle
+weapon	27	58	Underbarrel	58 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Jakobs Assault Rifle
+weapon	27	59	Underbarrel	59 - Atlas, Charge 0.45s (alt mode), Tracker Darts that work for {dur}s	# Jakobs Assault Rifle
+weapon	27	60	Underbarrel	60 - Ammo Switch, Mfg part selects mode	# Jakobs Assault Rifle
+weapon	27	61	Foregrip	61 - Dmg ×1.075	# Jakobs Assault Rifle
+weapon	27	62	Foregrip	62 - FR ×1.05	# Jakobs Assault Rifle
+weapon	27	63	Foregrip	63 - Sprd ×0.914	# Jakobs Assault Rifle
+weapon	27	64	Manufacturer Part	64 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Jakobs Assault Rifle
+weapon	27	65	Manufacturer Part	65 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Jakobs Assault Rifle
+weapon	27	66	Manufacturer Part	66 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Jakobs Assault Rifle
+weapon	27	67	Manufacturer Part	67 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Jakobs Assault Rifle
+weapon	27	68	Scope Accessory	68 - ADS Time ×0.8	# Jakobs Assault Rifle
+weapon	27	69	Scope Accessory	69 - Crit Dmg +23%	# Jakobs Assault Rifle
+weapon	27	71	Scope	71 - ADS FOV ×0.25, ADS Time 0.33s	# Jakobs Assault Rifle
+weapon	27	73	Barrel	73 - Bonnie and Clyde, 5323 Dmg, 76% Acc, 6.3/s FR, +20% Crit	# Jakobs Assault Rifle
+weapon	27	75	Barrel	75 - Rowan's Charge, 3591 Dmg, 75% Acc, 6.0/s FR, +20% Crit	# Jakobs Assault Rifle
+weapon	27	76	Barrel	76 - 1056 Dmg, 55% Acc, 8.0/s FR, +20% Crit	# Jakobs Assault Rifle
+weapon	27	78	Barrel	78 - Rowdy Rider, 4753 Dmg, 64% Acc, 3.2/s FR, -55% Crit	# Jakobs Assault Rifle
+weapon	27	85	Manufacturer Part	85 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Jakobs Assault Rifle
+weapon	27	80	Barrel	80 - Gomie, 4542 Dmg, 83% Acc, 6.0/s FR, +20% Crit	# Jakobs Assault Rifle
+weapon	27	82	Barrel	82 - Fishward, 3697 Dmg, 64% Acc, 3.2/s FR, -55% Crit	# Jakobs Assault Rifle
+weapon	27	84	Foregrip	84 - Hand Crank, Base Acc 6, Base Sprd 3, Base FR 7/s, Base Dmg 22, Use a hand crank to fire Full Auto	# Jakobs Assault Rifle
+weapon	3	2	Body	2 - (base)	# Jakobs Pistol
+weapon	3	3	Body Accessory	3 - Reload ×0.94	# Jakobs Pistol
+weapon	3	4	Body Accessory	4 - Reload ×0.94	# Jakobs Pistol
+weapon	3	5	Body Accessory	5 - Sprd ×0.914	# Jakobs Pistol
+weapon	3	6	Body Accessory	6 - Crit Dmg +23%	# Jakobs Pistol
+weapon	3	7	Barrel	7 - Cuca, 4225 Dmg, 69% Acc, 9.0/s FR, +20% Crit	# Jakobs Pistol
+weapon	3	8	Barrel	8 - Muki, 4436 Dmg, 78% Acc, 7.5/s FR, +20% Crit	# Jakobs Pistol
+weapon	3	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Jakobs Pistol
+weapon	3	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Jakobs Pistol
+weapon	3	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Jakobs Pistol
+weapon	3	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Jakobs Pistol
+weapon	3	13	Magazine	13 - Base 4, Reload 2.35s	# Jakobs Pistol
+weapon	3	14	Magazine	14 - Base 6, Reload 2.25s, Dmg ×0.7	# Jakobs Pistol
+weapon	3	15	Magazine	15 - Tor-lic., Base 8, Reload 2.85s, Dmg ×0.825, FR ×0.8, Sprd ×1.1, Recl ×1.15, Acc Res ×2.1	# Jakobs Pistol
+weapon	3	16	Magazine	16 - CoV, ~5 shots→OH, Cool 0.45/s, Cool Del 0.75s, OH Repair 3.2s, Dmg ×0.675, Sprd ×1.4, Recl ×1.1, Sway ×1.1, Acc Res ×2.2	# Jakobs Pistol
+weapon	3	17	Magazine	17 - Rip, Borg-lic., Base 8, Reload 2.25s, Charge 0.6s, Dmg ×0.875, FR ×0.8, Recl ×0.9	# Jakobs Pistol
+weapon	3	18	Manufacturer Part	18 - Tor, Splash R 100cm	# Jakobs Pistol
+weapon	3	19	Manufacturer Part	19 - Tor, Splash R 100cm	# Jakobs Pistol
+weapon	3	20	Tediore Throw Reload	20 - Throwload 2s, Reload@ 32%	# Jakobs Pistol
+weapon	3	21	Tediore Throw Reload	21 - Throwload 2s, Reload@ 32%	# Jakobs Pistol
+weapon	3	22	Tediore Throw Reload	22 - Throwload 2s, Reload@ 32%	# Jakobs Pistol
+weapon	3	23	Tediore Throw Reload	23 - Throwload 3s, Reload@ 68%	# Jakobs Pistol
+weapon	3	24	Tediore Throw Reload	24 - Throwload 2s, Reload@ 50%	# Jakobs Pistol
+weapon	3	25	Scope	25 - ADS FOV ×0.75, ADS Time 0.15s	# Jakobs Pistol
+weapon	3	26	Scope	26 - ADS FOV ×0.667, ADS Time 0.15s	# Jakobs Pistol
+weapon	3	27	Scope	27 - ADS FOV ×0.667, ADS Time 0.15s	# Jakobs Pistol
+weapon	3	28	Scope	28 - ADS FOV ×0.5, ADS Time 0.15s	# Jakobs Pistol
+weapon	3	29	Scope	29 - ADS FOV ×0.4, ADS Time 0.15s	# Jakobs Pistol
+weapon	3	30	Scope Accessory	30 - Dmg ×1.075	# Jakobs Pistol
+weapon	3	31	Scope Accessory	31 - Reload ×0.94	# Jakobs Pistol
+weapon	3	32	Scope Accessory	32 - ADS Time ×0.8	# Jakobs Pistol
+weapon	3	33	Scope Accessory	33 - Crit Dmg +23%	# Jakobs Pistol
+weapon	3	34	Scope Accessory	34 - Dmg ×1.075	# Jakobs Pistol
+weapon	3	35	Scope Accessory	35 - Reload ×0.94	# Jakobs Pistol
+weapon	3	36	Scope Accessory	36 - ADS Time ×0.8	# Jakobs Pistol
+weapon	3	37	Scope Accessory	37 - Crit Dmg +23%	# Jakobs Pistol
+weapon	3	38	Grip	38 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Jakobs Pistol
+weapon	3	39	Grip	39 - Thrown Thrust 2	# Jakobs Pistol
+weapon	3	40	Grip	40 - Thrown Dmg ×1.5	# Jakobs Pistol
+weapon	3	41	Grip	41 - Dmg ×1.075	# Jakobs Pistol
+weapon	3	42	Grip	42 - Crit Dmg +23%	# Jakobs Pistol
+weapon	3	43	Grip	43 - Reload ×0.94	# Jakobs Pistol
+weapon	3	44	Grip	44 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Jakobs Pistol
+weapon	3	45	Underbarrel	45 - Knife Launcher, Mag Cap 1 (alt mode), Crit Dmg +65% (alt mode), Launches a Knife that deals {dmg} Dmg	# Jakobs Pistol
+weapon	3	46	Underbarrel	46 - Zip Rockets, Splash R 150cm (alt mode), Mag Cap 5 (alt mode), Zip Rockets that deal {dmg} Dmg each	# Jakobs Pistol
+weapon	3	47	Underbarrel	47 - Ammo Switch, Mfg part selects mode	# Jakobs Pistol
+weapon	3	48	Underbarrel	48 - Atlas, Proj 4/shot, Base Acc 2, Base Sprd 3, Base FR 4/s, Tracker Darts that work for {dur}s	# Jakobs Pistol
+weapon	3	49	Foregrip	49 - FR ×1.05	# Jakobs Pistol
+weapon	3	50	Foregrip	50 - Sprd ×0.914	# Jakobs Pistol
+weapon	3	51	Barrel Accessory	51 - Dmg ×1.075	# Jakobs Pistol
+weapon	3	52	Barrel Accessory	52 - Crit Dmg +23%	# Jakobs Pistol
+weapon	3	53	Barrel Accessory	53 - Sprd ×0.914	# Jakobs Pistol
+weapon	3	54	Barrel Accessory	54 - Sprd ×0.914	# Jakobs Pistol
+weapon	3	55	Barrel Accessory	55 - Dmg ×1.075	# Jakobs Pistol
+weapon	3	56	Barrel Accessory	56 - Sprd ×0.914	# Jakobs Pistol
+weapon	3	57	Barrel Accessory	57 - FR ×1.05	# Jakobs Pistol
+weapon	3	58	Barrel Accessory	58 - Dmg ×1.075	# Jakobs Pistol
+weapon	3	59	Tediore Payload	59 - Ted Throw, Throws a Gun on Reload	# Jakobs Pistol
+weapon	3	60	Tediore Payload	60 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Jakobs Pistol
+weapon	3	61	Tediore Payload	61 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Jakobs Pistol
+weapon	3	62	Tediore Payload	62 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Jakobs Pistol
+weapon	3	63	Manufacturer Part	63 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Jakobs Pistol
+weapon	3	64	Manufacturer Part	64 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Jakobs Pistol
+weapon	3	65	Manufacturer Part	65 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Jakobs Pistol
+weapon	3	66	Manufacturer Part	66 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Jakobs Pistol
+weapon	3	67	Manufacturer Part	67 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Jakobs Pistol
+weapon	3	68	Underbarrel	68 - Vial Launcher, Splash R 0.2cm (alt mode), Mag Cap 0.2 (alt mode), Launches a Corr Vial that deals {dmg} Corr Dmg on impact and increases the target's Dmg Taken by {dmgpct} for 6s	# Jakobs Pistol
+weapon	3	69	Underbarrel	69 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Jakobs Pistol
+weapon	3	70	Foregrip	70 - Dmg ×1.075	# Jakobs Pistol
+weapon	3	72	Barrel	72 - San Saba Songbird, 4436 Dmg, 61% Acc, 7.5/s FR, +20% Crit	# Jakobs Pistol
+weapon	3	75	Barrel	75 - King's Gambit, 5070 Dmg, 69% Acc, 7.5/s FR, +20% Crit	# Jakobs Pistol
+weapon	3	77	Barrel	77 - Phantom Flame, 5281 Dmg, 43% Acc, 9.0/s FR, +20% Crit	# Jakobs Pistol
+weapon	3	80	Barrel	80 - Seventh Sense, 4225 Dmg, 67% Acc, 9.0/s FR, +20% Crit	# Jakobs Pistol
+weapon	3	82	Barrel	82 - Shalashaska, 5387 Dmg, 82% Acc, 7.5/s FR, +20% Crit	# Jakobs Pistol
+weapon	3	84	Barrel	84 - Shoals, 2112x3 Dmg, 51% Acc, 7.5/s FR, +20% Crit	# Jakobs Pistol
+weapon	9	1	Special Element Set	1 - Color Spray, Shoots Cryo, Fire, and Shock droplets	# Jakobs Shotgun
+weapon	9	2	Body	2 - (base)	# Jakobs Shotgun
+weapon	9	3	Body Accessory	3 - Reload ×0.94	# Jakobs Shotgun
+weapon	9	4	Body Accessory	4 - Reload ×0.94	# Jakobs Shotgun
+weapon	9	5	Body Accessory	5 - Sprd ×0.914	# Jakobs Shotgun
+weapon	9	6	Body Accessory	6 - Crit Dmg +23%	# Jakobs Shotgun
+weapon	9	7	Barrel	7 - Dullahan, 1947x6 Dmg, 73% Acc, 1.5/s FR, +20% Crit	# Jakobs Shotgun
+weapon	9	8	Barrel	8 - Balor, 1980x10 Dmg, 51% Acc, 1.3/s FR, +20% Crit, 2/shot	# Jakobs Shotgun
+weapon	9	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Jakobs Shotgun
+weapon	9	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Jakobs Shotgun
+weapon	9	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Jakobs Shotgun
+weapon	9	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Jakobs Shotgun
+weapon	9	13	Magazine	13 - Rip, Borg-lic., Base 8, Reload 2.5s, Charge 1s, Dmg ×0.688, FR ×1.25	# Jakobs Shotgun
+weapon	9	14	Magazine	14 - CoV, ~5.9 shots→OH, Cool 0.25/s, Cool Del 2s, OH Repair 3s, Dmg ×0.75, Sprd ×1.2, Recl ×1.2, Sway ×1.2	# Jakobs Shotgun
+weapon	9	15	Magazine	15 - Tor-lic., Base 12, Reload 2.3s, Cost ×2, Cost ×2 (alt mode), Dmg ×0.9, FR ×0.65, Sprd ×0.9, Recl ×1.25, Acc Res ×1.9	# Jakobs Shotgun
+weapon	9	16	Special Element Set	16 - Color Spray, Shoots Cryo, Fire, and Radn droplets	# Jakobs Shotgun
+weapon	9	17	Magazine	17 - Base 6, Reload 2.15s, Dmg ×0.9	# Jakobs Shotgun
+weapon	9	18	Tediore Throw Reload	18 - Throwload 2s, Reload@ 75%	# Jakobs Shotgun
+weapon	9	19	Tediore Throw Reload	19 - Throwload 2s, Reload@ 75%	# Jakobs Shotgun
+weapon	9	20	Tediore Throw Reload	20 - Throwload 2s, Reload@ 75%	# Jakobs Shotgun
+weapon	9	21	Tediore Throw Reload	21 - Throwload 3s, Reload@ 75%	# Jakobs Shotgun
+weapon	9	22	Tediore Throw Reload	22 - Throwload 3s, Reload@ 75%	# Jakobs Shotgun
+weapon	9	23	Scope	23 - ADS FOV ×0.75, ADS Time 0.2s	# Jakobs Shotgun
+weapon	9	24	Scope	24 - ADS FOV ×0.667, ADS Time 0.2s	# Jakobs Shotgun
+weapon	9	25	Scope	25 - ADS FOV ×0.5, ADS Time 0.2s	# Jakobs Shotgun
+weapon	9	26	Scope	26 - ADS FOV ×0.4, ADS Time 0.2s	# Jakobs Shotgun
+weapon	9	27	Scope	27 - ADS FOV ×0.333, ADS Time 0.2s	# Jakobs Shotgun
+weapon	9	28	Scope Accessory	28 - Dmg ×1.075	# Jakobs Shotgun
+weapon	9	29	Scope Accessory	29 - Reload ×0.94	# Jakobs Shotgun
+weapon	9	30	Scope Accessory	30 - ADS Time ×0.8	# Jakobs Shotgun
+weapon	9	31	Scope Accessory	31 - Crit Dmg +23%	# Jakobs Shotgun
+weapon	9	32	Scope Accessory	32 - Dmg ×1.075	# Jakobs Shotgun
+weapon	9	33	Scope Accessory	33 - Reload ×0.94	# Jakobs Shotgun
+weapon	9	34	Scope Accessory	34 - ADS Time ×0.8	# Jakobs Shotgun
+weapon	9	35	Scope Accessory	35 - Crit Dmg +23%	# Jakobs Shotgun
+weapon	9	36	Grip	36 - Thrown Thrust 2	# Jakobs Shotgun
+weapon	9	37	Grip	37 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Jakobs Shotgun
+weapon	9	38	Grip	38 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Jakobs Shotgun
+weapon	9	39	Grip	39 - Thrown Dmg ×1.5	# Jakobs Shotgun
+weapon	9	40	Grip	40 - Dmg ×1.075	# Jakobs Shotgun
+weapon	9	41	Grip	41 - Crit Dmg +23%	# Jakobs Shotgun
+weapon	9	42	Grip	42 - Reload ×0.94	# Jakobs Shotgun
+weapon	9	43	Underbarrel	43 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Jakobs Shotgun
+weapon	9	44	Underbarrel	44 - Atlas, Splash R 1cm (alt mode), Proj 4/shot (alt mode), Mag Cap 1 (alt mode), Tracker Darts that work for {dur}s	# Jakobs Shotgun
+weapon	9	45	Underbarrel	45 - Sprd Launcher, Splash R 300cm (alt mode), spread of Nades that deal {dmg}x{projectiles} Dmg each	# Jakobs Shotgun
+weapon	9	46	Underbarrel	46 - Gravity Harpoon, Splash R 500cm (alt mode), Gravity Harpoon that deals {dmg} Dmg and pulls in nearby enemies	# Jakobs Shotgun
+weapon	9	47	Foregrip	47 - FR ×1.05	# Jakobs Shotgun
+weapon	9	48	Foregrip	48 - Sprd ×0.914	# Jakobs Shotgun
+weapon	9	49	Underbarrel	49 - Ammo Switch, Mfg part selects mode	# Jakobs Shotgun
+weapon	9	50	Underbarrel	50 - Knife Launcher, Base Acc 4, Base Sprd 2, Base FR 2/s, Base Dmg 250, Knife that deals {dmg} Dmg	# Jakobs Shotgun
+weapon	9	51	Manufacturer Part	51 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Jakobs Shotgun
+weapon	9	52	Manufacturer Part	52 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Jakobs Shotgun
+weapon	9	53	Manufacturer Part	53 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Jakobs Shotgun
+weapon	9	54	Manufacturer Part	54 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Jakobs Shotgun
+weapon	9	55	Barrel Accessory	55 - Dmg ×1.075	# Jakobs Shotgun
+weapon	9	56	Barrel Accessory	56 - Crit Dmg +23%	# Jakobs Shotgun
+weapon	9	57	Barrel Accessory	57 - Sprd ×0.914	# Jakobs Shotgun
+weapon	9	58	Barrel Accessory	58 - Sprd ×0.914	# Jakobs Shotgun
+weapon	9	59	Barrel Accessory	59 - Dmg ×1.075	# Jakobs Shotgun
+weapon	9	60	Barrel Accessory	60 - Sprd ×0.914	# Jakobs Shotgun
+weapon	9	61	Barrel Accessory	61 - Reload ×0.94	# Jakobs Shotgun
+weapon	9	62	Barrel Accessory	62 - Dmg ×1.075	# Jakobs Shotgun
+weapon	9	63	Tediore Payload	63 - Ted Throw, Throws a Gun on Reload	# Jakobs Shotgun
+weapon	9	64	Tediore Payload	64 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Jakobs Shotgun
+weapon	9	65	Tediore Payload	65 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Jakobs Shotgun
+weapon	9	66	Tediore Payload	66 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Jakobs Shotgun
+weapon	9	67	Manufacturer Part	67 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Jakobs Shotgun
+weapon	9	68	Foregrip	68 - Dmg ×1.075	# Jakobs Shotgun
+weapon	9	69	Manufacturer Part	69 - Tor, Splash R 100cm	# Jakobs Shotgun
+weapon	9	70	Manufacturer Part	70 - Tor, Splash R 100cm	# Jakobs Shotgun
+weapon	9	71	Special Element Set	71 - Color Spray, Shoots Corr, Radn, and Shock droplets	# Jakobs Shotgun
+weapon	9	72	Special Element Set	72 - Color Spray, Shoots Corr, Fire, and Shock droplets	# Jakobs Shotgun
+weapon	9	73	Special Element Set	73 - Color Spray, Shoots Corr, Fire, and Radn droplets	# Jakobs Shotgun
+weapon	9	74	Special Element Set	74 - Color Spray, Shoots Corr, Cryo, and Shock droplets	# Jakobs Shotgun
+weapon	9	75	Special Element Set	75 - Color Spray, Shoots Corr, Cryo, and Radn droplets	# Jakobs Shotgun
+weapon	9	76	Special Element Set	76 - Color Spray, Shoots Corr, Cryo, and Fire droplets	# Jakobs Shotgun
+weapon	9	77	Special Element Set	77 - Color Spray, Shoots Fire, Radn, and Shock droplets	# Jakobs Shotgun
+weapon	9	78	Magazine	78 - Hot Slugger, Base 1, Reload 1.7s, Dmg ×1.5	# Jakobs Shotgun
+weapon	9	79	Barrel	79 - Hot Slugger, 11882 Dmg, 82% Acc, 1.0/s FR, +20% Crit	# Jakobs Shotgun
+weapon	9	82	Barrel	82 - Hellwalker, 3103x10 Dmg, 45% Acc, 2.0/s FR, +20% Crit, 2/shot	# Jakobs Shotgun
+weapon	9	84	Special Element Set	84 - Color Spray, Shoots Cryo, Radn, and Shock droplets	# Jakobs Shotgun
+weapon	9	86	Barrel	86 - Rainbow Vomit, 1947x6 Dmg, 73% Acc, 1.5/s FR, +20% Crit, 50cm Splash	# Jakobs Shotgun
+weapon	9	87	Magazine	87 - Rainbow Vomit, Base 6, Reload 2.15s	# Jakobs Shotgun
+weapon	9	88	Manufacturer Part	88 - T.K's Wave, Splash R 100cm	# Jakobs Shotgun
+weapon	9	89	Manufacturer Part	89 - T.K's Wave, Splash R 100cm	# Jakobs Shotgun
+weapon	9	90	Barrel	90 - T.K's Wave, 3961x10 Dmg, 51% Acc, 1.3/s FR, +20% Crit, 2/shot	# Jakobs Shotgun
+weapon	9	92	Magazine	92 - Base 6, Reload 4.3s, Dmg ×0.9	# Jakobs Shotgun
+weapon	9	93	Magazine	93 - Base 1, Reload 1.7s, Dmg ×1.5	# Jakobs Shotgun
+weapon	9	94	Magazine	94 - Base 2, Reload 1.7s	# Jakobs Shotgun
+weapon	9	99	Barrel	99 - Doeshot, 3631x2 Dmg, 82% Acc, 2.7/s FR, +20% Crit	# Jakobs Shotgun
+weapon	9	102	Barrel	102 - Constable, 1584x9 Dmg, 45% Acc, 2.0/s FR, +20% Crit, 2/shot	# Jakobs Shotgun
+weapon	24	2	Body	2 - (base)	# Jakobs Sniper
+weapon	24	3	Body Accessory	3 - Reload ×0.94	# Jakobs Sniper
+weapon	24	4	Body Accessory	4 - Reload ×0.94	# Jakobs Sniper
+weapon	24	5	Body Accessory	5 - Sprd ×0.914	# Jakobs Sniper
+weapon	24	6	Body Accessory	6 - Crit Dmg +23%	# Jakobs Sniper
+weapon	24	7	Barrel	7 - Inkanyamba, 10757 Dmg, 89% Acc, 1.1/s FR, +70% Crit	# Jakobs Sniper
+weapon	24	8	Barrel	8 - Xiuhcoatl, 12975 Dmg, 91% Acc, 0.8/s FR, +70% Crit	# Jakobs Sniper
+weapon	24	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Jakobs Sniper
+weapon	24	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Jakobs Sniper
+weapon	24	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Jakobs Sniper
+weapon	24	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Jakobs Sniper
+weapon	24	13	Magazine	13 - Base 6, Reload 3.5s, Dmg ×0.95, Sway ×1.2	# Jakobs Sniper
+weapon	24	14	Magazine	14 - Base 4, Reload 2.8s	# Jakobs Sniper
+weapon	24	15	Magazine	15 - Tor-lic., Base 10, Reload 3s, Dmg ×0.988, FR ×0.85, Sprd ×0.9, Recl ×1.3	# Jakobs Sniper
+weapon	24	16	Magazine	16 - CoV, ~9 shots→OH, Cool 0.3/s, Cool Del 4s, OH Repair 4s, Dmg ×0.863, Sprd ×1.3, Sway ×1.25, Acc Res ×2.3	# Jakobs Sniper
+weapon	24	17	Magazine	17 - Rip, Borg-lic., Base 8, Reload 3.1s, Charge 1s, Dmg ×0.825, FR ×1.3	# Jakobs Sniper
+weapon	24	18	Manufacturer Part	18 - Tor, Splash R 100cm	# Jakobs Sniper
+weapon	24	19	Manufacturer Part	19 - Tor, Splash R 100cm	# Jakobs Sniper
+weapon	24	20	Tediore Throw Reload	20 - Throwload 2s, Reload@ 75%	# Jakobs Sniper
+weapon	24	21	Tediore Throw Reload	21 - Throwload 2s, Reload@ 75%	# Jakobs Sniper
+weapon	24	22	Tediore Throw Reload	22 - Throwload 2s, Reload@ 75%	# Jakobs Sniper
+weapon	24	23	Tediore Throw Reload	23 - Throwload 3s, Reload@ 75%	# Jakobs Sniper
+weapon	24	24	Tediore Throw Reload	24 - Throwload 3s, Reload@ 75%	# Jakobs Sniper
+weapon	24	25	Scope	25 - ADS FOV ×0.5, ADS Time 0.375s	# Jakobs Sniper
+weapon	24	26	Scope	26 - ADS FOV ×0.133, ADS Time 0.5s	# Jakobs Sniper
+weapon	24	27	Scope	27 - ADS FOV ×0.2, ADS Time 0.375s	# Jakobs Sniper
+weapon	24	28	Scope	28 - ADS FOV ×0.143, ADS Time 0.5s	# Jakobs Sniper
+weapon	24	29	Scope	29 - ADS FOV ×0.125, ADS Time 0.5s	# Jakobs Sniper
+weapon	24	30	Scope Accessory	30 - Dmg ×1.075	# Jakobs Sniper
+weapon	24	31	Scope Accessory	31 - Reload ×0.94	# Jakobs Sniper
+weapon	24	32	Scope Accessory	32 - ADS Time ×0.8	# Jakobs Sniper
+weapon	24	33	Scope Accessory	33 - Crit Dmg +23%	# Jakobs Sniper
+weapon	24	34	Scope Accessory	34 - Dmg ×1.075	# Jakobs Sniper
+weapon	24	35	Scope Accessory	35 - Reload ×0.94	# Jakobs Sniper
+weapon	24	36	Scope Accessory	36 - ADS Time ×0.8	# Jakobs Sniper
+weapon	24	37	Scope Accessory	37 - Crit Dmg +23%	# Jakobs Sniper
+weapon	24	38	Grip	38 - Thrown Dmg ×1.5	# Jakobs Sniper
+weapon	24	39	Grip	39 - Thrown Thrust 2	# Jakobs Sniper
+weapon	24	40	Grip	40 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Jakobs Sniper
+weapon	24	41	Grip	41 - Hyp, Acc Imp ×1.5, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Jakobs Sniper
+weapon	24	42	Grip	42 - Dmg ×1.075	# Jakobs Sniper
+weapon	24	43	Grip	43 - Crit Dmg +23%	# Jakobs Sniper
+weapon	24	44	Grip	44 - Reload ×0.94	# Jakobs Sniper
+weapon	24	45	Underbarrel	45 - Shotgun, Proj 8/shot, Base Acc 3, Base Sprd 8, Base FR 1.25/s, Base Dmg 15, Shotgun that deals {dmg}x{projectiles} Dmg per shot	# Jakobs Sniper
+weapon	24	46	Underbarrel	46 - Big Rocket, Splash R 1cm (alt mode), Mag Cap 1 (alt mode), large Rocket that deals {dmg} Dmg	# Jakobs Sniper
+weapon	24	47	Underbarrel	47 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Jakobs Sniper
+weapon	24	48	Underbarrel	48 - Ammo Switch, Mfg part selects mode	# Jakobs Sniper
+weapon	24	49	Foregrip	49 - FR ×1.05	# Jakobs Sniper
+weapon	24	50	Foregrip	50 - Sprd ×0.914	# Jakobs Sniper
+weapon	24	51	Foregrip	51 - Dmg ×1.075	# Jakobs Sniper
+weapon	24	52	Underbarrel	52 - Atlas, Proj 4/shot, Base Acc 2, Base Sprd 4, Base FR 2/s, Tracker Darts that work for {dur}s	# Jakobs Sniper
+weapon	24	53	Underbarrel	53 - Crank SMG, Base Acc 3, Base Sprd 5, Base FR 6/s, Base Dmg 24, Crank-fires a SMG that deals {dmg} Dmg per shot	# Jakobs Sniper
+weapon	24	54	Manufacturer Part	54 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Jakobs Sniper
+weapon	24	55	Manufacturer Part	55 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Jakobs Sniper
+weapon	24	56	Manufacturer Part	56 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Jakobs Sniper
+weapon	24	57	Barrel Accessory	57 - Dmg ×1.075	# Jakobs Sniper
+weapon	24	58	Barrel Accessory	58 - Crit Dmg +23%	# Jakobs Sniper
+weapon	24	59	Barrel Accessory	59 - Sprd ×0.914	# Jakobs Sniper
+weapon	24	60	Barrel Accessory	60 - Sprd ×0.914	# Jakobs Sniper
+weapon	24	61	Barrel Accessory	61 - Dmg ×1.075	# Jakobs Sniper
+weapon	24	62	Barrel Accessory	62 - Sprd ×0.914	# Jakobs Sniper
+weapon	24	63	Barrel Accessory	63 - FR ×1.05	# Jakobs Sniper
+weapon	24	64	Barrel Accessory	64 - Dmg ×1.075	# Jakobs Sniper
+weapon	24	65	Tediore Payload	65 - Ted Throw, Throws a Gun on Reload	# Jakobs Sniper
+weapon	24	66	Tediore Payload	66 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Jakobs Sniper
+weapon	24	67	Tediore Payload	67 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Jakobs Sniper
+weapon	24	68	Tediore Payload	68 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Jakobs Sniper
+weapon	24	69	Manufacturer Part	69 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Jakobs Sniper
+weapon	24	70	Manufacturer Part	70 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Jakobs Sniper
+weapon	24	72	Barrel	72 - Borstel Ballista, 11090 Dmg, 86% Acc, 0.8/s FR, +70% Crit	# Jakobs Sniper
+weapon	24	74	Barrel	74 - Boomslang, 14417 Dmg, 95% Acc, 0.8/s FR, +70% Crit, 180cm Splash	# Jakobs Sniper
+weapon	24	75	Barrel	75 - Truck, 16635 Dmg, 87% Acc, 1.0/s FR, +70% Crit	# Jakobs Sniper
+weapon	24	77	Barrel	77 - Fearstalker, 11090 Dmg, 91% Acc, 1.6/s FR, +70% Crit	# Jakobs Sniper
+weapon	24	81	Manufacturer Part	81 - Fearstalker, Splash R 50cm, Splash R 100cm	# Jakobs Sniper
+weapon	24	80	Manufacturer Part	80 - Fearstalker, Splash R 50cm, Splash R 100cm	# Jakobs Sniper
+weapon	10	2	Body	2 - (base)	# Maliwan Shotgun
+weapon	10	3	Body Accessory	3 - Reload ×0.94	# Maliwan Shotgun
+weapon	10	4	Body Accessory	4 - Mag Cap ×1.15	# Maliwan Shotgun
+weapon	10	5	Body Accessory	5 - Sprd ×0.925	# Maliwan Shotgun
+weapon	10	6	Body Accessory	6 - Elem Dmg ×1.135	# Maliwan Shotgun
+weapon	10	7	Barrel	7 - Kickballer, 12146 Dmg, 77% Acc, 0.8/s FR, 150cm Splash	# Maliwan Shotgun
+weapon	10	8	Barrel	8 - Stellium, 12146 Dmg, 77% Acc, 0.8/s FR, 150cm Splash	# Maliwan Shotgun
+weapon	10	9	Barrel	9 - Vertex, 6337x2 Dmg, 75% Acc, 1.1/s FR, 2/shot, 35cm Splash	# Maliwan Shotgun
+weapon	10	10	Manufacturer Part	10 - Hyp, Zoom to enable Gun Shlds	# Maliwan Shotgun
+weapon	10	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Maliwan Shotgun
+weapon	10	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Maliwan Shotgun
+weapon	10	13	Manufacturer Part	13 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Maliwan Shotgun
+weapon	10	14	Magazine	14 - Rip, Borg-lic., Base 10, Reload 2.75s, Charge 1s, Dmg ×0.938, FR ×1.25	# Maliwan Shotgun
+weapon	10	15	Magazine	15 - CoV, ~8 shots→OH, Cool 0.15/s, Cool Del 3.25s, OH Repair 3.5s, Dmg ×1.062, Sprd ×1.2, Recl ×1.2	# Maliwan Shotgun
+weapon	10	16	Magazine	16 - Base 6, Reload 2.4s, Dmg ×1.05	# Maliwan Shotgun
+weapon	10	17	Magazine	17 - Base 8, Reload 2s, Sprd ×1.25	# Maliwan Shotgun
+weapon	10	18	Tediore Throw Reload	18 - Throwload 1.65s, Reload@ 75%	# Maliwan Shotgun
+weapon	10	19	Tediore Throw Reload	19 - Throwload 1.65s, Reload@ 75%	# Maliwan Shotgun
+weapon	10	20	Tediore Throw Reload	20 - Throwload 1.65s, Reload@ 75%	# Maliwan Shotgun
+weapon	10	21	Tediore Throw Reload	21 - Throwload 3s, Reload@ 75%	# Maliwan Shotgun
+weapon	10	22	Tediore Throw Reload	22 - Throwload 2.5s, Reload@ 75%	# Maliwan Shotgun
+weapon	10	23	Scope	23 - ADS FOV ×0.75, ADS Time 0.2s	# Maliwan Shotgun
+weapon	10	24	Scope	24 - ADS FOV ×0.5, ADS Time 0.2s	# Maliwan Shotgun
+weapon	10	25	Scope	25 - ADS FOV ×0.5, ADS Time 0.2s	# Maliwan Shotgun
+weapon	10	26	Scope	26 - ADS FOV ×0.4, ADS Time 0.2s	# Maliwan Shotgun
+weapon	10	27	Scope	27 - ADS FOV ×0.333, ADS Time 0.2s	# Maliwan Shotgun
+weapon	10	28	Scope Accessory	28 - Dmg ×1.075	# Maliwan Shotgun
+weapon	10	29	Scope Accessory	29 - Reload ×0.94	# Maliwan Shotgun
+weapon	10	30	Scope Accessory	30 - ADS Time ×0.8	# Maliwan Shotgun
+weapon	10	31	Scope Accessory	31 - Elem Dmg ×1.135	# Maliwan Shotgun
+weapon	10	32	Scope Accessory	32 - Dmg ×1.075	# Maliwan Shotgun
+weapon	10	33	Scope Accessory	33 - Reload ×0.94	# Maliwan Shotgun
+weapon	10	34	Scope Accessory	34 - ADS Time ×0.8	# Maliwan Shotgun
+weapon	10	35	Scope Accessory	35 - Elem Dmg ×1.135	# Maliwan Shotgun
+weapon	10	36	Grip	36 - Thrown Dmg ×1.5	# Maliwan Shotgun
+weapon	10	37	Grip	37 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Maliwan Shotgun
+weapon	10	38	Grip	38 - Thrown Thrust 2	# Maliwan Shotgun
+weapon	10	39	Grip	39 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Maliwan Shotgun
+weapon	10	40	Grip	40 - Dmg ×1.075	# Maliwan Shotgun
+weapon	10	41	Grip	41 - FR ×1.05	# Maliwan Shotgun
+weapon	10	42	Grip	42 - Reload ×0.94	# Maliwan Shotgun
+weapon	10	43	Underbarrel	43 - Beam Tosser, Splash R 250cm (alt mode), Mag Cap 3 (alt mode), Launches a Projectile that fires 3 Beams that deal {dmg} Dmg each	# Maliwan Shotgun
+weapon	10	44	Underbarrel	44 - Energy Disc, Splash R 250cm (alt mode), Mag Cap 2 (alt mode), Launches a bouncing Energy Disc that deals {dmg} Dmg per bounce	# Maliwan Shotgun
+weapon	10	45	Underbarrel	45 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Maliwan Shotgun
+weapon	10	46	Underbarrel	46 - Ammo Switch, Mfg part selects mode	# Maliwan Shotgun
+weapon	10	47	Foregrip	47 - FR ×1.05	# Maliwan Shotgun
+weapon	10	48	Foregrip	48 - Sprd ×0.925	# Maliwan Shotgun
+weapon	10	49	Underbarrel	49 - Energy Blast, Splash R 650cm (alt mode), Charge-fires a wide-angled Blast that deals {dmg} Dmg	# Maliwan Shotgun
+weapon	10	50	Underbarrel	50 - Atlas, Proj 4/shot, Base Acc 3, Base Sprd 5, Base FR 2/s, Tracker Darts that work for {dur}s	# Maliwan Shotgun
+weapon	10	51	Foregrip	51 - Dmg ×1.075	# Maliwan Shotgun
+weapon	10	52	Manufacturer Part	52 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Maliwan Shotgun
+weapon	10	53	Manufacturer Part	53 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Maliwan Shotgun
+weapon	10	54	Manufacturer Part	54 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Maliwan Shotgun
+weapon	10	55	Manufacturer Part	55 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Maliwan Shotgun
+weapon	10	56	Barrel	56 - Kaleidosplode, 2772 Dmg, 77% Acc, 1.0/s FR, 200cm Splash	# Maliwan Shotgun
+weapon	10	58	Barrel	58 - Sweet Embrace, 5941x4 Dmg, 72% Acc, 1.0/s FR, 2/shot, 150cm Splash	# Maliwan Shotgun
+weapon	10	59	Foregrip	59 - Melee Dmg ×1.5	# Maliwan Shotgun
+weapon	10	62	Barrel	62 - Mantra, 8119 Dmg, 86% Acc, 2.3/s FR, 50cm Splash	# Maliwan Shotgun
+weapon	10	63	Barrel Accessory	63 - Dmg ×1.075	# Maliwan Shotgun
+weapon	10	64	Barrel Accessory	64 - Elem Dmg ×1.135	# Maliwan Shotgun
+weapon	10	65	Barrel Accessory	65 - Elem Dmg ×1.135	# Maliwan Shotgun
+weapon	10	66	Barrel Accessory	66 - Sprd ×0.925	# Maliwan Shotgun
+weapon	10	67	Barrel Accessory	67 - Dmg ×1.075	# Maliwan Shotgun
+weapon	10	68	Barrel Accessory	68 - Sprd ×0.925	# Maliwan Shotgun
+weapon	10	69	Barrel Accessory	69 - FR ×1.05	# Maliwan Shotgun
+weapon	10	70	Barrel Accessory	70 - FR ×1.05	# Maliwan Shotgun
+weapon	10	71	Manufacturer Part	71 - Jak, Crits Ric to nearby enemies	# Maliwan Shotgun
+weapon	10	72	Tediore Payload	72 - Ted Throw, Throws a Gun on Reload	# Maliwan Shotgun
+weapon	10	73	Tediore Payload	73 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Maliwan Shotgun
+weapon	10	74	Tediore Payload	74 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Maliwan Shotgun
+weapon	10	75	Tediore Payload	75 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Maliwan Shotgun
+weapon	10	76	Manufacturer Part	76 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Maliwan Shotgun
+weapon	10	77	Manufacturer Part	77 - Tor, Gyrojets that explode on impact	# Maliwan Shotgun
+weapon	10	78	Manufacturer Part	78 - Tor, sticky Gyrojets that explode on Reload, or when switching Modes - which increases explosion Dmg by {stickymulti} each	# Maliwan Shotgun
+weapon	10	79	Magazine	79 - Tor-lic., Base 4, Reload 2.2s, Dmg ×1.38, FR ×0.825	# Maliwan Shotgun
+weapon	10	60	Barrel	60 - Reminisce, 2772 Dmg, 77% Acc, 4.0/s FR, 150cm Splash	# Maliwan Shotgun
+weapon	10	82	Barrel	82 - Discy Business, 12146 Dmg, 77% Acc, 0.8/s FR, 150cm Splash	# Maliwan Shotgun
+weapon	21	2	Body	2 - (base)	# Maliwan SMG
+weapon	21	3	Body Accessory	3 - Reload ×0.94	# Maliwan SMG
+weapon	21	4	Body Accessory	4 - Mag Cap ×1.15	# Maliwan SMG
+weapon	21	5	Body Accessory	5 - Sprd ×0.925	# Maliwan SMG
+weapon	21	6	Body Accessory	6 - Elem Dmg ×1.135	# Maliwan SMG
+weapon	21	7	Barrel	7 - Ephemeris, 1579 Dmg, 80% Acc, 7.3/s FR, 20cm Splash	# Maliwan SMG
+weapon	21	8	Barrel	8 - Synastry, 1943 Dmg, 86% Acc, 5.3/s FR, 35cm Splash	# Maliwan SMG
+weapon	21	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Maliwan SMG
+weapon	21	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Maliwan SMG
+weapon	21	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Maliwan SMG
+weapon	21	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Maliwan SMG
+weapon	21	13	Magazine	13 - Base 28, Reload 2.2s	# Maliwan SMG
+weapon	21	14	Magazine	14 - Base 36, Reload 2.7s, Dmg ×0.975	# Maliwan SMG
+weapon	21	15	Magazine	15 - Tor-lic., Base 24, Reload 2.4s, Dmg ×1.3, FR ×0.8	# Maliwan SMG
+weapon	21	16	Magazine	16 - CoV, ~36.4 shots→OH, Cool 0.25/s, Cool Del 2.25s, OH Repair 3.4s, Dmg ×1.025, Sprd ×1.4, Recl ×1.15	# Maliwan SMG
+weapon	21	17	Magazine	17 - Rip, Borg-lic., Base 40, Reload 2s, Charge 1s, Dmg ×0.912, FR ×1.2, Sprd ×1.25, Recl ×1.15	# Maliwan SMG
+weapon	21	18	Manufacturer Part	18 - Tor, Gyrojets that explode on impact	# Maliwan SMG
+weapon	21	19	Manufacturer Part	19 - Tor, sticky Gyrojets that explode on Reload, or when switching Modes - which increases explosion Dmg by {stickymulti} each	# Maliwan SMG
+weapon	21	20	Tediore Throw Reload	20 - Throwload 2s, Reload@ 75%	# Maliwan SMG
+weapon	21	21	Tediore Throw Reload	21 - Throwload 2s, Reload@ 75%	# Maliwan SMG
+weapon	21	22	Tediore Throw Reload	22 - Throwload 2s, Reload@ 75%	# Maliwan SMG
+weapon	21	23	Tediore Throw Reload	23 - Throwload 3s, Reload@ 75%	# Maliwan SMG
+weapon	21	24	Tediore Throw Reload	24 - Throwload 3s, Reload@ 75%	# Maliwan SMG
+weapon	21	25	Scope	25 - ADS FOV ×0.75, ADS Time 0.17s	# Maliwan SMG
+weapon	21	26	Scope	26 - ADS FOV ×0.5, ADS Time 0.17s	# Maliwan SMG
+weapon	21	27	Scope	27 - ADS FOV ×0.667, ADS Time 0.17s	# Maliwan SMG
+weapon	21	28	Scope	28 - ADS FOV ×0.4, ADS Time 0.17s	# Maliwan SMG
+weapon	21	29	Scope	29 - ADS FOV ×0.333, ADS Time 0.17s	# Maliwan SMG
+weapon	21	30	Scope Accessory	30 - Dmg ×1.075	# Maliwan SMG
+weapon	21	31	Scope Accessory	31 - Reload ×0.94	# Maliwan SMG
+weapon	21	32	Scope Accessory	32 - ADS Time ×0.8	# Maliwan SMG
+weapon	21	33	Scope Accessory	33 - Elem Dmg ×1.135	# Maliwan SMG
+weapon	21	34	Scope Accessory	34 - Dmg ×1.075	# Maliwan SMG
+weapon	21	35	Scope Accessory	35 - Reload ×0.94	# Maliwan SMG
+weapon	21	36	Scope Accessory	36 - ADS Time ×0.8	# Maliwan SMG
+weapon	21	37	Scope Accessory	37 - Elem Dmg ×1.135	# Maliwan SMG
+weapon	21	38	Grip	38 - Thrown Thrust 2	# Maliwan SMG
+weapon	21	39	Grip	39 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Maliwan SMG
+weapon	21	40	Grip	40 - Thrown Dmg ×1.5	# Maliwan SMG
+weapon	21	41	Grip	41 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Maliwan SMG
+weapon	21	42	Grip	42 - Dmg ×1.075	# Maliwan SMG
+weapon	21	43	Grip	43 - FR ×1.05	# Maliwan SMG
+weapon	21	44	Grip	44 - Reload ×0.94	# Maliwan SMG
+weapon	21	45	Underbarrel	45 - Railgun, Splash R 100cm (alt mode), Mag Cap 2 (alt mode), Charge-fires a piercing Railgun shot that deals {dmg} Dmg	# Maliwan SMG
+weapon	21	46	Underbarrel	46 - Energy Discharge, Splash R 1200cm (alt mode), Charge 2s (alt mode), Charge-fires a Blast that deals {dmg} Dmg	# Maliwan SMG
+weapon	21	47	Underbarrel	47 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Maliwan SMG
+weapon	21	48	Underbarrel	48 - Ammo Switch, Mfg part selects mode	# Maliwan SMG
+weapon	21	49	Foregrip	49 - FR ×1.05	# Maliwan SMG
+weapon	21	50	Foregrip	50 - Sprd ×0.925	# Maliwan SMG
+weapon	21	51	Foregrip	51 - Dmg ×1.075	# Maliwan SMG
+weapon	21	52	Underbarrel	52 - Atlas, Proj 4/shot, Base Acc 2, Base Sprd 4, Base FR 4/s, Tracker Darts that work for {dur}s	# Maliwan SMG
+weapon	21	53	Underbarrel	53 - Laser Wire, Splash R 50cm (alt mode), Mag Cap 4 (alt mode), Spawns a Laser Wire that deals {dmg} Dmg/s	# Maliwan SMG
+weapon	21	54	Manufacturer Part	54 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Maliwan SMG
+weapon	21	55	Manufacturer Part	55 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Maliwan SMG
+weapon	21	56	Manufacturer Part	56 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Maliwan SMG
+weapon	21	57	Manufacturer Part	57 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Maliwan SMG
+weapon	21	59	Barrel	59 - Ohm I Got, 2186 Dmg, 90% Acc, 7.3/s FR, 2/shot	# Maliwan SMG
+weapon	21	61	Barrel Accessory	61 - Superconducting Plasma Coil, FR ×1.05, Mag Cap ×17, Dmg ×1.3	# Maliwan SMG
+weapon	21	62	Barrel	62 - Plasma Coil, 2551 Dmg, 84% Acc, 7.7/s FR, 35cm Splash	# Maliwan SMG
+weapon	21	65	Barrel Accessory	65 - Dmg ×1.075	# Maliwan SMG
+weapon	21	66	Barrel Accessory	66 - Elem Dmg ×1.135	# Maliwan SMG
+weapon	21	67	Barrel Accessory	67 - Elem Dmg ×1.135	# Maliwan SMG
+weapon	21	68	Barrel Accessory	68 - Sprd ×0.925	# Maliwan SMG
+weapon	21	69	Barrel Accessory	69 - Dmg ×1.075	# Maliwan SMG
+weapon	21	70	Barrel Accessory	70 - Sprd ×0.925	# Maliwan SMG
+weapon	21	71	Barrel Accessory	71 - FR ×1.05	# Maliwan SMG
+weapon	21	72	Barrel Accessory	72 - FR ×1.05	# Maliwan SMG
+weapon	21	73	Manufacturer Part	73 - Jak, Crits Ric to nearby enemies	# Maliwan SMG
+weapon	21	74	Tediore Payload	74 - Ted Throw, Throws a Gun on Reload	# Maliwan SMG
+weapon	21	75	Tediore Payload	75 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Maliwan SMG
+weapon	21	76	Tediore Payload	76 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Maliwan SMG
+weapon	21	77	Tediore Payload	77 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Maliwan SMG
+weapon	21	78	Manufacturer Part	78 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Maliwan SMG
+weapon	21	79	Manufacturer Part	79 - Broken Wings, Gyrojets that explode on impact	# Maliwan SMG
+weapon	21	80	Barrel	80 - Broken Wings, 687x5 Dmg, 55% Acc, 8.0/s FR, 35cm Splash	# Maliwan SMG
+weapon	21	84	Barrel	84 - Flash Cyclone, 2736 Dmg, 55% Acc, 8.0/s FR, 35cm Splash	# Maliwan SMG
+weapon	21	88	Foregrip	88 - Flash Cyclone, Dmg ×1.075	# Maliwan SMG
+weapon	21	87	Foregrip	87 - Flash Cyclone, FR ×1.05	# Maliwan SMG
+weapon	21	86	Foregrip	86 - Flash Cyclone, Sprd ×0.925	# Maliwan SMG
+weapon	21	89	Barrel	89 - Juliet's Sparkle, 3380 Dmg, 80% Acc, 5.7/s FR, 50cm Splash	# Maliwan SMG
+weapon	25	2	Body	2 - (base)	# Maliwan Sniper
+weapon	25	3	Body Accessory	3 - Reload ×0.94	# Maliwan Sniper
+weapon	25	4	Body Accessory	4 - Mag Cap ×1.15	# Maliwan Sniper
+weapon	25	5	Body Accessory	5 - Sprd ×0.91	# Maliwan Sniper
+weapon	25	6	Body Accessory	6 - Elem Dmg ×1.1	# Maliwan Sniper
+weapon	25	7	Barrel	7 - Midheaven, 5878 Dmg, 89% Acc, 1.9/s FR, +50% Crit, 20cm Splash	# Maliwan Sniper
+weapon	25	8	Barrel	8 - Transit, 6543 Dmg, 92% Acc, 3.0/s FR, +50% Crit, 40cm Splash	# Maliwan Sniper
+weapon	25	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Maliwan Sniper
+weapon	25	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Maliwan Sniper
+weapon	25	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Maliwan Sniper
+weapon	25	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Maliwan Sniper
+weapon	25	13	Magazine	13 - Base 8, Reload 2.65s	# Maliwan Sniper
+weapon	25	14	Magazine	14 - Base 10, Reload 3.15s	# Maliwan Sniper
+weapon	25	15	Magazine	15 - Tor-lic., Base 6, Reload 2.2s, Dmg ×1.262, FR ×0.8	# Maliwan Sniper
+weapon	25	16	Magazine	16 - CoV, ~10 shots→OH, Cool 0.35/s, Cool Del 2.75s, OH Repair 3.75s, Dmg ×0.983, Sprd ×1.4, Recl ×0.95, Sway ×0.95, Acc Res ×2.4	# Maliwan Sniper
+weapon	25	17	Magazine	17 - Rip, Borg-lic., Base 12, Reload 2.4s, Charge 1s, Acc Res ×2.15	# Maliwan Sniper
+weapon	25	18	Manufacturer Part	18 - Tor, Gyrojets that explode on impact	# Maliwan Sniper
+weapon	25	19	Manufacturer Part	19 - Tor, sticky Gyrojets that explode on Reload, or when switching Modes - which increases explosion Dmg by {stickymulti} each	# Maliwan Sniper
+weapon	25	20	Barrel	20 - Complex Root, 5545 Dmg, 85% Acc, 1.2/s FR, +50% Crit, 20cm Splash	# Maliwan Sniper
+weapon	25	21	Tediore Throw Reload	21 - Throwload 2s, Reload@ 75%	# Maliwan Sniper
+weapon	25	22	Tediore Throw Reload	22 - Throwload 2s, Reload@ 75%	# Maliwan Sniper
+weapon	25	23	Tediore Throw Reload	23 - Throwload 2s, Reload@ 75%	# Maliwan Sniper
+weapon	25	24	Tediore Throw Reload	24 - Throwload 3s, Reload@ 75%	# Maliwan Sniper
+weapon	25	25	Tediore Throw Reload	25 - Throwload 3s, Reload@ 75%	# Maliwan Sniper
+weapon	25	26	Scope	26 - ADS FOV ×0.75, ADS Time 0.375s	# Maliwan Sniper
+weapon	25	27	Scope	27 - ADS FOV ×0.333, ADS Time 0.375s	# Maliwan Sniper
+weapon	25	28	Scope	28 - ADS FOV ×0.25, ADS Time 0.375s	# Maliwan Sniper
+weapon	25	29	Scope	29 - ADS FOV ×0.182, ADS Time 0.375s	# Maliwan Sniper
+weapon	25	30	Scope	30 - ADS FOV ×0.222, ADS Time 0.375s	# Maliwan Sniper
+weapon	25	31	Scope Accessory	31 - Dmg ×1.09	# Maliwan Sniper
+weapon	25	32	Scope Accessory	32 - Reload ×0.94	# Maliwan Sniper
+weapon	25	33	Scope Accessory	33 - ADS Time ×0.8	# Maliwan Sniper
+weapon	25	34	Scope Accessory	34 - Elem Dmg ×1.1	# Maliwan Sniper
+weapon	25	35	Scope Accessory	35 - Dmg ×1.09	# Maliwan Sniper
+weapon	25	36	Scope Accessory	36 - Reload ×0.94	# Maliwan Sniper
+weapon	25	37	Scope Accessory	37 - ADS Time ×0.8	# Maliwan Sniper
+weapon	25	38	Scope Accessory	38 - Elem Dmg ×1.1	# Maliwan Sniper
+weapon	25	39	Grip	39 - Thrown Thrust 2	# Maliwan Sniper
+weapon	25	40	Grip	40 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Maliwan Sniper
+weapon	25	41	Grip	41 - Thrown Dmg ×1.5	# Maliwan Sniper
+weapon	25	42	Grip	42 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Maliwan Sniper
+weapon	25	43	Grip	43 - Dmg ×1.09	# Maliwan Sniper
+weapon	25	44	Grip	44 - FR ×1.05	# Maliwan Sniper
+weapon	25	45	Grip	45 - Reload ×0.94	# Maliwan Sniper
+weapon	25	46	Underbarrel	46 - Ammo Switch, Mfg part selects mode	# Maliwan Sniper
+weapon	25	47	Underbarrel	47 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Maliwan Sniper
+weapon	25	48	Underbarrel	48 - Shock Field, Splash R 350cm (alt mode), Mag Cap 2 (alt mode), On impact, creates a Shock Field that deals {dmg} Dmg/s	# Maliwan Sniper
+weapon	25	49	Underbarrel	49 - Singularity Grenade Launcher, Splash R 350cm (alt mode), Singularity that deals {dmg} Dmg/s	# Maliwan Sniper
+weapon	25	50	Foregrip	50 - FR ×1.05	# Maliwan Sniper
+weapon	25	51	Foregrip	51 - Sprd ×0.91	# Maliwan Sniper
+weapon	25	52	Foregrip	52 - Dmg ×1.09	# Maliwan Sniper
+weapon	25	53	Underbarrel	53 - Rocket Pod, Splash R 100cm (alt mode), Cost 4/shot (alt mode), Mag Cap 16 (alt mode), salvo of Homing Rockets that deal {dmg}x{projectiles} Dmg	# Maliwan Sniper
+weapon	25	54	Underbarrel	54 - Atlas, Proj 7/shot, Base Sprd 4, Base FR 1/s, Tracker Darts that work for {dur}s	# Maliwan Sniper
+weapon	25	55	Manufacturer Part	55 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Maliwan Sniper
+weapon	25	56	Manufacturer Part	56 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Maliwan Sniper
+weapon	25	57	Manufacturer Part	57 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Maliwan Sniper
+weapon	25	58	Manufacturer Part	58 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Maliwan Sniper
+weapon	25	60	Barrel	60 - Katagawa's Revenge, 3604 Dmg, 89% Acc, 1.5/s FR, +50% Crit, 20cm Splash	# Maliwan Sniper
+weapon	25	62	Foregrip	62 - Melee Dmg ×1.5	# Maliwan Sniper
+weapon	25	63	Borg Magazine Adapter	63 - Mag Cap 12, Reload 2.4s, Dmg ×0.9, FR ×1.2, Sprd ×1.15	# Maliwan Sniper
+weapon	25	64	Borg Magazine Adapter	64 - Mag Cap 12, Reload 2.4s, Dmg ×0.9, FR ×0.35, Sprd ×1.15	# Maliwan Sniper
+weapon	25	65	Barrel Accessory	65 - Dmg ×1.09	# Maliwan Sniper
+weapon	25	66	Barrel Accessory	66 - Elem Dmg ×1.1	# Maliwan Sniper
+weapon	25	67	Barrel Accessory	67 - Elem Dmg ×1.1	# Maliwan Sniper
+weapon	25	68	Barrel Accessory	68 - Sprd ×0.91	# Maliwan Sniper
+weapon	25	69	Barrel Accessory	69 - Dmg ×1.09	# Maliwan Sniper
+weapon	25	70	Barrel Accessory	70 - Sprd ×0.91	# Maliwan Sniper
+weapon	25	71	Barrel Accessory	71 - FR ×1.05	# Maliwan Sniper
+weapon	25	72	Barrel Accessory	72 - FR ×1.05	# Maliwan Sniper
+weapon	25	73	Manufacturer Part	73 - Jak, Crit Dmg +10%, Crits Ric to nearby enemies	# Maliwan Sniper
+weapon	25	74	Tediore Payload	74 - Ted Throw, Throws a Gun on Reload	# Maliwan Sniper
+weapon	25	75	Tediore Payload	75 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Maliwan Sniper
+weapon	25	76	Tediore Payload	76 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Maliwan Sniper
+weapon	25	77	Tediore Payload	77 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Maliwan Sniper
+weapon	25	78	Manufacturer Part	78 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Maliwan Sniper
+weapon	25	79	Barrel	79 - Asher's Rise, 5822 Dmg, 89% Acc, 6.6/s FR, +50% Crit, 20cm Splash	# Maliwan Sniper
+weapon	25	81	Barrel	81 - Conflux, 4436 Dmg, 87% Acc, 2.0/s FR, +50% Crit, 20cm Splash	# Maliwan Sniper
+weapon	25	85	Barrel	85 - Marshall's Claw, 3327 Dmg, 76% Acc, 2.8/s FR, +50% Crit, 20cm Splash	# Maliwan Sniper
+weapon	25	86	Magazine Accessory	86 - Marshall's Claw, Reload 2.4s, Dmg ×0.9, Sprd ×1.15	# Maliwan Sniper
+weapon	15	1	Scope	1 - ADS FOV ×0.286, ADS Time 0.33s	# Order Assault Rifle
+weapon	15	2	Barrel	2 - G.M.R., 4753 Dmg, 65% Acc, 4.0/s FR, +5% Crit	# Order Assault Rifle
+weapon	15	3	Body Accessory	3 - Reload ×0.94	# Order Assault Rifle
+weapon	15	4	Body Accessory	4 - Dmg ×1.09	# Order Assault Rifle
+weapon	15	5	Body Accessory	5 - Sprd ×0.91	# Order Assault Rifle
+weapon	15	6	Body Accessory	6 - Crit Dmg +20%	# Order Assault Rifle
+weapon	15	7	Barrel	7 - Indiction, 2640 Dmg, 89% Acc, 5.5/s FR, +5% Crit	# Order Assault Rifle
+weapon	15	8	Barrel	8 - Schema, 2324 Dmg, 88% Acc, 6.5/s FR, +5% Crit	# Order Assault Rifle
+weapon	15	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Order Assault Rifle
+weapon	15	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Order Assault Rifle
+weapon	15	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Order Assault Rifle
+weapon	15	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Order Assault Rifle
+weapon	15	13	Magazine	13 - Base 18, Reload 1.9s	# Order Assault Rifle
+weapon	15	14	Magazine	14 - Base 24, Reload 2.3s, Dmg ×0.95	# Order Assault Rifle
+weapon	15	15	Magazine	15 - CoV, ~33.3 shots→OH, Cool 0.25/s, Cool Del 1.65s, OH Repair 3.7s, Dmg ×1.03, Sprd ×1.4, Recl ×1.2	# Order Assault Rifle
+weapon	15	16	Magazine	16 - Rip, Borg-lic., Base 30, Reload 2.3s, Charge 1s, Dmg ×0.975, FR ×1.2	# Order Assault Rifle
+weapon	15	17	Tediore Throw Reload	17 - Throwload 2s, Reload@ 75%	# Order Assault Rifle
+weapon	15	18	Tediore Throw Reload	18 - Throwload 2s, Reload@ 75%	# Order Assault Rifle
+weapon	15	19	Tediore Throw Reload	19 - Throwload 2s, Reload@ 75%	# Order Assault Rifle
+weapon	15	20	Tediore Throw Reload	20 - Throwload 2s, Reload@ 75%	# Order Assault Rifle
+weapon	15	21	Tediore Throw Reload	21 - Throwload 2s, Reload@ 75%	# Order Assault Rifle
+weapon	15	22	Scope	22 - ADS FOV ×0.286, ADS Time 0.33s	# Order Assault Rifle
+weapon	15	23	Scope	23 - ADS FOV ×0.333, ADS Time 0.33s	# Order Assault Rifle
+weapon	15	24	Scope	24 - ADS FOV ×0.4, ADS Time 0.33s	# Order Assault Rifle
+weapon	15	25	Scope	25 - ADS FOV ×0.5, ADS Time 0.33s	# Order Assault Rifle
+weapon	15	26	Scope	26 - ADS FOV ×0.75, ADS Time 0.33s	# Order Assault Rifle
+weapon	15	27	Scope Accessory	27 - Dmg ×1.09	# Order Assault Rifle
+weapon	15	28	Scope Accessory	28 - Reload ×0.94	# Order Assault Rifle
+weapon	15	29	Scope Accessory	29 - ADS Time ×0.8	# Order Assault Rifle
+weapon	15	30	Scope Accessory	30 - Crit Dmg +20%	# Order Assault Rifle
+weapon	15	31	Scope Accessory	31 - Dmg ×1.09	# Order Assault Rifle
+weapon	15	32	Scope Accessory	32 - Reload ×0.94	# Order Assault Rifle
+weapon	15	33	Scope Accessory	33 - ADS Time ×0.8	# Order Assault Rifle
+weapon	15	34	Scope Accessory	34 - Crit Dmg +20%	# Order Assault Rifle
+weapon	15	35	Grip	35 - Thrown Dmg ×1.5	# Order Assault Rifle
+weapon	15	36	Grip	36 - Thrown Thrust 2	# Order Assault Rifle
+weapon	15	37	Grip	37 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Order Assault Rifle
+weapon	15	38	Grip	38 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Order Assault Rifle
+weapon	15	39	Grip	39 - Dmg ×1.09	# Order Assault Rifle
+weapon	15	40	Grip	40 - FR ×1.05	# Order Assault Rifle
+weapon	15	41	Grip	41 - Reload ×0.94	# Order Assault Rifle
+weapon	15	42	Underbarrel	42 - Seeker Missiles, Charge 0.5s (alt mode), Charge to fire up to 4 Seeker Missiles each dealing {dmg} Dmg	# Order Assault Rifle
+weapon	15	43	Underbarrel	43 - Kill Drone, Proj 2/shot (alt mode), Mag Cap 10 (alt mode), Charge 0.155s (alt mode), Launches a Drone that fires at enemies for {dmg} Dmg per shot, before exploding for {explode} Dmg	# Order Assault Rifle
+weapon	15	44	Underbarrel	44 - Atlas, Splash R 350cm (alt mode), Mag Cap 1 (alt mode), Charge 0.155s (alt mode), Tracker Nades that work for {dur}s	# Order Assault Rifle
+weapon	15	45	Underbarrel	45 - Atlas, Mag Cap 1 (alt mode), Charge 0.155s (alt mode), Tracker Darts that work for {dur}s	# Order Assault Rifle
+weapon	15	46	Foregrip	46 - Crit Dmg +20%	# Order Assault Rifle
+weapon	15	47	Foregrip	47 - Sprd ×0.91	# Order Assault Rifle
+weapon	15	48	Manufacturer Part	48 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Order Assault Rifle
+weapon	15	49	Manufacturer Part	49 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Order Assault Rifle
+weapon	15	50	Manufacturer Part	50 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Order Assault Rifle
+weapon	15	51	Manufacturer Part	51 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Order Assault Rifle
+weapon	15	52	Barrel Accessory	52 - Dmg ×1.09	# Order Assault Rifle
+weapon	15	53	Barrel Accessory	53 - Crit Dmg +20%	# Order Assault Rifle
+weapon	15	54	Barrel Accessory	54 - Sprd ×0.91	# Order Assault Rifle
+weapon	15	55	Barrel Accessory	55 - Sprd ×0.91	# Order Assault Rifle
+weapon	15	56	Barrel Accessory	56 - Dmg ×1.09	# Order Assault Rifle
+weapon	15	57	Barrel Accessory	57 - Sprd ×0.91	# Order Assault Rifle
+weapon	15	58	Barrel Accessory	58 - FR ×1.05	# Order Assault Rifle
+weapon	15	59	Barrel Accessory	59 - FR ×1.05	# Order Assault Rifle
+weapon	15	60	Manufacturer Part	60 - Jak, Crits Ric to nearby enemies	# Order Assault Rifle
+weapon	15	61	Tediore Payload	61 - Ted Throw, Throws a Gun on Reload	# Order Assault Rifle
+weapon	15	62	Tediore Payload	62 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Order Assault Rifle
+weapon	15	63	Tediore Payload	63 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Order Assault Rifle
+weapon	15	64	Tediore Payload	64 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Order Assault Rifle
+weapon	15	65	Manufacturer Part	65 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Order Assault Rifle
+weapon	15	66	Manufacturer Part	66 - Tor, Splash R 100cm	# Order Assault Rifle
+weapon	15	67	Manufacturer Part	67 - Tor, Splash R 100cm	# Order Assault Rifle
+weapon	15	68	Underbarrel	68 - Death Sphere, Splash R 50cm (alt mode), Mag Cap 1 (alt mode), Charge 0.155s (alt mode), Launches a Death Sphere that deals {dmg} Dmg/s to nearby enemies	# Order Assault Rifle
+weapon	15	69	Underbarrel	69 - Ammo Switch, Mfg part selects mode	# Order Assault Rifle
+weapon	15	70	Foregrip	70 - Dmg ×1.09	# Order Assault Rifle
+weapon	15	71	Magazine	71 - Tor-lic., Base 15, Reload 2.1s, Dmg ×1.35, FR ×0.825	# Order Assault Rifle
+weapon	15	72	Barrel	72 - Goalkeeper, 4225 Dmg, 84% Acc, 7.0/s FR, +5% Crit	# Order Assault Rifle
+weapon	15	74	Body	74 - (base)	# Order Assault Rifle
+weapon	15	78	Barrel	78 - Crow-Sourced, 2799 Dmg, 84% Acc, 7.0/s FR, +5% Crit	# Order Assault Rifle
+weapon	4	1	Magazine	1 - Lucky Clover, Tor-lic., Base 6, Reload 1.9s	# Order Pistol
+weapon	4	2	Body	2 - (base)	# Order Pistol
+weapon	4	3	Body Accessory	3 - Reload ×0.94	# Order Pistol
+weapon	4	4	Body Accessory	4 - Dmg ×1.09	# Order Pistol
+weapon	4	5	Body Accessory	5 - Sprd ×0.91	# Order Pistol
+weapon	4	6	Body Accessory	6 - Crit Dmg +20%	# Order Pistol
+weapon	4	7	Barrel	7 - Punct, 1954 Dmg, 76% Acc, 8.0/s FR, +5% Crit	# Order Pistol
+weapon	4	8	Barrel	8 - Lemma, 2112 Dmg, 76% Acc, 6.5/s FR, +5% Crit	# Order Pistol
+weapon	4	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Order Pistol
+weapon	4	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Order Pistol
+weapon	4	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Order Pistol
+weapon	4	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Order Pistol
+weapon	4	13	Magazine	13 - Base 15, Reload 1.9s	# Order Pistol
+weapon	4	14	Magazine	14 - Base 18, Reload 2.8s, Dmg ×0.988	# Order Pistol
+weapon	4	15	Magazine	15 - CoV, ~20 shots→OH, Cool 0.35/s, Cool Del 1.4s, OH Repair 2.9s, Dmg ×0.938, Sprd ×1.4, Recl ×1.3, Sway ×1.15	# Order Pistol
+weapon	4	16	Magazine	16 - Rip, Borg-lic., Base 24, Reload 2.3s, Charge 1s, FR ×1.225, Recl ×0.8, Acc Res ×1.75	# Order Pistol
+weapon	4	17	Tediore Throw Reload	17 - Throwload 2s, Reload@ 32%	# Order Pistol
+weapon	4	18	Tediore Throw Reload	18 - Throwload 2s, Reload@ 32%	# Order Pistol
+weapon	4	19	Tediore Throw Reload	19 - Throwload 2s, Reload@ 32%	# Order Pistol
+weapon	4	20	Tediore Throw Reload	20 - Throwload 3s, Reload@ 68%	# Order Pistol
+weapon	4	21	Tediore Throw Reload	21 - Throwload 3s, Reload@ 50%	# Order Pistol
+weapon	4	22	Scope	22 - ADS FOV ×0.75, ADS Time 0.15s	# Order Pistol
+weapon	4	23	Scope	23 - ADS FOV ×0.667, ADS Time 0.15s	# Order Pistol
+weapon	4	24	Scope	24 - ADS FOV ×0.5, ADS Time 0.15s	# Order Pistol
+weapon	4	25	Scope	25 - ADS FOV ×0.4, ADS Time 0.15s	# Order Pistol
+weapon	4	26	Scope	26 - ADS FOV ×0.333, ADS Time 0.15s	# Order Pistol
+weapon	4	27	Scope Accessory	27 - Dmg ×1.09	# Order Pistol
+weapon	4	28	Scope Accessory	28 - Reload ×0.94	# Order Pistol
+weapon	4	29	Scope Accessory	29 - ADS Time ×0.8	# Order Pistol
+weapon	4	30	Scope Accessory	30 - Crit Dmg +20%	# Order Pistol
+weapon	4	31	Scope Accessory	31 - Dmg ×1.09	# Order Pistol
+weapon	4	32	Scope Accessory	32 - Reload ×0.94	# Order Pistol
+weapon	4	33	Scope Accessory	33 - ADS Time ×0.8	# Order Pistol
+weapon	4	34	Scope Accessory	34 - Crit Dmg +20%	# Order Pistol
+weapon	4	35	Grip	35 - Thrown Thrust 2	# Order Pistol
+weapon	4	36	Grip	36 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Order Pistol
+weapon	4	37	Grip	37 - Thrown Dmg ×1.5	# Order Pistol
+weapon	4	38	Grip	38 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Order Pistol
+weapon	4	39	Grip	39 - Dmg ×1.09	# Order Pistol
+weapon	4	40	Grip	40 - FR ×1.05	# Order Pistol
+weapon	4	41	Grip	41 - Reload ×0.94	# Order Pistol
+weapon	4	42	Underbarrel	42 - Ammo Switch, Mfg part selects mode	# Order Pistol
+weapon	4	43	Underbarrel	43 - Micro, Splash R 100cm (alt mode), Mag Cap 10 (alt mode), Charge 0.3s (alt mode), Charge 0.45s (alt mode), Charge-fires up to {ammo} Micro-Rockets that deal {dmg} Dmg each	# Order Pistol
+weapon	4	44	Underbarrel	44 - Energy Burst, Splash R 500cm (alt mode), Mag Cap 3 (alt mode), Charge 2s (alt mode), Charge-fires an Energy Burst, that deals up to {dmg} Dmg to nearby enemies	# Order Pistol
+weapon	4	45	Underbarrel	45 - Atlas, Charge 0.155s (alt mode), Charge 0.45s (alt mode), Tracker Darts that work for {dur}s	# Order Pistol
+weapon	4	46	Underbarrel	46 - Atlas, Splash R 350cm (alt mode), Charge 0.155s (alt mode), Charge 0.45s (alt mode), Tracker Nades that work for {dur}s	# Order Pistol
+weapon	4	47	Foregrip	47 - Crit Dmg +20%	# Order Pistol
+weapon	4	48	Foregrip	48 - Sprd ×0.91	# Order Pistol
+weapon	4	49	Manufacturer Part	49 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Order Pistol
+weapon	4	50	Manufacturer Part	50 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Order Pistol
+weapon	4	51	Manufacturer Part	51 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Order Pistol
+weapon	4	52	Manufacturer Part	52 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Order Pistol
+weapon	4	54	Barrel Accessory	54 - Dmg ×1.09	# Order Pistol
+weapon	4	55	Barrel Accessory	55 - Crit Dmg +20%	# Order Pistol
+weapon	4	56	Barrel Accessory	56 - Sprd ×0.91	# Order Pistol
+weapon	4	57	Barrel Accessory	57 - Sprd ×0.91	# Order Pistol
+weapon	4	58	Barrel Accessory	58 - Dmg ×1.09	# Order Pistol
+weapon	4	59	Barrel Accessory	59 - Sprd ×0.91	# Order Pistol
+weapon	4	60	Barrel Accessory	60 - FR ×1.05	# Order Pistol
+weapon	4	61	Barrel Accessory	61 - FR ×1.05	# Order Pistol
+weapon	4	62	Manufacturer Part	62 - Jak, Crits Ric to nearby enemies	# Order Pistol
+weapon	4	63	Tediore Payload	63 - Ted Throw, Throws a Gun on Reload	# Order Pistol
+weapon	4	64	Tediore Payload	64 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Order Pistol
+weapon	4	65	Tediore Payload	65 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Order Pistol
+weapon	4	66	Tediore Payload	66 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Order Pistol
+weapon	4	67	Manufacturer Part	67 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Order Pistol
+weapon	4	68	Foregrip	68 - Dmg ×1.09	# Order Pistol
+weapon	4	69	Manufacturer Part	69 - Tor, Splash R 100cm	# Order Pistol
+weapon	4	70	Manufacturer Part	70 - Tor, Splash R 100cm	# Order Pistol
+weapon	4	71	Magazine	71 - Tor-lic., Base 12, Reload 2s, Dmg ×1.25, FR ×0.825, Sprd ×0.9, Recl ×1.3, Acc Res ×1.9	# Order Pistol
+weapon	4	72	Underbarrel	72 - Gravity Well, Splash R 350cm (alt mode), Mag Cap 6 (alt mode), Charge 1s (alt mode), Charge-fires a Gravity Well that deals up to {dmg} Dmg and pulls in nearby enemies	# Order Pistol
+weapon	4	75	Barrel	75 - Bully, 3169 Dmg, 80% Acc, 7.0/s FR, +5% Crit	# Order Pistol
+weapon	4	78	Magazine	78 - Noisy Cricket, Base 2, Reload 1.5s	# Order Pistol
+weapon	4	79	Barrel	79 - Noisy Cricket, 10562 Dmg, 79% Acc, 3.0/s FR, +5% Crit, 2/shot, 400cm Splash	# Order Pistol
+weapon	4	81	Barrel	81 - Lucky Clover, 2905 Dmg, 75% Acc, 8.0/s FR, +5% Crit	# Order Pistol
+weapon	4	84	Barrel	84 - Roulette, 2535 Dmg, 84% Acc, 5.0/s FR, +5% Crit	# Order Pistol
+weapon	4	82	Barrel	82 - Sunspot, 2640 Dmg, 76% Acc, 8.0/s FR, +5% Crit	# Order Pistol
+weapon	4	86	Barrel	86 - Rhythm, 2640 Dmg, 76% Acc, 8.0/s FR, +5% Crit	# Order Pistol
+weapon	26	2	Body	2 - (base)	# Order Sniper
+weapon	26	3	Body Accessory	3 - Reload ×0.94	# Order Sniper
+weapon	26	4	Body Accessory	4 - Dmg ×1.09	# Order Sniper
+weapon	26	5	Body Accessory	5 - Sprd ×0.91	# Order Sniper
+weapon	26	6	Body Accessory	6 - Crit Dmg +20%	# Order Sniper
+weapon	26	7	Barrel	7 - Yuga, 5989 Dmg, 90% Acc, 1.9/s FR, +55% Crit	# Order Sniper
+weapon	26	8	Barrel	8 - Piktun, 7208 Dmg, 92% Acc, 1.5/s FR, +55% Crit	# Order Sniper
+weapon	26	9	Barrel Accessory	9 - Dmg ×1.09	# Order Sniper
+weapon	26	10	Barrel Accessory	10 - Sprd ×0.91	# Order Sniper
+weapon	26	11	Barrel Accessory	11 - Sprd ×0.91	# Order Sniper
+weapon	26	12	Barrel Accessory	12 - Dmg ×1.09	# Order Sniper
+weapon	26	13	Barrel Accessory	13 - Sprd ×0.91	# Order Sniper
+weapon	26	14	Barrel Accessory	14 - FR ×1.05	# Order Sniper
+weapon	26	15	Barrel Accessory	15 - FR ×1.05	# Order Sniper
+weapon	26	16	Manufacturer Part	16 - Jak, Crits Ric to nearby enemies	# Order Sniper
+weapon	26	17	Tediore Payload	17 - Ted Throw, Thrown Dmg ×0.5, Throws a Gun on Reload	# Order Sniper
+weapon	26	18	Tediore Payload	18 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Order Sniper
+weapon	26	19	Tediore Payload	19 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Order Sniper
+weapon	26	20	Tediore Payload	20 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Order Sniper
+weapon	26	21	Manufacturer Part	21 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Order Sniper
+weapon	26	22	Barrel Accessory	22 - Crit Dmg +20%	# Order Sniper
+weapon	26	23	Manufacturer Part	23 - Hyp, Zoom to enable Gun Shlds	# Order Sniper
+weapon	26	24	Manufacturer Part	24 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Order Sniper
+weapon	26	25	Manufacturer Part	25 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Order Sniper
+weapon	26	26	Manufacturer Part	26 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Order Sniper
+weapon	26	27	Magazine	27 - Base 12, Reload 2.3s	# Order Sniper
+weapon	26	28	Magazine	28 - Base 15, Reload 2.7s, Dmg ×0.975	# Order Sniper
+weapon	26	29	Magazine	29 - CoV, ~20 shots→OH, Cool 0.35/s, Cool Del 1.75s, OH Repair 3.7s	# Order Sniper
+weapon	26	30	Magazine	30 - Rip, Borg-lic., Base 18, Reload 2.1s, Charge 1s, Dmg ×0.9, FR ×1.2	# Order Sniper
+weapon	26	31	Tediore Throw Reload	31 - Throwload 1.6s, Reload@ 75%	# Order Sniper
+weapon	26	32	Tediore Throw Reload	32 - Throwload 1.6s, Reload@ 75%	# Order Sniper
+weapon	26	33	Tediore Throw Reload	33 - Throwload 1.6s, Reload@ 75%	# Order Sniper
+weapon	26	34	Tediore Throw Reload	34 - Throwload 3s, Reload@ 75%	# Order Sniper
+weapon	26	35	Tediore Throw Reload	35 - Throwload 3s, Reload@ 75%	# Order Sniper
+weapon	26	36	Scope	36 - ADS FOV ×0.75, ADS Time 0.375s	# Order Sniper
+weapon	26	37	Scope	37 - ADS FOV ×0.286, ADS Time 0.375s	# Order Sniper
+weapon	26	38	Scope	38 - ADS FOV ×0.222, ADS Time 0.375s	# Order Sniper
+weapon	26	39	Scope	39 - ADS FOV ×0.182, ADS Time 0.375s	# Order Sniper
+weapon	26	40	Scope	40 - ADS FOV ×0.154, ADS Time 0.5s	# Order Sniper
+weapon	26	41	Scope Accessory	41 - Dmg ×1.09	# Order Sniper
+weapon	26	42	Scope Accessory	42 - Reload ×0.94	# Order Sniper
+weapon	26	43	Scope Accessory	43 - ADS Time ×0.8	# Order Sniper
+weapon	26	44	Scope Accessory	44 - Crit Dmg +20%	# Order Sniper
+weapon	26	45	Scope Accessory	45 - Dmg ×1.09	# Order Sniper
+weapon	26	46	Scope Accessory	46 - Reload ×0.94	# Order Sniper
+weapon	26	47	Scope Accessory	47 - ADS Time ×0.8	# Order Sniper
+weapon	26	48	Scope Accessory	48 - Crit Dmg +20%	# Order Sniper
+weapon	26	49	Grip	49 - Thrown Thrust 2	# Order Sniper
+weapon	26	50	Grip	50 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Order Sniper
+weapon	26	51	Grip	51 - Thrown Dmg ×1.5	# Order Sniper
+weapon	26	52	Grip	52 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Order Sniper
+weapon	26	53	Grip	53 - Dmg ×1.09	# Order Sniper
+weapon	26	54	Grip	54 - FR ×1.05	# Order Sniper
+weapon	26	55	Grip	55 - Reload ×0.94	# Order Sniper
+weapon	26	56	Underbarrel	56 - Ammo Switch, Mfg part selects mode	# Order Sniper
+weapon	26	57	Underbarrel	57 - Tether Snare, Splash R 50cm (alt mode), Mag Cap 6 (alt mode), Charge 0.205s (alt mode), Charge 0.45s (alt mode), Tether that creates Beams btwn all other Tethers, dealing {dmg} Dmg/s	# Order Sniper
+weapon	26	58	Underbarrel	58 - Railgun, Splash R 150cm (alt mode), Mag Cap 10 (alt mode), Charge 1s (alt mode), Charge-fires dual Railguns that deal {dmg}x{projectiles} Dmg per shot	# Order Sniper
+weapon	26	59	Underbarrel	59 - Atlas, Mag Cap 1 (alt mode), Charge 0.155s (alt mode), Charge 0.45s (alt mode), Tracker Darts that work for {dur}s	# Order Sniper
+weapon	26	60	Foregrip	60 - Crit Dmg +20%	# Order Sniper
+weapon	26	61	Foregrip	61 - Sprd ×0.91	# Order Sniper
+weapon	26	62	Underbarrel	62 - Ordonite Spike, Splash R 350cm (alt mode), Mag Cap 3 (alt mode), Charge 0.205s (alt mode), Charge 0.45s (alt mode), Launches a Spike that drains power from nearby enemies before exploding for up to {dmg} Dmg	# Order Sniper
+weapon	26	63	Underbarrel	63 - Atlas, Splash R 350cm (alt mode), Mag Cap 1 (alt mode), Charge 0.155s (alt mode), Charge 0.45s (alt mode), Tracker Nades that work for {dur}s	# Order Sniper
+weapon	26	64	Foregrip	64 - Dmg ×1.09	# Order Sniper
+weapon	26	65	Manufacturer Part	65 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Order Sniper
+weapon	26	66	Manufacturer Part	66 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Order Sniper
+weapon	26	67	Manufacturer Part	67 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Order Sniper
+weapon	26	68	Manufacturer Part	68 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Order Sniper
+weapon	26	69	Manufacturer Part	69 - Tor, Splash R 100cm	# Order Sniper
+weapon	26	70	Manufacturer Part	70 - Tor, Splash R 100cm	# Order Sniper
+weapon	26	71	Magazine	71 - Tor-lic., Base 9, Reload 2.1s, Dmg ×1.275, FR ×0.8	# Order Sniper
+weapon	26	72	Barrel	72 - Symmetry, 7208 Dmg, 87% Acc, 1.3/s FR, +55% Crit	# Order Sniper
+weapon	26	74	Magazine	74 - Fisheye, Base 3, Reload 2.3s	# Order Sniper
+weapon	26	75	Barrel	75 - Fisheye, 11644 Dmg, 83% Acc, 1.1/s FR, +95% Crit	# Order Sniper
+weapon	26	77	Underbarrel	77 - Rooker, Splash R 75cm (alt mode), Mag Cap 10 (alt mode), Charge 1s (alt mode)	# Order Sniper
+weapon	26	78	Barrel	78 - Rooker, 5545 Dmg, 83% Acc, 2.0/s FR, +55% Crit	# Order Sniper
+weapon	26	83	Barrel	83 - Solar Temper, 6820 Dmg, 87% Acc, 1.3/s FR, +55% Crit, 125cm Splash	# Order Sniper
+weapon	26	80	Foregrip	80 - Tether Snare, Splash R 50cm (alt mode), Mag Cap 6 (alt mode), Charge 0.45s (alt mode)	# Order Sniper
+weapon	26	81	Barrel	81 - Ishmael, 6654 Dmg, 82% Acc, 2.0/s FR, +55% Crit, 25cm Splash	# Order Sniper
+weapon	7	1	Barrel	1 - Goremaster, 825x6 Dmg, 70% Acc, 3.0/s FR, 75cm Splash	# Ripper Shotgun
+weapon	7	2	Body	2 - (base)	# Ripper Shotgun
+weapon	7	3	Body Accessory	3 - Reload ×0.94	# Ripper Shotgun
+weapon	7	4	Body Accessory	4 - Mag Cap ×1.15	# Ripper Shotgun
+weapon	7	5	Body Accessory	5 - Sprd ×0.925	# Ripper Shotgun
+weapon	7	6	Body Accessory	6 - No stat changes	# Ripper Shotgun
+weapon	7	7	Barrel	7 - Weldwyrm, 891x4 Dmg, 63% Acc, 4.5/s FR, 50cm Splash	# Ripper Shotgun
+weapon	7	8	Barrel	8 - Hellhound, 743x6 Dmg, 70% Acc, 3.0/s FR, 75cm Splash	# Ripper Shotgun
+weapon	7	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Ripper Shotgun
+weapon	7	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Ripper Shotgun
+weapon	7	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Ripper Shotgun
+weapon	7	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Ripper Shotgun
+weapon	7	13	Magazine	13 - CoV, ~20 shots→OH, Cool 0.22/s, Cool Del 3.1s, OH Repair 3.2s, Dmg ×0.995, Sprd ×1.2, Recl ×1.2	# Ripper Shotgun
+weapon	7	14	Magazine	14 - Tor-lic., Base 10, Reload 2.6s, Dmg ×1.438, FR ×0.875	# Ripper Shotgun
+weapon	7	15	Magazine	15 - Base 15, Reload 2.4s	# Ripper Shotgun
+weapon	7	16	Magazine	16 - Borg-lic., Base 20, Reload 2.6s, Dmg ×0.95	# Ripper Shotgun
+weapon	7	17	Magazine	17 - Golden God, COV, ~20 shots→OH, Cool 0.22/s, Cool Del 3.1s, OH Repair 3.2s, Dmg ×0.995, Sprd ×1.2, Recl ×1.2	# Ripper Shotgun
+weapon	7	18	Barrel	18 - Golden God, 891x4 Dmg, 63% Acc, 4.5/s FR, 50cm Splash	# Ripper Shotgun
+weapon	7	22	Tediore Throw Reload	22 - Throwload 2s, Reload@ 75%	# Ripper Shotgun
+weapon	7	23	Tediore Throw Reload	23 - Throwload 2s, Reload@ 75%	# Ripper Shotgun
+weapon	7	24	Tediore Throw Reload	24 - Throwload 2s, Reload@ 75%	# Ripper Shotgun
+weapon	7	25	Tediore Throw Reload	25 - Throwload 3s, Reload@ 75%	# Ripper Shotgun
+weapon	7	26	Scope	26 - ADS FOV ×0.333, ADS Time 0.2s	# Ripper Shotgun
+weapon	7	27	Scope	27 - ADS FOV ×0.4, ADS Time 0.2s	# Ripper Shotgun
+weapon	7	28	Scope	28 - ADS FOV ×0.5, ADS Time 0.2s	# Ripper Shotgun
+weapon	7	29	Scope	29 - ADS FOV ×0.667, ADS Time 0.2s	# Ripper Shotgun
+weapon	7	30	Scope	30 - ADS FOV ×0.75, ADS Time 0.2s	# Ripper Shotgun
+weapon	7	31	Scope Accessory	31 - Dmg ×1.075	# Ripper Shotgun
+weapon	7	32	Scope Accessory	32 - Reload ×0.94	# Ripper Shotgun
+weapon	7	33	Scope Accessory	33 - ADS Time ×0.8	# Ripper Shotgun
+weapon	7	34	Scope Accessory	34 - Crit Dmg +20%	# Ripper Shotgun
+weapon	7	35	Scope Accessory	35 - Dmg ×1.075	# Ripper Shotgun
+weapon	7	36	Scope Accessory	36 - Reload ×0.94	# Ripper Shotgun
+weapon	7	37	Scope Accessory	37 - ADS Time ×0.8	# Ripper Shotgun
+weapon	7	38	Scope Accessory	38 - Crit Dmg +20%	# Ripper Shotgun
+weapon	7	39	Grip	39 - Thrown Thrust 2	# Ripper Shotgun
+weapon	7	40	Grip	40 - Thrown Dmg ×1.5	# Ripper Shotgun
+weapon	7	41	Grip	41 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Ripper Shotgun
+weapon	7	42	Grip	42 - Dmg ×1.075	# Ripper Shotgun
+weapon	7	43	Grip	43 - FR ×1.058	# Ripper Shotgun
+weapon	7	44	Grip	44 - Reload ×0.94	# Ripper Shotgun
+weapon	7	45	Grip	45 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Ripper Shotgun
+weapon	7	46	Underbarrel	46 - Atlas, Splash R 350cm (alt mode), Charge 0.75s (alt mode), Tracker Nades that work for {dur}s	# Ripper Shotgun
+weapon	7	47	Underbarrel	47 - Atlas, Charge 0.75s (alt mode), Tracker Darts that work for {dur}s	# Ripper Shotgun
+weapon	7	48	Underbarrel	48 - Lightning Beam, Mag Cap 20 (alt mode), Charge 0.75s (alt mode), Beam that deals {dmg} Shock Dmg/s and can chain to an additional target	# Ripper Shotgun
+weapon	7	49	Underbarrel	49 - Gauss Gun, Proj 8/shot (alt mode), Mag Cap 4 (alt mode), Charge 1.25s (alt mode), Charge-fires a Projectile that deals {dmg} Dmg	# Ripper Shotgun
+weapon	7	50	Foregrip	50 - Dmg ×1.075	# Ripper Shotgun
+weapon	7	51	Foregrip	51 - Sprd ×0.925	# Ripper Shotgun
+weapon	7	52	Underbarrel	52 - Ammo Switch, Mfg part selects mode	# Ripper Shotgun
+weapon	7	53	Underbarrel	53 - Switch btwn 2 configured elements	# Ripper Shotgun
+weapon	7	60	Manufacturer Part	60 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Ripper Shotgun
+weapon	7	61	Manufacturer Part	61 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Ripper Shotgun
+weapon	7	62	Manufacturer Part	62 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Ripper Shotgun
+weapon	7	63	Manufacturer Part	63 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Ripper Shotgun
+weapon	7	64	Barrel	64 - Hellhound, 924x6 Dmg, 70% Acc, 3.0/s FR, 75cm Splash	# Ripper Shotgun
+weapon	7	66	Barrel Accessory	66 - Dmg ×1.075	# Ripper Shotgun
+weapon	7	67	Barrel Accessory	67 - ADS Time ×0.9, Reload ×0.97	# Ripper Shotgun
+weapon	7	68	Barrel Accessory	68 - Dmg ×1.075	# Ripper Shotgun
+weapon	7	69	Barrel Accessory	69 - Sprd ×0.925	# Ripper Shotgun
+weapon	7	70	Barrel Accessory	70 - Dmg ×1.075	# Ripper Shotgun
+weapon	7	71	Barrel Accessory	71 - Sprd ×0.925	# Ripper Shotgun
+weapon	7	72	Barrel Accessory	72 - FR ×1.058	# Ripper Shotgun
+weapon	7	73	Barrel Accessory	73 - FR ×1.058	# Ripper Shotgun
+weapon	7	74	Manufacturer Part	74 - Jak, Crits Ric to nearby enemies	# Ripper Shotgun
+weapon	7	75	Tediore Payload	75 - Ted Throw, Throws a Gun on Reload	# Ripper Shotgun
+weapon	7	76	Tediore Payload	76 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Ripper Shotgun
+weapon	7	77	Tediore Payload	77 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Ripper Shotgun
+weapon	7	78	Tediore Payload	78 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Ripper Shotgun
+weapon	7	79	Manufacturer Part	79 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Ripper Shotgun
+weapon	7	80	Underbarrel	80 - Fuel Rod Discharge, Splash R 600cm (alt mode), Charge 0.75s (alt mode), spent Fuel Rod that explodes after 3s and deals {dmg} Radn Dmg	# Ripper Shotgun
+weapon	7	81	Foregrip	81 - FR ×1.058	# Ripper Shotgun
+weapon	7	82	Manufacturer Part	82 - Tor, Splash R 100cm	# Ripper Shotgun
+weapon	7	83	Manufacturer Part	83 - Tor, Splash R 100cm	# Ripper Shotgun
+weapon	7	55	Barrel	55 - Hair Trigger, 10892 Dmg, 70% Acc, 1.3/s FR, 400cm Splash	# Ripper Shotgun
+weapon	7	21	Barrel	21 - Crazed Earl, 3169x2 Dmg, 63% Acc, 4.5/s FR, 10cm Splash	# Ripper Shotgun
+weapon	7	58	Magazine	58 - Crazed Earl, Base 15, Reload 2.4s	# Ripper Shotgun
+weapon	7	57	Magazine	57 - Crazed Earl, Borg-lic., Base 20, Reload 2.6s, Dmg ×0.95	# Ripper Shotgun
+weapon	19	2	Body	2 - (base)	# Ripper SMG
+weapon	19	3	Body Accessory	3 - Reload ×0.94	# Ripper SMG
+weapon	19	4	Body Accessory	4 - Mag Cap ×1.15	# Ripper SMG
+weapon	19	5	Body Accessory	5 - Sprd ×0.925	# Ripper SMG
+weapon	19	6	Body Accessory	6 - No stat changes	# Ripper SMG
+weapon	19	7	Barrel	7 - Phage, 1796 Dmg, 72% Acc, 6.8/s FR	# Ripper SMG
+weapon	19	8	Barrel	8 - Infestation, 2007 Dmg, 79% Acc, 5.5/s FR	# Ripper SMG
+weapon	19	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Ripper SMG
+weapon	19	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Ripper SMG
+weapon	19	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Ripper SMG
+weapon	19	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Ripper SMG
+weapon	19	13	Magazine	13 - Borg-lic., Base 25, Reload 2.1s	# Ripper SMG
+weapon	19	14	Magazine	14 - Base 30, Reload 2.65s	# Ripper SMG
+weapon	19	15	Magazine	15 - Tor-lic., Base 20, Reload 2.4s, Dmg ×1.288, FR ×0.85	# Ripper SMG
+weapon	19	16	Magazine	16 - CoV, ~25 shots→OH, Cool 0.2/s, Cool Del 2.5s, OH Repair 3.1s, Dmg ×1.062, Sprd ×1.4, Recl ×1.4	# Ripper SMG
+weapon	19	17	Barrel	17 - Prince Harming, 2007 Dmg, 79% Acc, 5.5/s FR	# Ripper SMG
+weapon	19	20	Barrel	20 - Hellfire, 2324 Dmg, 70% Acc, 6.8/s FR, 25cm Splash	# Ripper SMG
+weapon	19	21	Underbarrel	21 - Roil, Charge 0.2s (alt mode)	# Ripper SMG
+weapon	19	22	Tediore Throw Reload	22 - Throwload 2s, Reload@ 75%	# Ripper SMG
+weapon	19	23	Tediore Throw Reload	23 - Throwload 2s, Reload@ 75%	# Ripper SMG
+weapon	19	24	Tediore Throw Reload	24 - Throwload 2s, Reload@ 75%	# Ripper SMG
+weapon	19	25	Tediore Throw Reload	25 - Throwload 3s, Reload@ 75%	# Ripper SMG
+weapon	19	26	Scope	26 - ADS FOV ×0.75, ADS Time 0.17s	# Ripper SMG
+weapon	19	27	Scope	27 - ADS FOV ×0.667, ADS Time 0.17s	# Ripper SMG
+weapon	19	28	Scope	28 - ADS FOV ×0.5, ADS Time 0.17s	# Ripper SMG
+weapon	19	29	Scope	29 - ADS FOV ×0.4, ADS Time 0.17s	# Ripper SMG
+weapon	19	30	Scope	30 - ADS FOV ×0.333, ADS Time 0.17s	# Ripper SMG
+weapon	19	31	Scope Accessory	31 - Dmg ×1.075	# Ripper SMG
+weapon	19	32	Scope Accessory	32 - Reload ×0.94	# Ripper SMG
+weapon	19	33	Scope Accessory	33 - ADS Time ×0.8	# Ripper SMG
+weapon	19	34	Scope Accessory	34 - Crit Dmg +20%	# Ripper SMG
+weapon	19	35	Scope Accessory	35 - Dmg ×1.075	# Ripper SMG
+weapon	19	36	Scope Accessory	36 - Reload ×0.94	# Ripper SMG
+weapon	19	37	Scope Accessory	37 - ADS Time ×0.8	# Ripper SMG
+weapon	19	38	Scope Accessory	38 - Crit Dmg +20%	# Ripper SMG
+weapon	19	39	Grip	39 - Thrown Dmg ×1.5	# Ripper SMG
+weapon	19	40	Grip	40 - Thrown Thrust 2	# Ripper SMG
+weapon	19	41	Grip	41 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Ripper SMG
+weapon	19	42	Grip	42 - Dmg ×1.075	# Ripper SMG
+weapon	19	43	Grip	43 - FR ×1.058	# Ripper SMG
+weapon	19	44	Grip	44 - Reload ×0.94	# Ripper SMG
+weapon	19	45	Grip	45 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Ripper SMG
+weapon	19	46	Underbarrel	46 - Gas Trap, Splash R 400cm (alt mode), Mag Cap 3 (alt mode), Charge 0.45s (alt mode), Projectile that explodes, causing a cloud of Noxious Gas that deals {dmg} Corr Dmg to enemies over time	# Ripper SMG
+weapon	19	47	Underbarrel	47 - Rip Rocket Launcher, Mag Cap 12 (alt mode), Splash R 400cm (alt mode), Burst Count 6 (alt mode), Burst Delay 0.75s (alt mode), Charge 0.75s (alt mode), Launches bursts of 6 Rockets that deal {dmg} Dmg	# Ripper SMG
+weapon	19	48	Underbarrel	48 - Switch btwn 2 configured elements, Charge 0.45s (alt mode)	# Ripper SMG
+weapon	19	49	Underbarrel	49 - Atlas, Charge 0.45s (alt mode), Tracker Darts that work for {dur}s	# Ripper SMG
+weapon	19	50	Foregrip	50 - Dmg ×1.075	# Ripper SMG
+weapon	19	51	Foregrip	51 - Sprd ×0.925	# Ripper SMG
+weapon	19	52	Underbarrel	52 - Shrapnel Cannon, Proj 8/shot (alt mode), Mag Cap 3 (alt mode), Charge 0.45s (alt mode), shrapnel that deals {dmg}x{projectiles} Dmg per shot	# Ripper SMG
+weapon	19	53	Underbarrel	53 - Atlas, Splash R 350cm (alt mode), Charge 0.45s (alt mode), Tracker Nades that work for {dur}s	# Ripper SMG
+weapon	19	54	Underbarrel	54 - Ammo Switch, Mfg part selects mode	# Ripper SMG
+weapon	19	55	Foregrip	55 - FR ×1.058	# Ripper SMG
+weapon	19	57	Barrel	57 - Roil, 2218 Dmg, 70% Acc, 6.8/s FR, 25cm Splash	# Ripper SMG
+weapon	19	62	Manufacturer Part	62 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Ripper SMG
+weapon	19	63	Manufacturer Part	63 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Ripper SMG
+weapon	19	64	Manufacturer Part	64 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Ripper SMG
+weapon	19	65	Manufacturer Part	65 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Ripper SMG
+weapon	19	66	Barrel Accessory	66 - Dmg ×1.075	# Ripper SMG
+weapon	19	67	Barrel Accessory	67 - ADS Time ×0.9, Reload ×0.97	# Ripper SMG
+weapon	19	68	Barrel Accessory	68 - Dmg ×1.075	# Ripper SMG
+weapon	19	69	Barrel Accessory	69 - Sprd ×0.925	# Ripper SMG
+weapon	19	70	Barrel Accessory	70 - Dmg ×1.075	# Ripper SMG
+weapon	19	71	Barrel Accessory	71 - Sprd ×0.925	# Ripper SMG
+weapon	19	72	Barrel Accessory	72 - FR ×1.058	# Ripper SMG
+weapon	19	73	Barrel Accessory	73 - FR ×1.058	# Ripper SMG
+weapon	19	74	Manufacturer Part	74 - Jak, Crits Ric to nearby enemies	# Ripper SMG
+weapon	19	75	Tediore Payload	75 - Ted Throw, Throws a Gun on Reload	# Ripper SMG
+weapon	19	76	Tediore Payload	76 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Ripper SMG
+weapon	19	77	Tediore Payload	77 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Ripper SMG
+weapon	19	78	Tediore Payload	78 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Ripper SMG
+weapon	19	79	Manufacturer Part	79 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Ripper SMG
+weapon	19	80	Manufacturer Part	80 - Tor, Splash R 100cm	# Ripper SMG
+weapon	19	81	Manufacturer Part	81 - Tor, Splash R 100cm	# Ripper SMG
+weapon	19	58	Barrel	58 - Falke, 1426x3 Dmg, 70% Acc, 6.8/s FR, 25cm Splash	# Ripper SMG
+weapon	19	60	Barrel	60 - Jail-Broken Gatling, 2852 Dmg, 59% Acc, 5.0/s FR, 25cm Splash	# Ripper SMG
+weapon	23	2	Body	2 - (base)	# Ripper Sniper
+weapon	23	3	Body Accessory	3 - Reload ×0.94	# Ripper Sniper
+weapon	23	4	Body Accessory	4 - Mag Cap ×1.15	# Ripper Sniper
+weapon	23	5	Body Accessory	5 - Sprd ×0.925	# Ripper Sniper
+weapon	23	6	Body Accessory	6 - No stat changes	# Ripper Sniper
+weapon	23	7	Barrel	7 - Nullsaint, 5323 Dmg, 90% Acc, 2.3/s FR, +50% Crit	# Ripper Sniper
+weapon	23	8	Barrel	8 - Daemon, 6266 Dmg, 88% Acc, 1.5/s FR, +50% Crit	# Ripper Sniper
+weapon	23	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Ripper Sniper
+weapon	23	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Ripper Sniper
+weapon	23	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Ripper Sniper
+weapon	23	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Ripper Sniper
+weapon	23	13	Magazine	13 - Borg-lic., Base 10, Reload 2.87s	# Ripper Sniper
+weapon	23	14	Magazine	14 - Borg-lic., Base 15, Reload 3.1s, Dmg ×0.9	# Ripper Sniper
+weapon	23	15	Magazine	15 - CoV, ~14.8 shots→OH, Cool 0.3/s, Cool Del 3s, OH Repair 4s, Dmg ×0.925	# Ripper Sniper
+weapon	23	16	Manufacturer Part	16 - Tor, Splash R 100cm	# Ripper Sniper
+weapon	23	17	Manufacturer Part	17 - Tor, Splash R 100cm	# Ripper Sniper
+weapon	23	20	Barrel	20 - Stray, 3327x3 Dmg, 90% Acc, 2.3/s FR, +50% Crit	# Ripper Sniper
+weapon	23	21	Barrel	21 - Vamoose, 8317 Dmg, 93% Acc, 9.0/s FR, +50% Crit	# Ripper Sniper
+weapon	23	23	Tediore Throw Reload	23 - Throwload 1.6s, Reload@ 75%	# Ripper Sniper
+weapon	23	24	Tediore Throw Reload	24 - Throwload 1.6s, Reload@ 75%	# Ripper Sniper
+weapon	23	25	Tediore Throw Reload	25 - Throwload 1.6s, Reload@ 75%	# Ripper Sniper
+weapon	23	26	Scope	26 - ADS FOV ×0.75, ADS Time 0.375s	# Ripper Sniper
+weapon	23	27	Scope	27 - ADS FOV ×0.25, ADS Time 0.375s	# Ripper Sniper
+weapon	23	28	Scope	28 - ADS FOV ×0.286, ADS Time 0.375s	# Ripper Sniper
+weapon	23	29	Scope	29 - ADS FOV ×0.2, ADS Time 0.375s	# Ripper Sniper
+weapon	23	30	Scope	30 - ADS FOV ×0.222, ADS Time 0.375s	# Ripper Sniper
+weapon	23	31	Scope Accessory	31 - Dmg ×1.075	# Ripper Sniper
+weapon	23	32	Scope Accessory	32 - Reload ×0.94	# Ripper Sniper
+weapon	23	33	Scope Accessory	33 - ADS Time ×0.8	# Ripper Sniper
+weapon	23	34	Scope Accessory	34 - Crit Dmg +20%	# Ripper Sniper
+weapon	23	35	Scope Accessory	35 - Dmg ×1.075	# Ripper Sniper
+weapon	23	36	Scope Accessory	36 - Reload ×0.94	# Ripper Sniper
+weapon	23	37	Scope Accessory	37 - ADS Time ×0.8	# Ripper Sniper
+weapon	23	38	Scope Accessory	38 - Crit Dmg +20%	# Ripper Sniper
+weapon	23	39	Grip	39 - Thrown Dmg ×1.5	# Ripper Sniper
+weapon	23	40	Grip	40 - Thrown Thrust 2	# Ripper Sniper
+weapon	23	41	Grip	41 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Ripper Sniper
+weapon	23	42	Grip	42 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Ripper Sniper
+weapon	23	43	Grip	43 - Dmg ×1.075	# Ripper Sniper
+weapon	23	44	Grip	44 - FR ×1.058	# Ripper Sniper
+weapon	23	45	Grip	45 - Reload ×0.94	# Ripper Sniper
+weapon	23	46	Underbarrel	46 - Switch btwn 2 configured elements	# Ripper Sniper
+weapon	23	47	Underbarrel	47 - Seeker Missiles, Splash R 100cm (alt mode), Cost 4/shot (alt mode), Proj 3/shot (alt mode), Mag Cap 12 (alt mode), Charge 0.45s (alt mode), Missiles that deal {dmg} Dmg each	# Ripper Sniper
+weapon	23	48	Underbarrel	48 - Gravity Trap, Splash R 600cm (alt mode), Charge 0.45s (alt mode), Singularity that deals {dmg} Dmg, and pulls in nearby enemies	# Ripper Sniper
+weapon	23	49	Underbarrel	49 - Atlas, Proj 3/shot (alt mode), Charge 0.45s (alt mode), Tracker Darts that work for {dur}s	# Ripper Sniper
+weapon	23	50	Foregrip	50 - Dmg ×1.075	# Ripper Sniper
+weapon	23	51	Foregrip	51 - Sprd ×0.925	# Ripper Sniper
+weapon	23	52	Foregrip	52 - FR ×1.058	# Ripper Sniper
+weapon	23	53	Underbarrel	53 - Ammo Switch, Mfg part selects mode	# Ripper Sniper
+weapon	23	54	Underbarrel	54 - Atlas, Splash R 350cm (alt mode), Charge 0.45s (alt mode), Tracker Nades that work for {dur}s	# Ripper Sniper
+weapon	23	55	Underbarrel	55 - Target Marker, Splash R 200cm (alt mode), Charge 0.45s (alt mode), Marker that deals {dmg} Dmg, Marking the enemy to receive an additional {dmg_pct} Dmg for {dur}s	# Ripper Sniper
+weapon	23	58	Barrel	58 - Rainmaker, 2329 Dmg, 93% Acc, 14.0/s FR, +50% Crit	# Ripper Sniper
+weapon	23	62	Manufacturer Part	62 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Ripper Sniper
+weapon	23	63	Manufacturer Part	63 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Ripper Sniper
+weapon	23	64	Manufacturer Part	64 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Ripper Sniper
+weapon	23	65	Manufacturer Part	65 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Ripper Sniper
+weapon	23	66	Barrel Accessory	66 - Dmg ×1.075	# Ripper Sniper
+weapon	23	67	Barrel Accessory	67 - ADS Time ×0.9, Reload ×0.97	# Ripper Sniper
+weapon	23	68	Barrel Accessory	68 - Dmg ×1.075	# Ripper Sniper
+weapon	23	69	Barrel Accessory	69 - Sprd ×0.925	# Ripper Sniper
+weapon	23	70	Barrel Accessory	70 - Dmg ×1.075	# Ripper Sniper
+weapon	23	71	Barrel Accessory	71 - Sprd ×0.925	# Ripper Sniper
+weapon	23	72	Barrel Accessory	72 - FR ×1.058	# Ripper Sniper
+weapon	23	73	Barrel Accessory	73 - FR ×1.058	# Ripper Sniper
+weapon	23	74	Manufacturer Part	74 - Jak, Crits Ric to nearby enemies	# Ripper Sniper
+weapon	23	75	Tediore Payload	75 - Ted Throw, Throws a Gun on Reload	# Ripper Sniper
+weapon	23	76	Tediore Payload	76 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Ripper Sniper
+weapon	23	77	Tediore Payload	77 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Ripper Sniper
+weapon	23	78	Tediore Payload	78 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Ripper Sniper
+weapon	23	79	Manufacturer Part	79 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Ripper Sniper
+weapon	23	80	Tediore Throw Reload	80 - Throwload 3s, Reload@ 75%	# Ripper Sniper
+weapon	23	81	Magazine	81 - Tor-lic., Base 8, Reload 2.3s, Dmg ×1.25, FR ×0.8	# Ripper Sniper
+weapon	23	22	Barrel	22 - Tankbuster, 11090 Dmg, 92% Acc, 2.5/s FR, +50% Crit, 2/shot	# Ripper Sniper
+weapon	23	59	Scope Accessory	59 - Reload ×0.94	# Ripper Sniper
+weapon	23	60	Barrel	60 - Abyss, 6654 Dmg, 93% Acc, 9.0/s FR, +50% Crit	# Ripper Sniper
+weapon	14	1	Magazine	1 - Chuck, Base 22, Reload 2.2s, Thrown Dmg ×5, FR ×3	# Tediore Assault Rifle
+weapon	14	2	Body	2 - (base)	# Tediore Assault Rifle
+weapon	14	3	Body Accessory	3 - Splash Dmg ×1.18, Splash R ×1.18, Thrown Dmg ×1.18	# Tediore Assault Rifle
+weapon	14	4	Body Accessory	4 - Mag Cap ×1.18	# Tediore Assault Rifle
+weapon	14	5	Body Accessory	5 - Sprd ×0.925	# Tediore Assault Rifle
+weapon	14	6	Body Accessory	6 - No stat changes	# Tediore Assault Rifle
+weapon	14	7	Barrel	7 - Assaultomatic, 2324 Dmg, 71% Acc, 4.5/s FR	# Tediore Assault Rifle
+weapon	14	8	Barrel	8 - Perforator, 2730 Dmg, 78% Acc, 3.7/s FR	# Tediore Assault Rifle
+weapon	14	9	Tediore Payload	9 - Ted Shooting, Shooting - Thrown Gun shoots enemies until out of Ammo	# Tediore Assault Rifle
+weapon	14	10	Tediore Payload	10 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Tediore Assault Rifle
+weapon	14	11	Tediore Payload	11 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Tediore Assault Rifle
+weapon	14	12	Tediore Payload	12 - Ted Replicator, Replicator - Throws additional Gun on Reload	# Tediore Assault Rifle
+weapon	14	13	Manufacturer Part	13 - Ted, Shooting Combo - Thrown Gun shoots enemies and can be shot to increase the explosion's Dmg	# Tediore Assault Rifle
+weapon	14	14	Manufacturer Part	14 - Ted, MIRV Combo - Thrown Gun can be shot to increase the explosion's Dmg and spawns 4 Nades on impact	# Tediore Assault Rifle
+weapon	14	15	Manufacturer Part	15 - Ted, Combo Replicator - Throws 2 Guns that can be shot to increase the explosion's Dmg	# Tediore Assault Rifle
+weapon	14	16	Manufacturer Part	16 - Ted, Combo Replicator - Throws 2 Guns that can be shot to increase the explosion's Dmg	# Tediore Assault Rifle
+weapon	14	17	Manufacturer Part	17 - Hyp, Zoom to enable Gun Shlds	# Tediore Assault Rifle
+weapon	14	18	Manufacturer Part	18 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Tediore Assault Rifle
+weapon	14	19	Manufacturer Part	19 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Tediore Assault Rifle
+weapon	14	20	Manufacturer Part	20 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Tediore Assault Rifle
+weapon	14	21	Scope	21 - ADS FOV ×0.25, ADS Time 0.248s	# Tediore Assault Rifle
+weapon	14	22	Scope	22 - ADS FOV ×0.333, ADS Time 0.248s	# Tediore Assault Rifle
+weapon	14	23	Scope	23 - ADS FOV ×0.667, ADS Time 0.248s	# Tediore Assault Rifle
+weapon	14	24	Scope	24 - ADS FOV ×0.5, ADS Time 0.248s	# Tediore Assault Rifle
+weapon	14	25	Scope	25 - ADS FOV ×0.75, ADS Time 0.248s	# Tediore Assault Rifle
+weapon	14	26	Scope Accessory	26 - Dmg ×1.075	# Tediore Assault Rifle
+weapon	14	27	Scope Accessory	27 - Reload ×0.928	# Tediore Assault Rifle
+weapon	14	28	Scope Accessory	28 - ADS Time ×0.8	# Tediore Assault Rifle
+weapon	14	29	Scope Accessory	29 - Crit Dmg +20%	# Tediore Assault Rifle
+weapon	14	30	Scope Accessory	30 - Dmg ×1.075	# Tediore Assault Rifle
+weapon	14	31	Scope Accessory	31 - Reload ×0.928	# Tediore Assault Rifle
+weapon	14	32	Scope Accessory	32 - ADS Time ×0.8	# Tediore Assault Rifle
+weapon	14	33	Scope Accessory	33 - Crit Dmg +20%	# Tediore Assault Rifle
+weapon	14	34	Barrel	34 - Chuck, 2324 Dmg, 77% Acc, 3.4/s FR	# Tediore Assault Rifle
+weapon	14	39	Barrel	39 - Divided Focus, 2905 Dmg, 72% Acc, 4.0/s FR	# Tediore Assault Rifle
+weapon	14	40	Tediore Payload	40 - Ted Multi-Replicator, No stat changes	# Tediore Assault Rifle
+weapon	14	41	Grip	41 - Thrown Dmg ×1.5	# Tediore Assault Rifle
+weapon	14	42	Grip	42 - Thrown Thrust 2	# Tediore Assault Rifle
+weapon	14	43	Grip	43 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Tediore Assault Rifle
+weapon	14	44	Grip	44 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Tediore Assault Rifle
+weapon	14	45	Grip	45 - Dmg ×1.075	# Tediore Assault Rifle
+weapon	14	46	Grip	46 - FR ×1.05	# Tediore Assault Rifle
+weapon	14	47	Grip	47 - Mag Cap ×1.18	# Tediore Assault Rifle
+weapon	14	48	Grip	48 - Thrown Dmg ×1.5	# Tediore Assault Rifle
+weapon	14	49	Manufacturer Part	49 - Murmur, Splash R 100cm	# Tediore Assault Rifle
+weapon	14	50	Manufacturer Part	50 - Murmur, Splash R 100cm	# Tediore Assault Rifle
+weapon	14	51	Barrel Accessory	51 - Dmg ×1.075	# Tediore Assault Rifle
+weapon	14	52	Barrel Accessory	52 - Mag Cap ×1.18	# Tediore Assault Rifle
+weapon	14	53	Barrel Accessory	53 - Mag Cap ×1.18	# Tediore Assault Rifle
+weapon	14	54	Barrel Accessory	54 - Sprd ×0.925	# Tediore Assault Rifle
+weapon	14	55	Barrel Accessory	55 - Dmg ×1.075	# Tediore Assault Rifle
+weapon	14	56	Barrel Accessory	56 - Sprd ×0.925	# Tediore Assault Rifle
+weapon	14	57	Barrel Accessory	57 - FR ×1.05	# Tediore Assault Rifle
+weapon	14	58	Barrel Accessory	58 - FR ×1.05	# Tediore Assault Rifle
+weapon	14	59	Manufacturer Part	59 - Jak, Crits Ric to nearby enemies	# Tediore Assault Rifle
+weapon	14	60	Manufacturer Part	60 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Tediore Assault Rifle
+weapon	14	61	Manufacturer Part	61 - No stat changes	# Tediore Assault Rifle
+weapon	14	62	Underbarrel	62 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Tediore Assault Rifle
+weapon	14	63	Underbarrel	63 - Atlas, Proj 4/shot, Base Acc 2, Base Sprd 4, Base FR 2/s, Tracker Darts that work for {dur}s	# Tediore Assault Rifle
+weapon	14	64	Underbarrel	64 - C.O.M.B.O., Splash R 500cm (alt mode), Orb that can be shot to deal {dmg} Dmg to nearby enemies	# Tediore Assault Rifle
+weapon	14	65	Underbarrel	65 - Shotgun, Proj 6/shot (alt mode), Mag Cap 5 (alt mode), Shotgun that deals {dmg}x{projectiles} Dmg per shot	# Tediore Assault Rifle
+weapon	14	66	Foregrip	66 - Dmg ×1.075	# Tediore Assault Rifle
+weapon	14	67	Foregrip	67 - Sprd ×0.925	# Tediore Assault Rifle
+weapon	14	68	Underbarrel	68 - Support Drone, Splash R 25cm (alt mode), Launches a Support Drone that will Heal {dmg}/s and grants +20% Dmg, Movement Speed and Reload Rate	# Tediore Assault Rifle
+weapon	14	69	Underbarrel	69 - Switch btwn 2 configured elements	# Tediore Assault Rifle
+weapon	14	70	Underbarrel	70 - Ammo Switch, Mfg part selects mode	# Tediore Assault Rifle
+weapon	14	71	Foregrip	71 - FR ×1.05	# Tediore Assault Rifle
+weapon	14	72	Manufacturer Part	72 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Tediore Assault Rifle
+weapon	14	73	Manufacturer Part	73 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Tediore Assault Rifle
+weapon	14	74	Manufacturer Part	74 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Tediore Assault Rifle
+weapon	14	75	Manufacturer Part	75 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Tediore Assault Rifle
+weapon	14	76	Barrel	76 - Murmur, 3169 Dmg, 72% Acc, 3.0/s FR	# Tediore Assault Rifle
+weapon	14	82	Magazine	82 - Base 22, Reload 2.2s	# Tediore Assault Rifle
+weapon	14	83	Magazine	83 - Base 26, Reload 2.6s	# Tediore Assault Rifle
+weapon	14	84	Magazine	84 - Tor-lic., Base 18, Reload 2.8s, Dmg ×1.34, FR ×0.9	# Tediore Assault Rifle
+weapon	14	85	Magazine	85 - CoV, ~30.8 shots→OH, Cool 0.2/s, Cool Del 2.4s, OH Repair 3.6s, Dmg ×1.05, Sprd ×1.4, Recl ×1.2	# Tediore Assault Rifle
+weapon	14	86	Magazine	86 - Rip, Borg-lic., Base 32, Reload 2.8s, Charge 1s, Dmg ×1.01, FR ×1.2	# Tediore Assault Rifle
+weapon	14	87	Manufacturer Part	87 - Tor, Splash R 100cm	# Tediore Assault Rifle
+weapon	14	88	Manufacturer Part	88 - Tor, Splash R 100cm	# Tediore Assault Rifle
+weapon	14	78	Barrel	78 - Laser Disker, 6865 Dmg, 75% Acc, 1.5/s FR, 50cm Splash	# Tediore Assault Rifle
+weapon	5	2	Body	2 - (base)	# Tediore Pistol
+weapon	5	3	Body Accessory	3 - Splash Dmg ×1.18, Splash R ×1.18, Thrown Dmg ×1.18	# Tediore Pistol
+weapon	5	4	Body Accessory	4 - Mag Cap ×1.18	# Tediore Pistol
+weapon	5	5	Body Accessory	5 - Sprd ×0.925	# Tediore Pistol
+weapon	5	6	Body Accessory	6 - No stat changes	# Tediore Pistol
+weapon	5	7	Barrel	7 - Pocketshot, 2091 Dmg, 52% Acc, 6.0/s FR	# Tediore Pistol
+weapon	5	8	Barrel	8 - Widget, 2471 Dmg, 67% Acc, 4.8/s FR	# Tediore Pistol
+weapon	5	9	Tediore Payload	9 - Ted Shooting, Shooting Homing - Thrown Gun homes in and shoots enemies	# Tediore Pistol
+weapon	5	10	Tediore Payload	10 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Tediore Pistol
+weapon	5	11	Tediore Payload	11 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Tediore Pistol
+weapon	5	12	Tediore Payload	12 - Ted Replicator, Replicator - Throws additional Gun on Reload	# Tediore Pistol
+weapon	5	14	Manufacturer Part	14 - Ted, Shooting Combo - Thrown Gun shoots enemies and can be shot to increase the explosion's Dmg	# Tediore Pistol
+weapon	5	15	Manufacturer Part	15 - Ted, MIRV Combo - Thrown Gun can be shot to increase the explosion's Dmg and spawns 4 Nades on impact	# Tediore Pistol
+weapon	5	16	Manufacturer Part	16 - Ted, Combo Replicator - Throws 2 Guns that can be shot to increase the explosion's Dmg	# Tediore Pistol
+weapon	5	17	Manufacturer Part	17 - Ted, Combo Replicator - Throws 2 Guns that can be shot to increase the explosion's Dmg	# Tediore Pistol
+weapon	5	18	Manufacturer Part	18 - Hyp, Zoom to enable Gun Shlds	# Tediore Pistol
+weapon	5	19	Manufacturer Part	19 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Tediore Pistol
+weapon	5	20	Manufacturer Part	20 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Tediore Pistol
+weapon	5	21	Manufacturer Part	21 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Tediore Pistol
+weapon	5	22	Magazine	22 - Base 15, Reload 1.4s	# Tediore Pistol
+weapon	5	23	Magazine	23 - Base 20, Reload 1.8s	# Tediore Pistol
+weapon	5	24	Magazine	24 - Tor-lic., Base 13, Reload 1.6s, Dmg ×1.3, FR ×0.8, Sprd ×0.9, Recl ×1.2	# Tediore Pistol
+weapon	5	25	Magazine	25 - CoV, ~26.7 shots→OH, Cool 0.2/s, Cool Del 2.25s, OH Repair 3s, Dmg ×1.1, Sprd ×1.4, Recl ×1.2, Sway ×1.2	# Tediore Pistol
+weapon	5	26	Magazine	26 - Rip, Borg-lic., Base 26, Reload 2.5s, Charge 1s, Dmg ×1.1, FR ×1.3	# Tediore Pistol
+weapon	5	27	Manufacturer Part	27 - Tor, Splash R 100cm	# Tediore Pistol
+weapon	5	28	Manufacturer Part	28 - Tor, Splash R 100cm	# Tediore Pistol
+weapon	5	29	Scope	29 - ADS FOV ×0.75, ADS Time 0.113s	# Tediore Pistol
+weapon	5	30	Scope	30 - ADS FOV ×0.4, ADS Time 0.113s	# Tediore Pistol
+weapon	5	31	Scope	31 - ADS FOV ×0.333, ADS Time 0.113s	# Tediore Pistol
+weapon	5	32	Scope	32 - ADS FOV ×0.667, ADS Time 0.113s	# Tediore Pistol
+weapon	5	33	Scope	33 - ADS FOV ×0.5, ADS Time 0.113s	# Tediore Pistol
+weapon	5	34	Scope Accessory	34 - Dmg ×1.075	# Tediore Pistol
+weapon	5	35	Scope Accessory	35 - Reload ×0.928	# Tediore Pistol
+weapon	5	36	Scope Accessory	36 - ADS Time ×0.8	# Tediore Pistol
+weapon	5	37	Scope Accessory	37 - Crit Dmg +20%	# Tediore Pistol
+weapon	5	38	Scope Accessory	38 - Dmg ×1.075	# Tediore Pistol
+weapon	5	39	Scope Accessory	39 - Reload ×0.928	# Tediore Pistol
+weapon	5	40	Scope Accessory	40 - ADS Time ×0.8	# Tediore Pistol
+weapon	5	41	Scope Accessory	41 - Crit Dmg +20%	# Tediore Pistol
+weapon	5	42	Grip	42 - Thrown Thrust 2	# Tediore Pistol
+weapon	5	43	Grip	43 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Tediore Pistol
+weapon	5	44	Grip	44 - Thrown Dmg ×1.5	# Tediore Pistol
+weapon	5	45	Grip	45 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Tediore Pistol
+weapon	5	46	Grip	46 - Dmg ×1.075	# Tediore Pistol
+weapon	5	47	Grip	47 - FR ×1.05	# Tediore Pistol
+weapon	5	48	Grip	48 - Mag Cap ×1.18	# Tediore Pistol
+weapon	5	49	Underbarrel	49 - Ammo Switch, Mfg part selects mode	# Tediore Pistol
+weapon	5	50	Underbarrel	50 - Micro, Proj 4/shot (alt mode), Burst Delay 0.3s (alt mode), Shotgun that deals {dmg}x{projectiles} Dmg per shot	# Tediore Pistol
+weapon	5	51	Underbarrel	51 - Switch btwn 2 configured elements	# Tediore Pistol
+weapon	5	52	Underbarrel	52 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Tediore Pistol
+weapon	5	53	Foregrip	53 - Dmg ×1.075	# Tediore Pistol
+weapon	5	54	Foregrip	54 - Sprd ×0.925	# Tediore Pistol
+weapon	5	55	Tediore Payload	55 - Ted Multi-Replicator, No stat changes	# Tediore Pistol
+weapon	5	56	Grip	56 - Thrown Thrust 2	# Tediore Pistol
+weapon	5	57	Grip	57 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Tediore Pistol
+weapon	5	58	Manufacturer Part	58 - Budget Deity, Thrown Dmg ×1.5, Combo Replicator - Throws 2 Guns that can be shot to increase the explosion's Dmg	# Tediore Pistol
+weapon	5	59	Barrel	59 - Budget Deity, 2482 Dmg, 65% Acc, 8.0/s FR	# Tediore Pistol
+weapon	5	61	Manufacturer Part	61 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Tediore Pistol
+weapon	5	62	Manufacturer Part	62 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Tediore Pistol
+weapon	5	63	Manufacturer Part	63 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Tediore Pistol
+weapon	5	64	Manufacturer Part	64 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Tediore Pistol
+weapon	5	65	Barrel	65 - Ruby's Grasp, 2471 Dmg, 67% Acc, 4.8/s FR	# Tediore Pistol
+weapon	5	67	Barrel	67 - Pocketshot, 1352 Dmg, 88% Acc, 3.0/s FR	# Tediore Pistol
+weapon	5	68	Barrel Accessory	68 - Dmg ×1.075	# Tediore Pistol
+weapon	5	69	Barrel Accessory	69 - Mag Cap ×1.18	# Tediore Pistol
+weapon	5	70	Barrel Accessory	70 - Mag Cap ×1.18	# Tediore Pistol
+weapon	5	71	Barrel Accessory	71 - Sprd ×0.925	# Tediore Pistol
+weapon	5	72	Barrel Accessory	72 - Dmg ×1.075	# Tediore Pistol
+weapon	5	73	Barrel Accessory	73 - Sprd ×0.925	# Tediore Pistol
+weapon	5	74	Barrel Accessory	74 - FR ×1.05	# Tediore Pistol
+weapon	5	75	Barrel Accessory	75 - FR ×1.05	# Tediore Pistol
+weapon	5	76	Manufacturer Part	76 - Jak, Crits Ric to nearby enemies	# Tediore Pistol
+weapon	5	77	Manufacturer Part	77 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Tediore Pistol
+weapon	5	78	Manufacturer Part	78 - No stat changes	# Tediore Pistol
+weapon	5	79	Underbarrel	79 - Zip Rockets, Splash R 150cm (alt mode), Mag Cap 120 (alt mode), Launches Zip Rockets that deal {dmg} Dmg each	# Tediore Pistol
+weapon	5	80	Underbarrel	80 - Attack Drone, Splash R 300cm (alt mode), Launches a Drone that homes in on a nearby enemy, exploding for {dmg} Dmg	# Tediore Pistol
+weapon	5	81	Underbarrel	81 - Atlas, Proj 4/shot, Base Acc 2, Base Sprd 4, Base FR 4/s, Tracker Darts that work for {dur}s	# Tediore Pistol
+weapon	5	82	Foregrip	82 - FR ×1.05	# Tediore Pistol
+weapon	5	83	Grip	83 - Thrown Dmg ×1.5	# Tediore Pistol
+weapon	5	84	Manufacturer Part	84 - Inscriber, Splash R 50cm, Splash R 100cm	# Tediore Pistol
+weapon	5	85	Barrel	85 - Inscriber, 6654 Dmg, 73% Acc, 2.5/s FR	# Tediore Pistol
+weapon	5	88	Barrel	88 - Shammy Kablammy, 2007 Dmg, 52% Acc, 6.0/s FR	# Tediore Pistol
+weapon	11	2	Body	2 - (base)	# Tediore Shotgun
+weapon	11	3	Body Accessory	3 - Splash Dmg ×1.18, Splash R ×1.18, Thrown Dmg ×1.18	# Tediore Shotgun
+weapon	11	4	Body Accessory	4 - Mag Cap ×1.18	# Tediore Shotgun
+weapon	11	5	Body Accessory	5 - Sprd ×0.925	# Tediore Shotgun
+weapon	11	6	Body Accessory	6 - No stat changes	# Tediore Shotgun
+weapon	11	7	Barrel	7 - EZ-Blast, 1089x8 Dmg, 61% Acc, 1.3/s FR	# Tediore Shotgun
+weapon	11	8	Barrel	8 - Omnibore, 762x10 Dmg, 56% Acc, 1.5/s FR	# Tediore Shotgun
+weapon	11	9	Tediore Payload	9 - Ted Shooting, Shooting Homing - Thrown Gun homes in and shoots enemies	# Tediore Shotgun
+weapon	11	10	Tediore Payload	10 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Tediore Shotgun
+weapon	11	11	Tediore Payload	11 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Tediore Shotgun
+weapon	11	12	Tediore Payload	12 - Ted Replicator, Replicator - Throws additional Gun on Reload	# Tediore Shotgun
+weapon	11	13	Manufacturer Part	13 - Ted, Shooting Combo - Thrown Gun shoots enemies and can be shot to increase the explosion's Dmg	# Tediore Shotgun
+weapon	11	14	Manufacturer Part	14 - Ted, MIRV Combo - Thrown Gun can be shot to increase the explosion's Dmg and spawns 4 Nades on impact	# Tediore Shotgun
+weapon	11	15	Manufacturer Part	15 - Ted, Combo Replicator - Throws 2 Guns that can be shot to increase the explosion's Dmg	# Tediore Shotgun
+weapon	11	16	Manufacturer Part	16 - Ted, Combo Replicator - Throws 2 Guns that can be shot to increase the explosion's Dmg	# Tediore Shotgun
+weapon	11	17	Manufacturer Part	17 - Hyp, Zoom to enable Gun Shlds	# Tediore Shotgun
+weapon	11	18	Manufacturer Part	18 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Tediore Shotgun
+weapon	11	19	Manufacturer Part	19 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Tediore Shotgun
+weapon	11	20	Manufacturer Part	20 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Tediore Shotgun
+weapon	11	21	Magazine	21 - Rip, Borg-lic., Base 13, Reload 2.6s, Charge 1s, FR ×1.25	# Tediore Shotgun
+weapon	11	22	Magazine	22 - CoV, ~8.7 shots→OH, Cool 0.2/s, Cool Del 2.5s, OH Repair 3s, Dmg ×1.038, Sprd ×1.2, Recl ×1.2, Sway ×1.2	# Tediore Shotgun
+weapon	11	23	Magazine	23 - Base 9, Reload 2s, Dmg ×1.025	# Tediore Shotgun
+weapon	11	24	Magazine	24 - Base 11, Reload 2s, Dmg ×0.975	# Tediore Shotgun
+weapon	11	25	Magazine	25 - Tor-lic., Base 7, Reload 2s, Dmg ×1.363, FR ×0.8	# Tediore Shotgun
+weapon	11	26	Manufacturer Part	26 - Tor, Splash R 100cm	# Tediore Shotgun
+weapon	11	27	Manufacturer Part	27 - Tor, Splash R 100cm	# Tediore Shotgun
+weapon	11	28	Scope	28 - ADS FOV ×0.75, ADS Time 0.15s	# Tediore Shotgun
+weapon	11	29	Scope	29 - ADS FOV ×0.333, ADS Time 0.15s	# Tediore Shotgun
+weapon	11	30	Scope	30 - ADS FOV ×0.4, ADS Time 0.15s	# Tediore Shotgun
+weapon	11	31	Scope	31 - ADS FOV ×0.667, ADS Time 0.15s	# Tediore Shotgun
+weapon	11	32	Scope	32 - ADS FOV ×0.5, ADS Time 0.15s	# Tediore Shotgun
+weapon	11	33	Scope Accessory	33 - Dmg ×1.075	# Tediore Shotgun
+weapon	11	34	Scope Accessory	34 - Reload ×0.928	# Tediore Shotgun
+weapon	11	35	Scope Accessory	35 - ADS Time ×0.8	# Tediore Shotgun
+weapon	11	36	Scope Accessory	36 - Crit Dmg +20%	# Tediore Shotgun
+weapon	11	37	Scope Accessory	37 - Dmg ×1.075	# Tediore Shotgun
+weapon	11	38	Scope Accessory	38 - Reload ×0.928	# Tediore Shotgun
+weapon	11	39	Scope Accessory	39 - ADS Time ×0.8	# Tediore Shotgun
+weapon	11	40	Scope Accessory	40 - Crit Dmg +20%	# Tediore Shotgun
+weapon	11	41	Grip	41 - Thrown Dmg ×1.5	# Tediore Shotgun
+weapon	11	42	Grip	42 - Thrown Thrust 2	# Tediore Shotgun
+weapon	11	43	Grip	43 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Tediore Shotgun
+weapon	11	44	Grip	44 - Hyp, Sprd ×0.81, Acc Res ×1.5, +Acc on sustained fire	# Tediore Shotgun
+weapon	11	45	Grip	45 - Dmg ×1.075	# Tediore Shotgun
+weapon	11	46	Grip	46 - FR ×1.05	# Tediore Shotgun
+weapon	11	47	Grip	47 - Mag Cap ×1.18	# Tediore Shotgun
+weapon	11	48	Underbarrel	48 - Atlas, Proj 4/shot, Base Acc 2, Base Sprd 4, Base FR 2/s, Tracker Darts that work for {dur}s	# Tediore Shotgun
+weapon	11	49	Underbarrel	49 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Tediore Shotgun
+weapon	11	50	Underbarrel	50 - Deployable Barrier, Mag Cap 5 (alt mode), Deploys a Shld that blocks incoming Proj	# Tediore Shotgun
+weapon	11	51	Underbarrel	51 - Proximity Mines, Splash R 250cm (alt mode), Mag Cap 5 (alt mode), Proximity Mines that deal {dmg} Dmg each	# Tediore Shotgun
+weapon	11	52	Foregrip	52 - Dmg ×1.075	# Tediore Shotgun
+weapon	11	53	Foregrip	53 - Sprd ×0.925	# Tediore Shotgun
+weapon	11	54	Foregrip	54 - FR ×1.05	# Tediore Shotgun
+weapon	11	55	Underbarrel	55 - Ammo Switch, Mfg part selects mode	# Tediore Shotgun
+weapon	11	56	Underbarrel	56 - Switch btwn 2 configured elements	# Tediore Shotgun
+weapon	11	57	Underbarrel	57 - Digital Backup, Splash R 100cm (alt mode), Mag Cap 1 (alt mode), Deploys a Ted Assault Rifle with legs that fires at enemies	# Tediore Shotgun
+weapon	11	58	Manufacturer Part	58 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Tediore Shotgun
+weapon	11	59	Manufacturer Part	59 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Tediore Shotgun
+weapon	11	60	Manufacturer Part	60 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Tediore Shotgun
+weapon	11	61	Manufacturer Part	61 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Tediore Shotgun
+weapon	11	62	Barrel Accessory	62 - Dmg ×1.075	# Tediore Shotgun
+weapon	11	63	Barrel Accessory	63 - Mag Cap ×1.18	# Tediore Shotgun
+weapon	11	64	Barrel Accessory	64 - Mag Cap ×1.18	# Tediore Shotgun
+weapon	11	65	Barrel Accessory	65 - Sprd ×0.925	# Tediore Shotgun
+weapon	11	66	Barrel Accessory	66 - Dmg ×1.075	# Tediore Shotgun
+weapon	11	67	Barrel Accessory	67 - Sprd ×0.925	# Tediore Shotgun
+weapon	11	68	Barrel Accessory	68 - FR ×1.05	# Tediore Shotgun
+weapon	11	69	Barrel Accessory	69 - FR ×1.05	# Tediore Shotgun
+weapon	11	70	Manufacturer Part	70 - Jak, Crits Ric to nearby enemies	# Tediore Shotgun
+weapon	11	71	Manufacturer Part	71 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Tediore Shotgun
+weapon	11	72	Manufacturer Part	72 - No stat changes	# Tediore Shotgun
+weapon	11	73	Grip	73 - Thrown Dmg ×1.5	# Tediore Shotgun
+weapon	11	74	Tediore Payload	74 - Ted Multi-Replicator, No stat changes	# Tediore Shotgun
+weapon	11	75	Barrel	75 - Anarchy, 792x12 Dmg, 61% Acc, 1.6/s FR, 2/shot	# Tediore Shotgun
+weapon	11	77	Barrel	77 - Forsaken Chaos, 1089x8 Dmg, 61% Acc, 1.3/s FR, 2/shot	# Tediore Shotgun
+weapon	11	79	Underbarrel	79 - Husky Friend, Splash R 100cm (alt mode)	# Tediore Shotgun
+weapon	11	81	Barrel	81 - Eigenburst, 3301x3 Dmg, 82% Acc, 2.3/s FR, 2/shot	# Tediore Shotgun
+weapon	11	83	Manufacturer Part	83 - Sharkbait, Splash R 100cm	# Tediore Shotgun
+weapon	11	84	Manufacturer Part	84 - Sharkbait, Splash R 100cm	# Tediore Shotgun
+weapon	11	85	Grip	85 - Thrown Thrust 2	# Tediore Shotgun
+weapon	11	86	Grip	86 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Tediore Shotgun
+weapon	11	87	Grip	87 - Thrown Dmg ×1.5	# Tediore Shotgun
+weapon	11	88	Grip	88 - Thrown Dmg ×1.5	# Tediore Shotgun
+weapon	11	89	Barrel	89 - Sharkbait, 1320x5 Dmg, 61% Acc, 1.3/s FR, 2/shot	# Tediore Shotgun
+weapon	17	3	Body Accessory	3 - Reload ×0.94	# Torgue Assault Rifle
+weapon	17	4	Body Accessory	4 - Dmg ×1.09	# Torgue Assault Rifle
+weapon	17	5	Body Accessory	5 - Sprd ×0.925	# Torgue Assault Rifle
+weapon	17	6	Body Accessory	6 - No stat changes	# Torgue Assault Rifle
+weapon	17	7	Barrel	7 - Handle, 2746 Dmg, 75% Acc, 3.5/s FR, 135cm Splash	# Torgue Assault Rifle
+weapon	17	8	Barrel	8 - Truncheon, 3591 Dmg, 76% Acc, 2.5/s FR, 135cm Splash	# Torgue Assault Rifle
+weapon	17	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Torgue Assault Rifle
+weapon	17	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Torgue Assault Rifle
+weapon	17	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Torgue Assault Rifle
+weapon	17	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Torgue Assault Rifle
+weapon	17	13	Magazine	13 - Tor-lic., Base 14, Reload 2s	# Torgue Assault Rifle
+weapon	17	14	Magazine	14 - Tor-lic., Base 20, Reload 2.8s	# Torgue Assault Rifle
+weapon	17	15	Magazine	15 - CoV, ~25 shots→OH, Cool 0.2/s, Cool Del 3s, OH Repair 4s, Dmg ×1.05, Sprd ×1.4, Recl ×1.2	# Torgue Assault Rifle
+weapon	17	16	Magazine	16 - Rip, Borg-lic., Base 24, Reload 2.4s, Charge 1s, Dmg ×0.95, FR ×1.2	# Torgue Assault Rifle
+weapon	17	17	Tediore Throw Reload	17 - Throwload 2s, Reload@ 75%	# Torgue Assault Rifle
+weapon	17	18	Tediore Throw Reload	18 - Throwload 2s, Reload@ 75%	# Torgue Assault Rifle
+weapon	17	19	Tediore Throw Reload	19 - Throwload 2s, Reload@ 75%	# Torgue Assault Rifle
+weapon	17	20	Tediore Throw Reload	20 - Throwload 2s, Reload@ 75%	# Torgue Assault Rifle
+weapon	17	21	Scope	21 - ADS FOV ×0.75, ADS Time 0.33s	# Torgue Assault Rifle
+weapon	17	22	Scope	22 - ADS FOV ×0.667, ADS Time 0.33s	# Torgue Assault Rifle
+weapon	17	23	Scope	23 - ADS FOV ×0.5, ADS Time 0.33s	# Torgue Assault Rifle
+weapon	17	24	Scope	24 - ADS FOV ×0.4, ADS Time 0.33s	# Torgue Assault Rifle
+weapon	17	25	Scope	25 - ADS FOV ×0.333, ADS Time 0.33s	# Torgue Assault Rifle
+weapon	17	26	Scope Accessory	26 - Dmg ×1.09	# Torgue Assault Rifle
+weapon	17	27	Scope Accessory	27 - Reload ×0.94	# Torgue Assault Rifle
+weapon	17	28	Scope Accessory	28 - ADS Time ×0.8	# Torgue Assault Rifle
+weapon	17	29	Scope Accessory	29 - Splash R ×1.203	# Torgue Assault Rifle
+weapon	17	30	Scope Accessory	30 - Dmg ×1.09	# Torgue Assault Rifle
+weapon	17	31	Scope Accessory	31 - Reload ×0.94	# Torgue Assault Rifle
+weapon	17	32	Scope Accessory	32 - ADS Time ×0.8	# Torgue Assault Rifle
+weapon	17	33	Scope Accessory	33 - Splash R ×1.203	# Torgue Assault Rifle
+weapon	17	34	Grip	34 - Thrown Dmg ×1.5	# Torgue Assault Rifle
+weapon	17	35	Grip	35 - Thrown Thrust 2	# Torgue Assault Rifle
+weapon	17	36	Grip	36 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Torgue Assault Rifle
+weapon	17	37	Grip	37 - Dmg ×1.09	# Torgue Assault Rifle
+weapon	17	38	Grip	38 - FR ×1.05	# Torgue Assault Rifle
+weapon	17	39	Grip	39 - Reload ×0.94	# Torgue Assault Rifle
+weapon	17	40	Grip	40 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Torgue Assault Rifle
+weapon	17	41	Underbarrel	41 - Ammo Switch, Mfg part selects mode	# Torgue Assault Rifle
+weapon	17	42	Underbarrel	42 - Switch btwn 2 configured elements	# Torgue Assault Rifle
+weapon	17	43	Underbarrel	43 - MIRV Grenade Launcher, Splash R 1cm (alt mode), Mag Cap 1 (alt mode), Launches a MIRV Grenade that deals {dmg} Dmg	# Torgue Assault Rifle
+weapon	17	44	Underbarrel	44 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Torgue Assault Rifle
+weapon	17	45	Underbarrel	45 - Airstrike, Splash R 600cm (alt mode), Charge 1.5s (alt mode), Mark an area to call in an Airstrike that deals {dmg} Dmg	# Torgue Assault Rifle
+weapon	17	46	Foregrip	46 - Tor, FR ×1.05	# Torgue Assault Rifle
+weapon	17	47	Foregrip	47 - Tor, Splash R ×1.203	# Torgue Assault Rifle
+weapon	17	48	Manufacturer Part	48 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Torgue Assault Rifle
+weapon	17	49	Manufacturer Part	49 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Torgue Assault Rifle
+weapon	17	50	Manufacturer Part	50 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Torgue Assault Rifle
+weapon	17	51	Manufacturer Part	51 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Torgue Assault Rifle
+weapon	17	52	Body	52 - (base)	# Torgue Assault Rifle
+weapon	17	54	Barrel	54 - Bugbear, 2662 Dmg, 78% Acc, 5.5/s FR, 50cm Splash	# Torgue Assault Rifle
+weapon	17	55	Barrel	55 - Cold Shoulder, 3042 Dmg, 78% Acc, 5.5/s FR, 50cm Splash	# Torgue Assault Rifle
+weapon	17	57	Foregrip	57 - Dmg ×1.09	# Torgue Assault Rifle
+weapon	17	58	Barrel Accessory	58 - Dmg ×1.09	# Torgue Assault Rifle
+weapon	17	59	Barrel Accessory	59 - Dmg ×1.09	# Torgue Assault Rifle
+weapon	17	60	Barrel Accessory	60 - Splash R ×1.203	# Torgue Assault Rifle
+weapon	17	61	Barrel Accessory	61 - Sprd ×0.925	# Torgue Assault Rifle
+weapon	17	62	Barrel Accessory	62 - Dmg ×1.09	# Torgue Assault Rifle
+weapon	17	63	Barrel Accessory	63 - Sprd ×0.925	# Torgue Assault Rifle
+weapon	17	64	Barrel Accessory	64 - FR ×1.05	# Torgue Assault Rifle
+weapon	17	65	Barrel Accessory	65 - FR ×1.05	# Torgue Assault Rifle
+weapon	17	66	Manufacturer Part	66 - Jak, Crits Ric to nearby enemies	# Torgue Assault Rifle
+weapon	17	67	Tediore Payload	67 - Ted Throw, Throws a Gun on Reload	# Torgue Assault Rifle
+weapon	17	68	Tediore Payload	68 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Torgue Assault Rifle
+weapon	17	69	Tediore Payload	69 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Torgue Assault Rifle
+weapon	17	70	Tediore Payload	70 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Torgue Assault Rifle
+weapon	17	71	Manufacturer Part	71 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Torgue Assault Rifle
+weapon	17	72	Underbarrel	72 - Sticky Shotgun, Splash R 6cm (alt mode), Proj 6/shot (alt mode), Mag Cap 6 (alt mode), Sticky Shotgun that deals {dmg}x{projectiles} Dmg per shot	# Torgue Assault Rifle
+weapon	17	73	Underbarrel	73 - Atlas, Proj 5/shot, Base Acc 2, Base Sprd 4, Base FR 4/s, Tracker Darts that work for {dur}s	# Torgue Assault Rifle
+weapon	17	74	Foregrip	74 - Tor, Dmg ×1.09	# Torgue Assault Rifle
+weapon	17	75	Foregrip	75 - Splash R ×1.203	# Torgue Assault Rifle
+weapon	17	76	Foregrip	76 - FR ×1.05	# Torgue Assault Rifle
+weapon	17	77	Barrel	77 - Potato Thrower IV, 1373 Dmg, 75% Acc, 5.5/s FR, 135cm Splash	# Torgue Assault Rifle
+weapon	17	79	Foregrip	79 - Fleabag, Splash R ×1.203	# Torgue Assault Rifle
+weapon	17	80	Foregrip	80 - Fleabag, FR ×1.05	# Torgue Assault Rifle
+weapon	17	81	Foregrip	81 - Fleabag, Dmg ×1.09	# Torgue Assault Rifle
+weapon	17	82	Barrel	82 - Fleabag, 3485 Dmg, 78% Acc, 5.5/s FR, 50cm Splash	# Torgue Assault Rifle
+weapon	17	84	Barrel	84 - Lockjaw, 5281 Dmg, 78% Acc, 2.0/s FR, 50cm Splash	# Torgue Assault Rifle
+weapon	6	2	Body	2 - (base)	# Torgue Pistol
+weapon	6	3	Body Accessory	3 - Reload ×0.94	# Torgue Pistol
+weapon	6	4	Body Accessory	4 - Dmg ×1.09	# Torgue Pistol
+weapon	6	5	Body Accessory	5 - Sprd ×0.925	# Torgue Pistol
+weapon	6	6	Body Accessory	6 - No stat changes	# Torgue Pistol
+weapon	6	7	Barrel	7 - Kitty, 4225 Dmg, 64% Acc, 2.5/s FR, 135cm Splash	# Torgue Pistol
+weapon	6	8	Barrel	8 - Lotus, 5281 Dmg, 65% Acc, 1.8/s FR, 135cm Splash	# Torgue Pistol
+weapon	6	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Torgue Pistol
+weapon	6	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Torgue Pistol
+weapon	6	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Torgue Pistol
+weapon	6	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Torgue Pistol
+weapon	6	13	Magazine	13 - Tor-lic., Base 6, Reload 1.75s	# Torgue Pistol
+weapon	6	14	Magazine	14 - Tor-lic., Base 8, Reload 2.25s	# Torgue Pistol
+weapon	6	15	Magazine	15 - CoV, ~8 shots→OH, Cool 0.2/s, Cool Del 2.25s, OH Repair 3.5s, Dmg ×1.066, Sprd ×1.4, Acc Res ×1.9	# Torgue Pistol
+weapon	6	16	Magazine	16 - Rip, Borg-lic., Base 10, Reload 2.75s, Charge 1s, Dmg ×1.08, FR ×1.25, Sprd ×1.2, Recl ×1.1, Sway ×1.2, Acc Res ×2.2	# Torgue Pistol
+weapon	6	17	Tediore Throw Reload	17 - Throwload 2s, Reload@ 75%	# Torgue Pistol
+weapon	6	18	Tediore Throw Reload	18 - Throwload 2s, Reload@ 75%	# Torgue Pistol
+weapon	6	19	Tediore Throw Reload	19 - Throwload 3s, Reload@ 75%	# Torgue Pistol
+weapon	6	20	Tediore Throw Reload	20 - Throwload 3s, Reload@ 75%	# Torgue Pistol
+weapon	6	21	Scope	21 - ADS FOV ×0.75, ADS Time 0.15s	# Torgue Pistol
+weapon	6	22	Scope	22 - ADS FOV ×0.667, ADS Time 0.15s	# Torgue Pistol
+weapon	6	23	Scope	23 - ADS FOV ×0.5, ADS Time 0.15s	# Torgue Pistol
+weapon	6	24	Scope	24 - ADS FOV ×0.4, ADS Time 0.15s	# Torgue Pistol
+weapon	6	25	Scope	25 - ADS FOV ×0.333, ADS Time 0.15s	# Torgue Pistol
+weapon	6	26	Scope Accessory	26 - Dmg ×1.09	# Torgue Pistol
+weapon	6	27	Scope Accessory	27 - Reload ×0.94	# Torgue Pistol
+weapon	6	28	Scope Accessory	28 - ADS Time ×0.8	# Torgue Pistol
+weapon	6	29	Scope Accessory	29 - Splash R ×1.203	# Torgue Pistol
+weapon	6	30	Scope Accessory	30 - Dmg ×1.09	# Torgue Pistol
+weapon	6	31	Scope Accessory	31 - Reload ×0.94	# Torgue Pistol
+weapon	6	32	Scope Accessory	32 - ADS Time ×0.8	# Torgue Pistol
+weapon	6	33	Scope Accessory	33 - Splash R ×1.203	# Torgue Pistol
+weapon	6	34	Grip	34 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Torgue Pistol
+weapon	6	35	Grip	35 - Thrown Thrust 2	# Torgue Pistol
+weapon	6	36	Grip	36 - Thrown Dmg ×1.5	# Torgue Pistol
+weapon	6	37	Grip	37 - Dmg ×1.09	# Torgue Pistol
+weapon	6	38	Grip	38 - FR ×1.05	# Torgue Pistol
+weapon	6	39	Grip	39 - Reload ×0.94	# Torgue Pistol
+weapon	6	40	Grip	40 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Torgue Pistol
+weapon	6	41	Underbarrel	41 - Ammo Switch, Mfg part selects mode	# Torgue Pistol
+weapon	6	42	Underbarrel	42 - Switch btwn 2 configured elements	# Torgue Pistol
+weapon	6	43	Underbarrel	43 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Torgue Pistol
+weapon	6	44	Underbarrel	44 - Magnum Rockets, Splash R 1cm (alt mode), Burst Count 2 (alt mode), Mag Cap 3 (alt mode), Rocket that deals {dmg} Dmg	# Torgue Pistol
+weapon	6	45	Underbarrel	45 - Turbine Cleaver, Splash R 2cm (alt mode), Proj 2/shot (alt mode), Mag Cap 10 (alt mode), Crit Dmg +65% (alt mode), piercing Cleaver that deals {dmg} Dmg	# Torgue Pistol
+weapon	6	46	Foregrip	46 - Tor, FR ×1.05	# Torgue Pistol
+weapon	6	47	Foregrip	47 - Tor, Splash R ×1.203	# Torgue Pistol
+weapon	6	48	Manufacturer Part	48 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Torgue Pistol
+weapon	6	49	Manufacturer Part	49 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Torgue Pistol
+weapon	6	50	Manufacturer Part	50 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Torgue Pistol
+weapon	6	51	Manufacturer Part	51 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Torgue Pistol
+weapon	6	52	Barrel	52 - Queen's Rest, 5281 Dmg, 65% Acc, 2.6/s FR, 135cm Splash	# Torgue Pistol
+weapon	6	54	Barrel	54 - Roach, 3169 Dmg, 64% Acc, 2.2/s FR, 25cm Splash	# Torgue Pistol
+weapon	6	58	Barrel	58 - Hardpoint, 2640x5 Dmg, 51% Acc, 1.5/s FR, 2/shot, 135cm Splash	# Torgue Pistol
+weapon	6	60	Barrel Accessory	60 - Dmg ×1.09	# Torgue Pistol
+weapon	6	61	Barrel Accessory	61 - Dmg ×1.09	# Torgue Pistol
+weapon	6	62	Barrel Accessory	62 - Splash R ×1.203	# Torgue Pistol
+weapon	6	63	Barrel Accessory	63 - Sprd ×0.925	# Torgue Pistol
+weapon	6	64	Barrel Accessory	64 - Dmg ×1.09	# Torgue Pistol
+weapon	6	65	Barrel Accessory	65 - Sprd ×0.925	# Torgue Pistol
+weapon	6	66	Barrel Accessory	66 - FR ×1.05	# Torgue Pistol
+weapon	6	67	Barrel Accessory	67 - FR ×1.05	# Torgue Pistol
+weapon	6	68	Manufacturer Part	68 - Jak, Crits Ric to nearby enemies	# Torgue Pistol
+weapon	6	69	Tediore Payload	69 - Ted Throw, Throws a Gun on Reload	# Torgue Pistol
+weapon	6	70	Tediore Payload	70 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Torgue Pistol
+weapon	6	71	Tediore Payload	71 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Torgue Pistol
+weapon	6	72	Tediore Payload	72 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Torgue Pistol
+weapon	6	73	Manufacturer Part	73 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Torgue Pistol
+weapon	6	74	Underbarrel	74 - Atlas, Proj 5/shot, Base Acc 2, Base Sprd 3, Base FR 4/s, Tracker Darts that work for {dur}s	# Torgue Pistol
+weapon	6	75	Underbarrel	75 - Exhaust Blast, Splash R 1cm (alt mode), Mag Cap 1 (alt mode), Releases a Blast on nearby enemies that deals {dmg} Dmg	# Torgue Pistol
+weapon	6	76	Foregrip	76 - Tor, Dmg ×1.09	# Torgue Pistol
+weapon	6	77	Barrel	77 - Handcannon, 8185 Dmg, 64% Acc, 1.8/s FR, 25cm Splash	# Torgue Pistol
+weapon	6	79	Foregrip	79 - Handcannon, Splash R ×1.203	# Torgue Pistol
+weapon	6	80	Foregrip	80 - Handcannon, FR ×1.05	# Torgue Pistol
+weapon	6	81	Foregrip	81 - Handcannon, Dmg ×1.09	# Torgue Pistol
+weapon	6	56	Barrel	56 - Scoot'n'Shoot, 3802 Dmg, 64% Acc, 2.6/s FR, 25cm Splash	# Torgue Pistol
+weapon	6	84	Foregrip	84 - Herald, Dmg ×1.09	# Torgue Pistol
+weapon	6	83	Foregrip	83 - Herald, FR ×1.05	# Torgue Pistol
+weapon	6	82	Foregrip	82 - Herald, Splash R ×1.203	# Torgue Pistol
+weapon	6	86	Barrel	86 - Herald, 2112x3 Dmg, 64% Acc, 2.6/s FR, 3/shot, 25cm Splash	# Torgue Pistol
+weapon	12	2	Body	2 - (base)	# Torgue Shotgun
+weapon	12	3	Body Accessory	3 - Reload ×0.94	# Torgue Shotgun
+weapon	12	4	Body Accessory	4 - Dmg ×1.09	# Torgue Shotgun
+weapon	12	5	Body Accessory	5 - Sprd ×0.925	# Torgue Shotgun
+weapon	12	6	Body Accessory	6 - No stat changes	# Torgue Shotgun
+weapon	12	7	Barrel	7 - Rider, 3515x4 Dmg, 67% Acc, 1.2/s FR, 2/shot, 135cm Splash	# Torgue Shotgun
+weapon	12	8	Barrel	8 - Crank, 3961x4 Dmg, 70% Acc, 0.9/s FR, 2/shot, 135cm Splash	# Torgue Shotgun
+weapon	12	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Torgue Shotgun
+weapon	12	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Torgue Shotgun
+weapon	12	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Torgue Shotgun
+weapon	12	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Torgue Shotgun
+weapon	12	13	Magazine	13 - Rip, Borg-lic., Base 10, Reload 2.4s, Charge 1s, Dmg ×0.89, FR ×1.25	# Torgue Shotgun
+weapon	12	14	Magazine	14 - CoV, ~8 shots→OH, Cool 0.2/s, Cool Del 3s, OH Repair 3.25s, Dmg ×0.925, Sprd ×1.2, Recl ×1.2, Sway ×1.2	# Torgue Shotgun
+weapon	12	15	Magazine	15 - Tor-lic., Base 8, Reload 2s	# Torgue Shotgun
+weapon	12	16	Magazine	16 - Tor-lic., Base 12, Reload 2.4s, Dmg ×0.9	# Torgue Shotgun
+weapon	12	17	Tediore Throw Reload	17 - Throwload 2s, Reload@ 75%	# Torgue Shotgun
+weapon	12	18	Tediore Throw Reload	18 - Throwload 2s, Reload@ 75%	# Torgue Shotgun
+weapon	12	19	Tediore Throw Reload	19 - Throwload 3s, Reload@ 75%	# Torgue Shotgun
+weapon	12	20	Tediore Throw Reload	20 - Throwload 3s, Reload@ 75%	# Torgue Shotgun
+weapon	12	21	Scope	21 - ADS FOV ×0.75, ADS Time 0.2s	# Torgue Shotgun
+weapon	12	22	Scope	22 - ADS FOV ×0.667, ADS Time 0.2s	# Torgue Shotgun
+weapon	12	23	Scope	23 - ADS FOV ×0.5, ADS Time 0.2s	# Torgue Shotgun
+weapon	12	24	Scope	24 - ADS FOV ×0.4, ADS Time 0.2s	# Torgue Shotgun
+weapon	12	25	Scope	25 - ADS FOV ×0.4, ADS Time 0.2s	# Torgue Shotgun
+weapon	12	26	Scope Accessory	26 - Dmg ×1.09	# Torgue Shotgun
+weapon	12	27	Scope Accessory	27 - Reload ×0.94	# Torgue Shotgun
+weapon	12	28	Scope Accessory	28 - ADS Time ×0.8	# Torgue Shotgun
+weapon	12	29	Scope Accessory	29 - Splash R ×1.203	# Torgue Shotgun
+weapon	12	30	Scope Accessory	30 - Dmg ×1.09	# Torgue Shotgun
+weapon	12	31	Scope Accessory	31 - Reload ×0.94	# Torgue Shotgun
+weapon	12	32	Scope Accessory	32 - ADS Time ×0.8	# Torgue Shotgun
+weapon	12	33	Scope Accessory	33 - Splash R ×1.203	# Torgue Shotgun
+weapon	12	34	Grip	34 - Thrown Thrust 2	# Torgue Shotgun
+weapon	12	35	Grip	35 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Torgue Shotgun
+weapon	12	36	Grip	36 - Thrown Dmg ×1.5	# Torgue Shotgun
+weapon	12	37	Grip	37 - Dmg ×1.09	# Torgue Shotgun
+weapon	12	38	Grip	38 - FR ×1.05	# Torgue Shotgun
+weapon	12	39	Grip	39 - Reload ×0.94	# Torgue Shotgun
+weapon	12	40	Grip	40 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Torgue Shotgun
+weapon	12	41	Underbarrel	41 - Ammo Switch, Mfg part selects mode	# Torgue Shotgun
+weapon	12	42	Underbarrel	42 - Switch btwn 2 configured elements	# Torgue Shotgun
+weapon	12	43	Underbarrel	43 - Seeker Missiles, Splash R 400cm (alt mode), Cost 2/shot (alt mode), Mag Cap 2 (alt mode), Homing Missiles deal {dmg} Dmg each	# Torgue Shotgun
+weapon	12	44	Underbarrel	44 - Rolling Thunder Nades, Splash R 300cm (alt mode), Nades that deal {dmg} Dmg each	# Torgue Shotgun
+weapon	12	45	Underbarrel	45 - Atlas, Proj 5/shot, Base Sprd 2, Base FR 2/s, Tracker Darts that work for {dur}s	# Torgue Shotgun
+weapon	12	46	Foregrip	46 - Tor, FR ×1.05, Mode Switch Time ×0.85, Mode Switch Time ×0.85 (alt mode)	# Torgue Shotgun
+weapon	12	47	Foregrip	47 - Tor, Splash R ×1.203, Mode Switch Time ×0.85, Mode Switch Time ×0.85 (alt mode)	# Torgue Shotgun
+weapon	12	48	Foregrip	48 - Tor, Dmg ×1.09, Mode Switch Time ×0.85, Mode Switch Time ×0.85 (alt mode)	# Torgue Shotgun
+weapon	12	49	Underbarrel	49 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Torgue Shotgun
+weapon	12	50	Underbarrel	50 - Flame Blast, Mag Cap 60 (alt mode), Charge 0.5s (alt mode), incendiary Blast that deals {dmg} Dmg/s	# Torgue Shotgun
+weapon	12	51	Manufacturer Part	51 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Torgue Shotgun
+weapon	12	52	Manufacturer Part	52 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Torgue Shotgun
+weapon	12	53	Manufacturer Part	53 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Torgue Shotgun
+weapon	12	54	Manufacturer Part	54 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Torgue Shotgun
+weapon	12	56	Barrel	56 - Lead Balloon, 2971x3 Dmg, 70% Acc, 1.8/s FR, 2/shot, 135cm Splash	# Torgue Shotgun
+weapon	12	58	Barrel	58 - Linebacker, 1848x4 Dmg, 67% Acc, 1.0/s FR, 100cm Splash	# Torgue Shotgun
+weapon	12	61	Barrel Accessory	61 - Dmg ×1.09	# Torgue Shotgun
+weapon	12	62	Barrel Accessory	62 - Dmg ×1.09	# Torgue Shotgun
+weapon	12	63	Barrel Accessory	63 - Splash R ×1.203	# Torgue Shotgun
+weapon	12	64	Barrel Accessory	64 - Sprd ×0.925	# Torgue Shotgun
+weapon	12	65	Barrel Accessory	65 - Dmg ×1.09	# Torgue Shotgun
+weapon	12	66	Barrel Accessory	66 - Sprd ×0.925	# Torgue Shotgun
+weapon	12	67	Barrel Accessory	67 - FR ×1.05	# Torgue Shotgun
+weapon	12	68	Barrel Accessory	68 - FR ×1.05	# Torgue Shotgun
+weapon	12	69	Manufacturer Part	69 - Jak, Crits Ric to nearby enemies	# Torgue Shotgun
+weapon	12	70	Tediore Payload	70 - Ted Throw, Throws a Gun on Reload	# Torgue Shotgun
+weapon	12	71	Tediore Payload	71 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Torgue Shotgun
+weapon	12	72	Tediore Payload	72 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Torgue Shotgun
+weapon	12	73	Tediore Payload	73 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Torgue Shotgun
+weapon	12	74	Manufacturer Part	74 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Torgue Shotgun
+weapon	12	78	Barrel	78 - ARC-TAN, 8714 Dmg, 70% Acc, 2.3/s FR, 2/shot, 300cm Splash	# Torgue Shotgun
+weapon	12	76	Barrel	76 - Unstable Kor, 4225x4 Dmg, 67% Acc, 1.5/s FR, 100cm Splash	# Torgue Shotgun
+weapon	12	75	Foregrip	75 - Unstable Kor, Dmg ×1.09	# Torgue Shotgun
+weapon	12	60	Foregrip	60 - Unstable Kor, FR ×1.05	# Torgue Shotgun
+weapon	12	59	Foregrip	59 - Unstable Kor, Splash R ×1.203	# Torgue Shotgun
+weapon	12	80	Foregrip	80 - Cormano, Splash R ×1.203, Mode Switch Time ×0.85, Mode Switch Time ×0.85 (alt mode)	# Torgue Shotgun
+weapon	12	81	Foregrip	81 - Cormano, FR ×1.05, Mode Switch Time ×0.85, Mode Switch Time ×0.85 (alt mode)	# Torgue Shotgun
+weapon	12	82	Foregrip	82 - Cormano, Dmg ×1.09, Mode Switch Time ×0.85, Mode Switch Time ×0.85 (alt mode)	# Torgue Shotgun
+weapon	12	84	Barrel	84 - Cormano, 2310x9 Dmg, 66% Acc, 1.6/s FR, 2/shot, 135cm Splash	# Torgue Shotgun
+weapon	18	1	Barrel	1 - Lucian's Flank, 1531 Dmg, 76% Acc, 11.5/s FR	# Vladof Assault Rifle
+weapon	18	2	Body	2 - (base)	# Vladof Assault Rifle
+weapon	18	3	Body Accessory	3 - Reload ×0.94	# Vladof Assault Rifle
+weapon	18	4	Body Accessory	4 - Mag Cap ×1.188	# Vladof Assault Rifle
+weapon	18	5	Body Accessory	5 - Sprd ×0.925	# Vladof Assault Rifle
+weapon	18	6	Body Accessory	6 - No stat changes	# Vladof Assault Rifle
+weapon	18	7	Barrel	7 - Buzzymuzz, 1030 Dmg, 78% Acc, 11.5/s FR	# Vladof Assault Rifle
+weapon	18	8	Barrel	8 - Gruppagrak, 1109 Dmg, 82% Acc, 9.9/s FR	# Vladof Assault Rifle
+weapon	18	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Vladof Assault Rifle
+weapon	18	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Vladof Assault Rifle
+weapon	18	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Vladof Assault Rifle
+weapon	18	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Vladof Assault Rifle
+weapon	18	13	Magazine	13 - Base 40, Reload 2.9s	# Vladof Assault Rifle
+weapon	18	14	Magazine	14 - Base 50, Reload 3.4s, Recl ×1.05	# Vladof Assault Rifle
+weapon	18	15	Magazine	15 - Tor-lic., Base 30, Reload 2.8s, Dmg ×1.3, FR ×0.8, Sprd ×0.9, Recl ×1.2	# Vladof Assault Rifle
+weapon	18	16	Magazine	16 - CoV, ~60.6 shots→OH, Cool 0.2/s, Cool Del 3.25s, OH Repair 5.5s, Dmg ×0.85, Sprd ×1.4, Recl ×1.3, Sway ×1.2	# Vladof Assault Rifle
+weapon	18	17	Magazine	17 - Rip, Borg-lic., Base 60, Reload 3.7s, Charge 1s, Dmg ×0.95, FR ×1.25	# Vladof Assault Rifle
+weapon	18	18	Manufacturer Part	18 - Tor, Splash R 100cm	# Vladof Assault Rifle
+weapon	18	19	Manufacturer Part	19 - Tor, Splash R 100cm	# Vladof Assault Rifle
+weapon	18	20	Tediore Throw Reload	20 - Throwload 2s, Reload@ 75%	# Vladof Assault Rifle
+weapon	18	21	Tediore Throw Reload	21 - Throwload 2s, Reload@ 75%	# Vladof Assault Rifle
+weapon	18	22	Tediore Throw Reload	22 - Throwload 2s, Reload@ 75%	# Vladof Assault Rifle
+weapon	18	23	Tediore Throw Reload	23 - Throwload 2s, Reload@ 75%	# Vladof Assault Rifle
+weapon	18	24	Tediore Throw Reload	24 - Throwload 2s, Reload@ 75%	# Vladof Assault Rifle
+weapon	18	25	Scope	25 - ADS FOV ×0.75, ADS Time 0.33s	# Vladof Assault Rifle
+weapon	18	26	Scope	26 - ADS FOV ×0.5, ADS Time 0.33s	# Vladof Assault Rifle
+weapon	18	27	Scope	27 - ADS FOV ×0.667, ADS Time 0.33s	# Vladof Assault Rifle
+weapon	18	28	Scope	28 - ADS FOV ×0.333, ADS Time 0.33s	# Vladof Assault Rifle
+weapon	18	29	Scope	29 - ADS FOV ×0.4, ADS Time 0.33s	# Vladof Assault Rifle
+weapon	18	30	Scope Accessory	30 - Dmg ×1.075	# Vladof Assault Rifle
+weapon	18	31	Scope Accessory	31 - Reload ×0.94	# Vladof Assault Rifle
+weapon	18	32	Scope Accessory	32 - ADS Time ×0.8	# Vladof Assault Rifle
+weapon	18	33	Scope Accessory	33 - Mag Cap ×1.188	# Vladof Assault Rifle
+weapon	18	34	Scope Accessory	34 - Dmg ×1.075	# Vladof Assault Rifle
+weapon	18	35	Scope Accessory	35 - Reload ×0.94	# Vladof Assault Rifle
+weapon	18	36	Scope Accessory	36 - ADS Time ×0.8	# Vladof Assault Rifle
+weapon	18	37	Scope Accessory	37 - Mag Cap ×1.188	# Vladof Assault Rifle
+weapon	18	38	Grip	38 - Thrown Dmg ×1.5	# Vladof Assault Rifle
+weapon	18	39	Grip	39 - Thrown Thrust 2	# Vladof Assault Rifle
+weapon	18	40	Grip	40 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Vladof Assault Rifle
+weapon	18	41	Grip	41 - Dmg ×1.075	# Vladof Assault Rifle
+weapon	18	42	Grip	42 - FR ×1.062	# Vladof Assault Rifle
+weapon	18	43	Grip	43 - Reload ×0.94	# Vladof Assault Rifle
+weapon	18	44	Grip	44 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Vladof Assault Rifle
+weapon	18	45	Underbarrel	45 - Ammo Switch, Mfg part selects mode	# Vladof Assault Rifle
+weapon	18	46	Underbarrel	46 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Vladof Assault Rifle
+weapon	18	47	Underbarrel	47 - Atlas, Proj 5/shot, Base Acc 2, Base Sprd 4, Base FR 4/s, Tracker Darts that work for {dur}s	# Vladof Assault Rifle
+weapon	18	48	Underbarrel	48 - Bipod, Sprd ×0.75 (alt mode), Acc Imp ×0.25 (alt mode), Acc Res ×0.75 (alt mode), Recl ×0.25 (alt mode), Sway ×0.25 (alt mode)	# Vladof Assault Rifle
+weapon	18	49	Underbarrel	49 - Grenade Launcher, Splash R 300cm (alt mode)	# Vladof Assault Rifle
+weapon	18	50	Underbarrel Accessory	50 - Mag Cap ×4 (alt mode), Splash R ×1.25 (alt mode)	# Vladof Assault Rifle
+weapon	18	51	Underbarrel Accessory	51 - Dmg ×1.15 (alt mode), Mag Cap ×7 (alt mode)	# Vladof Assault Rifle
+weapon	18	52	Underbarrel Accessory	52 - Motile Bipod, Enabling the Bipod increases Acc without decreasing Movement Speed	# Vladof Assault Rifle
+weapon	18	53	Underbarrel Accessory	53 - Sprd ×0.925 (alt mode)	# Vladof Assault Rifle
+weapon	18	54	Underbarrel Accessory	54 - Mag Cap ×1.188 (alt mode)	# Vladof Assault Rifle
+weapon	18	55	Underbarrel Accessory	55 - Reload ×0.94 (alt mode)	# Vladof Assault Rifle
+weapon	18	56	Foregrip	56 - Dmg ×1.075	# Vladof Assault Rifle
+weapon	18	57	Foregrip	57 - FR ×1.062	# Vladof Assault Rifle
+weapon	18	58	Foregrip	58 - Sprd ×0.925	# Vladof Assault Rifle
+weapon	18	59	Manufacturer Part	59 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Vladof Assault Rifle
+weapon	18	60	Manufacturer Part	60 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Vladof Assault Rifle
+weapon	18	61	Manufacturer Part	61 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Vladof Assault Rifle
+weapon	18	62	Manufacturer Part	62 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Vladof Assault Rifle
+weapon	18	64	Barrel	64 - Wombo Combo 1373 Dmg, 78% Acc, 12.0/s FR	# Vladof Assault Rifle
+weapon	18	66	Underbarrel Accessory	66 - No stat changes	# Vladof Assault Rifle
+weapon	18	67	Underbarrel Accessory	67 - No stat changes	# Vladof Assault Rifle
+weapon	18	69	Underbarrel	69 - Aegon's Dream, FR ×1.5 (alt mode), Sprd ×2 (alt mode)	# Vladof Assault Rifle
+weapon	18	70	Barrel	70 - Buzzymuzz, 1426 Dmg, 76% Acc, 12.5/s FR	# Vladof Assault Rifle
+weapon	18	71	Tediore Payload	71 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Vladof Assault Rifle
+weapon	18	72	Barrel Accessory	72 - Dmg ×1.075	# Vladof Assault Rifle
+weapon	18	73	Barrel Accessory	73 - Crit Dmg +20%	# Vladof Assault Rifle
+weapon	18	74	Barrel Accessory	74 - Mag Cap ×1.188	# Vladof Assault Rifle
+weapon	18	75	Barrel Accessory	75 - Sprd ×0.925	# Vladof Assault Rifle
+weapon	18	76	Barrel Accessory	76 - Dmg ×1.075	# Vladof Assault Rifle
+weapon	18	77	Barrel Accessory	77 - Sprd ×0.925	# Vladof Assault Rifle
+weapon	18	78	Barrel Accessory	78 - FR ×1.062	# Vladof Assault Rifle
+weapon	18	79	Barrel Accessory	79 - FR ×1.062	# Vladof Assault Rifle
+weapon	18	80	Manufacturer Part	80 - Jak, Crits Ric to nearby enemies	# Vladof Assault Rifle
+weapon	18	81	Tediore Payload	81 - Ted Throw, Throws a Gun on Reload	# Vladof Assault Rifle
+weapon	18	82	Tediore Payload	82 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Vladof Assault Rifle
+weapon	18	83	Tediore Payload	83 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Vladof Assault Rifle
+weapon	18	84	Manufacturer Part	84 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Vladof Assault Rifle
+weapon	18	85	Underbarrel	85 - Switch btwn 2 configured elements	# Vladof Assault Rifle
+weapon	18	86	Underbarrel	86 - Extra Barrel, FR ×1.5 (alt mode), Sprd ×2 (alt mode)	# Vladof Assault Rifle
+weapon	18	87	Underbarrel	87 - Shotgun, Proj 6/shot (alt mode)	# Vladof Assault Rifle
+weapon	18	89	Underbarrel Accessory	89 - Dmg ×1.15 (alt mode), Mag Cap ×26 (alt mode)	# Vladof Assault Rifle
+weapon	18	90	Underbarrel	90 - Overdrive, Splash R 6cm (alt mode), Proj 6/shot (alt mode)	# Vladof Assault Rifle
+weapon	18	91	Underbarrel Accessory	91 - Dmg ×1.15 (alt mode), Mag Cap ×4 (alt mode)	# Vladof Assault Rifle
+weapon	18	92	Underbarrel	92 - Scrap Cannon, Proj 6/shot, Base Acc 4, Base Sprd 5, Base FR 4.5/s, Base Dmg 8	# Vladof Assault Rifle
+weapon	18	94	Barrel	94 - Whiskey Foxtrot, 2007 Dmg, 84% Acc, 6.1/s FR	# Vladof Assault Rifle
+weapon	18	99	Barrel	99 - Bubbles, 2376x2 Dmg, 61% Acc, 5.6/s FR, 2/shot, 50cm Splash	# Vladof Assault Rifle
+weapon	18	102	Barrel	102 - Laser-Cutter, 4542x3 Dmg, 72% Acc, 2.0/s FR, 3/shot	# Vladof Assault Rifle
+weapon	18	101	Underbarrel	101 - Laser Cutter, Cost 3/shot (alt mode), Proj 3/shot (alt mode)	# Vladof Assault Rifle
+weapon	22	2	Body	2 - (base)	# Vladof SMG
+weapon	22	3	Body Accessory	3 - Reload ×0.94	# Vladof SMG
+weapon	22	4	Body Accessory	4 - Mag Cap ×1.188	# Vladof SMG
+weapon	22	5	Body Accessory	5 - Sprd ×0.925	# Vladof SMG
+weapon	22	6	Body Accessory	6 - No stat changes	# Vladof SMG
+weapon	22	7	Barrel	7 - Boory, 1003 Dmg, 66% Acc, 12.3/s FR	# Vladof SMG
+weapon	22	8	Barrel	8 - Flewdy, 1162 Dmg, 73% Acc, 9.2/s FR	# Vladof SMG
+weapon	22	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Vladof SMG
+weapon	22	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Vladof SMG
+weapon	22	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Vladof SMG
+weapon	22	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Vladof SMG
+weapon	22	13	Magazine	13 - Base 30, Reload 2.4s	# Vladof SMG
+weapon	22	14	Magazine	14 - Base 35, Reload 3.5s, Dmg ×1.15	# Vladof SMG
+weapon	22	15	Magazine	15 - Tor-lic., Base 25, Reload 2.2s, Dmg ×1.3, FR ×0.75, Sprd ×0.9, Recl ×1.2	# Vladof SMG
+weapon	22	16	Magazine	16 - CoV, ~40 shots→OH, Cool 0.18/s, Cool Del 2.85s, OH Repair 4.35s, Dmg ×1.09, Sprd ×1.4, Recl ×1.1, Sway ×1.35	# Vladof SMG
+weapon	22	17	Magazine	17 - Rip, Borg-lic., Base 40, Reload 2.25s, Charge 1s, FR ×1.15	# Vladof SMG
+weapon	22	18	Manufacturer Part	18 - Tor, Splash R 100cm	# Vladof SMG
+weapon	22	19	Manufacturer Part	19 - Tor, Splash R 100cm	# Vladof SMG
+weapon	22	20	Tediore Throw Reload	20 - Throwload 1.6s, Reload@ 75%	# Vladof SMG
+weapon	22	21	Tediore Throw Reload	21 - Throwload 1.6s, Reload@ 75%	# Vladof SMG
+weapon	22	22	Tediore Throw Reload	22 - Throwload 1.6s, Reload@ 75%	# Vladof SMG
+weapon	22	23	Tediore Throw Reload	23 - Throwload 3s, Reload@ 75%	# Vladof SMG
+weapon	22	24	Tediore Throw Reload	24 - Throwload 2.5s, Reload@ 75%	# Vladof SMG
+weapon	22	25	Body Accessory	25 - No stat changes	# Vladof SMG
+weapon	22	26	Scope	26 - ADS FOV ×0.75, ADS Time 0.17s	# Vladof SMG
+weapon	22	27	Scope	27 - ADS FOV ×0.5, ADS Time 0.17s	# Vladof SMG
+weapon	22	28	Scope	28 - ADS FOV ×0.667, ADS Time 0.17s	# Vladof SMG
+weapon	22	29	Scope	29 - ADS FOV ×0.333, ADS Time 0.17s	# Vladof SMG
+weapon	22	30	Scope	30 - ADS FOV ×0.4, ADS Time 0.17s	# Vladof SMG
+weapon	22	31	Scope Accessory	31 - Dmg ×1.075	# Vladof SMG
+weapon	22	32	Scope Accessory	32 - Reload ×0.94	# Vladof SMG
+weapon	22	33	Scope Accessory	33 - ADS Time ×0.8	# Vladof SMG
+weapon	22	34	Scope Accessory	34 - Mag Cap ×1.188	# Vladof SMG
+weapon	22	35	Scope Accessory	35 - Dmg ×1.075	# Vladof SMG
+weapon	22	36	Scope Accessory	36 - Reload ×0.94	# Vladof SMG
+weapon	22	37	Scope Accessory	37 - ADS Time ×0.8	# Vladof SMG
+weapon	22	38	Scope Accessory	38 - Mag Cap ×1.188	# Vladof SMG
+weapon	22	40	Grip	40 - Thrown Thrust 2	# Vladof SMG
+weapon	22	41	Grip	41 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Vladof SMG
+weapon	22	42	Grip	42 - Thrown Dmg ×1.5	# Vladof SMG
+weapon	22	43	Grip	43 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Vladof SMG
+weapon	22	44	Grip	44 - Dmg ×1.075	# Vladof SMG
+weapon	22	45	Grip	45 - FR ×1.062	# Vladof SMG
+weapon	22	46	Grip	46 - Reload ×0.94	# Vladof SMG
+weapon	22	47	Underbarrel	47 - Ammo Switch, Mfg part selects mode	# Vladof SMG
+weapon	22	48	Underbarrel	48 - Atlas, Splash R 350cm (alt mode), Tracker Nades that work for {dur}s	# Vladof SMG
+weapon	22	49	Underbarrel	49 - Switch btwn 2 configured elements	# Vladof SMG
+weapon	22	50	Underbarrel	50 - Zip Rockets, Splash R 150cm (alt mode), Mag Cap 20 (alt mode)	# Vladof SMG
+weapon	22	51	Underbarrel	51 - Taser, Splash R 5cm (alt mode), Mag Cap 20 (alt mode)	# Vladof SMG
+weapon	22	52	Underbarrel	52 - Flamethrower, Splash R 4cm (alt mode)	# Vladof SMG
+weapon	22	53	Underbarrel	53 - Extra Barrel, FR ×1.75 (alt mode), Sprd ×2 (alt mode)	# Vladof SMG
+weapon	22	54	Underbarrel	54 - Atlas, Proj 5/shot, Base Acc 2, Base Sprd 4, Base FR 4/s, Tracker Darts that work for {dur}s	# Vladof SMG
+weapon	22	55	Underbarrel Accessory	55 - Mag Cap ×11 (alt mode)	# Vladof SMG
+weapon	22	56	Underbarrel Accessory	56 - Dmg ×1.15 (alt mode), Mag Cap ×3 (alt mode)	# Vladof SMG
+weapon	22	57	Underbarrel Accessory	57 - Dmg ×1.15 (alt mode)	# Vladof SMG
+weapon	22	58	Underbarrel Accessory	58 - Sprd ×0.925 (alt mode)	# Vladof SMG
+weapon	22	59	Foregrip	59 - Dmg ×1.075	# Vladof SMG
+weapon	22	60	Foregrip	60 - FR ×1.062	# Vladof SMG
+weapon	22	61	Foregrip	61 - Sprd ×0.925	# Vladof SMG
+weapon	22	62	Manufacturer Part	62 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Vladof SMG
+weapon	22	63	Manufacturer Part	63 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Vladof SMG
+weapon	22	64	Manufacturer Part	64 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Vladof SMG
+weapon	22	65	Manufacturer Part	65 - Swap: Sniper Mode, Alt → SN ammo, Crit Dmg +35%, Recl ×1.4, Max Acc ×0.6, Sprd ×0.6, FR ×0.75, Dmg ×1.3	# Vladof SMG
+weapon	22	66	Barrel	66 - Kaoson, 951x2 Dmg, 83% Acc, 10.5/s FR, 2/shot	# Vladof SMG
+weapon	22	68	Barrel	68 - Onslaught, 1479 Dmg, 76% Acc, 16.0/s FR	# Vladof SMG
+weapon	22	69	Barrel Accessory	69 - FR ×1.062	# Vladof SMG
+weapon	22	70	Barrel Accessory	70 - FR ×1.062	# Vladof SMG
+weapon	22	71	Manufacturer Part	71 - Birt's Bees, Splash R 100cm	# Vladof SMG
+weapon	22	72	Barrel Accessory	72 - Dmg ×1.075	# Vladof SMG
+weapon	22	73	Barrel Accessory	73 - Crit Dmg +20%	# Vladof SMG
+weapon	22	74	Barrel Accessory	74 - Mag Cap ×1.188	# Vladof SMG
+weapon	22	75	Barrel Accessory	75 - Mag Cap ×1.188	# Vladof SMG
+weapon	22	76	Barrel Accessory	76 - Dmg ×1.075	# Vladof SMG
+weapon	22	77	Barrel Accessory	77 - Sprd ×0.925	# Vladof SMG
+weapon	22	78	Barrel Accessory	78 - FR ×1.062	# Vladof SMG
+weapon	22	79	Barrel Accessory	79 - FR ×1.062	# Vladof SMG
+weapon	22	80	Manufacturer Part	80 - Jak, Crits Ric to nearby enemies	# Vladof SMG
+weapon	22	81	Tediore Payload	81 - Ted Throw, Throws a Gun on Reload	# Vladof SMG
+weapon	22	82	Tediore Payload	82 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Vladof SMG
+weapon	22	83	Tediore Payload	83 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Vladof SMG
+weapon	22	84	Tediore Payload	84 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Vladof SMG
+weapon	22	85	Manufacturer Part	85 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Vladof SMG
+weapon	22	86	Manufacturer Part	86 - Birt's Bees, Splash R 100cm	# Vladof SMG
+weapon	22	87	Barrel	87 - Birt's Bees, 1249 Dmg, 73% Acc, 12.4/s FR	# Vladof SMG
+weapon	22	89	Manufacturer Part	89 - Mercurious, Splash R 100cm	# Vladof SMG
+weapon	22	90	Manufacturer Part	90 - Mercurious, Splash R 100cm	# Vladof SMG
+weapon	22	91	Barrel	91 - Mercurious, 3697 Dmg, 71% Acc, 4.3/s FR, 2/shot	# Vladof SMG
+weapon	22	100	Manufacturer Part	100 - Parasite, Splash R 100cm	# Vladof SMG
+weapon	22	99	Manufacturer Part	99 - Parasite, Splash R 100cm	# Vladof SMG
+weapon	22	102	Underbarrel	102 - Locust Rockets, Splash R 300cm (alt mode), Mag Cap 20 (alt mode)	# Vladof SMG
+weapon	22	103	Barrel	103 - Parasite, 2044 Dmg, 75% Acc, 9.3/s FR	# Vladof SMG
+weapon	22	93	Barrel	93 - Brickhouse, 2905 Dmg, 71% Acc, 6.0/s FR	# Vladof SMG
+weapon	16	1	Barrel	1 - Finnity XXX-L, 2218 Dmg, 94% Acc, 13.0/s FR, +50% Crit	# Vladof Sniper
+weapon	16	2	Body	2 - (base)	# Vladof Sniper
+weapon	16	3	Body Accessory	3 - No stat changes	# Vladof Sniper
+weapon	16	4	Body Accessory	4 - Reload ×0.94	# Vladof Sniper
+weapon	16	5	Body Accessory	5 - Mag Cap ×1.188	# Vladof Sniper
+weapon	16	6	Body Accessory	6 - Sprd ×0.925	# Vladof Sniper
+weapon	16	7	Barrel	7 - Ragoon, 3216 Dmg, 87% Acc, 4.0/s FR, +50% Crit	# Vladof Sniper
+weapon	16	8	Barrel	8 - Vyudazy, 4214 Dmg, 87% Acc, 2.5/s FR, +50% Crit	# Vladof Sniper
+weapon	16	9	Manufacturer Part	9 - Hyp, Zoom to enable Gun Shlds	# Vladof Sniper
+weapon	16	10	Manufacturer Part	10 - Hyp, Dmg to Gun Shlds can Ric to enemies	# Vladof Sniper
+weapon	16	11	Manufacturer Part	11 - Hyp, Dmg to Gun Shlds absorbs Ammo	# Vladof Sniper
+weapon	16	12	Manufacturer Part	12 - Hyp, Dmg to Gun Shlds amplifies Gun Dmg	# Vladof Sniper
+weapon	16	13	Magazine	13 - Base 12, Reload 3s	# Vladof Sniper
+weapon	16	14	Magazine	14 - Base 15, Reload 3.6s	# Vladof Sniper
+weapon	16	15	Magazine	15 - Tor-lic., Base 9, Reload 2.85s, Dmg ×1.288, FR ×0.825	# Vladof Sniper
+weapon	16	16	Magazine	16 - CoV, ~13.8 shots→OH, Cool 0.3/s, Cool Del 2.4s, OH Repair 4.25s, Sprd ×1.3, Recl ×1.4, Acc Res ×2.3	# Vladof Sniper
+weapon	16	17	Magazine	17 - Rip, Borg-lic., Base 18, Reload 3.6s, Charge 1s, Dmg ×0.988, FR ×1.25	# Vladof Sniper
+weapon	16	18	Manufacturer Part	18 - Tor, Splash R 100cm	# Vladof Sniper
+weapon	16	19	Manufacturer Part	19 - Tor, Splash R 100cm	# Vladof Sniper
+weapon	16	20	Tediore Throw Reload	20 - Throwload 2s, Reload@ 75%	# Vladof Sniper
+weapon	16	21	Tediore Throw Reload	21 - Throwload 2s, Reload@ 75%	# Vladof Sniper
+weapon	16	22	Tediore Throw Reload	22 - Throwload 2s, Reload@ 75%	# Vladof Sniper
+weapon	16	23	Tediore Throw Reload	23 - Throwload 3s, Reload@ 75%	# Vladof Sniper
+weapon	16	24	Tediore Throw Reload	24 - Throwload 3s, Reload@ 75%	# Vladof Sniper
+weapon	16	25	Manufacturer Part	25 - Jak, Crits Ric to nearby enemies	# Vladof Sniper
+weapon	16	26	Scope	26 - ADS FOV ×0.75, ADS Time 0.375s	# Vladof Sniper
+weapon	16	27	Scope	27 - ADS FOV ×0.2, ADS Time 0.375s	# Vladof Sniper
+weapon	16	28	Scope	28 - ADS FOV ×0.167, ADS Time 0.5s	# Vladof Sniper
+weapon	16	29	Scope	29 - ADS FOV ×0.143, ADS Time 0.5s	# Vladof Sniper
+weapon	16	30	Scope	30 - ADS FOV ×0.125, ADS Time 0.5s	# Vladof Sniper
+weapon	16	31	Scope Accessory	31 - Dmg ×1.075	# Vladof Sniper
+weapon	16	32	Scope Accessory	32 - Reload ×0.94	# Vladof Sniper
+weapon	16	33	Scope Accessory	33 - ADS Time ×0.8	# Vladof Sniper
+weapon	16	34	Scope Accessory	34 - Mag Cap ×1.188	# Vladof Sniper
+weapon	16	35	Scope Accessory	35 - Dmg ×1.075	# Vladof Sniper
+weapon	16	36	Scope Accessory	36 - Reload ×0.94	# Vladof Sniper
+weapon	16	37	Scope Accessory	37 - ADS Time ×0.8	# Vladof Sniper
+weapon	16	38	Scope Accessory	38 - Mag Cap ×1.188	# Vladof Sniper
+weapon	16	39	Grip	39 - Thrown Thrust 2, Thrown Dmg ×0.9, Thrown Splash R ×0.65	# Vladof Sniper
+weapon	16	40	Grip	40 - Thrown Dmg ×1.5	# Vladof Sniper
+weapon	16	41	Grip	41 - Hyp, Sprd ×0.9, Acc Res ×1.5, +Acc on sustained fire	# Vladof Sniper
+weapon	16	42	Grip	42 - Dmg ×1.075	# Vladof Sniper
+weapon	16	43	Grip	43 - FR ×1.062	# Vladof Sniper
+weapon	16	44	Grip	44 - Reload ×0.94	# Vladof Sniper
+weapon	16	45	Underbarrel	45 - Switch btwn 2 configured elements	# Vladof Sniper
+weapon	16	46	Underbarrel	46 - Ammo Switch, Mfg part selects mode	# Vladof Sniper
+weapon	16	47	Underbarrel	47 - Atlas, Splash R 350cm (alt mode), Mag Cap 1 (alt mode), Tracker Nades that work for {dur}s	# Vladof Sniper
+weapon	16	48	Underbarrel	48 - Big Rocket, Splash R 600cm (alt mode)	# Vladof Sniper
+weapon	16	49	Underbarrel	49 - Extra Barrel, FR ×1.667 (alt mode), Sprd ×1.25 (alt mode), Acc Res ×1.5 (alt mode)	# Vladof Sniper
+weapon	16	50	Underbarrel	50 - Bipod, Base Acc 0.75, Base Sprd 0.75, Base FR 2/s	# Vladof Sniper
+weapon	16	51	Underbarrel	51 - Atlas, Mag Cap 1 (alt mode), Tracker Darts that work for {dur}s	# Vladof Sniper
+weapon	16	52	Underbarrel	52 - Shotgun, Proj 4/shot (alt mode), Mag Cap 4 (alt mode)	# Vladof Sniper
+weapon	16	53	Underbarrel Accessory	53 - Dmg ×1.15 (alt mode), Mag Cap ×5 (alt mode)	# Vladof Sniper
+weapon	16	54	Underbarrel Accessory	54 - Splash R 600cm (alt mode), Dmg ×1.15 (alt mode)	# Vladof Sniper
+weapon	16	55	Underbarrel Accessory	55 - Motile Bipod, Enabling the Bipod increases Acc by +75%	# Vladof Sniper
+weapon	16	56	Underbarrel Accessory	56 - Sprd ×0.925 (alt mode)	# Vladof Sniper
+weapon	16	57	Underbarrel Accessory	57 - Mag Cap ×1.188 (alt mode)	# Vladof Sniper
+weapon	16	58	Underbarrel Accessory	58 - Reload ×0.94 (alt mode)	# Vladof Sniper
+weapon	16	59	Foregrip	59 - Dmg ×1.075	# Vladof Sniper
+weapon	16	60	Foregrip	60 - FR ×1.062	# Vladof Sniper
+weapon	16	61	Foregrip	61 - Sprd ×0.925	# Vladof Sniper
+weapon	16	62	Manufacturer Part	62 - Swap: SMG Mode, Alt → SMG ammo, Recl ×0.8, Acc Imp ×1.25, Max Acc ×0.8, Sprd ×1.25, FR ×1.25, Dmg ×0.9	# Vladof Sniper
+weapon	16	63	Manufacturer Part	63 - Swap: Shotgun Mode, Alt → SG ammo, Cost +1/shot, Proj ×3, Recl ×1.25, Acc Imp ×1.1, Max Acc ×0.65, Sprd ×2, FR ×0.8, Dmg ×0.6	# Vladof Sniper
+weapon	16	64	Manufacturer Part	64 - Swap: Assault Rifle Mode, Alt → assault rifle ammo, Recl ×1.05, Max Acc ×0.85, Sprd ×0.9, FR ×0.9, Dmg ×1.1	# Vladof Sniper
+weapon	16	65	Manufacturer Part	65 - Swap: Pistol Mode, Alt → PS ammo, ADS Time ×0.7, Putdown Time ×0.7, Equip Time ×0.7, Max Acc ×1.1, Sprd ×0.9, Reload ×0.85, FR ×1.1, Dmg ×0.95	# Vladof Sniper
+weapon	16	68	Barrel	68 - Midnight Defiance, 3216 Dmg, 87% Acc, 4.0/s FR, +50% Crit	# Vladof Sniper
+weapon	16	71	Grip	71 - Upgraded Finnity XXX-L, Sprd ×1.08, Acc Res ×2.7, +Acc on sustained fire	# Vladof Sniper
+weapon	16	72	Barrel	72 - Stop Gap, 2994 Dmg, 87% Acc, 4.4/s FR, +50% Crit	# Vladof Sniper
+weapon	16	73	Barrel Accessory	73 - Dmg ×1.075	# Vladof Sniper
+weapon	16	74	Barrel Accessory	74 - Crit Dmg +20%	# Vladof Sniper
+weapon	16	75	Barrel Accessory	75 - Mag Cap ×1.188	# Vladof Sniper
+weapon	16	76	Barrel Accessory	76 - Mag Cap ×1.188	# Vladof Sniper
+weapon	16	77	Barrel Accessory	77 - Dmg ×1.075	# Vladof Sniper
+weapon	16	78	Barrel Accessory	78 - Sprd ×0.925	# Vladof Sniper
+weapon	16	79	Barrel Accessory	79 - FR ×1.062	# Vladof Sniper
+weapon	16	80	Barrel Accessory	80 - FR ×1.062	# Vladof Sniper
+weapon	16	81	Tediore Payload	81 - Ted Throw, Throws a Gun on Reload	# Vladof Sniper
+weapon	16	82	Tediore Payload	82 - Ted Shooting, Shooting - Thrown Gun shoots enemies until it is out of Ammo	# Vladof Sniper
+weapon	16	83	Tediore Payload	83 - Ted Combo - Thrown Gun can be shot to increase the explosion's Dmg	# Vladof Sniper
+weapon	16	84	Tediore Payload	84 - Ted MIRV - Thrown Gun spawns 4 Nades on impact	# Vladof Sniper
+weapon	16	85	Manufacturer Part	85 - Hyp Weapon Shld, Enables the Hyp front weapon shld and its shld parts	# Vladof Sniper
+weapon	16	86	Grip	86 - Thrown Thrust 2	# Vladof Sniper
+weapon	16	87	Barrel	87 - Hemorrhage, 2994 Dmg, 87% Acc, 4.4/s FR, +50% Crit	# Vladof Sniper
+weapon	16	90	Barrel	90 - Light Gun, 3604 Dmg, 87% Acc, 4.0/s FR, +50% Crit	# Vladof Sniper
+

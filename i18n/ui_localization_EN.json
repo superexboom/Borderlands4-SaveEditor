@@ -66,8 +66,7 @@
       "yaml_editor": "YAML Editor",
       "class_mod": "Class Mod",
       "enhancement": "Enhancement",
-      "weapon_editor": "Wpn Edit",
-      "weapon_generator": "Wpn Gen",
+      "weapons": "Weapons",
       "grenade": "Grenade",
       "shield": "Shield",
       "repkit": "Repkit",
@@ -664,7 +663,9 @@
       "unknown_manufacturer": "Unknown Manufacturer",
       "no_stat_changes": "No stat changes",
       "element_group": "Element Configuration Group · {n} parts",
-      "licensed_group": "Licensed Part Group · {mfg} · {n} parts"
+      "licensed_group": "Licensed Part Group · {mfg} · {n} parts",
+      "cross_mfg_same_type": "─── cross-mfg (same weapon type) ───",
+      "cross_mfg_other_type": "─── cross-mfg (other weapon types) ───"
     },
     "summary": {
       "none_selected": "No backpack weapon selected",

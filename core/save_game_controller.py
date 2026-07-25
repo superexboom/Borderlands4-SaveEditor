@@ -347,6 +347,37 @@ class SaveGameController:
         
         return sorted(found_files, key=lambda x: x['modified'], reverse=True)
 
+    def remove_item(self, item_path: List[Any]) -> bool:
+        """Delete the item at ``item_path`` from the yaml tree.
+
+        ``item_path`` is the same list-of-keys shape used by ``update_item``
+        (the item's ``original_path`` in ``get_all_items()``). Walks to the
+        parent container, pops the last key. Returns True on success, False
+        if the path is unreachable or already absent.
+        """
+        if not self.yaml_obj:
+            raise ValueError("存档未加载，无法删除物品。")
+        if not item_path:
+            return False
+        try:
+            node = self.yaml_obj
+            for key in item_path[:-1]:
+                if isinstance(node, list) and isinstance(key, str) and key.isdigit():
+                    node = node[int(key)]
+                else:
+                    node = node[key]
+            last_key = item_path[-1]
+            if isinstance(node, list):
+                idx = int(last_key) if isinstance(last_key, str) and last_key.isdigit() else last_key
+                del node[idx]
+            else:
+                if last_key not in node:
+                    return False
+                del node[last_key]
+            return True
+        except (KeyError, IndexError, TypeError, ValueError):
+            return False
+
     def update_item(self, item_path: List[Any], original_item_data: Dict[str, Any], new_item_data: Dict[str, Any]) -> str:
         """
         更新单个物品。根据变化的字段决定是否需要重新编码。

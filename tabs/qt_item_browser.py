@@ -116,6 +116,10 @@ class ItemBrowser(QtWidgets.QFrame):
 
     item_selected = QtCore.pyqtSignal(dict)
     selection_changed = QtCore.pyqtSignal(object, object)
+    # Emitted with the item's ``original_path`` when the user confirms a
+    # right-click Delete. The host tab re-emits (or main_window connects
+    # directly) so the controller can excise the entry and refresh.
+    item_delete_requested = QtCore.pyqtSignal(list)
 
     def __init__(
         self,
@@ -220,6 +224,7 @@ class ItemBrowser(QtWidgets.QFrame):
             if built is None:
                 continue
             display_name, detail, row_widget = built
+            row_widget = self._wrap_with_delete_button(row_widget, item_dict)
             list_item = QtWidgets.QListWidgetItem()
             list_item.setData(QtCore.Qt.ItemDataRole.UserRole, item_dict)
             search_blob = f"{item_dict.get('name', '')} {display_name} {detail}".casefold()
@@ -375,6 +380,22 @@ class ItemBrowser(QtWidgets.QFrame):
             self._selected_path = data.get("original_path")
             self.item_selected.emit(data)
 
+    def _wrap_with_delete_button(self, row_widget, item_dict):
+        """Overlay a hover-visible red ✕ in the row's upper-right corner.
+
+        The button sits in reserved space (row_widget gets a small right
+        margin) so its show/hide never reflows the card. Click → confirm
+        dialog → emit ``item_delete_requested`` with the item's
+        ``original_path``. No success popup — the row disappearing on the
+        next browser refresh IS the confirmation.
+        """
+        path = item_dict.get('original_path')
+        if not path:
+            return row_widget
+        wrapper = _RowWithDeleteButton(row_widget, path, self.item_delete_requested)
+        return wrapper
+
+
     def _update_summary(self, item_dict):
         if item_dict and self._summary_formatter:
             try:
@@ -415,6 +436,10 @@ class PositionalTokenRow(QtWidgets.QWidget):
         self._state = state
         self._index = index
         self._inner = inner_widget
+        # Capture Token identity so we can locate this row's token after
+        # arbitrary reorderings — position-based sync breaks the moment
+        # sibling parts_data doesn't stay parallel to state.tokens.
+        self._token = state.tokens[index] if 0 <= index < len(state.tokens) else None
 
         layout = QtWidgets.QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -449,6 +474,9 @@ class PositionalTokenRow(QtWidgets.QWidget):
     def token_index(self):
         return self._index
 
+    def token(self):
+        return self._token
+
     def inner_widget(self):
         return self._inner
 
@@ -459,21 +487,101 @@ class PositionalTokenRow(QtWidgets.QWidget):
         self.index_label.setText(str(index))
 
     def _move_up(self):
-        if self._index <= 0:
+        # Find the previous typed (non-raw) token position and SWAP with it.
+        # A plain move() would slide this token into an adjacent whitespace
+        # slot, doubling the leading space and collapsing the trailing one.
+        tokens = self._state.tokens
+        prev = None
+        for j in range(self._index - 1, -1, -1):
+            if tokens[j].kind != 'raw':
+                prev = j
+                break
+        if prev is None:
             return
-        new_index = self._index - 1
-        self._state.move(self._index, new_index)
         old = self._index
-        self._index = new_index
-        self.index_label.setText(str(new_index))
-        self.token_moved.emit(old, new_index)
+        self._state.swap(self._index, prev)
+        self._index = prev
+        self.index_label.setText(str(prev))
+        self.token_moved.emit(old, prev)
 
     def _move_down(self):
-        if self._index >= len(self._state.tokens) - 1:
+        tokens = self._state.tokens
+        nxt = None
+        for j in range(self._index + 1, len(tokens)):
+            if tokens[j].kind != 'raw':
+                nxt = j
+                break
+        if nxt is None:
             return
-        new_index = self._index + 1
-        self._state.move(self._index, new_index)
         old = self._index
-        self._index = new_index
-        self.index_label.setText(str(new_index))
-        self.token_moved.emit(old, new_index)
+        self._state.swap(self._index, nxt)
+        self._index = nxt
+        self.index_label.setText(str(nxt))
+        self.token_moved.emit(old, nxt)
+
+
+class _RowWithDeleteButton(QtWidgets.QWidget):
+    """Row wrapper that overlays a hover-visible red ✕ in the top-right
+    corner. Click → confirm dialog → emit the browser's
+    ``item_delete_requested`` signal. Reserved right-margin means the
+    button's show/hide never reflows the row content.
+    """
+
+    _BUTTON_SIZE = 20
+    _RIGHT_MARGIN = 24  # leaves ~4px gap between row content and button
+
+    def __init__(self, row_widget, item_path, delete_signal, parent=None):
+        super().__init__(parent)
+        self._item_path = list(item_path)
+        self._delete_signal = delete_signal
+        outer = QtWidgets.QHBoxLayout(self)
+        outer.setContentsMargins(0, 0, self._RIGHT_MARGIN, 0)
+        outer.setSpacing(0)
+        outer.addWidget(row_widget, 1)
+
+        self._delete_btn = QtWidgets.QPushButton("✕", self)
+        self._delete_btn.setObjectName("ItemBrowserDeleteButton")
+        self._delete_btn.setFixedSize(self._BUTTON_SIZE, self._BUTTON_SIZE)
+        self._delete_btn.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+        self._delete_btn.setToolTip("Delete this item")
+        self._delete_btn.setStyleSheet(
+            "QPushButton#ItemBrowserDeleteButton {"
+            "  color: #ff5252; background: transparent;"
+            "  border: none; font-size: 14px; font-weight: bold;"
+            "}"
+            "QPushButton#ItemBrowserDeleteButton:hover {"
+            "  color: #ffffff; background: #ff2222; border-radius: 4px;"
+            "}"
+        )
+        self._delete_btn.clicked.connect(self._on_delete_clicked)
+        self._delete_btn.hide()
+
+    def resizeEvent(self, event):
+        # Pin the button to the top-right of the wrapper, above any layout
+        # rows underneath. Runs on every resize so list-widget size hints
+        # / column resizes keep it anchored.
+        super().resizeEvent(event)
+        btn = self._delete_btn
+        margin = 2
+        btn.move(self.width() - self._BUTTON_SIZE - margin, margin)
+        btn.raise_()
+
+    def enterEvent(self, event):
+        self._delete_btn.show()
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        self._delete_btn.hide()
+        super().leaveEvent(event)
+
+    def _on_delete_clicked(self):
+        confirm = QtWidgets.QMessageBox.question(
+            self, "Delete item",
+            "Permanently remove this item from the save?\n\n"
+            "The file is only rewritten when you click Save — restore from "
+            "a backup if you change your mind.",
+            QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No,
+            QtWidgets.QMessageBox.StandardButton.No,
+        )
+        if confirm == QtWidgets.QMessageBox.StandardButton.Yes:
+            self._delete_signal.emit(self._item_path)

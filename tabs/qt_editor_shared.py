@@ -165,6 +165,33 @@ class TokenOrderedState:
                 new_bindings[idx] = getter
         self._bindings = new_bindings
 
+    def swap(self, i: int, j: int) -> None:
+        """Swap tokens at positions ``i`` and ``j`` in place, and swap their
+        bindings so a getter continues to fire for the same token identity.
+
+        Distinct from ``move``: swap leaves every OTHER token at its original
+        index — critical when interstitial whitespace (kind='raw') tokens sit
+        between typed tokens and callers want to reorder the typed pair
+        without disturbing spacing. ``move(i, i+1)`` would slide the swap
+        partner into the raw slot; ``swap(i, next_typed_after_i)`` keeps the
+        raw tokens exactly where they were, so the rendered serial gains no
+        stray spaces and loses no separators.
+        """
+        n = len(self.tokens)
+        if not 0 <= i < n:
+            raise IndexError(f"swap i={i} out of range (have {n})")
+        if not 0 <= j < n:
+            raise IndexError(f"swap j={j} out of range (have {n})")
+        if i == j:
+            return
+        self.tokens[i], self.tokens[j] = self.tokens[j], self.tokens[i]
+        bi = self._bindings.pop(i, None)
+        bj = self._bindings.pop(j, None)
+        if bi is not None:
+            self._bindings[j] = bi
+        if bj is not None:
+            self._bindings[i] = bj
+
     def insert(self, index: int, token: Token) -> None:
         """Insert ``token`` at ``index``; every binding at ``index`` or higher
         shifts up by one so a getter attached to a token follows the token to

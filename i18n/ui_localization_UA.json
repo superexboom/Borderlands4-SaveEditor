@@ -66,8 +66,7 @@
       "yaml_editor": "YAML Редактор",
       "class_mod": "Мод класу",
       "enhancement": "Посилення",
-      "weapon_editor": "Ред. зброї",
-      "weapon_generator": "Ген. зброї",
+      "weapons": "Зброя",
       "grenade": "Граната",
       "shield": "Щит",
       "repkit": "Ремкомплект",
@@ -664,7 +663,9 @@
       "unknown_manufacturer": "Невідомий виробник",
       "no_stat_changes": "Без змін характеристик",
       "element_group": "Група налаштування стихії · {n} дет.",
-      "licensed_group": "Група ліцензов. деталей · {mfg} · {n} дет."
+      "licensed_group": "Група ліцензов. деталей · {mfg} · {n} дет.",
+      "cross_mfg_same_type": "─── міжвиробн. (той же тип зброї) ───",
+      "cross_mfg_other_type": "─── міжвиробн. (інші типи зброї) ───"
     },
     "summary": {
       "none_selected": "Зброю з рюкзака не вибрано",
