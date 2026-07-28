@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import re
+from collections import Counter
 from functools import lru_cache
 from typing import Any
 
@@ -1001,6 +1002,274 @@ def weapon_part_selection_tags(item_id: int, part_id: str) -> dict[str, list[str
         for key in ("adds", "requires", "excludes")
         if tags.get(key)
     }
+
+
+def _weapon_generation_refs(decoded: str, root_ref: str) -> list[str]:
+    component_text = decoded.split("||", 1)[1] if "||" in decoded else ""
+    refs: list[str] = []
+    for component in _parse_components(component_text):
+        if component.get("type") == "simple":
+            refs.append(f"{root_ref}:{component.get('id')}")
+        elif component.get("type") == "group":
+            refs.extend(f"{component.get('id')}:{part_id}" for part_id in component.get("sub_ids", []))
+        elif component.get("type") == "elemental":
+            refs.append(f"{component.get('id')}:{component.get('sub_id')}")
+    return sorted(ref for ref in refs if not ref.endswith(":None"))
+
+
+def _weapon_generation_tags(index: dict[str, Any], rules: dict[str, Any], ref: str) -> dict[str, set[str]]:
+    raw = (rules.get("part_selection_tags") or {}).get(ref) or (index.get("part_refs") or {}).get(ref, {}).get(
+        "selection_tags", {}
+    )
+    return {
+        key: {str(value).casefold() for value in raw.get(key, [])}
+        for key in ("adds", "requires", "excludes")
+    }
+
+
+def _weapon_generation_root(ref: str) -> str:
+    return ref.partition(":")[0]
+
+
+def weapon_generation_context(decoded: str) -> dict[str, Any]:
+    index = _item_index()
+    rules = index.get("weapon_generation_rules") or {}
+    match = re.match(r"\s*(\d+)", decoded or "")
+    root_ref = match.group(1) if match else ""
+    weapon = (rules.get("weapons") or {}).get(root_ref, {})
+    refs = _weapon_generation_refs(decoded, root_ref) if root_ref else []
+    part_refs = index.get("part_refs") or {}
+    compositions = weapon.get("compositions") or {}
+    composition_tokens = [ref for ref in refs if ref in compositions]
+    unknown_compositions = [
+        ref for ref in refs if (part_refs.get(ref) or {}).get("category") == "inv_comp" and ref not in compositions
+    ]
+    composition_ref = composition_tokens[0] if len(composition_tokens) == 1 else ""
+    composition = compositions.get(composition_ref, {})
+    selected = [ref for ref in refs if (part_refs.get(ref) or {}).get("category") != "inv_comp"]
+    selected_by_group: dict[str, list[str]] = {}
+    for ref in selected:
+        entry = part_refs.get(ref) or {}
+        group = str(entry.get("selection_group") or entry.get("category") or "").casefold()
+        if group:
+            selected_by_group.setdefault(group, []).append(ref)
+
+    groups: dict[str, Any] = {}
+    for group, rule in (composition.get("groups") or {}).items():
+        group = str(group).casefold()
+        groups[group] = {
+            "allowed": list(rule.get("allowed_part_refs") or []),
+            "source": str(rule.get("source") or ""),
+            "min": int(rule.get("min", 1)),
+            "max": int(rule.get("max", 1)),
+            "selected": selected_by_group.get(group, []),
+            "eligible_refs": [],
+            "additional_part_chance": rule.get("additional_chance"),
+            "unresolved_parts": list(rule.get("unresolved_parts") or []),
+        }
+
+    ordered_groups: list[str] = []
+    for group in weapon.get("part_types") or []:
+        group = str(group).casefold()
+        if group not in ordered_groups:
+            ordered_groups.append(group)
+    ordered_groups.extend(sorted((set(groups) | set(selected_by_group)) - set(ordered_groups)))
+    active_tags = {str(tag).casefold() for tag in composition.get("base_tags") or []}
+    for group in ordered_groups:
+        if group in groups:
+            groups[group]["eligible_refs"] = [
+                ref
+                for ref in groups[group]["allowed"]
+                if (tags := _weapon_generation_tags(index, rules, ref))["requires"] <= active_tags
+                and not (tags["excludes"] & active_tags)
+            ]
+        for ref in selected_by_group.get(group, []):
+            active_tags.update(_weapon_generation_tags(index, rules, ref)["adds"])
+
+    unknown_parts = [ref for ref in selected if ref not in part_refs]
+    foreign_parts = [ref for ref in refs if _weapon_generation_root(ref) not in {root_ref, "1"}]
+    coverage_complete = bool(root_ref and weapon and composition_ref)
+    coverage_complete &= not bool(composition.get("inheritance_cycle"))
+    coverage_complete &= not any(group["unresolved_parts"] for group in groups.values())
+    coverage_complete &= not bool(unknown_parts or unknown_compositions)
+    return {
+        "root_ref": root_ref,
+        "parent": weapon.get("parent", ""),
+        "manufacturer": weapon.get("manufacturer", ""),
+        "weapon_type": weapon.get("weapon_type", ""),
+        "rules_available": bool(rules),
+        "weapon_known": bool(weapon),
+        "composition_ref": composition_ref,
+        "composition_tokens": composition_tokens,
+        "unknown_compositions": unknown_compositions,
+        "coverage_complete": coverage_complete,
+        "availability": composition.get("availability", ""),
+        "base_tags": list(composition.get("base_tags") or []),
+        "tag_rules": list(composition.get("tag_rules") or []),
+        "forced_part_refs": list(composition.get("forced_part_refs") or []),
+        "part_types": list(weapon.get("part_types") or []),
+        "groups": groups,
+        "selected_part_refs": selected,
+        "unknown_part_refs": unknown_parts,
+        "foreign_part_refs": foreign_parts,
+        "inheritance_cycle": list(composition.get("inheritance_cycle") or []),
+    }
+
+
+def validate_weapon_generation(decoded: str, allow_incomplete: bool = False) -> dict[str, Any]:
+    context = weapon_generation_context(decoded)
+    index = _item_index()
+    rules = index.get("weapon_generation_rules") or {}
+    part_refs = index.get("part_refs") or {}
+    selected = context["selected_part_refs"]
+    violations: list[dict[str, Any]] = []
+    hard = False
+    unknown = False
+    incomplete = False
+    conditional = False
+
+    def add(code: str, **details: Any) -> None:
+        violations.append({"code": code, **details})
+
+    if not context["root_ref"]:
+        add("invalid_serial")
+        unknown = True
+    elif not context["rules_available"]:
+        add("rules_unavailable")
+        unknown = True
+    elif not context["weapon_known"]:
+        add("weapon_rules_missing", root_ref=context["root_ref"])
+        unknown = True
+
+    if len(context["composition_tokens"]) > 1:
+        add("multiple_compositions", parts=context["composition_tokens"])
+        hard = True
+    elif context["unknown_compositions"]:
+        add("unknown_composition", parts=context["unknown_compositions"])
+        unknown = True
+    elif context["weapon_known"] and not context["composition_ref"]:
+        add("unknown_composition")
+        unknown = True
+
+    for ref in context["foreign_part_refs"]:
+        add("foreign_root_part", part=ref)
+        hard = True
+    if context["unknown_part_refs"]:
+        add("unknown_part", parts=context["unknown_part_refs"])
+        unknown = True
+    if context["inheritance_cycle"]:
+        add("inheritance_cycle", parts=context["inheritance_cycle"])
+        unknown = True
+    unresolved = {
+        group: data["unresolved_parts"]
+        for group, data in context["groups"].items()
+        if data["unresolved_parts"]
+    }
+    if unresolved:
+        add("unresolved_rule_parts", groups=unresolved)
+        unknown = True
+
+    selected_by_group: dict[str, list[str]] = {}
+    for ref in selected:
+        entry = part_refs.get(ref) or {}
+        group = str(entry.get("selection_group") or entry.get("category") or "").casefold()
+        if group:
+            selected_by_group.setdefault(group, []).append(ref)
+    resolved = bool(context["rules_available"] and context["weapon_known"] and context["composition_ref"])
+    if resolved:
+        duplicate_parts = sorted(ref for ref, count in Counter(selected).items() if count > 1)
+        if duplicate_parts:
+            add("duplicate_part", parts=duplicate_parts)
+            hard = True
+        for group, refs in selected_by_group.items():
+            group_rule = context["groups"].get(group)
+            if not group_rule:
+                add("part_not_allowed", group=group, parts=refs)
+                hard = True
+                continue
+            illegal = sorted(ref for ref in refs if ref not in set(group_rule["allowed"]))
+            if illegal:
+                add("part_not_allowed", group=group, parts=illegal)
+                hard = True
+        for group, group_rule in context["groups"].items():
+            actual = len(selected_by_group.get(group, []))
+            if group_rule["eligible_refs"] and actual < group_rule["min"]:
+                add("count_below", group=group, actual=actual, min=group_rule["min"])
+                incomplete = True
+            if actual > group_rule["max"]:
+                add("count_above", group=group, actual=actual, max=group_rule["max"])
+                hard = True
+
+        missing_forced = sorted(set(context["forced_part_refs"]) - set(selected))
+        if missing_forced:
+            add("forced_part_missing", parts=missing_forced)
+            incomplete = True
+
+    base_tags = {str(tag).casefold() for tag in context["base_tags"]}
+    part_tags = [_weapon_generation_tags(index, rules, ref) for ref in selected]
+    all_tags = base_tags | set().union(*(tags["adds"] for tags in part_tags), set())
+    for ref, tags in zip(selected, part_tags):
+        missing = sorted(tags["requires"] - all_tags)
+        if missing:
+            add("missing_required_tag", part=ref, tags=missing)
+            hard = True
+        conflict = sorted(tags["excludes"] & base_tags)
+        if conflict:
+            add("excluded_tag_conflict", part=ref, tags=conflict)
+            hard = True
+
+    if resolved and len(selected) <= 24:
+        target = (1 << len(selected)) - 1
+
+        @lru_cache(maxsize=None)
+        def can_select(mask: int) -> bool:
+            if mask == target:
+                return True
+            active = set(base_tags)
+            for index_, tags in enumerate(part_tags):
+                if mask & (1 << index_):
+                    active.update(tags["adds"])
+            for index_, tags in enumerate(part_tags):
+                if mask & (1 << index_):
+                    continue
+                if tags["requires"] <= active and not (tags["excludes"] & active):
+                    if can_select(mask | (1 << index_)):
+                        return True
+            return False
+
+        if selected and not can_select(0) and not any(item["code"] == "missing_required_tag" for item in violations):
+            add("excluded_tag_conflict", parts=selected)
+            hard = True
+    elif resolved:
+        add("selection_order_unchecked", count=len(selected))
+        conditional = True
+
+    for rule in context["tag_rules"] if resolved else []:
+        tags = {str(tag).casefold() for tag in rule.get("tags", [])}
+        actual = sum(bool(part["adds"] & tags) for part in part_tags)
+        if "min" in rule and actual < int(rule["min"]):
+            add("tag_count_below", tags=sorted(tags), actual=actual, min=int(rule["min"]))
+            incomplete = True
+        if actual > int(rule.get("max", 1)):
+            add("tag_limit", tags=sorted(tags), actual=actual, max=int(rule.get("max", 1)))
+            hard = True
+
+    unavailable_parts = sorted(set(selected) & set((rules.get("part_availability") or {})))
+    if resolved and (context["availability"] not in {"", "coregame"} or unavailable_parts):
+        add("conditional_availability", composition=context["availability"], parts=unavailable_parts)
+        conditional = True
+
+    if hard:
+        status = "modified"
+    elif unknown:
+        status = "unknown"
+    elif incomplete:
+        status = "incomplete" if allow_incomplete else "modified"
+    elif conditional:
+        status = "conditional"
+    else:
+        status = "legal"
+    return {"status": status, **context, "violations": violations}
 
 
 def _weapon_csv_barrel_name(item_id: int, part_id: str, lang: str) -> str:

@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import (
     QSizePolicy, QButtonGroup
 )
 from PyQt6.QtCore import pyqtSignal, Qt
+from PyQt6.QtGui import QColor
 
 from core import b_encoder, item_display_resolver, resource_loader
 
@@ -139,13 +140,13 @@ class QtWeaponGeneratorTab(QWidget):
     PART_LAYOUT = {
         "Body": (0, 0), "Body Accessory": (0, 1),
         "Barrel": (1, 0), "Barrel Accessory": (1, 1),
-        "Magazine": (2, 0), "Stat Modifier": (2, 1),
+        "Magazine": (2, 0), "Magazine Accessory": (2, 1),
         "Grip": (3, 0), "Foregrip": (3, 1),
         "Scope": (4, 0), "Scope Accessory": (4, 1),
         "Underbarrel": (5, 0), "Underbarrel Accessory": (5, 1),
         "Manufacturer Part": (6, 0), "Tediore Payload": (6, 1),
         "Tediore Throw Reload": (7, 0), "Borg Magazine Adapter": (7, 1),
-        "Special Element Set": (8, 0),
+        "Special Element Set": (8, 0), "Stat Modifier": (8, 1),
     }
     CONDITIONAL_PART_TYPES = {"Tediore Throw Reload", "Borg Magazine Adapter", "Special Element Set"}
     MULTI_SELECT_SLOTS = {
@@ -171,6 +172,8 @@ class QtWeaponGeneratorTab(QWidget):
         self.part_combo_rows = {}
         self.part_group_boxes = {}
         self.part_detail_labels = {}
+        self.part_rule_badges = {}
+        self.generation_rule_badge = None
         self.legendary_frame = None # Initialize to None
         self.elem2_hint = None
         self.current_lang = 'zh-CN'
@@ -188,6 +191,7 @@ class QtWeaponGeneratorTab(QWidget):
         loc_file = resource_loader.get_ui_localization_file(lang)
         full_loc = resource_loader.load_json_resource(loc_file) or {}
         self.ui_loc = full_loc.get("weapon_gen_tab", {})
+        self.weapon_rule_loc = full_loc.get("weapon_rules", {})
         self.stats_loc = full_loc.get("weapon_editor_tab", {}).get("stats", {})
         try:
             suffix = "_EN" if lang in ['en-US', 'ru', 'ua'] else ""
@@ -250,6 +254,7 @@ class QtWeaponGeneratorTab(QWidget):
         self.part_combo_rows = {}
         self.part_group_boxes = {}
         self.part_detail_labels = {}
+        self.part_rule_badges = {}
         self.legendary_frame = None
         self.elem2_hint = None
         
@@ -421,7 +426,14 @@ class QtWeaponGeneratorTab(QWidget):
         parts_v = QVBoxLayout(parts_card)
         parts_v.setContentsMargins(14, 12, 14, 12)
         parts_v.setSpacing(8)
-        parts_v.addWidget(self._make_section_title(self._section_text('parts')))
+        parts_header = QHBoxLayout()
+        parts_header.addWidget(self._make_section_title(self._section_text('parts')))
+        parts_header.addStretch()
+        self.generation_rule_badge = QLabel()
+        self.generation_rule_badge.setObjectName("multiBadge")
+        self.generation_rule_badge.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
+        parts_header.addWidget(self.generation_rule_badge)
+        parts_v.addLayout(parts_header)
         self.parts_frame = QWidget()
         self.parts_layout = QGridLayout(self.parts_frame)
         self.parts_layout.setContentsMargins(0, 0, 0, 0)
@@ -502,6 +514,7 @@ class QtWeaponGeneratorTab(QWidget):
         self.part_combo_rows = {}
         self.part_group_boxes = {}
         self.part_detail_labels = {}
+        self.part_rule_badges = {}
         # IMPORTANT: Clear reference to the deleted widget to prevent crash if signal handlers traverse it
         self.legendary_frame = None
         self.pearl_frame = None
@@ -535,11 +548,11 @@ class QtWeaponGeneratorTab(QWidget):
             self.part_group_boxes[part_type_en] = group_box
 
             num_slots = self.MULTI_SELECT_SLOTS.get(part_type_en, 1)
-            if num_slots > 1:
-                badge = QLabel(f"{self._section_text('multi')} ×{num_slots}")
-                badge.setObjectName("multiBadge")
-                badge.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
-                group_layout.addWidget(badge, 0, Qt.AlignmentFlag.AlignLeft)
+            badge = QLabel(f"{self._section_text('multi')} ×{num_slots}" if num_slots > 1 else "—")
+            badge.setObjectName("multiBadge")
+            badge.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
+            group_layout.addWidget(badge, 0, Qt.AlignmentFlag.AlignLeft)
+            self.part_rule_badges[part_type_en] = badge
 
             for i in range(num_slots):
                 combo = NoScrollComboBox()
@@ -587,6 +600,39 @@ class QtWeaponGeneratorTab(QWidget):
         combo.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         combo.view().setMinimumWidth(620)
 
+    def _apply_part_rule_colors(self, part_type, item_id, eligible_refs=(), allowed_refs=()):
+        eligible_refs, allowed_refs = set(eligible_refs), set(allowed_refs)
+        for key, combo in self.part_combos.items():
+            if not key.startswith(f"{part_type}_") or not isinstance(combo, QComboBox):
+                continue
+            for index in range(combo.count()):
+                combo.setItemData(index, None, Qt.ItemDataRole.BackgroundRole)
+                combo.setItemData(index, None, Qt.ItemDataRole.ForegroundRole)
+                combo.setItemData(index, None, Qt.ItemDataRole.FontRole)
+                part_id = combo.itemData(index)
+                if item_id is None or part_id is None:
+                    continue
+                ref = f"{item_id}:{part_id}"
+                if ref in eligible_refs:
+                    font = combo.font()
+                    font.setBold(True)
+                    combo.setItemData(index, QColor("#0E7490"), Qt.ItemDataRole.BackgroundRole)
+                    combo.setItemData(index, QColor("#F0FDFA"), Qt.ItemDataRole.ForegroundRole)
+                    combo.setItemData(index, font, Qt.ItemDataRole.FontRole)
+                elif ref in allowed_refs:
+                    combo.setItemData(index, QColor("#F59E0B"), Qt.ItemDataRole.BackgroundRole)
+                    combo.setItemData(index, QColor("#1C1917"), Qt.ItemDataRole.ForegroundRole)
+
+    def _set_part_group_rule_title(self, part_type, current, legal_range):
+        group = self.part_group_boxes.get(part_type)
+        if group is None:
+            return
+        suffix = self._rule_message(
+            "current_legal", "当前{current}/合法{range}", "{current}/{range}",
+            current=current, range=legal_range,
+        )
+        group.setTitle(f"{self.get_localized_string(part_type)} ({suffix})")
+
     def _selected_part_adds(self, item_id):
         adds = set()
         for combo in self.part_combos.values():
@@ -602,33 +648,26 @@ class QtWeaponGeneratorTab(QWidget):
         if item_id is None:
             return
         none_text = self.get_localized_string(self._NONE_VALUE)
-        for _ in range(2):
-            available_tags = self._selected_part_adds(item_id)
-            for key, rows in self.part_combo_rows.items():
-                part_type = key.rsplit('_', 1)[0]
-                if part_type not in self.CONDITIONAL_PART_TYPES:
-                    continue
-                combo = self.part_combos[key]
-                selected = combo.currentData()
-                decoded = self.serial_decoded_entry.text() if hasattr(self, 'serial_decoded_entry') else ""
-                allowed = []
-                for _, row in rows.iterrows():
-                    part_id = str(row['Part ID'])
-                    tags = item_display_resolver.weapon_part_selection_tags(item_id, part_id)
-                    if set(tags.get("requires", [])) <= available_tags and not set(tags.get("excludes", [])).intersection(available_tags):
-                        allowed.append((part_id, row))
-                combo.blockSignals(True)
-                combo.clear()
-                combo.addItem(none_text, None)
-                for part_id, row in allowed:
-                    combo.addItem(self._part_option_text(item_id, part_id, row, decoded), part_id)
-                    combo.setItemData(combo.count() - 1, combo.itemText(combo.count() - 1), Qt.ItemDataRole.ToolTipRole)
-                selected_index = combo.findData(selected)
-                combo.setCurrentIndex(selected_index if selected_index >= 0 else 0)
-                combo.blockSignals(False)
-                group = self.part_group_boxes.get(part_type)
-                if group is not None:
-                    group.setVisible(bool(allowed))
+        for key, rows in self.part_combo_rows.items():
+            part_type = key.rsplit('_', 1)[0]
+            if part_type not in self.CONDITIONAL_PART_TYPES:
+                continue
+            combo = self.part_combos[key]
+            selected = combo.currentData()
+            decoded = self.serial_decoded_entry.text() if hasattr(self, 'serial_decoded_entry') else ""
+            combo.blockSignals(True)
+            combo.clear()
+            combo.addItem(none_text, None)
+            for _, row in rows.iterrows():
+                part_id = str(row['Part ID'])
+                combo.addItem(self._part_option_text(item_id, part_id, row, decoded), part_id)
+                combo.setItemData(combo.count() - 1, combo.itemText(combo.count() - 1), Qt.ItemDataRole.ToolTipRole)
+            selected_index = combo.findData(selected)
+            combo.setCurrentIndex(selected_index if selected_index >= 0 else 0)
+            combo.blockSignals(False)
+            group = self.part_group_boxes.get(part_type)
+            if group is not None:
+                group.setVisible(not rows.empty)
 
     def _refresh_part_descriptions(self, decoded_str):
         item_id = self._current_m_id()
@@ -659,6 +698,169 @@ class QtWeaponGeneratorTab(QWidget):
                 detail.setVisible(bool(description))
             elif detail is not None:
                 detail.hide()
+
+    def _rule_message(self, key, zh, en, **fmt):
+        fallback = zh if self.current_lang == 'zh-CN' else en
+        text = self.weapon_rule_loc.get(key, fallback)
+        return text.format(**fmt) if fmt else text
+
+    def _rule_violation_text(self, violation):
+        labels = {
+            "rules_unavailable": ("violation_rules_unavailable", "规则数据不可用", "Rule data unavailable"),
+            "weapon_rules_missing": ("violation_weapon_rules_missing", "缺少该武器规则", "Weapon rules missing"),
+            "unknown_composition": ("violation_unknown_composition", "未选择或无法识别武器模板", "Weapon composition is missing or unknown"),
+            "multiple_compositions": ("violation_multiple_compositions", "存在多个武器模板", "Multiple weapon compositions"),
+            "foreign_root_part": ("violation_foreign_root_part", "存在跨武器配件", "Foreign weapon part"),
+            "unknown_part": ("violation_unknown_part", "存在未知配件", "Unknown weapon part"),
+            "part_not_allowed": ("violation_part_not_allowed", "存在非自然生成配件", "Part is outside the natural pool"),
+            "count_below": ("violation_count_below", "配件尚未补齐", "Required parts are missing"),
+            "count_above": ("violation_count_above", "配件数量超过自然上限", "Part count exceeds the natural maximum"),
+            "duplicate_part": ("violation_duplicate_part", "存在重复配件", "Duplicate part"),
+            "missing_required_tag": ("violation_missing_required_tag", "配件依赖未满足", "Part dependency is not satisfied"),
+            "excluded_tag_conflict": ("violation_excluded_tag_conflict", "配件条件冲突", "Part conditions conflict"),
+            "tag_limit": ("violation_tag_limit", "授权类配件超过上限", "Tagged part count exceeds the limit"),
+            "forced_part_missing": ("violation_forced_part_missing", "缺少模板固有配件", "Forced composition part is missing"),
+            "conditional_availability": ("violation_conditional_availability", "仅在特定条件下生成", "Available only in a special context"),
+            "unresolved_rule_parts": ("violation_unresolved_rule_parts", "规则仍有未解析配件", "Rule contains unresolved parts"),
+            "inheritance_cycle": ("violation_inheritance_cycle", "模板规则继承异常", "Composition rule inheritance cycle"),
+        }
+        code = violation.get("code")
+        key, zh, en = labels.get(code, ("", str(code or ""), str(code or "")))
+        text = self._rule_message(key, zh, en) if key else en
+        actual = violation.get("actual")
+        limit = violation.get("min", violation.get("max"))
+        if actual is not None and limit is not None:
+            text += f" ({actual}/{limit})"
+        return text
+
+    def _rule_candidate_text(self, ref, rows):
+        root_id, _, part_id = str(ref).partition(":")
+        matches = rows[rows['Part ID'] == part_id] if rows is not None else None
+        row = matches.iloc[0] if matches is not None and not matches.empty else None
+        name = item_display_resolver.weapon_part_name(
+            int(root_id), part_id, self.current_lang, row
+        ) if root_id.isdigit() else ""
+        return f"{ref} — {name}" if name else str(ref)
+
+    def _selected_ui_part_count(self, part_type):
+        prefix = f"{part_type}_"
+        return sum(
+            combo.currentData() is not None
+            for key, combo in self.part_combos.items()
+            if key.startswith(prefix) and isinstance(combo, QComboBox)
+        )
+
+    def _update_generation_rule_guidance(self, decoded_str):
+        if self.generation_rule_badge is None:
+            return
+        try:
+            result = item_display_resolver.validate_weapon_generation(
+                decoded_str, allow_incomplete=True
+            )
+        except Exception as exc:
+            result = {
+                "status": "unknown",
+                "groups": {},
+                "violations": [{"code": f"rule_error: {exc}"}],
+                "rules_available": False,
+                "composition_ref": "",
+            }
+
+        status_labels = {
+            "legal": ("status_legal", "自然生成", "Legal"),
+            "incomplete": ("status_incomplete", "待补齐", "Incomplete"),
+            "modified": ("status_modified", "魔改", "Modified"),
+            "conditional": ("status_conditional", "条件限定", "Conditional"),
+            "unknown": ("status_unknown", "规则未知", "Rules unknown"),
+        }
+        status = str(result.get("status") or "unknown")
+        status_key, status_zh, status_en = status_labels.get(status, status_labels["unknown"])
+        status_text = self._rule_message(status_key, status_zh, status_en)
+        self.generation_rule_badge.setText(self._rule_message(
+            "rule_prefix", "规则：{status}", "Rules: {status}", status=status_text,
+        ))
+        violations = [
+            self._rule_violation_text(item)
+            for item in result.get("violations", [])
+        ]
+        self.generation_rule_badge.setToolTip(
+            "\n".join(violations) or self._rule_message(
+                "matches_rules", "符合当前自然生成规则", "Matches the current generation rules"
+            )
+        )
+
+        rules_ready = bool(result.get("rules_available") and result.get("composition_ref"))
+        groups = result.get("groups") or {}
+        item_id = self._current_m_id()
+        for part_type, badge in self.part_rule_badges.items():
+            current = self._selected_ui_part_count(part_type)
+            if not rules_ready or item_id is None:
+                badge.setText(f"{current} / —")
+                badge.setToolTip(self._rule_message(
+                    "select_composition", "选择武器模板后显示合法范围", "Select a composition to show its legal range"
+                ))
+                self._set_part_group_rule_title(part_type, current, "—")
+                self._apply_part_rule_colors(part_type, item_id)
+                continue
+
+            rows = self.part_combo_rows.get(f"{part_type}_0")
+            candidate_refs = {
+                f"{item_id}:{part_id}"
+                for part_id in (rows['Part ID'].tolist() if rows is not None else [])
+                if str(part_id)
+            }
+            matched = []
+            for group_rule in groups.values():
+                known = set(group_rule.get("allowed") or []) | set(group_rule.get("selected") or [])
+                if known & candidate_refs:
+                    matched.append(group_rule)
+
+            if not matched:
+                badge.setText(f"{current} / —")
+                badge.setToolTip(self._rule_message(
+                    "no_group_rule", "该显示分组没有独立生成规则", "No separate generation rule for this display group"
+                ))
+                self._set_part_group_rule_title(part_type, current, "—")
+                self._apply_part_rule_colors(part_type, item_id)
+                continue
+
+            active = [
+                group_rule for group_rule in matched
+                if set(group_rule.get("eligible_refs") or []) & candidate_refs
+                or set(group_rule.get("selected") or []) & candidate_refs
+            ]
+            legal_min = sum(int(group_rule.get("min", 0)) for group_rule in active)
+            legal_max = sum(int(group_rule.get("max", 0)) for group_rule in active)
+            legal_range = str(legal_min) if legal_min == legal_max else f"{legal_min}–{legal_max}"
+            badge.setText(f"{current} / {legal_range}")
+            self._set_part_group_rule_title(part_type, current, legal_range)
+
+            eligible = sorted({
+                ref
+                for group_rule in active
+                for ref in group_rule.get("eligible_refs") or []
+                if ref in candidate_refs
+            }, key=lambda ref: tuple(map(int, ref.split(":"))))
+            allowed = {
+                ref
+                for group_rule in matched
+                for ref in group_rule.get("allowed") or []
+                if ref in candidate_refs
+            }
+            self._apply_part_rule_colors(part_type, item_id, eligible, allowed)
+            lines = [
+                self._rule_message("current", "当前：{current}", "Current: {current}", current=current),
+                self._rule_message("legal_count", "合法数量：{range}", "Legal count: {range}", range=legal_range),
+            ]
+            if eligible:
+                lines.append(self._rule_message("legal_candidates", "合法候选：", "Legal candidates:"))
+                lines.extend(self._rule_candidate_text(ref, rows) for ref in eligible)
+            else:
+                lines.append(self._rule_message(
+                    "no_legal_candidates", "当前配件条件下没有合法候选",
+                    "No legal candidates under the current part conditions",
+                ))
+            badge.setToolTip("\n".join(lines))
 
     def _create_special_dropdown(self, name, m_id, position):
         row, col = position
@@ -951,12 +1153,14 @@ class QtWeaponGeneratorTab(QWidget):
             self.serial_b85_entry.setText(encoded_serial)
             self._update_weapon_stats(full_decoded_str)
             self._refresh_part_descriptions(full_decoded_str)
+            self._update_generation_rule_guidance(full_decoded_str)
         except Exception as e:
             self._encode_error = True
             self.serial_b85_entry.clear()
             # Maybe log this to a status bar in the future
             print(f"Weapon generation error: {e}")
             self._update_weapon_stats("")
+            self._update_generation_rule_guidance("")
 
     def _update_weapon_stats(self, decoded_str):
         stats = item_display_resolver.resolve_weapon_stats(decoded_str) if decoded_str else {}

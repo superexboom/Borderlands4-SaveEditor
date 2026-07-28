@@ -1554,3 +1554,72 @@ QToolTip {
     font-family: "Microsoft YaHei UI", "Segoe UI";
 }
 
+
+/* ============================================== */
+/* Faceted Catalog Picker (weapon add-part dialog) */
+/* ============================================== */
+
+/* 筛选侧栏紧凑列表 */
+#facetList {
+    background-color: {bg_input};
+    border: 1px solid {border_color};
+    border-radius: 8px;
+    padding: 2px;
+    outline: none;
+}
+
+#facetList::item {
+    padding: 3px 8px;
+    border-radius: 5px;
+    min-height: 20px;
+    color: {text_primary};
+}
+
+#facetList::item:selected {
+    background-color: {selection_bg};
+    color: white;
+}
+
+#facetResultCount {
+    color: {text_secondary};
+    font-size: 9pt;
+    padding-right: 4px;
+}
+
+/* 预览卡片 */
+#previewCard {
+    background-color: {bg_panel};
+    border: 1px solid {accent};
+    border-radius: 10px;
+}
+
+#previewTitle {
+    color: {text_primary};
+    font-size: 11pt;
+    font-weight: bold;
+}
+
+#previewBadge {
+    background-color: {button_bg};
+    border: 1px solid {border_color};
+    border-radius: 8px;
+    padding: 1px 8px;
+    color: {text_secondary};
+    font-size: 8pt;
+}
+
+#previewCandidateBadge {
+    background-color: {selection_bg};
+    border: 1px solid {accent};
+    border-radius: 8px;
+    padding: 1px 8px;
+    color: white;
+    font-size: 8pt;
+    font-weight: bold;
+}
+
+#previewDetail {
+    color: {text_secondary};
+    font-size: 9.5pt;
+    line-height: 1.5;
+}

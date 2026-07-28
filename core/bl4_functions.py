@@ -237,6 +237,29 @@ def _walk_for_serials(node: Any, path: List[str]) -> List[Tuple[List[str], Any]]
     return found_items
 
 
+def parse_decoded_item_header(decoded_full: str) -> Optional[Dict[str, Any]]:
+    """Parse the item header, including game-canonical Lv1 headers without marker 1."""
+    try:
+        header_part, component_part = decoded_full.split("||", 1)
+        segments = [segment.strip() for segment in header_part.strip().split("|") if segment.strip()]
+        fields = [[int(value.strip()) for value in segment.split(",")] for segment in segments]
+        if not fields or len(fields[0]) < 4:
+            return None
+
+        first = fields[0]
+        implicit_level_one = len(fields) == 1 and first[2] == 2
+        seed_fields = fields[-1]
+        return {
+            "mfg_id": first[0],
+            "level": 1 if implicit_level_one else first[3],
+            "seed": first[3] if implicit_level_one else (seed_fields[1] if len(seed_fields) > 1 else None),
+            "implicit_level_one": implicit_level_one,
+            "component": component_part,
+        }
+    except (AttributeError, TypeError, ValueError):
+        return None
+
+
 def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
     """
     Scans the YAML data for all items using a recursive walk, decodes their serials,
@@ -272,15 +295,14 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
         if split_marker not in formatted_str:
             continue
         
-        header_part, parts_part = formatted_str.split(split_marker, 1)
-        
+        header = parse_decoded_item_header(formatted_str)
+        if not header:
+            continue
+        parts_part = header["component"]
+
         try:
-            id_section = header_part.strip().split('|')[0]
-            id_part = id_section.strip().split(',')
-            if len(id_part) < 4:
-                continue
-            item_id = int(id_part[0].strip())
-            item_level = int(id_part[3].strip())
+            item_id = header["mfg_id"]
+            item_level = header["level"]
 
             manufacturer, item_type, found = lookup.get_kind_enums(item_id)
             if not found:
@@ -419,8 +441,14 @@ def update_level_in_decoded_str(decoded_full: str, new_level: int) -> Optional[s
         id_section, *other_header_parts = header_part.strip().split('|')
         
         id_parts = [p.strip() for p in id_section.split(',')]
-        
-        if len(id_parts) >= 4:
+
+        # The game omits the explicit ``1, 1|`` level pair when canonicalizing
+        # some Lv1 items, leaving ``mfg, 0, 2, seed||``.
+        if len(id_parts) >= 4 and id_parts[2] == "2" and not other_header_parts:
+            seed_parts = id_parts[2:]
+            id_parts = id_parts[:2] + ["1", str(new_level)]
+            other_header_parts = [", ".join(seed_parts)]
+        elif len(id_parts) >= 4:
             id_parts[3] = str(new_level)
         else:
             return None # Not a valid format

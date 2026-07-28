@@ -3,6 +3,7 @@ import pandas as pd
 import random
 import re
 import sys
+from collections import Counter, defaultdict
 from functools import partial
 
 from core import bl4_functions as bl4f
@@ -10,7 +11,7 @@ from core import b_encoder
 from core import decoder_logic
 from core import item_display_resolver
 from core import resource_loader
-from tabs.qt_catalog_picker import CatalogPicker, ContainedWheelListWidget, ContainedWheelScrollArea
+from tabs.qt_catalog_picker import CatalogPicker, ContainedWheelListWidget, ContainedWheelScrollArea, FacetedCatalogPicker
 
 
 class PartDragHandle(QtWidgets.QLabel):
@@ -274,6 +275,26 @@ class WeaponEditorTab(QtWidgets.QWidget):
         "SMG": "smg", "Sniper": "sniper",
     }
 
+    GENERATION_GROUP_TYPES = {
+        "barrel": "Barrel", "barrel_acc": "Barrel Accessory",
+        "body": "Body", "body_acc": "Body Accessory", "body_bolt": "Body Accessory",
+        "body_ele": "Special Element Set", "body_mag": "Manufacturer Part",
+        "endgame": "Stat Modifier", "firmware": "Stat Modifier",
+        "foregrip": "Foregrip", "grip": "Grip",
+        "hyperion_secondary_acc": "Manufacturer Part",
+        "magazine": "Magazine", "magazine_acc": "Magazine Accessory",
+        "magazine_borg": "Borg Magazine Adapter",
+        "magazine_ted_thrown": "Tediore Throw Reload",
+        "pearl_elem": "Pearl Elements", "pearl_stat": "Pearl Stat",
+        "scope": "Scope", "scope_acc": "Scope Accessory",
+        "secondary_ammo": "Manufacturer Part",
+        "secondary_ele": "Underbarrel Element Switch",
+        "tediore_acc": "Tediore Payload",
+        "tediore_secondary_acc": "Manufacturer Part",
+        "underbarrel": "Underbarrel", "underbarrel_acc": "Underbarrel Accessory",
+        "underbarrel_acc_vis": "Underbarrel Accessory",
+    }
+
     def __init__(self, main_app):
         super().__init__()
         self.main_app = main_app
@@ -289,6 +310,8 @@ class WeaponEditorTab(QtWidgets.QWidget):
         
         self.is_handling_change = False
         self.current_lang = 'zh-CN'
+        self._weapon_legality_decoded = None
+        self._weapon_legality_result = None
         
         # Main layout
         self.main_layout = QtWidgets.QVBoxLayout(self)
@@ -302,6 +325,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         loc_file = resource_loader.get_ui_localization_file(lang)
         full_loc = resource_loader.load_json_resource(loc_file) or {}
         self.ui_localization = full_loc.get("weapon_editor_tab", {})
+        self.weapon_rule_loc = full_loc.get("weapon_rules", {})
         try:
             suffix = "_EN" if lang in ['en-US', 'ru', 'ua'] else ""
 
@@ -524,7 +548,16 @@ class WeaponEditorTab(QtWidgets.QWidget):
         
         parts_header_frame = QtWidgets.QFrame()
         parts_header_layout = QtWidgets.QGridLayout(parts_header_frame)
-        parts_header_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("weapon_parts")), 0, 0, QtCore.Qt.AlignmentFlag.AlignLeft)
+        parts_title_layout = QtWidgets.QHBoxLayout()
+        parts_title_layout.setContentsMargins(0, 0, 0, 0)
+        parts_title_layout.addWidget(QtWidgets.QLabel(self.get_localized_string("weapon_parts")))
+        self.weapon_legality_badge = QtWidgets.QLabel("Unknown")
+        self.weapon_legality_badge.setObjectName("multiBadge")
+        self.weapon_legality_badge.setSizePolicy(QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Fixed)
+        self.weapon_legality_badge.setToolTip("No decoded weapon loaded.")
+        parts_title_layout.addWidget(self.weapon_legality_badge)
+        parts_title_layout.addStretch(1)
+        parts_header_layout.addLayout(parts_title_layout, 0, 0)
         parts_header_layout.setColumnStretch(0, 1)
         self.refresh_parts_btn = QtWidgets.QPushButton()
         self.refresh_parts_btn.setObjectName("PartActionButton")
@@ -749,15 +782,17 @@ class WeaponEditorTab(QtWidgets.QWidget):
 
     def parse_and_display_weapon(self, decoded_str):
         try:
-            header_part, component_part = decoded_str.split('||', 1)
-            sections = header_part.strip().split('|')
-            m_id, level = int(sections[0].strip().split(',')[0]), int(sections[0].strip().split(',')[3])
+            header = bl4f.parse_decoded_item_header(decoded_str)
+            if not header:
+                raise ValueError("Invalid decoded item header")
+            m_id, level = header["mfg_id"], header["level"]
+            component_part = header["component"]
             m_info = self.all_weapon_parts_df[self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == m_id].iloc[0]
             self.is_handling_change = True
             self.manufacturer_entry.setText(self.get_localized_string(m_info['Manufacturer']))
             self.item_type_entry.setText(self.get_localized_string(m_info['Weapon Type']))
             self.level_entry.setText(str(level))
-            self.seed_entry.setText(sections[1].strip().split(',')[1].strip() if len(sections) > 1 and len(sections[1].strip().split(',')) > 1 else "")
+            self.seed_entry.setText(str(header["seed"]) if header["seed"] is not None else "")
             
             temp_parts = self._parse_component_string(component_part)
             display_rarity, weapon_name, self.rarity_part, remaining_parts = self._get_rarity_and_weapon_name(temp_parts, m_id, decoded_str)
@@ -781,11 +816,209 @@ class WeaponEditorTab(QtWidgets.QWidget):
             self.main_app.log(f"Error parsing weapon: {e}"); self.clear_all_fields()
 
     def _update_weapon_stats(self, decoded_str):
-        if not hasattr(self, 'weapon_stat_value_labels'):
+        if hasattr(self, 'weapon_stat_value_labels'):
+            stats = item_display_resolver.resolve_weapon_stats(decoded_str) if decoded_str else {}
+            for key, label in self.weapon_stat_value_labels.items():
+                label.setText(item_display_resolver.format_weapon_stat(key, stats.get(key), self.current_lang) or "—")
+        self._update_weapon_legality(decoded_str)
+
+    def _rule_message(self, key, zh, en, **fmt):
+        fallback = zh if self.current_lang == 'zh-CN' else en
+        text = self.weapon_rule_loc.get(key, fallback)
+        return text.format(**fmt) if fmt else text
+
+    def _generation_group_text(self, group):
+        raw = self.GENERATION_GROUP_TYPES.get(str(group).casefold())
+        return self.get_localized_string(raw, raw) if raw else str(group).replace('_', ' ').title()
+
+    def _generation_ref_text(self, ref, group=""):
+        root, sep, part_id = str(ref).partition(':')
+        name = item_display_resolver.weapon_part_name(int(root), part_id, self.current_lang) if sep and root.isdigit() else ""
+        return name or f"{self._generation_group_text(group)} [{ref}]"
+
+    def _generation_ref_list(self, refs, group="", limit=2):
+        values = list(dict.fromkeys(map(str, refs or [])))
+        text = self._rule_message("list_separator", '、', ', ').join(
+            self._generation_ref_text(ref, group) for ref in values[:limit]
+        )
+        if len(values) > limit:
+            text += self._rule_message(
+                "more_items", "，另{count}个", " +{count}",
+                count=len(values) - limit,
+            )
+        return text
+
+    @staticmethod
+    def _generation_group_for_ref(result, ref):
+        for group, rule in (result.get("groups") or {}).items():
+            if ref in set(rule.get("allowed") or []) | set(rule.get("selected") or []):
+                return group
+        return ""
+
+    def _legality_violation_text(self, violation, result):
+        code = str(violation.get("code") or "unknown")
+        group = str(violation.get("group") or "")
+        group_text = self._generation_group_text(group) if group else ""
+        actual = violation.get("actual", violation.get("count"))
+
+        if code == "count_above":
+            return self._rule_message(
+                "too_many_group", "{group}过多（{actual}/{max}）", "Too many {group} ({actual}/{max})",
+                group=group_text, actual=actual, max=violation.get("max"), suffix="",
+            )
+        if code == "count_below":
+            eligible = (result.get("groups", {}).get(group) or {}).get("eligible_refs", [])
+            choices = self._generation_ref_list(eligible, group)
+            suffix = self._rule_message(
+                "eligible_suffix", "，可选：{parts}", "; eligible: {parts}", parts=choices,
+            ) if choices else ""
+            return self._rule_message(
+                "missing_group", "缺少{group}（{actual}/{min}）{suffix}",
+                "Missing {group} ({actual}/{min}){suffix}",
+                group=group_text, actual=actual, min=violation.get("min"), suffix=suffix,
+            )
+        if code == "tag_count_below":
+            return self._rule_message(
+                "missing_combination", "缺少要求的配件组合（{actual}/{min}）",
+                "Missing required part combination ({actual}/{min})",
+                actual=actual, min=violation.get("min"),
+            )
+        if code == "duplicate_part":
+            counts = Counter(result.get("selected_part_refs") or [])
+            refs = violation.get("parts") or []
+            names = self._rule_message("list_separator", '、', ', ').join(
+                f"{self._generation_ref_text(ref, self._generation_group_for_ref(result, ref))} ×{counts.get(ref, 2)}"
+                for ref in refs[:2]
+            )
+            return self._rule_message("duplicate_part", "重复配件：{parts}", "Duplicate part: {parts}", parts=names)
+        if code == "part_not_allowed":
+            names = self._generation_ref_list(violation.get("parts") or [], group)
+            return self._rule_message(
+                "not_allowed", "当前组合不允许：{parts}", "Not allowed by this composition: {parts}", parts=names,
+            )
+        if code == "foreign_root_part":
+            name = self._generation_ref_text(violation.get("part", ""))
+            return self._rule_message("foreign_part", "跨武器配件：{part}", "Part from another weapon: {part}", part=name)
+        if code == "forced_part_missing":
+            names = self._generation_ref_list(violation.get("parts") or [])
+            return self._rule_message(
+                "missing_intrinsic", "缺少固有配件：{parts}", "Missing intrinsic part: {parts}", parts=names,
+            )
+        if code == "missing_required_tag":
+            part = self._generation_ref_text(violation.get("part", ""), group)
+            required = set(map(str, violation.get("tags") or []))
+            providers = []
+            for rule in result.get("groups", {}).values():
+                for ref in rule.get("allowed", []):
+                    root, sep, part_id = str(ref).partition(':')
+                    if sep and root.isdigit() and required.intersection(
+                        item_display_resolver.weapon_part_selection_tags(int(root), part_id).get("adds", [])
+                    ):
+                        providers.append(ref)
+            choices = self._generation_ref_list(providers)
+            if choices:
+                return self._rule_message("requires", "{part}缺少前置：{parts}", "{part} requires {parts}", part=part, parts=choices)
+            return self._rule_message(
+                "unmet_dependency", "{part}的前置条件未满足", "{part} has an unmet dependency", part=part,
+            )
+        if code == "excluded_tag_conflict":
+            refs = violation.get("parts") or ([violation.get("part")] if violation.get("part") else [])
+            names = self._generation_ref_list(refs)
+            return self._rule_message(
+                "conflicting_parts", "配件搭配互斥：{parts}", "Conflicting parts: {parts}", parts=names,
+            )
+        if code == "tag_limit":
+            bucket = set(map(str, violation.get("tags") or []))
+            contributors = []
+            for ref in result.get("selected_part_refs") or []:
+                root, sep, part_id = str(ref).partition(':')
+                if sep and root.isdigit() and bucket.intersection(
+                    item_display_resolver.weapon_part_selection_tags(int(root), part_id).get("adds", [])
+                ):
+                    contributors.append(ref)
+            names = self._generation_ref_list(contributors)
+            suffix = (f"：{names}" if self.current_lang == "zh-CN" else f": {names}") if names else ""
+            return self._rule_message(
+                "too_many_tagged", "同类授权配件过多（{actual}/{max}）{suffix}",
+                "Too many tagged parts ({actual}/{max}){suffix}",
+                actual=actual, max=violation.get("max"), suffix=suffix,
+            )
+        if code == "multiple_compositions":
+            names = self._generation_ref_list(violation.get("parts") or [])
+            return self._rule_message(
+                "multiple_compositions", "同时存在多个武器模板：{parts}", "Multiple compositions: {parts}", parts=names,
+            )
+        if code in {"conditional_availability"}:
+            return self._rule_message(
+                "conditional_availability", "仅限特定投放条件", "Available only under special conditions",
+            )
+        if code in {"selection_order_unchecked"}:
+            return self._rule_message(
+                "selection_order_unchecked", "配件过多，依赖顺序未完全验证",
+                "Too many parts to verify dependency order",
+            )
+        if code in {
+            "invalid_serial", "rules_unavailable", "weapon_rules_missing", "unknown_composition",
+            "unknown_part", "unresolved_rule_parts", "inheritance_cycle", "validation_failed",
+        }:
+            return self._rule_message(
+                "cannot_validate", "无法验证：生成规则未覆盖", "Cannot validate: generation rules are incomplete",
+            )
+        return code.replace('_', ' ').title()
+
+    def _legality_reason_lines(self, result):
+        priority = {
+            "foreign_root_part": 0, "part_not_allowed": 1, "multiple_compositions": 1,
+            "duplicate_part": 2, "count_above": 3, "tag_limit": 3,
+            "missing_required_tag": 4, "excluded_tag_conflict": 4,
+            "count_below": 5, "forced_part_missing": 5, "tag_count_below": 5,
+            "conditional_availability": 6,
+        }
+        ordered = sorted(result.get("violations") or [], key=lambda item: priority.get(item.get("code"), 9))
+        return list(dict.fromkeys(self._legality_violation_text(item, result) for item in ordered))
+
+    def _update_weapon_legality(self, decoded_str, force=False):
+        badge = getattr(self, "weapon_legality_badge", None)
+        if badge is None:
             return
-        stats = item_display_resolver.resolve_weapon_stats(decoded_str) if decoded_str else {}
-        for key, label in self.weapon_stat_value_labels.items():
-            label.setText(item_display_resolver.format_weapon_stat(key, stats.get(key), self.current_lang) or "—")
+        decoded = (decoded_str or "").strip()
+        if not decoded:
+            result = {"status": "unknown", "violations": []}
+            self._weapon_legality_decoded, self._weapon_legality_result = "", result
+        elif force or decoded != self._weapon_legality_decoded:
+            try:
+                result = item_display_resolver.validate_weapon_generation(decoded, allow_incomplete=True)
+            except Exception as exc:
+                result = {"status": "unknown", "violations": [{"code": "validation_failed", "part": str(exc)}]}
+                self.main_app.log(f"Weapon legality validation failed: {exc}")
+            self._weapon_legality_decoded, self._weapon_legality_result = decoded, result
+        else:
+            result = self._weapon_legality_result or {"status": "unknown", "violations": []}
+
+        status = str(result.get("status") or "unknown").casefold()
+        labels = {
+            "legal": ("status_legal", "自然生成", "Natural"),
+            "conditional": ("status_conditional", "条件限定", "Conditional"),
+            "incomplete": ("status_incomplete", "待补全", "Incomplete"),
+            "modified": ("status_modified", "魔改", "Modified"),
+            "unknown": ("status_unknown", "无法验证", "Unknown"),
+        }
+        label = self._rule_message(*labels.get(status, labels["unknown"]))
+        reasons = self._legality_reason_lines(result)
+        short = reasons[0] if reasons else ""
+        if len(short) > 36:
+            short = short[:35] + '…'
+        tooltip = [label]
+        tooltip.extend(f"• {line}" for line in reasons)
+        if not reasons:
+            tooltip.append(self._rule_message(
+                "matches_rules" if status == "legal" else "no_weapon",
+                "符合当前自然生成规则" if status == "legal" else "尚未载入可验证武器",
+                "Matches the current generation rules" if status == "legal" else "No verifiable weapon loaded",
+            ))
+        badge.setText(f"{label} · {short}" if short else label)
+        badge.setToolTip("\n".join(tooltip))
+        badge.setAccessibleName(label)
 
     def display_parts(self, manufacturer_id):
         self.parts_list_widget.clear()
@@ -1037,6 +1270,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
     def force_refresh_parts(self):
         if not (decoded_str := self.serial_decoded_entry.text()):
             QtWidgets.QMessageBox.warning(self, self.get_localized_string("no_input"), self.get_localized_string("serial_empty")); return
+        self._weapon_legality_decoded = None
         self.main_app.log("Forcing parts list refresh..."); self.parse_and_display_weapon(decoded_str)
         QtWidgets.QMessageBox.information(self, self.get_localized_string("success"), self.get_localized_string("parts_refresh_success"))
 
@@ -1207,7 +1441,8 @@ class WeaponEditorTab(QtWidgets.QWidget):
         win = QtWidgets.QDialog(self)
         win.setObjectName("addPartDialog")
         win.setWindowTitle(self.get_localized_string("add_part_title"))
-        win.setMinimumSize(1050, 720)
+        win.setMinimumSize(1280, 760)
+        win.resize(1540, 900)
         win.setModal(True)
 
         layout = QtWidgets.QVBoxLayout(win)
@@ -1218,26 +1453,29 @@ class WeaponEditorTab(QtWidgets.QWidget):
         header_label.setObjectName("addPartDialogHeader")
         layout.addWidget(header_label)
 
-        picker = CatalogPicker(
+        picker = FacetedCatalogPicker(
             stackable=True,
             search_placeholder=self._loc('catalog', 'search_part', "Search part name, effect, manufacturer, or type"),
-            avail_title=self._loc('catalog', 'available_parts', "Available Parts"),
+            avail_title=self._loc('catalog', 'available_parts_hint', "Available Parts (click to preview, double-click to add)"),
             selected_title=self._loc('catalog', 'selected_parts', "Selected Parts"),
             clear_text=self._loc('catalog', 'clear', "Clear"),
+            result_text=self._loc('catalog', 'result_count', "{n} / {total}"),
         )
-        source, part_types, manufacturers, weapon_types = self._add_part_catalog_items()
-        picker.set_categories(
-            [("all", self._loc('catalog', 'all', "All")), *[(value, self.get_localized_string(value)) for value in part_types]],
-            columns=3,
-        )
-        picker.set_subcategories(
-            [("all", self._loc('catalog', 'all_manufacturers', "All Manufacturers")), *[(value, self.get_localized_string(value)) for value in manufacturers]],
-            columns=4,
-        )
-        picker.set_third_categories(
-            [("all", self._loc('catalog', 'all_weapon_types', "All Weapon Types")), *[(value, self.get_localized_string(value)) for value in weapon_types]],
-            columns=3,
-        )
+        source, part_types, manufacturers, weapon_types, part_type_hints = self._add_part_catalog_items()
+        picker.set_facets([
+            (self._loc('catalog', 'facet_part_type', "Part Type"),
+             [("all", self._loc('catalog', 'all', "All")),
+              *[(value, (
+                  f"[{part_type_hints[value]}] {self.get_localized_string(value)}"
+                  if value in part_type_hints else self.get_localized_string(value)
+              )) for value in part_types]], 7),
+            (self._loc('catalog', 'facet_manufacturer', "Manufacturer"),
+             [("all", self._loc('catalog', 'all_manufacturers', "All Manufacturers")),
+              *[(value, self.get_localized_string(value)) for value in manufacturers]], 6),
+            (self._loc('catalog', 'facet_weapon_type', "Weapon Type"),
+             [("all", self._loc('catalog', 'all_weapon_types', "All Weapon Types")),
+              *[(value, self.get_localized_string(value)) for value in weapon_types]], 5),
+        ])
         picker.set_source(source)
         layout.addWidget(picker, 1)
 
@@ -1278,6 +1516,12 @@ class WeaponEditorTab(QtWidgets.QWidget):
             source.append({
                 "key": f"normal:{item_id}:{part_id}", "label": label, "category": part_type,
                 "subcategory": manufacturer, "tertiary": weapon_type,
+                "title": name or part_type, "detail": description,
+                "badges": [self.get_localized_string(manufacturer),
+                           self.get_localized_string(weapon_type),
+                           self.get_localized_string(part_type)],
+                "search_text": metadata,
+                "_rule_ref": f"{item_id}:{part_id}",
                 "data": {"id": part_id, "mfg_id": item_id, "type": "normal"},
             })
 
@@ -1285,12 +1529,282 @@ class WeaponEditorTab(QtWidgets.QWidget):
             element_id, part_id = int(row['Elemental_ID']), int(row['Part_ID'])
             name = str(row[self.elemental_stat_col])
             part_type = self._elemental_part_type(row)
+            stat_text = str(row['Stat'])
             source.append({
                 "key": f"elemental:{element_id}:{part_id}", "label": name, "category": part_type,
                 "subcategory": elemental_type, "tertiary": elemental_type,
+                "title": name, "detail": stat_text,
+                "badges": [self.get_localized_string(elemental_type),
+                           self.get_localized_string(part_type)],
+                "search_text": stat_text,
+                "_rule_ref": f"{element_id}:{part_id}",
                 "data": {"id": part_id, "mfg_id": element_id, "type": "elemental"},
             })
-        return source, part_types, manufacturers, weapon_types
+        try:
+            context = item_display_resolver.weapon_generation_context(self.serial_decoded_entry.text())
+        except Exception:
+            context = {}
+        self._append_missing_generation_candidates(
+            source, context, part_types, manufacturers, weapon_types, level
+        )
+        return source, part_types, manufacturers, weapon_types, self._apply_generation_candidate_hints(source, context)
+
+    @staticmethod
+    def _generation_count_range(minimum, maximum):
+        minimum, maximum = int(minimum), int(maximum)
+        return str(minimum) if minimum == maximum else f"{minimum}–{maximum}"
+
+    def _append_missing_generation_candidates(self, source, context, part_types, manufacturers, weapon_types, level):
+        represented = {item.get("_rule_ref") for item in source}
+        for group, rule in (context.get("groups") or {}).items():
+            for ref in rule.get("allowed", []):
+                if ref in represented:
+                    continue
+                root, sep, part_id = str(ref).partition(':')
+                if not sep or not root.isdigit() or not part_id.isdigit():
+                    continue
+                item_id = int(root)
+                part_type = self.GENERATION_GROUP_TYPES.get(group, group.replace('_', ' ').title())
+                if item_id == 1:
+                    manufacturer = weapon_type = "Elemental"
+                    data_type = "elemental"
+                else:
+                    rows = self.all_weapon_parts_df[
+                        self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == item_id
+                    ]
+                    if rows.empty:
+                        continue
+                    manufacturer = str(rows.iloc[0]['Manufacturer'])
+                    weapon_type = str(rows.iloc[0]['Weapon Type'])
+                    data_type = "normal"
+                name = item_display_resolver.weapon_part_name(item_id, part_id, self.current_lang)
+                preview_serial = f"{item_id}, 0, 1, {level}| 2, 0|| |"
+                description = item_display_resolver.format_weapon_part_description(
+                    item_id, part_id, preview_serial, self.current_lang, part_type
+                )
+                detail = " · ".join(filter(None, (name, description)))
+                metadata = " / ".join(
+                    self.get_localized_string(value) for value in (manufacturer, weapon_type, part_type)
+                )
+                source.append({
+                    "key": f"{data_type}:{item_id}:{part_id}",
+                    "label": f"{detail or part_type}  [{metadata}]",
+                    "category": part_type,
+                    "subcategory": manufacturer,
+                    "tertiary": weapon_type,
+                    "title": name or part_type,
+                    "detail": description,
+                    "badges": [self.get_localized_string(manufacturer),
+                               self.get_localized_string(weapon_type),
+                               self.get_localized_string(part_type)],
+                    "search_text": metadata,
+                    "_rule_ref": ref,
+                    "data": {"id": part_id, "mfg_id": item_id, "type": data_type},
+                })
+                represented.add(ref)
+                if part_type not in part_types:
+                    part_types.append(part_type)
+                if manufacturer not in manufacturers:
+                    manufacturers.append(manufacturer)
+                if weapon_type not in weapon_types:
+                    weapon_types.append(weapon_type)
+
+    def _generation_candidate_condition_text(self, ref, group, context):
+        root, sep, part_id = str(ref).partition(':')
+        if not sep or not root.isdigit():
+            return ""
+        candidate_tags = item_display_resolver.weapon_part_selection_tags(int(root), part_id)
+        required = set(candidate_tags.get("requires", []))
+        excluded = set(candidate_tags.get("excludes", []))
+        ordered_groups = list(dict.fromkeys(map(str, context.get("part_types") or [])))
+        ordered_groups.extend(g for g in context.get("groups", {}) if g not in ordered_groups)
+        active = set(map(str, context.get("base_tags") or []))
+        prior_groups = []
+        for current_group in ordered_groups:
+            if current_group == group:
+                break
+            prior_groups.append(current_group)
+            for selected_ref in (context.get("groups", {}).get(current_group) or {}).get("selected", []):
+                selected_root, selected_sep, selected_id = str(selected_ref).partition(':')
+                if selected_sep and selected_root.isdigit():
+                    active.update(item_display_resolver.weapon_part_selection_tags(
+                        int(selected_root), selected_id
+                    ).get("adds", []))
+
+        missing = required - active
+        conflicts = excluded & active
+        providers = []
+        conflicting_parts = []
+        for current_group in prior_groups:
+            rule = context.get("groups", {}).get(current_group) or {}
+            for candidate_ref in rule.get("eligible_refs", []):
+                candidate_root, candidate_sep, candidate_id = str(candidate_ref).partition(':')
+                if candidate_sep and candidate_root.isdigit() and missing.intersection(
+                    item_display_resolver.weapon_part_selection_tags(int(candidate_root), candidate_id).get("adds", [])
+                ):
+                    providers.append((candidate_ref, current_group))
+            for selected_ref in rule.get("selected", []):
+                selected_root, selected_sep, selected_id = str(selected_ref).partition(':')
+                if selected_sep and selected_root.isdigit() and conflicts.intersection(
+                    item_display_resolver.weapon_part_selection_tags(int(selected_root), selected_id).get("adds", [])
+                ):
+                    conflicting_parts.append((selected_ref, current_group))
+
+        details = []
+        if missing:
+            choices = self._rule_message("list_separator", '、', ', ').join(
+                self._generation_ref_text(candidate_ref, candidate_group)
+                for candidate_ref, candidate_group in list(dict.fromkeys(providers))[:2]
+            )
+            details.append(self._rule_message(
+                "requires_first" if choices else "no_prerequisite",
+                "需要先选择：{parts}" if choices else "缺少可用的前置配件",
+                "Requires first: {parts}" if choices else "No eligible prerequisite part is currently available",
+                **({"parts": choices} if choices else {}),
+            ))
+        if conflicts:
+            names = self._rule_message("list_separator", '、', ', ').join(
+                self._generation_ref_text(selected_ref, selected_group)
+                for selected_ref, selected_group in list(dict.fromkeys(conflicting_parts))[:2]
+            )
+            details.append(self._rule_message(
+                "conflicts_selected" if names else "conflicts_composition",
+                "与当前已选配件互斥：{parts}" if names else "与当前武器模板互斥",
+                "Conflicts with selected part: {parts}" if names else "Conflicts with the current composition",
+                **({"parts": names} if names else {}),
+            ))
+        return self._rule_message("semicolon", '；', '; ').join(details)
+
+    def _apply_generation_candidate_hints(self, source, context):
+        rules_ready = bool(context.get("rules_available") and context.get("composition_ref"))
+        selected_counts = Counter(context.get("selected_part_refs") or [])
+        ref_rules = {}
+        for group, rule in (context.get("groups") or {}).items():
+            for ref in rule.get("allowed", []):
+                ref_rules[ref] = (group, rule)
+
+        category_groups = defaultdict(set)
+        group_categories = defaultdict(set)
+        for item in source:
+            ref = item.get("_rule_ref")
+            matched = ref_rules.get(ref)
+            if not rules_ready:
+                item["candidate"] = {
+                    "kind": "unknown", "marker": "",
+                    "badge": self._rule_message("rules_unknown", "规则未知", "Rules unknown"),
+                    "hint": self._rule_message(
+                        "rules_unknown_hint",
+                        "当前武器没有可识别的稀有度或传奇模板，仍可作为魔改配件添加。",
+                        "The current rarity or legendary composition is unknown; the part can still be added.",
+                    ),
+                }
+                continue
+            if not matched:
+                item["candidate"] = {
+                    "kind": "modified", "marker": "◇",
+                    "badge": self._rule_message("modified_pairing", "非自然搭配", "Modified pairing"),
+                    "hint": self._rule_message(
+                        "modified_pairing_hint",
+                        "不在当前稀有度或传奇模板的自然生成配件池内；仍可选择作为魔改。",
+                        "Outside the natural pool for this composition; it remains selectable as a modified part.",
+                    ),
+                }
+                continue
+
+            group, rule = matched
+            item["_rule_group"] = group
+            category_groups[item["category"]].add(group)
+            group_categories[group].add(item["category"])
+            current = len(rule.get("selected") or [])
+            minimum, maximum = int(rule.get("min", 1)), int(rule.get("max", 1))
+            active = bool(rule.get("eligible_refs") or rule.get("selected"))
+            legal_range = self._generation_count_range(minimum if active else 0, maximum if active else 0)
+            group_text = self._generation_group_text(group)
+            progress = f"{current}/{legal_range}"
+
+            if selected_counts.get(ref, 0):
+                item["candidate"] = {
+                    "kind": "legal", "marker": "✓",
+                    "badge": self._rule_message(
+                        "legal_existing_badge", "合法配件池 · 已存在 · {progress}",
+                        "Natural pool · Already present · {progress}", progress=progress,
+                    ),
+                    "hint": self._rule_message(
+                        "legal_existing_hint",
+                        "该配件与当前模板合法，但 {group} 中已经存在它；请先替换/删除，直接再加会成为重复魔改。",
+                        "This part is valid for the composition but already exists in {group}; replace/remove it first or adding again creates a duplicate.",
+                        group=group_text,
+                    ),
+                }
+            elif current >= maximum:
+                item["candidate"] = {
+                    "kind": "legal", "marker": "✓",
+                    "badge": self._rule_message(
+                        "legal_limit_badge", "合法配件池 · 已达上限 · {progress}",
+                        "Natural pool · Limit reached · {progress}", progress=progress,
+                    ),
+                    "hint": self._rule_message(
+                        "legal_limit_hint",
+                        "该配件与当前模板合法；但 {group} 已有 {current} 个、上限为 {max}。先替换/删除可保持合法，直接添加会成为魔改。",
+                        "This part is valid for the composition, but {group} is at {current}/{max}. Replace/remove first to stay natural; direct addition is modified.",
+                        group=group_text, current=current, max=maximum,
+                    ),
+                }
+            elif ref not in set(rule.get("eligible_refs") or []):
+                condition = self._generation_candidate_condition_text(ref, group, context)
+                condition_zh = f"{condition}；" if condition else ""
+                condition_en = f" {condition};" if condition else ""
+                item["candidate"] = {
+                    "kind": "warning", "marker": "!",
+                    "badge": self._rule_message(
+                        "condition_unmet_badge", "条件未满足 · {progress}", "Condition unmet · {progress}", progress=progress,
+                    ),
+                    "hint": self._rule_message(
+                        "condition_unmet_hint",
+                        "该配件属于 {group} 的生成池，但当前条件不满足。{suffix}仍可选择。",
+                        "This part belongs to the {group} pool, but its condition is not satisfied.{suffix} It remains selectable.",
+                        group=group_text, suffix=condition_zh if self.current_lang == "zh-CN" else condition_en,
+                    ),
+                }
+            else:
+                item["candidate"] = {
+                    "kind": "legal", "marker": "✓",
+                    "badge": self._rule_message(
+                        "legal_pairing_badge", "合法搭配 · {progress}", "Natural pairing · {progress}", progress=progress,
+                    ),
+                    "hint": self._rule_message(
+                        "legal_pairing_hint",
+                        "当前模板允许该 {group}；现有 {current} 个，自然生成范围为 {range}。",
+                        "Allowed by the current composition. Existing: {current}; natural range: {range}.",
+                        group=group_text, current=current, range=legal_range,
+                    ),
+                }
+
+        hints = {
+            str(item.get("category")): self._rule_message(
+                "current_legal_zero", "当前{current}/合法—", "{current}/—", current=0,
+            )
+            for item in source if rules_ready and item.get("category")
+        }
+        groups = context.get("groups") or {}
+        for category, native_groups in category_groups.items():
+            current = minimum = maximum = 0
+            for group in native_groups:
+                rule = groups[group]
+                active = bool(rule.get("eligible_refs") or rule.get("selected"))
+                current += len(rule.get("selected") or [])
+                if active:
+                    minimum += int(rule.get("min", 1))
+                    maximum += int(rule.get("max", 1))
+            legal_range = self._generation_count_range(minimum, maximum)
+            shared = any(len(group_categories[group]) > 1 for group in native_groups)
+            hints[category] = self._rule_message(
+                "shared_current_legal" if shared else "current_legal",
+                "共享配额 当前{current}/合法{range}" if shared else "当前{current}/合法{range}",
+                "shared {current}/{range}" if shared else "{current}/{range}",
+                current=current, range=legal_range,
+            )
+        return hints
 
     @staticmethod
     def _elemental_part_type(row):

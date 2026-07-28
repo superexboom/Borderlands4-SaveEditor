@@ -14,9 +14,10 @@ via ``set_source`` and read the current selection back via ``entries``.
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit,
     QPushButton, QListWidget, QListWidgetItem, QButtonGroup, QSizePolicy,
-    QFrame, QScrollArea
+    QFrame, QScrollArea, QSplitter
 )
 from PyQt6.QtCore import pyqtSignal, Qt, QSize, QTimer
+from PyQt6.QtGui import QColor
 
 
 class ContainedWheelListWidget(QListWidget):
@@ -660,3 +661,383 @@ class InlineCatalogPicker(QWidget):
         selected = len(self._counts)
         total = sum(self._counts.values())
         self.count_lbl.setText(str(total) if self._stackable else str(selected))
+
+
+# ====================================================================== #
+# FacetedCatalogPicker：筛选侧栏 + 宽列表 + 预览卡片 + 已选清单
+# ====================================================================== #
+class FacetGroup(QWidget):
+    """一个筛选维度：标题 + 紧凑单选列表（超出 max_visible 行后滚动）。"""
+
+    changed = pyqtSignal(str)
+
+    ROW_H = 26
+
+    def __init__(self, title, max_visible=6, parent=None):
+        super().__init__(parent)
+        lay = QVBoxLayout(self)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(4)
+        lbl = QLabel(title)
+        lbl.setObjectName("catalogColTitle")
+        lay.addWidget(lbl)
+        self.list = ContainedWheelListWidget()
+        self.list.setObjectName("facetList")
+        self.list.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.list.setTextElideMode(Qt.TextElideMode.ElideRight)
+        self.list.currentItemChanged.connect(self._on_change)
+        self._max_visible = max_visible
+        lay.addWidget(self.list)
+
+    def _on_change(self, current, _prev):
+        if current is not None:
+            self.changed.emit(current.data(Qt.ItemDataRole.UserRole))
+
+    def set_options(self, options):
+        """options: [(key, label)]；第一项自动选中（通常是“全部”）。"""
+        self.list.blockSignals(True)
+        self.list.clear()
+        for key, label in options:
+            lwi = QListWidgetItem(label)
+            lwi.setData(Qt.ItemDataRole.UserRole, key)
+            lwi.setToolTip(label)
+            self.list.addItem(lwi)
+        rows = max(1, min(len(options), self._max_visible))
+        self.list.setFixedHeight(rows * self.ROW_H + 10)
+        if self.list.count():
+            self.list.setCurrentRow(0)
+        self.list.blockSignals(False)
+
+    def current_key(self):
+        item = self.list.currentItem()
+        return item.data(Qt.ItemDataRole.UserRole) if item is not None else None
+
+
+class FacetedCatalogPicker(QWidget):
+    """三栏式现代化目录选择器。
+
+    与 CatalogPicker 数据协议兼容：item dict 使用
+    ``key/label/category/subcategory/tertiary/data``，
+    并可额外携带 ``title``、``detail``、``badges``（list[str]）、``search_text``
+    驱动右侧预览卡片。facet 与字段按顺序对应：
+    第 1 个 facet → category，第 2 个 → subcategory，第 3 个 → tertiary。
+    """
+
+    changed = pyqtSignal()
+    _FACET_FIELDS = ("category", "subcategory", "tertiary")
+    _FACET_MIN_WIDTH = 220
+    _FACET_MAX_WIDTH = 400
+
+    def __init__(self, stackable=True, search_placeholder="",
+                 avail_title="", selected_title="", clear_text="Clear",
+                 result_text="{n} / {total}", parent=None):
+        super().__init__(parent)
+        self._stackable = stackable
+        self._source = []
+        self._selected_keys = {}
+        self._result_fmt = result_text
+
+        root = QVBoxLayout(self)
+        root.setContentsMargins(0, 0, 0, 0)
+        root.setSpacing(8)
+
+        # 顶部：搜索 + 匹配计数
+        top = QHBoxLayout()
+        self.search = QLineEdit()
+        self.search.setPlaceholderText(search_placeholder)
+        self.search.setClearButtonEnabled(True)
+        self.search.textChanged.connect(self._refilter)
+        top.addWidget(self.search, 1)
+        self.result_lbl = QLabel("")
+        self.result_lbl.setObjectName("facetResultCount")
+        top.addWidget(self.result_lbl)
+        root.addLayout(top)
+
+        # 三栏主体（分隔条可拖）
+        self._splitter = QSplitter(Qt.Orientation.Horizontal)
+
+        # 左：筛选侧栏
+        sidebar = QFrame()
+        sidebar.setObjectName("catalogCard")
+        sidebar.setMinimumWidth(self._FACET_MIN_WIDTH)
+        sidebar.setMaximumWidth(self._FACET_MAX_WIDTH)
+        self._sidebar_lay = QVBoxLayout(sidebar)
+        self._sidebar_lay.setContentsMargins(10, 10, 10, 10)
+        self._sidebar_lay.setSpacing(10)
+        self._facet_groups = []
+        self._sidebar_lay.addStretch(1)
+        self._splitter.addWidget(sidebar)
+
+        # 中：可用列表
+        avail_card = QFrame()
+        avail_card.setObjectName("catalogCard")
+        avail_v = QVBoxLayout(avail_card)
+        avail_v.setContentsMargins(8, 8, 8, 8)
+        avail_v.setSpacing(6)
+        if avail_title:
+            lbl = QLabel(avail_title)
+            lbl.setObjectName("catalogColTitle")
+            avail_v.addWidget(lbl)
+        self.avail = ContainedWheelListWidget()
+        self.avail.setMinimumHeight(240)
+        self.avail.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.avail.setTextElideMode(Qt.TextElideMode.ElideRight)
+        self.avail.itemDoubleClicked.connect(self._on_avail_double)
+        self.avail.currentItemChanged.connect(self._on_avail_current)
+        avail_v.addWidget(self.avail)
+        self._splitter.addWidget(avail_card)
+
+        # 右：预览卡片 + 已选清单
+        right = QWidget()
+        right_lay = QVBoxLayout(right)
+        right_lay.setContentsMargins(0, 0, 0, 0)
+        right_lay.setSpacing(8)
+
+        self.preview_card = QFrame()
+        self.preview_card.setObjectName("previewCard")
+        pv = QVBoxLayout(self.preview_card)
+        pv.setContentsMargins(12, 10, 12, 10)
+        pv.setSpacing(6)
+        self.preview_title = QLabel("—")
+        self.preview_title.setObjectName("previewTitle")
+        self.preview_title.setWordWrap(True)
+        pv.addWidget(self.preview_title)
+        self.preview_badges = QHBoxLayout()
+        self.preview_badges.setContentsMargins(0, 0, 0, 0)
+        self.preview_badges.setSpacing(4)
+        self.preview_badges.addStretch(1)
+        pv.addLayout(self.preview_badges)
+        self.preview_detail = QLabel("")
+        self.preview_detail.setObjectName("previewDetail")
+        self.preview_detail.setWordWrap(True)
+        self.preview_detail.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        pv.addWidget(self.preview_detail, 1)
+        right_lay.addWidget(self.preview_card, 2)
+
+        sel_card = QFrame()
+        sel_card.setObjectName("catalogCard")
+        sel_v = QVBoxLayout(sel_card)
+        sel_v.setContentsMargins(8, 8, 8, 8)
+        sel_v.setSpacing(6)
+        header = QHBoxLayout()
+        header.setContentsMargins(0, 0, 0, 0)
+        self._sel_title = selected_title
+        self.count_lbl = QLabel(self._fmt_count(0))
+        self.count_lbl.setObjectName("catalogCount")
+        header.addWidget(self.count_lbl, 1)
+        self.clear_btn = QPushButton(clear_text)
+        self.clear_btn.setObjectName("catalogClearBtn")
+        self.clear_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.clear_btn.clicked.connect(self.clear)
+        header.addWidget(self.clear_btn)
+        sel_v.addLayout(header)
+        self.selected = ContainedWheelListWidget()
+        self.selected.setObjectName("catalogSelectedList")
+        self.selected.setMinimumHeight(140)
+        self.selected.setSelectionMode(QListWidget.SelectionMode.NoSelection)
+        sel_v.addWidget(self.selected)
+        right_lay.addWidget(sel_card, 3)
+
+        self._splitter.addWidget(right)
+        self._splitter.setStretchFactor(0, 0)
+        self._splitter.setStretchFactor(1, 1)
+        self._splitter.setStretchFactor(2, 0)
+        self._splitter.setSizes([self._FACET_MIN_WIDTH, 560, 300])
+        self._splitter.setCollapsible(0, False)
+        self._splitter.setCollapsible(1, False)
+        root.addWidget(self._splitter, 1)
+
+    # ------------------------------------------------------------------ #
+    # Configuration
+    # ------------------------------------------------------------------ #
+    def set_facets(self, facets):
+        """facets: [(title, [(key, label), ...], max_visible), ...] 最多 3 个。"""
+        facets = facets[:3]
+        # 清掉旧的
+        for group in self._facet_groups:
+            self._sidebar_lay.removeWidget(group)
+            group.deleteLater()
+        self._facet_groups = []
+        for i, spec in enumerate(facets):
+            title, options = spec[0], spec[1]
+            max_visible = spec[2] if len(spec) > 2 else 6
+            group = FacetGroup(title, max_visible)
+            group.changed.connect(lambda *_: self._refilter())
+            # 插入到 stretch 之前
+            self._sidebar_lay.insertWidget(self._sidebar_lay.count() - 1, group)
+            group.set_options(options)
+            self._facet_groups.append(group)
+
+        texts = [str(spec[0]) for spec in facets]
+        texts.extend(str(label) for spec in facets for _, label in spec[1])
+        text_width = max((self.fontMetrics().horizontalAdvance(text) for text in texts), default=0)
+        sidebar_width = max(self._FACET_MIN_WIDTH,
+                            min(self._FACET_MAX_WIDTH, text_width + 54))
+        self._splitter.setSizes([sidebar_width, 560, 300])
+
+    def set_source(self, items):
+        self._source = list(items)
+        self._refilter()
+
+    # ------------------------------------------------------------------ #
+    # Filtering / preview
+    # ------------------------------------------------------------------ #
+    def _facet_keys(self):
+        keys = []
+        for group in self._facet_groups:
+            keys.append(group.current_key())
+        return keys
+
+    def _refilter(self, *args):
+        self.avail.clear()
+        facet_keys = self._facet_keys()
+        query = self.search.text().casefold().strip()
+        matched = 0
+        for it in self._source:
+            skip = False
+            for idx, key in enumerate(facet_keys):
+                if key in (None, "all"):
+                    continue
+                field = self._FACET_FIELDS[idx] if idx < len(self._FACET_FIELDS) else None
+                if field and it.get(field) != key:
+                    skip = True
+                    break
+            if skip:
+                continue
+            if query:
+                hay = " ".join(str(it.get(k, "")) for k in
+                               ("label", "title", "detail", "search_text")).casefold()
+                if query not in hay:
+                    continue
+            matched += 1
+            candidate = it.get("candidate") or {}
+            marker = str(candidate.get("marker") or "").strip()
+            label = str(it.get("label", ""))
+            lwi = QListWidgetItem(f"{marker}  {label}" if marker else label)
+            lwi.setData(Qt.ItemDataRole.UserRole, it)
+            tooltip = [str(it.get("tooltip") or label)]
+            if candidate.get("hint"):
+                tooltip.insert(0, str(candidate["hint"]))
+            lwi.setToolTip("\n\n".join(filter(None, tooltip)))
+            if candidate.get("kind") == "legal":
+                font = lwi.font()
+                font.setBold(True)
+                lwi.setFont(font)
+                lwi.setBackground(QColor(74, 144, 226, 38))
+            elif candidate.get("kind") == "warning":
+                lwi.setBackground(QColor(230, 164, 57, 30))
+            self.avail.addItem(lwi)
+        self.result_lbl.setText(self._result_fmt.format(n=matched, total=len(self._source)))
+        if self.avail.count():
+            self.avail.setCurrentRow(0)
+        else:
+            self._show_preview(None)
+
+    def _on_avail_current(self, current, _prev):
+        it = current.data(Qt.ItemDataRole.UserRole) if current is not None else None
+        self._show_preview(it)
+
+    def _show_preview(self, it):
+        # 清空 badges
+        while self.preview_badges.count():
+            item = self.preview_badges.takeAt(0)
+            w = item.widget()
+            if w is not None:
+                w.deleteLater()
+        if not it:
+            self.preview_title.setText("—")
+            self.preview_detail.setText("")
+            self.preview_badges.addStretch(1)
+            return
+        self.preview_title.setText(it.get("title") or it.get("label", ""))
+        candidate = it.get("candidate") or {}
+        if candidate.get("badge"):
+            b = QLabel(str(candidate["badge"]))
+            b.setObjectName("previewCandidateBadge" if candidate.get("kind") == "legal" else "previewBadge")
+            self.preview_badges.addWidget(b)
+        for badge_text in it.get("badges") or []:
+            b = QLabel(str(badge_text))
+            b.setObjectName("previewBadge")
+            self.preview_badges.addWidget(b)
+        self.preview_badges.addStretch(1)
+        self.preview_detail.setText("\n\n".join(filter(None, (
+            str(candidate.get("hint") or ""),
+            str(it.get("detail") or ""),
+        ))))
+
+    # ------------------------------------------------------------------ #
+    # Selection（与 CatalogPicker 语义一致）
+    # ------------------------------------------------------------------ #
+    def _on_avail_double(self, item):
+        it = item.data(Qt.ItemDataRole.UserRole)
+        if it:
+            self.add_item(it)
+
+    def add_item(self, it, count=1):
+        key = it["key"]
+        if key in self._selected_keys:
+            if self._stackable:
+                row = self.selected.itemWidget(self._selected_keys[key])
+                if row is not None:
+                    row.set_count(row.count() + count)
+            return
+
+        lwi = QListWidgetItem()
+        lwi.setData(Qt.ItemDataRole.UserRole, it)
+        self.selected.addItem(lwi)
+        row = SelectedRow(it.get("title") or it.get("label", ""), count=count,
+                          stackable=self._stackable)
+        hint = row.sizeHint()
+        lwi.setSizeHint(QSize(max(hint.width(), 200), hint.height()))
+        self.selected.setItemWidget(lwi, row)
+        self._selected_keys[key] = lwi
+        row.countChanged.connect(self.changed.emit)
+        row.removed.connect(lambda k=key: QTimer.singleShot(0, lambda: self._remove_key(k)))
+        self._update_count()
+        self.changed.emit()
+
+    def _remove_key(self, key):
+        lwi = self._selected_keys.pop(key, None)
+        if lwi is not None:
+            self.selected.takeItem(self.selected.row(lwi))
+        self._update_count()
+        self.changed.emit()
+
+    def remove_key(self, key):
+        if key in self._selected_keys:
+            self._remove_key(key)
+
+    def clear(self):
+        if not self._selected_keys and self.selected.count() == 0:
+            return
+        self.selected.clear()
+        self._selected_keys = {}
+        self._update_count()
+        self.changed.emit()
+
+    def entries(self):
+        result = []
+        for i in range(self.selected.count()):
+            lwi = self.selected.item(i)
+            it = lwi.data(Qt.ItemDataRole.UserRole)
+            row = self.selected.itemWidget(lwi)
+            count = row.count() if row is not None else 1
+            result.append({
+                "data": it.get("data"),
+                "count": count,
+                "key": it.get("key"),
+                "label": it.get("label"),
+            })
+        return result
+
+    def selected_keys(self):
+        return set(self._selected_keys.keys())
+
+    def set_search_placeholder(self, text):
+        self.search.setPlaceholderText(text)
+
+    def _fmt_count(self, n):
+        return f"{self._sel_title}  ({n})" if self._sel_title else f"({n})"
+
+    def _update_count(self):
+        self.count_lbl.setText(self._fmt_count(self.selected.count()))
