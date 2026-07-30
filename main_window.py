@@ -21,7 +21,7 @@ for _stream_name in ("stdout", "stderr"):
         except (AttributeError, ValueError):
             pass
 
-VERSION = "3.8.0"
+VERSION = "3.9.0"
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QMessageBox, QFileDialog,
@@ -643,6 +643,7 @@ class MainWindow(QMainWindow):
 
         self.weapon_generator_tab = QtWeaponGeneratorTab()
         self.weapon_generator_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
+        self.weapon_generator_tab.batch_add_to_backpack_requested.connect(self.handle_weapon_generator_batch_add)
         self.add_tab(self.weapon_generator_tab, self.loc['tabs']['weapon_generator'], "🔫")
 
         self.grenade_tab = QtGrenadeEditorTab(main_app=self)
@@ -1182,14 +1183,18 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, self.loc['dialogs']['no_save'], self.loc['dialogs']['decrypt_save_first'])
             self.converter_tab.finalize_batch_add(0, 0)
             return
+        self._start_batch_add_worker(
+            lines, flag, self.converter_tab.update_batch_add_status, self.on_batch_add_finished
+        )
 
+    def _start_batch_add_worker(self, lines, flag, progress_slot, finished_slot):
         self.batch_add_thread = QThread()
         self.batch_add_worker = BatchAddWorker(self.controller, lines, flag)
         self.batch_add_worker.moveToThread(self.batch_add_thread)
 
         self.batch_add_thread.started.connect(self.batch_add_worker.run)
-        self.batch_add_worker.finished.connect(self.on_batch_add_finished)
-        self.batch_add_worker.progress.connect(self.converter_tab.update_batch_add_status)
+        self.batch_add_worker.finished.connect(finished_slot)
+        self.batch_add_worker.progress.connect(progress_slot)
 
         self.batch_add_worker.finished.connect(self.batch_add_thread.quit)
         self.batch_add_worker.finished.connect(self.batch_add_worker.deleteLater)
@@ -1197,6 +1202,26 @@ class MainWindow(QMainWindow):
 
         self._suspend_autosave(True)
         self.batch_add_thread.start()
+
+    @pyqtSlot(list, str)
+    def handle_weapon_generator_batch_add(self, lines: list, flag: str):
+        if not self.controller.yaml_obj:
+            QMessageBox.critical(self, self.loc['dialogs']['no_save'], self.loc['dialogs']['decrypt_save_first'])
+            self.weapon_generator_tab.finalize_roll_batch_add(0, len(lines))
+            return
+        self._start_batch_add_worker(
+            lines,
+            flag,
+            self.weapon_generator_tab.update_roll_add_progress,
+            self.on_weapon_generator_batch_add_finished,
+        )
+
+    def on_weapon_generator_batch_add_finished(self, success_count, fail_count):
+        self._suspend_autosave(False)
+        self.weapon_generator_tab.finalize_roll_batch_add(success_count, fail_count)
+        if success_count > 0:
+            self.invalidate_items_snapshot()
+            self._refresh_inventory_view(self.content_stack.currentIndex())
 
     def on_batch_add_finished(self, success_count, fail_count):
         self._suspend_autosave(False)

@@ -234,6 +234,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         "Barrel Accessory": "#90A4AE",
         "Body": "#BCAAA4",
         "Body Accessory": "#A1887F",
+        "Body Mechanism": "#8D6E63",
         "Foregrip": "#9CCC65",
         "Grip": "#AED581",
         "Magazine": "#FFB300",
@@ -256,7 +257,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
     }
 
     TAXONOMY_KEYS = {
-        "Body": "body", "Body Accessory": "body_accessory",
+        "Body": "body", "Body Accessory": "body_accessory", "Body Mechanism": "body_mechanism",
         "Barrel": "barrel", "Barrel Accessory": "barrel_accessory",
         "Manufacturer Part": "manufacturer_part", "Tediore Payload": "tediore_payload",
         "Tediore Throw Reload": "tediore_throw_reload", "Magazine": "magazine",
@@ -277,7 +278,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
 
     GENERATION_GROUP_TYPES = {
         "barrel": "Barrel", "barrel_acc": "Barrel Accessory",
-        "body": "Body", "body_acc": "Body Accessory", "body_bolt": "Body Accessory",
+        "body": "Body", "body_acc": "Body Accessory", "body_bolt": "Body Mechanism",
         "body_ele": "Special Element Set", "body_mag": "Manufacturer Part",
         "endgame": "Stat Modifier", "firmware": "Stat Modifier",
         "foregrip": "Foregrip", "grip": "Grip",
@@ -867,7 +868,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 group=group_text, actual=actual, max=violation.get("max"), suffix="",
             )
         if code == "count_below":
-            eligible = (result.get("groups", {}).get(group) or {}).get("eligible_refs", [])
+            eligible = (result.get("groups", {}).get(group) or {}).get("remaining_eligible_refs", [])
             choices = self._generation_ref_list(eligible, group)
             suffix = self._rule_message(
                 "eligible_suffix", "，可选：{parts}", "; eligible: {parts}", parts=choices,
@@ -1610,6 +1611,10 @@ class WeaponEditorTab(QtWidgets.QWidget):
                     weapon_types.append(weapon_type)
 
     def _generation_candidate_condition_text(self, ref, group, context):
+        if ref in set((context.get("groups", {}).get(group) or {}).get("tag_limited_refs") or []):
+            return self._rule_message(
+                "violation_tag_limit", "授权类配件超过上限", "Tagged part count exceeds the limit",
+            )
         root, sep, part_id = str(ref).partition(':')
         if not sep or not root.isdigit():
             return ""
@@ -1650,6 +1655,13 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 ):
                     conflicting_parts.append((selected_ref, current_group))
 
+        if not missing and not conflicts:
+            conflicting_parts.extend(
+                (selected_ref, group)
+                for selected_ref in (context.get("groups", {}).get(group) or {}).get("selected", [])
+                if selected_ref != ref
+            )
+
         details = []
         if missing:
             choices = self._rule_message("list_separator", '、', ', ').join(
@@ -1662,7 +1674,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 "Requires first: {parts}" if choices else "No eligible prerequisite part is currently available",
                 **({"parts": choices} if choices else {}),
             ))
-        if conflicts:
+        if conflicts or conflicting_parts:
             names = self._rule_message("list_separator", '、', ', ').join(
                 self._generation_ref_text(selected_ref, selected_group)
                 for selected_ref, selected_group in list(dict.fromkeys(conflicting_parts))[:2]
@@ -1716,9 +1728,9 @@ class WeaponEditorTab(QtWidgets.QWidget):
             category_groups[item["category"]].add(group)
             group_categories[group].add(item["category"])
             current = len(rule.get("selected") or [])
-            minimum, maximum = int(rule.get("min", 1)), int(rule.get("max", 1))
-            active = bool(rule.get("eligible_refs") or rule.get("selected"))
-            legal_range = self._generation_count_range(minimum if active else 0, maximum if active else 0)
+            minimum = int(rule.get("effective_min", rule.get("min", 1)))
+            maximum = int(rule.get("effective_max", rule.get("max", 1)))
+            legal_range = self._generation_count_range(minimum, maximum)
             group_text = self._generation_group_text(group)
             progress = f"{current}/{legal_range}"
 
@@ -1791,11 +1803,9 @@ class WeaponEditorTab(QtWidgets.QWidget):
             current = minimum = maximum = 0
             for group in native_groups:
                 rule = groups[group]
-                active = bool(rule.get("eligible_refs") or rule.get("selected"))
                 current += len(rule.get("selected") or [])
-                if active:
-                    minimum += int(rule.get("min", 1))
-                    maximum += int(rule.get("max", 1))
+                minimum += int(rule.get("effective_min", rule.get("min", 1)))
+                maximum += int(rule.get("effective_max", rule.get("max", 1)))
             legal_range = self._generation_count_range(minimum, maximum)
             shared = any(len(group_categories[group]) > 1 for group in native_groups)
             hints[category] = self._rule_message(

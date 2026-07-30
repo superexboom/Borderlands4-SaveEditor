@@ -753,6 +753,7 @@
     "taxonomy": {
       "body": "Корпус",
       "body_accessory": "Аксессуар корпуса",
+      "body_mechanism": "Механизм корпуса",
       "barrel": "Ствол",
       "barrel_accessory": "Аксессуар ствола",
       "manufacturer_part": "Деталь производителя",
@@ -834,12 +835,46 @@
       "serial_b85": "Base85:",
       "manufacturer": "Производитель",
       "weapon_type": "Тип оружия",
+      "build_status": "Статус",
+      "generator_page": "Генератор",
+      "results_page": "Результаты",
+      "random": "Случайно",
+      "rarity": "Редкость",
+      "named_weapon": "Модель",
+      "quantity": "Кол-во",
+      "name": "Название",
+      "weapon": "Производитель / тип",
+      "element": "Стихия",
+      "main_element": "Основная стихия",
+      "secondary_element": "Вторая стихия",
+      "status": "Статус",
+      "matches": "Найдено: {count}",
+      "no_matches": "Нет совпадений",
+      "selected_count": "Выбрано: {count}/{total}",
+      "double_click": "Двойной клик — добавить",
+      "current_context": "Текущий уровень и флаг",
+      "generated": "Создано: {count}",
+      "no_results": "Результатов пока нет",
+      "select_result": "Выберите оружие слева",
+      "no_element": "Без стихии",
+      "level_value": "Ур. {level}",
+      "legal": "Легально",
+      "scope_template": "Производитель: {manufacturer} · Тип: {weapon_type} · Редкость: {rarity}",
       "level": "Уровень",
       "seed": "Сид",
-      "select_flag": "Выбор флага:"
+      "select_flag": "Выбор флага:",
+      "Body Mechanism": "Механизм корпуса"
     },
     "buttons": {
-      "add_to_backpack": "Добавить в рюкзак"
+      "add_to_backpack": "Добавить в рюкзак",
+      "lucky": "Мне повезёт",
+      "roll": "Создать",
+      "add_one": "Добавить",
+      "copy_base85": "Копировать Base85",
+      "add_selected": "Добавить выбранное",
+      "add_all": "Добавить все",
+      "cancel": "Отмена",
+      "close": "Закрыть"
     },
     "sections": {
       "config": "Конфигурация",
@@ -848,8 +883,10 @@
       "multi": "Мульти",
       "pearl_stat": "Жемчужный стат",
       "pearl_elements": "Жемчужные элементы",
-      "elem2_hint": "Переключение стихии подствольника появится после выбора соответствующей детали.",
-      "need_elem1": "Сначала выберите Стихию 1"
+      "roll_options": "Параметры",
+      "roll_results": "Результаты",
+      "available_only": "Только доступные",
+      "attribute_hint": "Вторая стихия показывается при поддержке; жемчужные поля — только для жемчужной редкости."
     },
     "dialogs": {
       "error_title": "Ошибка",
@@ -857,7 +894,15 @@
       "file_not_found": "Не найден один или несколько путей к CSV файлам оружия.",
       "loc_file_error": "Ошибка загрузки 'weapon_localization_zh-CN.json'.",
       "no_serial_title": "Нет серийного номера",
-      "gen_first": "Сначала сгенерируйте оружие."
+      "gen_first": "Сначала сгенерируйте оружие.",
+      "no_legal_result": "Нет подходящей сборки.",
+      "roll_failed": "Ошибка генерации: {error}",
+      "roll_running": "Создание сборок…",
+      "roll_scope_tip": "Фильтры или случайно; шанс выпадения не моделируется.",
+      "roll_add_start": "Добавление: {count}",
+      "roll_add_progress": "{current}/{total} · +{success} · −{fail}",
+      "roll_add_done": "Добавлено {success}, ошибок {fail}",
+      "base85_copied": "Base85 скопирован"
     }
   },
   "grenade_tab": {

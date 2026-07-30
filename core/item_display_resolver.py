@@ -7,6 +7,7 @@ from functools import lru_cache
 from typing import Any
 
 from . import resource_loader, weapon_display_stats
+from .weapon_generation_logic import evaluate_group_selection
 
 
 WEAPON_TYPES = {"Pistol", "Shotgun", "SMG", "Assault Rifle", "Sniper"}
@@ -1064,6 +1065,9 @@ def weapon_generation_context(decoded: str) -> dict[str, Any]:
             "max": int(rule.get("max", 1)),
             "selected": selected_by_group.get(group, []),
             "eligible_refs": [],
+            "tag_limited_refs": [],
+            "activation_tags": [],
+            "active": False,
             "additional_part_chance": rule.get("additional_chance"),
             "unresolved_parts": list(rule.get("unresolved_parts") or []),
         }
@@ -1075,16 +1079,38 @@ def weapon_generation_context(decoded: str) -> dict[str, Any]:
             ordered_groups.append(group)
     ordered_groups.extend(sorted((set(groups) | set(selected_by_group)) - set(ordered_groups)))
     active_tags = {str(tag).casefold() for tag in composition.get("base_tags") or []}
+    tag_rules = [
+        ({str(tag).casefold() for tag in rule.get("tags", [])}, int(rule.get("max", 1)))
+        for rule in composition.get("tag_rules") or []
+    ]
+    tag_counts = [0] * len(tag_rules)
     for group in ordered_groups:
         if group in groups:
-            groups[group]["eligible_refs"] = [
-                ref
+            selected_refs = selected_by_group.get(group, [])
+            group_state = evaluate_group_selection(
+                allowed_refs=groups[group]["allowed"],
+                selected_refs=selected_refs,
+                tags_for_ref=lambda ref: _weapon_generation_tags(index, rules, ref),
+                base_tags=active_tags,
+                tag_rules=composition.get("tag_rules") or [],
+                base_tag_counts=tag_counts,
+                minimum=groups[group]["min"],
+                maximum=groups[group]["max"],
+                additional_chance=groups[group]["additional_part_chance"],
+            )
+            groups[group].update(group_state)
+            requires = [
+                _weapon_generation_tags(index, rules, ref)["requires"]
                 for ref in groups[group]["allowed"]
-                if (tags := _weapon_generation_tags(index, rules, ref))["requires"] <= active_tags
-                and not (tags["excludes"] & active_tags)
             ]
-        for ref in selected_by_group.get(group, []):
-            active_tags.update(_weapon_generation_tags(index, rules, ref)["adds"])
+            activation_tags = set.intersection(*requires) if requires else set()
+            groups[group]["activation_tags"] = sorted(activation_tags)
+        if group in groups and groups[group].get("selected_reachable"):
+            for ref in selected_by_group.get(group, []):
+                adds = _weapon_generation_tags(index, rules, ref)["adds"]
+                active_tags.update(adds)
+                for index_, (bucket, _maximum) in enumerate(tag_rules):
+                    tag_counts[index_] += bool(adds & bucket)
 
     unknown_parts = [ref for ref in selected if ref not in part_refs]
     foreign_parts = [ref for ref in refs if _weapon_generation_root(ref) not in {root_ref, "1"}]
@@ -1178,6 +1204,7 @@ def validate_weapon_generation(decoded: str, allow_incomplete: bool = False) -> 
     resolved = bool(context["rules_available"] and context["weapon_known"] and context["composition_ref"])
     if resolved:
         duplicate_parts = sorted(ref for ref, count in Counter(selected).items() if count > 1)
+        duplicate_set = set(duplicate_parts)
         if duplicate_parts:
             add("duplicate_part", parts=duplicate_parts)
             hard = True
@@ -1192,57 +1219,39 @@ def validate_weapon_generation(decoded: str, allow_incomplete: bool = False) -> 
                 add("part_not_allowed", group=group, parts=illegal)
                 hard = True
         for group, group_rule in context["groups"].items():
-            actual = len(selected_by_group.get(group, []))
-            if group_rule["eligible_refs"] and actual < group_rule["min"]:
-                add("count_below", group=group, actual=actual, min=group_rule["min"])
-                incomplete = True
+            refs = selected_by_group.get(group, [])
+            actual = len(refs)
             if actual > group_rule["max"]:
                 add("count_above", group=group, actual=actual, max=group_rule["max"])
                 hard = True
+                continue
+            if any(ref not in set(group_rule["allowed"]) for ref in refs) or duplicate_set.intersection(refs):
+                continue
+            if not group_rule["selected_reachable"]:
+                direct_reason = False
+                tags_before = set(group_rule.get("tags_before") or [])
+                for ref in refs:
+                    tags = _weapon_generation_tags(index, rules, ref)
+                    missing = sorted(tags["requires"] - tags_before)
+                    if missing:
+                        add("missing_required_tag", part=ref, tags=missing)
+                        direct_reason = True
+                    conflict = sorted(tags["excludes"] & tags_before)
+                    if conflict:
+                        add("excluded_tag_conflict", part=ref, tags=conflict)
+                        direct_reason = True
+                if not direct_reason and not group_rule.get("selected_tag_limit_exceeded"):
+                    add("excluded_tag_conflict", parts=refs)
+                hard = True
+            elif not group_rule["selected_terminal"]:
+                required = next(
+                    (count for count in group_rule.get("terminal_counts", []) if count > actual),
+                    group_rule["effective_min"],
+                )
+                add("count_below", group=group, actual=actual, min=required)
+                incomplete = True
 
-        missing_forced = sorted(set(context["forced_part_refs"]) - set(selected))
-        if missing_forced:
-            add("forced_part_missing", parts=missing_forced)
-            incomplete = True
-
-    base_tags = {str(tag).casefold() for tag in context["base_tags"]}
     part_tags = [_weapon_generation_tags(index, rules, ref) for ref in selected]
-    all_tags = base_tags | set().union(*(tags["adds"] for tags in part_tags), set())
-    for ref, tags in zip(selected, part_tags):
-        missing = sorted(tags["requires"] - all_tags)
-        if missing:
-            add("missing_required_tag", part=ref, tags=missing)
-            hard = True
-        conflict = sorted(tags["excludes"] & base_tags)
-        if conflict:
-            add("excluded_tag_conflict", part=ref, tags=conflict)
-            hard = True
-
-    if resolved and len(selected) <= 24:
-        target = (1 << len(selected)) - 1
-
-        @lru_cache(maxsize=None)
-        def can_select(mask: int) -> bool:
-            if mask == target:
-                return True
-            active = set(base_tags)
-            for index_, tags in enumerate(part_tags):
-                if mask & (1 << index_):
-                    active.update(tags["adds"])
-            for index_, tags in enumerate(part_tags):
-                if mask & (1 << index_):
-                    continue
-                if tags["requires"] <= active and not (tags["excludes"] & active):
-                    if can_select(mask | (1 << index_)):
-                        return True
-            return False
-
-        if selected and not can_select(0) and not any(item["code"] == "missing_required_tag" for item in violations):
-            add("excluded_tag_conflict", parts=selected)
-            hard = True
-    elif resolved:
-        add("selection_order_unchecked", count=len(selected))
-        conditional = True
 
     for rule in context["tag_rules"] if resolved else []:
         tags = {str(tag).casefold() for tag in rule.get("tags", [])}

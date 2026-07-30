@@ -682,6 +682,7 @@
     "taxonomy": {
       "body": "Корпус",
       "body_accessory": "Аксесуар корпуса",
+      "body_mechanism": "Механізм корпуса",
       "barrel": "Ствол",
       "barrel_accessory": "Аксесуар ствола",
       "manufacturer_part": "Деталь виробника",
@@ -763,12 +764,46 @@
       "serial_b85": "Base85:",
       "manufacturer": "Виробник",
       "weapon_type": "Тип зброї",
+      "build_status": "Статус",
+      "generator_page": "Генератор",
+      "results_page": "Результати",
+      "random": "Випадково",
+      "rarity": "Рідкість",
+      "named_weapon": "Модель",
+      "quantity": "Кількість",
+      "name": "Назва",
+      "weapon": "Виробник / тип",
+      "element": "Стихія",
+      "main_element": "Основна стихія",
+      "secondary_element": "Друга стихія",
+      "status": "Статус",
+      "matches": "Знайдено: {count}",
+      "no_matches": "Немає збігів",
+      "selected_count": "Вибрано: {count}/{total}",
+      "double_click": "Подвійний клік — додати",
+      "current_context": "Поточний рівень і прапорець",
+      "generated": "Створено: {count}",
+      "no_results": "Результатів ще немає",
+      "select_result": "Оберіть зброю ліворуч",
+      "no_element": "Без стихії",
+      "level_value": "Рів. {level}",
+      "legal": "Легально",
+      "scope_template": "Виробник: {manufacturer} · Тип: {weapon_type} · Рідкість: {rarity}",
       "level": "Рівень",
       "seed": "Сід",
-      "select_flag": "Вибір прапорця:"
+      "select_flag": "Вибір прапорця:",
+      "Body Mechanism": "Механізм корпуса"
     },
     "buttons": {
-      "add_to_backpack": "Додати до рюкзака"
+      "add_to_backpack": "Додати до рюкзака",
+      "lucky": "Мені пощастить",
+      "roll": "Створити",
+      "add_one": "Додати",
+      "copy_base85": "Копіювати Base85",
+      "add_selected": "Додати вибране",
+      "add_all": "Додати все",
+      "cancel": "Скасувати",
+      "close": "Закрити"
     },
     "sections": {
       "config": "Конфігурація",
@@ -777,8 +812,10 @@
       "multi": "Мульті",
       "pearl_stat": "Перлинний стат",
       "pearl_elements": "Перлинні елементи",
-      "elem2_hint": "Перемикання стихії підствольника з’явиться після вибору відповідної деталі.",
-      "need_elem1": "Спочатку виберіть Стихію 1"
+      "roll_options": "Параметри",
+      "roll_results": "Результати",
+      "available_only": "Лише доступні",
+      "attribute_hint": "Друга стихія з’являється за підтримки; перлинні поля — лише для перлинної рідкості."
     },
     "dialogs": {
       "error_title": "Помилка",
@@ -786,7 +823,15 @@
       "file_not_found": "Не знайдено один або кілька шляхів до CSV файлів зброї.",
       "loc_file_error": "Помилка завантаження 'weapon_localization_zh-CN.json'.",
       "no_serial_title": "Немає серійного номера",
-      "gen_first": "Спочатку згенеруйте зброю."
+      "gen_first": "Спочатку згенеруйте зброю.",
+      "no_legal_result": "Немає відповідної збірки.",
+      "roll_failed": "Помилка генерації: {error}",
+      "roll_running": "Створення збірок…",
+      "roll_scope_tip": "Фільтри або випадково; шанс випадіння не моделюється.",
+      "roll_add_start": "Додавання: {count}",
+      "roll_add_progress": "{current}/{total} · +{success} · −{fail}",
+      "roll_add_done": "Додано {success}, помилок {fail}",
+      "base85_copied": "Base85 скопійовано"
     }
   },
   "grenade_tab": {

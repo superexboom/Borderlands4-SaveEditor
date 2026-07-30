@@ -753,6 +753,7 @@
     "taxonomy": {
       "body": "枪身",
       "body_accessory": "枪身附属",
+      "body_mechanism": "枪身机构",
       "barrel": "枪管",
       "barrel_accessory": "枪管附件",
       "manufacturer_part": "厂商授权部件",
@@ -834,12 +835,46 @@
       "serial_b85": "Base85:",
       "manufacturer": "厂商",
       "weapon_type": "武器类型",
+      "build_status": "构建状态",
+      "generator_page": "主生成器",
+      "results_page": "随机结果",
+      "random": "随机",
+      "rarity": "稀有度",
+      "named_weapon": "指定武器",
+      "quantity": "数量",
+      "name": "名称",
+      "weapon": "厂商 / 类型",
+      "element": "元素",
+      "main_element": "主元素",
+      "secondary_element": "第二元素",
+      "status": "状态",
+      "matches": "匹配 {count} 个模板",
+      "no_matches": "当前条件没有匹配结果",
+      "selected_count": "已选 {count} / {total}",
+      "double_click": "双击一行可直接加入",
+      "current_context": "使用主页面当前等级与 Flag",
+      "generated": "已生成 {count} 把合法武器",
+      "no_results": "还没有随机生成结果",
+      "select_result": "从左侧选择一把武器",
+      "no_element": "无元素",
+      "level_value": "{level}级",
+      "legal": "自然生成",
+      "scope_template": "厂商：{manufacturer} · 类型：{weapon_type} · 稀有度：{rarity}",
       "level": "等级",
       "seed": "种子",
-      "select_flag": "选择Flag:"
+      "select_flag": "选择Flag:",
+      "Body Mechanism": "枪身机构"
     },
     "buttons": {
-      "add_to_backpack": "添加到背包"
+      "add_to_backpack": "添加到背包",
+      "lucky": "手气不错",
+      "roll": "开始随机",
+      "add_one": "加入这把",
+      "copy_base85": "复制 Base85",
+      "add_selected": "添加选中",
+      "add_all": "全部加入背包",
+      "cancel": "取消",
+      "close": "关闭"
     },
     "sections": {
       "config": "武器配置",
@@ -848,8 +883,10 @@
       "multi": "可多选",
       "pearl_stat": "珠光属性",
       "pearl_elements": "珠光元素",
-      "elem2_hint": "下挂元素切换需选择相关部件后才会显示",
-      "need_elem1": "需先选择元素1"
+      "roll_options": "随机生成设置",
+      "roll_results": "随机生成结果",
+      "available_only": "只显示当前可用项",
+      "attribute_hint": "只有当前配件支持时，才展开“第二元素”；只有珠光稀有度时，才展开“珠光属性 / 珠光元素”。"
     },
     "dialogs": {
       "error_title": "错误",
@@ -857,7 +894,15 @@
       "file_not_found": "一个或多个武器CSV文件路径未能找到。",
       "loc_file_error": "'weapon_localization_zh-CN.json' 文件加载失败。",
       "no_serial_title": "无序列号",
-      "gen_first": "请先生成一个武器。"
+      "gen_first": "请先生成一个武器。",
+      "no_legal_result": "当前条件下未找到合法构建。",
+      "roll_failed": "随机生成失败：{error}",
+      "roll_running": "正在生成合法构建…",
+      "roll_scope_tip": "可指定筛选条件，保留随机则从全部合法构建中抽取；不模拟游戏掉落权重。",
+      "roll_add_start": "正在加入 {count} 件物品…",
+      "roll_add_progress": "正在加入 {current}/{total} · 成功 {success} · 失败 {fail}",
+      "roll_add_done": "已加入 {success} 件，失败 {fail} 件",
+      "base85_copied": "已复制 Base85"
     }
   },
   "grenade_tab": {

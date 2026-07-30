@@ -753,6 +753,7 @@
     "taxonomy": {
       "body": "Body",
       "body_accessory": "Body Accessory",
+      "body_mechanism": "Body Mechanism",
       "barrel": "Barrel",
       "barrel_accessory": "Barrel Accessory",
       "manufacturer_part": "Manufacturer Part",
@@ -834,12 +835,46 @@
       "serial_b85": "Base85:",
       "manufacturer": "Manufacturer",
       "weapon_type": "Weapon Type",
+      "build_status": "Build Status",
+      "generator_page": "Main Generator",
+      "results_page": "Random Results",
+      "random": "Random",
+      "rarity": "Rarity",
+      "named_weapon": "Named Weapon",
+      "quantity": "Quantity",
+      "name": "Name",
+      "weapon": "Manufacturer / Type",
+      "element": "Element",
+      "main_element": "Main Element",
+      "secondary_element": "Secondary Element",
+      "status": "Status",
+      "matches": "{count} matches",
+      "no_matches": "No matches",
+      "selected_count": "Selected {count} / {total}",
+      "double_click": "Double-click a row to add it",
+      "current_context": "Uses the current level and Flag",
+      "generated": "Generated {count} legal weapons",
+      "no_results": "No generated weapons yet",
+      "select_result": "Select a weapon from the list",
+      "no_element": "No Element",
+      "level_value": "Lv{level}",
+      "legal": "Legal",
+      "scope_template": "Manufacturer: {manufacturer} · Type: {weapon_type} · Rarity: {rarity}",
       "level": "Level",
       "seed": "Seed",
-      "select_flag": "Select Flag:"
+      "select_flag": "Select Flag:",
+      "Body Mechanism": "Body Mechanism"
     },
     "buttons": {
-      "add_to_backpack": "Add to Backpack"
+      "add_to_backpack": "Add to Backpack",
+      "lucky": "I'm Feeling Lucky",
+      "roll": "Roll",
+      "add_one": "Add This",
+      "copy_base85": "Copy Base85",
+      "add_selected": "Add Selected",
+      "add_all": "Add All",
+      "cancel": "Cancel",
+      "close": "Close"
     },
     "sections": {
       "config": "Weapon Config",
@@ -848,8 +883,10 @@
       "multi": "Multi",
       "pearl_stat": "Pearl Stat",
       "pearl_elements": "Pearl Elements",
-      "elem2_hint": "Underbarrel element switch appears after selecting the related part.",
-      "need_elem1": "Select Element 1 first"
+      "roll_options": "Roll Options",
+      "roll_results": "Roll Results",
+      "available_only": "Available options only",
+      "attribute_hint": "Secondary elements appear only when supported; Pearl fields appear only for Pearl rarity."
     },
     "dialogs": {
       "error_title": "Error",
@@ -857,7 +894,15 @@
       "file_not_found": "One or more weapon CSV file paths not found.",
       "loc_file_error": "'weapon_localization_zh-CN.json' failed to load.",
       "no_serial_title": "No Serial",
-      "gen_first": "Please generate a weapon first."
+      "gen_first": "Please generate a weapon first.",
+      "no_legal_result": "No legal build matches the selected filters.",
+      "roll_failed": "Roll failed: {error}",
+      "roll_running": "Generating legal builds…",
+      "roll_scope_tip": "Set filters or leave them Random; native drop weights are not simulated.",
+      "roll_add_start": "Adding {count} item(s)…",
+      "roll_add_progress": "Adding {current}/{total} · success {success} · failed {fail}",
+      "roll_add_done": "Added {success}; failed {fail}",
+      "base85_copied": "Base85 copied"
     }
   },
   "grenade_tab": {

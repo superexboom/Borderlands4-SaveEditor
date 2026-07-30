@@ -2,13 +2,16 @@ import random
 import pandas as pd
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit,
-    QComboBox, QPushButton, QMessageBox, QScrollArea, QFrame, QGroupBox,
-    QSizePolicy, QButtonGroup
+    QComboBox, QPushButton, QMessageBox, QScrollArea, QFrame,
+    QSizePolicy, QButtonGroup, QToolButton, QApplication, QStackedWidget,
+    QMenu, QWidgetAction
 )
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6.QtGui import QColor
 
 from core import b_encoder, item_display_resolver, resource_loader
+from core.weapon_generation_logic import sample_composition_parts
+from .qt_weapon_roll_dialog import WeaponRollOptionsWidget, WeaponRollResultsPage
 
 
 class NoScrollComboBox(QComboBox):
@@ -27,23 +30,41 @@ class NoScrollComboBox(QComboBox):
             event.ignore()
 
 
+class ElidedChipButton(QPushButton):
+    """Chip text stays inside its grid cell; the full value remains in the tooltip."""
+
+    def __init__(self, text, parent=None):
+        super().__init__(parent)
+        self._full_text = str(text)
+
+    def resizeEvent(self, event):
+        available = max(12, event.size().width() - 24)
+        text = "\n".join(
+            self.fontMetrics().elidedText(line, Qt.TextElideMode.ElideRight, available)
+            for line in self._full_text.splitlines() or [self._full_text]
+        )
+        if text != self.text():
+            self.setText(text)
+        super().resizeEvent(event)
+
+
 class ElementChipSelector(QWidget):
     """单选芯片组：把固定的小选项集渲染成一排可点选的圆角芯片（含 None）。
     对外暴露与 QComboBox 兼容的 currentText()，方便沿用既有生成逻辑。"""
 
     changed = pyqtSignal()
-    _COLUMNS = 3
-
-    def __init__(self, none_text, parent=None):
+    def __init__(self, none_text, parent=None, columns=3):
         super().__init__(parent)
         self._none_text = none_text
+        self._columns = max(1, int(columns))
         self._group = QButtonGroup(self)
         self._group.setExclusive(True)
         self._grid = QGridLayout(self)
         self._grid.setContentsMargins(0, 0, 0, 0)
         self._grid.setHorizontalSpacing(6)
         self._grid.setVerticalSpacing(6)
-        self._grid.setColumnStretch(self._COLUMNS, 1)
+        for column in range(self._columns):
+            self._grid.setColumnStretch(column, 1)
         self._building = False
         self._group.buttonToggled.connect(self._on_toggled)
         self.set_values([])
@@ -73,18 +94,19 @@ class ElementChipSelector(QWidget):
         self._clear()
         all_values = [self._none_text] + list(values)
         for i, v in enumerate(all_values):
-            btn = QPushButton(self._label_of(v))
+            btn = ElidedChipButton(self._label_of(v))
             btn.setObjectName("elemChip")
             btn.setCheckable(True)
             btn.setCursor(Qt.CursorShape.PointingHandCursor)
             btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-            btn.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
+            btn.setMinimumWidth(0)
+            btn.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
             lines = btn.text().count("\n") + 1
             btn.setMinimumHeight(max(28, lines * btn.fontMetrics().lineSpacing() + 12))
             btn.setProperty("chipValue", v)
             btn.setToolTip(v)
             self._group.addButton(btn)
-            self._grid.addWidget(btn, i // self._COLUMNS, i % self._COLUMNS)
+            self._grid.addWidget(btn, i // self._columns, i % self._columns)
         self._building = False
         target = prev if prev in all_values else self._none_text
         self.set_current_text(target, silent=True)
@@ -121,6 +143,7 @@ class QtWeaponGeneratorTab(QWidget):
     # 自定义信号，当用户点击“添加到背包”时发射
     # 参数： serial (str), flag (str)
     add_to_backpack_requested = pyqtSignal(str, str)
+    batch_add_to_backpack_requested = pyqtSignal(list, str)
 
     _NONE_VALUE = "None"
     RARITY_ORDER = ("Common", "Uncommon", "Rare", "Epic", "Legendary", "Pearl")
@@ -129,24 +152,25 @@ class QtWeaponGeneratorTab(QWidget):
     _PURE_ELEMENTS = {"Corrosive", "Cryo", "Fire", "Radiation", "Shock"}
     _ELEM_KEYWORDS = ["Shock", "Radiation", "Incendiary", "Cryo", "Corrosive"]
 
-    # 属性卡片内的布局：元素1 → 珠光属性 → 珠光元素 → 元素2
+    # 属性卡片内的布局：稀有度、普通元素、珠光覆盖各自成行。
     ATTR_LAYOUT = {
         "Rarity": (0, 0), "Legendary Type": (0, 1), "Pearl Type": (0, 1),
-        "Element 1": (1, 0), "Pearl Stat": (1, 1),
-        "Pearl Elements": (2, 0), "Element 2": (2, 1),
+        "Element 1": (1, 0), "Element 2": (2, 0),
     }
+    PEARL_LAYOUT = {"Pearl Stat": (0, 0), "Pearl Elements": (0, 1)}
 
     # 部件容器内的布局：按武器结构顺序，主件在左、其附件/相关件在右
     PART_LAYOUT = {
-        "Body": (0, 0), "Body Accessory": (0, 1),
-        "Barrel": (1, 0), "Barrel Accessory": (1, 1),
-        "Magazine": (2, 0), "Magazine Accessory": (2, 1),
-        "Grip": (3, 0), "Foregrip": (3, 1),
-        "Scope": (4, 0), "Scope Accessory": (4, 1),
-        "Underbarrel": (5, 0), "Underbarrel Accessory": (5, 1),
-        "Manufacturer Part": (6, 0), "Tediore Payload": (6, 1),
-        "Tediore Throw Reload": (7, 0), "Borg Magazine Adapter": (7, 1),
-        "Special Element Set": (8, 0), "Stat Modifier": (8, 1),
+        "Body": (0, 0), "Body Mechanism": (0, 1),
+        "Body Accessory": (1, 0),
+        "Barrel": (2, 0), "Barrel Accessory": (2, 1),
+        "Magazine": (3, 0), "Magazine Accessory": (3, 1),
+        "Grip": (4, 0), "Foregrip": (4, 1),
+        "Scope": (5, 0), "Scope Accessory": (5, 1),
+        "Underbarrel": (6, 0), "Underbarrel Accessory": (6, 1),
+        "Manufacturer Part": (7, 0), "Tediore Payload": (7, 1),
+        "Tediore Throw Reload": (8, 0), "Borg Magazine Adapter": (8, 1),
+        "Special Element Set": (9, 0), "Stat Modifier": (9, 1),
     }
     CONDITIONAL_PART_TYPES = {"Tediore Throw Reload", "Borg Magazine Adapter", "Special Element Set"}
     MULTI_SELECT_SLOTS = {
@@ -158,8 +182,8 @@ class QtWeaponGeneratorTab(QWidget):
     _SECTION_FALLBACKS = {
         'config': 'Weapon Config', 'attributes': 'Rarity / Elements', 'parts': 'Weapon Parts', 'multi': 'Multi',
         'pearl_stat': 'Pearl Stat', 'pearl_elements': 'Pearl Elements',
-        'elem2_hint': 'Underbarrel element switch appears after selecting the related part.',
-        'need_elem1': 'Select Element 1 first',
+        'available_only': 'Only current options are shown',
+        'attribute_hint': 'Secondary and Pearl fields appear only when the current build supports them.',
     }
 
     def __init__(self, parent=None):
@@ -168,14 +192,24 @@ class QtWeaponGeneratorTab(QWidget):
         self.elemental_df = None
         self.weapon_rarity_df = None
         self.weapon_localization = None
+        self.weapon_taxonomy = {}
+        self.item_index = {}
+        self.weapon_rules = {}
         self.part_combos = {}
         self.part_combo_rows = {}
         self.part_group_boxes = {}
+        self.part_title_labels = {}
         self.part_detail_labels = {}
         self.part_rule_badges = {}
+        self.element_frames = {}
+        self.element2_frame = None
         self.generation_rule_badge = None
         self.legendary_frame = None # Initialize to None
-        self.elem2_hint = None
+        self._roll_menu = None
+        self._roll_options_widget = None
+        self._roll_constraints = {}
+        self._roll_count = 5
+        self._roll_add_busy = False
         self.current_lang = 'zh-CN'
         self._character_level = "50"
         
@@ -193,6 +227,7 @@ class QtWeaponGeneratorTab(QWidget):
         self.ui_loc = full_loc.get("weapon_gen_tab", {})
         self.weapon_rule_loc = full_loc.get("weapon_rules", {})
         self.stats_loc = full_loc.get("weapon_editor_tab", {}).get("stats", {})
+        self.weapon_taxonomy = full_loc.get("weapon_editor_tab", {}).get("taxonomy", {})
         try:
             suffix = "_EN" if lang in ['en-US', 'ru', 'ua'] else ""
             
@@ -229,6 +264,8 @@ class QtWeaponGeneratorTab(QWidget):
             self.elemental_stat_col = 'Stat_ZH' if lang == 'zh-CN' else 'Stat'
             self.weapon_rarity_df = pd.read_csv(paths["rarity"])
             self.rarity_desc_col = 'Description_ZH' if lang == 'zh-CN' else 'Description'
+            self.item_index = resource_loader.load_item_json('item_name_index.json') or {}
+            self.weapon_rules = self.item_index.get('weapon_generation_rules') or {}
             
             self.weapon_localization = {}
             if lang == 'zh-CN':
@@ -253,10 +290,12 @@ class QtWeaponGeneratorTab(QWidget):
         self.part_combos = {}
         self.part_combo_rows = {}
         self.part_group_boxes = {}
+        self.part_title_labels = {}
         self.part_detail_labels = {}
         self.part_rule_badges = {}
+        self.element_frames = {}
+        self.element2_frame = None
         self.legendary_frame = None
-        self.elem2_hint = None
         
         self.create_widgets()
         
@@ -308,10 +347,39 @@ class QtWeaponGeneratorTab(QWidget):
 
         # Create new content widget
         self.content_widget = QWidget()
-        main_layout = QVBoxLayout(self.content_widget)
-        main_layout.setContentsMargins(8, 8, 8, 8)
-        main_layout.setSpacing(10)
+        shell_layout = QVBoxLayout(self.content_widget)
+        shell_layout.setContentsMargins(8, 8, 8, 8)
+        shell_layout.setSpacing(10)
         self.main_layout.addWidget(self.content_widget)
+
+        page_nav = QHBoxLayout()
+        page_nav.setSpacing(8)
+        self.generator_page_button = QPushButton(self.get_localized_string("generator_page", "Main Generator"))
+        self.roll_results_button = QPushButton(self.get_localized_string("results_page", "Random Results"))
+        self.page_button_group = QButtonGroup(self.content_widget)
+        self.page_button_group.setExclusive(True)
+        for index, button in enumerate((self.generator_page_button, self.roll_results_button)):
+            button.setObjectName("genPageTab")
+            button.setCheckable(True)
+            self.page_button_group.addButton(button, index)
+            page_nav.addWidget(button)
+        page_nav.addStretch()
+        shell_layout.addLayout(page_nav)
+
+        self.page_stack = QStackedWidget()
+        self.page_stack.setObjectName("genPageStack")
+        self.generator_page = QWidget()
+        generator_layout = QVBoxLayout(self.generator_page)
+        generator_layout.setContentsMargins(0, 0, 0, 0)
+        generator_layout.setSpacing(10)
+        self.roll_results_page = WeaponRollResultsPage(texts=self._roll_texts())
+        self.roll_results_page.add_requested.connect(self._request_roll_add)
+        self.roll_results_page.close_requested.connect(lambda: self._set_workspace_page(0))
+        self.page_stack.addWidget(self.generator_page)
+        self.page_stack.addWidget(self.roll_results_page)
+        shell_layout.addWidget(self.page_stack, 1)
+        self.page_button_group.idClicked.connect(self._set_workspace_page)
+        self._set_workspace_page(0)
 
         # --- 输出框（序列展示，保持不动） ---
         output_frame = QFrame(self.content_widget); output_frame.setLayout(QGridLayout())
@@ -321,7 +389,7 @@ class QtWeaponGeneratorTab(QWidget):
         output_frame.layout().addWidget(self.serial_decoded_entry, 0, 1)
         output_frame.layout().addWidget(QLabel(self.get_localized_string("serial_b85")), 1, 0)
         output_frame.layout().addWidget(self.serial_b85_entry, 1, 1)
-        main_layout.addWidget(output_frame)
+        generator_layout.addWidget(output_frame)
 
         # --- 配置卡片（固定在滚动区之外）：厂商 / 武器类型 / 等级 / 种子 ---
         config_card = QFrame(self.content_widget)
@@ -329,7 +397,30 @@ class QtWeaponGeneratorTab(QWidget):
         config_v = QVBoxLayout(config_card)
         config_v.setContentsMargins(14, 12, 14, 12)
         config_v.setSpacing(8)
-        config_v.addWidget(self._make_section_title(self._section_text('config')))
+        config_header = QHBoxLayout()
+        config_header.addWidget(self._make_section_title(self._section_text('config')))
+        config_header.addStretch()
+        self.lucky_button = QToolButton()
+        self.lucky_button.setObjectName("genLuckyButton")
+        lucky_text = self.get_localized_string("lucky", "I'm Feeling Lucky")
+        self.lucky_button.setText(f"🎲 {lucky_text}")
+        self.lucky_button.setToolTip(self.ui_loc.get('dialogs', {}).get(
+            'roll_scope_tip', 'Generate structurally legal builds; native drop weights are not simulated.'
+        ))
+        self.lucky_button.setPopupMode(QToolButton.ToolButtonPopupMode.MenuButtonPopup)
+        self._roll_menu = QMenu(self.lucky_button)
+        self._roll_options_widget = WeaponRollOptionsWidget(
+            self._weapon_roll_catalog(), texts=self._roll_texts(),
+            constraints=self._roll_constraints, count=self._roll_count,
+        )
+        self._roll_options_widget.roll_requested.connect(self._roll_from_menu)
+        roll_options_action = QWidgetAction(self._roll_menu)
+        roll_options_action.setDefaultWidget(self._roll_options_widget)
+        self._roll_menu.addAction(roll_options_action)
+        self.lucky_button.setMenu(self._roll_menu)
+        self.lucky_button.clicked.connect(self._quick_roll)
+        config_header.addWidget(self.lucky_button)
+        config_v.addLayout(config_header)
 
         config_grid = QGridLayout()
         config_grid.setHorizontalSpacing(14)
@@ -376,7 +467,7 @@ class QtWeaponGeneratorTab(QWidget):
         config_grid.setColumnStretch(3, 2)
         config_grid.setColumnStretch(4, 2)
         config_v.addLayout(config_grid)
-        main_layout.addWidget(config_card)
+        generator_layout.addWidget(config_card)
 
         stats_frame = QFrame()
         stats_frame.setObjectName("InnerFrame")
@@ -395,7 +486,18 @@ class QtWeaponGeneratorTab(QWidget):
             stats_layout.addWidget(value, row * 2 + 1, column)
             stats_layout.setColumnStretch(column, 1)
             self.weapon_stat_value_labels[key] = value
-        main_layout.addWidget(stats_frame)
+        status_index = len(item_display_resolver.WEAPON_STAT_KEYS)
+        status_row, status_column = divmod(status_index, 4)
+        status_title = QLabel(self.get_localized_string("build_status", "Build Status"))
+        status_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.generation_rule_badge = QLabel("—")
+        self.generation_rule_badge.setObjectName("genBuildStatus")
+        self.generation_rule_badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.generation_rule_badge.setMinimumWidth(72)
+        stats_layout.addWidget(status_title, status_row * 2, status_column)
+        stats_layout.addWidget(self.generation_rule_badge, status_row * 2 + 1, status_column)
+        stats_layout.setColumnStretch(status_column, 1)
+        generator_layout.addWidget(stats_frame)
 
         # --- 滚动区：属性卡片 + 部件容器 ---
         self.parts_scroll_area = QScrollArea()
@@ -411,34 +513,52 @@ class QtWeaponGeneratorTab(QWidget):
         attr_v = QVBoxLayout(attr_card)
         attr_v.setContentsMargins(14, 12, 14, 12)
         attr_v.setSpacing(8)
-        attr_v.addWidget(self._make_section_title(self._section_text('attributes')))
+        attr_header = QHBoxLayout()
+        attr_header.addWidget(self._make_section_title(self._section_text('attributes')))
+        attr_header.addStretch()
+        available_hint = QLabel(self._section_text('available_only'))
+        available_hint.setObjectName("genHeaderHint")
+        attr_header.addWidget(available_hint)
+        attr_v.addLayout(attr_header)
         attr_grid_holder = QWidget()
         self.attr_layout = QGridLayout(attr_grid_holder)
         self.attr_layout.setContentsMargins(0, 0, 0, 0)
         self.attr_layout.setHorizontalSpacing(12)
-        self.attr_layout.setVerticalSpacing(10)
+        self.attr_layout.setVerticalSpacing(8)
+        self.attr_layout.setColumnStretch(0, 2)
+        self.attr_layout.setColumnStretch(1, 3)
         attr_v.addWidget(attr_grid_holder)
+        self.pearl_settings_frame = QFrame()
+        self.pearl_settings_frame.setObjectName("genPearlSettings")
+        self.pearl_layout = QGridLayout(self.pearl_settings_frame)
+        self.pearl_layout.setContentsMargins(0, 0, 0, 0)
+        self.pearl_layout.setHorizontalSpacing(12)
+        self.pearl_layout.setVerticalSpacing(8)
+        self.pearl_layout.setColumnStretch(0, 1)
+        self.pearl_layout.setColumnStretch(1, 1)
+        attr_v.addWidget(self.pearl_settings_frame)
+        self._set_pearl_expanded(False)
+        divider = QFrame()
+        divider.setObjectName("genAttrDivider")
+        divider.setFrameShape(QFrame.Shape.HLine)
+        attr_v.addWidget(divider)
+        attr_hint = QLabel(self._section_text('attribute_hint'))
+        attr_hint.setObjectName("genHint")
+        attr_hint.setWordWrap(True)
+        attr_v.addWidget(attr_hint)
         scroll_layout.addWidget(attr_card)
 
         # 部件容器
         parts_card = QFrame()
         parts_card.setObjectName("genPartsContainer")
         parts_v = QVBoxLayout(parts_card)
-        parts_v.setContentsMargins(14, 12, 14, 12)
-        parts_v.setSpacing(8)
-        parts_header = QHBoxLayout()
-        parts_header.addWidget(self._make_section_title(self._section_text('parts')))
-        parts_header.addStretch()
-        self.generation_rule_badge = QLabel()
-        self.generation_rule_badge.setObjectName("multiBadge")
-        self.generation_rule_badge.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
-        parts_header.addWidget(self.generation_rule_badge)
-        parts_v.addLayout(parts_header)
+        parts_v.setContentsMargins(0, 0, 0, 0)
+        parts_v.setSpacing(4)
         self.parts_frame = QWidget()
         self.parts_layout = QGridLayout(self.parts_frame)
         self.parts_layout.setContentsMargins(0, 0, 0, 0)
         self.parts_layout.setHorizontalSpacing(12)
-        self.parts_layout.setVerticalSpacing(10)
+        self.parts_layout.setVerticalSpacing(6)
         self.parts_layout.setColumnStretch(0, 1)
         self.parts_layout.setColumnStretch(1, 1)
         parts_v.addWidget(self.parts_frame)
@@ -446,7 +566,7 @@ class QtWeaponGeneratorTab(QWidget):
         scroll_layout.addStretch()
 
         self.parts_scroll_area.setWidget(scroll_content)
-        main_layout.addWidget(self.parts_scroll_area, 1)
+        generator_layout.addWidget(self.parts_scroll_area, 1)
 
         # --- 连接信号 ---
         self.manufacturer_combo.currentTextChanged.connect(self.on_main_selection_change)
@@ -509,16 +629,19 @@ class QtWeaponGeneratorTab(QWidget):
     def _create_part_dropdowns(self):
         # 清理旧的 widgets（属性卡片 + 部件容器）
         self._clear_layout(self.attr_layout)
+        self._clear_layout(self.pearl_layout)
         self._clear_layout(self.parts_layout)
         self.part_combos = {}
         self.part_combo_rows = {}
         self.part_group_boxes = {}
+        self.part_title_labels = {}
         self.part_detail_labels = {}
         self.part_rule_badges = {}
+        self.element_frames = {}
+        self.element2_frame = None
         # IMPORTANT: Clear reference to the deleted widget to prevent crash if signal handlers traverse it
         self.legendary_frame = None
         self.pearl_frame = None
-        self.elem2_hint = None
         
         selected_mfg_en = self._get_english_key(self.manufacturer_combo.currentText())
         selected_wt_en = self._get_english_key(self.weapon_type_combo.currentText())
@@ -532,9 +655,9 @@ class QtWeaponGeneratorTab(QWidget):
 
         # 元素 / 珠光：芯片单选。顺序：元素1 → 珠光属性 → 珠光元素 → 元素2
         self._create_element_selector("Element 1", self.ATTR_LAYOUT["Element 1"])
-        self._create_pearl_selector("Pearl Stat", self.ATTR_LAYOUT["Pearl Stat"])
-        self._create_pearl_selector("Pearl Elements", self.ATTR_LAYOUT["Pearl Elements"])
         self._create_element_selector("Element 2", self.ATTR_LAYOUT["Element 2"])
+        self._create_pearl_selector("Pearl Stat", self.PEARL_LAYOUT["Pearl Stat"])
+        self._create_pearl_selector("Pearl Elements", self.PEARL_LAYOUT["Pearl Elements"])
 
         filtered_df = self.all_weapon_parts_df[self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == m_id]
         for part_type_en, group_df in filtered_df.groupby('Part Type'):
@@ -542,16 +665,30 @@ class QtWeaponGeneratorTab(QWidget):
             
             row, col = self.PART_LAYOUT[part_type_en]
             
-            group_box = QGroupBox(self.get_localized_string(part_type_en))
+            group_box = QFrame()
+            group_box.setObjectName("genPartGroup")
+            group_box.setProperty("partType", part_type_en)
             group_box.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
             group_layout = QVBoxLayout(group_box)
+            group_layout.setContentsMargins(0, 2, 0, 6)
+            group_layout.setSpacing(5)
             self.part_group_boxes[part_type_en] = group_box
 
+            header = QHBoxLayout()
+            header.setContentsMargins(0, 0, 0, 0)
+            title = QLabel(self.get_localized_string(part_type_en))
+            title.setObjectName("genPartTitle")
+            title.setProperty("partType", part_type_en)
+            header.addWidget(title)
+            header.addStretch()
             num_slots = self.MULTI_SELECT_SLOTS.get(part_type_en, 1)
-            badge = QLabel(f"{self._section_text('multi')} ×{num_slots}" if num_slots > 1 else "—")
+            badge = QLabel("—")
             badge.setObjectName("multiBadge")
             badge.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
-            group_layout.addWidget(badge, 0, Qt.AlignmentFlag.AlignLeft)
+            badge.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+            header.addWidget(badge)
+            group_layout.addLayout(header)
+            self.part_title_labels[part_type_en] = title
             self.part_rule_badges[part_type_en] = badge
 
             for i in range(num_slots):
@@ -576,6 +713,7 @@ class QtWeaponGeneratorTab(QWidget):
                 detail = QLabel()
                 detail.setObjectName("genPartDetail")
                 detail.setWordWrap(True)
+                detail.setMaximumHeight(detail.fontMetrics().lineSpacing() * 2 + 8)
                 detail.hide()
                 self.part_detail_labels[combo_key] = detail
                 group_layout.addWidget(detail)
@@ -585,6 +723,9 @@ class QtWeaponGeneratorTab(QWidget):
         # 部件建好后，依据元素1 / 下挂初始化元素2 的可选项
         self._refresh_conditional_part_options()
         self._refresh_element2()
+        rarity_combo = self.part_combos.get("Rarity")
+        rarity = self._get_english_key(rarity_combo.currentText()) if rarity_combo else ""
+        self._sync_pearl_visibility(rarity)
         self.generate_weapon()
 
     def _part_option_text(self, item_id, part_id, row, decoded_str=""):
@@ -623,15 +764,13 @@ class QtWeaponGeneratorTab(QWidget):
                     combo.setItemData(index, QColor("#F59E0B"), Qt.ItemDataRole.BackgroundRole)
                     combo.setItemData(index, QColor("#1C1917"), Qt.ItemDataRole.ForegroundRole)
 
-    def _set_part_group_rule_title(self, part_type, current, legal_range):
-        group = self.part_group_boxes.get(part_type)
-        if group is None:
-            return
-        suffix = self._rule_message(
-            "current_legal", "当前{current}/合法{range}", "{current}/{range}",
-            current=current, range=legal_range,
-        )
-        group.setTitle(f"{self.get_localized_string(part_type)} ({suffix})")
+    def _set_part_group_rule_title(self, part_type, current, legal_range, shared=False):
+        title = self.part_title_labels.get(part_type)
+        if title is not None:
+            title.setText(self.get_localized_string(part_type))
+        badge = self.part_rule_badges.get(part_type)
+        if badge is not None:
+            badge.setProperty("shared", bool(shared))
 
     def _selected_part_adds(self, item_id):
         adds = set()
@@ -695,8 +834,10 @@ class QtWeaponGeneratorTab(QWidget):
                     str(matches.iloc[0]['Part Type']) if not matches.empty else "",
                 )
                 detail.setText(description)
+                detail.setToolTip(description)
                 detail.setVisible(bool(description))
             elif detail is not None:
+                detail.setToolTip("")
                 detail.hide()
 
     def _rule_message(self, key, zh, en, **fmt):
@@ -776,9 +917,10 @@ class QtWeaponGeneratorTab(QWidget):
         status = str(result.get("status") or "unknown")
         status_key, status_zh, status_en = status_labels.get(status, status_labels["unknown"])
         status_text = self._rule_message(status_key, status_zh, status_en)
-        self.generation_rule_badge.setText(self._rule_message(
-            "rule_prefix", "规则：{status}", "Rules: {status}", status=status_text,
-        ))
+        self.generation_rule_badge.setText(status_text)
+        self.generation_rule_badge.setProperty("ruleStatus", status)
+        self.generation_rule_badge.style().unpolish(self.generation_rule_badge)
+        self.generation_rule_badge.style().polish(self.generation_rule_badge)
         violations = [
             self._rule_violation_text(item)
             for item in result.get("violations", [])
@@ -792,6 +934,25 @@ class QtWeaponGeneratorTab(QWidget):
         rules_ready = bool(result.get("rules_available") and result.get("composition_ref"))
         groups = result.get("groups") or {}
         item_id = self._current_m_id()
+        display_matches = {}
+        group_categories = {}
+        if rules_ready and item_id is not None:
+            for part_type in self.part_rule_badges:
+                rows = self.part_combo_rows.get(f"{part_type}_0")
+                candidate_refs = {
+                    f"{item_id}:{part_id}"
+                    for part_id in (rows['Part ID'].tolist() if rows is not None else [])
+                    if str(part_id)
+                }
+                matched_groups = [
+                    group
+                    for group, group_rule in groups.items()
+                    if (set(group_rule.get("allowed") or []) | set(group_rule.get("selected") or [])) & candidate_refs
+                ]
+                display_matches[part_type] = (rows, candidate_refs, matched_groups)
+                for group in matched_groups:
+                    group_categories.setdefault(group, set()).add(part_type)
+
         for part_type, badge in self.part_rule_badges.items():
             current = self._selected_ui_part_count(part_type)
             if not rules_ready or item_id is None:
@@ -803,19 +964,9 @@ class QtWeaponGeneratorTab(QWidget):
                 self._apply_part_rule_colors(part_type, item_id)
                 continue
 
-            rows = self.part_combo_rows.get(f"{part_type}_0")
-            candidate_refs = {
-                f"{item_id}:{part_id}"
-                for part_id in (rows['Part ID'].tolist() if rows is not None else [])
-                if str(part_id)
-            }
-            matched = []
-            for group_rule in groups.values():
-                known = set(group_rule.get("allowed") or []) | set(group_rule.get("selected") or [])
-                if known & candidate_refs:
-                    matched.append(group_rule)
+            rows, candidate_refs, matched_groups = display_matches.get(part_type, (None, set(), []))
 
-            if not matched:
+            if not matched_groups:
                 badge.setText(f"{current} / —")
                 badge.setToolTip(self._rule_message(
                     "no_group_rule", "该显示分组没有独立生成规则", "No separate generation rule for this display group"
@@ -824,22 +975,29 @@ class QtWeaponGeneratorTab(QWidget):
                 self._apply_part_rule_colors(part_type, item_id)
                 continue
 
-            active = [
-                group_rule for group_rule in matched
-                if set(group_rule.get("eligible_refs") or []) & candidate_refs
-                or set(group_rule.get("selected") or []) & candidate_refs
-            ]
-            legal_min = sum(int(group_rule.get("min", 0)) for group_rule in active)
-            legal_max = sum(int(group_rule.get("max", 0)) for group_rule in active)
+            matched = [groups[group] for group in matched_groups]
+            current = sum(len(group_rule.get("selected") or []) for group_rule in matched)
+            shared = any(len(group_categories.get(group, ())) > 1 for group in matched_groups)
+            legal_min = sum(int(group_rule.get("effective_min", 0)) for group_rule in matched)
+            legal_max = sum(int(group_rule.get("effective_max", 0)) for group_rule in matched)
             legal_range = str(legal_min) if legal_min == legal_max else f"{legal_min}–{legal_max}"
-            badge.setText(f"{current} / {legal_range}")
-            self._set_part_group_rule_title(part_type, current, legal_range)
+            badge.setText(self._rule_message(
+                "shared_current_legal" if shared else "current_legal",
+                "共享配额 当前{current}/合法{range}" if shared else "当前{current}/合法{range}",
+                "shared {current}/{range}" if shared else "{current}/{range}",
+                current=current, range=legal_range,
+            ))
+            self._set_part_group_rule_title(part_type, current, legal_range, shared)
 
             eligible = sorted({
                 ref
-                for group_rule in active
+                for group_rule in matched
                 for ref in group_rule.get("eligible_refs") or []
                 if ref in candidate_refs
+                and (
+                    len(group_rule.get("selected") or []) < int(group_rule.get("effective_max", 1))
+                    or ref in set(group_rule.get("selected") or [])
+                )
             }, key=lambda ref: tuple(map(int, ref.split(":"))))
             allowed = {
                 ref
@@ -864,12 +1022,20 @@ class QtWeaponGeneratorTab(QWidget):
 
     def _create_special_dropdown(self, name, m_id, position):
         row, col = position
-        
-        group_box = QGroupBox(self.get_localized_string(name.replace(" ", ""), name))
-        group_layout = QVBoxLayout(group_box)
-        
-        if name == "Legendary Type": self.legendary_frame = group_box
-        if name == "Pearl Type": self.pearl_frame = group_box
+
+        field = QFrame()
+        field.setObjectName("genAttrField")
+        field.setProperty("attributeType", name)
+        field_layout = QVBoxLayout(field)
+        field_layout.setContentsMargins(0, 0, 0, 0)
+        field_layout.setSpacing(4)
+        label_key = "rarity" if name == "Rarity" else "named_weapon"
+        label = QLabel(self.get_localized_string(label_key, name))
+        label.setObjectName("genAttrLabel")
+        field_layout.addWidget(label)
+
+        if name == "Legendary Type": self.legendary_frame = field
+        if name == "Pearl Type": self.pearl_frame = field
 
         combo = NoScrollComboBox()
         
@@ -904,10 +1070,10 @@ class QtWeaponGeneratorTab(QWidget):
         else:
              combo.currentTextChanged.connect(self.generate_weapon)
         
-        group_layout.addWidget(combo)
-        self.attr_layout.addWidget(group_box, row, col, Qt.AlignmentFlag.AlignTop)
+        field_layout.addWidget(combo)
+        self.attr_layout.addWidget(field, row, col, Qt.AlignmentFlag.AlignTop)
         
-        if name in {"Legendary Type", "Pearl Type"}: group_box.hide()
+        if name in {"Legendary Type", "Pearl Type"}: field.hide()
 
     # ------------------------------------------------------------------ #
     # 元素数据分类工具
@@ -1005,15 +1171,13 @@ class QtWeaponGeneratorTab(QWidget):
         elem_name = self._element_name_of_selection(elem1_val)
 
         if elem_name is None:
-            # 元素1 未选：元素2 置灰，只有 None，并提示先选元素1
             elem2.set_values([])
             elem2.setEnabled(False)
-            if self.elem2_hint is not None:
-                self.elem2_hint.setText(self._section_text('need_elem1'))
+            if self.element2_frame is not None:
+                self.element2_frame.hide()
             self.generate_weapon()
             return
 
-        elem2.setEnabled(True)
         values = []
         for r in self._normal_switch_rows():
             if self._switch_first_element(str(r['Stat'])) == elem_name:
@@ -1024,8 +1188,9 @@ class QtWeaponGeneratorTab(QWidget):
                     values.append(self._fmt_elem_value(r))
 
         elem2.set_values(values)  # 保留原选择；若失效则自动回退 None
-        if self.elem2_hint is not None:
-            self.elem2_hint.setText(self._section_text('elem2_hint'))
+        elem2.setEnabled(bool(values))
+        if self.element2_frame is not None:
+            self.element2_frame.setVisible(bool(values))
         self.generate_weapon()
 
     def _on_element1_changed(self):
@@ -1033,44 +1198,63 @@ class QtWeaponGeneratorTab(QWidget):
 
     def _create_element_selector(self, name, position):
         row, col = position
-        group_box = QGroupBox(self.get_localized_string(name.replace(" ", "")))
-        group_layout = QVBoxLayout(group_box)
+        frame = QFrame()
+        frame.setObjectName("genElementRow")
+        frame.setProperty("attributeType", name)
+        row_layout = QHBoxLayout(frame)
+        row_layout.setContentsMargins(0, 0, 0, 0)
+        row_layout.setSpacing(10)
+        label_key = "main_element" if name == "Element 1" else "secondary_element"
+        label = QLabel(self.get_localized_string(label_key, name))
+        label.setObjectName("genAttrLabel")
+        label.setMinimumWidth(64)
+        row_layout.addWidget(label)
 
         none_val = self.get_localized_string(self._NONE_VALUE)
-        selector = ElementChipSelector(none_val)
+        selector = ElementChipSelector(none_val, columns=6 if name == "Element 1" else 4)
+        selector.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.part_combos[name] = selector
+        self.element_frames[name] = frame
 
         if name == "Element 1":
             selector.set_values(self._element1_values())
             selector.changed.connect(self._on_element1_changed)
         else:  # Element 2 的可选项由 _refresh_element2 动态填充
             selector.changed.connect(self.generate_weapon)
+            self.element2_frame = frame
+            frame.hide()
 
-        group_layout.addWidget(selector)
-
-        if name == "Element 2":
-            self.elem2_hint = QLabel(self._section_text('elem2_hint'))
-            self.elem2_hint.setObjectName("genHint")
-            self.elem2_hint.setWordWrap(True)
-            group_layout.addWidget(self.elem2_hint)
-
-        self.attr_layout.addWidget(group_box, row, col, Qt.AlignmentFlag.AlignTop)
+        row_layout.addWidget(selector, 1)
+        self.attr_layout.addWidget(frame, row, col, 1, 2, Qt.AlignmentFlag.AlignTop)
 
     def _create_pearl_selector(self, name, position):
         row, col = position
         title_key = 'pearl_stat' if name == "Pearl Stat" else 'pearl_elements'
-        group_box = QGroupBox(self._section_text(title_key))
-        group_layout = QVBoxLayout(group_box)
+        field = QFrame()
+        field.setObjectName("genAttrField")
+        field.setProperty("attributeType", name)
+        field_layout = QVBoxLayout(field)
+        field_layout.setContentsMargins(0, 0, 0, 0)
+        field_layout.setSpacing(4)
+        label = QLabel(self._section_text(title_key))
+        label.setObjectName("genAttrLabel")
+        field_layout.addWidget(label)
 
         none_val = self.get_localized_string(self._NONE_VALUE)
-        selector = ElementChipSelector(none_val)
+        selector = ElementChipSelector(none_val, columns=3)
         values = self._pearl_stat_values() if name == "Pearl Stat" else self._pearl_element_values()
         selector.set_values(values)
         selector.changed.connect(self.generate_weapon)
         self.part_combos[name] = selector
 
-        group_layout.addWidget(selector)
-        self.attr_layout.addWidget(group_box, row, col, Qt.AlignmentFlag.AlignTop)
+        field_layout.addWidget(selector)
+        self.pearl_layout.addWidget(field, row, col, Qt.AlignmentFlag.AlignTop)
+
+    def _set_pearl_expanded(self, expanded):
+        self.pearl_settings_frame.setVisible(bool(expanded))
+
+    def _sync_pearl_visibility(self, rarity):
+        self._set_pearl_expanded(rarity == "Pearl")
 
     def _on_rarity_change(self, choice):
         selected = self._get_english_key(choice)
@@ -1081,7 +1265,8 @@ class QtWeaponGeneratorTab(QWidget):
                 combo.blockSignals(True)
                 combo.setCurrentIndex(0)
                 combo.blockSignals(False)
-            
+
+        self._sync_pearl_visibility(selected)
         self.generate_weapon()
 
     def _get_english_key(self, localized_value):
@@ -1091,6 +1276,318 @@ class QtWeaponGeneratorTab(QWidget):
 
     def randomize_seed(self):
         self.seed_var.setText(str(random.randint(100, 9999)))
+
+    def _set_workspace_page(self, index):
+        if not hasattr(self, "page_stack"):
+            return
+        index = 1 if int(index) == 1 else 0
+        self.page_stack.setCurrentIndex(index)
+        self.generator_page_button.setChecked(index == 0)
+        self.roll_results_button.setChecked(index == 1)
+
+    def _roll_texts(self):
+        labels = self.ui_loc.get('labels', {})
+        buttons = self.ui_loc.get('buttons', {})
+        sections = self.ui_loc.get('sections', {})
+        return {
+            "constraints_title": sections.get("roll_options", "Roll Options"),
+            "results_title": sections.get("roll_results", "Roll Results"),
+            "manufacturer": labels.get("manufacturer", "Manufacturer"),
+            "weapon_type": labels.get("weapon_type", "Weapon Type"),
+            "rarity": labels.get("rarity", "Rarity"),
+            "named_weapon": labels.get("named_weapon", "Named Weapon"),
+            "count": labels.get("quantity", "Quantity"),
+            "random": labels.get("random", "Random"),
+            "name": labels.get("name", "Name"),
+            "weapon": labels.get("weapon", "Manufacturer / Type"),
+            "element": labels.get("element", "Element"),
+            "matches": labels.get("matches", "Matches: {count}"),
+            "no_matches": labels.get("no_matches", "No matching weapon"),
+            "selected_count": labels.get("selected_count", "Selected {count} / {total}"),
+            "double_click": labels.get("double_click", "Double-click a row to add it"),
+            "current_context": labels.get("current_context", "Uses the current level and Flag"),
+            "generated": labels.get("generated", "Generated {count} legal weapons"),
+            "no_results": labels.get("no_results", "No generated weapons yet"),
+            "select_result": labels.get("select_result", "Select a generated weapon"),
+            "no_element": labels.get("no_element", "No Element"),
+            "level_value": labels.get("level_value", "Lv{level}"),
+            "legal": labels.get("legal", "Legal"),
+            "scope_template": labels.get("scope_template", "Manufacturer: {manufacturer} · Type: {weapon_type} · Rarity: {rarity}"),
+            "roll": buttons.get("roll", "Roll"),
+            "cancel": buttons.get("cancel", "Cancel"),
+            "close": buttons.get("close", "Close"),
+            "add_one": buttons.get("add_one", "Add This"),
+            "copy_base85": buttons.get("copy_base85", "Copy Base85"),
+            "add_selected": buttons.get("add_selected", "Add Selected"),
+            "add_all": buttons.get("add_all", "Add All"),
+            "copied": self.ui_loc.get('dialogs', {}).get("base85_copied", "Base85 copied"),
+            "roll_scope_tip": self.ui_loc.get('dialogs', {}).get("roll_scope_tip", ""),
+            **{key: self.stats_loc.get(key, key) for key in (
+                "damage", "dps", "accuracy", "fire_rate", "reload_time", "magazine"
+            )},
+        }
+
+    def _weapon_roll_catalog(self):
+        catalog = []
+        weapons = self.weapon_rules.get("weapons") or {}
+        root_column = pd.to_numeric(
+            self.all_weapon_parts_df['Manufacturer & Weapon Type ID'], errors='coerce'
+        )
+        for root_id, weapon in weapons.items():
+            rows = self.all_weapon_parts_df[root_column == int(root_id)]
+            if rows.empty:
+                continue
+            manufacturer = str(rows.iloc[0]['Manufacturer'])
+            weapon_type = str(rows.iloc[0]['Weapon Type'])
+            manufacturer_label = self.get_localized_string(manufacturer, manufacturer)
+            weapon_type_label = self.weapon_taxonomy.get(
+                weapon_type.casefold().replace(" ", "_"),
+                self.get_localized_string(weapon_type, weapon_type),
+            )
+            for composition_ref, composition in (weapon.get("compositions") or {}).items():
+                if composition.get("availability") != "coregame":
+                    continue
+                if "npc_weapon" in {str(tag).casefold() for tag in composition.get("base_tags", ())}:
+                    continue
+                rarity = str(composition.get("rarity") or "")
+                names = composition.get("name") or {}
+                named = bool(str(names.get("en") or "").strip() or str(names.get("zh") or "").strip())
+                preferred_name = names.get("zh") if self.current_lang == 'zh-CN' else names.get("en")
+                name = str(preferred_name or names.get("en") or names.get("zh") or "").strip()
+                rarity_label = self.weapon_taxonomy.get(
+                    rarity.casefold(), self.get_localized_string(rarity, rarity)
+                )
+                catalog.append({
+                    "root_id": str(root_id),
+                    "composition_ref": str(composition_ref),
+                    "manufacturer": manufacturer,
+                    "manufacturer_label": manufacturer_label,
+                    "weapon_type": weapon_type,
+                    "weapon_type_label": weapon_type_label,
+                    "rarity": rarity,
+                    "rarity_label": rarity_label,
+                    "name": name if named else "",
+                    "is_named": named and rarity in {"Legendary", "Pearl"},
+                })
+        return catalog
+
+    @staticmethod
+    def _roll_serial_token(ref, root_id):
+        ref_root, _, part_id = str(ref).partition(":")
+        return f"{{{part_id}}}" if ref_root == str(root_id) else f"{{{ref_root}:{part_id}}}"
+
+    def _roll_part_tags(self, ref):
+        return (
+            (self.weapon_rules.get("part_selection_tags") or {}).get(str(ref))
+            or (self.item_index.get("part_refs") or {}).get(str(ref), {}).get("selection_tags")
+            or {}
+        )
+
+    def _roll_element_text(self, selected_refs):
+        values = []
+        part_refs = self.item_index.get("part_refs") or {}
+        for ref in selected_refs:
+            group = str((part_refs.get(str(ref)) or {}).get("selection_group") or "").casefold()
+            if group not in {"body_ele", "secondary_ele", "pearl_elem"}:
+                continue
+            _root, _sep, part_id = str(ref).partition(":")
+            if not part_id.isdigit():
+                continue
+            rows = self.elemental_df[self.elemental_df['Part_ID'] == int(part_id)]
+            if rows.empty:
+                continue
+            value = str(rows.iloc[0].get(self.elemental_stat_col) or "").strip()
+            if group == "pearl_elem" and ':' in value:
+                value = value.split(':', 1)[1].strip()
+            if value and value not in values:
+                values.append(value)
+        return " / ".join(values)
+
+    @staticmethod
+    def _filter_roll_catalog(catalog, constraints):
+        return [
+            row for row in catalog
+            if (constraints.get("manufacturer") is None or row["manufacturer"] == constraints["manufacturer"])
+            and (constraints.get("weapon_type") is None or row["weapon_type"] == constraints["weapon_type"])
+            and (constraints.get("rarity") is None or row["rarity"] == constraints["rarity"])
+            and (constraints.get("composition_ref") is None or row["composition_ref"] == constraints["composition_ref"])
+        ]
+
+    def _roll_one_weapon(self, candidate, rng):
+        root_id = candidate["root_id"]
+        weapon = (self.weapon_rules.get("weapons") or {})[root_id]
+        composition = weapon["compositions"][candidate["composition_ref"]]
+        selected = sample_composition_parts(
+            composition=composition,
+            part_types=weapon.get("part_types") or (),
+            tags_for_ref=self._roll_part_tags,
+            excluded_refs=set((self.weapon_rules.get("part_availability") or {}).keys()),
+            rng=rng,
+        )
+        level = self.level_var.text() if self.level_var.text().isdigit() else self._character_level
+        seed = rng.randint(100, 9999)
+        refs = [candidate["composition_ref"], *selected]
+        components = " ".join(self._roll_serial_token(ref, root_id) for ref in refs)
+        decoded = f"{root_id}, 0, 1, {level}| 2, {seed}|| {components} |"
+        serial, error = b_encoder.encode_to_base85(decoded)
+        if error:
+            raise ValueError(error)
+        validation = item_display_resolver.validate_weapon_generation(decoded)
+        if validation.get("status") != "legal":
+            raise ValueError(", ".join(
+                str(item.get("code")) for item in validation.get("violations", ())
+            ) or str(validation.get("status")))
+        display = item_display_resolver.resolve_item_display(
+            int(root_id), candidate["manufacturer"], candidate["weapon_type"], decoded, self.current_lang
+        )
+        stats = item_display_resolver.resolve_weapon_stats(decoded)
+        formatted_stats = {
+            key: item_display_resolver.format_weapon_stat(key, stats.get(key), self.current_lang) or "—"
+            for key in item_display_resolver.WEAPON_STAT_KEYS
+        }
+        name = display.get("display_name") or candidate.get("name") or "—"
+        rarity = display.get("rarity") or candidate["rarity_label"]
+        element = self._roll_element_text(selected)
+        type_label = f"{candidate['manufacturer_label']} · {candidate['weapon_type_label']}"
+        tooltip_lines = [name, type_label, f"{self.get_localized_string('rarity', 'Rarity')}: {rarity}"]
+        if element:
+            tooltip_lines.append(f"{self.get_localized_string('element', 'Element')}: {element}")
+        tooltip_lines.extend(
+            f"{self.stats_loc.get(key, key)}: {formatted_stats[key]}"
+            for key in item_display_resolver.WEAPON_STAT_KEYS
+        )
+        tooltip_lines.append(f"Base85: {serial}")
+        return {
+            **candidate,
+            "serial": serial,
+            "decoded": decoded,
+            "level": level,
+            "name": name,
+            "manufacturer": candidate["manufacturer_label"],
+            "weapon_type": candidate["weapon_type_label"],
+            "type_label": type_label,
+            "rarity": rarity,
+            "rarity_key": candidate["rarity"],
+            "element": element,
+            "status": "legal",
+            "status_label": self._rule_message("status_legal", "自然生成", "Legal"),
+            "stats": stats,
+            "formatted_stats": formatted_stats,
+            "tooltip": "\n".join(tooltip_lines),
+        }
+
+    def _roll_weapons(self, constraints, count):
+        constraints = dict(constraints or {})
+        count = max(1, min(50, int(count)))
+        self._roll_constraints = constraints
+        self._roll_count = count
+        catalog = self._filter_roll_catalog(self._weapon_roll_catalog(), constraints)
+        if not catalog:
+            QMessageBox.warning(
+                self,
+                self._section_text('roll_options'),
+                self.ui_loc.get('dialogs', {}).get('no_legal_result', 'No legal build matches the filters.'),
+            )
+            return
+        rng = random.SystemRandom()
+        roots = sorted({row["root_id"] for row in catalog}, key=int)
+        results = []
+        self.roll_results_page.set_add_status(
+            self.ui_loc.get('dialogs', {}).get('roll_running', 'Rolling...'), busy=True
+        )
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+        try:
+            for _ in range(int(count)):
+                last_error = None
+                for _attempt in range(24):
+                    root_id = rng.choice(roots)
+                    candidate = rng.choice([row for row in catalog if row["root_id"] == root_id])
+                    try:
+                        results.append(self._roll_one_weapon(candidate, rng))
+                        break
+                    except Exception as exc:
+                        last_error = exc
+                else:
+                    raise RuntimeError(last_error or "no legal result")
+        except Exception as exc:
+            self.roll_results_page.set_add_status("", busy=False)
+            QMessageBox.critical(
+                self,
+                self._section_text('roll_options'),
+                self.ui_loc.get('dialogs', {}).get('roll_failed', 'Roll failed: {error}').format(error=exc),
+            )
+            return
+        finally:
+            QApplication.restoreOverrideCursor()
+        texts = self._roll_texts()
+        self.roll_results_page.set_results(
+            results,
+            texts["generated"].format(count=len(results)),
+            self._roll_scope_text(constraints),
+        )
+        self.roll_results_page.set_add_status("", busy=False)
+        self._set_workspace_page(1)
+
+    def _roll_scope_text(self, constraints):
+        texts = self._roll_texts()
+        catalog = self._weapon_roll_catalog()
+        random_text = texts["random"]
+
+        def label(field, label_field):
+            value = constraints.get(field)
+            if value is None:
+                return random_text
+            row = next((item for item in catalog if item.get(field) == value), None)
+            return str((row or {}).get(label_field) or value)
+
+        return texts["scope_template"].format(
+            manufacturer=label("manufacturer", "manufacturer_label"),
+            weapon_type=label("weapon_type", "weapon_type_label"),
+            rarity=label("rarity", "rarity_label"),
+        )
+
+    def _quick_roll(self, _checked=False):
+        if self._roll_options_widget is None:
+            self._roll_weapons({}, self._roll_count)
+            return
+        self._roll_weapons(
+            self._roll_options_widget.constraints(), self._roll_options_widget.count_spin.value()
+        )
+
+    def _roll_from_menu(self, constraints, count):
+        if self._roll_menu is not None:
+            self._roll_menu.hide()
+        self._roll_weapons(constraints, count)
+
+    def _request_roll_add(self, serials):
+        if not serials or self._roll_add_busy:
+            return
+        self._roll_add_busy = True
+        flag = self.flag_combo.currentText().split(" ")[0]
+        self.roll_results_page.set_add_status(
+            self.ui_loc.get('dialogs', {}).get('roll_add_start', 'Adding {count} item(s)...').format(
+                count=len(serials)
+            ),
+            busy=True,
+        )
+        self.batch_add_to_backpack_requested.emit(list(serials), flag)
+
+    def update_roll_add_progress(self, current, total, success, fail):
+        self.roll_results_page.set_add_status(
+            self.ui_loc.get('dialogs', {}).get(
+                'roll_add_progress', 'Adding {current}/{total} · success {success} · failed {fail}'
+            ).format(current=current, total=total, success=success, fail=fail),
+            busy=True,
+        )
+
+    def finalize_roll_batch_add(self, success, fail):
+        self._roll_add_busy = False
+        self.roll_results_page.set_add_status(
+            self.ui_loc.get('dialogs', {}).get(
+                'roll_add_done', 'Added {success}; failed {fail}'
+            ).format(success=success, fail=fail),
+            busy=False,
+        )
 
     def generate_weapon(self, *args):
         try:

@@ -919,7 +919,7 @@ QGroupBox[title="传奇武器（皮肤）选择"] {
 }
 QGroupBox[title="Legendary Type"]::title, QGroupBox[title="LegendaryType"]::title,
 QGroupBox[title="传奇武器（皮肤）选择"]::title {
-    color: #FFEA00;
+    color: #B8860B;
 }
 
 /* Element1 / 元素1 - 火红 */
@@ -947,7 +947,7 @@ QGroupBox[title="Pearl Stat"], QGroupBox[title="珠光属性"] {
     border-left: 4px solid #80DEEA;
 }
 QGroupBox[title="Pearl Stat"]::title, QGroupBox[title="珠光属性"]::title {
-    color: #B2EBF2;
+    color: #00838F;
 }
 
 /* Pearl Elements / 珠光元素 - 淡紫珍珠 */
@@ -955,7 +955,7 @@ QGroupBox[title="Pearl Elements"], QGroupBox[title="珠光元素"] {
     border-left: 4px solid #CE93D8;
 }
 QGroupBox[title="Pearl Elements"]::title, QGroupBox[title="珠光元素"]::title {
-    color: #E1BEE7;
+    color: #8E24AA;
 }
 
 /* ============================================== */
@@ -1116,11 +1116,41 @@ QDialogButtonBox QPushButton {
 /* 武器生成器 - 毛玻璃卡片布局                       */
 /* ============================================== */
 
-/* Config / Attributes / Parts cards */
-#genConfigCard, #genAttrCard, #genPartsContainer {
+/* Config / Attributes cards */
+#genConfigCard, #genAttrCard {
     background-color: {bg_panel};
     border: 1px solid {border_color};
     border-radius: 12px;
+}
+
+#genPartsContainer, #genPartGroup, #genAttrField, #genElementRow, #genPearlSettings {
+    background-color: transparent;
+    border: none;
+}
+
+#genPartGroup {
+    border-bottom: 1px solid {border_color};
+}
+
+#genPartTitle {
+    color: {text_primary};
+    font-weight: bold;
+}
+
+#genAttrLabel {
+    color: {text_secondary};
+    font-weight: bold;
+}
+
+#genHeaderHint {
+    color: {text_secondary};
+    font-size: 9pt;
+}
+
+#genAttrDivider {
+    background-color: {border_color};
+    border: none;
+    max-height: 1px;
 }
 
 /* Primary action button (add to backpack) inside config card */
@@ -1140,6 +1170,171 @@ QDialogButtonBox QPushButton {
 
 #genAddButton:pressed {
     background-color: {button_pressed};
+}
+
+#genLuckyButton {
+    background-color: {text_primary};
+    border: 1px solid {text_primary};
+    border-radius: 8px;
+    color: {dropdown_bg};
+    font-weight: bold;
+    padding: 6px 14px;
+}
+
+#genLuckyButton:hover {
+    background-color: {accent_hover};
+    border-color: {accent_hover};
+    color: white;
+}
+
+#genLuckyButton::menu-indicator {
+    subcontrol-position: right center;
+    subcontrol-origin: padding;
+    right: 6px;
+}
+
+#genBuildStatus {
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    padding: 3px 10px;
+}
+
+#genBuildStatus[ruleStatus="legal"] { background-color: #0F766E; }
+#genBuildStatus[ruleStatus="incomplete"] { background-color: #B45309; }
+#genBuildStatus[ruleStatus="modified"] { background-color: #B91C1C; }
+#genBuildStatus[ruleStatus="conditional"] { background-color: #6D28D9; }
+#genBuildStatus[ruleStatus="unknown"] { background-color: #475569; }
+
+#genPageStack, #weaponRollResultsPage {
+    background-color: transparent;
+    border: none;
+}
+
+#genPageTab {
+    background-color: {button_bg};
+    border: 1px solid {border_color};
+    border-radius: 9px;
+    color: {text_primary};
+    padding: 7px 14px;
+}
+
+#genPageTab:hover {
+    background-color: {button_hover};
+}
+
+#genPageTab:checked {
+    background-color: {text_primary};
+    border-color: {text_primary};
+    color: {dropdown_bg};
+}
+
+#weaponRollOptionsWidget {
+    background-color: {dropdown_bg};
+    padding: 6px;
+}
+
+#genPearlSettings {
+    padding: 0px;
+}
+
+#genRollButton {
+    background-color: #0F766E;
+    border: 1px solid #14B8A6;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    padding: 8px 16px;
+}
+
+#genRollButton:hover { background-color: #0D9488; }
+
+#genContextHint {
+    color: {accent};
+    font-weight: bold;
+}
+
+#rollSummary {
+    color: {text_primary};
+    font-size: 15px;
+    font-weight: bold;
+}
+
+#rollScope, #rollDetailMeta, #rollStatName {
+    color: {text_secondary};
+}
+
+#rollResultList {
+    background-color: transparent;
+    border: none;
+    border-radius: 0px;
+    padding: 0px;
+}
+
+#rollResultList::item {
+    border: 1px solid {border_color};
+    border-radius: 8px;
+    color: {text_primary};
+    margin-bottom: 7px;
+    padding: 10px 12px;
+}
+
+#rollResultList::item:hover {
+    border-color: {accent};
+}
+
+#rollResultList::item:selected {
+    background-color: {selection_bg};
+    border-color: {accent_hover};
+    color: white;
+}
+
+#rollDetailCard {
+    background-color: {bg_panel};
+    border: 1px solid {border_color};
+    border-radius: 14px;
+}
+
+#rollDetailName {
+    color: {text_primary};
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#rollDetailStatus {
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    padding: 5px 10px;
+}
+
+#rollDetailStatus[ruleStatus="legal"] { background-color: #075985; }
+#rollDetailStatus[ruleStatus="modified"] { background-color: #B91C1C; }
+#rollDetailStatus[ruleStatus="incomplete"] { background-color: #B45309; }
+#rollDetailStatus[ruleStatus="unknown"] { background-color: #475569; }
+
+#rollDetailStats {
+    background-color: {border_color};
+    border-radius: 8px;
+}
+
+#rollStatCell {
+    background-color: {bg_input};
+}
+
+#rollStatName {
+    font-size: 14px;
+}
+
+#rollStatValue {
+    color: {text_primary};
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#weaponRollResultsPage QSplitter::handle {
+    background-color: transparent;
+    width: 14px;
 }
 
 /* ============================================== */
@@ -1364,15 +1559,14 @@ QFrame#inlineCatalogRow[selected="true"] QLabel {
     padding: 0 2px 2px 2px;
 }
 
-/* Multi-select badge - small pill */
+/* Live current/legal count in a compact part row. */
 #multiBadge {
-    background-color: {bg_input};
-    border: 1px solid {border_color};
-    border-radius: 8px;
+    background-color: transparent;
+    border: none;
     color: {text_secondary};
-    font-size: 8pt;
-    font-weight: bold;
-    padding: 1px 8px;
+    font-size: 9pt;
+    font-weight: normal;
+    padding: 0px;
 }
 
 /* Element / Pearl chip selector - clickable pills */
@@ -1409,11 +1603,10 @@ QFrame#inlineCatalogRow[selected="true"] QLabel {
 }
 
 #genPartDetail {
-    background-color: {bg_input};
-    border-left: 2px solid {accent};
-    border-radius: 4px;
+    background-color: transparent;
+    border: none;
     color: {text_secondary};
-    padding: 5px 7px;
+    padding: 1px 2px;
 }
 
 /* Weapon Editor browser and part cards */
