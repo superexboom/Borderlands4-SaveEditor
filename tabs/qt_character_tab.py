@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton,
-    QGroupBox, QFormLayout, QComboBox, QDialog, QDialogButtonBox, QSizePolicy
+    QGroupBox, QFormLayout, QComboBox, QDialog, QDialogButtonBox, QSizePolicy,
+    QScrollArea
 )
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6.QtGui import QIntValidator
@@ -65,7 +66,17 @@ class QtCharacterTab(QWidget):
         self.money_edit = QLineEdit(self)
         self.eridium_edit = QLineEdit(self)
 
-        main_layout = QVBoxLayout(self)
+        page_layout = QVBoxLayout(self)
+        page_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.scroll_area = QScrollArea(self)
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        page_layout.addWidget(self.scroll_area)
+
+        content = QWidget()
+        self.scroll_area.setWidget(content)
+        main_layout = QVBoxLayout(content)
         main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         # --- 角色信息区 ---

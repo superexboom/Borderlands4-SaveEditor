@@ -87,7 +87,7 @@ QMainWindow {
 }
 
 /* Header action buttons */
-#headerBar QPushButton {
+#headerBar #headerActionButton {
     background-color: {button_bg};
     border: 1px solid {border_color};
     padding: 4px 16px;
@@ -98,16 +98,16 @@ QMainWindow {
     color: {text_primary};
 }
 
-#headerBar QPushButton:hover {
+#headerBar #headerActionButton:hover {
     background-color: {button_hover};
     border: 1px solid {accent};
 }
 
-#headerBar QPushButton:pressed {
+#headerBar #headerActionButton:pressed {
     background-color: {button_pressed};
 }
 
-#headerBar QPushButton:disabled {
+#headerBar #headerActionButton:disabled {
     background-color: {bg_input};
     color: {text_disabled};
 }

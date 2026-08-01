@@ -21,12 +21,13 @@ for _stream_name in ("stdout", "stderr"):
         except (AttributeError, ValueError):
             pass
 
-VERSION = "3.9.0"
+VERSION = "3.9.1"
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QMessageBox, QFileDialog,
     QStackedWidget, QButtonGroup, QSizeGrip, QInputDialog,
-    QMenu, QGraphicsBlurEffect, QStackedLayout, QSizePolicy, QCheckBox
+    QMenu, QGraphicsBlurEffect, QStackedLayout, QSizePolicy, QCheckBox,
+    QScrollArea
 )
 from PyQt6.QtGui import QAction, QIcon, QPixmap, QPainter
 from PyQt6.QtCore import pyqtSlot, QPropertyAnimation, QEasingCurve, Qt, QTimer, QObject, QThread, pyqtSignal
@@ -288,8 +289,6 @@ class MainWindow(QMainWindow):
         icon_path = resource_loader.get_resource_path("assets/BL4.ico")
         if icon_path:
             self.setWindowIcon(QIcon(str(icon_path)))
-        self.setGeometry(100, 100, 1600, 900)
-
         self.setWindowFlag(Qt.WindowType.FramelessWindowHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
 
@@ -364,6 +363,12 @@ class MainWindow(QMainWindow):
         
         self._add_tabs()
         self.content_stack.currentChanged.connect(self._refresh_inventory_view)
+
+        available = (self.screen() or QApplication.primaryScreen()).availableGeometry()
+        width = min(1600, max(1, available.width() - 40))
+        height = min(900, max(1, available.height() - 40))
+        self.resize(width, height)
+        self.move(available.center() - self.rect().center())
 
         # If saved language differs from default (zh-CN), sync backend + all tabs
         if self.current_language != 'zh-CN':
@@ -506,10 +511,13 @@ class MainWindow(QMainWindow):
         header_layout.addLayout(title_vbox, 1)
 
         self.open_button = QPushButton(self.loc['header']['open'])
+        self.open_button.setObjectName("headerActionButton")
         self.open_button.clicked.connect(self.open_action.trigger)
         self.save_button = QPushButton(self.loc['header']['save'])
+        self.save_button.setObjectName("headerActionButton")
         self.save_button.clicked.connect(self.save_action.trigger)
         self.save_as_button = QPushButton(self.loc['header']['save_as'])
+        self.save_as_button.setObjectName("headerActionButton")
         self.save_as_button.clicked.connect(self.save_as_action.trigger)
 
         header_layout.addWidget(self.open_button)
@@ -595,6 +603,17 @@ class MainWindow(QMainWindow):
         self.toggle_button.clicked.connect(self.toggle_nav_bar)
         self.nav_bar_layout.addWidget(self.toggle_button)
 
+        self.nav_scroll_area = QScrollArea(self.nav_bar)
+        self.nav_scroll_area.setWidgetResizable(True)
+        self.nav_scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.nav_buttons_widget = QWidget()
+        self.nav_buttons_layout = QVBoxLayout(self.nav_buttons_widget)
+        self.nav_buttons_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.nav_buttons_layout.setContentsMargins(0, 0, 0, 0)
+        self.nav_buttons_layout.setSpacing(5)
+        self.nav_scroll_area.setWidget(self.nav_buttons_widget)
+        self.nav_bar_layout.addWidget(self.nav_scroll_area)
+
         self.nav_button_group = QButtonGroup(self)
         self.nav_button_group.setExclusive(True)
         self.nav_button_group.idClicked.connect(self.handle_nav_click)
@@ -675,7 +694,7 @@ class MainWindow(QMainWindow):
         button.setProperty("fullText", f" {icon_char}   {text}")
         button.setProperty("iconChar", icon_char)
         button.setCheckable(True)
-        self.nav_bar_layout.addWidget(button)
+        self.nav_buttons_layout.addWidget(button)
         self.nav_button_group.addButton(button, index)
     
     def switch_to_tab(self, index: int):

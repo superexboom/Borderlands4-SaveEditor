@@ -502,6 +502,9 @@ class QtWeaponGeneratorTab(QWidget):
         # --- 滚动区：属性卡片 + 部件容器 ---
         self.parts_scroll_area = QScrollArea()
         self.parts_scroll_area.setWidgetResizable(True)
+        self.parts_scroll_area.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Ignored
+        )
         scroll_content = QWidget()
         scroll_layout = QVBoxLayout(scroll_content)
         scroll_layout.setContentsMargins(0, 0, 0, 0)

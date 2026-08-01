@@ -217,7 +217,9 @@ class ProcessedItem(TypedDict):
     decoded_parts: str
     weapon_stats: Dict[str, Any]
 
-def _walk_for_serials(node: Any, path: List[str]) -> List[Tuple[List[str], Any]]:
+def _walk_for_serials(
+    node: Any, path: List[Union[str, int]]
+) -> List[Tuple[List[Union[str, int]], Any]]:
     """
     Recursively walks through the YAML object to find all items with a 'serial' key.
     Returns a list of tuples, where each tuple is (path_to_item, item_object).
@@ -230,10 +232,10 @@ def _walk_for_serials(node: Any, path: List[str]) -> List[Tuple[List[str], Any]]
         # Otherwise, continue walking through the dictionary.
         else:
             for k, v in node.items():
-                found_items.extend(_walk_for_serials(v, path + [str(k)]))
+                found_items.extend(_walk_for_serials(v, path + [k]))
     elif isinstance(node, list):
         for i, v in enumerate(node):
-            found_items.extend(_walk_for_serials(v, path + [str(i)]))
+            found_items.extend(_walk_for_serials(v, path + [i]))
     return found_items
 
 
@@ -339,7 +341,7 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
             # Only find a slot_key if not in lost loot
             if container_name != "Lost Loot":
                 for p_part in reversed(path):
-                    if p_part.startswith("slot_"):
+                    if isinstance(p_part, str) and p_part.startswith("slot_"):
                         slot_key = p_part
                         break
 
@@ -510,6 +512,8 @@ def sync_inventory_item_levels(yaml_data: Dict[str, Any]) -> Tuple[int, int, Lis
     
     inventory_items = []
     for path, item_data in all_discovered_items:
+        if "unknown_items" in path:
+            continue
         # Heuristic to identify backpack items. This should be robust.
         is_in_inventory = False
         path_str = '/'.join(map(str, path))
@@ -525,7 +529,10 @@ def sync_inventory_item_levels(yaml_data: Dict[str, Any]) -> Tuple[int, int, Lis
     # 3. Iterate, decode, update, re-encode
     for path, item_data in inventory_items:
         original_serial = item_data.get("serial")
-        slot_identifier = next((p for p in reversed(path) if p.startswith("slot_")), "Slot-?")
+        slot_identifier = next((
+            p for p in reversed(path)
+            if isinstance(p, str) and p.startswith("slot_")
+        ), "Slot-?")
 
         if not original_serial:
             fail_count += 1
@@ -557,7 +564,7 @@ def sync_inventory_item_levels(yaml_data: Dict[str, Any]) -> Tuple[int, int, Lis
         try:
             _set_by_path(yaml_data, path + ['serial'], new_serial)
             success_count += 1
-        except (KeyError, IndexError) as e:
+        except (KeyError, IndexError, TypeError) as e:
             fail_count += 1
             failed_items_info.append(f"{slot_identifier}: {loc.get('write_fail', 'Write fail')} ({e})")
 
