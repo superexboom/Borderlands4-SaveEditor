@@ -1,24 +1,12 @@
 import pandas as pd
 from functools import lru_cache
 import random
-import re
 
-from PyQt6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit,
-    QPushButton, QGroupBox, QComboBox, QRadioButton, QListWidgetItem,
-    QScrollArea, QMessageBox, QAbstractItemView, QSpinBox, QButtonGroup
-)
-from PyQt6.QtCore import pyqtSignal, Qt
+from PyQt6.QtCore import Qt
 
-from core import b_encoder
 from core import resource_loader
-from tabs.qt_catalog_picker import ContainedWheelListWidget, ContainedWheelScrollArea
-from tabs.qt_serial_import import (
-    SerialSourceBar, build_header, choose_backpack_item, decode_base85,
-    parse_components, prompt_base85, select_flag_value, source_texts, split_decoded,
-)
-from core import lookup
-from core import bl4_functions as bl4f
+from tabs.qt_equipment_base_tab import BaseEquipmentEditorTab
+
 
 @lru_cache(maxsize=None)
 def load_heavy_weapon_data(lang='zh-CN'):
@@ -28,764 +16,183 @@ def load_heavy_weapon_data(lang='zh-CN'):
         df_mfg['Manufacturer ID'] = pd.to_numeric(df_mfg['Manufacturer ID'], errors='coerce')
         df_mfg.dropna(subset=['Manufacturer ID'], inplace=True)
         df_mfg['Manufacturer ID'] = df_mfg['Manufacturer ID'].astype(int)
-
         localization = {}
         if lang == 'zh-CN':
             localization = resource_loader.load_json_resource('heavy/Heavy_localization_zh-CN.json') or {}
-            
         return df_main, df_mfg, localization
     except Exception as e:
         print(f"Error loading heavy weapon data: {e}")
         return None, None, None
 
-class QtHeavyWeaponEditorTab(QWidget):
-    add_to_backpack_requested = pyqtSignal(str, str)
 
-    def __init__(self, main_app=None, parent=None):
-        super().__init__(parent)
-        self.main_app = main_app
-        self.current_lang = 'zh-CN'
-        self._character_level = "50"
-        self._is_loading = False
-        self._imported = False
-        self._import_header = None
-        self._import_unknown_tokens = []
-        self._import_source_name = ""
-        self.df_main, self.df_mfg, self.localization = load_heavy_weapon_data(self.current_lang)
-        
-        self._load_ui_localization()
+class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
+    EQUIP_TYPE = "heavy"
+    UI_LOC_KEY = "heavy_weapon_tab"
+    DEFAULT_SEED = None  # heavy uses a random seed per new build
+    MFG_IDS = [282, 273, 275, 289]
+    BACKPACK_TYPE_EN = "Heavy Weapon"
+    ITEM_LABEL = "Heavy Weapon"
 
-        if self.df_main is None:
-            layout = QVBoxLayout(self)
-            layout.addWidget(QLabel(self.ui_loc.get('dialogs', {}).get('load_error', "错误: 重武器数据(heavy weapon data)无法加载。")))
-            return
+    ELEMENT_PARENT = 1
+    FIRMWARE_PARENT = 244
 
-        self.mfg_ids = [282, 273, 275, 289]
-        self.barrel_widgets = []
-        self.element_widgets = []
-        self.firmware_widgets = []
-        
-        self._build_ui()
-        self.populate_initial_data()
-        self._connect_signals()
+    def load_data(self, lang):
+        return load_heavy_weapon_data(lang)
 
-    def _load_ui_localization(self):
-        loc_file = resource_loader.get_ui_localization_file(self.current_lang)
-        full_loc = resource_loader.load_json_resource(loc_file) or {}
-        self.ui_loc = full_loc.get("heavy_weapon_tab", {})
+    def _backpack_predicate(self, value):
+        return value.get('container') == 'Backpack' and (
+            value.get('type_en') == 'Heavy Weapon' or value.get('id') in self.mfg_ids)
 
-    def update_language(self, lang):
-        restore_serial = self.b85_output_edit.text() if getattr(self, '_imported', False) else ""
-        restore_source = self._import_source_name
-        restore_flag = self.flag_combo.currentText().split(" ")[0] if hasattr(self, 'flag_combo') else "3"
-        print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
-        self.current_lang = lang
-        self.df_main, self.df_mfg, self.localization = load_heavy_weapon_data(lang)
-        
-        if self.df_main is None:
-            print(f"DEBUG: load_heavy_weapon_data failed for {self.__class__.__name__}")
-            return
+    def _default_new_header(self, mfg_id, level):
+        return f"{mfg_id}, 0, 1, {level}| 2, {random.randint(100, 9999)}"
 
-        self._load_ui_localization()
-        
-        if not self.ui_loc:
-            print(f"DEBUG: UI localization missing for {self.__class__.__name__}")
-            return
-        
-        # Refresh UI Texts
-        self.output_group.setTitle(self.ui_loc.get('groups', {}).get('output', 'Output'))
-        self.raw_label.setText(self.ui_loc.get('labels', {}).get('raw', 'Raw'))
-        self.copy_raw_btn.setText(self.ui_loc.get('buttons', {}).get('copy', 'Copy'))
-        self.b85_label.setText(self.ui_loc.get('labels', {}).get('base85', 'Base85'))
-        self.copy_b85_btn.setText(self.ui_loc.get('buttons', {}).get('copy', 'Copy'))
-        self.add_to_pack_btn.setText(self.ui_loc.get('buttons', {}).get('add_to_backpack', 'Add'))
-        
-        self.base_attrs_group.setTitle(self.ui_loc.get('groups', {}).get('base_attrs', 'Attributes'))
-        self.mfg_label.setText(self.ui_loc.get('labels', {}).get('manufacturer', 'Mfg'))
-        self.level_label.setText(self.ui_loc.get('labels', {}).get('level', 'Level'))
-        self.rarity_label.setText(self.ui_loc.get('labels', {}).get('rarity', 'Rarity'))
-        
-        self.perks_frame.setTitle(self.ui_loc.get('groups', {}).get('perks', 'Perks'))
-        self.barrel_group.setTitle(self.ui_loc.get('groups', {}).get('barrel', 'Barrel'))
-        self.element_group.setTitle(self.ui_loc.get('groups', {}).get('element', 'Element'))
-        self.firmware_group.setTitle(self.ui_loc.get('groups', {}).get('firmware', 'FW'))
-        self.barrel_acc_group.setTitle(self.ui_loc.get('groups', {}).get('barrel_acc', 'Barrel Acc'))
-        self.body_acc_group.setTitle(self.ui_loc.get('groups', {}).get('body_acc', 'Body Acc'))
-        
-        self.barrel_acc_clear_btn.setText(self.ui_loc.get('buttons', {}).get('clear', 'Clear'))
-        self.body_acc_clear_btn.setText(self.ui_loc.get('buttons', {}).get('clear', 'Clear'))
-        self._update_source_bar_texts()
-        
-        self._populate_flags()
-
-        # Refresh Data
-        self.mfg_combo.blockSignals(True)
-        # Block rarity combo signal as well to prevent unwanted updates during data refresh
-        self.rarity_combo.blockSignals(True)
-        self.populate_initial_data()
-        self.mfg_combo.blockSignals(False)
-        self.rarity_combo.blockSignals(False)
-        self.on_mfg_change()
-        if restore_serial:
-            self._load_serial_copy(restore_serial, restore_source, restore_flag)
-        print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
-
-    def _rebuild_and_connect(self, frame_layout, widget_list):
-        for widget in widget_list:
-            if isinstance(widget, QRadioButton):
-                widget.toggled.connect(self.rebuild_output)
-                
-    def _(self, text):
-        return self.localization.get(str(text), str(text))
-
-    def _build_ui(self):
-        # Main layout for the tab itself, containing only the scroll area
-        tab_layout = QVBoxLayout(self)
-        tab_layout.setContentsMargins(0, 0, 0, 0)
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        tab_layout.addWidget(scroll_area)
-
-        # Container widget for all the content that will be scrolled
-        container = QWidget()
-        scroll_area.setWidget(container)
-        main_layout = QVBoxLayout(container)
-
-        self.source_bar = SerialSourceBar(
-            new_text=self._source_text('new'),
-            backpack_text=self._source_text('backpack'),
-            base85_text=self._source_text('base85'),
-            reset_text=self._source_text('reset'),
-        )
-        self.source_bar.backpack_requested.connect(self._import_from_backpack)
-        self.source_bar.base85_requested.connect(self._import_from_base85)
-        self.source_bar.reset_requested.connect(self._reset_import_source)
-        main_layout.addWidget(self.source_bar)
-        
-        # --- Top Output ---
-        self._create_output_group(main_layout)
-        
-        # --- Top Controls ---
-        self._create_top_controls(main_layout)
-
-        # --- Perks ---
-        self.perks_frame = QGroupBox(self.ui_loc['groups']['perks'])
-        perks_layout = QGridLayout(self.perks_frame)
-        self._create_perk_groups(perks_layout)
-        main_layout.addWidget(self.perks_frame)
-        main_layout.addStretch() # Ensure content is pushed to the top within the scroll area
-        
-    def _create_output_group(self, layout):
-        self.output_group = QGroupBox(self.ui_loc['groups']['output'])
-        grid = QGridLayout(self.output_group)
-        
-        self.raw_output_edit = QLineEdit()
-        self.raw_output_edit.setReadOnly(True)
-        self.copy_raw_btn = QPushButton(self.ui_loc['buttons']['copy'])
-        
-        self.raw_label = QLabel(self.ui_loc['labels']['raw'])
-        grid.addWidget(self.raw_label, 0, 0)
-        grid.addWidget(self.raw_output_edit, 0, 1)
-        grid.addWidget(self.copy_raw_btn, 0, 2)
-        
-        self.b85_output_edit = QLineEdit()
-        self.b85_output_edit.setReadOnly(True)
-        self.copy_b85_btn = QPushButton(self.ui_loc['buttons']['copy'])
-        self.add_to_pack_btn = QPushButton(self.ui_loc['buttons']['add_to_backpack'])
-        self.flag_combo = QComboBox()
-        self._populate_flags()
-        
-        self.b85_label = QLabel(self.ui_loc['labels']['base85'])
-        grid.addWidget(self.b85_label, 1, 0)
-        grid.addWidget(self.b85_output_edit, 1, 1)
-        grid.addWidget(self.copy_b85_btn, 1, 2)
-        grid.addWidget(self.flag_combo, 1, 3)
-        grid.addWidget(self.add_to_pack_btn, 1, 4)
-
-        layout.addWidget(self.output_group)
-
-    def _create_top_controls(self, layout):
-        self.base_attrs_group = QGroupBox(self.ui_loc['groups']['base_attrs'])
-        controls_layout = QHBoxLayout(self.base_attrs_group)
-        
-        self.mfg_combo = QComboBox()
-        self.level_edit = QLineEdit(self._character_level)
-        self.level_edit.setFixedWidth(100)
-        self.rarity_combo = QComboBox()
-        self.rarity_combo.setFixedWidth(300)
-        
-        self.mfg_label = QLabel(self.ui_loc['labels']['manufacturer'])
-        self.level_label = QLabel(self.ui_loc['labels']['level'])
-        self.rarity_label = QLabel(self.ui_loc['labels']['rarity'])
-        
-        controls_layout.addWidget(self.mfg_label)
-        controls_layout.addWidget(self.mfg_combo)
-        controls_layout.addWidget(self.level_label)
-        controls_layout.addWidget(self.level_edit)
-        controls_layout.addWidget(self.rarity_label)
-        controls_layout.addWidget(self.rarity_combo)
-        controls_layout.addStretch()
-        
-        layout.addWidget(self.base_attrs_group)
-
-    def _create_radio_perk_groups(self, layout):
-        self.barrel_group, self.barrel_frame = self._create_scrollable_radio_group(self.ui_loc['groups']['barrel'])
-        self.element_group, self.element_frame = self._create_scrollable_radio_group(self.ui_loc['groups']['element'])
-        self.firmware_group, self.firmware_frame = self._create_scrollable_radio_group(self.ui_loc['groups']['firmware'])
-        
-        layout.addWidget(self.barrel_group, 0, 0)
-        layout.addWidget(self.element_group, 0, 1)
-        layout.addWidget(self.firmware_group, 0, 2)
-        layout.setRowStretch(0, 1) # Less stretch for top radio buttons
-        layout.setRowStretch(1, 1) # More stretch for the list views below
-        layout.setRowStretch(2, 1)
-
-    def _create_list_perk_groups(self, layout):
-        self.barrel_acc_group = self._create_list_perk_group(self.ui_loc['groups']['barrel_acc'], "barrel_acc", use_multiplier=True)
-        self.body_acc_group = self._create_list_perk_group(self.ui_loc['groups']['body_acc'], "body_acc", use_multiplier=True)
-        layout.addWidget(self.barrel_acc_group, 1, 0, 1, 3)
-        layout.addWidget(self.body_acc_group, 2, 0, 1, 3)
-        
-    def _create_perk_groups(self, layout):
-        self._create_radio_perk_groups(layout)
-        self._create_list_perk_groups(layout)
-
-    def _create_scrollable_radio_group(self, title):
-        group_box = QGroupBox(title)
-        scroll_area = ContainedWheelScrollArea()
-        scroll_area.setMinimumHeight(200)
-        scroll_area.setWidgetResizable(True)
-        widget_in_scroll = QWidget()
-        layout = QVBoxLayout(widget_in_scroll)
-        scroll_area.setWidget(widget_in_scroll)
-        main_layout = QVBoxLayout(group_box)
-        main_layout.addWidget(scroll_area)
-        return group_box, layout
-
-    def _create_list_perk_group(self, title, key=None, use_multiplier=False):
-        group_box = QGroupBox(title)
-        layout = QGridLayout(group_box)
-        
-        avail_list = ContainedWheelListWidget()
-        avail_list.setMinimumHeight(200)
-        avail_list.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
-        sel_list = ContainedWheelListWidget()
-        sel_list.setMinimumHeight(200)
-        sel_list.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
-        
-        button_layout = QVBoxLayout()
-        
-        multiplier_box = None
-        if use_multiplier:
-            multiplier_box = QSpinBox()
-            multiplier_box.setRange(1, 999)
-            multiplier_box.setValue(1)
-            button_layout.addWidget(multiplier_box)
-            
-        move_btn = QPushButton("»")
-        remove_btn = QPushButton("«")
-        clear_btn = QPushButton(self.ui_loc['buttons']['clear'])
-        
-        button_layout.addWidget(move_btn)
-        button_layout.addWidget(remove_btn)
-        button_layout.addWidget(clear_btn)
-        button_layout.addStretch()
-
-        layout.addWidget(avail_list, 0, 0)
-        layout.addLayout(button_layout, 0, 1)
-        layout.addWidget(sel_list, 0, 2)
-        layout.setColumnStretch(0, 1)
-        layout.setColumnStretch(2, 1)
-
-        # Store widgets for later access
-        if key:
-            prefix = key
-        else:
-            # Fallback (should not be reached if key is provided)
-            if '枪管' in title or 'Barrel' in title:
-                prefix = 'barrel_acc'
-            elif '枪身' in title or 'Body' in title:
-                prefix = 'body_acc'
-            else:
-                prefix = 'other'
-            
-        setattr(self, f"{prefix}_avail_list", avail_list)
-        setattr(self, f"{prefix}_sel_list", sel_list)
-        setattr(self, f"{prefix}_clear_btn", clear_btn)
-        
-        if multiplier_box:
-            setattr(self, f"{prefix}_multiplier", multiplier_box)
-        
-        # Connect signals
-        move_btn.clicked.connect(lambda: self._move_selected_items(avail_list, sel_list, multiplier_box))
-        remove_btn.clicked.connect(lambda: self._remove_selected_items(sel_list))
-        clear_btn.clicked.connect(lambda: self._clear_list(sel_list))
-        
-        # Store buttons for connecting signals later (legacy, though using direct connect above is better)
-        setattr(self, f"{prefix}_move_btn", move_btn)
-        setattr(self, f"{prefix}_remove_btn", remove_btn)
-
-        return group_box
-        
-    def _get_mfg_name(self, mfg_id):
-        if mfg_id in lookup.REVERSE_ID_MAP:
-            mfg_en = lookup.REVERSE_ID_MAP[mfg_id][0]
-            return bl4f.get_localized_string(mfg_en)
-        return "Unknown"
-
-    def populate_initial_data(self):
-        self.mfg_combo.clear()
-        
-        items = []
-        for k in self.mfg_ids:
-            name = self._get_mfg_name(k)
-            items.append((f"{name} - {k}", k))
-        
-        items.sort(key=lambda x: x[1])
-        self.mfg_combo.addItems([x[0] for x in items])
-
-        self._populate_radio_buttons(self.element_frame, self.df_main[self.df_main['Heavy_perk_main_ID'] == 1], self.element_widgets)
-        self._populate_radio_buttons(self.firmware_frame, self.df_main[self.df_main['Heavy_perk_main_ID'] == 244], self.firmware_widgets)
-        self.on_mfg_change()
-
-    def _populate_radio_buttons(self, frame_layout, df, widget_list, name_key='Stat', desc_key='Description'):
-        # Clear existing
-        while frame_layout.count():
-            child = frame_layout.takeAt(0)
-            if child.widget():
-                child.widget().setAutoExclusive(False)
-                child.widget().setParent(None)
-                child.widget().deleteLater()
-        widget_list.clear()
-
-        group_name = 'barrel' if widget_list is self.barrel_widgets else 'element' if widget_list is self.element_widgets else 'firmware'
-        old_group = getattr(self, f'_{group_name}_button_group', None)
-        if old_group:
-            old_group.deleteLater()
-        button_group = QButtonGroup(self)
-        button_group.setExclusive(True)
-        setattr(self, f'_{group_name}_button_group', button_group)
-
-        none_rb = QRadioButton(self.ui_loc['misc']['none'])
-        none_rb.setChecked(True)
-        button_group.addButton(none_rb)
-        setattr(self, f'_{group_name}_none_rb', none_rb)
-        frame_layout.addWidget(none_rb)
-        widget_list.append(none_rb)
-
-        for _, row in df.iterrows():
-            desc = row[desc_key] if desc_key in row and pd.notna(row[desc_key]) else ''
-            display_text = f"{self._(row[name_key])} - {desc}" if desc else self._(row[name_key])
-            rb = QRadioButton(display_text)
-            
-            part_id = row['Part_ID']
-            # 如果存在 Heavy_perk_main_ID，则将其作为前缀
-            if 'Heavy_perk_main_ID' in row and pd.notna(row['Heavy_perk_main_ID']):
-                part_id = f"{int(row['Heavy_perk_main_ID'])}:{part_id}"
-            
-            rb.setProperty("part_id", part_id)
-            button_group.addButton(rb)
-            frame_layout.addWidget(rb)
-            widget_list.append(rb)
-        frame_layout.addStretch()
-        self._rebuild_and_connect(frame_layout, widget_list)
-        
-    def _populate_barrel_radiobuttons(self):
-        mfg_id = int(self.mfg_combo.currentText().split(' - ')[-1])
-        filtered_df = self.df_mfg[(self.df_mfg['Part_type'] == 'Barrel') & (self.df_mfg['Manufacturer ID'] == mfg_id)]
-        self._populate_radio_buttons(self.barrel_frame, filtered_df, self.barrel_widgets, name_key='Stat', desc_key='Description')
-        
-    def _connect_signals(self):
-        self.mfg_combo.currentTextChanged.connect(self.on_mfg_change)
-        self.level_edit.textChanged.connect(self.rebuild_output)
-        self.rarity_combo.currentTextChanged.connect(self.rebuild_output)
-        
-        self.copy_raw_btn.clicked.connect(lambda: self._copy_to_clipboard(self.raw_output_edit))
-        self.copy_b85_btn.clicked.connect(lambda: self._copy_to_clipboard(self.b85_output_edit))
-        self.add_to_pack_btn.clicked.connect(self._add_to_backpack)
-
-        # List signals for updates
-        if hasattr(self, 'barrel_acc_sel_list'):
-            self.barrel_acc_sel_list.model().rowsInserted.connect(self.rebuild_output)
-            self.barrel_acc_sel_list.model().rowsRemoved.connect(self.rebuild_output)
-        if hasattr(self, 'body_acc_sel_list'):
-            self.body_acc_sel_list.model().rowsInserted.connect(self.rebuild_output)
-            self.body_acc_sel_list.model().rowsRemoved.connect(self.rebuild_output)
-        
-    def on_mfg_change(self):
-        if not self.mfg_combo.currentText(): return
-        mfg_id = int(self.mfg_combo.currentText().split(' - ')[-1])
-        
-        # Populate Rarity
-        self.rarity_combo.blockSignals(True)
-        self.rarity_combo.clear()
-        rarities_df = self.df_mfg[(self.df_mfg['Manufacturer ID'] == mfg_id) & (self.df_mfg['Part_type'] == 'Rarity')]
-        for _, row in rarities_df.iterrows():
-            desc_val = row['Description']
-            desc = f" - {desc_val}" if pd.notna(desc_val) else ""
-            self.rarity_combo.addItem(f"{self._(row['Stat'])}{desc}", userData=row['Part_ID'])
-        self.rarity_combo.blockSignals(False)
-        self.rarity_combo.setFixedWidth(300)  # Re-apply width after populating
-        
-        self._populate_barrel_radiobuttons() # Refresh barrels on mfg change
-        self.populate_accessory_lists()
-        self.rebuild_output()
-
-    def populate_accessory_lists(self):
-        mfg_id = int(self.mfg_combo.currentText().split(' - ')[-1])
-
-        # --- Barrel Accessories ---
-        if hasattr(self, 'barrel_acc_avail_list'):
-            self.barrel_acc_avail_list.clear()
-        else:
-            # Should not happen with correct key
-            return
-
-        barrel_acc_df = self.df_mfg[self.df_mfg['Part_type'] == 'Barrel Accessory'].copy()
-        barrel_acc_df.dropna(subset=['String'], inplace=True)
-        barrel_acc_df = barrel_acc_df.drop_duplicates(subset=['Part_ID', 'Manufacturer ID'])
-        barrel_acc_df = barrel_acc_df[barrel_acc_df['Manufacturer ID'] == mfg_id] # Filter for current manufacturer
-        barrel_acc_df = barrel_acc_df.sort_values(by=['String', 'Part_ID'])
-
-        barrel_subtype_names = {}
-        barrel_subtypes_df = self.df_mfg[
-            (self.df_mfg['Part_type'] == 'Barrel') & 
-            (~self.df_mfg['Stat'].str.contains('（', na=False))
+    def _declare_perk_groups(self):
+        return [
+            {"key": "barrel", "mode": "chip", "title_key": "barrel", "columns": 2, "grid": (0, 0, 1, 1)},
+            {"key": "element", "mode": "chip", "title_key": "element", "columns": 2, "grid": (0, 1, 1, 1)},
+            {"key": "firmware", "mode": "chip", "title_key": "firmware", "columns": 2, "grid": (0, 2, 1, 1)},
+            {"key": "barrel_acc", "mode": "picker", "title_key": "barrel_acc", "stackable": True, "grid": (1, 0, 1, 3)},
+            {"key": "body_acc", "mode": "picker", "title_key": "body_acc", "stackable": True, "grid": (2, 0, 1, 3)},
         ]
-        for _, row in barrel_subtypes_df.iterrows():
+
+    def _initial_preserved_children(self):
+        return {}
+
+    # ------------------------------------------------------------------ #
+    # Population
+    # ------------------------------------------------------------------ #
+    def _populate_initial_extra(self):
+        self._populate_chip_group(
+            self._group_cfgs["element"],
+            self.df_main[self.df_main['Heavy_perk_main_ID'] == self.ELEMENT_PARENT],
+            self._fmt_prefixed_row)
+        self._populate_chip_group(
+            self._group_cfgs["firmware"],
+            self.df_main[self.df_main['Heavy_perk_main_ID'] == self.FIRMWARE_PARENT],
+            self._fmt_prefixed_row)
+
+    def _fmt_prefixed_row(self, r):
+        """Format a heavy row; part_id becomes 'main_id:part_id' when applicable."""
+        text = self._(r['Stat'])
+        if 'Description' in r and pd.notna(r['Description']) and r['Description']:
+            text += f" - {r['Description']}"
+        part_id = r['Part_ID']
+        if 'Heavy_perk_main_ID' in r and pd.notna(r['Heavy_perk_main_ID']):
+            part_id = f"{int(r['Heavy_perk_main_ID'])}:{part_id}"
+        return text, part_id
+
+    def _group_rows(self, key, mfg_id):
+        if key == "barrel":
+            df = self.df_mfg[(self.df_mfg['Part_type'] == 'Barrel') & (self.df_mfg['Manufacturer ID'] == mfg_id)]
+            return df, self._fmt_row
+        return None  # element/firmware populated once
+
+    def _group_items(self, key, mfg_id):
+        if key == "barrel_acc":
+            return self._barrel_acc_items(mfg_id)
+        if key == "body_acc":
+            return self._body_acc_items(mfg_id)
+        return []
+
+    def _barrel_acc_items(self, mfg_id):
+        items = []
+        df = self.df_mfg[self.df_mfg['Part_type'] == 'Barrel Accessory'].copy()
+        df.dropna(subset=['String'], inplace=True)
+        df = df.drop_duplicates(subset=['Part_ID', 'Manufacturer ID'])
+        df = df[df['Manufacturer ID'] == mfg_id].sort_values(by=['String', 'Part_ID'])
+        # barrel subtype names keyed by (mfg, string base)
+        subtype_names = {}
+        sub = self.df_mfg[(self.df_mfg['Part_type'] == 'Barrel') & (~self.df_mfg['Stat'].str.contains('（', na=False))]
+        for _, row in sub.iterrows():
             if pd.notna(row['String']):
-                barrel_subtype_names[(row['Manufacturer ID'], row['String'])] = row['Stat']
-        
-        for _, row in barrel_acc_df.iterrows():
-            barrel_string_base = '_'.join(row['String'].split('_')[:2])
-            subtype_name = barrel_subtype_names.get((row['Manufacturer ID'], barrel_string_base), '')
-            
-            desc = row['Description'] if pd.notna(row['Description']) else ''
-            display_text = f"{subtype_name} - {row['Stat']} - {desc} - ID:{row['Part_ID']}"
+                subtype_names[(row['Manufacturer ID'], row['String'])] = row['Stat']
+        for _, r in df.iterrows():
+            base = '_'.join(r['String'].split('_')[:2])
+            subtype = subtype_names.get((r['Manufacturer ID'], base), '')
+            desc = r['Description'] if pd.notna(r['Description']) else ''
+            label = f"{subtype} - {r['Stat']} - {desc} - ID:{r['Part_ID']}"
+            items.append({"key": f"ba{r['Part_ID']}", "label": label, "category": subtype or None,
+                          "data": int(r['Part_ID'])})
+        return items
 
-            item = QListWidgetItem(display_text)
-            item.setData(Qt.ItemDataRole.UserRole, row['Part_ID'])
-            if hasattr(self, 'barrel_acc_avail_list'):
-                self.barrel_acc_avail_list.addItem(item)
+    def _body_acc_items(self, mfg_id):
+        items = []
+        df = self.df_mfg[self.df_mfg['Part_type'] == 'Body Accessory'].copy()
+        df = df.drop_duplicates(subset=['Part_ID', 'Manufacturer ID'])
+        df = df[df['Manufacturer ID'] == mfg_id].sort_values(by=['Part_ID'])
+        for _, r in df.iterrows():
+            mfg_name = self._get_mfg_name(r['Manufacturer ID'])
+            label = f"{mfg_name} - {r['Stat']} - ID:{r['Part_ID']}"
+            items.append({"key": f"ba2{r['Part_ID']}", "label": label, "category": None, "data": int(r['Part_ID'])})
+        return items
 
-        # --- Body Accessories ---
-        if hasattr(self, 'body_acc_avail_list'):
-            self.body_acc_avail_list.clear()
-        body_df = self.df_mfg[self.df_mfg['Part_type'] == 'Body Accessory'].copy()
-        body_df = body_df.drop_duplicates(subset=['Part_ID', 'Manufacturer ID'])
-        body_df = body_df[body_df['Manufacturer ID'] == mfg_id] # Filter for current manufacturer
-        body_df = body_df.sort_values(by=['Part_ID'])
+    def _body_id(self, mfg_id):
+        rows = self.df_mfg[(self.df_mfg['Manufacturer ID'] == mfg_id) & (self.df_mfg['Part_type'] == 'Body')]
+        return int(rows.iloc[0]['Part_ID']) if not rows.empty else None
 
-        for _, row in body_df.iterrows():
-            mfg_name = self._get_mfg_name(row['Manufacturer ID'])
-            display_text = f"{mfg_name} - {row['Stat']} - ID:{row['Part_ID']}"
-            item = QListWidgetItem(display_text)
-            item.setData(Qt.ItemDataRole.UserRole, row['Part_ID'])
-            if hasattr(self, 'body_acc_avail_list'):
-                self.body_acc_avail_list.addItem(item)
+    # ------------------------------------------------------------------ #
+    # Output
+    # ------------------------------------------------------------------ #
+    def _build_skill_parts(self, mfg_id):
+        skill_parts, secondary = [], {}
+        body_id = self._body_id(mfg_id)
+        if body_id is not None:
+            skill_parts.append(f"{{{body_id}}}")
+        # barrel + element + firmware are emitted as plain {part_id}
+        # (element/firmware part_id already carries "parent:child" prefix)
+        for pid in self._checked_part_ids("barrel", "element", "firmware"):
+            skill_parts.append(f"{{{pid}}}")
+        # accessories stacked
+        for key in ("barrel_acc", "body_acc"):
+            for e in self._picker_entries(key):
+                for _ in range(self._count_of(e)):
+                    skill_parts.append(f"{{{e['data']}}}")
+        return skill_parts, secondary
 
-    def rebuild_output(self, *args):
-        if self._is_loading:
-            return
-        mfg_id = int(self.mfg_combo.currentText().split(' - ')[-1])
-        level = self.level_edit.text()
-        rarity_id = self.rarity_combo.currentData()
-        
-        if self._imported and self._import_header:
-            main_parts = [f"{build_header(self._import_header, level=level)}||"]
-        else:
-            main_parts = [f"{mfg_id}, 0, 1, {level}| 2, {random.randint(100,9999)}||"]
-        skill_parts = []
-        
-        if rarity_id: skill_parts.append(f"{{{rarity_id}}}")
-        
-        body_row = self.df_mfg[(self.df_mfg['Manufacturer ID'] == mfg_id) & (self.df_mfg['Part_type'] == 'Body')]
-        if not body_row.empty: skill_parts.append(f"{{{body_row.iloc[0]['Part_ID']}}}")
-
-        for rb in self.barrel_widgets + self.element_widgets + self.firmware_widgets:
-            if rb.isChecked() and rb.property("part_id"):
-                skill_parts.append(f"{{{rb.property('part_id')}}}")
-
-        lists_to_check = []
-        if hasattr(self, 'barrel_acc_sel_list'): lists_to_check.append(self.barrel_acc_sel_list)
-        if hasattr(self, 'body_acc_sel_list'): lists_to_check.append(self.body_acc_sel_list)
-
-        for list_widget in lists_to_check:
-            for i in range(list_widget.count()):
-                item = list_widget.item(i)
-                # Handle count
-                count = 1
-                match = re.match(r"\((\d+)\)\s+(.*)", item.text())
-                if match:
-                    count = int(match.group(1))
-                
-                part_id = item.data(Qt.ItemDataRole.UserRole)
-                for _ in range(count):
-                    skill_parts.append(f"{{{part_id}}}")
-
-        if self._imported:
-            skill_parts.extend(self._import_unknown_tokens)
-
-        final_string = " ".join(main_parts) + " " + " ".join(skill_parts) + " |"
-        self.raw_output_edit.setText(final_string)
-        
-        encoded, err = b_encoder.encode_to_base85(final_string)
-        self._encode_error = bool(err)
-        self.b85_output_edit.setText(f"{self.ui_loc.get('dialogs', {}).get('error', 'Error')}: {err}" if err else encoded)
-
-    def _move_selected_items(self, source_list, dest_list, multiplier_box=None):
-        count_val = multiplier_box.value() if multiplier_box else 1
-        for item in source_list.selectedItems():
-            if item.flags() & Qt.ItemFlag.ItemIsEnabled:
-                 base_text = item.text()
-                 
-                 existing_item = None
-                 for i in range(dest_list.count()):
-                    sel_item = dest_list.item(i)
-                    sel_text = sel_item.text()
-                    
-                    match = re.match(r"\((\d+)\)\s+(.*)", sel_text)
-                    if match:
-                        current_count = int(match.group(1))
-                        current_name = match.group(2)
-                    else:
-                        current_count = 1
-                        current_name = sel_text
-                    
-                    if current_name == base_text:
-                        existing_item = sel_item
-                        break
-                
-                 if existing_item:
-                    new_count = current_count + count_val
-                    existing_item.setText(f"({new_count}) {base_text}")
-                 else:
-                    new_item = item.clone()
-                    if multiplier_box:
-                        new_item.setText(f"({count_val}) {base_text}")
-                    dest_list.addItem(new_item)
-        self.rebuild_output()
-
-    def _remove_selected_items(self, list_widget):
-        for item in list_widget.selectedItems():
-            list_widget.takeItem(list_widget.row(item))
-        self.rebuild_output()
-
-    def _clear_list(self, list_widget):
-        list_widget.clear()
-        self.rebuild_output()
-
-    def _copy_to_clipboard(self, line_edit):
-        clipboard = QApplication.clipboard()
-        clipboard.setText(line_edit.text())
-        QMessageBox.information(self, self.ui_loc['dialogs']['success'], self.ui_loc['dialogs']['copied'])
-        
-    def _add_to_backpack(self):
-        serial = self.b85_output_edit.text()
-        if not serial or getattr(self, '_encode_error', False):
-            QMessageBox.warning(self, self.ui_loc['dialogs']['no_valid_code'], self.ui_loc['dialogs']['gen_first'])
-            return
-        flag = self.flag_combo.currentText().split(" ")[0]
-        self.add_to_backpack_requested.emit(serial, flag)
-
-    def _populate_flags(self):
-        self.flag_combo.clear()
-        
-        flags_map = resource_loader.get_flag_labels(self.current_lang)
-        flag_values = [flags_map[k] for k in ("1", "3", "5", "17", "33", "65", "129")]
-        self.flag_combo.addItems(flag_values)
-        for i in range(self.flag_combo.count()):
-            if flags_map["3"] == self.flag_combo.itemText(i):
-                self.flag_combo.setCurrentIndex(i)
-
-    def _source_text(self, key):
-        return source_texts(self.current_lang)[{'new': 'new_source', 'copy': 'imported'}.get(key, key)]
-
-    def _update_source_bar_texts(self):
-        if not hasattr(self, 'source_bar'):
-            return
-        self.source_bar.backpack_btn.setText(self._source_text('backpack'))
-        self.source_bar.base85_btn.setText(self._source_text('base85'))
-        self.source_bar.reset_btn.setText(self._source_text('reset'))
-        text = self._source_text('copy').format(name=self._import_source_name) if self._imported else self._source_text('new')
-        self.source_bar.set_source(text, imported=self._imported)
-
-    def _import_from_backpack(self):
-        texts = source_texts(self.current_lang)
-        if not self.main_app or not hasattr(self.main_app, 'get_items_snapshot'):
-            QMessageBox.warning(self, texts['import_error'], texts['no_save'])
-            return
-        item = choose_backpack_item(
-            self,
-            self.main_app.get_items_snapshot(),
-            lambda candidate: candidate.get('container') == 'Backpack'
-            and (candidate.get('type_en') == 'Heavy Weapon' or candidate.get('id') in self.mfg_ids),
-            title=texts['backpack_title'],
-            search_placeholder=texts['search'],
-        )
-        if item:
-            self._load_serial_copy(item.get('serial', ''), item.get('name') or 'Heavy Weapon', item.get('state_flags'))
-
-    def _import_from_base85(self):
-        texts = source_texts(self.current_lang)
-        serial = prompt_base85(self, title=texts['base85_title'], label=texts['base85_label'])
-        if serial:
-            self._load_serial_copy(serial, 'Base85')
-
-    def open_item_serial(self, item: dict):
-        """公开入口：从 YAML 编辑器/物品快照跳转加载一件物品。类型不符时抛 ValueError。"""
-        flags = item.get('state_flags')
-        try:
-            flags = int(str(flags).strip()) if str(flags).strip() else None
-        except ValueError:
-            flags = None
-        self._load_serial_copy(item.get('serial', ''), source_name=item.get('name', 'Backpack'),
-                               state_flags=flags)
-
-    def _load_serial_copy(self, serial, source_name='Base85', state_flags=None):
-        texts = source_texts(self.current_lang)
-        try:
-            decoded = decode_base85(serial)
-            header = split_decoded(decoded)
-            if header['mfg_id'] not in self.mfg_ids:
-                raise ValueError(texts['wrong_type'])
-            component = header['component']
-            self._is_loading = True
-            self._imported = True
-            self._import_header = header
-            self._import_unknown_tokens = []
-            self._import_source_name = source_name
-
-            index = self.mfg_combo.findText(str(header['mfg_id']), Qt.MatchFlag.MatchEndsWith)
-            if index < 0:
-                raise ValueError(texts['wrong_type'])
-            self.mfg_combo.setEnabled(True)
-            self.mfg_combo.blockSignals(True)
-            self.mfg_combo.setCurrentIndex(index)
-            self.mfg_combo.blockSignals(False)
-            self.on_mfg_change()
-            self.mfg_combo.setEnabled(False)
-            self.level_edit.setText(str(header['level']))
-            self._clear_import_widgets()
-            self._apply_imported_components(component)
-            self._set_flag_value(state_flags)
-            self.source_bar.set_source(self._source_text('copy').format(name=source_name), imported=True)
-        except Exception as exc:
-            self._reset_import_source()
-            QMessageBox.warning(self, texts['import_error'], str(exc))
-            return False
-        finally:
-            self._is_loading = False
-        self.rebuild_output()
-        return True
-
-    def _clear_import_widgets(self):
-        for name in ('barrel', 'element', 'firmware'):
-            none_radio = getattr(self, f'_{name}_none_rb', None)
-            if none_radio:
-                none_radio.setChecked(True)
-        self.barrel_acc_sel_list.clear()
-        self.body_acc_sel_list.clear()
-
-    def _apply_imported_components(self, component):
+    # ------------------------------------------------------------------ #
+    # Import
+    # ------------------------------------------------------------------ #
+    def _apply_components(self, component):
+        from tabs.qt_serial_import import parse_components
         mfg_id = self._current_mfg_id()
-        rarity_ids = {int(self.rarity_combo.itemData(i)) for i in range(self.rarity_combo.count()) if self.rarity_combo.itemData(i) is not None}
-        body_rows = self.df_mfg[(self.df_mfg['Manufacturer ID'] == mfg_id) & (self.df_mfg['Part_type'] == 'Body')]
-        body_id = int(body_rows.iloc[0]['Part_ID']) if not body_rows.empty else None
-        barrel = {int(rb.property('part_id')): rb for rb in self.barrel_widgets if rb.property('part_id') is not None}
-        element = {str(rb.property('part_id')): rb for rb in self.element_widgets if rb.property('part_id') is not None}
-        firmware = {str(rb.property('part_id')): rb for rb in self.firmware_widgets if rb.property('part_id') is not None}
-        barrel_acc = self._list_lookup(self.barrel_acc_avail_list)
-        body_acc = self._list_lookup(self.body_acc_avail_list)
+        rarity_ids = self._rarity_index_map()
+        body_id = self._body_id(mfg_id)
+        barrel_pids = {int(p) for p in self._group_cfgs["barrel"]["_chip"].option_pids()}
+        barrel_acc = self._picker_item_map("barrel_acc")
+        body_acc = self._picker_item_map("body_acc")
 
         for token in parse_components(component):
             kind = token['type']
             if kind == 'simple':
                 part_id = token['id']
                 if part_id in rarity_ids:
-                    self._set_combo_data(self.rarity_combo, part_id)
-                elif part_id == body_id:
+                    self.rarity_combo.setCurrentIndex(rarity_ids[part_id])
+                elif body_id is not None and part_id == body_id:
                     continue
-                elif part_id in barrel:
-                    barrel[part_id].setChecked(True)
+                elif part_id in barrel_pids:
+                    self._select_group_pid("barrel", part_id)
                 elif part_id in barrel_acc:
-                    self._stack_selected(self.barrel_acc_sel_list, barrel_acc[part_id])
+                    self._picker_add("barrel_acc", barrel_acc[part_id])
                 elif part_id in body_acc:
-                    self._stack_selected(self.body_acc_sel_list, body_acc[part_id])
+                    self._picker_add("body_acc", body_acc[part_id])
                 else:
-                    self._import_unknown_tokens.append(f"{{{part_id}}}")
+                    self._preserved_tokens.append(f"{{{part_id}}}")
                 continue
-
             if kind in ('single', 'group'):
                 parent = token['id']
                 children = [token['value']] if kind == 'single' else token['children']
                 unknown = []
-                options = element if parent == 1 else firmware if parent == 244 else {}
+                key = "element" if parent == self.ELEMENT_PARENT else "firmware" if parent == self.FIRMWARE_PARENT else None
                 for child in children:
-                    radio = options.get(f'{parent}:{child}')
-                    if radio:
-                        radio.setChecked(True)
+                    if key and self._select_group_pid(key, f"{parent}:{child}"):
+                        pass
                     else:
                         unknown.append(child)
                 if unknown:
-                    self._import_unknown_tokens.append(self._format_group(parent, unknown))
+                    self._preserved_tokens.append(self._format_group(parent, unknown))
                 continue
-
-            self._import_unknown_tokens.append(f'"{token["value"]}"')
-
-    def _reset_import_source(self):
-        self._is_loading = True
-        self._imported = False
-        self._import_header = None
-        self._import_unknown_tokens = []
-        self._import_source_name = ""
-        if hasattr(self, 'mfg_combo'):
-            self.mfg_combo.setEnabled(True)
-            self.level_edit.setText(self._character_level)
-            self.on_mfg_change()
-            self._clear_import_widgets()
-            self._set_flag_value(None)
-        if hasattr(self, 'source_bar'):
-            self.source_bar.set_source(self._source_text('new'), imported=False)
-        self._is_loading = False
-        if hasattr(self, 'mfg_combo'):
-            self.rebuild_output()
-
-    def _current_mfg_id(self):
-        return int(self.mfg_combo.currentText().split(' - ')[-1])
-
-    @staticmethod
-    def _set_combo_data(combo, value):
-        for index in range(combo.count()):
-            if combo.itemData(index) is not None and int(combo.itemData(index)) == int(value):
-                combo.setCurrentIndex(index)
-                return True
-        return False
-
-    @staticmethod
-    def _list_lookup(list_widget):
-        return {int(list_widget.item(i).data(Qt.ItemDataRole.UserRole)): list_widget.item(i) for i in range(list_widget.count())}
-
-    @staticmethod
-    def _stack_selected(dest, source):
-        data = source.data(Qt.ItemDataRole.UserRole)
-        for index in range(dest.count()):
-            current = dest.item(index)
-            if current.data(Qt.ItemDataRole.UserRole) == data:
-                match = re.match(r"\((\d+)\)\s+(.*)", current.text())
-                current.setText(f"({int(match.group(1)) + 1 if match else 2}) {match.group(2) if match else current.text()}")
-                return
-        dest.addItem(source.clone())
+            self._preserved_tokens.append(f'"{token["value"]}"')
 
     @staticmethod
     def _format_group(parent, children):
         return f"{{{parent}:{children[0]}}}" if len(children) == 1 else f"{{{parent}:[{' '.join(map(str, children))}]}}"
-
-    def _set_flag_value(self, value):
-        select_flag_value(self.flag_combo, value)
-
-    def set_character_level(self, level: str):
-        """设置角色等级，更新默认等级显示。"""
-        self._character_level = level if level else "50"
-        if hasattr(self, 'level_edit') and not self._imported:
-            self.level_edit.setText(self._character_level)
