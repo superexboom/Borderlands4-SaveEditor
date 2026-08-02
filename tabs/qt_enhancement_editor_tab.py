@@ -200,6 +200,7 @@ class QtEnhancementEditorTab(QWidget):
             clear_text=self.ui_loc.get('buttons', {}).get('clear', self._pick_text("清空", "Clear")),
             disable_selected_source=True,
         )
+        self.stack_picker.add_sel_btn.setText(self._pick_text("添加所选 →", "Add selected →"))
         self.stack_picker.changed.connect(self.rebuild_output)
         stacking_layout.addWidget(self.stack_picker)
         main_layout.addWidget(stacking_group)
@@ -219,6 +220,7 @@ class QtEnhancementEditorTab(QWidget):
         self.stat_picker.set_subcategories([(k, self._sub_label(k)) for k in
                                             ['all', 'dmg', 'crit', 'firerate', 'acc', 'reload', 'mag',
                                              'splashdmg', 'splashradius', 'ads', 'se_dmg', 'se_chance', 'equip']], columns=4)
+        self.stat_picker.add_sel_btn.setText(self._pick_text("添加所选 →", "Add selected →"))
         self.stat_picker.changed.connect(self.rebuild_output)
         self._populate_stat_picker()
         builder_247_layout.addWidget(self.stat_picker)

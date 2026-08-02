@@ -23,9 +23,18 @@ from PyQt6.QtGui import QColor
 class ContainedWheelListWidget(QListWidget):
     """Keep wheel input inside a list, including at its scroll boundaries."""
 
+    activated = pyqtSignal()  # Enter/Return pressed
+
     def wheelEvent(self, event):
         super().wheelEvent(event)
         event.accept()
+
+    def keyPressEvent(self, event):
+        if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
+            self.activated.emit()
+            event.accept()
+            return
+        super().keyPressEvent(event)
 
 
 class ContainedWheelScrollArea(QScrollArea):
@@ -250,7 +259,15 @@ class CatalogPicker(QWidget):
         self.avail.setTextElideMode(Qt.TextElideMode.ElideRight)
         self.avail.setSelectionMode(QListWidget.SelectionMode.ExtendedSelection)
         self.avail.itemDoubleClicked.connect(self._on_avail_double)
+        self.avail.activated.connect(self.add_selected)
         avail_v.addWidget(self.avail)
+        # 多选批量加入：按钮 + 回车均可触发，与双击共用同一逻辑
+        self.add_sel_btn = QPushButton("添加所选 →")
+        self.add_sel_btn.setObjectName("catalogAddBtn")
+        self.add_sel_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.add_sel_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.add_sel_btn.clicked.connect(self.add_selected)
+        avail_v.addWidget(self.add_sel_btn)
         body.addWidget(avail_card, 1)
 
         sel_card = QFrame()
@@ -337,10 +354,18 @@ class CatalogPicker(QWidget):
     # Selection
     # ------------------------------------------------------------------ #
     def _on_avail_double(self, item):
+        # 双击加入"当前全部选中项"；若双击项不在选区里则只加它自己
         selected = self.avail.selectedItems()
         if item not in selected:
             selected = [item]
-        items = [row.data(Qt.ItemDataRole.UserRole) for row in selected
+        self._add_rows(selected)
+
+    def add_selected(self):
+        """把候选栏当前所有选中项加入右侧已选区（批量）。"""
+        self._add_rows(self.avail.selectedItems())
+
+    def _add_rows(self, rows):
+        items = [row.data(Qt.ItemDataRole.UserRole) for row in rows
                  if row.flags() & Qt.ItemFlag.ItemIsEnabled]
         for it in filter(None, items):
             self.add_item(it, refresh=False)

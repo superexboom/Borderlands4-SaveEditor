@@ -1396,6 +1396,21 @@ QListWidget::item:disabled {
     border: 1px solid {accent};
 }
 
+/* "Add selected" button under the catalog's available list */
+#catalogAddBtn {
+    background-color: {button_bg};
+    border: 1px solid {border_color};
+    border-radius: 6px;
+    padding: 4px 12px;
+    color: {text_primary};
+}
+
+#catalogAddBtn:hover {
+    background-color: {accent};
+    border: 1px solid {accent_hover};
+    color: white;
+}
+
 /* Category filter chips (reuse the element chip look) */
 #catalogChip {
     background-color: {bg_input};
@@ -1544,37 +1559,6 @@ QFrame#inlineCatalogRow[selected="true"] QLabel {
     background-color: {accent};
     border-color: {accent_hover};
     color: white;
-}
-
-/* ------------------------------------------------------------------ */
-/* Equipment tab: single-select option chips (element / firmware /    */
-/* prefix / barrel). Mirrors the catalog chip look so the four        */
-/* equipment tabs share the same frosted-glass visual language.       */
-/* ------------------------------------------------------------------ */
-#optionChip {
-    background-color: {bg_input};
-    border: 1px solid {border_color};
-    border-radius: 12px;
-    padding: 4px 10px;
-    color: {text_primary};
-    font-weight: normal;
-}
-
-#optionChip:hover {
-    border: 1px solid {accent};
-    background-color: {button_hover};
-}
-
-#optionChip:checked {
-    background-color: {accent};
-    border: 1px solid {accent_hover};
-    color: white;
-    font-weight: bold;
-}
-
-#optionChip:disabled {
-    color: {text_disabled};
-    border-color: {border_color};
 }
 
 /* Section title inside a card */

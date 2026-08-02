@@ -29,7 +29,6 @@ from tabs.qt_catalog_picker import (
     ContainedWheelListWidget,
     ContainedWheelScrollArea,
 )
-from PyQt6.QtWidgets import QButtonGroup, QSizePolicy
 from tabs.qt_serial_import import (
     SerialSourceBar,
     build_header,
@@ -43,80 +42,60 @@ from tabs.qt_serial_import import (
 )
 
 
-class ChipRadioGroup(QWidget):
-    """Mutually-exclusive option chips laid out in a wrapping grid.
+class OptionCombo(QWidget):
+    """Compact single-select option dropdown (replaces the chip grid).
 
-    A modern replacement for the old vertical scrollable list of radio
-    buttons. Emits ``changed`` whenever the selected part id changes.
+    A label-less combo box holding a "none" entry plus the option list.
+    Emits ``changed`` whenever the selected part id changes. Keeps the
+    frosted-glass combo styling from the global theme.
     """
 
     changed = pyqtSignal()
 
-    def __init__(self, columns=3, parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        self._columns = max(1, columns)
-        self._group = QButtonGroup(self)
-        self._group.setExclusive(True)
-        self._grid = QGridLayout(self)
-        self._grid.setContentsMargins(0, 0, 0, 0)
-        self._grid.setHorizontalSpacing(6)
-        self._grid.setVerticalSpacing(6)
-        self._group.buttonToggled.connect(self._on_toggled)
+        lay = QVBoxLayout(self)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
+        self.combo = QComboBox()
+        self.combo.setMaxVisibleItems(20)
+        lay.addWidget(self.combo)
+        self.combo.currentIndexChanged.connect(self._on_index)
 
-    def _on_toggled(self, _btn, checked):
-        if checked:
-            self.changed.emit()
-
-    def clear_options(self):
-        for b in list(self._group.buttons()):
-            self._group.removeButton(b)
-        while self._grid.count():
-            item = self._grid.takeAt(0)
-            w = item.widget()
-            if w is not None:
-                w.setParent(None)
-                w.deleteLater()
-        for c in range(64):
-            self._grid.setColumnStretch(c, 0)
+    def _on_index(self, _i):
+        self.changed.emit()
 
     def set_options(self, options):
-        """options: list of (part_id_or_None, label). First is auto-checked."""
-        self.clear_options()
-        for i, (pid, label) in enumerate(options):
-            btn = QPushButton(label)
-            btn.setObjectName("optionChip")
-            btn.setCheckable(True)
-            btn.setCursor(Qt.CursorShape.PointingHandCursor)
-            btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-            btn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-            btn.setToolTip(label)
-            btn.setProperty("part_id", pid)
-            self._group.addButton(btn)
-            self._grid.addWidget(btn, i // self._columns, i % self._columns)
-        for c in range(self._columns):
-            self._grid.setColumnStretch(c, 1)
-        if self._group.buttons():
-            self._group.buttons()[0].setChecked(True)
+        """options: list of (part_id_or_None, label). First entry auto-selected."""
+        self.combo.blockSignals(True)
+        self.combo.clear()
+        for pid, label in options:
+            self.combo.addItem(label, pid)
+            idx = self.combo.count() - 1
+            self.combo.setItemData(idx, label, Qt.ItemDataRole.ToolTipRole)
+        self.combo.setCurrentIndex(0)
+        self.combo.blockSignals(False)
 
     def selected_pid(self):
-        b = self._group.checkedButton()
-        return b.property("part_id") if b is not None else None
+        return self.combo.currentData()
 
     def select_pid(self, pid):
-        for b in self._group.buttons():
-            if b.property("part_id") == pid:
-                b.setChecked(True)
+        for i in range(self.combo.count()):
+            if self.combo.itemData(i) == pid:
+                self.combo.setCurrentIndex(i)
                 return True
         return False
 
     def select_none(self):
-        for b in self._group.buttons():
-            if not b.property("part_id"):
-                b.setChecked(True)
+        for i in range(self.combo.count()):
+            if not self.combo.itemData(i):
+                self.combo.setCurrentIndex(i)
                 return
+        self.combo.setCurrentIndex(0)
 
     def option_pids(self):
-        return [b.property("part_id") for b in self._group.buttons() if b.property("part_id")]
+        return [self.combo.itemData(i) for i in range(self.combo.count())
+                if self.combo.itemData(i)]
 
 
 class BaseEquipmentEditorTab(QWidget):
@@ -234,6 +213,7 @@ class BaseEquipmentEditorTab(QWidget):
                     selected_title=title,
                     clear_text=self.ui_loc['buttons'].get('clear', 'Clear'),
                 )
+                picker.add_sel_btn.setText(self._add_selected_text())
                 picker.list_min_height = cfg.get("min_height", 200)
                 picker.avail.setMinimumHeight(cfg.get("min_height", 200))
                 picker.selected.setMinimumHeight(cfg.get("min_height", 200))
@@ -258,10 +238,10 @@ class BaseEquipmentEditorTab(QWidget):
             elif mode == "chip":
                 group = QGroupBox(title)
                 v = QVBoxLayout(group)
-                chip = ChipRadioGroup(columns=cfg.get("columns", 3))
-                chip.changed.connect(self.rebuild_output)
-                v.addWidget(chip)
-                cfg["_chip"] = chip
+                combo = OptionCombo()
+                combo.changed.connect(self.rebuild_output)
+                v.addWidget(combo)
+                cfg["_chip"] = combo
             else:  # radio / checkbox scroll group
                 wtype = QRadioButton if mode == "radio" else QCheckBox
                 group, frame, widgets = self._create_scrollable_group(title, wtype)
@@ -276,6 +256,10 @@ class BaseEquipmentEditorTab(QWidget):
 
     def _avail_title(self):
         return self.ui_loc.get('misc', {}).get('available', '可选' if self.current_lang == 'zh-CN' else 'Available')
+
+    def _add_selected_text(self):
+        return self.ui_loc.get('buttons', {}).get('add_selected',
+               '添加所选 →' if self.current_lang == 'zh-CN' else 'Add selected →')
 
     def _create_scrollable_group(self, title, widget_type):
         group_box = QGroupBox(title)
@@ -785,6 +769,7 @@ class BaseEquipmentEditorTab(QWidget):
                 picker.set_search_placeholder(self._search_placeholder())
                 picker.clear_btn.setText(self.ui_loc['buttons'].get('clear', 'Clear'))
                 if mode == "picker":
+                    picker.add_sel_btn.setText(self._add_selected_text())
                     picker._sel_title = title
                     picker._update_count()
         self._populate_flags()
