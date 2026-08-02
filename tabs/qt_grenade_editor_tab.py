@@ -38,11 +38,11 @@ class QtGrenadeEditorTab(BaseEquipmentEditorTab):
 
     def _declare_perk_groups(self):
         return [
-            {"key": "mfg_perk", "mode": "checkbox", "title_key": "mfg_perks", "grid": (0, 0, 1, 1)},
-            {"key": "element", "mode": "chip", "title_key": "element", "columns": 3, "grid": (0, 1, 1, 1)},
-            {"key": "firmware", "mode": "chip", "title_key": "firmware", "columns": 3, "grid": (0, 2, 1, 1)},
-            {"key": "legendary", "mode": "picker", "title_key": "legendary", "stackable": False, "grid": (1, 0, 1, 3)},
-            {"key": "universal", "mode": "picker", "title_key": "universal", "stackable": True, "grid": (2, 0, 1, 3)},
+            {"key": "element", "mode": "chip", "title_key": "element", "columns": 3, "grid": (0, 0, 1, 1)},
+            {"key": "firmware", "mode": "chip", "title_key": "firmware", "columns": 3, "grid": (0, 1, 1, 2)},
+            {"key": "mfg_perk", "mode": "picker", "title_key": "mfg_perks", "stackable": False, "grid": (1, 0, 1, 3)},
+            {"key": "legendary", "mode": "picker", "title_key": "legendary", "stackable": False, "grid": (2, 0, 1, 3)},
+            {"key": "universal", "mode": "picker", "title_key": "universal", "stackable": True, "grid": (3, 0, 1, 3)},
         ]
 
     def _initial_preserved_children(self):
@@ -70,13 +70,17 @@ class QtGrenadeEditorTab(BaseEquipmentEditorTab):
         return items
 
     def _group_rows(self, key, mfg_id):
-        if key == "mfg_perk":
-            df = self.df_mfg[(self.df_mfg['Manufacturer ID'] == mfg_id) & (self.df_mfg['Part_type'] == 'Perk')]
-            return df, self._fmt_row
         # element/firmware populated once in _populate_initial_extra; skip refresh
         return None
 
     def _group_items(self, key, mfg_id):
+        if key == "mfg_perk":
+            items = []
+            df = self.df_mfg[(self.df_mfg['Manufacturer ID'] == mfg_id) & (self.df_mfg['Part_type'] == 'Perk')]
+            for _, r in df.iterrows():
+                text, part_id = self._fmt_row(r)
+                items.append({"key": f"m{part_id}", "label": text, "category": None, "data": int(part_id)})
+            return items
         if key == "legendary":
             return self._legendary_items(mfg_id)
         if key == "universal":
@@ -121,8 +125,9 @@ class QtGrenadeEditorTab(BaseEquipmentEditorTab):
         for pid in self._checked_part_ids("element", "firmware"):
             secondary.setdefault(self.SECONDARY_PARENT, []).append(pid)
         # mfg perks -> plain {id}
-        for pid in self._checked_part_ids("mfg_perk"):
-            skill_parts.append(f"{{{pid}}}")
+        for e in self._picker_entries("mfg_perk"):
+            for _ in range(self._count_of(e)):
+                skill_parts.append(f"{{{e['data']}}}")
         # universal -> secondary group 245 (stacked)
         for e in self._picker_entries("universal"):
             for _ in range(self._count_of(e)):
@@ -136,7 +141,7 @@ class QtGrenadeEditorTab(BaseEquipmentEditorTab):
         from tabs.qt_serial_import import parse_components
         mfg_id = self._current_mfg_id()
         rarity_ids = self._rarity_index_map()
-        mfg_perks = self._button_pid_map("mfg_perk")
+        mfg_perks = self._picker_item_map("mfg_perk")
         universal = self._picker_item_map("universal")
         legendary = self._picker_item_map("legendary")
 
@@ -150,7 +155,7 @@ class QtGrenadeEditorTab(BaseEquipmentEditorTab):
                 if part_id in rarity_ids:
                     self.rarity_combo.setCurrentIndex(rarity_ids[part_id])
                 elif part_id in mfg_perks:
-                    mfg_perks[part_id].setChecked(True)
+                    self._picker_add("mfg_perk", mfg_perks[part_id])
                 elif (part_id, mfg_id) in legendary:
                     self._picker_add("legendary", legendary[(part_id, mfg_id)])
                 else:
