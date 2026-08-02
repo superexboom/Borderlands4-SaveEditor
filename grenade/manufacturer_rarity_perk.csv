@@ -42,6 +42,8 @@
 270,8,Legendary Perk,筑垒阵地,Fortification,爆炸前会有随机语音：爆炸后，手雷在原地跳动，向外溅射伤害并散发气体，同时射出追踪弹，造成对应属性的伤害,"Random voice lines before explosion: After exploding, the grenade bounces in place dealing splash damage and releasing gas, while firing tracking shots dealing corresponding elemental damage"
 270,9,Rarity,Legendary,Legendary,导火索皮肤,Fuse skin
 270,10,Perk,代达洛斯,Daedalus,手雷在手持时会开始计时，并在固定时间后爆炸,Grenade timer starts when held and explodes after a fixed time
+270,11,Legendary Perk,钻石之手,Diamond Hands,投掷5枚分裂型手雷。握持手雷的时间越长，造成的伤害越高，但投掷的射弹数会减少。,Throws 5 Divider grenades. Cooking the grenade increases the Damage it deals and reduces the number of projectiles thrown.
+270,12,Rarity,Legendary,Legendary,高压锅皮肤,Pressure Kettle Skin
 272,1,Perk,教团,Order,手雷会自动追踪附近敌人,Grenades automatically track nearby enemies
 272,2,Rarity,Common,Common,,
 272,3,Rarity,Uncommon,Uncommon,,

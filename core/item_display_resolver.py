@@ -1116,7 +1116,11 @@ def weapon_generation_context(decoded: str) -> dict[str, Any]:
     foreign_parts = [ref for ref in refs if _weapon_generation_root(ref) not in {root_ref, "1"}]
     coverage_complete = bool(root_ref and weapon and composition_ref)
     coverage_complete &= not bool(composition.get("inheritance_cycle"))
-    coverage_complete &= not any(group["unresolved_parts"] for group in groups.values())
+    coverage_complete &= not any(
+        group["unresolved_parts"]
+        and (group.get("allowed") or group.get("effective_max", group["max"]) > 0)
+        for group in groups.values()
+    )
     coverage_complete &= not bool(unknown_parts or unknown_compositions)
     return {
         "root_ref": root_ref,
@@ -1190,6 +1194,7 @@ def validate_weapon_generation(decoded: str, allow_incomplete: bool = False) -> 
         group: data["unresolved_parts"]
         for group, data in context["groups"].items()
         if data["unresolved_parts"]
+        and (data.get("allowed") or data.get("effective_max", data["max"]) > 0)
     }
     if unresolved:
         add("unresolved_rule_parts", groups=unresolved)

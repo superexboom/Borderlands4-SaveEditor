@@ -35,7 +35,7 @@
 287,10,Model,/,/,,
 287,11,Rarity,Legendary,Legendary,跳房子皮肤,Hopscotch skin
 287,12,Legendary Perk,震荡,Shook,当护甲段破裂时，生成一个奇点,Spawns a Singularity when an Armor Segment breaks
-287,13,Legendary Perk,姐妹,Sister,"段数破裂时生成杀戮无人机。该无机将与秘藏猎同时开火，复制当前枪械的元素并造成枪械伤害的25%伤害","On Segment break, spawn a Kill Drone that fires alongside the Vault Hunter, mimicing their Gun's Element and deals 25% of the Gun's Damage"
+287,13,Legendary Perk,姐妹,Sister,段数破裂时生成杀戮无人机。该无机将与秘藏猎同时开火，复制当前枪械的元素并造成枪械伤害的25%伤害,"On Segment break, spawn a Kill Drone that fires alongside the Vault Hunter, mimicing their Gun's Element and deals 25% of the Gun's Damage"
 287,14,Rarity,Legendary,Legendary,小妹妹皮肤,Little Sister Skin
 293,1,Legendary Perk,玻璃,Glass,受到伤害时，获得一层决心，每有一层决心，所受伤害减少2%，最多叠加25层。能量护盾破裂时将释放星爆，造成7436伤害，每有一层决心，该伤害提升+20%,"When damaged, gain a stack of Determination. Each stack reduces Damage Taken by 2%, max 25 stacks. When Energy Shield breaks, release a Star Burst dealing 7436 Damage, increased by +20% per stack of Determination"
 293,2,Legendary Perk,直流电,Direct Current,通过落地猛击切换此效果开关。启用后，会持续消耗护盾并获得+40%加成电击伤害，但受到的伤害会直接穿透护盾,"Toggle via Ground Slam. When active, continuously drains Shield to gain +40% Bonus Shock Damage, but incoming Damage bypasses Shield"
@@ -61,7 +61,7 @@
 300,10,Model,/,/,,
 300,11,Legendary Perk,后门,Backdoor,能量护盾破裂时，对3名敌人触发星爆并造成5577伤害,"When Energy Shield breaks, trigger a Star Burst on 3 enemies dealing 5577 Damage"
 300,12,Rarity,Legendary,Legendary,防火线皮肤,Firebreak skin
-300,13,Legendary Perk,蜂群,Swarm,"能量护盾破裂时，成杀戮无人机冲向附近敌人，造成6320伤害并恢复15%护盾。护盾全满时，杀戮无人机会再次冲击","When breaks, spawn that charge a nearby enemy, deal 6320 damage and restore 15% shield. recharge while is full."
+300,13,Legendary Perk,蜂群,Swarm,能量护盾破裂时，成杀戮无人机冲向附近敌人，造成6320伤害并恢复15%护盾。护盾全满时，杀戮无人机会再次冲击,"When breaks, spawn that charge a nearby enemy, deal 6320 damage and restore 15% shield. recharge while is full."
 300,14,Rarity,Legendary,Legendary,蜂群过境皮肤,Over Swarm Skin
 306,1,Rarity,Common,Common,,
 306,2,Rarity,Uncommon,Uncommon,,
@@ -95,3 +95,5 @@
 321,8,Rarity,Legendary,Legendary,完成皮肤,Compleation skin
 321,9,Legendary Perk,西西弗斯式,Sisyphusian,护甲护盾全满时，立刻失去一个护甲段,Immediately lose an Armor Segment when Armor Shield becomes full
 321,10,Model,/,/,,
+321,11,Legendary Perk,电鳗,Electric Eel,滑铲时，向附近敌人发射导弹。滑铲结束时获得护甲。,"While sliding, launch missiles toward nearby enemies. Gain armor at the end of a slide."
+321,12,Rarity,Legendary,Legendary,水力机械皮肤,Hydrowerks Skin

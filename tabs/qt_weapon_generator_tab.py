@@ -1097,7 +1097,7 @@ class QtWeaponGeneratorTab(QWidget):
     def _element1_values(self):
         """纯元素（腐蚀/冰冻/燃烧/辐射/电击）。"""
         return [self._fmt_elem_value(r) for _, r in self.elemental_df.iterrows()
-                if str(r['Stat']) in self._PURE_ELEMENTS]
+                if str(r['Stat']).split(' (', 1)[0] in self._PURE_ELEMENTS]
 
     def _pearl_stat_values(self):
         return [self._fmt_pearl_value(r) for _, r in self.elemental_df.iterrows()
@@ -1126,7 +1126,7 @@ class QtWeaponGeneratorTab(QWidget):
         rows = self.elemental_df[self.elemental_df['Part_ID'] == int(pid)]
         if rows.empty:
             return None
-        stat = str(rows.iloc[0]['Stat'])
+        stat = str(rows.iloc[0]['Stat']).split(' (', 1)[0]
         return "Incendiary" if stat == "Fire" else stat
 
     def _switch_first_element(self, stat_en):

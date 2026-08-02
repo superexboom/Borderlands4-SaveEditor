@@ -9,6 +9,7 @@
 13,Daedalus,Assault Rifle,100,Rarity,Legendary,Oscar Mike,正在行动
 13,Daedalus,Assault Rifle,83,Rarity,Legendary,Mercredi,星期三
 13,Daedalus,Assault Rifle,87,Rarity,Legendary,Hard Dark,黑暗能量
+13,Daedalus,Assault Rifle,91,Rarity,Pearl,Kaos,混沌
 2,Daedalus,Pistol,95,Rarity,Common,,
 2,Daedalus,Pistol,96,Rarity,Uncommon,,
 2,Daedalus,Pistol,97,Rarity,Rare,,
@@ -16,6 +17,7 @@
 2,Daedalus,Pistol,54,Rarity,Legendary,Zipper,拉链
 2,Daedalus,Pistol,59,Rarity,Legendary,Rangefinder,测距仪
 2,Daedalus,Pistol,80,Rarity,Pearl,Soul Survivor,灵魂幸存者
+2,Daedalus,Pistol,84,Rarity,Legendary,Silver Sliver,银色碎片
 8,Daedalus,Shotgun,95,Rarity,Common,,
 8,Daedalus,Shotgun,96,Rarity,Uncommon,,
 8,Daedalus,Shotgun,97,Rarity,Rare,,
@@ -61,6 +63,7 @@
 9,Jakobs,Shotgun,91,Rarity,Legendary,T.K's Wave,尊者波动
 9,Jakobs,Shotgun,100,Rarity,Legendary,Doeshot,一命呼呼
 9,Jakobs,Shotgun,101,Rarity,Pearl,Constable,康斯特布尔
+9,Jakobs,Shotgun,104,Rarity,Legendary,Verce,诗篇
 24,Jakobs,Sniper,95,Rarity,Common,,
 24,Jakobs,Sniper,96,Rarity,Uncommon,,
 24,Jakobs,Sniper,97,Rarity,Rare,,
@@ -69,6 +72,7 @@
 24,Jakobs,Sniper,73,Rarity,Legendary,Borstel Ballista,博斯特尔弩炮
 24,Jakobs,Sniper,76,Rarity,Legendary,Truck,卡车
 24,Jakobs,Sniper,78,Rarity,Legendary,Fearstalker,恐惧追猎者
+24,Jakobs,Sniper,83,Rarity,Pearl,PRISM,棱镜
 10,Maliwan,Shotgun,95,Rarity,Common,,
 10,Maliwan,Shotgun,96,Rarity,Uncommon,,
 10,Maliwan,Shotgun,97,Rarity,Rare,,
@@ -98,6 +102,7 @@
 25,Maliwan,Sniper,80,Rarity,Legendary,Asher's Rise,亚瑟的崛起
 25,Maliwan,Sniper,82,Rarity,Pearl,Conflux,汇流
 25,Maliwan,Sniper,87,Rarity,Legendary,Marshall's Claw,马歇尔之爪
+25,Maliwan,Sniper,83,Rarity,Legendary,Stealth & Seek,潜行与追踪
 15,Order,Assault Rifle,95,Rarity,Common,,
 15,Order,Assault Rifle,96,Rarity,Uncommon,,
 15,Order,Assault Rifle,97,Rarity,Rare,,
@@ -105,6 +110,8 @@
 15,Order,Assault Rifle,75,Rarity,Legendary,G.M.R.,G.M.R.
 15,Order,Assault Rifle,76,Rarity,Legendary,Goalkeeper,门将
 15,Order,Assault Rifle,77,Rarity,Pearl,Crow-Sourced,大众协作
+15,Order,Assault Rifle,79,Rarity,Pearl,Pachonk,帕琼克
+15,Order,Assault Rifle,81,Rarity,Legendary,Divided Glow,分裂光芒
 4,Order,Pistol,95,Rarity,Common,,
 4,Order,Pistol,96,Rarity,Uncommon,,
 4,Order,Pistol,97,Rarity,Rare,,
@@ -133,6 +140,7 @@
 7,Ripper,Shotgun,100,Rarity,Legendary,Convergence,汇聚
 7,Ripper,Shotgun,56,Rarity,Legendary,Hair Trigger,一触即发
 7,Ripper,Shotgun,54,Rarity,Pearl,Crazed Earl,疯狂厄尔
+7,Ripper,Shotgun,65,Rarity,Legendary,Plumb Bob,铅垂线
 19,Ripper,SMG,95,Rarity,Common,,
 19,Ripper,SMG,96,Rarity,Uncommon,,
 19,Ripper,SMG,97,Rarity,Rare,,
@@ -168,6 +176,7 @@
 5,Tediore,Pistol,66,Rarity,Legendary,Ruby's Grasp,红宝石的触碰
 5,Tediore,Pistol,86,Rarity,Legendary,Inscriber,记录器
 5,Tediore,Pistol,89,Rarity,Legendary,Shammy Kablammy,诈爆轰轰
+5,Tediore,Pistol,99,Rarity,Legendary,Overconsumption,过度消耗
 11,Tediore,Shotgun,95,Rarity,Common,,
 11,Tediore,Shotgun,96,Rarity,Uncommon,,
 11,Tediore,Shotgun,97,Rarity,Rare,,
@@ -215,6 +224,7 @@
 18,Vladof,Assault Rifle,93,Rarity,Legendary,Whiskey Foxtrot,旺德发
 18,Vladof,Assault Rifle,100,Rarity,Legendary,Bubbles,泡泡
 18,Vladof,Assault Rifle,103,Rarity,Legendary,Laser-Cutter,激光切割器
+18,Vladof,Assault Rifle,105,Rarity,Legendary,Eradication,根除
 22,Vladof,SMG,95,Rarity,Common,,
 22,Vladof,SMG,96,Rarity,Uncommon,,
 22,Vladof,SMG,97,Rarity,Rare,,

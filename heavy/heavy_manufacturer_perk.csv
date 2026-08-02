@@ -65,6 +65,8 @@
 273,40,Barrel,Barrel_02_Ravenfire,（火箭筒）621,621 - Explosions radiate outward from the point of impact,爆炸会从撞击点向外辐射扩散,
 273,42,Barrel,Barrel_dahlfather,（火箭筒）诡计,Rig - Fires Dahl Soldier heads that attack nearby enemies,发射达尔士兵头颅攻击附近敌人,
 273,43,Rarity,,Legendary,Legendary,海姆达尔皮肤,Heimdahl Skin
+273,44,Barrel,part_barrel_loiter,剥削者,Sploiter,,
+273,45,Rarity,,Legendary,Legendary,徘徊剥削者皮肤,Loiter Sploiter Skin
 275,1,Barrel,Barrel_01_Streamer,（光束）委托模式,Delegation - Launches stationary Projectiles that each fire a Beam forward,发射会向前射出光束的静止射弹,
 275,2,Barrel Accessory,Barrel_01_A,爆炸,Explosive - Damage splashes to other enemies near the target,伤害溅射至目标附近的其他敌人,-Damage
 275,18,Barrel Accessory,Barrel_01_A,爆炸,Explosive - Damage splashes to other enemies near the target,伤害溅射至目标附近的其他敌人,-Damage
@@ -130,4 +132,4 @@
 289,27,Barrel,Barrel_01_ichor,（能量弹）致命危害,Deihazard - Deals Incendiary and Corrosive Damage,造成燃烧和腐蚀伤害,
 289,28,Rarity,,Legendary,Legendary,灵液皮肤,Ichor Skin
 289,29,Rarity,,Legendary,Legendary,库珀欺诈者皮肤,Cooper Duper Skin
-289,30,Barrel,part_barrel_02_barrel,"（能量魔球）全息爆桶","Holo-Barrel - Shoots holographic barrels that pierce enemies and attach to the world. Shooting attached barrels causes it to explode, dealing 16730 damage.","发射全息爆桶,其会穿透敌人并附着在场景中。射击附着的爆桶会引起爆炸,造成16730伤害",
+289,30,Barrel,part_barrel_02_barrel,（能量魔球）全息爆桶,"Holo-Barrel - Shoots holographic barrels that pierce enemies and attach to the world. Shooting attached barrels causes it to explode, dealing 16730 damage.","发射全息爆桶,其会穿透敌人并附着在场景中。射击附着的爆桶会引起爆炸,造成16730伤害",

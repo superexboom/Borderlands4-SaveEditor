@@ -21,7 +21,7 @@ for _stream_name in ("stdout", "stderr"):
         except (AttributeError, ValueError):
             pass
 
-VERSION = "3.9.1"
+VERSION = "3.9.2"
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QMessageBox, QFileDialog,
@@ -520,12 +520,7 @@ class MainWindow(QMainWindow):
         self.save_as_button.setObjectName("headerActionButton")
         self.save_as_button.clicked.connect(self.save_as_action.trigger)
 
-        header_layout.addWidget(self.open_button)
-        header_layout.addWidget(self.save_button)
-        header_layout.addWidget(self.save_as_button)
-
         self.lang_button = QPushButton(self._get_lang_button_text())
-        self.lang_button.setFixedWidth(60)
         
         self.lang_menu = QMenu(self)
         
@@ -544,24 +539,27 @@ class MainWindow(QMainWindow):
             self.lang_menu.addAction(action)
 
         self.lang_button.setMenu(self.lang_menu)
-        header_layout.addWidget(self.lang_button)
 
         # Theme toggle button (next to language button)
         self.theme_button = QPushButton(self.theme_manager.get_theme_icon())
         self.theme_button.setObjectName("themeButton")
-        self.theme_button.setFixedWidth(45)
         self.theme_button.setToolTip(self._get_theme_tooltip())
         self.theme_button.clicked.connect(self.toggle_theme)
-        header_layout.addWidget(self.theme_button)
 
         # Background toggle button (next to theme button)
         self.bg_button = QPushButton("🖼️")
         self.bg_button.setObjectName("bgButton")
-        self.bg_button.setFixedWidth(45)
         # We need a fallback tooltip text if not in dict
         self.bg_button.setToolTip(self.loc.get('header', {}).get('change_bg', 'Change Background'))
         self.bg_button.clicked.connect(self.change_background)
-        header_layout.addWidget(self.bg_button)
+
+        for button in (
+            self.open_button, self.save_button, self.save_as_button,
+            self.lang_button, self.theme_button, self.bg_button,
+        ):
+            button.setProperty("headerControl", True)
+            button.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+            header_layout.addWidget(button)
 
         header_layout.addStretch()
 

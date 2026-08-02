@@ -86,46 +86,30 @@ QMainWindow {
     border-radius: 0px;
 }
 
-/* Header action buttons */
-#headerBar #headerActionButton {
+/* Header file / language / appearance controls */
+#headerBar QPushButton[headerControl="true"] {
     background-color: {button_bg};
     border: 1px solid {border_color};
-    padding: 4px 16px;
+    padding: 4px 10px;
     border-radius: 5px;
-    min-width: 80px;
+    min-width: 64px;
     min-height: 30px;
     max-height: 30px;
     color: {text_primary};
 }
 
-#headerBar #headerActionButton:hover {
+#headerBar QPushButton[headerControl="true"]:hover {
     background-color: {button_hover};
     border: 1px solid {accent};
 }
 
-#headerBar #headerActionButton:pressed {
+#headerBar QPushButton[headerControl="true"]:pressed {
     background-color: {button_pressed};
 }
 
-#headerBar #headerActionButton:disabled {
+#headerBar QPushButton[headerControl="true"]:disabled {
     background-color: {bg_input};
     color: {text_disabled};
-}
-
-/* Theme toggle button */
-#themeButton {
-    background-color: transparent;
-    border: 1px solid {border_color};
-    padding: 4px 8px;
-    border-radius: 5px;
-    min-width: 40px;
-    max-width: 50px;
-    font-size: 14px;
-}
-
-#themeButton:hover {
-    background-color: {button_hover};
-    border: 1px solid {accent};
 }
 
 /* Labels ---------------------------------------------------------------- */

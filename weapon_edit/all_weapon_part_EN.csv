@@ -80,6 +80,7 @@
 13,Daedalus,Assault Rifle,89,Underbarrel,DAD_AR.part_underbarrel_04_atlas_ball_Mercredi,
 13,Daedalus,Assault Rifle,90,Underbarrel,DAD_AR.part_underbarrel_04_atlas_Mercredi,
 13,Daedalus,Assault Rifle,86,Barrel,DAD_AR.part_barrel_02_harddark,Hard Dark
+13,Daedalus,Assault Rifle,88,Barrel,DAD_AR.part_barrel_02_kaos,Kaos
 2,Daedalus,Pistol,1,Barrel,DAD_PS.part_barrel_01_zipgun,Zipper
 2,Daedalus,Pistol,2,Body,DAD_PS.part_body,
 2,Daedalus,Pistol,3,Body Accessory,DAD_PS.part_body_a,
@@ -157,6 +158,7 @@
 2,Daedalus,Pistol,79,Barrel,DAD_PS.part_barrel_02_soulsurvivor,Soul Survivor
 2,Daedalus,Pistol,82,Manufacturer Part,DAD_PS.part_mag_torgue_normal_soulsurvivor,Soul Survivor
 2,Daedalus,Pistol,81,Manufacturer Part,DAD_PS.part_mag_torgue_sticky_soulsurvivor,Soul Survivor
+2,Daedalus,Pistol,83,Barrel,DAD_PS.part_barrel_01_silversliver,Silver Sliver
 8,Daedalus,Shotgun,2,Body,DAD_SG.part_body,
 8,Daedalus,Shotgun,3,Body Accessory,DAD_SG.part_body_a,
 8,Daedalus,Shotgun,4,Body Accessory,DAD_SG.part_body_b,
@@ -556,6 +558,7 @@
 9,Jakobs,Shotgun,94,Magazine,JAK_SG.part_mag_01_b02,
 9,Jakobs,Shotgun,99,Barrel,JAK_SG.part_barrel_Doeshot,Doeshot
 9,Jakobs,Shotgun,102,Barrel,JAK_SG.part_barrel_01_constable,Constable
+9,Jakobs,Shotgun,103,Barrel,JAK_SG.part_barrel_verce,Verce
 24,Jakobs,Sniper,2,Body,JAK_SR.part_body,
 24,Jakobs,Sniper,3,Body Accessory,JAK_SR.part_body_a,
 24,Jakobs,Sniper,4,Body Accessory,JAK_SR.part_body_b,
@@ -631,6 +634,7 @@
 24,Jakobs,Sniper,77,Barrel,JAK_SR.part_barrel_02_fearstalker,Fearstalker
 24,Jakobs,Sniper,81,Manufacturer Part,JAK_SR.part_mag_torgue_normal_fearstalker,Fearstalker
 24,Jakobs,Sniper,80,Manufacturer Part,JAK_SR.part_mag_torgue_sticky_fearstalker,Fearstalker
+24,Jakobs,Sniper,82,Barrel,JAK_SR.part_barrel_02_burrow,PRISM
 10,Maliwan,Shotgun,2,Body,MAL_SG.part_body,
 10,Maliwan,Shotgun,3,Body Accessory,MAL_SG.part_body_a,
 10,Maliwan,Shotgun,4,Body Accessory,MAL_SG.part_body_b,
@@ -867,6 +871,7 @@
 25,Maliwan,Sniper,81,Barrel,MAL_SR.part_barrel_02_conflux,Conflux
 25,Maliwan,Sniper,85,Barrel,MAL_SR.part_barrel_01_manifest,Marshall's Claw
 25,Maliwan,Sniper,86,Magazine Accessory,MAL_SR.part_mag_05_borg_acc_manifest,Marshall's Claw
+25,Maliwan,Sniper,84,Barrel,MAL_SR.part_barrel_02_stealth,Stealth & Seek
 15,Order,Assault Rifle,1,Scope,ORD_AR.part_scope_02_lens_02_gmr,
 15,Order,Assault Rifle,2,Barrel,ORD_AR.part_barrel_02_gmr,G.M.R.
 15,Order,Assault Rifle,3,Body Accessory,ORD_AR.part_body_a,
@@ -941,6 +946,8 @@
 15,Order,Assault Rifle,72,Barrel,ORD_AR.part_barrel_02_goalkeeper,Goalkeeper
 15,Order,Assault Rifle,74,Body,ORD_AR.part_body,
 15,Order,Assault Rifle,78,Barrel,ORD_AR.part_barrel_02_crowsourced,Crow-Sourced
+15,Order,Assault Rifle,80,Barrel,ORD_AR.part_barrel_02_pchonk,Pachonk
+15,Order,Assault Rifle,82,Barrel,ORD_AR.part_barrel_02_testament,Divided Glow
 4,Order,Pistol,1,Magazine,ORD_PS.part_mag_03_rocketreload,Lucky Clover
 4,Order,Pistol,2,Body,ORD_PS.part_body,
 4,Order,Pistol,3,Body Accessory,ORD_PS.part_body_a,
@@ -1174,6 +1181,7 @@
 7,Ripper,Shotgun,21,Barrel,BOR_SG.part_barrel_crazedearl,Crazed Earl
 7,Ripper,Shotgun,58,Magazine,BOR_SG.part_mag_01_crazedearl,Crazed Earl
 7,Ripper,Shotgun,57,Magazine,BOR_SG.part_mag_02_crazedearl,Crazed Earl
+7,Ripper,Shotgun,59,Barrel,BOR_SG.part_unique_barrel_02_plumbbob,Plumb Bob
 19,Ripper,SMG,2,Body,BOR_SM.part_body,
 19,Ripper,SMG,3,Body Accessory,BOR_SM.part_body_a,
 19,Ripper,SMG,4,Body Accessory,BOR_SM.part_body_b,
@@ -1486,6 +1494,9 @@
 5,Tediore,Pistol,84,Manufacturer Part,TED_PS.part_mag_torgue_normal_Inscriber,Inscriber
 5,Tediore,Pistol,85,Barrel,TED_PS.part_barrel_02_Inscriber,Inscriber
 5,Tediore,Pistol,88,Barrel,TED_PS.part_barrel_01_shammy,Shammy Kablammy
+5,Tediore,Pistol,92,Grip,TED_PS.part_grip_05a_ted_legs_earlyexcess,
+5,Tediore,Pistol,93,Foregrip,TED_PS.part_underbarrel_02_rockets_earlyexcess,
+5,Tediore,Pistol,94,Barrel,TED_PS.part_barrel_02_earlyexcess,Overconsumption
 11,Tediore,Shotgun,2,Body,TED_SG.part_body,
 11,Tediore,Shotgun,3,Body Accessory,TED_SG.part_body_a,
 11,Tediore,Shotgun,4,Body Accessory,TED_SG.part_body_b,
@@ -1897,6 +1908,7 @@
 18,Vladof,Assault Rifle,99,Barrel,VLA_AR.part_barrel_01_bubbles,Bubbles
 18,Vladof,Assault Rifle,102,Barrel,VLA_AR.part_barrel_01_lasercutter,Laser-Cutter
 18,Vladof,Assault Rifle,101,Underbarrel,VLA_AR.part_underbarrel_07_secondbarrel_lasercutter,
+18,Vladof,Assault Rifle,104,Barrel,VLA_AR.part_barrel_01_extinction,Eradication
 22,Vladof,SMG,2,Body,VLA_SM.part_body,
 22,Vladof,SMG,3,Body Accessory,VLA_SM.part_body_a,
 22,Vladof,SMG,4,Body Accessory,VLA_SM.part_body_b,
