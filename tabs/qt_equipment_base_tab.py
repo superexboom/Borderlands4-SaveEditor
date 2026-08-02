@@ -267,6 +267,7 @@ class BaseEquipmentEditorTab(QWidget):
                 group, frame, widgets = self._create_scrollable_group(title, wtype)
                 self._group_widgets[key] = widgets
                 cfg["_frame"] = frame
+            cfg["_group_box"] = group
             row, col, rowspan, colspan = cfg.get("grid", (0, 0, 1, 1))
             perks_layout.addWidget(group, row, col, rowspan, colspan)
 
@@ -778,18 +779,14 @@ class BaseEquipmentEditorTab(QWidget):
         for key, cfg in self._group_cfgs.items():
             title = self.ui_loc['groups'].get(cfg["title_key"], cfg["title_key"])
             mode = cfg.get("mode", "picker")
+            cfg["_group_box"].setTitle(title)
             if mode in ("picker", "inline"):
                 picker = self._group_pickles[key]
-                picker.parentWidget().setTitle(title)
                 picker.set_search_placeholder(self._search_placeholder())
                 picker.clear_btn.setText(self.ui_loc['buttons'].get('clear', 'Clear'))
                 if mode == "picker":
                     picker._sel_title = title
                     picker._update_count()
-            elif mode == "chip":
-                cfg["_chip"].parentWidget().setTitle(title)
-            else:
-                cfg["_frame"].parentWidget().parentWidget().setTitle(title)
         self._populate_flags()
         self._update_language_texts_extra()
         # data refresh
