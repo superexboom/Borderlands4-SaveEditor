@@ -417,6 +417,7 @@ class QtClassModEditorTab(QWidget):
             stackable=True,
             search_placeholder=self.ui_loc['perks'].get('search_placeholder', self._pick_text("搜索…", "Search...")),
             clear_text=self.ui_loc['perks'].get('clear', self._pick_text("清空", "Clear")),
+            multi_select=True,
         )
         self.perk_picker.list.setMinimumHeight(286)
         self.perk_picker.changed.connect(self.update_string)

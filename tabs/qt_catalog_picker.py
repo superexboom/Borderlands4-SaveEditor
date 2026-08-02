@@ -106,6 +106,7 @@ class SelectedRow(QWidget):
     """One row in the selected cart: label + optional [-] N [+] + remove."""
 
     countChanged = pyqtSignal()
+    increaseRequested = pyqtSignal()
     removed = pyqtSignal()
     ROW_HEIGHT = 40
 
@@ -143,7 +144,7 @@ class SelectedRow(QWidget):
             self.btn_plus.setFixedSize(QSize(26, 26))
             self.btn_plus.setCursor(Qt.CursorShape.PointingHandCursor)
             self.btn_plus.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-            self.btn_plus.clicked.connect(self._inc)
+            self.btn_plus.clicked.connect(self.increaseRequested.emit)
 
             lay.addWidget(self.btn_minus, 0, Qt.AlignmentFlag.AlignVCenter)
             lay.addWidget(self.count_lbl, 0, Qt.AlignmentFlag.AlignVCenter)
@@ -172,11 +173,6 @@ class SelectedRow(QWidget):
             self.count_lbl.setText(str(self._count))
         self.countChanged.emit()
 
-    def _inc(self):
-        self._count += 1
-        self.count_lbl.setText(str(self._count))
-        self.countChanged.emit()
-
     def _dec(self):
         if self._count > 1:
             self._count -= 1
@@ -201,9 +197,11 @@ class CatalogPicker(QWidget):
 
     def __init__(self, stackable=True, search_placeholder="",
                  avail_title="", selected_title="", clear_text="Clear",
+                 disable_selected_source=False,
                  parent=None):
         super().__init__(parent)
         self._stackable = stackable
+        self._disable_selected_source = disable_selected_source
         self._source = []
         self._selected_keys = {}  # key -> QListWidgetItem
 
@@ -250,6 +248,7 @@ class CatalogPicker(QWidget):
         self.avail.setMinimumHeight(200)
         self.avail.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.avail.setTextElideMode(Qt.TextElideMode.ElideRight)
+        self.avail.setSelectionMode(QListWidget.SelectionMode.ExtendedSelection)
         self.avail.itemDoubleClicked.connect(self._on_avail_double)
         avail_v.addWidget(self.avail)
         body.addWidget(avail_card, 1)
@@ -274,7 +273,7 @@ class CatalogPicker(QWidget):
         self.selected = ContainedWheelListWidget()
         self.selected.setObjectName("catalogSelectedList")
         self.selected.setMinimumHeight(200)
-        self.selected.setSelectionMode(QListWidget.SelectionMode.NoSelection)
+        self.selected.setSelectionMode(QListWidget.SelectionMode.ExtendedSelection)
         sel_v.addWidget(self.selected)
         body.addWidget(sel_card, 1)
 
@@ -330,17 +329,24 @@ class CatalogPicker(QWidget):
             lwi = QListWidgetItem(it.get("label", ""))
             lwi.setData(Qt.ItemDataRole.UserRole, it)
             lwi.setToolTip(it.get("label", ""))
+            if self._disable_selected_source and it.get("key") in self._selected_keys:
+                lwi.setFlags(lwi.flags() & ~Qt.ItemFlag.ItemIsEnabled & ~Qt.ItemFlag.ItemIsSelectable)
             self.avail.addItem(lwi)
 
     # ------------------------------------------------------------------ #
     # Selection
     # ------------------------------------------------------------------ #
     def _on_avail_double(self, item):
-        it = item.data(Qt.ItemDataRole.UserRole)
-        if it:
-            self.add_item(it)
+        selected = self.avail.selectedItems()
+        if item not in selected:
+            selected = [item]
+        items = [row.data(Qt.ItemDataRole.UserRole) for row in selected
+                 if row.flags() & Qt.ItemFlag.ItemIsEnabled]
+        for it in filter(None, items):
+            self.add_item(it, refresh=False)
+        self._refilter()
 
-    def add_item(self, it, count=1):
+    def add_item(self, it, count=1, refresh=True):
         key = it["key"]
         if key in self._selected_keys:
             if self._stackable:
@@ -358,16 +364,30 @@ class CatalogPicker(QWidget):
         self.selected.setItemWidget(lwi, row)
         self._selected_keys[key] = lwi
         row.countChanged.connect(self.changed.emit)
+        if self._stackable:
+            row.increaseRequested.connect(lambda k=key: self._increase_key(k))
         # 延迟到下一轮事件循环再删除，避免在按钮自身点击槽内销毁其宿主控件导致崩溃
         row.removed.connect(lambda k=key: QTimer.singleShot(0, lambda: self._remove_key(k)))
         self._update_count()
+        if refresh:
+            self._refilter()
         self.changed.emit()
+
+    def _increase_key(self, key):
+        clicked = self._selected_keys.get(key)
+        selected = self.selected.selectedItems()
+        targets = selected if clicked in selected and len(selected) > 1 else [clicked]
+        for lwi in filter(None, targets):
+            row = self.selected.itemWidget(lwi)
+            if row is not None:
+                row.set_count(row.count() + 1)
 
     def _remove_key(self, key):
         lwi = self._selected_keys.pop(key, None)
         if lwi is not None:
             self.selected.takeItem(self.selected.row(lwi))
         self._update_count()
+        self._refilter()
         self.changed.emit()
 
     def remove_key(self, key):
@@ -380,6 +400,7 @@ class CatalogPicker(QWidget):
         self.selected.clear()
         self._selected_keys = {}
         self._update_count()
+        self._refilter()
         self.changed.emit()
 
     def entries(self):
@@ -415,6 +436,7 @@ class InlineCatalogRow(QFrame):
     """Single catalog row with an inline selector or bounded stepper."""
 
     countChanged = pyqtSignal(int)
+    increaseRequested = pyqtSignal()
     ROW_HEIGHT = 58
     ACCENTS = {
         "red": "#d75b67",
@@ -479,7 +501,7 @@ class InlineCatalogRow(QFrame):
             self.plus_btn = QPushButton("+")
             self.plus_btn.setObjectName("rowStepBtn")
             self.plus_btn.setFixedSize(QSize(28, 28))
-            self.plus_btn.clicked.connect(self._increase)
+            self.plus_btn.clicked.connect(self.increaseRequested.emit)
             layout.addWidget(self.minus_btn)
             layout.addWidget(self.count_label)
             layout.addWidget(self.plus_btn)
@@ -495,9 +517,6 @@ class InlineCatalogRow(QFrame):
 
     def sizeHint(self):
         return QSize(super().sizeHint().width(), self.ROW_HEIGHT)
-
-    def _increase(self):
-        self.set_count(min(self._max_count, self._count + 1))
 
     def _decrease(self):
         self.set_count(max(0, self._count - 1))
@@ -539,9 +558,11 @@ class InlineCatalogPicker(QWidget):
 
     changed = pyqtSignal()
 
-    def __init__(self, stackable=True, search_placeholder="", clear_text="Clear", parent=None):
+    def __init__(self, stackable=True, search_placeholder="", clear_text="Clear",
+                 multi_select=False, parent=None):
         super().__init__(parent)
         self._stackable = stackable
+        self._multi_select = bool(multi_select and stackable)
         self._source = []
         self._counts = {}
 
@@ -572,7 +593,10 @@ class InlineCatalogPicker(QWidget):
         self.list = ContainedWheelListWidget()
         self.list.setObjectName("inlineCatalogList")
         self.list.setMinimumHeight(220)
-        self.list.setSelectionMode(QListWidget.SelectionMode.NoSelection)
+        mode = (QListWidget.SelectionMode.ExtendedSelection if self._multi_select
+                else QListWidget.SelectionMode.NoSelection)
+        self.list.setSelectionMode(mode)
+        self.list.itemSelectionChanged.connect(self._sync_selection_style)
         self.list.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         root.addWidget(self.list)
 
@@ -605,9 +629,59 @@ class InlineCatalogPicker(QWidget):
             list_item.setData(Qt.ItemDataRole.UserRole, item)
             row = InlineCatalogRow(item, self._counts.get(item["key"], 0), self._stackable)
             row.countChanged.connect(lambda count, key=item["key"]: self._set_count(key, count))
+            row.increaseRequested.connect(lambda key=item["key"]: self._increase_key(key))
             list_item.setSizeHint(row.sizeHint())
             self.list.addItem(list_item)
             self.list.setItemWidget(list_item, row)
+        self._sync_selection_style()
+
+    def _increase_key(self, key):
+        targets = [key]
+        if self._multi_select:
+            selected = [
+                item.data(Qt.ItemDataRole.UserRole)["key"]
+                for item in self.list.selectedItems()
+            ]
+            if key in selected:
+                targets = selected
+
+        source = {item["key"]: item for item in self._source}
+        changed = False
+        for target in targets:
+            item = source.get(target)
+            if item is None:
+                continue
+            maximum = max(1, int(item.get("max_count", 99)))
+            count = min(maximum, self._counts.get(target, 0) + 1)
+            if count == self._counts.get(target, 0):
+                continue
+            self._counts[target] = count
+            for row_index in range(self.list.count()):
+                list_item = self.list.item(row_index)
+                row_item = list_item.data(Qt.ItemDataRole.UserRole)
+                if row_item["key"] != target:
+                    continue
+                row = self.list.itemWidget(list_item)
+                row.blockSignals(True)
+                row.set_count(count)
+                row.blockSignals(False)
+                break
+            changed = True
+        if changed:
+            self._update_count()
+            self.changed.emit()
+
+    def _sync_selection_style(self):
+        for index in range(self.list.count()):
+            item = self.list.item(index)
+            row = self.list.itemWidget(item)
+            selected = self._multi_select and item.isSelected()
+            if row is None or row.property("batchSelected") == selected:
+                continue
+            row.setProperty("batchSelected", selected)
+            row.style().unpolish(row)
+            row.style().polish(row)
+            row.update()
 
     def _set_count(self, key, count):
         if count > 0:
@@ -992,6 +1066,8 @@ class FacetedCatalogPicker(QWidget):
         self.selected.setItemWidget(lwi, row)
         self._selected_keys[key] = lwi
         row.countChanged.connect(self.changed.emit)
+        if self._stackable:
+            row.increaseRequested.connect(lambda r=row: r.set_count(r.count() + 1))
         row.removed.connect(lambda k=key: QTimer.singleShot(0, lambda: self._remove_key(k)))
         self._update_count()
         self.changed.emit()

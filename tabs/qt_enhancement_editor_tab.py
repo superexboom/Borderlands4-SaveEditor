@@ -193,11 +193,12 @@ class QtEnhancementEditorTab(QWidget):
         stacking_group = QGroupBox(self.ui_loc['groups']['perk_stacking'])
         stacking_layout = QVBoxLayout(stacking_group)
         self.stack_picker = CatalogPicker(
-            stackable=True,
+            stackable=False,
             search_placeholder=self._loc('picker', 'search_placeholder', "Search..."),
             avail_title=self._loc('picker', 'available', "Available (double-click to add)"),
             selected_title=self._loc('picker', 'selected_stacks', "Selected Stacks"),
             clear_text=self.ui_loc.get('buttons', {}).get('clear', self._pick_text("清空", "Clear")),
+            disable_selected_source=True,
         )
         self.stack_picker.changed.connect(self.rebuild_output)
         stacking_layout.addWidget(self.stack_picker)
@@ -579,7 +580,7 @@ class QtEnhancementEditorTab(QWidget):
                     idx = perk['index']
                     items.append({
                         "key": f"{mfg}:{idx}",
-                        "label": f"[{idx}] {self._(perk['name'])} \u2014 {self._(mfg)}",
+                        "label": f"{self._(perk['name'])} \u2014 {self._(mfg)}",
                         "category": mfg,
                         "subcategory": None,
                         "data": {"mfg": mfg, "idx": idx},

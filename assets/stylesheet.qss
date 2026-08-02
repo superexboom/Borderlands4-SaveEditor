@@ -1350,6 +1350,11 @@ QListWidget::item:selected {
     color: white;
 }
 
+QListWidget::item:disabled {
+    color: {text_disabled};
+    background-color: transparent;
+}
+
 /* Selected cart rows need extra vertical room for inline +/- controls */
 #catalogSelectedList::item {
     padding: 4px 6px;
@@ -1503,6 +1508,12 @@ QPushButton#catalogChip[catKey="blue"]:checked {
 QFrame#inlineCatalogRow[selected="true"] {
     background-color: {selection_bg};
     border-color: {accent_hover};
+}
+
+QFrame#inlineCatalogRow[batchSelected="true"] {
+    border-top: 2px solid {accent};
+    border-right: 2px solid {accent};
+    border-bottom: 2px solid {accent};
 }
 
 QFrame#inlineCatalogRow[selected="true"] QLabel {

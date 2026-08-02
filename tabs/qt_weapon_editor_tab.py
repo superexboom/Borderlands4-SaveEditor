@@ -1513,11 +1513,13 @@ class WeaponEditorTab(QtWidgets.QWidget):
             name = name or (self._loc('parts', 'unnamed_barrel', "Unnamed Barrel") if part_type == "Barrel" else "")
             detail = " · ".join(value for value in (name, description) if value)
             metadata = " / ".join(self.get_localized_string(value) for value in (manufacturer, weapon_type, part_type))
-            label = f"{detail}  [{metadata}]"
+            id_label = f"ID {part_id}"
+            display_name = name or part_type
+            label = f"{detail or display_name}  [{metadata}] [{id_label}]"
             source.append({
                 "key": f"normal:{item_id}:{part_id}", "label": label, "category": part_type,
                 "subcategory": manufacturer, "tertiary": weapon_type,
-                "title": name or part_type, "detail": description,
+                "title": f"[{id_label}] {display_name}", "detail": description,
                 "badges": [self.get_localized_string(manufacturer),
                            self.get_localized_string(weapon_type),
                            self.get_localized_string(part_type)],
@@ -1531,10 +1533,14 @@ class WeaponEditorTab(QtWidgets.QWidget):
             name = str(row[self.elemental_stat_col])
             part_type = self._elemental_part_type(row)
             stat_text = str(row['Stat'])
+            metadata = " / ".join((self.get_localized_string(elemental_type),
+                                   self.get_localized_string(part_type)))
+            id_label = f"ID {part_id}"
             source.append({
-                "key": f"elemental:{element_id}:{part_id}", "label": name, "category": part_type,
+                "key": f"elemental:{element_id}:{part_id}",
+                "label": f"{name}  [{metadata}] [{id_label}]", "category": part_type,
                 "subcategory": elemental_type, "tertiary": elemental_type,
-                "title": name, "detail": stat_text,
+                "title": f"[{id_label}] {name}", "detail": stat_text,
                 "badges": [self.get_localized_string(elemental_type),
                            self.get_localized_string(part_type)],
                 "search_text": stat_text,
@@ -1587,13 +1593,15 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 metadata = " / ".join(
                     self.get_localized_string(value) for value in (manufacturer, weapon_type, part_type)
                 )
+                id_label = f"ID {part_id}"
+                display_name = name or part_type
                 source.append({
                     "key": f"{data_type}:{item_id}:{part_id}",
-                    "label": f"{detail or part_type}  [{metadata}]",
+                    "label": f"{detail or display_name}  [{metadata}] [{id_label}]",
                     "category": part_type,
                     "subcategory": manufacturer,
                     "tertiary": weapon_type,
-                    "title": name or part_type,
+                    "title": f"[{id_label}] {display_name}",
                     "detail": description,
                     "badges": [self.get_localized_string(manufacturer),
                                self.get_localized_string(weapon_type),
