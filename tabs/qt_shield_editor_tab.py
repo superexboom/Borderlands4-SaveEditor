@@ -42,6 +42,11 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
         self._source_model_present = False
         super().__init__(main_app, parent)
 
+    def _build_perk_groups(self, perks_layout):
+        super()._build_perk_groups(perks_layout)
+        perks_layout.setColumnStretch(0, 1)
+        perks_layout.setColumnStretch(1, 1)
+
     def _declare_perk_groups(self):
         return [
             {"key": "element", "mode": "chip", "title_key": "element", "columns": 3, "grid": (0, 0, 1, 1)},

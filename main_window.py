@@ -25,12 +25,12 @@ VERSION = "3.9.2"
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QMessageBox, QFileDialog,
-    QStackedWidget, QButtonGroup, QSizeGrip, QInputDialog,
-    QMenu, QGraphicsBlurEffect, QStackedLayout, QSizePolicy, QCheckBox,
+    QStackedWidget, QButtonGroup, QInputDialog,
+    QMenu, QGraphicsBlurEffect, QStackedLayout, QSizePolicy, QCheckBox, QLayout,
     QScrollArea
 )
 from PyQt6.QtGui import QAction, QIcon, QPixmap, QPainter
-from PyQt6.QtCore import pyqtSlot, QPropertyAnimation, QEasingCurve, Qt, QTimer, QObject, QThread, pyqtSignal
+from PyQt6.QtCore import pyqtSlot, Qt, QTimer, QObject, QThread, pyqtSignal, QEvent, QRect
 
 from core import b_encoder
 from core import resource_loader
@@ -275,6 +275,14 @@ class BatchAddWorker(QObject):
 
 
 class MainWindow(QMainWindow):
+    _NAV_STATE_KEY = 'nav_bar_expanded'
+    _NAV_SMALL_SCREEN_WIDTH = 1050
+    _NAV_COLLAPSED_WIDTH = 56
+    _NAV_EXPANDED_MIN_WIDTH = 196
+    _NAV_EXPANDED_MAX_WIDTH = 240
+    _NAV_HORIZONTAL_CHROME = 46
+    _RESIZE_MARGIN = 8
+
     def __init__(self):
         super().__init__()
         from PyQt6.QtCore import QSettings
@@ -295,9 +303,16 @@ class MainWindow(QMainWindow):
         self.controller = SaveGameController()
         self._items_snapshot = None
         self._dirty_item_views = {"items", "weapon", "yaml"}
-        self.is_nav_bar_expanded = True
-        self.nav_bar_width_expanded = 150
-        self.nav_bar_width_collapsed = 60
+        screen = QApplication.primaryScreen()
+        screen_width = screen.availableGeometry().width() if screen else 1600
+        if self._settings.contains(self._NAV_STATE_KEY):
+            self.is_nav_bar_expanded = self._settings.value(
+                self._NAV_STATE_KEY, True, type=bool
+            )
+        else:
+            self.is_nav_bar_expanded = screen_width >= self._NAV_SMALL_SCREEN_WIDTH
+        self.nav_bar_width_expanded = self._NAV_EXPANDED_MIN_WIDTH
+        self.nav_bar_width_collapsed = self._NAV_COLLAPSED_WIDTH
 
         # Apply themed stylesheet
         self._apply_themed_stylesheet()
@@ -350,16 +365,11 @@ class MainWindow(QMainWindow):
         self.footer.setFixedHeight(25)
         footer_layout = QHBoxLayout(self.footer)
         footer_layout.setContentsMargins(15, 0, 15, 0)
-        self.status_label = QLabel(self.loc['status']['welcome'])
-        self.status_label.setObjectName("statusLabel")
-        footer_layout.addWidget(self.status_label)
         footer_layout.addStretch()
         root_layout.addWidget(self.footer)
 
         self._init_autosave(footer_layout)
-
-        self.size_grip = QSizeGrip(self)
-        self.size_grip.setFixedSize(20, 20)
+        self._create_resize_handles()
         
         self._add_tabs()
         self.content_stack.currentChanged.connect(self._refresh_inventory_view)
@@ -426,28 +436,148 @@ class MainWindow(QMainWindow):
             if handle is not None:
                 handle.startSystemMove()
 
+    def _create_resize_handles(self):
+        specs = (
+            (Qt.Edge.TopEdge | Qt.Edge.LeftEdge, Qt.CursorShape.SizeFDiagCursor),
+            (Qt.Edge.TopEdge, Qt.CursorShape.SizeVerCursor),
+            (Qt.Edge.TopEdge | Qt.Edge.RightEdge, Qt.CursorShape.SizeBDiagCursor),
+            (Qt.Edge.RightEdge, Qt.CursorShape.SizeHorCursor),
+            (Qt.Edge.BottomEdge | Qt.Edge.RightEdge, Qt.CursorShape.SizeFDiagCursor),
+            (Qt.Edge.BottomEdge, Qt.CursorShape.SizeVerCursor),
+            (Qt.Edge.BottomEdge | Qt.Edge.LeftEdge, Qt.CursorShape.SizeBDiagCursor),
+            (Qt.Edge.LeftEdge, Qt.CursorShape.SizeHorCursor),
+        )
+        self._resize_handles = {}
+        for edges, cursor in specs:
+            zone = QWidget(self)
+            zone.setCursor(cursor)
+            zone.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+            zone.installEventFilter(self)
+            zone.raise_()
+            self._resize_handles[zone] = edges
+
+    def eventFilter(self, watched, event):
+        edges = getattr(self, '_resize_handles', {}).get(watched)
+        if watched is getattr(self, '_manual_resize_widget', None):
+            if (
+                event.type() == QEvent.Type.MouseMove
+                and event.buttons() & Qt.MouseButton.LeftButton
+            ):
+                self._manual_resize_to(event.globalPosition().toPoint())
+                return True
+            if (
+                event.type() == QEvent.Type.MouseButtonRelease
+                and event.button() == Qt.MouseButton.LeftButton
+            ):
+                self._manual_resize_to(event.globalPosition().toPoint())
+                self._manual_resize_widget = None
+                return True
+
+        if (
+            edges is not None
+            and event.type() == QEvent.Type.MouseButtonPress
+            and event.button() == Qt.MouseButton.LeftButton
+            and not (self.isMaximized() or self.isFullScreen())
+        ):
+            # Qt's own QSizeGrip deliberately avoids startSystemResize() on
+            # translucent Windows windows (QTBUG-90628: resize flicker).
+            if (
+                sys.platform == 'win32'
+                and self.testAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+            ):
+                self._manual_resize_widget = watched
+                self._manual_resize_edges = edges
+                self._manual_resize_origin = event.globalPosition().toPoint()
+                self._manual_resize_geometry = self.geometry()
+                return True
+
+            handle = self.windowHandle()
+            if handle is not None and handle.startSystemResize(edges):
+                return True
+        return super().eventFilter(watched, event)
+
+    def _manual_resize_to(self, global_position):
+        initial = self._manual_resize_geometry
+        delta = global_position - self._manual_resize_origin
+        edges = self._manual_resize_edges
+        requested = initial.size()
+        if edges & Qt.Edge.LeftEdge:
+            requested.setWidth(initial.width() - delta.x())
+        elif edges & Qt.Edge.RightEdge:
+            requested.setWidth(initial.width() + delta.x())
+        if edges & Qt.Edge.TopEdge:
+            requested.setHeight(initial.height() - delta.y())
+        elif edges & Qt.Edge.BottomEdge:
+            requested.setHeight(initial.height() + delta.y())
+
+        geometry = QRect(initial.topLeft(), QLayout.closestAcceptableSize(self, requested))
+        if edges & Qt.Edge.LeftEdge:
+            geometry.moveRight(initial.right())
+        if edges & Qt.Edge.TopEdge:
+            geometry.moveBottom(initial.bottom())
+        self.setGeometry(geometry)
+
+    def _layout_resize_handles(self):
+        handles = list(getattr(self, '_resize_handles', {}))
+        if not handles:
+            return
+        active = not (self.isMaximized() or self.isFullScreen())
+        for zone in handles:
+            zone.setVisible(active)
+        if not active:
+            return
+
+        width, height, margin = self.width(), self.height(), self._RESIZE_MARGIN
+        inner_width = max(0, width - margin * 2)
+        inner_height = max(0, height - margin * 2)
+        geometries = (
+            QRect(0, 0, margin, margin),
+            QRect(margin, 0, inner_width, margin),
+            QRect(width - margin, 0, margin, margin),
+            QRect(width - margin, margin, margin, inner_height),
+            QRect(width - margin, height - margin, margin, margin),
+            QRect(margin, height - margin, inner_width, margin),
+            QRect(0, height - margin, margin, margin),
+            QRect(0, margin, margin, inner_height),
+        )
+        for zone, geometry in zip(handles, geometries):
+            if zone.geometry() != geometry:
+                zone.setGeometry(geometry)
+
     def resizeEvent(self, event):
         super().resizeEvent(event)
-        self.size_grip.move(self.width() - self.size_grip.width(), self.height() - self.size_grip.height())
-        self.size_grip.raise_()
-        
+        self._layout_resize_handles()
+        self._apply_window_mask()
+
+    def changeEvent(self, event):
+        super().changeEvent(event)
+        if event.type() == QEvent.Type.WindowStateChange:
+            QTimer.singleShot(0, self._sync_window_frame)
+
+    def _sync_window_frame(self):
+        self._apply_window_mask()
+        self._layout_resize_handles()
+
+    def _apply_window_mask(self):
         # Apply rounded corner mask to central widget to clip all child widgets including blur effect
         central = self.centralWidget()
         if central:
-            from PyQt6.QtGui import QBitmap, QPainter
-            corner_radius = 20
-            
-            bitmap = QBitmap(central.width(), central.height())
-            bitmap.fill(Qt.GlobalColor.white)  # White = transparent in mask
-            
-            painter = QPainter(bitmap)
-            painter.setBrush(Qt.GlobalColor.black)  # Black = visible in mask
-            painter.setPen(Qt.GlobalColor.black)
-            painter.drawRoundedRect(0, 0, central.width(), central.height(), 
-                                    corner_radius, corner_radius)
-            painter.end()
-            
-            central.setMask(bitmap)
+            if self.isMaximized() or self.isFullScreen():
+                if not central.mask().isEmpty():
+                    central.clearMask()
+            else:
+                from PyQt6.QtGui import QBitmap
+                corner_radius = 20
+                bitmap = QBitmap(central.width(), central.height())
+                bitmap.fill(Qt.GlobalColor.white)
+                painter = QPainter(bitmap)
+                painter.setBrush(Qt.GlobalColor.black)
+                painter.setPen(Qt.GlobalColor.black)
+                painter.drawRoundedRect(
+                    0, 0, central.width(), central.height(), corner_radius, corner_radius
+                )
+                painter.end()
+                central.setMask(bitmap)
 
     def _create_actions(self):
         self.open_action = QAction(self.loc['menu']['open_selector'], self)
@@ -590,25 +720,36 @@ class MainWindow(QMainWindow):
     def _create_nav_bar(self):
         self.nav_bar = QWidget()
         self.nav_bar.setObjectName("nav_bar")
-        self.nav_bar.setFixedWidth(self.nav_bar_width_expanded)
+        self.nav_bar.setProperty("navCollapsed", not self.is_nav_bar_expanded)
+        self.nav_bar.setFixedWidth(
+            self.nav_bar_width_expanded
+            if self.is_nav_bar_expanded else self.nav_bar_width_collapsed
+        )
         self.nav_bar_layout = QVBoxLayout(self.nav_bar)
         self.nav_bar_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.nav_bar_layout.setContentsMargins(5, 5, 5, 5)
-        self.nav_bar_layout.setSpacing(5)
+        self.nav_bar_layout.setContentsMargins(4, 8, 4, 8)
+        self.nav_bar_layout.setSpacing(4)
 
-        self.toggle_button = QPushButton("👈")
+        self.toggle_button = QPushButton("‹" if self.is_nav_bar_expanded else "›")
         self.toggle_button.setObjectName("toggleButton")
+        self.toggle_button.setFixedHeight(36)
+        self.toggle_button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.toggle_button.clicked.connect(self.toggle_nav_bar)
         self.nav_bar_layout.addWidget(self.toggle_button)
 
         self.nav_scroll_area = QScrollArea(self.nav_bar)
+        self.nav_scroll_area.setObjectName("navScrollArea")
         self.nav_scroll_area.setWidgetResizable(True)
+        self.nav_scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self.nav_scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.nav_buttons_widget = QWidget()
+        self.nav_buttons_widget.setObjectName("navButtonsWidget")
+        self.nav_buttons_widget.setMinimumWidth(0)
+        self.nav_buttons_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         self.nav_buttons_layout = QVBoxLayout(self.nav_buttons_widget)
         self.nav_buttons_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.nav_buttons_layout.setContentsMargins(0, 0, 0, 0)
-        self.nav_buttons_layout.setSpacing(5)
+        self.nav_buttons_layout.setSpacing(4)
         self.nav_scroll_area.setWidget(self.nav_buttons_widget)
         self.nav_bar_layout.addWidget(self.nav_scroll_area)
 
@@ -644,6 +785,7 @@ class MainWindow(QMainWindow):
         self.yaml_editor_tab.open_item_requested.connect(self.handle_open_item_from_yaml)
         self.yaml_editor_tab.apply_theme(self.theme_manager.is_dark())
         self.add_tab(self.yaml_editor_tab, self.loc['tabs']['yaml_editor'], "📄")
+        self._add_nav_separator()
 
         self.class_mod_tab = QtClassModEditorTab(main_app=self)
         self.class_mod_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
@@ -679,21 +821,77 @@ class MainWindow(QMainWindow):
         self.heavy_weapon_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
         self.add_tab(self.heavy_weapon_tab, self.loc['tabs']['heavy_weapon'], "🚀")
 
+        self._add_nav_separator()
         self.loadout_manager_tab = QtLoadoutManagerTab()
         self.add_tab(self.loadout_manager_tab, self.loc['tabs'].get('loadout_manager', '配置管理'), "📋")
 
-
+        self._refresh_nav_bar()
         if self.nav_button_group.buttons():
             self.nav_button_group.buttons()[0].click()
 
     def add_tab(self, widget: QWidget, text: str, icon_char: str):
         index = self.content_stack.addWidget(widget)
-        button = QPushButton(f" {icon_char}   {text}")
-        button.setProperty("fullText", f" {icon_char}   {text}")
+        full_text = f"{icon_char}  {text}"
+        button = QPushButton(full_text)
+        button.setProperty("navItem", True)
+        button.setProperty("navCollapsed", not self.is_nav_bar_expanded)
+        button.setProperty("fullText", full_text)
         button.setProperty("iconChar", icon_char)
+        button.setProperty("navLabel", text)
+        button.setToolTip(text)
+        button.setAccessibleName(text)
         button.setCheckable(True)
+        button.setFixedHeight(42)
+        button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.nav_buttons_layout.addWidget(button)
         self.nav_button_group.addButton(button, index)
+
+    def _add_nav_separator(self):
+        separator = QWidget()
+        separator.setObjectName("navSeparator")
+        separator.setFixedHeight(1)
+        separator.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.nav_buttons_layout.addWidget(separator)
+
+    def _calculate_nav_bar_expanded_width(self):
+        text_width = max((
+            button.fontMetrics().horizontalAdvance(str(button.property("fullText") or ""))
+            for button in self.nav_button_group.buttons()
+        ), default=0)
+        return min(
+            self._NAV_EXPANDED_MAX_WIDTH,
+            max(self._NAV_EXPANDED_MIN_WIDTH, text_width + self._NAV_HORIZONTAL_CHROME),
+        )
+
+    def _refresh_nav_bar(self):
+        self.nav_bar_width_expanded = self._calculate_nav_bar_expanded_width()
+        collapsed = not self.is_nav_bar_expanded
+        target_width = (
+            self.nav_bar_width_collapsed if collapsed else self.nav_bar_width_expanded
+        )
+        available_text_width = max(
+            1, self.nav_bar_width_expanded - self._NAV_HORIZONTAL_CHROME
+        )
+
+        self.nav_bar.setProperty("navCollapsed", collapsed)
+        self.nav_bar.setFixedWidth(target_width)
+        self.toggle_button.setText("›" if collapsed else "‹")
+
+        for button in self.nav_button_group.buttons():
+            button.setProperty("navCollapsed", collapsed)
+            full_text = str(button.property("fullText") or "")
+            button.setText(
+                str(button.property("iconChar") or "") if collapsed
+                else button.fontMetrics().elidedText(
+                    full_text, Qt.TextElideMode.ElideRight, available_text_width
+                )
+            )
+            button.setToolTip(str(button.property("navLabel") or ""))
+            button.style().unpolish(button)
+            button.style().polish(button)
+            button.update()
+
+        self.nav_bar.updateGeometry()
     
     def switch_to_tab(self, index: int):
         if 0 <= index < self.content_stack.count():
@@ -765,35 +963,8 @@ class MainWindow(QMainWindow):
     @pyqtSlot()
     def toggle_nav_bar(self):
         self.is_nav_bar_expanded = not self.is_nav_bar_expanded
-        target_width = self.nav_bar_width_expanded if self.is_nav_bar_expanded else self.nav_bar_width_collapsed
-
-        # Set a dynamic property to reflect the collapsed state
-        collapsed = not self.is_nav_bar_expanded
-        self.nav_bar.setProperty("navCollapsed", collapsed)
-        # Switch ObjectName to allow simpler ID selectors in QSS
-        self.nav_bar.setObjectName("nav_bar_collapsed" if collapsed else "nav_bar")
-        
-        self.nav_bar.style().unpolish(self.nav_bar)
-        self.nav_bar.style().polish(self.nav_bar)
-
-        for button in self.nav_button_group.buttons():
-            if self.is_nav_bar_expanded:
-                button.setText(button.property("fullText"))
-            else:
-                button.setText(button.property("iconChar"))
-            
-            # Force style update for the button to recognize parent ObjectName change
-            button.style().unpolish(button)
-            button.style().polish(button)
-        
-        self.toggle_button.setText("👈" if self.is_nav_bar_expanded else "👉")
-
-        self.animation = QPropertyAnimation(self.nav_bar, b"minimumWidth")
-        self.animation.setDuration(250)
-        self.animation.setStartValue(self.nav_bar.width())
-        self.animation.setEndValue(target_width)
-        self.animation.setEasingCurve(QEasingCurve.Type.InOutCubic)
-        self.animation.start()
+        self._settings.setValue(self._NAV_STATE_KEY, self.is_nav_bar_expanded)
+        self._refresh_nav_bar()
 
     @pyqtSlot(str, str)
     def open_save_from_selector(self, file_path_str: str, user_id: str):
@@ -815,6 +986,7 @@ class MainWindow(QMainWindow):
                                         self.loc['dialogs']['decrypt_success'].format(platform=platform.upper(), backup_name=backup_name))
                 self.setWindowTitle(f"{self.loc['window_title']} V{VERSION} - {file_path.name}")
 
+                self._set_autosave_indicator("", False)
                 self._maybe_restore_recovery(file_path)
                 QTimer.singleShot(0, self.refresh_all_tabs)
                 self.switch_to_tab(1)  # Switch to character tab
@@ -910,6 +1082,8 @@ class MainWindow(QMainWindow):
     # ------------------------------------------------------------------
     def _init_autosave(self, footer_layout):
         self._autosave_suspend = 0
+        self._autosave_status_message = ""
+        self._autosave_status_failed = False
         self.autosave_enabled = self._settings.value('autosave_enabled', True, type=bool)
         self.autosave_interval_ms = max(5, int(self._settings.value('autosave_interval_sec', 30, type=int))) * 1000
         self.recover_interval_ms = 5000
@@ -926,12 +1100,38 @@ class MainWindow(QMainWindow):
         self.autosave_checkbox.setToolTip(self.loc['status'].get('autosave_tip', "停止修改约30秒后自动写盘（原子写入，旧文件轮转为 .prev.bak）"))
         self.autosave_checkbox.toggled.connect(self._toggle_autosave)
         footer_layout.addWidget(self.autosave_checkbox)
+        self._set_autosave_indicator()
 
         self.controller.add_dirty_listener(self._on_controller_dirty)
+
+    def _set_autosave_indicator(self, message=None, failed=None):
+        if message is not None:
+            self._autosave_status_message = message
+        if failed is not None:
+            self._autosave_status_failed = failed
+
+        label = self.loc['status'].get('autosave', "自动保存")
+        self.autosave_checkbox.setText(
+            f"⚠ {label}" if self._autosave_status_failed else label
+        )
+        tooltip = self.loc['status'].get(
+            'autosave_tip',
+            "停止修改约30秒后自动写盘（原子写入，旧文件轮转为 .prev.bak）",
+        )
+        if self._autosave_status_message:
+            tooltip += f"\n{self._autosave_status_message}"
+        self.autosave_checkbox.setToolTip(tooltip)
+
+        if self.autosave_checkbox.property('autosaveError') != self._autosave_status_failed:
+            self.autosave_checkbox.setProperty('autosaveError', self._autosave_status_failed)
+            self.autosave_checkbox.style().unpolish(self.autosave_checkbox)
+            self.autosave_checkbox.style().polish(self.autosave_checkbox)
+            self.autosave_checkbox.update()
 
     def _toggle_autosave(self, on):
         self.autosave_enabled = on
         self._settings.setValue('autosave_enabled', on)
+        self._set_autosave_indicator("", False)
         if not on:
             self._autosave_timer.stop()
             self._recover_timer.stop()
@@ -996,17 +1196,24 @@ class MainWindow(QMainWindow):
         if self.controller.is_content_saved():
             self.controller.mark_clean()
             self._remove_recovery()
+            self._set_autosave_indicator("", False)
             return
         try:
             target = self.controller.save_to_disk()
             self._remove_recovery()
-            self.status_label.setText(
+            self._set_autosave_indicator(
                 self.loc['status'].get('autosaved', "已自动保存 {time}").format(
-                    time=time.strftime("%H:%M:%S")))
+                    time=time.strftime("%H:%M:%S")
+                ),
+                False,
+            )
             self.log(f"Auto-saved to {target}")
         except Exception as e:
             self.log(f"Auto-save failed: {e}")
-            self.status_label.setText(self.loc['status'].get('autosave_failed', "自动保存失败，请手动保存"))
+            self._set_autosave_indicator(
+                self.loc['status'].get('autosave_failed', "自动保存失败，请手动保存"),
+                True,
+            )
             # 失败则稍后重试，避免静默丢数据
             self._autosave_timer.start(self.recover_interval_ms)
 
@@ -1030,7 +1237,10 @@ class MainWindow(QMainWindow):
             try:
                 text = rp.read_text(encoding="utf-8")
                 if self.controller.update_yaml_object(text):
-                    self.status_label.setText(self.loc['status'].get('recovered', "已恢复未保存的修改（尚未写盘）"))
+                    self._set_autosave_indicator(
+                        self.loc['status'].get('recovered', "已恢复未保存的修改（尚未写盘）"),
+                        False,
+                    )
                     return
             except Exception as e:
                 self.log(f"Recovery restore failed: {e}")
@@ -1186,7 +1396,11 @@ class MainWindow(QMainWindow):
         self._dirty_item_views.discard("items")
         self._switch_to_widget(self.items_tab)
         if not self.items_tab.select_item_by_path(item.get("original_path")):
-            self.status_label.setText(self.loc['status'].get('item_not_found', "未找到对应物品"))
+            QMessageBox.warning(
+                self,
+                self.loc.get('dialogs', {}).get('warning', "Warning"),
+                self.loc['status'].get('item_not_found', "未找到对应物品"),
+            )
 
     def _switch_to_widget(self, widget):
         index = self.content_stack.indexOf(widget)
@@ -1326,6 +1540,7 @@ class MainWindow(QMainWindow):
             self._autosave_timer.stop()
             self._recover_timer.stop()
             self._remove_recovery()
+            self._set_autosave_indicator("", False)
             QMessageBox.information(self, self.loc['dialogs']['success'],
                                     self.loc['dialogs']['save_saved'].format(path=saved_path))
         except Exception as e:
@@ -1385,7 +1600,12 @@ class MainWindow(QMainWindow):
         self.open_action.setText(self.loc['menu']['open_selector'])
         self.save_action.setText(self.loc['menu']['save'])
         self.save_as_action.setText(self.loc['menu']['save_as'])
-        self.status_label.setText(self.loc['status']['welcome'])
+        if hasattr(self, 'autosave_checkbox'):
+            self._autosave_status_message = (
+                self.loc['status'].get('autosave_failed', "自动保存失败，请手动保存")
+                if self._autosave_status_failed else ""
+            )
+            self._set_autosave_indicator()
         self.lang_button.setText(self._get_lang_button_text())
         # Update tooltips for theme and background buttons
         self.theme_button.setToolTip(self._get_theme_tooltip())
@@ -1402,19 +1622,22 @@ class MainWindow(QMainWindow):
             button = self.nav_button_group.button(i)
             if button:
                 icon_char = button.property("iconChar")
-                new_full_text = f" {icon_char}   {self.loc['tabs'][key]}"
+                label = self.loc['tabs'][key]
+                new_full_text = f"{icon_char}  {label}"
                 button.setProperty("fullText", new_full_text)
-                if self.is_nav_bar_expanded:
-                    button.setText(new_full_text)
-                else:
-                    # If collapsed, ensure we only show the icon (though it should already be correct)
-                    button.setText(icon_char)
+                button.setProperty("navLabel", label)
+                button.setToolTip(label)
+                button.setAccessibleName(label)
+
+        self._refresh_nav_bar()
 
     def _apply_themed_stylesheet(self):
         """Apply the themed stylesheet from ThemeManager."""
         stylesheet = self.theme_manager.get_stylesheet()
         if stylesheet:
             self.setStyleSheet(stylesheet)
+            if hasattr(self, 'nav_button_group'):
+                self._refresh_nav_bar()
         else:
             print("Warning: stylesheet.qss not found or failed to load.")
 

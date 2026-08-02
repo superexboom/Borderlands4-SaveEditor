@@ -946,38 +946,45 @@ QGroupBox[title="Pearl Elements"]::title, QGroupBox[title="珠光元素"]::title
 /* Navigation Sidebar - Solid Background          */
 /* ============================================== */
 
-#nav_bar, #nav_bar_collapsed {
+#nav_bar {
     background-color: {sidebar_bg};
+    border-right: 1px solid {border_color};
 }
 
-#nav_bar QPushButton, #nav_bar_collapsed QPushButton {
+#navScrollArea, #navButtonsWidget {
     background-color: transparent;
     border: none;
-    border-radius: 6px;
-    padding: 18px 8px;
-    text-align: left;
-    padding-left: 5px;
-    color: {text_primary};
 }
 
-#nav_bar QPushButton:hover, #nav_bar_collapsed QPushButton:hover {
+#nav_bar QPushButton[navItem="true"] {
+    background-color: transparent;
+    border: none;
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+    padding: 0px 10px;
+    text-align: left;
+    color: {text_primary};
+    font-weight: normal;
+}
+
+#nav_bar QPushButton[navItem="true"]:hover {
     background-color: {button_hover};
 }
 
-#nav_bar QPushButton:checked, #nav_bar_collapsed QPushButton:checked {
-    background-color: {accent};
-    border: 1px solid {accent_hover};
-    color: white;
+#nav_bar QPushButton[navItem="true"]:checked {
+    background-color: {bg_input};
+    border-left: 3px solid {accent};
+    color: {text_primary};
+    font-weight: bold;
 }
 
-#nav_bar QPushButton:checked:hover, #nav_bar_collapsed QPushButton:checked:hover {
-    background-color: {accent_hover};
+#nav_bar QPushButton[navItem="true"]:checked:hover {
+    background-color: {button_hover};
 }
 
-#nav_bar_collapsed QPushButton {
+#nav_bar QPushButton[navItem="true"][navCollapsed="true"] {
     text-align: center;
-    text-indent: 0px;
-    padding: 18px 0px;
+    padding: 0px;
     margin: 0px;
 }
 
@@ -985,16 +992,38 @@ QGroupBox[title="Pearl Elements"]::title, QGroupBox[title="珠光元素"]::title
 #toggleButton {
     background-color: transparent;
     border: none;
+    border-radius: 8px;
     color: {text_secondary};
-    padding: 5px;
+    padding: 0px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: normal;
 }
 
 #toggleButton:hover {
     background-color: {button_hover};
+    color: {text_primary};
 }
 
 #toggleButton:pressed {
     background-color: {accent};
+    color: white;
+}
+
+#navSeparator {
+    background-color: {border_color};
+    border: none;
+}
+
+QScrollArea#navScrollArea QScrollBar:vertical {
+    background: transparent;
+    width: 6px;
+    border-radius: 3px;
+}
+
+QScrollArea#navScrollArea QScrollBar::handle:vertical {
+    min-height: 20px;
+    border-radius: 3px;
 }
 
 /* ============================================== */
@@ -1007,20 +1036,9 @@ QGroupBox[title="Pearl Elements"]::title, QGroupBox[title="珠光元素"]::title
     border-bottom-right-radius: 20px;
 }
 
-#statusLabel {
-    color: {text_secondary};
-    font-size: 9pt;
-}
-
-/* ============================================== */
-/* Size Grip                                       */
-/* ============================================== */
-
-QSizeGrip {
-    width: 16px;
-    height: 16px;
-    background-color: transparent;
-    border: none;
+#footer QCheckBox[autosaveError="true"] {
+    color: #ef5350;
+    font-weight: bold;
 }
 
 /* ============================================== */
@@ -1518,6 +1536,24 @@ QPushButton#catalogChip[catKey="blue"]:checked {
 
 #inlineCatalogRow:hover {
     background-color: {button_hover};
+}
+
+/* Keep class-mod/enhancement inline steppers readable on dark panels. */
+QFrame#inlineCatalogRow QPushButton#rowStepBtn {
+    background-color: {button_hover};
+    border-color: {accent};
+    color: {text_primary};
+}
+
+QFrame#inlineCatalogRow QPushButton#rowStepBtn:hover {
+    background-color: {accent};
+    color: white;
+}
+
+QFrame#inlineCatalogRow QPushButton#rowStepBtn:disabled {
+    background-color: {bg_input};
+    border-color: {border_color};
+    color: {text_disabled};
 }
 
 QFrame#inlineCatalogRow[selected="true"] {

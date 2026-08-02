@@ -36,13 +36,18 @@ class QtGrenadeEditorTab(BaseEquipmentEditorTab):
     def load_data(self, lang):
         return load_grenade_data(lang)
 
+    def _build_perk_groups(self, perks_layout):
+        super()._build_perk_groups(perks_layout)
+        perks_layout.setColumnStretch(0, 1)
+        perks_layout.setColumnStretch(1, 1)
+
     def _declare_perk_groups(self):
         return [
             {"key": "element", "mode": "chip", "title_key": "element", "columns": 3, "grid": (0, 0, 1, 1)},
-            {"key": "firmware", "mode": "chip", "title_key": "firmware", "columns": 3, "grid": (0, 1, 1, 2)},
-            {"key": "mfg_perk", "mode": "picker", "title_key": "mfg_perks", "stackable": False, "grid": (1, 0, 1, 3)},
-            {"key": "legendary", "mode": "picker", "title_key": "legendary", "stackable": False, "grid": (2, 0, 1, 3)},
-            {"key": "universal", "mode": "picker", "title_key": "universal", "stackable": True, "grid": (3, 0, 1, 3)},
+            {"key": "firmware", "mode": "chip", "title_key": "firmware", "columns": 3, "grid": (0, 1, 1, 1)},
+            {"key": "mfg_perk", "mode": "picker", "title_key": "mfg_perks", "stackable": False, "grid": (1, 0, 1, 2)},
+            {"key": "legendary", "mode": "picker", "title_key": "legendary", "stackable": False, "grid": (2, 0, 1, 2)},
+            {"key": "universal", "mode": "picker", "title_key": "universal", "stackable": True, "grid": (3, 0, 1, 2)},
         ]
 
     def _initial_preserved_children(self):
