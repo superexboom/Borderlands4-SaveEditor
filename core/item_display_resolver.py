@@ -345,28 +345,11 @@ def _strategy_single(table: dict[str, Any], attr: str, lang: str) -> str:
 def _strategy_words(attrs: list[str], table: dict[str, Any], lang: str) -> list[str]:
     remaining = [attr for attr in attrs if attr]
     words: list[str] = []
-    while len(remaining) >= 2:
-        pair: tuple[int, int, str] | None = None
-        for prefer_duplicate in (True, False):
-            for i, first in enumerate(remaining):
-                for j in range(i + 1, len(remaining)):
-                    second = remaining[j]
-                    if prefer_duplicate and _strategy_key(first) != _strategy_key(second):
-                        continue
-                    word = _strategy_combo(table, first, second, lang)
-                    if word:
-                        pair = (i, j, word)
-                        break
-                if pair:
-                    break
-            if pair:
-                break
-        if not pair:
-            break
-        i, j, word = pair
-        words.append(word)
-        del remaining[j]
-        del remaining[i]
+    if len(remaining) >= 2:
+        word = _strategy_combo(table, remaining[0], remaining[1], lang)
+        if word:
+            words.append(word)
+            remaining = remaining[2:]
     for attr in remaining:
         word = _strategy_single(table, attr, lang)
         if word:
@@ -387,19 +370,28 @@ def _unique_words(words: list[str]) -> list[str]:
 
 def _enhancement_name(item_id: int, core_ids: list[str], stat_ids: list[str], lang: str) -> tuple[str, str]:
     strategy = _item_index().get("enhancement_strategies") or {}
-    stat_attrs: list[str] = []
+    stat_attrs_by_group: dict[str, str] = {}
     core_attrs: list[str] = []
     for part_id in stat_ids:
         ref = _part_ref(247, part_id)
-        if str(ref.get("category", "")).startswith("stat_group"):
-            stat_attrs.append(ref.get("naming_row", ""))
+        category = str(ref.get("category", ""))
+        if category in {"stat_group1", "stat_group2", "stat_group3"}:
+            # Modded serials may repeat a slot; native naming uses its final part.
+            stat_attrs_by_group[category] = ref.get("naming_row", "")
     for part_id in core_ids:
         ref = _part_ref(item_id, part_id)
         if ref.get("category") == "core_augment":
             core_attrs.append(ref.get("naming_row", ""))
 
-    words = _strategy_words(stat_attrs, strategy.get("stats", {}), lang)
-    words.extend(_strategy_words(core_attrs, strategy.get("cores", {}), lang))
+    stat_strategy = strategy.get("stats", {})
+    priority = {_strategy_key(attr): order for order, attr in enumerate(stat_strategy.get("priority") or [])}
+    stat_attrs = sorted(
+        (stat_attrs_by_group.get(f"stat_group{group}", "") for group in range(1, 4)),
+        key=lambda attr: priority.get(_strategy_key(attr), len(priority)),
+    )
+    words = _strategy_words(stat_attrs, stat_strategy, lang)
+    if len(core_attrs) <= 2:
+        words.extend(_strategy_words(core_attrs, strategy.get("cores", {}), lang))
     words = _unique_words(words)
     name = " ".join(word for word in words if word).strip()
     return name, "enhancement_strategy" if name else ""
@@ -2062,7 +2054,7 @@ def resolve_item_display(
     elif item_type == HEAVY_TYPE:
         name, source = _heavy_name(item_id, ids, lang)
     elif item_type == "Class Mod":
-        name, rarity, source = _classmod_name(item_id, ids, lang)
+        name, rarity, source = _classmod_name(item_id, simple_ids, lang)
     elif item_type == "Enhancement":
         name, source = _enhancement_name(item_id, simple_ids, enhancement_stat_ids, lang)
     elif item_type in {"Grenade", "Shield", "Repkit"}:

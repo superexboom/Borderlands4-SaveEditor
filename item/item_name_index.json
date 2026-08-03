@@ -662219,7 +662219,21 @@
           "en": "Devastating",
           "zh": "毁灭性"
         }
-      }
+      },
+      "priority": [
+        "partstatweapondamage",
+        "partstatweaponfirerate",
+        "partstatweaponaccuracy",
+        "partstatweaponsplashdamage",
+        "partstatweaponcriticaldamage",
+        "partstatweaponsplashradius",
+        "partstatweaponadsproficiency",
+        "partstatstatuseffectdamage",
+        "partstatstatuseffectchance",
+        "partstatweaponreloadspeed",
+        "partstatweaponmagsize",
+        "partstatweaponequipspeed"
+      ]
     },
     "cores": {
       "singles": {
