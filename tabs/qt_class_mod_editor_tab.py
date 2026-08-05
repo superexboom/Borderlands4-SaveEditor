@@ -29,24 +29,6 @@ from .qt_serial_import import (
     split_decoded,
 )
 
-# Current NCS uimarkuptextstyle0 FLinearColor values converted to CSS sRGB.
-SKILL_TEXT_STYLES = {
-    'primary': 'color: #EB7300; font-weight: 600;',
-    'secondary': 'color: #2D95CA; font-weight: 600;',
-    'flavor': 'color: #3F769D; font-style: italic;',
-    'fire': 'color: #FF5224;',
-    'shock': 'color: #2F63F9;',
-    'cryo': 'color: #53FBFB;',
-    'corrosive': 'color: #72F800;',
-    'radiation': 'color: #F1FF00;',
-    'kinetic': 'color: #E4D9CE;',
-}
-
-SKILL_IMAGE_TAGS = {
-    'corrosive_icon', 'cryo_icon', 'elemental_icon', 'fire_icon', 'frtn_icon',
-    'kinetic_icon', 'radiation_icon', 'shock_icon', 'wfll_icon',
-}
-
 class QtClassModEditorTab(QWidget):
     add_to_backpack_requested = pyqtSignal(str, str)
     
@@ -946,15 +928,7 @@ class QtClassModEditorTab(QWidget):
 
     @staticmethod
     def _skill_description_html(value):
-        text = escape(str(value or '')).replace('[newline]', '<br>').replace('\n', '<br>')
-        for tag in SKILL_IMAGE_TAGS:
-            text = text.replace(f'[{tag}]', '')
-        for tag, style in SKILL_TEXT_STYLES.items():
-            text = text.replace(f'[{tag}]', f"<span style='{style}'>")
-            text = text.replace(f'[/{tag}]', '</span>')
-        text = text.replace('[nowrap]', "<span style='white-space: nowrap;'>").replace('[/nowrap]', '</span>')
-        text = text.replace('[glyph]', "<span style='color: #F9F3DE; font-weight: 600;'>").replace('[/glyph]', '</span>')
-        return re.sub(r'\[/?[a-z][a-z0-9_]*\]', '', text, flags=re.IGNORECASE).strip()
+        return item_display_resolver.render_skill_markup(value)
 
     def populate_skills(self):
         """填充按三色技能树筛选的单列技能目录。"""

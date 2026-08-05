@@ -222,6 +222,18 @@
       "splash_radius": "爆炸范围",
       "ads_time": "开镜时间",
       "equip_time": "装备时间",
+      "radius": "爆炸范围",
+      "cooldown": "冷却时间",
+      "charges": "充能次数",
+      "capacity": "容量",
+      "recharge_delay": "充能延迟",
+      "recharge_rate": "充能速率",
+      "armor_segments": "装甲段数",
+      "damage_reduction": "伤害减免",
+      "healing": "总治疗量",
+      "instant_healing": "瞬时治疗",
+      "health_over_time": "持续治疗",
+      "duration": "持续时间",
       "serial": "序列"
     },
     "containers": {

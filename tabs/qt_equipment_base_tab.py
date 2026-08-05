@@ -23,6 +23,7 @@ from core import b_encoder
 from core import resource_loader
 from core import lookup
 from core import bl4_functions as bl4f
+from core import item_display_resolver
 from tabs.qt_catalog_picker import (
     CatalogPicker,
     InlineCatalogPicker,
@@ -65,15 +66,20 @@ class OptionCombo(QWidget):
     def _on_index(self, _i):
         self.changed.emit()
 
-    def set_options(self, options):
+    def set_options(self, options, preserve=False):
         """options: list of (part_id_or_None, label). First entry auto-selected."""
+        selected = self.selected_pid() if preserve else None
         self.combo.blockSignals(True)
         self.combo.clear()
         for pid, label in options:
             self.combo.addItem(label, pid)
             idx = self.combo.count() - 1
             self.combo.setItemData(idx, label, Qt.ItemDataRole.ToolTipRole)
-        self.combo.setCurrentIndex(0)
+        match = next(
+            (index for index in range(self.combo.count()) if self.combo.itemData(index) == selected),
+            0,
+        )
+        self.combo.setCurrentIndex(match)
         self.combo.blockSignals(False)
 
     def selected_pid(self):
@@ -138,6 +144,7 @@ class BaseEquipmentEditorTab(QWidget):
         self._preserved_tokens = []
         self._preserved_children = {}
         self._encode_error = False
+        self._refreshing_descriptions = False
         self.df_main, self.df_mfg, self.localization = self.load_data(self.current_lang)
 
         self._load_ui_localization()
@@ -404,7 +411,7 @@ class BaseEquipmentEditorTab(QWidget):
         for _, r in df.iterrows():
             text, part_id = fmt(r)
             options.append((part_id, text))
-        cfg["_chip"].set_options(options)
+        cfg["_chip"].set_options(options, preserve=self._refreshing_descriptions)
 
     def _populate_button_group(self, cfg, df, fmt):
         frame = cfg["_frame"]
@@ -426,12 +433,71 @@ class BaseEquipmentEditorTab(QWidget):
 
     def _fmt_row(self, r, extra=None):
         """Default display formatter -> (text, part_id)."""
-        text = self._(r['Stat'])
-        if 'Description' in r and pd.notna(r['Description']) and r['Description']:
-            text += f" - {r['Description']}"
+        text = item_display_resolver.equipment_part_name(
+            self._row_ref_key(r), self.current_lang, self._(r['Stat'])
+        )
+        description = self._row_description(r)
+        if description:
+            text += f" - {description}"
         if extra:
             text = f"{extra}{text}"
         return text, r['Part_ID']
+
+    @staticmethod
+    def _row_ref_key(r):
+        owner = next(
+            (
+                r[column]
+                for column in (
+                    "Grenade_perk_main_ID",
+                    "Shield_perk_main_ID",
+                    "Repkit_perk_main_ID",
+                    "Heavy_perk_main_ID",
+                    "Manufacturer ID",
+                )
+                if column in r and pd.notna(r[column])
+            ),
+            None,
+        )
+        try:
+            return f"{int(owner)}:{int(r['Part_ID'])}"
+        except (TypeError, ValueError, KeyError):
+            return ""
+
+    def _row_description(self, r):
+        fallback = ""
+        if 'Description' in r and pd.notna(r['Description']) and r['Description']:
+            fallback = str(r['Description'])
+        formatter = getattr(item_display_resolver, "format_equipment_part_description", None)
+        decoded = self.raw_output_edit.text() if hasattr(self, "raw_output_edit") else ""
+        ref_key = self._row_ref_key(r)
+        if not formatter or not decoded or not ref_key:
+            return fallback
+        try:
+            return formatter(decoded, self.BACKPACK_TYPE_EN, ref_key, self.current_lang) or fallback
+        except (KeyError, TypeError, ValueError, OverflowError, ZeroDivisionError):
+            return fallback
+
+    def _refresh_dynamic_descriptions(self):
+        if self._refreshing_descriptions or self._loading_import or not self.raw_output_edit.text():
+            return
+        mfg_id = self._current_mfg_id()
+        if mfg_id is None:
+            return
+        self._refreshing_descriptions = True
+        try:
+            self._populate_initial_extra()
+            for key, cfg in self._group_cfgs.items():
+                mode = cfg.get("mode", "picker")
+                if mode in ("picker", "inline"):
+                    self._group_pickles[key].set_source(self._group_items(key, mfg_id))
+                elif mode == "chip":
+                    rows = self._group_rows(key, mfg_id)
+                    if rows is not None:
+                        df, fmt = rows
+                        self._populate_chip_group(cfg, df, fmt)
+        finally:
+            self._refreshing_descriptions = False
 
     # ------------------------------------------------------------------ #
     # Serial assembly (output)
@@ -465,6 +531,7 @@ class BaseEquipmentEditorTab(QWidget):
             encoded, err = b_encoder.encode_to_base85(final_str)
             self._encode_error = bool(err)
             self.b85_output_edit.setText(f"{self.ui_loc.get('dialogs', {}).get('error', 'Error')}: {err}" if err else encoded)
+            self._refresh_dynamic_descriptions()
         except Exception as e:
             print(f"Rebuild error ({self.EQUIP_TYPE}): {e}")
 

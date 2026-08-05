@@ -4,9 +4,10 @@ import csv
 import re
 from collections import Counter
 from functools import lru_cache
+from html import escape
 from typing import Any
 
-from . import resource_loader, weapon_display_stats
+from . import equipment_display_stats, resource_loader, weapon_display_stats
 from .weapon_generation_logic import evaluate_group_selection
 
 
@@ -132,6 +133,8 @@ def _group_sub_ids(components: list[dict[str, Any]], group_id: str) -> list[str]
     for part in components:
         if part.get("type") == "group" and str(part.get("id", "")) == group_id:
             ids.extend(str(item) for item in part.get("sub_ids", []))
+        elif part.get("type") == "elemental" and str(part.get("id", "")) == group_id and part.get("sub_id"):
+            ids.append(str(part["sub_id"]))
     return [item for item in ids if item]
 
 
@@ -1994,12 +1997,21 @@ def resolve_weapon_stats(decoded_full: str) -> dict[str, Any]:
         return {}
 
 
+def resolve_equipment_stats(decoded_full: str, item_type: str) -> dict[str, Any]:
+    if item_type not in {"Grenade", "Shield", "Repkit", HEAVY_TYPE}:
+        return {}
+    try:
+        return equipment_display_stats.equipment_card_stats_from_serial(decoded_full, _item_index(), item_type)
+    except (KeyError, TypeError, ValueError, OverflowError, ZeroDivisionError):
+        return {}
+
+
 def format_weapon_stat(key: str, value: Any, lang: str = "zh-CN") -> str:
     if value is None or value == "":
         return ""
     if key == "accuracy":
         return f"{int(value)}%"
-    if key == "dps":
+    if key in {"dps", "elemental_dps", "elemental_dps_mode02"}:
         return f"{int(value):,}"
     if key == "fire_rate":
         return f"{float(value):.1f}/s"
@@ -2009,12 +2021,803 @@ def format_weapon_stat(key: str, value: Any, lang: str = "zh-CN") -> str:
         return f"{float(value):.2f}s"
     if key == "critical_damage":
         return f"{int(value):+d}%" if value else "0%"
+    if key in {"elemental_chance", "elemental_chance_mode02", "cryo_efficiency", "cryo_efficiency_mode02"}:
+        return f"{int(value)}%"
     if key == "ammo_cost":
         suffix = {"zh-CN": "发", "ru": "выстрел", "ua": "постріл"}.get(lang, "shot")
         return f"{int(value)}/{suffix}"
     if key == "splash_radius":
         return f"{int(value)}cm"
     return str(value)
+
+
+def format_equipment_stat(key: str, value: Any, lang: str = "zh-CN") -> str:
+    if value is None or value == "":
+        return ""
+    if key == "accuracy":
+        return f"{int(value)}%"
+    if key in {"dps", "elemental_dps", "elemental_dps_mode02"}:
+        return f"{int(value):,}"
+    if key in {"fire_rate", "recharge_rate"}:
+        suffix = "/秒" if _lang_is_zh(lang) else "/s"
+        return f"{float(value):.1f}{suffix}" if key == "fire_rate" else f"{int(value):,}{suffix}"
+    if key == "recharge_delay":
+        return f"{float(value):.1f}{'秒' if _lang_is_zh(lang) else 's'}"
+    if key in {"cooldown", "duration"}:
+        return f"{int(value)}{'秒' if _lang_is_zh(lang) else 's'}"
+    if key in {"radius", "splash_radius"}:
+        return f"{int(value)}{'厘米' if _lang_is_zh(lang) else 'cm'}"
+    if key == "critical_damage":
+        return f"{int(value):+d}%" if value else "0%"
+    if key in {"elemental_chance", "elemental_chance_mode02", "cryo_efficiency", "cryo_efficiency_mode02"}:
+        return f"{int(value)}%"
+    if key == "critical_chance":
+        return f"{int(value)}%"
+    if key == "damage_reduction":
+        return f"{int(value)}%"
+    if key in {"capacity", "healing", "instant_healing", "health_over_time", "damage"}:
+        return f"{int(value):,}" if not isinstance(value, str) or value.isdigit() else value
+    return str(value)
+
+
+EQUIPMENT_PART_STAT_LABELS = {
+    "damage": ("伤害", "Damage"),
+    "radius": ("爆炸范围", "Blast Radius"),
+    "cooldown": ("冷却", "Cooldown"),
+    "charges": ("充能次数", "Charges"),
+    "critical_damage": ("暴击伤害", "Critical Damage"),
+    "critical_chance": ("暴击几率", "Critical Chance"),
+    "capacity": ("护盾容量", "Shield Capacity"),
+    "recharge_delay": ("恢复延迟", "Recharge Delay"),
+    "recharge_rate": ("恢复速率", "Recharge Rate"),
+    "armor_segments": ("护甲段数", "Armor Segments"),
+    "damage_reduction": ("伤害减免", "Damage Reduction"),
+    "healing": ("治疗量", "Healing"),
+    "instant_healing": ("即时治疗", "Instant Healing"),
+    "health_over_time": ("持续治疗", "Healing Over Time"),
+    "duration": ("持续时间", "Duration"),
+    "accuracy": ("精准度", "Accuracy"),
+    "fire_rate": ("射速", "Fire Rate"),
+    "magazine": ("弹容", "Magazine"),
+    "splash_radius": ("爆炸范围", "Splash Radius"),
+}
+
+SKILL_TEXT_STYLES = {
+    "primary": "color: #EB7300; font-weight: 600;",
+    "secondary": "color: #2D95CA; font-weight: 600;",
+    "flavor": "color: #3F769D; font-style: italic;",
+    "fire": "color: #FF5224;",
+    "shock": "color: #2F63F9;",
+    "cryo": "color: #53FBFB;",
+    "corrosive": "color: #72F800;",
+    "radiation": "color: #F1FF00;",
+    "kinetic": "color: #E4D9CE;",
+}
+SKILL_IMAGE_TAGS = {
+    "corrosive_icon", "cryo_icon", "elemental_icon", "fire_icon", "frtn_icon",
+    "kinetic_icon", "radiation_icon", "shock_icon", "wfll_icon",
+}
+
+
+def render_skill_markup(value: Any) -> str:
+    """Render the game's localized skill markup into Qt-compatible rich text."""
+    text = escape(str(value or "")).replace("[newline]", "<br>").replace("\n", "<br>")
+    for tag in SKILL_IMAGE_TAGS:
+        text = text.replace(f"[{tag}]", "")
+    for tag, style in SKILL_TEXT_STYLES.items():
+        text = text.replace(f"[{tag}]", f"<span style='{style}'>")
+        text = text.replace(f"[/{tag}]", "</span>")
+    text = text.replace("[nowrap]", "<span style='white-space: nowrap;'>").replace("[/nowrap]", "</span>")
+    text = text.replace("[glyph]", "<span style='color: #F9F3DE; font-weight: 600;'>").replace("[/glyph]", "</span>")
+    return re.sub(r"\[/?[a-z][a-z0-9_]*\]", "", text, flags=re.IGNORECASE).strip()
+
+
+def equipment_part_name(ref_key: str, lang: str = "zh-CN", fallback: str = "") -> str:
+    index = _item_index()
+    ref = (index.get("part_refs") or {}).get(ref_key) or {}
+    key = "zh" if _lang_is_zh(lang) else "en"
+    for ui_id in ref.get("uistats_include") or ref.get("uistats", []):
+        ui_key = str(ui_id).casefold()
+        if any(marker in ui_key for marker in ("redtext", "red_text", "typeline", "_manu_")):
+            continue
+        ui = (index.get("uistats") or {}).get(ui_key) or {}
+        title = _title_from_text(ui.get(key) or ui.get("en") or "")
+        if _valid_name(title):
+            return title
+    name = (ref.get("name") or {}).get(key) or (ref.get("name") or {}).get("en") or ""
+    if _valid_name(name):
+        return name
+    return re.split(r"\s+[-–—]\s+|(?<=\S)-(?=\S)", str(fallback or ""), maxsplit=1)[0].strip()
+
+
+def _serial_without_equipment_part(decoded: str, root_id: str, ref_key: str) -> str:
+    owner_wanted, part_wanted = ref_key.split(":", 1)
+    removed = False
+
+    def remove(match: re.Match[str]) -> str:
+        nonlocal removed
+        owner, separator, payload = match.group(1).partition(":")
+        owner = owner.strip()
+        if not separator:
+            if not removed and owner_wanted == root_id and owner == part_wanted:
+                removed = True
+                return ""
+            return match.group(0)
+        if removed or owner != owner_wanted:
+            return match.group(0)
+        ids = re.findall(r"\d+", payload)
+        if part_wanted not in ids:
+            return match.group(0)
+        ids.remove(part_wanted)
+        removed = True
+        if not ids:
+            return ""
+        return f"{{{owner}:{ids[0]}}}" if len(ids) == 1 else f"{{{owner}:[{' '.join(ids)}]}}"
+
+    return re.sub(r"\{([^{}]+)\}", remove, decoded)
+
+
+@lru_cache(maxsize=4096)
+def format_equipment_part_description(
+    decoded_full: str,
+    item_type: str,
+    ref_key: str,
+    lang: str = "zh-CN",
+) -> str:
+    """Render official UIStat values and current-build final stats for one equipment part."""
+    index = _item_index()
+    lines = []
+    try:
+        official = equipment_display_stats.equipment_part_uistat_descriptions(
+            decoded_full, index, item_type, ref_key, lang
+        )
+    except (KeyError, TypeError, ValueError, OverflowError, ZeroDivisionError):
+        official = []
+    for text in official:
+        for separator in (" - ", " – "):
+            if separator in text:
+                text = text.split(separator, 1)[1].strip()
+                break
+        if text and text not in lines:
+            lines.append(text)
+
+    ref = (index.get("part_refs") or {}).get(ref_key) or {}
+    if ref.get("category") == "element":
+        try:
+            root_id, _level = equipment_display_stats._header(decoded_full)
+            _family, model, _root = equipment_display_stats._family_model(index, root_id, item_type)
+            defaults = model.get("attribute_defaults") or {}
+            resist = next(
+                (
+                    equipment_display_stats._effect_value(effect, defaults)
+                    for effect in ref.get("weapon_attribute_effects", [])
+                    if effect.get("attribute") == "shield_elemental_damage_reduction"
+                ),
+                None,
+            )
+            if resist is not None:
+                text = f"{abs(resist):.0%}抗性" if _lang_is_zh(lang) else f"{abs(resist):.0%} Resistance"
+                if text not in lines:
+                    lines.append(text)
+        except (KeyError, TypeError, ValueError):
+            pass
+
+    try:
+        root_id, _level = equipment_display_stats._header(decoded_full)
+        candidate = equipment_display_stats._candidate_serial(decoded_full, index, root_id, ref_key)
+        selected = ref_key in weapon_display_stats._serial_part_keys(decoded_full, root_id)
+        baseline = _serial_without_equipment_part(decoded_full, root_id, ref_key) if selected else decoded_full
+        try:
+            before = equipment_display_stats.equipment_card_stats_from_serial(baseline, index, item_type)
+        except (KeyError, TypeError, ValueError, OverflowError, ZeroDivisionError):
+            before = {}
+        after = equipment_display_stats.equipment_card_stats_from_serial(candidate, index, item_type)
+    except (KeyError, TypeError, ValueError, OverflowError, ZeroDivisionError):
+        after = {}
+        before = {}
+
+    for key, labels in EQUIPMENT_PART_STAT_LABELS.items():
+        if key not in after or after.get(key) == before.get(key):
+            continue
+        value = format_equipment_stat(key, after[key], lang)
+        label = labels[0] if _lang_is_zh(lang) else labels[1]
+        joined = " ".join(lines).casefold()
+        if label.casefold() in joined or (
+            key == "critical_chance"
+            and (("暴击" in joined and "几率" in joined) or ("critical" in joined and "chance" in joined))
+        ):
+            continue
+        text = f"{label} {value}"
+        if text not in lines:
+            lines.append(text)
+    return ", ".join(lines)
+
+
+_EQUIPMENT_ELEMENT_KEYS = {
+    "corrosive": "corrosive",
+    "cryo": "cryo",
+    "fire": "fire",
+    "incendiary": "fire",
+    "radiation": "radiation",
+    "shock": "shock",
+    "electric": "shock",
+    "kinetic": "kinetic",
+    "sonic": "sonic",
+}
+
+_EQUIPMENT_FIRMWARE_FILES = {
+    "Grenade": "grenade/grenade_main_perk.csv",
+    "Shield": "shield/shield_main_perk.csv",
+    "Repkit": "repkit/repkit_main_perk.csv",
+    HEAVY_TYPE: "heavy/heavy_main_perk.csv",
+}
+
+
+def limit_item_card_entries(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Keep one Pearl row plus the native 1 legendary / 3 normal card budget."""
+    pearl = [entry for entry in entries if entry.get("display_kind") == "pearl"][:1]
+    legendary = [entry for entry in entries if entry.get("display_kind") == "legendary"][:1]
+    normal = [entry for entry in entries if entry.get("display_kind") not in {"pearl", "legendary"}]
+    return [*pearl, *legendary, *normal[:3 if legendary else 4]]
+
+
+def item_card_entry_kind(ref: dict[str, Any]) -> str:
+    if ref.get("category") == "pearl_elem":
+        return "pearl"
+    ui_ids = [*ref.get("uistats", []), *ref.get("uistats_include", [])]
+    if any("redtext" in str(ui_id).casefold() or "red_text" in str(ui_id).casefold() for ui_id in ui_ids):
+        return "legendary"
+    return "normal"
+
+
+def _equipment_firmware_entry(ref_key: str, item_type: str, lang: str) -> dict[str, Any] | None:
+    _owner, _separator, part_id = ref_key.partition(":")
+    for row in _rows_by_file(_EQUIPMENT_FIRMWARE_FILES[item_type]):
+        if row.get("Part_ID", "").strip() != part_id or row.get("Part_type", "").strip().casefold() != "firmware":
+            continue
+        name = _text(row, lang)
+        return {
+            "id": part_id,
+            "name": name,
+            "text": name,
+            "internal": str((_item_index().get("part_refs") or {}).get(ref_key, {}).get("part") or ""),
+            "count": 1,
+            "level": 0,
+            "max_level": 3,
+        }
+    return None
+
+
+@lru_cache(maxsize=2048)
+def resolve_equipment_card_details(
+    decoded_full: str,
+    item_type: str,
+    lang: str = "zh-CN",
+) -> dict[str, Any]:
+    """Return the official effect rows needed by the Item-tab equipment card."""
+    if item_type not in {"Grenade", "Shield", "Repkit", HEAVY_TYPE}:
+        return {}
+    try:
+        root_id, _level = equipment_display_stats._header(decoded_full)
+        ref_keys = weapon_display_stats._serial_part_keys(decoded_full, root_id)
+    except (KeyError, TypeError, ValueError):
+        return {}
+
+    index = _item_index()
+    rows: list[str] = []
+    entries: list[dict[str, Any]] = []
+    red_texts: list[str] = []
+    firmware: list[dict[str, Any]] = []
+    element = ""
+    element_text = ""
+    for ref_key in ref_keys:
+        ref = (index.get("part_refs") or {}).get(ref_key) or {}
+        category = str(ref.get("category") or "")
+        part_name = str(ref.get("part") or "").casefold()
+        if category == "firmware":
+            existing = next((entry for entry in firmware if entry["id"] == ref_key.partition(":")[2]), None)
+            if existing:
+                existing["count"] += 1
+            elif entry := _equipment_firmware_entry(ref_key, item_type, lang):
+                firmware.append(entry)
+            continue
+        if category in {"element", "body_ele"}:
+            element = next((value for marker, value in _EQUIPMENT_ELEMENT_KEYS.items() if marker in part_name), element)
+            description = format_equipment_part_description(decoded_full, item_type, ref_key, lang)
+            if "抗性" in description or "resistance" in description.casefold():
+                element_text = description
+            continue
+
+        try:
+            official = equipment_display_stats.equipment_part_uistat_descriptions(
+                decoded_full, index, item_type, ref_key, lang, with_ids=True
+            )
+        except (KeyError, TypeError, ValueError, OverflowError, ZeroDivisionError):
+            official = []
+        for entry in official:
+            text = str(entry.get("text") or "")
+            if text and text not in rows:
+                rows.append(text)
+                ui_key = str(entry.get("uistat") or "").casefold()
+                ui = (index.get("uistats") or {}).get(ui_key) or {}
+                entries.append({
+                    "text": text,
+                    "icon_asset": str(ui.get("icon_asset") or ref.get("icon_asset") or ""),
+                    "ref_key": ref_key,
+                    "uistat": ui_key,
+                    "category": category,
+                    "display_kind": item_card_entry_kind(ref),
+                })
+
+        for ui_id in ref.get("uistats_include") or ref.get("uistats", []):
+            ui_key = str(ui_id).casefold()
+            if not any(marker in ui_key for marker in ("redtext", "red_text")):
+                continue
+            ui = (index.get("uistats") or {}).get(ui_key) or {}
+            text = _clean_markup(ui.get("zh" if _lang_is_zh(lang) else "en") or ui.get("en") or "")
+            if text and "{" not in text and text not in red_texts:
+                red_texts.append(text)
+
+    return {
+        "rows": rows,
+        "entries": entries,
+        "display_entries": limit_item_card_entries(entries),
+        "red_texts": red_texts,
+        "display_red_texts": red_texts[:1],
+        "firmware": firmware,
+        "element": element,
+        "element_text": element_text,
+    }
+
+
+def _localized_uistat_text(ui: dict[str, Any], lang: str) -> str:
+    text = str(ui.get("zh" if _lang_is_zh(lang) else "en") or ui.get("en") or "")
+    if not _lang_is_zh(lang):
+        return text
+    try:
+        repaired = text.encode("latin1").decode("gbk")
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        return text
+    return repaired if len(re.findall(r"[\u4e00-\u9fff]", repaired)) > len(re.findall(r"[\u4e00-\u9fff]", text)) else text
+
+
+def _classmod_skill_stat_lines(
+    skill_key: str,
+    level: int,
+    ranks: dict[tuple[str, str], int],
+    lang: str,
+) -> list[str]:
+    model = _item_index().get("classmod_skill_model") or {}
+    stats = ((model.get("skills") or {}).get(skill_key) or {}).get("stats") or []
+    resolvers = model.get("attribute_resolvers") or {}
+    cache: dict[str, float | None] = {}
+    resolving: set[str] = set()
+
+    def number(value: Any) -> float | None:
+        return equipment_display_stats._number(value)
+
+    def attribute_name(value: Any) -> str:
+        return equipment_display_stats._ref_name(value)
+
+    def rank_value(node: dict[str, Any]) -> float:
+        ref = node.get("progressgraphnoderef") or {}
+        graph = attribute_name(ref.get("progressgraph"))
+        name = str(ref.get("nodename") or "").casefold()
+        return float(ranks.get((graph, name), 0))
+
+    def atom(node: Any) -> float | None:
+        direct = number(node)
+        if direct is not None:
+            return direct
+        if not isinstance(node, dict):
+            return None
+        if node.get("attribute"):
+            return resolve_attribute(attribute_name(node["attribute"]))
+        if (value := number(node.get("resolved_value"))) is not None:
+            return value
+        if (value := atom(node.get("datatablevalue"))) is not None:
+            return value
+        if (value := number(node.get("constant"))) is not None:
+            return value
+        kind = str(node.get("type") or "").casefold()
+        if kind == "attribute":
+            return resolve_attribute(attribute_name(node.get("value")))
+        if kind in {"datatable", "float", "int"}:
+            return atom(node.get("value"))
+        if (value := atom(node.get("attributeinit"))) is not None:
+            scale = number((node.get("attributeinit") or {}).get("basescale")) or 1.0
+            post = number((node.get("attributeinit") or {}).get("postscale")) or 1.0
+            return value * scale * post
+        return atom(node.get("defaultvalue"))
+
+    def expression_value(expression: dict[str, Any]) -> float | None:
+        if isinstance(expression, str):
+            expression = {"formula": expression}
+        if not isinstance(expression, dict):
+            return None
+        formula = str(expression.get("formula") or "")
+        values: dict[str, float] = {}
+        pairs = (((expression.get("variables") or {}).get("variablevalues") or {}).get("pairs") or {})
+        for pair in pairs.values() if isinstance(pairs, dict) else ():
+            name = str(pair.get("key") or "")
+            value = atom((pair.get("value") or {}).get("value"))
+            if name and value is not None:
+                values[name] = value
+
+        def replace_attribute(match: re.Match[str]) -> str:
+            key = f"a{len(values)}"
+            value = resolve_attribute(attribute_name(match.group(1)))
+            if value is None:
+                raise ValueError("unresolved attribute")
+            values[key] = value
+            return key
+
+        try:
+            formula = re.sub(r"\battr\(\s*([^()]+?)\s*\)", replace_attribute, formula, flags=re.I)
+        except ValueError:
+            return None
+        return equipment_display_stats._safe_arithmetic(formula, values)
+
+    def resolve_attribute(name: str) -> float | None:
+        name = attribute_name(name)
+        if name in {"pawn_experience_level", "inventory_experience_level", "weapon_level"}:
+            return float(level)
+        if name.endswith("resource_pct"):
+            return 0.0
+        if name in cache:
+            return cache[name]
+        if not name or name in resolving:
+            return None
+        resolving.add(name)
+        definition = resolvers.get(name) or {}
+        value = definition.get("value") or {}
+        kind = attribute_name(value.get("structtype"))
+        result: float | None = None
+        progress = value.get("progressgraphnoderef") or definition.get("progressgraphnoderef")
+        if progress:
+            result = rank_value({"progressgraphnoderef": progress})
+        elif "balancestatevalueresolver" in kind and str(value.get("valuetoresolve") or "").casefold() == "experiencelevel":
+            result = float(level)
+        elif "expressionvalueresolver" in kind:
+            result = expression_value(value.get("expression") or {})
+        elif "balanceformulavalueresolver" in kind:
+            multiplier = atom(value.get("multiplier"))
+            balance_level = atom(value.get("level")) if value.get("level") else 1.0
+            power = atom(value.get("power")) if value.get("power") else 1.0
+            if multiplier is not None and balance_level is not None and power is not None:
+                result = multiplier * (balance_level**power) * (atom(value.get("scalar")) or 1.0)
+        elif any(token in kind for token in ("datatablevalueresolver", "constantattributevalueresolver")) or value.get("attributeinit"):
+            result = atom(value.get("attributeinit") or value)
+        elif "conditionalattributevalueresolver" in kind:
+            result = atom(value.get("defaultvalue"))
+            if result is None:
+                result = 0.0
+        elif "skilltokenstackvalueresolver" in kind:
+            result = 0.0
+        elif "blackboardvalueresolver" in kind:
+            result = atom(value.get("defaultvalue"))
+            if result is None:
+                result = 0.0
+        resolving.remove(name)
+        cache[name] = result
+        return result
+
+    def condition_matches(condition: dict[str, Any]) -> bool:
+        if not condition:
+            return True
+        attribute = str(condition.get("attribute") or "")
+        if not attribute:
+            return True
+        value = resolve_attribute(attribute)
+        compare = number(condition.get("compare_value")) or 0.0
+        if value is None:
+            return False
+        return {
+            "greaterthan": value > compare,
+            "greaterorequal": value >= compare,
+            "lessthan": value < compare,
+            "lessorequal": value <= compare,
+            "equal": value == compare,
+            "notequal": value != compare,
+        }.get(str(condition.get("compare_type") or "equal").casefold(), value != 0)
+
+    def localized(value: Any, fallback: str) -> str:
+        if not isinstance(value, dict):
+            return fallback
+        return str(value.get("zh" if _lang_is_zh(lang) else "en") or value.get("en") or fallback)
+
+    def display_number(arg: dict[str, Any]) -> str | None:
+        if not condition_matches(arg.get("displaycondition") or {}):
+            return None
+        value = resolve_attribute(str(arg.get("attribute") or ""))
+        if value is None:
+            return None
+        if str(arg.get("signstyle") or "").casefold() == "negative":
+            value = -abs(value)
+        percentage = bool(arg.get("bdisplayaspercentage"))
+        if percentage:
+            value *= 100.0
+        precision = int(number(arg.get("floatprecision")) or 0)
+        if str(arg.get("roundingmode") or "").casefold() == "roundtoint":
+            precision = 0
+        if precision:
+            rendered = f"{value:,.{precision}f}"
+        elif abs(value) >= 100 or abs(value - round(value)) < 0.0001:
+            rendered = f"{round(value):,}"
+        else:
+            rendered = f"{value:,.2f}".rstrip("0").rstrip(".")
+        if value > 0 and (arg.get("bdisplayplussign") or str(arg.get("signstyle") or "").casefold() == "positive"):
+            rendered = f"+{rendered}"
+        return f"{rendered}%" if percentage else rendered
+
+    lines: list[str] = []
+    for stat in stats:
+        kind = attribute_name(stat.get("structtype"))
+        text = localized(stat.get("formattext"), "$VALUE$")
+        if kind.endswith("numericdisplayvalue"):
+            value = display_number(stat)
+            if value is None:
+                continue
+            text = text.replace("$VALUE$", value)
+        elif kind.endswith("stringdisplayvalue"):
+            args = list((stat.get("args") or {}).items())
+            eligible = [
+                (key, arg) for key, arg in args
+                if "nextlevel" not in str(arg.get("attribute") or "").replace("_", "").casefold()
+                and condition_matches(arg.get("displaycondition") or {})
+            ]
+            active = [(key, arg) for key, arg in eligible if not arg.get("bshowmodifierdelta")] or eligible[:1]
+            if any(not arg.get("bshowstatmodifier") for _key, arg in active):
+                active = [(key, arg) for key, arg in active if not arg.get("bshowstatmodifier")]
+            replaced = False
+            used_groups: set[str] = set()
+            for key, arg in active:
+                group = str(arg.get("keygroup") or key).casefold()
+                if group in used_groups:
+                    continue
+                value = display_number(arg)
+                if value is None:
+                    continue
+                text, count = re.subn(r"\{" + re.escape(group) + r"\}", value, text, flags=re.I)
+                replaced |= bool(count)
+                used_groups.add(group)
+            if not replaced:
+                continue
+            text = re.sub(r"\{\w+\}", "", text)
+        else:
+            continue
+        text = re.sub(r"[ \t]+", " ", text).strip()
+        if text and text not in lines:
+            lines.append(text)
+    return lines
+
+
+@lru_cache(maxsize=1024)
+def resolve_classmod_card_details(
+    decoded_full: str,
+    lang: str = "zh-CN",
+    skill_limit: int = 6,
+    experience_level: int | None = None,
+) -> dict[str, Any]:
+    """Resolve localized Class Mod skills, perks and legendary text for an item card."""
+    root = re.match(r"\s*(\d+)", decoded_full or "")
+    if not root:
+        return {}
+    item_id = int(root.group(1))
+    components = _parse_components(decoded_full.split("||", 1)[-1])
+    simple_ids = _simple_ids(components)
+    skill_rows = [
+        row for row in _rows_by_file("class_mods/Skills.csv")
+        if row.get("class_ID", "").strip() == str(item_id)
+    ]
+    skills_by_code: dict[str, dict[str, str]] = {}
+    for row in skill_rows:
+        for index in range(1, 6):
+            code = row.get(f"skill_ID_{index}", "").strip()
+            if code:
+                skills_by_code[code] = row
+
+    counts: Counter[str] = Counter()
+    order: list[str] = []
+    selected_codes: dict[str, list[str]] = {}
+    rows_by_key: dict[str, dict[str, str]] = {}
+    for part_id in simple_ids:
+        if _part_ref(item_id, part_id).get("category") != "passive_points":
+            continue
+        row = skills_by_code.get(part_id)
+        if not row:
+            continue
+        key = row.get("skill_key") or f"{item_id}:{row.get('skill_name_EN', '')}"
+        if key not in counts:
+            order.append(key)
+            rows_by_key[key] = row
+        counts[key] += 1
+        selected_codes.setdefault(key, []).append(part_id)
+
+    class_name = next((row.get("class_name", "") for row in skill_rows if row.get("class_name")), "")
+    try:
+        _root_id, item_level = equipment_display_stats._header(decoded_full)
+    except (TypeError, ValueError):
+        item_level = 1
+    level = experience_level if experience_level is not None and experience_level > 0 else item_level
+    ranks = {
+        (row.get("graph_name", "").casefold(), row.get("node_name", "").casefold()): counts[key]
+        for key, row in rows_by_key.items()
+    }
+    skills = []
+    for key in order[:max(0, skill_limit)]:
+        row = rows_by_key[key]
+        codes = [row.get(f"skill_ID_{index}", "").strip() for index in range(1, 6)]
+        name = row.get("skill_name_ZH" if _lang_is_zh(lang) else "skill_name_EN", "") or row.get("skill_name_EN", "")
+        if class_name == "C4sh":
+            name = re.sub(r" [BGR]$", "", name)
+        skills.append({
+            "key": key,
+            "name": name,
+            "description": row.get("description_ZH" if _lang_is_zh(lang) else "description_EN", "") or row.get("description_EN", ""),
+            "points": counts[key],
+            "max_points": sum(bool(code) for code in codes),
+            "selected_codes": selected_codes[key],
+            "skill_type": row.get("skill_type", ""),
+            "tree_color": row.get("tree_color", ""),
+            "tree_name": row.get("tree_name_ZH" if _lang_is_zh(lang) else "tree_name_EN", "") or row.get("tree_name_EN", ""),
+            "graph_name": row.get("graph_name", ""),
+            "node_name": row.get("node_name", ""),
+            "skill_internal": row.get("skill_internal", ""),
+            "icon_file": row.get("icon_file", ""),
+            "icon_asset": row.get("icon_asset", ""),
+            "stat_lines": _classmod_skill_stat_lines(key, level, ranks, lang),
+        })
+
+    perk_ids = _group_sub_ids(components, "234")
+    perk_ids.extend(value for value in re.findall(r'"([^"]+)"', decoded_full.split("||", 1)[-1]) if value != "c")
+    perk_rows = {row.get("perk_ID", "").strip(): row for row in _rows_by_file("class_mods/Class_perk.csv")}
+    perk_counts = Counter(perk_ids)
+    perks = []
+    firmware = []
+    for perk_id in dict.fromkeys(perk_ids):
+        row = perk_rows.get(perk_id)
+        if not row:
+            continue
+        entry = {
+            "id": perk_id,
+            "name": row.get("perk_name_ZH" if _lang_is_zh(lang) else "perk_name_EN", "") or row.get("perk_name_EN", ""),
+            "count": perk_counts[perk_id],
+            "category": row.get("perk_category", ""),
+            "internal": row.get("perk_internal", ""),
+        }
+        if entry["category"] == "firmware":
+            firmware.append({**entry, "level": 0, "max_level": 3})
+        else:
+            perks.append(entry)
+
+    effects: list[dict[str, str]] = []
+    red_texts: list[str] = []
+    index = _item_index()
+    seen_uistats: set[str] = set()
+    for part_id in simple_ids:
+        ref = _part_ref(item_id, part_id)
+        if ref.get("category") != "class_mod_body":
+            continue
+        for ui_id in ref.get("uistats_include") or ref.get("uistats", []):
+            ui_key = str(ui_id).casefold()
+            if ui_key in seen_uistats:
+                continue
+            seen_uistats.add(ui_key)
+            ui = (index.get("uistats") or {}).get(ui_key) or {}
+            text = _localized_uistat_text(ui, lang)
+            if not text:
+                continue
+            if "redtext" in ui_key or "red_text" in ui_key:
+                red_texts.append(_clean_markup(text))
+            else:
+                effects.append({"text": text, "icon_asset": str(ui.get("icon_asset") or "")})
+
+    return {
+        "class_name": class_name,
+        "skills": skills,
+        "skill_count": len(order),
+        "omitted_skills": max(0, len(order) - max(0, skill_limit)),
+        "perks": perks,
+        "firmware": firmware,
+        "effects": effects,
+        "red_texts": red_texts,
+        "display_red_texts": red_texts[:1],
+    }
+
+
+@lru_cache(maxsize=1024)
+def resolve_enhancement_card_details(decoded_full: str, lang: str = "zh-CN") -> dict[str, Any]:
+    """Resolve localized Enhancement core effects, stat rolls and firmware."""
+    root = re.match(r"\s*(\d+)", decoded_full or "")
+    if not root:
+        return {}
+    item_id = int(root.group(1))
+    components = _parse_components(decoded_full.split("||", 1)[-1])
+    simple_ids = _simple_ids(components)
+    shared_ids = _group_sub_ids(components, "247")
+    core_rows = {
+        (row.get("manufacturers_ID", "").strip(), row.get("perk_ID", "").strip()): row
+        for row in _rows_by_file("enhancement/Enhancement_manufacturers.csv")
+    }
+    shared_rows = {
+        row.get("perk_ID", "").strip(): row
+        for row in _rows_by_file("enhancement/Enhancement_perk.csv")
+        if row.get("manufacturers_ID", "").strip() == "247"
+    }
+    localized = "perk_name_ZH" if _lang_is_zh(lang) else "perk_name_EN"
+
+    effects = []
+    for part_id in simple_ids:
+        if _part_ref(item_id, part_id).get("category") != "core_augment":
+            continue
+        row = core_rows.get((str(item_id), part_id))
+        if row:
+            effects.append({"id": part_id, "text": row.get(localized, "") or row.get("perk_name_EN", "")})
+
+    stacked_counts: Counter[tuple[str, str]] = Counter()
+    stacked_order: list[tuple[str, str]] = []
+    for component in components:
+        owner = str(component.get("id", ""))
+        if owner == "247":
+            continue
+        part_ids = component.get("sub_ids", []) if component.get("type") == "group" else (
+            [component.get("sub_id")] if component.get("type") == "elemental" else []
+        )
+        for part_id in map(str, filter(None, part_ids)):
+            key = (owner, part_id)
+            if key not in core_rows:
+                continue
+            if key not in stacked_counts:
+                stacked_order.append(key)
+            stacked_counts[key] += 1
+    stacked_effects = []
+    for owner, part_id in stacked_order:
+        row = core_rows[(owner, part_id)]
+        stacked_effects.append({
+            "manufacturer_id": owner,
+            "manufacturer": row.get("manufacturers_name", ""),
+            "id": part_id,
+            "text": row.get(localized, "") or row.get("perk_name_EN", ""),
+            "count": stacked_counts[(owner, part_id)],
+        })
+
+    stats = []
+    firmware = []
+    for part_id in shared_ids:
+        ref = _part_ref(247, part_id)
+        category = ref.get("category")
+        row = shared_rows.get(part_id)
+        if not row:
+            continue
+        text = row.get(localized, "") or row.get("perk_name_EN", "")
+        entry = {"id": part_id, "text": text}
+        if category == "firmware":
+            firmware.append({
+                **entry,
+                "name": text,
+                "internal": str(ref.get("part") or ""),
+                "level": 0,
+                "max_level": 3,
+            })
+        elif category in {"stat_group1", "stat_group2", "stat_group3"}:
+            entry["group"] = category
+            stats.append(entry)
+
+    unique_effects: dict[tuple[str, str], dict[str, Any]] = {}
+    for entry in [*effects, *stacked_effects]:
+        key = (str(entry.get("manufacturer_id") or item_id), str(entry.get("id") or ""))
+        unique_effects.setdefault(key, entry)
+    display_effects = list(unique_effects.values())[:4]
+    display_stats = list({entry["id"]: entry for entry in stats}.values())[:6]
+    return {
+        "effects": effects,
+        "stacked_effects": stacked_effects,
+        "stats": stats,
+        "firmware": firmware,
+        "display_effects": display_effects,
+        "display_stats": display_stats,
+    }
 
 
 def resolve_item_display(

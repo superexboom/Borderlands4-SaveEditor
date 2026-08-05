@@ -222,6 +222,18 @@
       "splash_radius": "Радиус взрыва",
       "ads_time": "Время прицеливания",
       "equip_time": "Время экипировки",
+      "radius": "Радиус взрыва",
+      "cooldown": "Восстановление",
+      "charges": "Заряды",
+      "capacity": "Ёмкость",
+      "recharge_delay": "Задержка регенерации",
+      "recharge_rate": "Скорость регенерации",
+      "armor_segments": "Сегменты брони",
+      "damage_reduction": "Снижение урона",
+      "healing": "Общее лечение",
+      "instant_healing": "Мгновенное лечение",
+      "health_over_time": "Лечение со временем",
+      "duration": "Длительность",
       "serial": "Серийный номер"
     },
     "containers": {

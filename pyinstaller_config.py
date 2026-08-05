@@ -63,6 +63,8 @@ assets_files = [
     (str(BASE_DIR / 'assets/BL4.ico'), 'assets'),
     (str(BASE_DIR / 'assets/bg.jpg'), 'assets'),
 ] + collect_data_files('assets/item_stats_icon', ('.png',)) + collect_data_files('assets/item_card_type', ('.png',))
+assets_files += collect_data_files('assets/item_card', ('.png',))
+assets_files += collect_data_files('assets/item_card_icons', ('.png',))
 
 
 # PyInstaller spec文件内容
@@ -89,6 +91,7 @@ a = Analysis(
         'core.item_display_resolver',
         'core.weapon_generation_logic',
         'core.weapon_display_stats',
+        'core.equipment_display_stats',
         'core.unlock_logic',
         'core.unlock_data',
         'core.save_game_controller',

@@ -352,6 +352,7 @@ class MainWindow(QMainWindow):
         main_content_layout.setSpacing(0)
         
         self.content_stack = QStackedWidget()
+        self.content_stack.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
         self._create_nav_bar()
 
         main_content_layout.addWidget(self.nav_bar)
@@ -1051,7 +1052,7 @@ class MainWindow(QMainWindow):
             char_level = char_data.get("角色等级", "") if char_data else ""
             if char_level:
                 level_sync_tabs = [
-                    self.class_mod_tab, self.enhancement_tab,
+                    self.items_tab, self.class_mod_tab, self.enhancement_tab,
                     self.grenade_tab, self.shield_tab, self.repkit_tab,
                     self.heavy_weapon_tab, self.weapon_generator_tab,
                 ]

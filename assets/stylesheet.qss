@@ -1789,7 +1789,8 @@ QToolTip {
     color: #eef5f6;
     background-color: #0a222b;
     border: 1px solid #527a83;
-    padding: 0;
+    border-radius: 10px;
+    padding: 4px;
     font-family: "Microsoft YaHei UI", "Segoe UI";
 }
 

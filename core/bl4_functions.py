@@ -216,6 +216,7 @@ class ProcessedItem(TypedDict):
     decoded_full: str
     decoded_parts: str
     weapon_stats: Dict[str, Any]
+    equipment_stats: Dict[str, Any]
 
 def _walk_for_serials(
     node: Any, path: List[Union[str, int]]
@@ -369,6 +370,7 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
                     if item_type in item_display_resolver.WEAPON_TYPES
                     else {}
                 ),
+                "equipment_stats": item_display_resolver.resolve_equipment_stats(formatted_str, item_type),
             }
             all_items.append(processed_item)
 

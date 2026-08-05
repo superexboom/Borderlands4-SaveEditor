@@ -222,6 +222,18 @@
       "splash_radius": "Splash Radius",
       "ads_time": "ADS Time",
       "equip_time": "Equip Time",
+      "radius": "Blast Radius",
+      "cooldown": "Cooldown",
+      "charges": "Charges",
+      "capacity": "Capacity",
+      "recharge_delay": "Recharge Delay",
+      "recharge_rate": "Recharge Rate",
+      "armor_segments": "Armor Segments",
+      "damage_reduction": "Damage Reduction",
+      "healing": "Total Healing",
+      "instant_healing": "Instant Healing",
+      "health_over_time": "Healing Over Time",
+      "duration": "Duration",
       "serial": "Serial"
     },
     "containers": {

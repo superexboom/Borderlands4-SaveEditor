@@ -222,6 +222,18 @@
       "splash_radius": "Радіус вибуху",
       "ads_time": "Час прицілювання",
       "equip_time": "Час екіпірування",
+      "radius": "Радіус вибуху",
+      "cooldown": "Відновлення",
+      "charges": "Заряди",
+      "capacity": "Місткість",
+      "recharge_delay": "Затримка відновлення",
+      "recharge_rate": "Швидкість відновлення",
+      "armor_segments": "Сегменти броні",
+      "damage_reduction": "Зменшення шкоди",
+      "healing": "Загальне лікування",
+      "instant_healing": "Миттєве лікування",
+      "health_over_time": "Лікування з часом",
+      "duration": "Тривалість",
       "serial": "Серійний номер"
     },
     "containers": {

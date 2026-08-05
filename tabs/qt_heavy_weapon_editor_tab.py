@@ -4,7 +4,7 @@ import random
 
 from PyQt6.QtCore import Qt
 
-from core import resource_loader
+from core import item_display_resolver, resource_loader
 from tabs.qt_equipment_base_tab import BaseEquipmentEditorTab
 
 
@@ -73,9 +73,12 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
 
     def _fmt_prefixed_row(self, r):
         """Format a heavy row; part_id becomes 'main_id:part_id' when applicable."""
-        text = self._(r['Stat'])
-        if 'Description' in r and pd.notna(r['Description']) and r['Description']:
-            text += f" - {r['Description']}"
+        text = item_display_resolver.equipment_part_name(
+            self._row_ref_key(r), self.current_lang, self._(r['Stat'])
+        )
+        description = self._row_description(r)
+        if description:
+            text += f" - {description}"
         part_id = r['Part_ID']
         if 'Heavy_perk_main_ID' in r and pd.notna(r['Heavy_perk_main_ID']):
             part_id = f"{int(r['Heavy_perk_main_ID'])}:{part_id}"
@@ -109,8 +112,11 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
         for _, r in df.iterrows():
             base = '_'.join(r['String'].split('_')[:2])
             subtype = subtype_names.get((r['Manufacturer ID'], base), '')
-            desc = r['Description'] if pd.notna(r['Description']) else ''
-            label = f"{subtype} - {r['Stat']} - {desc} - ID:{r['Part_ID']}"
+            name = item_display_resolver.equipment_part_name(
+                self._row_ref_key(r), self.current_lang, r['Stat']
+            )
+            desc = self._row_description(r)
+            label = " - ".join(part for part in (subtype, name, desc, f"ID:{r['Part_ID']}") if part)
             items.append({"key": f"ba{r['Part_ID']}", "label": label, "category": subtype or None,
                           "data": int(r['Part_ID'])})
         return items
@@ -122,7 +128,11 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
         df = df[df['Manufacturer ID'] == mfg_id].sort_values(by=['Part_ID'])
         for _, r in df.iterrows():
             mfg_name = self._get_mfg_name(r['Manufacturer ID'])
-            label = f"{mfg_name} - {r['Stat']} - ID:{r['Part_ID']}"
+            name = item_display_resolver.equipment_part_name(
+                self._row_ref_key(r), self.current_lang, r['Stat']
+            )
+            desc = self._row_description(r)
+            label = " - ".join(part for part in (mfg_name, name, desc, f"ID:{r['Part_ID']}") if part)
             items.append({"key": f"ba2{r['Part_ID']}", "label": label, "category": None, "data": int(r['Part_ID'])})
         return items
 

@@ -182,6 +182,10 @@ class SelectedRow(QWidget):
             self.count_lbl.setText(str(self._count))
         self.countChanged.emit()
 
+    def set_label(self, label):
+        self._label.setText(label)
+        self._label.setToolTip(label)
+
     def _dec(self):
         if self._count > 1:
             self._count -= 1
@@ -323,6 +327,15 @@ class CatalogPicker(QWidget):
     def set_source(self, items):
         """Replace the catalog pool. Current selection is preserved."""
         self._source = list(items)
+        by_key = {item["key"]: item for item in self._source}
+        for key, list_item in self._selected_keys.items():
+            item = by_key.get(key)
+            if item is None:
+                continue
+            list_item.setData(Qt.ItemDataRole.UserRole, item)
+            row = self.selected.itemWidget(list_item)
+            if row is not None:
+                row.set_label(item.get("label", ""))
         self._refilter()
 
     # ------------------------------------------------------------------ #

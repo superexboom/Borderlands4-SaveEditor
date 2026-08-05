@@ -20,6 +20,33 @@ RARITY_STAT_SCALE = {
 
 WEAPON_TYPE_BY_ROOT_SUFFIX = {"ps": "Pistol", "sg": "Shotgun", "ar": "AssaultRifle", "sm": "SMG", "sr": "Sniper"}
 PRIMARY_ELEMENT_COMPONENTS = frozenset(range(10, 15))
+ELEMENT_NAMES = ("corrosive", "cryo", "fire", "radiation", "shock")
+STATUS_APPLICATION_DEFAULTS = {
+    "corrosive": {"dps_scalar": 0.155, "chance": 0.05},
+    "cryo": {"dps_scalar": 0.0},
+    "fire": {"dps_scalar": 0.2, "chance": 0.05},
+    "radiation": {"dps_scalar": 0.13, "chance": 0.05},
+    "shock": {"dps_scalar": 0.38, "chance": 0.05},
+}
+STATUS_CHANCE_BASE_BY_TYPE = {
+    "Pistol": 0.105,
+    "Shotgun": 0.065,
+    "AssaultRifle": 0.095,
+    "SMG": 0.08,
+    "Sniper": 0.2,
+}
+CRYO_IMPACT_BASE_BY_TYPE = {
+    "Pistol": 1.05,
+    "Shotgun": 1.0,
+    "AssaultRifle": 1.075,
+    "SMG": 0.9,
+    "Sniper": 1.25,
+}
+STATUS_STAT_FALLBACKS = {
+    "damage": {"scalar": 0.1, "manufacturer_multipliers": {"borg": 1.15, "maliwan": 1.35}},
+    "chance": {"scalar": 0.2, "manufacturer_multipliers": {"borg": 1.4, "maliwan": 1.2}},
+    "cryo": {"scalar": 0.125, "manufacturer_multipliers": {}},
+}
 ACCURACY_IMPULSE_SCALAR = 0.015
 ACCURACY_IMPULSE_MANUFACTURER_MULTIPLIERS = {"order": 1.1}
 ACCURACY_UI = {
@@ -181,6 +208,7 @@ def weapon_damage_from_serial(
     *,
     elemental: bool | None = None,
     projectiles: float | None = None,
+    mode_bit: int = 1,
 ) -> float:
     """Resolve the confirmed damage inputs from a decoded serial and name index."""
     header = re.match(r"\s*(\d+)\s*,\s*\d+\s*,\s*\d+\s*,\s*(\d+)", decoded)
@@ -216,7 +244,7 @@ def weapon_damage_from_serial(
             1.0,
         )
 
-    damage_stat_groups = _stat_modifier_groups(parts, "Damage")
+    damage_stat_groups = _stat_modifier_groups(parts, "Damage", mode_bit)
 
     native_model = index["weapon_native_model"]
     item_model = native_model["items"][root_id]
@@ -230,7 +258,8 @@ def weapon_damage_from_serial(
         for effect in part.get("weapon_attribute_effects", []):
             if effect.get("attribute") != "weapon_damage" or effect.get("modifier_type") != "ScaleMultiply":
                 continue
-            if not int(effect.get("use_mode_bitmask", 1)) & 1:
+            mode = effect.get("use_mode_bitmask")
+            if mode is not None and not int(mode) & mode_bit:
                 continue
             value = effect.get("constant")
             if value is None:
@@ -416,15 +445,15 @@ def _effect_value(effect: dict[str, Any], attribute_defaults: dict[str, float] |
     return float(value) if value is not None else None
 
 
-def _stat_points(parts: list[dict[str, Any]], attr: str) -> float:
-    base_points, mode_points = _stat_point_groups(parts, attr)
+def _stat_points(parts: list[dict[str, Any]], attr: str, mode_bit: int = 1) -> float:
+    base_points, mode_points = _stat_point_groups(parts, attr, mode_bit)
     return f32(base_points + mode_points)
 
 
-def _stat_point_groups(parts: list[dict[str, Any]], attr: str) -> tuple[float, float]:
+def _stat_point_groups(parts: list[dict[str, Any]], attr: str, mode_bit: int = 1) -> tuple[float, float]:
     return tuple(
         _sum_f32(group)
-        for group in _stat_modifier_groups(parts, attr)
+        for group in _stat_modifier_groups(parts, attr, mode_bit)
     )
 
 
@@ -435,14 +464,18 @@ def _sum_f32(values: Iterable[float]) -> float:
     return total
 
 
-def _stat_modifier_groups(parts: list[dict[str, Any]], attr: str) -> tuple[tuple[float, ...], tuple[float, ...]]:
+def _stat_modifier_groups(
+    parts: list[dict[str, Any]],
+    attr: str,
+    mode_bit: int = 1,
+) -> tuple[tuple[float, ...], tuple[float, ...]]:
     points: list[list[float]] = [[], []]
     for part in parts:
         for modifier in part.get("weapon_stat_modifiers", []):
             if modifier.get("attr") != attr:
                 continue
             mode = modifier.get("use_mode_bitmask")
-            if mode is not None and not int(mode) & 1:
+            if mode is not None and not int(mode) & mode_bit:
                 continue
             value = _effect_value(modifier)
             if value is not None:
@@ -460,9 +493,10 @@ def _scaled_stat_from_parts(
     multiplier: float = 1.0,
     *,
     invert: bool = False,
+    mode_bit: int = 1,
 ) -> float:
     value = f32(base)
-    for points in _stat_modifier_groups(parts, attr):
+    for points in _stat_modifier_groups(parts, attr, mode_bit):
         if points:
             values = (-point for point in points) if invert else points
             value = _scaled_stat_group(value, values, per_point, rarity, multiplier)
@@ -622,13 +656,17 @@ def _attribute_effect_ratio(
     effects: Iterable[dict[str, Any]],
     attribute: str,
     attribute_defaults: dict[str, float],
+    mode_bit: int = 1,
 ) -> float:
     simple: list[float] = []
     pre_add = 0.0
     post_add = 0.0
     product = 1.0
     for effect in effects:
-        if effect.get("attribute") != attribute or not int(effect.get("use_mode_bitmask", 1)) & 1:
+        if effect.get("attribute") != attribute:
+            continue
+        mode = effect.get("use_mode_bitmask")
+        if mode is not None and not int(mode) & mode_bit:
             continue
         value = _effect_value(effect, attribute_defaults)
         if value is None:
@@ -798,6 +836,166 @@ def splash_radius_from_serial(decoded: str, index: dict[str, Any]) -> int | None
     return floor(value + 0.5)
 
 
+def _part_element_names(part: dict[str, Any]) -> list[str]:
+    name = str(part.get("part") or "").casefold()
+    if "normal" in name or "kinetic" in name:
+        return ["kinetic"]
+    return [element for _, element in sorted((name.find(element), element) for element in ELEMENT_NAMES if element in name)]
+
+
+def weapon_elements_from_serial(decoded: str, index: dict[str, Any]) -> tuple[str, str]:
+    """Return the primary and mode-02 elements, honoring pearl overrides."""
+    header = re.match(r"\s*(\d+)", decoded)
+    if not header:
+        raise ValueError("invalid decoded weapon serial")
+    parts = _serial_parts(decoded, index, header.group(1))
+    primary = ""
+    secondary = ""
+    pearl: str | None = None
+    for part in parts:
+        category = part.get("category")
+        elements = _part_element_names(part)
+        if category == "body_ele" and elements and not primary:
+            primary = elements[0]
+        elif category == "secondary_ele" and elements:
+            if not primary:
+                primary = elements[0]
+            secondary = elements[1] if len(elements) > 1 else elements[0]
+        elif category == "pearl_elem":
+            pearl = elements[0] if elements else ""
+    if pearl is not None:
+        primary = pearl
+    if secondary == primary:
+        secondary = ""
+    return primary, secondary
+
+
+def _status_default(model: dict[str, Any], element: str) -> dict[str, Any]:
+    value = dict(STATUS_APPLICATION_DEFAULTS.get(element, {}))
+    exported = next(
+        (
+            row
+            for row_name, row in (model.get("status_application_defaults") or {}).items()
+            if str(row_name).casefold() == element
+        ),
+        {},
+    )
+    value.update(exported)
+    return value
+
+
+def _resolved_number(value: Any, field: str) -> float | None:
+    if isinstance(value, dict):
+        if value.get(field) is not None:
+            try:
+                return float(value[field])
+            except (TypeError, ValueError):
+                pass
+        for child in value.values():
+            found = _resolved_number(child, field)
+            if found is not None:
+                return found
+    elif isinstance(value, list):
+        for child in value:
+            found = _resolved_number(child, field)
+            if found is not None:
+                return found
+    return None
+
+
+def _status_stat_spec(model: dict[str, Any], kind: str) -> dict[str, Any]:
+    spec = dict(STATUS_STAT_FALLBACKS[kind])
+    aliases = {
+        "damage": ("damage", "StatusDamage", "status_damage", "ElementalPower"),
+        "chance": ("chance", "StatusChance", "status_chance"),
+        "cryo": ("cryo", "CryoImpact", "cryo_impact"),
+    }[kind]
+    sources = (model.get("status_stats") or {}, model.get("stats") or {})
+    for source in sources:
+        candidate = next((source.get(alias) for alias in aliases if isinstance(source.get(alias), dict)), None)
+        if candidate:
+            spec.update(candidate)
+            break
+    return spec
+
+
+def _status_type_base(model: dict[str, Any], weapon_type: str, kind: str) -> float:
+    aliases = {
+        "damage": ("StatusDamage", "status_damage", "ElementalPower"),
+        "chance": ("StatusChance", "status_chance", "ElementalChance"),
+        "cryo": ("CryoImpact", "cryo_impact", "CryoImpactContribution"),
+    }[kind]
+    for source in (model.get("status_type_initializers") or {}, model.get("type_initializers") or {}):
+        row = source.get(weapon_type) or {}
+        for alias in aliases:
+            if row.get(alias) is not None:
+                return float(row[alias])
+    if kind == "chance":
+        return STATUS_CHANCE_BASE_BY_TYPE[weapon_type]
+    if kind == "cryo":
+        return CRYO_IMPACT_BASE_BY_TYPE[weapon_type]
+    return 1.0
+
+
+def _status_attribute_value(
+    parts: list[dict[str, Any]],
+    rarity: str,
+    provider: str,
+    model: dict[str, Any],
+    item: dict[str, Any],
+    weapon_type: str,
+    kind: str,
+    mode_bit: int,
+) -> float:
+    spec = _status_stat_spec(model, kind)
+    value = _scaled_stat_from_parts(
+        _status_type_base(model, weapon_type, kind),
+        parts,
+        "ElementalPower",
+        float(spec.get("scalar", 0.0)),
+        rarity,
+        (spec.get("manufacturer_multipliers") or {}).get(provider, 1.0),
+        mode_bit=mode_bit,
+    )
+    attribute = {
+        "damage": "weapon_damage_modifier_base_status_effect_damage",
+        "chance": "weapon_damage_modifier_base_status_effect_chance",
+        "cryo": "impact_contribution_scalar",
+    }[kind]
+    effects = [
+        *item.get("attribute_effects", []),
+        *(effect for part in parts for effect in part.get("weapon_attribute_effects", [])),
+    ]
+    return f32(value * _attribute_effect_ratio(effects, attribute, model.get("attribute_defaults", {}), mode_bit))
+
+
+def weapon_element_card_stats_from_serial(decoded: str, index: dict[str, Any]) -> dict[str, Any]:
+    """Resolve the primary and mode-02 elemental rows shown on a weapon card."""
+    parts, rarity, provider, model, item = _serial_stat_context(decoded, index)
+    weapon_type = WEAPON_TYPE_BY_ROOT_SUFFIX[item["root"].rsplit("_", 1)[-1]]
+    primary, secondary = weapon_elements_from_serial(decoded, index)
+    dot_interval = _resolved_number((model.get("attribute_resolvers") or {}).get("att_playershared_dotinterval", {}), "resolved_value") or 0.33
+    stats: dict[str, Any] = {}
+
+    for element, mode_bit, suffix in ((primary, 1, ""), (secondary, 2, "_mode02")):
+        if not element or element == "kinetic":
+            continue
+        stats[f"element{suffix}"] = element
+        if element == "cryo":
+            efficiency = _status_attribute_value(parts, rarity, provider, model, item, weapon_type, "cryo", mode_bit)
+            stats[f"cryo_efficiency{suffix}"] = floor(f32(efficiency * 100.0) + 0.5)
+            continue
+
+        status_damage = _status_attribute_value(parts, rarity, provider, model, item, weapon_type, "damage", mode_bit)
+        damage = weapon_damage_from_serial(decoded, index, projectiles=1.0, mode_bit=mode_bit)
+        dps_scalar = float(_status_default(model, element).get("dps_scalar", 0.0))
+        elemental_dps = f32(f32(f32(damage * status_damage) * f32(dps_scalar)) / f32(dot_interval))
+        chance = _status_attribute_value(parts, rarity, provider, model, item, weapon_type, "chance", mode_bit)
+        stats[f"elemental_dps{suffix}"] = floor(elemental_dps + 0.5)
+        stats[f"elemental_chance{suffix}"] = floor(f32(chance * 100.0) + 0.5)
+    return stats
+
+
 def weapon_card_stats_from_serial(decoded: str, index: dict[str, Any]) -> dict[str, Any]:
     """Return every verified primary-mode item-card stat that can be resolved."""
     parts, _rarity, _provider, _model, _item = _serial_stat_context(decoded, index)
@@ -838,4 +1036,8 @@ def weapon_card_stats_from_serial(decoded: str, index: dict[str, Any]) -> dict[s
             stats[key] = resolver(decoded, index)
         except (KeyError, TypeError, ValueError, OverflowError, ZeroDivisionError):
             pass
+    try:
+        stats.update(weapon_element_card_stats_from_serial(decoded, index))
+    except (KeyError, TypeError, ValueError, OverflowError, ZeroDivisionError):
+        pass
     return stats

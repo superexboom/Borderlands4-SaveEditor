@@ -74,9 +74,8 @@ class QtRepkitEditorTab(BaseEquipmentEditorTab):
     def _universal_items(self):
         items = []
         for _, r in self._df243()[self._df243()['Part_type'] == 'Perk'].iterrows():
-            name = self._(r['Stat'])
-            desc = r['Description'] if pd.notna(r['Description']) else ''
-            label = f"{name} - {desc} [{r['Part_ID']}]" if desc else f"{name} [{r['Part_ID']}]"
+            text, _ = self._fmt_row(r)
+            label = f"{text} [{r['Part_ID']}]"
             items.append({"key": f"u{r['Part_ID']}", "label": label, "category": None, "data": int(r['Part_ID'])})
         return items
 
@@ -87,7 +86,8 @@ class QtRepkitEditorTab(BaseEquipmentEditorTab):
         df_leg = df_leg.sort_values(by=['sort_key', 'Manufacturer ID', 'Part_ID'])
         for _, r in df_leg.iterrows():
             mfg_name = self._get_mfg_name(r['Manufacturer ID'])
-            label = f"{mfg_name} - {r['Stat']} - {r['Description']}"
+            text, _ = self._fmt_row(r)
+            label = f"{mfg_name} - {text}".strip(" -")
             pid, mid = int(r['Part_ID']), int(r['Manufacturer ID'])
             items.append({"key": f"l{mid}:{pid}", "label": label,
                           "category": "current" if mid == current_mfg else "other", "data": (pid, mid)})
