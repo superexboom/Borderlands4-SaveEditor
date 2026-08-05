@@ -33,6 +33,10 @@ RARITY_ZH = {
     "Pearl": "珠光",
     "pearl": "珠光",
 }
+# Rarities whose inv_comp skin names a weapon, highest priority last.
+# Epic and below keep barrel-derived names, so their named inv_comp entries
+# (grenade/shield prefix words like "Gate", "Scab") stay prefixes.
+_WEAPON_TITLE_RARITIES = {"Legendary": 0, "Pearl": 1}
 CLASSMOD_RARITY_FALLBACK = {
     254: {"217": "Common", "218": "Uncommon", "219": "Rare", "220": "Epic"},
     255: {"70": "Common", "69": "Uncommon", "68": "Rare", "67": "Epic"},
@@ -1315,6 +1319,31 @@ def _weapon_has_named_barrel_variant(item_id: int, ref: dict[str, Any], lang: st
     return False
 
 
+def _weapon_rarity_component_name(item_id: int, ids: list[str], key: str) -> str:
+    """Title for named Legendary/Pearl weapons.
+
+    The rarity skin (``inv_comp``) is the only authoritative name holder. Its
+    companion gimmick part carries the legendary effect and usually - but not
+    always - repeats the name: barrel ``18:70`` owns the Aegon's Dream effect
+    (``uistat_DualDamage_red_text``) yet is named the generic "Buzzymuzz",
+    while underbarrel ``18:69`` merely adds fire rate. Reading ``inv_comp``
+    sidesteps that split. Pearl outranks Legendary when both are present.
+    """
+    best_rank = -1
+    best_name = ""
+    for part_id in ids:
+        ref = _part_ref(item_id, part_id)
+        if ref.get("category") != "inv_comp":
+            continue
+        rank = _WEAPON_TITLE_RARITIES.get(str(ref.get("rarity") or ""), -1)
+        if rank <= best_rank:
+            continue
+        name = ((ref.get("name") or {}).get(key) or (ref.get("name") or {}).get("en", "")).strip()
+        if _valid_name(name):
+            best_rank, best_name = rank, name
+    return best_name
+
+
 def _weapon_root_name(item_id: int, ids: list[str], lang: str) -> tuple[str, str]:
     key = "zh" if _lang_is_zh(lang) else "en"
     if item_id == 11 and ("7" in ids or "8" in ids) and any(part_id in ids for part_id in ("79", "80")):
@@ -1334,6 +1363,11 @@ def _weapon_root_name(item_id: int, ids: list[str], lang: str) -> tuple[str, str
             name = ((ref.get("name") or {}).get(key) or (ref.get("name") or {}).get("en", "")).strip()
             if _valid_name(name):
                 return name, "ncs_name"
+    # A unique barrel_acc above may upgrade the title ("Superconducting Plasma
+    # Coil" over "Plasma Coil"), so the rarity skin only applies after it.
+    rarity_name = _weapon_rarity_component_name(item_id, ids, key)
+    if rarity_name:
+        return rarity_name, "ncs_name"
     for part_id in ids:
         ref = _part_ref(item_id, part_id)
         if ref.get("category") != "barrel":
