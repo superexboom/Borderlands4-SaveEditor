@@ -302,10 +302,12 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
         # weapon_part_name despite its name is the better namer for every item
         # type: it returns the curated ref["name"] on all 802 refs that have one,
         # covers 9 equipment refs equipment_part_name misses (and none the other
-        # way), and leaks no {mod} placeholders where equipment_part_name leaks 19
-        # on class mod bodies. equipment_part_name puts the uistat title first,
-        # which collapses distinct parts onto a shared group label: all 10 of
-        # 243:22..26,47 become "元素抗性" where weapon_part_name keeps 橡胶/含铅/淬炼.
+        # way). equipment_part_name puts the uistat title first, which collapses
+        # distinct parts onto a shared group label: all 10 of 243:22..26,47 become
+        # "元素抗性" where weapon_part_name keeps 橡胶/含铅/淬炼.
+        # Both namers used to leak {mod}/{damage} placeholders on the 293 stat_group
+        # refs of the shared 234/247 pools; _title_from_text now takes the label out
+        # of the uistat markup instead of using the whole template sentence.
         try:
             display_name = resolver.weapon_part_name(int(owner), part_id, lang) or ""
         except Exception:

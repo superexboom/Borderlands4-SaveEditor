@@ -461,7 +461,14 @@ class QtSerialInspectorTab(QWidget):
                 str(part.get("description") or ""),
             ]
             for column, value in enumerate(values):
-                table.setItem(index, column, QTableWidgetItem(value))
+                item = QTableWidgetItem(value)
+                # Columns are sized to contents and Qt elides what will not fit,
+                # so long effect text (worst in en-US, which is wordier than zh)
+                # was unreadable with no way to see the rest. Carry the full text
+                # in a tooltip; only where it can actually be clipped.
+                if value:
+                    item.setToolTip(value)
+                table.setItem(index, column, item)
 
     def _render_bits(self, report: dict[str, Any]):
         bits = (report.get("bit_layout") or {}).get("blocks") or []

@@ -81,11 +81,36 @@ def _clean_markup(text: str) -> str:
     return " ".join(text.split())
 
 
+_PLACEHOLDER_RE = re.compile(r"\{[^}]*\}")
+_MARKUP_SPAN_RE = re.compile(r"\[(?!/)([^\]]+)\]([^\[]*)\[/\1\]")
+
+
+def _label_from_markup(text: str) -> str:
+    """Pull a stat label out of a uistat sentence.
+
+    Stat uistats are templates, e.g. "[secondary]Gun Damage[/secondary] is
+    increased by [secondary]{damage}[/secondary]", and the value placeholder is
+    only substituted on the card. Using such a sentence as a part name leaked
+    the raw "{damage}"/"{mod}" text into the UI. The markup already tags the
+    label, so take the first tagged span that holds no placeholder; that works
+    whether the placeholder trails the label or leads it ("{damage} [secondary]
+    Melee Critical Hit Chance[/secondary]").
+    """
+    for _tag, inner in _MARKUP_SPAN_RE.findall(text or ""):
+        if inner.strip() and not _PLACEHOLDER_RE.search(inner):
+            return " ".join(inner.split())
+    return ""
+
+
 def _title_from_text(text: str) -> str:
-    text = _clean_markup(text)
+    label = _label_from_markup(text)
+    text = _clean_markup(label or text)
     if not text:
         return ""
-    return re.split(r"\s*-\s*", text, maxsplit=1)[0].strip().replace("Ⅳ", "IV")
+    title = re.split(r"\s*-\s*", text, maxsplit=1)[0].strip().replace("Ⅳ", "IV")
+    # Never surface a template placeholder as a name; callers treat "" as
+    # "no name available" and fall back to the part's other identifiers.
+    return "" if _PLACEHOLDER_RE.search(title) else title
 
 
 def _valid_name(text: str) -> bool:
@@ -500,6 +525,18 @@ def _part_row_value(row: Any, *keys: str) -> str:
 
 def weapon_part_name(item_id: int, part_id: str, lang: str = "zh-CN", row: Any = None) -> str:
     """Return the maintained part name without reusing the old hand-written effect text."""
+    key = "zh" if _lang_is_zh(lang) else "en"
+
+    # Checked before the CSV because the CSV carries the same wrong name: the
+    # game reuses the generic barrel's name for some legendary gimmick parts
+    # (18:70 Aegon's Dream shows as "Buzzymuzz") or leaves them unnamed, in which
+    # case the namer used to print the red-text sentence as the part name. The
+    # pipeline derives this from the rarity component, the authoritative holder.
+    unique = _part_ref(item_id, part_id).get("unique_name") or {}
+    name = unique.get(key) or unique.get("en", "")
+    if _valid_name(name):
+        return name
+
     if _lang_is_zh(lang):
         name = _part_row_value(row, "Name_ZH", "Name")
     else:
@@ -509,7 +546,6 @@ def weapon_part_name(item_id: int, part_id: str, lang: str = "zh-CN", row: Any =
 
     ref = _part_ref(item_id, part_id)
     fallback = ref.get("fallback_name") or {}
-    key = "zh" if _lang_is_zh(lang) else "en"
     name = fallback.get(key) or fallback.get("en", "")
     if _valid_name(name):
         return name
@@ -2271,6 +2307,19 @@ def format_equipment_part_description(
                     lines.append(text)
         except (KeyError, TypeError, ValueError):
             pass
+
+    if ref.get("category") == "firmware":
+        # Equipment firmware refs carry no uistats and no attribute effects in the
+        # index, so the stat machinery above yields nothing and the row rendered
+        # blank. The text exists only in the per-type *_main_perk.csv, which until
+        # now was reachable from the item-card resolver but not from here.
+        try:
+            entry = _equipment_firmware_entry(ref_key, item_type, lang)
+        except (KeyError, OSError, TypeError, ValueError):
+            entry = None
+        text = str((entry or {}).get("text") or "").strip()
+        if text and text not in lines:
+            lines.append(text)
 
     try:
         root_id, _level = equipment_display_stats._header(decoded_full)

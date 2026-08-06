@@ -93,8 +93,13 @@ def html_to_pixmap(html: str, scale: float = 2.0, max_width: float = CARD_MAX_WI
 
     document = QTextDocument()
     document.setDocumentMargin(0)
-    # Set as the document default so any span with its own colour still wins.
-    document.setDefaultStyleSheet("body,table,td,span,i,b { color: %s; }" % CARD_TEXT_COLOR)
+    # Only the container elements may carry the default. A selector that matches
+    # an inline element instead overrides the colour it should have inherited:
+    # the red flavour text is "<td style='color:#f33a47'><i>...</i></td>", and
+    # for that <i> the td's colour is merely an inherited value, which loses to
+    # any rule targeting the <i> itself. Listing i/b here therefore repainted the
+    # red text white; they were never needed to fix the default-black problem.
+    document.setDefaultStyleSheet("body,table,td { color: %s; }" % CARD_TEXT_COLOR)
     document.setHtml("<body>%s</body>" % html)
     document.setTextWidth(max_width)
     size = document.size()
