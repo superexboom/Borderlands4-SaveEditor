@@ -40,7 +40,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from core import card_image, resource_loader, serial_inspect
+from core import card_image, item_display_resolver, resource_loader, serial_inspect
 
 UI_LOC_KEY = "serial_inspector_tab"
 
@@ -161,6 +161,8 @@ _FALLBACK_LOC: dict[str, Any] = {
 _VIOLATION_FALLBACK = {
     "invalid_serial": "Serial could not be parsed",
     "tag_count_below": "Tagged parts are missing",
+    "foreign_root_part_manufacturer": "Cross-manufacturer part",
+    "foreign_root_part_type": "Cross-type part",
 }
 
 # The weapon editor colours the 22 firearm part types it can edit. Serials also
@@ -894,8 +896,14 @@ class QtSerialInspectorTab(QWidget):
 
     def _violation_text(self, violation: dict[str, Any]) -> str:
         code = str(violation.get("code") or "")
+        # "foreign" splits into cross-manufacturer and cross-type; the generic
+        # code is only used when a root's identity is unknown.
+        foreign_kind = str(violation.get("foreign_kind") or "")
+        lookup_code = code + ("_" + foreign_kind if code == "foreign_root_part" and foreign_kind else "")
         text = (
-            self.rule_loc.get("violation_" + code)
+            self.rule_loc.get("violation_" + lookup_code)
+            or self.rule_loc.get("violation_" + code)
+            or _VIOLATION_FALLBACK.get(lookup_code)
             or _VIOLATION_FALLBACK.get(code)
             or code
         )
@@ -913,6 +921,15 @@ class QtSerialInspectorTab(QWidget):
         part = violation.get("part")
         if part:
             text += " \u00b7 %s" % part
+            # Name both sides so the user can see which brand/type it came from.
+            if foreign_kind:
+                own_root = str((self._report.get("generation") or {}).get("root_ref") or "")
+                other = item_display_resolver.root_kind_label(
+                    str(part).partition(":")[0], self.current_lang
+                )
+                own = item_display_resolver.root_kind_label(own_root, self.current_lang) if own_root else ""
+                if other:
+                    text += " (%s \u2192 %s)" % (own, other) if own else " (%s)" % other
         return text
 
     # ------------------------------------------------------------------- card

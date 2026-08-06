@@ -899,7 +899,29 @@ class WeaponEditorTab(QtWidgets.QWidget):
             )
         if code == "foreign_root_part":
             name = self._generation_ref_text(violation.get("part", ""))
-            return self._rule_message("foreign_part", "跨武器配件：{part}", "Part from another weapon: {part}", part=name)
+            # Distinguish another brand of the same item type from another item
+            # type entirely; "another weapon" is wrong for both on gear.
+            foreign_kind = str(violation.get("foreign_kind") or "")
+            other = item_display_resolver.root_kind_label(
+                str(violation.get("part", "")).partition(":")[0], self.current_lang
+            )
+            own_root = str(result.get("root_ref") or "")
+            own = item_display_resolver.root_kind_label(own_root, self.current_lang) if own_root else ""
+            if foreign_kind == "manufacturer":
+                return self._rule_message(
+                    "foreign_part_manufacturer",
+                    "跨厂商配件（本物品为{own}，配件来自{other}）：{part}",
+                    "Cross-manufacturer part (this item is {own}, part is from {other}): {part}",
+                    own=own, other=other, part=name,
+                )
+            if foreign_kind == "type":
+                return self._rule_message(
+                    "foreign_part_type",
+                    "跨类型配件（本物品为{own}，配件来自{other}）：{part}",
+                    "Cross-type part (this item is {own}, part is from {other}): {part}",
+                    own=own, other=other, part=name,
+                )
+            return self._rule_message("foreign_part", "跨来源配件：{part}", "Part from another item: {part}", part=name)
         if code == "forced_part_missing":
             names = self._generation_ref_list(violation.get("parts") or [])
             return self._rule_message(

@@ -219,6 +219,102 @@ def _rows_by_file(filename: str) -> list[dict[str, str]]:
     return _read_csv(getter(name)) if getter else []
 
 
+@lru_cache(maxsize=256)
+def root_kind(root_ref: str) -> tuple[str, str]:
+    """Return the (manufacturer, item_type) enums for a root id.
+
+    `weapon_generation_rules` leaves `manufacturer`/`weapon_type` empty for the
+    non-firearm roots (enhancements, shields, class mods), so the static ID map
+    is the authority; `dynamic_item_kind` covers class-mod roots it omits.
+    Returns ("", "") when neither knows the root, so callers can degrade to a
+    generic message instead of asserting a wrong manufacturer or type.
+    """
+    from . import lookup
+
+    try:
+        item_id = int(str(root_ref).strip())
+    except (TypeError, ValueError):
+        return "", ""
+    manufacturer, item_type, found = lookup.get_kind_enums(item_id)
+    if found:
+        return manufacturer, item_type
+    dynamic = dynamic_item_kind(item_id)
+    if dynamic:
+        return str(dynamic[0] or ""), str(dynamic[1] or "")
+    return "", ""
+
+
+def classify_foreign_root(own_root: str, other_root: str) -> str:
+    """Say *how* a part is foreign: from another brand, or another item class.
+
+    A Maliwan enhancement holding a Ripper enhancement augment is a
+    cross-manufacturer swap; the same enhancement holding a Torgue shotgun
+    barrel is a cross-type swap. Both were previously reported as "another
+    weapon", which is wrong twice over for non-weapon gear. Returns
+    "manufacturer", "type", or "" when either root's identity is unknown.
+    """
+    own_mfr, own_type = root_kind(own_root)
+    other_mfr, other_type = root_kind(other_root)
+    if not own_type or not other_type:
+        return ""
+    if own_type != other_type:
+        return "type"
+    if own_mfr and other_mfr and own_mfr != other_mfr:
+        return "manufacturer"
+    return ""
+
+
+# Item-type enums map onto strings the UI already ships: the firearm types live
+# in weapon_editor_tab.taxonomy, the gear types in main_window.tabs. Reusing them
+# keeps all four languages correct without inventing new translations.
+_ROOT_TYPE_LOC_KEYS = {
+    "Assault Rifle": ("weapon_editor_tab", "taxonomy", "assault_rifle"),
+    "Pistol": ("weapon_editor_tab", "taxonomy", "pistol"),
+    "Shotgun": ("weapon_editor_tab", "taxonomy", "shotgun"),
+    "SMG": ("weapon_editor_tab", "taxonomy", "smg"),
+    "Sniper": ("weapon_editor_tab", "taxonomy", "sniper"),
+    "Heavy Weapon": ("main_window", "tabs", "heavy_weapon"),
+    "Class Mod": ("main_window", "tabs", "class_mod"),
+    "Enhancement": ("main_window", "tabs", "enhancement"),
+    "Grenade": ("main_window", "tabs", "grenade"),
+    "Shield": ("main_window", "tabs", "shield"),
+    "Repkit": ("main_window", "tabs", "repkit"),
+}
+
+
+@lru_cache(maxsize=8)
+def _root_type_names(lang: str) -> dict[str, str]:
+    """Localized item-type names keyed by enum. Cached: load_json_resource has no
+    cache of its own and a serial can raise one violation per foreign part."""
+    try:
+        data = resource_loader.load_json_resource(
+            resource_loader.get_ui_localization_file(lang)
+        )
+    except (OSError, ValueError):
+        return {}
+    names: dict[str, str] = {}
+    for enum, (section, subsection, key) in _ROOT_TYPE_LOC_KEYS.items():
+        value = ((data or {}).get(section) or {}).get(subsection) or {}
+        text = value.get(key) if isinstance(value, dict) else None
+        if isinstance(text, str) and text:
+            names[enum] = text
+    return names
+
+
+def root_kind_label(root_ref: str, lang: str = "zh-CN") -> str:
+    """Human-readable "Manufacturer Type" for a root, e.g. "Maliwan 强化模组".
+
+    Manufacturer names are proper nouns and stay untranslated; the item type uses
+    the UI's existing translations. Falls back to the bare root id when the root
+    is unknown, so callers never print an invented name.
+    """
+    manufacturer, item_type = root_kind(root_ref)
+    if not item_type:
+        return str(root_ref)
+    type_text = _root_type_names(lang).get(item_type) or item_type
+    return f"{manufacturer} {type_text}" if manufacturer else type_text
+
+
 @lru_cache(maxsize=64)
 def dynamic_item_kind(item_id: int) -> tuple[str, str] | None:
     prefix = f"{item_id}:"
@@ -1241,7 +1337,13 @@ def validate_weapon_generation(decoded: str, allow_incomplete: bool = False) -> 
         unknown = True
 
     for ref in context["foreign_part_refs"]:
-        add("foreign_root_part", part=ref)
+        # Report *why* the part is foreign so the UI can say cross-manufacturer
+        # or cross-type instead of always claiming "another weapon".
+        add(
+            "foreign_root_part",
+            part=ref,
+            foreign_kind=classify_foreign_root(context["root_ref"], str(ref).partition(":")[0]),
+        )
         hard = True
     if context["unknown_part_refs"]:
         add("unknown_part", parts=context["unknown_part_refs"])

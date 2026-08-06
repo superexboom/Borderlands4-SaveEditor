@@ -854,7 +854,14 @@ class QtWeaponGeneratorTab(QWidget):
             "weapon_rules_missing": ("violation_weapon_rules_missing", "缺少该武器规则", "Weapon rules missing"),
             "unknown_composition": ("violation_unknown_composition", "未选择或无法识别武器模板", "Weapon composition is missing or unknown"),
             "multiple_compositions": ("violation_multiple_compositions", "存在多个武器模板", "Multiple weapon compositions"),
-            "foreign_root_part": ("violation_foreign_root_part", "存在跨武器配件", "Foreign weapon part"),
+            "foreign_root_part": ("violation_foreign_root_part", "存在跨来源配件", "Foreign part"),
+            # Same item type, different brand vs. a different item class entirely.
+            "foreign_root_part_manufacturer": (
+                "violation_foreign_root_part_manufacturer", "存在跨厂商配件", "Cross-manufacturer part",
+            ),
+            "foreign_root_part_type": (
+                "violation_foreign_root_part_type", "存在跨类型配件", "Cross-type part",
+            ),
             "unknown_part": ("violation_unknown_part", "存在未知配件", "Unknown weapon part"),
             "part_not_allowed": ("violation_part_not_allowed", "存在非自然生成配件", "Part is outside the natural pool"),
             "count_below": ("violation_count_below", "配件尚未补齐", "Required parts are missing"),
@@ -869,6 +876,9 @@ class QtWeaponGeneratorTab(QWidget):
             "inheritance_cycle": ("violation_inheritance_cycle", "模板规则继承异常", "Composition rule inheritance cycle"),
         }
         code = violation.get("code")
+        foreign_kind = str(violation.get("foreign_kind") or "")
+        if code == "foreign_root_part" and foreign_kind:
+            code = f"{code}_{foreign_kind}"
         key, zh, en = labels.get(code, ("", str(code or ""), str(code or "")))
         text = self._rule_message(key, zh, en) if key else en
         actual = violation.get("actual")
