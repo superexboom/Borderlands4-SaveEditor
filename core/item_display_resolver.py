@@ -1090,11 +1090,24 @@ def weapon_generation_context(decoded: str) -> dict[str, Any]:
     for group in ordered_groups:
         if group in groups:
             selected_refs = selected_by_group.get(group, [])
+            # Dependency chains can live INSIDE one group: a class mod spends its
+            # skill points on `passive_points` where tier_2 requires the tier_1 of
+            # the same branch, so the tags a sibling adds must be visible to the
+            # parts picked after it. `native_generation_routes.md:267` allows the
+            # preferred-parts path to enqueue dependency providers, and :278
+            # defines legality as "there exists at least one completion", which is
+            # exactly this ordered reading. Exclusions stay on the group-entry
+            # snapshot (:269 shrinks the pool but never revives a candidate), so
+            # mutually exclusive siblings are still reported.
+            dependency_tags = set(active_tags)
+            for ref in selected_refs:
+                dependency_tags |= _weapon_generation_tags(index, rules, ref)["adds"]
             group_state = evaluate_group_selection(
                 allowed_refs=groups[group]["allowed"],
                 selected_refs=selected_refs,
                 tags_for_ref=lambda ref: _weapon_generation_tags(index, rules, ref),
                 base_tags=active_tags,
+                dependency_tags=dependency_tags,
                 tag_rules=composition.get("tag_rules") or [],
                 base_tag_counts=tag_counts,
                 minimum=groups[group]["min"],
@@ -1116,7 +1129,14 @@ def weapon_generation_context(decoded: str) -> dict[str, Any]:
                     tag_counts[index_] += bool(adds & bucket)
 
     unknown_parts = [ref for ref in selected if ref not in part_refs]
-    foreign_parts = [ref for ref in refs if _weapon_generation_root(ref) not in {root_ref, "1"}]
+    # A part is only "foreign" if it comes from a root this item does not
+    # inherit from. Weapons share root 1, but shields share 246, class mods 234,
+    # grenades 245 and so on, and a heavy weapon legitimately shares both 244
+    # and 1. `shared_roots` is published per root by the rules builder; the
+    # literal "1" stays as the fallback for weapon roots exported before it.
+    shared_roots = {str(value) for value in (weapon.get("shared_roots") or [])}
+    allowed_roots = {root_ref} | (shared_roots or {"1"})
+    foreign_parts = [ref for ref in refs if _weapon_generation_root(ref) not in allowed_roots]
     coverage_complete = bool(root_ref and weapon and composition_ref)
     coverage_complete &= not bool(composition.get("inheritance_cycle"))
     coverage_complete &= not any(
@@ -1238,9 +1258,13 @@ def validate_weapon_generation(decoded: str, allow_incomplete: bool = False) -> 
             if not group_rule["selected_reachable"]:
                 direct_reason = False
                 tags_before = set(group_rule.get("tags_before") or [])
+                # `requires` is judged against the widened set so an intra-group
+                # dependency chain is not reported as missing; `excludes` keeps
+                # using the group-entry snapshot.
+                requires_before = set(group_rule.get("dependency_tags") or []) | tags_before
                 for ref in refs:
                     tags = _weapon_generation_tags(index, rules, ref)
-                    missing = sorted(tags["requires"] - tags_before)
+                    missing = sorted(tags["requires"] - requires_before)
                     if missing:
                         add("missing_required_tag", part=ref, tags=missing)
                         direct_reason = True

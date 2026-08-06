@@ -491,8 +491,9 @@ class QtSerialInspectorTab(QWidget):
 
         generation = report.get("generation") or {}
         if not generation:
-            # Only the five firearm types have a rule tree; equipment has none.
-            self.rules_view.setHtml("<p style='opacity:0.75;'>%s</p>" % escape(label("not_weapon")))
+            # Rules cover every inventory root that ships generation data; this
+            # branch is now only reached by roots the index has no rules for.
+            self.rules_view.setHtml("<p style='opacity:0.75;'>%s</p>" % escape(label("no_rules")))
             return
 
         yes, no = label("yes"), label("no")

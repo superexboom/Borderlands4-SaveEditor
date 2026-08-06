@@ -159,8 +159,15 @@ def evaluate_group_selection(
     minimum: int,
     maximum: int,
     additional_chance: Any = None,
+    dependency_tags: Iterable[str] | None = None,
 ) -> dict[str, Any]:
-    """Evaluate one native part-type slot using the game's shrink-only pool loop."""
+    """Evaluate one native part-type slot using the game's shrink-only pool loop.
+
+    ``dependency_tags`` optionally widens the tag set used to satisfy ``requires``
+    so that a dependency chain contained within a single slot (class mod skill
+    tiers) is accepted. It never widens ``excludes``: the native loop shrinks the
+    pool after every pick, so mutually exclusive siblings must still be rejected.
+    """
     allowed = list(dict.fromkeys(map(str, allowed_refs)))
     selected = list(map(str, selected_refs))
     selected_unique = list(dict.fromkeys(selected))
@@ -177,6 +184,11 @@ def evaluate_group_selection(
         for rule in tag_rules
     ]
     base_active = frozenset(str(tag).casefold() for tag in base_tags)
+    # Tags granted only by the dependency widening. They may satisfy `requires`
+    # but must not trigger `excludes`, otherwise a chain like tier_1 -> tier_2
+    # would be rejected by the very sibling that enables it.
+    widened_only = frozenset(str(tag).casefold() for tag in (dependency_tags or ())) - base_active
+    requires_active = base_active | widened_only
     base_counts = tuple(
         int(base_tag_counts[index]) if index < len(base_tag_counts) else 0
         for index in range(len(normalized_rules))
@@ -184,7 +196,7 @@ def evaluate_group_selection(
 
     @lru_cache(maxsize=None)
     def state(mask: int) -> tuple[frozenset[str], tuple[int, ...]]:
-        active = set(base_active)
+        active = set(requires_active)
         counts = list(base_counts)
         for index, ref in enumerate(allowed):
             if not mask & (1 << index):
@@ -197,7 +209,7 @@ def evaluate_group_selection(
 
     def candidate_allowed(index: int, active: frozenset[str], counts: tuple[int, ...]) -> bool:
         tags = candidate_tags[allowed[index]]
-        if not tags["requires"] <= active or tags["excludes"] & active:
+        if not tags["requires"] <= active or tags["excludes"] & (active - widened_only):
             return False
         return not any(
             tags["adds"] & bucket and counts[rule_index] >= limit
@@ -206,7 +218,7 @@ def evaluate_group_selection(
 
     initial_pool = 0
     for index in range(len(allowed)):
-        if candidate_allowed(index, base_active, base_counts):
+        if candidate_allowed(index, requires_active, base_counts):
             initial_pool |= 1 << index
 
     reachable_masks: set[int] = set()
@@ -294,4 +306,5 @@ def evaluate_group_selection(
         "effective_max": effective_max,
         "active": bool(selected or (initial_pool and any(target > 0 for target in targets))),
         "tags_before": sorted(base_active),
+        "dependency_tags": sorted(requires_active),
     }

@@ -539,16 +539,19 @@ def inspect_serial(text: str, lang: str = "zh-CN") -> dict[str, Any]:
     report["roundtrip"] = _roundtrip(decoded, base85)
     report["bit_layout"] = bit_layout(base85 or report["roundtrip"].get("encoded", ""))
 
-    if item_type in WEAPON_TYPES:
-        # validate_weapon_generation returns weapon_generation_context plus
-        # "status" and "violations", so one call covers both.
-        try:
-            generation = resolver.validate_weapon_generation(decoded) or {}
+    # Generation rules now cover every inventory root - shields, grenades,
+    # repkits, heavy weapons, class mods and enhancements all ride the same
+    # FInventoryTypeDef machinery - so validate whatever the index knows about
+    # instead of gating on WEAPON_TYPES. `allow_incomplete` keeps an under-rolled
+    # but otherwise lawful item out of the "modified" bucket.
+    try:
+        generation = resolver.validate_weapon_generation(decoded, allow_incomplete=True) or {}
+        if generation.get("rules_available") and generation.get("weapon_known"):
             report["generation"] = generation
             report["status"] = str(generation.get("status") or "")
             report["violations"] = list(generation.get("violations") or [])
-        except Exception as exc:
-            report["warnings"].append(f"validate_weapon_generation failed: {type(exc).__name__}: {exc}")
+    except Exception as exc:
+        report["warnings"].append(f"validate_weapon_generation failed: {type(exc).__name__}: {exc}")
 
     report["ok"] = True
     return report
