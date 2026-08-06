@@ -392,11 +392,11 @@
       "summary": "Summary",
       "card": "Item card",
       "parts": "Parts",
-      "bits": "Bit layout",
-      "raw": "Raw data",
       "rules": "Generation rules",
       "empty": "Paste a serial above to inspect it.",
       "no_card": "No card available for this item type.",
+      "zoom_hint": "Click the card to enlarge",
+      "no_parts": "No parts to show.",
       "item_id": "Item ID",
       "manufacturer": "Manufacturer",
       "type": "Type",
@@ -409,14 +409,13 @@
       "decoded": "Decoded",
       "components": "Components",
       "roundtrip": "Round-trip",
-      "bit_total": "Total bits",
-      "bit_header": "Header bits",
-      "bit_padding": "Padding bits",
       "part_total": "Parts",
       "implicit_level_one": "Implicit level 1"
     },
     "buttons": {
       "inspect": "Inspect",
+      "use": "Edit this form",
+      "copy": "Copy",
       "paste": "Paste",
       "clear": "Clear",
       "copy_json": "Copy JSON",
@@ -431,14 +430,6 @@
       "Name",
       "Effect",
       "Description"
-    ],
-    "bits_columns": [
-      "#",
-      "Token",
-      "Bits",
-      "Length",
-      "Byte",
-      "Value"
     ],
     "effect_state": {
       "described": "described",
@@ -484,6 +475,28 @@
       "ok": "ok",
       "incomplete": "not filled",
       "unreachable": "unreachable"
+    },
+    "categories": {
+      "passive_points": "Passive Skill",
+      "inv_comp": "Item Component",
+      "class_mod_body": "Class Mod Body",
+      "action_skill_mod": "Action Skill Mod",
+      "stat_group1": "Stat Roll 1",
+      "stat_group2": "Stat Roll 2",
+      "stat_group3": "Stat Roll 3",
+      "stat_augment": "Stat Augment",
+      "primary_augment": "Primary Augment",
+      "secondary_augment": "Secondary Augment",
+      "core_augment": "Core Augment",
+      "payload": "Payload",
+      "payload_augment": "Payload Augment",
+      "element": "Element",
+      "augment_element_resist": "Elemental Resistance",
+      "augment_element_immunity": "Elemental Immunity",
+      "augment_element_splat": "Elemental Splat",
+      "augment_element_nova": "Elemental Nova",
+      "unique": "Unique Part",
+      "barrel_licensed": "Licensed Barrel"
     }
   },
   "yaml_tab": {

@@ -1,9 +1,13 @@
 """Read-only serial inspector.
 
 Paste one Base85 code or one decoded string and see everything the project knows
-about that item: header fields, resolved name/rarity, the rendered item card, a
-per-part breakdown with parsed augment ids, the raw bit layout, generation rule
-violations and a round-trip check.
+about that item: header fields, both serial forms, the rendered item card, a
+per-part breakdown and generation rule violations.
+
+The part breakdown is laid out as one framed card per part, reusing the weapon
+editor's ``PartFrame``/``PartTypeBadge``/``PartName``/``PartDescription`` object
+names so the two tabs look like the same application. It replaces an earlier
+plain table, which elided long effect text with no way to read the rest.
 
 This tab never writes to the save. All analysis comes from ``core.serial_inspect``
 and the card image from ``core.card_image``, so it always agrees with what the
@@ -18,20 +22,18 @@ from typing import Any
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QGuiApplication
 from PyQt6.QtWidgets import (
-    QAbstractItemView,
+    QDialog,
     QFileDialog,
     QFrame,
     QGroupBox,
     QHBoxLayout,
-    QHeaderView,
     QLabel,
+    QLineEdit,
     QPlainTextEdit,
     QPushButton,
     QScrollArea,
     QSizePolicy,
     QSplitter,
-    QTableWidget,
-    QTableWidgetItem,
     QTabWidget,
     QTextEdit,
     QVBoxLayout,
@@ -44,7 +46,8 @@ UI_LOC_KEY = "serial_inspector_tab"
 
 # Cards are authored against a 520px table and card_image renders them at that
 # width. Displaying them 1:1 made the preview dominate the tab, so the pixmap is
-# scaled down to a thumbnail; the full-resolution pixmap is kept for "save card".
+# scaled down to a thumbnail; the full-resolution pixmap is kept for "save card"
+# and for the click-to-zoom viewer.
 CARD_DISPLAY_WIDTH = 300
 
 _FALLBACK_LOC: dict[str, Any] = {
@@ -53,11 +56,11 @@ _FALLBACK_LOC: dict[str, Any] = {
         "summary": "Summary",
         "card": "Item card",
         "parts": "Parts",
-        "bits": "Bit layout",
-        "raw": "Raw data",
         "rules": "Generation rules",
         "empty": "Paste a serial above to inspect it.",
         "no_card": "No card available for this item type.",
+        "no_parts": "No parts to show.",
+        "zoom_hint": "Click the card to enlarge",
         "item_id": "Item ID",
         "manufacturer": "Manufacturer",
         "type": "Type",
@@ -71,7 +74,6 @@ _FALLBACK_LOC: dict[str, Any] = {
         "components": "Components",
         "roundtrip": "Round-trip",
         "bit_total": "Total bits",
-        "bit_header": "Header bits",
         "bit_padding": "Padding bits",
         "part_total": "Parts",
         "implicit_level_one": "Implicit level 1",
@@ -83,9 +85,9 @@ _FALLBACK_LOC: dict[str, Any] = {
         "copy_json": "Copy JSON",
         "export_json": "Export JSON",
         "save_card": "Save card image",
+        "copy": "Copy",
+        "use": "Edit this form",
     },
-    "parts_columns": ["#", "Ref", "Category", "Rarity", "Name", "Effect", "Description"],
-    "bits_columns": ["#", "Token", "Bits", "Length", "Byte", "Value"],
     "effect_state": {
         "described": "described",
         "cosmetic": "cosmetic",
@@ -106,6 +108,7 @@ _FALLBACK_LOC: dict[str, Any] = {
     },
     "rules_labels": {
         "not_weapon": "Generation rules apply to firearms only; this item type has no rule tree.",
+        "no_rules": "No generation rule data is available for this item type.",
         "no_data": "No generation rule data is available for this weapon.",
         "composition": "Composition",
         "parent": "Parent",
@@ -124,6 +127,32 @@ _FALLBACK_LOC: dict[str, Any] = {
         "incomplete": "not filled",
         "unreachable": "unreachable",
     },
+    # Part categories outside the firearm taxonomy the weapon editor localizes.
+    # Named from what each one demonstrably is, not from the raw key: e.g.
+    # passive_points are class-mod passive skills (passive_green_3_2_tier_4) and
+    # inv_comp is the identity/rarity component (comp_05_legendary_*).
+    "categories": {
+        "passive_points": "Passive Skill",
+        "inv_comp": "Item Component",
+        "class_mod_body": "Class Mod Body",
+        "action_skill_mod": "Action Skill Mod",
+        "stat_group1": "Stat Roll 1",
+        "stat_group2": "Stat Roll 2",
+        "stat_group3": "Stat Roll 3",
+        "stat_augment": "Stat Augment",
+        "primary_augment": "Primary Augment",
+        "secondary_augment": "Secondary Augment",
+        "core_augment": "Core Augment",
+        "payload": "Payload",
+        "payload_augment": "Payload Augment",
+        "element": "Element",
+        "augment_element_resist": "Elemental Resistance",
+        "augment_element_immunity": "Elemental Immunity",
+        "augment_element_splat": "Elemental Splat",
+        "augment_element_nova": "Elemental Nova",
+        "unique": "Unique Part",
+        "barrel_licensed": "Licensed Barrel",
+    },
 }
 
 # Violation codes carry no text of their own. weapon_rules already localizes each
@@ -132,6 +161,54 @@ _FALLBACK_LOC: dict[str, Any] = {
 _VIOLATION_FALLBACK = {
     "invalid_serial": "Serial could not be parsed",
     "tag_count_below": "Tagged parts are missing",
+}
+
+# The weapon editor colours the 22 firearm part types it can edit. Serials also
+# carry class-mod skills, enhancement augments and stat groups, so those get
+# their own hues here instead of all collapsing to the same grey.
+_EXTRA_CATEGORY_COLORS = {
+    "passive_points": "#7E9BE0",
+    "inv_comp": "#B39DDB",
+    "class_mod_body": "#9575CD",
+    "action_skill_mod": "#7986CB",
+    "stat_group1": "#F06292",
+    "stat_group2": "#F06292",
+    "stat_group3": "#F06292",
+    "stat_augment": "#EC7CA8",
+    "primary_augment": "#4FC3F7",
+    "secondary_augment": "#4DD0E1",
+    "core_augment": "#29B6F6",
+    "payload": "#FFA726",
+    "payload_augment": "#FFB74D",
+    "element": "#EF9A9A",
+    "body_ele": "#EF9A9A",
+    "augment_element_resist": "#E57373",
+    "augment_element_immunity": "#E57373",
+    "augment_element_splat": "#FF8A65",
+    "augment_element_nova": "#FF8A65",
+    "tediore_acc": "#AED581",
+    "magazine_ted_thrown": "#DCE775",
+    "barrel_licensed": "#B0BEC5",
+    "unique": "#FFD54F",
+}
+_DEFAULT_CATEGORY_COLOR = "#B0BEC5"
+
+# Effect state drives a small badge; only the two "something is missing" states
+# need to draw the eye.
+_EFFECT_STATE_COLORS = {
+    "unmapped": "#FFB74D",
+    "unknown": "#E57373",
+}
+
+_RARITY_COLORS = {
+    "common": "#c8c8c8",
+    "unusual": "#4ade80",
+    "uncommon": "#4ade80",
+    "rare": "#38bdf8",
+    "veryrare": "#a855f7",
+    "epic": "#a855f7",
+    "legendary": "#fb923c",
+    "unique": "#fbbf24",
 }
 
 
@@ -150,6 +227,53 @@ def _columns(loc: dict[str, Any], key: str) -> list[str]:
     return list(_FALLBACK_LOC[key])
 
 
+class _CardViewer(QDialog):
+    """Full-resolution card, sized to fit the screen. Click or Esc to close."""
+
+    def __init__(self, pixmap, title: str, parent: QWidget = None):
+        super().__init__(parent)
+        self.setWindowTitle(title)
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        label = QLabel()
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        shown = pixmap
+        screen = self.screen() or QGuiApplication.primaryScreen()
+        if screen is not None:
+            available = screen.availableGeometry()
+            ratio = pixmap.devicePixelRatio() or 1.0
+            limit_h = int(available.height() * 0.9 * ratio)
+            limit_w = int(available.width() * 0.9 * ratio)
+            if pixmap.height() > limit_h or pixmap.width() > limit_w:
+                shown = pixmap.scaled(
+                    limit_w,
+                    limit_h,
+                    Qt.AspectRatioMode.KeepAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation,
+                )
+                shown.setDevicePixelRatio(ratio)
+        label.setPixmap(shown)
+        layout.addWidget(label)
+
+    def mousePressEvent(self, event):
+        self.accept()
+        super().mousePressEvent(event)
+
+
+class _ClickableLabel(QLabel):
+    """QLabel that runs a callback on left click, for the card thumbnail."""
+
+    def __init__(self, on_click, parent: QWidget = None):
+        super().__init__(parent)
+        self._on_click = on_click
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton and callable(self._on_click):
+            self._on_click()
+        super().mousePressEvent(event)
+
+
 class QtSerialInspectorTab(QWidget):
     """Read-only inspector for a single item serial."""
 
@@ -160,6 +284,7 @@ class QtSerialInspectorTab(QWidget):
         self._report: dict[str, Any] = {}
         self._card_pixmap = None
         self._syncing_summary = False
+        self._part_widgets: list[QWidget] = []
 
         self.ui_labels: dict[str, QLabel] = {}
         self.ui_buttons: dict[str, QPushButton] = {}
@@ -170,13 +295,12 @@ class QtSerialInspectorTab(QWidget):
         root.setSpacing(8)
         root.addWidget(self._build_input_group())
 
-        # The point of this tab is the per-part effect table, so it gets every
+        # The point of this tab is the per-part effect list, so it gets every
         # spare pixel of height. The summary is a full-width 2-row strip rather
         # than a 13-row column: inside the left column it was ~70px too narrow
-        # and had to scroll. The card moves into a narrow right-hand column,
-        # since above the table it cost ~300px of height that the table wants,
-        # and a horizontal splitter stretched the 2-row summary to the card's
-        # height. The splitter keeps the card user-resizable/collapsible.
+        # and had to scroll. The card sits in a narrow right-hand column, since
+        # above the list it cost ~300px of height that the list wants. The
+        # splitter keeps the card user-resizable/collapsible.
         root.addWidget(self._build_summary_group())
 
         body = QSplitter(Qt.Orientation.Horizontal, self)
@@ -201,6 +325,33 @@ class QtSerialInspectorTab(QWidget):
         self.input_edit.setMaximumHeight(70)
         self.input_edit.setPlaceholderText(_tr(self.loc, "labels", "empty"))
         layout.addWidget(self.input_edit)
+
+        # Both serial forms sit directly under the input, so pasting either one
+        # shows the other: Base85 in, decoded string out, and the reverse. Each
+        # row is read-only but selectable, with a copy button; "edit this form"
+        # moves that text back into the input box for further work.
+        self.form_rows: dict[str, QLineEdit] = {}
+        for key in ("base85", "decoded"):
+            row = QHBoxLayout()
+            caption = QLabel(_tr(self.loc, "labels", key))
+            caption.setMinimumWidth(70)
+            self.ui_labels[key] = caption
+            field = QLineEdit()
+            field.setReadOnly(True)
+            field.setObjectName("inspectorSerialForm")
+            field.setCursorPosition(0)
+            self.form_rows[key] = field
+            copy_button = QPushButton(_tr(self.loc, "buttons", "copy"))
+            copy_button.clicked.connect(lambda _checked=False, k=key: self._copy_form(k))
+            use_button = QPushButton(_tr(self.loc, "buttons", "use"))
+            use_button.clicked.connect(lambda _checked=False, k=key: self._use_form(k))
+            self.ui_buttons["copy_" + key] = copy_button
+            self.ui_buttons["use_" + key] = use_button
+            row.addWidget(caption)
+            row.addWidget(field, 1)
+            row.addWidget(copy_button)
+            row.addWidget(use_button)
+            layout.addLayout(row)
 
         row = QHBoxLayout()
         for key, slot in (
@@ -256,10 +407,18 @@ class QtSerialInspectorTab(QWidget):
         # so wrapping the card in one under a Maximum policy collapsed it to ~50px
         # and grew a scrollbar over the card. Here the label is fixed to the
         # thumbnail size and the group hugs it.
-        self.card_label = QLabel()
+        self.card_label = _ClickableLabel(self._zoom_card)
         self.card_label.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
         self.card_label.setFixedWidth(CARD_DISPLAY_WIDTH)
         layout.addWidget(self.card_label)
+
+        self.zoom_hint = QLabel(_tr(self.loc, "labels", "zoom_hint"))
+        self.zoom_hint.setObjectName("PartDescription")
+        self.zoom_hint.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        self.zoom_hint.setWordWrap(True)
+        self.zoom_hint.setVisible(False)
+        self.ui_labels["zoom_hint"] = self.zoom_hint
+        layout.addWidget(self.zoom_hint)
         group.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
 
         # Pin the card to the top of its column, and let it scroll only when the
@@ -278,32 +437,26 @@ class QtSerialInspectorTab(QWidget):
 
     def _build_detail_tabs(self) -> QTabWidget:
         self.detail_tabs = QTabWidget()
-        self.parts_table = self._make_table(_columns(self.loc, "parts_columns"))
-        self.bits_table = self._make_table(_columns(self.loc, "bits_columns"))
+
+        # Parts are framed cards in a scroll area rather than table rows, so a
+        # long description wraps and stays readable instead of being elided.
+        self.parts_container = QWidget()
+        self.parts_layout = QVBoxLayout(self.parts_container)
+        self.parts_layout.setContentsMargins(4, 4, 4, 4)
+        self.parts_layout.setSpacing(6)
+        self.parts_layout.addStretch(1)
+
+        self.parts_scroll = QScrollArea()
+        self.parts_scroll.setWidgetResizable(True)
+        self.parts_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        self.parts_scroll.setWidget(self.parts_container)
+
         self.rules_view = QTextEdit()
         self.rules_view.setReadOnly(True)
-        self.raw_view = QPlainTextEdit()
-        self.raw_view.setReadOnly(True)
-        self.raw_view.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
 
-        self.detail_tabs.addTab(self.parts_table, _tr(self.loc, "labels", "parts"))
-        self.detail_tabs.addTab(self.bits_table, _tr(self.loc, "labels", "bits"))
+        self.detail_tabs.addTab(self.parts_scroll, _tr(self.loc, "labels", "parts"))
         self.detail_tabs.addTab(self.rules_view, _tr(self.loc, "labels", "rules"))
-        self.detail_tabs.addTab(self.raw_view, _tr(self.loc, "labels", "raw"))
         return self.detail_tabs
-
-    @staticmethod
-    def _make_table(headers: list[str]) -> QTableWidget:
-        table = QTableWidget(0, len(headers))
-        table.setObjectName("inspectorTable")
-        table.setHorizontalHeaderLabels(headers)
-        table.verticalHeader().setVisible(False)
-        table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
-        table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
-        table.setAlternatingRowColors(True)
-        table.horizontalHeader().setStretchLastSection(True)
-        table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
-        return table
 
     # ------------------------------------------------------------------ logic
 
@@ -319,10 +472,10 @@ class QtSerialInspectorTab(QWidget):
         self._report = {}
         self._card_pixmap = None
         self.input_edit.clear()
-        self.parts_table.setRowCount(0)
-        self.bits_table.setRowCount(0)
+        self._clear_parts()
         self.rules_view.clear()
-        self.raw_view.clear()
+        for field in self.form_rows.values():
+            field.clear()
         self._clear_card()
         self.status_badge.setVisible(False)
         self._set_placeholder()
@@ -337,14 +490,37 @@ class QtSerialInspectorTab(QWidget):
             self.input_edit.setPlainText(clipboard.text().strip())
             self.inspect()
 
+    def _copy_form(self, key: str):
+        text = self.form_rows[key].text()
+        clipboard = QGuiApplication.clipboard()
+        if text and clipboard:
+            clipboard.setText(text)
+
+    def _use_form(self, key: str):
+        """Move one form into the input box, so either can be edited and re-run."""
+        text = self.form_rows[key].text()
+        if not text:
+            return
+        self.input_edit.setPlainText(text)
+        self.inspect()
+
     def _render(self, report: dict[str, Any]):
+        self._render_forms(report)
         self._render_summary(report)
         self._render_status(report)
         self._render_parts(report)
-        self._render_bits(report)
         self._render_rules(report)
-        self._render_raw(report)
         self._render_card(report)
+
+    def _render_forms(self, report: dict[str, Any]):
+        for key, value in (
+            ("base85", report.get("base85")),
+            ("decoded", report.get("decoded_full")),
+        ):
+            field = self.form_rows[key]
+            field.setText(str(value or ""))
+            # Long serials otherwise show their tail, which hides the item id.
+            field.setCursorPosition(0)
 
     def _render_summary(self, report: dict[str, Any]):
         from html import escape
@@ -362,7 +538,6 @@ class QtSerialInspectorTab(QWidget):
         else:
             rt_text = _tr(self.loc, "roundtrip", "differs")
 
-        bits = report.get("bit_layout") or {}
         counts = report.get("part_counts") or {}
         # Two rows: identity on top, encoding facts below. Laid out horizontally
         # so the summary costs ~2 lines of height instead of 13.
@@ -377,8 +552,6 @@ class QtSerialInspectorTab(QWidget):
             ("item_id", report.get("item_id")),
             ("seed", report.get("seed")),
             ("part_total", counts.get("total")),
-            ("bit_total", "%s (%s bytes)" % (bits.get("total_bits"), bits.get("total_bytes"))),
-            ("bit_padding", bits.get("padding_bits")),
             ("roundtrip", rt_text),
             ("name_source", report.get("display_source")),
         ]
@@ -443,48 +616,135 @@ class QtSerialInspectorTab(QWidget):
         self.status_badge.style().polish(self.status_badge)
         self.status_badge.setVisible(True)
 
-    def _render_parts(self, report: dict[str, Any]):
-        rows = report.get("parts") or []
-        table = self.parts_table
-        table.setRowCount(len(rows))
-        for index, part in enumerate(rows):
-            state = part.get("effect_state") or ""
-            if not part.get("known"):
-                state = "unknown"
-            values = [
-                str(index + 1),
-                str(part.get("key") or ""),
-                str(part.get("category") or ""),
-                str(part.get("rarity") or ""),
-                str(part.get("name") or ""),
-                _tr(self.loc, "effect_state", state),
-                str(part.get("description") or ""),
-            ]
-            for column, value in enumerate(values):
-                item = QTableWidgetItem(value)
-                # Columns are sized to contents and Qt elides what will not fit,
-                # so long effect text (worst in en-US, which is wordier than zh)
-                # was unreadable with no way to see the rest. Carry the full text
-                # in a tooltip; only where it can actually be clipped.
-                if value:
-                    item.setToolTip(value)
-                table.setItem(index, column, item)
+    # ------------------------------------------------------------------ parts
 
-    def _render_bits(self, report: dict[str, Any]):
-        bits = (report.get("bit_layout") or {}).get("blocks") or []
-        table = self.bits_table
-        table.setRowCount(len(bits))
-        for index, block in enumerate(bits):
-            values = [
-                str(block.get("index")),
-                str(block.get("token") or ""),
-                "%s-%s" % (block.get("bit_start"), block.get("bit_end")),
-                str(block.get("bit_len")),
-                str(block.get("byte_start")),
-                str(block.get("text") or ""),
-            ]
-            for column, value in enumerate(values):
-                table.setItem(index, column, QTableWidgetItem(value))
+    def _clear_parts(self):
+        for widget in self._part_widgets:
+            self.parts_layout.removeWidget(widget)
+            widget.setParent(None)
+            widget.deleteLater()
+        self._part_widgets = []
+
+    def _render_parts(self, report: dict[str, Any]):
+        self._clear_parts()
+        rows = report.get("parts") or []
+        if not rows:
+            empty = QLabel(_tr(self.loc, "labels", "no_parts"))
+            empty.setObjectName("PartDescription")
+            self.parts_layout.insertWidget(0, empty)
+            self._part_widgets.append(empty)
+            return
+        for index, part in enumerate(rows):
+            frame = self._create_part_frame(index, part)
+            # Keep the trailing stretch last so the cards stay top-aligned.
+            self.parts_layout.insertWidget(self.parts_layout.count() - 1, frame)
+            self._part_widgets.append(frame)
+
+    def _create_part_frame(self, index: int, part: dict[str, Any]) -> QFrame:
+        """One framed part card, styled like the weapon editor's part list."""
+        frame = QFrame()
+        frame.setObjectName("PartFrame")
+        layout = QVBoxLayout(frame)
+        layout.setSpacing(3)
+        layout.setContentsMargins(6, 4, 6, 4)
+
+        category = str(part.get("category") or "")
+        state = str(part.get("effect_state") or "")
+        if not part.get("known"):
+            state = "unknown"
+        colour = self._category_color(category)
+
+        header = QHBoxLayout()
+        header.setSpacing(6)
+
+        ordinal = QLabel("  %d  " % (index + 1))
+        ordinal.setObjectName("PartIdBadge")
+        header.addWidget(ordinal)
+
+        type_label = QLabel(self._category_label(category))
+        type_label.setObjectName("PartTypeBadge")
+        type_label.setProperty("partColor", colour)
+        type_label.setStyleSheet("color: %s; border-color: %s;" % (colour, colour))
+        type_label.setWordWrap(True)
+        header.addWidget(type_label)
+
+        name = str(part.get("name") or "")
+        if name:
+            name_label = QLabel(name)
+            name_label.setObjectName("PartName")
+            name_label.setWordWrap(True)
+            header.addWidget(name_label, 1)
+        else:
+            header.addStretch(1)
+
+        rarity = str(part.get("rarity") or "")
+        if rarity:
+            rarity_label = QLabel(self._taxonomy_text(rarity))
+            rarity_label.setObjectName("PartTypeBadge")
+            rarity_colour = _RARITY_COLORS.get(rarity.replace(" ", "").casefold(), "")
+            if rarity_colour:
+                rarity_label.setStyleSheet(
+                    "color: %s; border-color: %s;" % (rarity_colour, rarity_colour)
+                )
+            header.addWidget(rarity_label)
+
+        # "described" is the normal case on almost every row, so badging it just
+        # adds noise; only flag the states that mean something is missing.
+        if state in _EFFECT_STATE_COLORS:
+            state_label = QLabel(_tr(self.loc, "effect_state", state))
+            state_label.setObjectName("PartTypeBadge")
+            colour = _EFFECT_STATE_COLORS[state]
+            state_label.setStyleSheet("color: %s; border-color: %s;" % (colour, colour))
+            header.addWidget(state_label)
+
+        # The ref key is what every probe, report and CSV row is keyed by, so it
+        # stays visible rather than living only in a tooltip.
+        ref_label = QLabel("  %s  " % str(part.get("key") or ""))
+        ref_label.setObjectName("PartIdBadge")
+        header.addWidget(ref_label)
+        layout.addLayout(header)
+
+        description = str(part.get("description") or "")
+        if description:
+            description_label = QLabel(description)
+            description_label.setObjectName("PartDescription")
+            description_label.setWordWrap(True)
+            layout.addWidget(description_label)
+
+        internal = str(part.get("part") or "")
+        if internal:
+            frame.setToolTip("%s\n%s" % (part.get("key") or "", internal))
+        return frame
+
+    def _category_color(self, category: str) -> str:
+        key = category.casefold()
+        part_type = self._group_types().get(key)
+        colour = self._part_type_colors().get(part_type or "")
+        if colour:
+            return str(colour)
+        return _EXTRA_CATEGORY_COLORS.get(key, _DEFAULT_CATEGORY_COLOR)
+
+    def _taxonomy_text(self, term: str) -> str:
+        """Localize an English taxonomy term (part type or rarity) like the
+        weapon editor does, or return it unchanged when there is no entry."""
+        key = self._taxonomy_keys().get(str(term))
+        text = self.taxonomy_loc.get(key or "")
+        return str(text) if text else str(term)
+
+    def _category_label(self, category: str) -> str:
+        """Localize a part category, falling back to the raw key."""
+        if not category:
+            return "-"
+        key = category.casefold()
+        # Categories outside the firearm taxonomy (class-mod skills, augments,
+        # stat groups) have no weapon-editor entry, so they carry their own
+        # localized names here rather than showing a raw key like "inv_comp".
+        own = _tr(self.loc, "categories", key)
+        if own != key:
+            return own
+        return self._group_label(category)
+
+    # ------------------------------------------------------------------ rules
 
     def _render_rules(self, report: dict[str, Any]):
         from html import escape
@@ -626,6 +886,12 @@ class QtSerialInspectorTab(QWidget):
 
         return WeaponEditorTab.TAXONOMY_KEYS
 
+    @staticmethod
+    def _part_type_colors() -> dict[str, str]:
+        from tabs.qt_weapon_editor_tab import WeaponEditorTab
+
+        return WeaponEditorTab.PART_TYPE_COLORS
+
     def _violation_text(self, violation: dict[str, Any]) -> str:
         code = str(violation.get("code") or "")
         text = (
@@ -649,15 +915,7 @@ class QtSerialInspectorTab(QWidget):
             text += " \u00b7 %s" % part
         return text
 
-    def _render_raw(self, report: dict[str, Any]):
-        blocks = [
-            "%s: %s" % (_tr(self.loc, "labels", "base85"), report.get("base85") or ""),
-            "%s: %s" % (_tr(self.loc, "labels", "decoded"), report.get("decoded_full") or ""),
-            "%s: %s" % (_tr(self.loc, "labels", "components"), report.get("decoded_parts") or ""),
-            "",
-            json.dumps(self._json_payload(report), ensure_ascii=False, indent=2),
-        ]
-        self.raw_view.setPlainText("\n".join(blocks))
+    # ------------------------------------------------------------------- card
 
     def _render_card(self, report: dict[str, Any]):
         self._card_pixmap = None
@@ -677,8 +935,9 @@ class QtSerialInspectorTab(QWidget):
             self._clear_card(_tr(self.loc, "labels", "no_card"))
             return
         self._card_pixmap = pixmap
-        # Keep the full-resolution pixmap for _save_card and show a thumbnail, so
-        # the table keeps the width without degrading the exported image.
+        # Keep the full-resolution pixmap for _save_card and the zoom viewer, and
+        # show a thumbnail so the part list keeps the width without degrading the
+        # exported image.
         preview = pixmap
         logical_width = pixmap.width() / pixmap.devicePixelRatio()
         if logical_width > CARD_DISPLAY_WIDTH:
@@ -692,13 +951,27 @@ class QtSerialInspectorTab(QWidget):
         self.card_label.setFixedHeight(
             int(preview.height() / preview.devicePixelRatio())
         )
+        self.card_label.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.card_label.setToolTip(_tr(self.loc, "labels", "zoom_hint"))
+        self.zoom_hint.setVisible(True)
 
     def _clear_card(self, text: str = ""):
         """Reset the card slot, releasing the height the last card reserved."""
         self.card_label.clear()
         self.card_label.setFixedHeight(self.card_label.fontMetrics().height() + 4)
+        self.card_label.setCursor(Qt.CursorShape.ArrowCursor)
+        self.card_label.setToolTip("")
+        if hasattr(self, "zoom_hint"):
+            self.zoom_hint.setVisible(False)
         if text:
             self.card_label.setText(text)
+
+    def _zoom_card(self):
+        """Show the card at full resolution; the thumbnail is too small to read."""
+        if self._card_pixmap is None or self._card_pixmap.isNull():
+            return
+        viewer = _CardViewer(self._card_pixmap, _tr(self.loc, "labels", "card"), self)
+        viewer.exec()
 
     def _card_labels(self) -> dict[str, str]:
         """Card builders expect the items_tab 'columns' block for stat labels."""
@@ -712,6 +985,8 @@ class QtSerialInspectorTab(QWidget):
         except (KeyError, TypeError, ValueError, OSError):
             pass
         return {"level": "Lv"}
+
+    # ------------------------------------------------------------------ export
 
     @staticmethod
     def _json_payload(report: dict[str, Any]) -> dict[str, Any]:
@@ -783,11 +1058,14 @@ class QtSerialInspectorTab(QWidget):
         self.ui_groups["summary"].setTitle(_tr(self.loc, "labels", "summary"))
         self.ui_groups["card"].setTitle(_tr(self.loc, "labels", "card"))
         self.input_edit.setPlaceholderText(_tr(self.loc, "labels", "empty"))
-        for key, button in self.ui_buttons.items():
-            button.setText(_tr(self.loc, "buttons", key))
-        self.parts_table.setHorizontalHeaderLabels(_columns(self.loc, "parts_columns"))
-        self.bits_table.setHorizontalHeaderLabels(_columns(self.loc, "bits_columns"))
-        for index, key in enumerate(("parts", "bits", "rules", "raw")):
+        for key in ("base85", "decoded"):
+            self.ui_labels[key].setText(_tr(self.loc, "labels", key))
+            self.ui_buttons["copy_" + key].setText(_tr(self.loc, "buttons", "copy"))
+            self.ui_buttons["use_" + key].setText(_tr(self.loc, "buttons", "use"))
+        self.zoom_hint.setText(_tr(self.loc, "labels", "zoom_hint"))
+        for key in ("inspect", "paste", "clear", "copy_json", "export_json", "save_card"):
+            self.ui_buttons[key].setText(_tr(self.loc, "buttons", key))
+        for index, key in enumerate(("parts", "rules")):
             self.detail_tabs.setTabText(index, _tr(self.loc, "labels", key))
         if self._report:
             # Re-run so names, part descriptions and the card switch language.

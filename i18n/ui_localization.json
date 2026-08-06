@@ -392,11 +392,11 @@
       "summary": "概要",
       "card": "物品卡片",
       "parts": "配件",
-      "bits": "比特布局",
-      "raw": "原始数据",
       "rules": "生成规则",
       "empty": "在上方粘贴序列号以进行检视。",
       "no_card": "该物品类型没有可用卡片。",
+      "zoom_hint": "点击卡片可放大查看",
+      "no_parts": "没有可显示的配件。",
       "item_id": "物品 ID",
       "manufacturer": "厂商",
       "type": "类型",
@@ -409,14 +409,13 @@
       "decoded": "解码字符串",
       "components": "组件段",
       "roundtrip": "往返校验",
-      "bit_total": "总比特数",
-      "bit_header": "头部比特",
-      "bit_padding": "填充比特",
       "part_total": "配件数",
       "implicit_level_one": "隐式 1 级"
     },
     "buttons": {
       "inspect": "检视",
+      "use": "编辑此形式",
+      "copy": "复制",
       "paste": "粘贴",
       "clear": "清空",
       "copy_json": "复制 JSON",
@@ -431,14 +430,6 @@
       "名称",
       "效果",
       "描述"
-    ],
-    "bits_columns": [
-      "#",
-      "标记",
-      "比特区间",
-      "长度",
-      "字节",
-      "值"
     ],
     "effect_state": {
       "described": "已解析",
@@ -484,6 +475,28 @@
       "ok": "正常",
       "incomplete": "未补齐",
       "unreachable": "不可达"
+    },
+    "categories": {
+      "passive_points": "被动技能点",
+      "inv_comp": "物品本体",
+      "class_mod_body": "模组本体",
+      "action_skill_mod": "行动技能改装",
+      "stat_group1": "属性词条 1",
+      "stat_group2": "属性词条 2",
+      "stat_group3": "属性词条 3",
+      "stat_augment": "属性强化",
+      "primary_augment": "主强化",
+      "secondary_augment": "副强化",
+      "core_augment": "核心强化",
+      "payload": "载荷",
+      "payload_augment": "载荷强化",
+      "element": "元素",
+      "augment_element_resist": "元素抗性强化",
+      "augment_element_immunity": "元素免疫强化",
+      "augment_element_splat": "元素喷溅强化",
+      "augment_element_nova": "元素新星强化",
+      "unique": "专属部件",
+      "barrel_licensed": "授权枪管"
     }
   },
   "yaml_tab": {
