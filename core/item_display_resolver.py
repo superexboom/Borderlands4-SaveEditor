@@ -2197,8 +2197,16 @@ def format_equipment_part_description(
     item_type: str,
     ref_key: str,
     lang: str = "zh-CN",
+    strict_delta: bool = False,
 ) -> str:
-    """Render official UIStat values and current-build final stats for one equipment part."""
+    """Render official UIStat values and current-build final stats for one equipment part.
+
+    With ``strict_delta`` the leave-one-out comparison is skipped whenever the
+    baseline serial cannot be evaluated. Removing the rarity-bearing ``inv_comp``
+    part makes the baseline raise "no indexed rarity", which otherwise leaves
+    ``before`` empty and misreports the item's whole stat block as that single
+    part's contribution. Existing callers keep the old lenient behaviour.
+    """
     index = _item_index()
     lines = []
     try:
@@ -2241,11 +2249,15 @@ def format_equipment_part_description(
         candidate = equipment_display_stats._candidate_serial(decoded_full, index, root_id, ref_key)
         selected = ref_key in weapon_display_stats._serial_part_keys(decoded_full, root_id)
         baseline = _serial_without_equipment_part(decoded_full, root_id, ref_key) if selected else decoded_full
+        baseline_failed = False
         try:
             before = equipment_display_stats.equipment_card_stats_from_serial(baseline, index, item_type)
         except (KeyError, TypeError, ValueError, OverflowError, ZeroDivisionError):
             before = {}
+            baseline_failed = True
         after = equipment_display_stats.equipment_card_stats_from_serial(candidate, index, item_type)
+        if strict_delta and baseline_failed:
+            after = {}
     except (KeyError, TypeError, ValueError, OverflowError, ZeroDivisionError):
         after = {}
         before = {}

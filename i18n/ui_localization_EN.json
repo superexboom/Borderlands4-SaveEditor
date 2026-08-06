@@ -69,6 +69,7 @@
       "character": "Character",
       "items": "Items",
       "converter": "Converter",
+      "serial_inspector": "Inspector",
       "yaml_editor": "YAML Editor",
       "class_mod": "Class Mod",
       "enhancement": "Enhancement",
@@ -383,6 +384,105 @@
       "export_txt_title": "Export as TXT",
       "export_opts": "Export Options",
       "only_base85": "Export only Base85 codes?"
+    }
+  },
+  "serial_inspector_tab": {
+    "labels": {
+      "input": "Serial (Base85 or decoded)",
+      "summary": "Summary",
+      "card": "Item card",
+      "parts": "Parts",
+      "bits": "Bit layout",
+      "raw": "Raw data",
+      "rules": "Generation rules",
+      "empty": "Paste a serial above to inspect it.",
+      "no_card": "No card available for this item type.",
+      "item_id": "Item ID",
+      "manufacturer": "Manufacturer",
+      "type": "Type",
+      "level": "Level",
+      "seed": "Seed",
+      "name": "Name",
+      "rarity": "Rarity",
+      "name_source": "Name source",
+      "base85": "Base85",
+      "decoded": "Decoded",
+      "components": "Components",
+      "roundtrip": "Round-trip",
+      "bit_total": "Total bits",
+      "bit_header": "Header bits",
+      "bit_padding": "Padding bits",
+      "part_total": "Parts",
+      "implicit_level_one": "Implicit level 1"
+    },
+    "buttons": {
+      "inspect": "Inspect",
+      "paste": "Paste",
+      "clear": "Clear",
+      "copy_json": "Copy JSON",
+      "export_json": "Export JSON",
+      "save_card": "Save card image"
+    },
+    "parts_columns": [
+      "#",
+      "Ref",
+      "Category",
+      "Rarity",
+      "Name",
+      "Effect",
+      "Description"
+    ],
+    "bits_columns": [
+      "#",
+      "Token",
+      "Bits",
+      "Length",
+      "Byte",
+      "Value"
+    ],
+    "effect_state": {
+      "described": "described",
+      "cosmetic": "no stat changes",
+      "unmapped": "unmapped payload",
+      "unknown": "unknown ref"
+    },
+    "status": {
+      "legal": "Legal",
+      "incomplete": "Incomplete",
+      "modified": "Modified",
+      "conditional": "Conditional",
+      "unknown": "Unknown"
+    },
+    "roundtrip": {
+      "match": "re-encodes identically",
+      "differs": "re-encodes to a different code",
+      "failed": "re-encode failed"
+    },
+    "rules_labels": {
+      "not_weapon": "Generation rules apply to firearms only; this item type has no rule tree.",
+      "no_data": "No generation rule data is available for this weapon.",
+      "composition": "Composition",
+      "parent": "Parent",
+      "availability": "Availability",
+      "coverage": "Rule coverage complete",
+      "base_tags": "Base tags",
+      "tag_limits": "Tag limits",
+      "groups": "Part groups",
+      "violations": "Issues",
+      "yes": "yes",
+      "no": "no"
+    },
+    "rules_columns": [
+      "Group",
+      "Selected",
+      "Legal",
+      "Pool",
+      "State"
+    ],
+    "rules_state": {
+      "ok": "ok",
+      "incomplete": "not filled",
+      "unreachable": "unreachable"
     }
   },
   "yaml_tab": {

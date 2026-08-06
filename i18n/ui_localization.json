@@ -69,6 +69,7 @@
       "character": "角色",
       "items": "物品",
       "converter": "转换器",
+      "serial_inspector": "序列检视器",
       "yaml_editor": "YAML 编辑器",
       "class_mod": "职业模组",
       "enhancement": "强化模组",
@@ -383,6 +384,105 @@
       "export_txt_title": "导出为TXT",
       "export_opts": "导出选项",
       "only_base85": "是否只导出Base85编码?"
+    }
+  },
+  "serial_inspector_tab": {
+    "labels": {
+      "input": "序列号（Base85 或解码字符串）",
+      "summary": "概要",
+      "card": "物品卡片",
+      "parts": "配件",
+      "bits": "比特布局",
+      "raw": "原始数据",
+      "rules": "生成规则",
+      "empty": "在上方粘贴序列号以进行检视。",
+      "no_card": "该物品类型没有可用卡片。",
+      "item_id": "物品 ID",
+      "manufacturer": "厂商",
+      "type": "类型",
+      "level": "等级",
+      "seed": "随机种子",
+      "name": "名称",
+      "rarity": "稀有度",
+      "name_source": "命名来源",
+      "base85": "Base85",
+      "decoded": "解码字符串",
+      "components": "组件段",
+      "roundtrip": "往返校验",
+      "bit_total": "总比特数",
+      "bit_header": "头部比特",
+      "bit_padding": "填充比特",
+      "part_total": "配件数",
+      "implicit_level_one": "隐式 1 级"
+    },
+    "buttons": {
+      "inspect": "检视",
+      "paste": "粘贴",
+      "clear": "清空",
+      "copy_json": "复制 JSON",
+      "export_json": "导出 JSON",
+      "save_card": "保存卡片图"
+    },
+    "parts_columns": [
+      "#",
+      "引用",
+      "分类",
+      "稀有度",
+      "名称",
+      "效果",
+      "描述"
+    ],
+    "bits_columns": [
+      "#",
+      "标记",
+      "比特区间",
+      "长度",
+      "字节",
+      "值"
+    ],
+    "effect_state": {
+      "described": "已解析",
+      "cosmetic": "无属性变化",
+      "unmapped": "有数据未映射",
+      "unknown": "未知引用"
+    },
+    "status": {
+      "legal": "合法",
+      "incomplete": "不完整",
+      "modified": "已改动",
+      "conditional": "有条件",
+      "unknown": "未知"
+    },
+    "roundtrip": {
+      "match": "重新编码结果一致",
+      "differs": "重新编码结果不同",
+      "failed": "重新编码失败"
+    },
+    "rules_labels": {
+      "not_weapon": "生成规则仅适用于枪械，该物品类型没有规则树。",
+      "no_data": "该武器没有可用的生成规则数据。",
+      "composition": "模板",
+      "parent": "继承自",
+      "availability": "投放条件",
+      "coverage": "规则覆盖完整",
+      "base_tags": "基础标签",
+      "tag_limits": "标签上限",
+      "groups": "配件分组",
+      "violations": "问题",
+      "yes": "是",
+      "no": "否"
+    },
+    "rules_columns": [
+      "分组",
+      "已选",
+      "合法",
+      "候选池",
+      "状态"
+    ],
+    "rules_state": {
+      "ok": "正常",
+      "incomplete": "未补齐",
+      "unreachable": "不可达"
     }
   },
   "yaml_tab": {

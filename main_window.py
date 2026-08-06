@@ -42,7 +42,7 @@ from tabs import (
     QtClassModEditorTab, QtHeavyWeaponEditorTab, QtShieldEditorTab,
     QtGrenadeEditorTab, QtRepkitEditorTab, QtYamlEditorTab,
     QtEnhancementEditorTab, WeaponEditorTab as QtWeaponEditorTab,
-    QtLoadoutManagerTab
+    QtLoadoutManagerTab, QtSerialInspectorTab
 )
 
 
@@ -779,6 +779,9 @@ class MainWindow(QMainWindow):
         self.converter_tab.iterator_requested.connect(self.handle_iterator_request)
         self.converter_tab.iterator_add_to_backpack_requested.connect(self.handle_iterator_add_to_backpack)
         self.add_tab(self.converter_tab, self.loc['tabs']['converter'], "🔧")
+
+        self.serial_inspector_tab = QtSerialInspectorTab()
+        self.add_tab(self.serial_inspector_tab, self.loc['tabs'].get('serial_inspector', 'Inspector'), "🔍")
 
         self.yaml_editor_tab = QtYamlEditorTab(self)
         self.yaml_editor_tab.yaml_text_changed.connect(self.handle_yaml_update)
@@ -1613,9 +1616,11 @@ class MainWindow(QMainWindow):
         self.bg_button.setToolTip(self.loc.get('header', {}).get('change_bg', 'Change Background'))
         
         # Update tab titles
+        # Order must match the add_tab() call order in _add_tabs(); index i is
+        # looked up directly in nav_button_group.
         tab_keys = [
-            'select_save', 'character', 'items', 'converter', 'yaml_editor',
-            'class_mod', 'enhancement', 'weapon_editor', 'weapon_generator',
+            'select_save', 'character', 'items', 'converter', 'serial_inspector',
+            'yaml_editor', 'class_mod', 'enhancement', 'weapon_editor', 'weapon_generator',
             'grenade', 'shield', 'repkit', 'heavy_weapon', 'loadout_manager'
         ]
 

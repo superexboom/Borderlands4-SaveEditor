@@ -1208,6 +1208,42 @@ QDialogButtonBox QPushButton {
 #genBuildStatus[ruleStatus="conditional"] { background-color: #6D28D9; }
 #genBuildStatus[ruleStatus="unknown"] { background-color: #475569; }
 
+#inspectorInput {
+    font-family: Consolas, monospace;
+    background-color: {bg_input};
+    color: {text_primary};
+    border: 1px solid {border_color};
+    border-radius: 4px;
+}
+
+#inspectorInput:focus {
+    border: 1px solid {border_focus};
+}
+
+#inspectorSummary {
+    color: {text_primary};
+}
+
+/* The global sheet only styles QTreeView rows, so tables would otherwise draw
+   alternating rows in a near-transparent default over the background image. */
+#inspectorTable {
+    alternate-background-color: {bg_secondary};
+    background-color: {bg_panel};
+    border: 1px solid {border_color};
+    border-radius: 5px;
+    color: {text_primary};
+    gridline-color: {border_color};
+}
+
+#inspectorTable::item {
+    padding: 3px 6px;
+}
+
+#inspectorTable::item:selected {
+    background-color: {selection_bg};
+    color: white;
+}
+
 #genPageStack, #weaponRollResultsPage {
     background-color: transparent;
     border: none;
