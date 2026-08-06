@@ -42,6 +42,11 @@ from core import card_image, resource_loader, serial_inspect
 
 UI_LOC_KEY = "serial_inspector_tab"
 
+# Cards are authored against a 520px table and card_image renders them at that
+# width. Displaying them 1:1 made the preview dominate the tab, so the pixmap is
+# scaled down to a thumbnail; the full-resolution pixmap is kept for "save card".
+CARD_DISPLAY_WIDTH = 300
+
 _FALLBACK_LOC: dict[str, Any] = {
     "labels": {
         "input": "Serial (Base85 or decoded)",
@@ -154,6 +159,7 @@ class QtSerialInspectorTab(QWidget):
         self._load_localization()
         self._report: dict[str, Any] = {}
         self._card_pixmap = None
+        self._syncing_summary = False
 
         self.ui_labels: dict[str, QLabel] = {}
         self.ui_buttons: dict[str, QPushButton] = {}
@@ -164,13 +170,22 @@ class QtSerialInspectorTab(QWidget):
         root.setSpacing(8)
         root.addWidget(self._build_input_group())
 
-        splitter = QSplitter(Qt.Orientation.Horizontal, self)
-        splitter.addWidget(self._build_left_panel())
-        splitter.addWidget(self._build_right_panel())
-        splitter.setStretchFactor(0, 1)
-        splitter.setStretchFactor(1, 0)
-        splitter.setSizes([1000, int(card_image.CARD_MAX_WIDTH) + 60])
-        root.addWidget(splitter, 1)
+        # The point of this tab is the per-part effect table, so it gets every
+        # spare pixel of height. The summary is a full-width 2-row strip rather
+        # than a 13-row column: inside the left column it was ~70px too narrow
+        # and had to scroll. The card moves into a narrow right-hand column,
+        # since above the table it cost ~300px of height that the table wants,
+        # and a horizontal splitter stretched the 2-row summary to the card's
+        # height. The splitter keeps the card user-resizable/collapsible.
+        root.addWidget(self._build_summary_group())
+
+        body = QSplitter(Qt.Orientation.Horizontal, self)
+        body.addWidget(self._build_detail_tabs())
+        body.addWidget(self._build_card_column())
+        body.setStretchFactor(0, 1)
+        body.setStretchFactor(1, 0)
+        body.setSizes([1000, CARD_DISPLAY_WIDTH + 40])
+        root.addWidget(body, 1)
 
         self._set_placeholder()
 
@@ -209,30 +224,59 @@ class QtSerialInspectorTab(QWidget):
         layout.addLayout(row)
         return group
 
-    def _build_left_panel(self) -> QWidget:
-        panel = QWidget()
-        layout = QVBoxLayout(panel)
-        layout.setContentsMargins(0, 0, 0, 0)
+    def _build_summary_group(self) -> QGroupBox:
+        group = QGroupBox(_tr(self.loc, "labels", "summary"))
+        self.ui_groups["summary"] = group
+        layout = QVBoxLayout(group)
+        layout.setContentsMargins(8, 6, 8, 6)
 
         self.summary_label = QLabel()
         self.summary_label.setObjectName("inspectorSummary")
         self.summary_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        self.summary_label.setWordWrap(True)
+        self.summary_label.setWordWrap(False)
         self.summary_label.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        summary_group = QGroupBox(_tr(self.loc, "labels", "summary"))
-        self.ui_groups["summary"] = summary_group
-        # The summary is a 12-row table; without a scroll area it either clips or
-        # steals all the vertical space from the parts table.
-        summary_scroll = QScrollArea()
-        summary_scroll.setWidgetResizable(True)
-        summary_scroll.setFrameShape(QFrame.Shape.NoFrame)
-        summary_scroll.setWidget(self.summary_label)
-        summary_layout = QVBoxLayout(summary_group)
-        summary_layout.addWidget(summary_scroll)
-        summary_group.setMinimumHeight(320)
-        summary_group.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        layout.addWidget(summary_group)
+        # Two horizontal rows of label/value pairs need to scroll sideways on a
+        # narrow window rather than wrap into an unpredictable number of lines.
+        self.summary_scroll = QScrollArea()
+        self.summary_scroll.setWidgetResizable(True)
+        self.summary_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        self.summary_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.summary_scroll.setWidget(self.summary_label)
+        layout.addWidget(self.summary_scroll)
+        group.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
+        return group
 
+    def _build_card_column(self) -> QScrollArea:
+        group = QGroupBox(_tr(self.loc, "labels", "card"))
+        self.ui_groups["card"] = group
+        layout = QVBoxLayout(group)
+        layout.setContentsMargins(6, 6, 6, 6)
+
+        # The label carries the size: QScrollArea reports a constant 6x15 sizeHint,
+        # so wrapping the card in one under a Maximum policy collapsed it to ~50px
+        # and grew a scrollbar over the card. Here the label is fixed to the
+        # thumbnail size and the group hugs it.
+        self.card_label = QLabel()
+        self.card_label.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
+        self.card_label.setFixedWidth(CARD_DISPLAY_WIDTH)
+        layout.addWidget(self.card_label)
+        group.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
+
+        # Pin the card to the top of its column, and let it scroll only when the
+        # window is genuinely too short for the card.
+        inner = QWidget()
+        inner_layout = QVBoxLayout(inner)
+        inner_layout.setContentsMargins(0, 0, 0, 0)
+        inner_layout.addWidget(group)
+        inner_layout.addStretch(1)
+
+        column = QScrollArea()
+        column.setWidgetResizable(True)
+        column.setFrameShape(QFrame.Shape.NoFrame)
+        column.setWidget(inner)
+        return column
+
+    def _build_detail_tabs(self) -> QTabWidget:
         self.detail_tabs = QTabWidget()
         self.parts_table = self._make_table(_columns(self.loc, "parts_columns"))
         self.bits_table = self._make_table(_columns(self.loc, "bits_columns"))
@@ -246,26 +290,7 @@ class QtSerialInspectorTab(QWidget):
         self.detail_tabs.addTab(self.bits_table, _tr(self.loc, "labels", "bits"))
         self.detail_tabs.addTab(self.rules_view, _tr(self.loc, "labels", "rules"))
         self.detail_tabs.addTab(self.raw_view, _tr(self.loc, "labels", "raw"))
-        layout.addWidget(self.detail_tabs, 1)
-        return panel
-
-    def _build_right_panel(self) -> QWidget:
-        group = QGroupBox(_tr(self.loc, "labels", "card"))
-        self.ui_groups["card"] = group
-        layout = QVBoxLayout(group)
-
-        self.card_scroll = QScrollArea()
-        self.card_scroll.setWidgetResizable(True)
-        self.card_scroll.setFrameShape(QFrame.Shape.NoFrame)
-        # Cards are authored against a 520px table; narrower than that and the
-        # stat rows wrap into each other.
-        self.card_scroll.setMinimumWidth(int(card_image.CARD_MAX_WIDTH) + 40)
-        self.card_label = QLabel()
-        self.card_label.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
-        self.card_label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        self.card_scroll.setWidget(self.card_label)
-        layout.addWidget(self.card_scroll, 1)
-        return group
+        return self.detail_tabs
 
     @staticmethod
     def _make_table(headers: list[str]) -> QTableWidget:
@@ -298,12 +323,13 @@ class QtSerialInspectorTab(QWidget):
         self.bits_table.setRowCount(0)
         self.rules_view.clear()
         self.raw_view.clear()
-        self.card_label.clear()
+        self._clear_card()
         self.status_badge.setVisible(False)
         self._set_placeholder()
 
     def _set_placeholder(self):
         self.summary_label.setText(_tr(self.loc, "labels", "empty"))
+        self._sync_summary_height()
 
     def _paste(self):
         clipboard = QGuiApplication.clipboard()
@@ -321,17 +347,11 @@ class QtSerialInspectorTab(QWidget):
         self._render_card(report)
 
     def _render_summary(self, report: dict[str, Any]):
-        def row(key: str, value: Any) -> str:
-            from html import escape
-
-            return (
-                "<tr><td style='padding:1px 10px 1px 0;opacity:0.75;'>%s</td>"
-                "<td style='padding:1px 0;'>%s</td></tr>"
-                % (escape(_tr(self.loc, "labels", key)), escape("" if value is None else str(value)))
-            )
+        from html import escape
 
         if not report.get("ok"):
             self.summary_label.setText(str(report.get("error") or ""))
+            self._sync_summary_height()
             return
 
         rt = report.get("roundtrip") or {}
@@ -344,23 +364,72 @@ class QtSerialInspectorTab(QWidget):
 
         bits = report.get("bit_layout") or {}
         counts = report.get("part_counts") or {}
-        rows = [
-            row("name", report.get("display_name")),
-            row("rarity", report.get("rarity")),
-            row("item_id", report.get("item_id")),
-            row("manufacturer", "%s / %s" % (report.get("manufacturer") or "", report.get("manufacturer_en") or "")),
-            row("type", "%s / %s" % (report.get("type") or "", report.get("type_en") or "")),
-            row("level", report.get("level")),
-            row("seed", report.get("seed")),
-            row("name_source", report.get("display_source")),
-            row("part_total", counts.get("total")),
-            row("bit_total", "%s (%s bytes)" % (bits.get("total_bits"), bits.get("total_bytes"))),
-            row("bit_padding", bits.get("padding_bits")),
-            row("roundtrip", rt_text),
+        # Two rows: identity on top, encoding facts below. Laid out horizontally
+        # so the summary costs ~2 lines of height instead of 13.
+        first = [
+            ("name", report.get("display_name")),
+            ("rarity", report.get("rarity")),
+            ("type", "%s / %s" % (report.get("type") or "", report.get("type_en") or "")),
+            ("manufacturer", "%s / %s" % (report.get("manufacturer") or "", report.get("manufacturer_en") or "")),
+            ("level", report.get("level")),
+        ]
+        second = [
+            ("item_id", report.get("item_id")),
+            ("seed", report.get("seed")),
+            ("part_total", counts.get("total")),
+            ("bit_total", "%s (%s bytes)" % (bits.get("total_bits"), bits.get("total_bytes"))),
+            ("bit_padding", bits.get("padding_bits")),
+            ("roundtrip", rt_text),
+            ("name_source", report.get("display_source")),
         ]
         if report.get("implicit_level_one"):
-            rows.append(row("implicit_level_one", _tr(self.loc, "rules_labels", "yes")))
-        self.summary_label.setText("<table>%s</table>" % "".join(rows))
+            second.append(("implicit_level_one", _tr(self.loc, "rules_labels", "yes")))
+
+        def cells(pairs: list[tuple[str, Any]]) -> str:
+            out = []
+            for key, value in pairs:
+                out.append(
+                    "<td style='padding:1px 6px 1px 0;opacity:0.7;white-space:nowrap;'>%s</td>"
+                    "<td style='padding:1px 18px 1px 0;white-space:nowrap;'>%s</td>"
+                    % (
+                        escape(_tr(self.loc, "labels", key)),
+                        escape("" if value is None else str(value)),
+                    )
+                )
+            # Each row is its own table: sharing one grid would pad every column to
+            # the widest of the two rows and blow the width past the viewport.
+            return (
+                "<table style='border-collapse:collapse;'><tr>%s</tr></table>"
+                % "".join(out)
+            )
+
+        self.summary_label.setText(cells(first) + cells(second))
+        self._sync_summary_height()
+
+    def _sync_summary_height(self):
+        """Reserve room for the horizontal scrollbar so row 2 is never clipped."""
+        # setFixedHeight re-triggers layout, which can re-enter resizeEvent; guard
+        # against that and against redundant no-op writes.
+        if self._syncing_summary:
+            return
+        self._syncing_summary = True
+        try:
+            label = self.summary_label
+            scroll = self.summary_scroll
+            hint = label.sizeHint()
+            height = hint.height()
+            if hint.width() > scroll.viewport().width():
+                height += scroll.horizontalScrollBar().sizeHint().height()
+            height += 2
+            if scroll.height() != height:
+                scroll.setFixedHeight(height)
+        finally:
+            self._syncing_summary = False
+
+    def resizeEvent(self, event):
+        # Whether the horizontal scrollbar is needed depends on the width.
+        super().resizeEvent(event)
+        self._sync_summary_height()
 
     def _render_status(self, report: dict[str, Any]):
         status = str(report.get("status") or "")
@@ -584,9 +653,8 @@ class QtSerialInspectorTab(QWidget):
 
     def _render_card(self, report: dict[str, Any]):
         self._card_pixmap = None
-        self.card_label.clear()
+        self._clear_card(_tr(self.loc, "labels", "no_card") if not report.get("ok") else "")
         if not report.get("ok"):
-            self.card_label.setText(_tr(self.loc, "labels", "no_card"))
             return
         item = card_image.card_item_from_report(report)
         columns = self._card_labels()
@@ -598,11 +666,31 @@ class QtSerialInspectorTab(QWidget):
             columns,
         )
         if pixmap.isNull():
-            self.card_label.setText(_tr(self.loc, "labels", "no_card"))
+            self._clear_card(_tr(self.loc, "labels", "no_card"))
             return
         self._card_pixmap = pixmap
-        self.card_label.setPixmap(pixmap)
-        self.card_label.setMinimumSize(pixmap.size() / pixmap.devicePixelRatio())
+        # Keep the full-resolution pixmap for _save_card and show a thumbnail, so
+        # the table keeps the width without degrading the exported image.
+        preview = pixmap
+        logical_width = pixmap.width() / pixmap.devicePixelRatio()
+        if logical_width > CARD_DISPLAY_WIDTH:
+            preview = pixmap.scaledToWidth(
+                int(CARD_DISPLAY_WIDTH * pixmap.devicePixelRatio()),
+                Qt.TransformationMode.SmoothTransformation,
+            )
+            preview.setDevicePixelRatio(pixmap.devicePixelRatio())
+        self.card_label.setPixmap(preview)
+        # Width is already fixed; only the height follows the card.
+        self.card_label.setFixedHeight(
+            int(preview.height() / preview.devicePixelRatio())
+        )
+
+    def _clear_card(self, text: str = ""):
+        """Reset the card slot, releasing the height the last card reserved."""
+        self.card_label.clear()
+        self.card_label.setFixedHeight(self.card_label.fontMetrics().height() + 4)
+        if text:
+            self.card_label.setText(text)
 
     def _card_labels(self) -> dict[str, str]:
         """Card builders expect the items_tab 'columns' block for stat labels."""

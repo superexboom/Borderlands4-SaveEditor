@@ -460,6 +460,10 @@ WEAPON_PART_ATTRIBUTE_LABELS = {
     "weapon_tor_sticky_attach_damage_scale": ("粘弹伤害", "Sticky Damage"),
 }
 WEAPON_PART_INTERNAL_ATTRIBUTES = {
+    # Aim-charge animation blendspace scale. Every weapon body part carries this
+    # and nothing else, so leaving it unregistered made all 26 bodies look like
+    # they had renderable stats that the formatter had silently dropped.
+    "weapon_zoomed_charge_blendspace_scale",
     "weapon_part_reload_value",
     "weapon_part_grip_value",
     "weapon_part_barrel_value",

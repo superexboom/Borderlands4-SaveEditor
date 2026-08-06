@@ -459,7 +459,7 @@
       "failed": "re-encode failed"
     },
     "rules_labels": {
-      "not_weapon": "Generation rules apply to firearms only; this item type has no rule tree.",
+      "not_weapon": "Generation rules apply to firearms only; this item type has no rule tree. Rules for it will be added in a later update.",
       "no_data": "No generation rule data is available for this weapon.",
       "composition": "Composition",
       "parent": "Parent",

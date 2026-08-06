@@ -28,10 +28,22 @@ __all__ = ["inspect_serial", "part_rows", "bit_layout", "NO_STAT_TEXTS"]
 # distinguishes the two by checking the ref payload directly.
 NO_STAT_TEXTS = {"无属性变化", "No stat changes"}
 
-# Exact strings produced by lookup.get_kind_enums / dynamic_item_kind. Heavy
-# Weapon is included because its card and per-part stats go through the
-# equipment path (see tabs.qt_items_tab.EQUIPMENT_CARD_FIELDS).
-_EQUIPMENT_STAT_TYPES = {"Shield", "Grenade", "Repkit", "Enhancement", "Class Mod", HEAVY_TYPE}
+# Exact strings produced by lookup.get_kind_enums / dynamic_item_kind. Only
+# these four have an entry in equipment_native_models.models, which is what
+# _family_model resolves against (equipment_display_stats.FAMILY_BY_ITEM_TYPE);
+# resolve_equipment_stats gates on the same set.
+_EQUIPMENT_STAT_TYPES = {"Shield", "Grenade", "Repkit", HEAVY_TYPE}
+
+# Enhancement and Class Mod roots are absent from every equipment family, so
+# _family_model always raises and format_equipment_part_description can only
+# return "". Their per-part text lives in the whole-item CSV resolvers, both of
+# which tag each entry with the part id it came from.
+_CSV_DETAIL_TYPES = {"Enhancement", "Class Mod"}
+
+# Owner of the shared Class Mod perk/firmware pool. It has no part_refs entry
+# (the pipeline's shared_roots set omits "classmod"), so these tokens can only
+# be named through class_mods/Class_perk.csv via resolve_classmod_card_details.
+_CLASSMOD_SHARED_OWNER = "234"
 
 
 def _blank(text: str) -> bool:
@@ -71,11 +83,117 @@ def _kind(item_id: int) -> tuple[str, str, bool]:
 
 
 def _ref_payload(ref: dict[str, Any]) -> int:
-    return (
-        len(ref.get("weapon_stat_modifiers") or [])
-        + len(ref.get("weapon_attribute_effects") or [])
-        + len(ref.get("uistats") or [])
-    )
+    """Count only payload entries a formatter is expected to turn into text.
+
+    A plain length sum reports "unmapped" for every part whose payload is
+    deliberately dropped downstream. Two kinds are dropped: attributes listed in
+    WEAPON_PART_INTERNAL_ATTRIBUTES (engine-internal, skipped by
+    _part_direct_effects) and modifiers with no attribute, stat tag or source
+    aspect to attribute the number to (equipment_display_stats._stat_groups
+    needs one of those to place a modifier).
+    """
+    effects = [
+        effect
+        for effect in (ref.get("weapon_attribute_effects") or [])
+        if str(effect.get("attribute") or "").casefold()
+        not in resolver.WEAPON_PART_INTERNAL_ATTRIBUTES
+    ]
+    modifiers = [
+        modifier
+        for modifier in (ref.get("weapon_stat_modifiers") or [])
+        if modifier.get("attr") or modifier.get("stat_tag") or modifier.get("source_aspect")
+    ]
+    # Mirror the uistats precedence used by equipment_part_name and
+    # equipment_part_uistat_descriptions.
+    uistats = ref.get("uistats_include") or ref.get("uistats") or []
+    return len(effects) + len(modifiers) + len(uistats)
+
+
+def _plain_markup(value: Any) -> str:
+    """Strip the game's localized markup without producing HTML.
+
+    render_skill_markup emits <span style=...> for the same input, which is right
+    for the card but wrong for a table cell: the inspector's part table renders
+    plain text, so the tags would show up verbatim.
+    """
+    text = str(value or "").replace("[newline]", " ").replace("\n", " ")
+    text = re.sub(r"\[/?[a-z][a-z0-9_]*\]", "", text, flags=re.IGNORECASE)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _csv_part_details(
+    decoded_full: str, item_id: int, item_type: str, lang: str
+) -> dict[str, dict[str, str]]:
+    """Map ref_key -> {text, name, category} for the types with no equipment model.
+
+    Enhancement and Class Mod cards are built from whole-item CSV resolvers
+    rather than a native stat model, but both already report which part id each
+    entry came from, so the per-part view can be reconstructed from them. The
+    name and category are carried along because the shared Class Mod perk owner
+    has no part_refs row to read them from.
+    """
+    out: dict[str, dict[str, str]] = {}
+    if item_type == "Enhancement":
+        try:
+            details = resolver.resolve_enhancement_card_details(decoded_full, lang) or {}
+        except Exception:
+            return out
+        for entry in details.get("effects") or []:
+            out[f"{item_id}:{entry.get('id')}"] = {"text": _plain_markup(entry.get("text"))}
+        for entry in details.get("stacked_effects") or []:
+            text = _plain_markup(entry.get("text"))
+            count = int(entry.get("count") or 1)
+            out[f"{entry.get('manufacturer_id')}:{entry.get('id')}"] = {
+                "text": f"{text} x{count}" if count > 1 else text
+            }
+        # stats and firmware are always resolved against shared owner 247.
+        for entry in [*(details.get("stats") or []), *(details.get("firmware") or [])]:
+            out[f"247:{entry.get('id')}"] = {
+                "text": _plain_markup(entry.get("text") or entry.get("name") or "")
+            }
+        return out
+
+    if item_type == "Class Mod":
+        try:
+            # The default skill_limit of 6 truncates the list; the inspector
+            # needs every skill the serial actually selected.
+            details = resolver.resolve_classmod_card_details(decoded_full, lang, 64) or {}
+        except Exception:
+            return out
+        for skill in details.get("skills") or []:
+            lines = [_plain_markup(line) for line in (skill.get("stat_lines") or [])]
+            head = f"+{skill.get('points')}/{skill.get('max_points')}"
+            text = ", ".join(part for part in [head, *lines] if part and part.strip())
+            for code in skill.get("selected_codes") or []:
+                out[f"{item_id}:{code}"] = {
+                    "text": text,
+                    "name": _plain_markup(skill.get("name")),
+                }
+        for entry in [*(details.get("perks") or []), *(details.get("firmware") or [])]:
+            name = _plain_markup(entry.get("name") or entry.get("text") or "")
+            count = int(entry.get("count") or 1)
+            out[f"{_CLASSMOD_SHARED_OWNER}:{entry.get('id')}"] = {
+                "text": f"{name} x{count}" if count > 1 else name,
+                "name": name,
+                "category": str(entry.get("category") or ""),
+                "part": str(entry.get("internal") or ""),
+            }
+        # Legendary class mod bodies carry the item-wide effect text and red text.
+        body_text = ", ".join(
+            part
+            for part in (
+                _plain_markup(entry.get("text")) for entry in details.get("effects") or []
+            )
+            if part and part.strip()
+        )
+        if body_text:
+            refs = resolver._item_index().get("part_refs") or {}
+            for ref_key, ref in refs.items():
+                if ref_key.startswith(f"{item_id}:") and ref.get("category") == "class_mod_body":
+                    out.setdefault(ref_key, {"text": body_text})
+        return out
+
+    return out
 
 
 def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-CN") -> list[dict[str, Any]]:
@@ -91,40 +209,58 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
 
     index = resolver._item_index()
     refs = index.get("part_refs") or {}
-    is_weapon = item_type in WEAPON_TYPES or item_type == HEAVY_TYPE
+    is_weapon = item_type in WEAPON_TYPES
+    # Heavy Weapon's card is built from the equipment model, so its per-part rows
+    # must prefer the equipment formatter's final values ("Splash Radius 236cm")
+    # over the weapon formatter's raw multipliers ("Splash Radius x1.24"). Its
+    # inv_comp and barrel rows only resolve on the weapon side, so that stays as
+    # the fallback rather than being dropped.
+    is_heavy = item_type == HEAVY_TYPE
+    csv_details = _csv_part_details(decoded_full, item_id, item_type, lang)
     rows: list[dict[str, Any]] = []
     for key in keys:
         owner, _, part_id = key.partition(":")
         ref = refs.get(key) or {}
         names = ref.get("name") or {}
-        category = str(ref.get("category") or "")
+        detail = csv_details.get(key) or {}
+        # The shared Class Mod perk owner has no part_refs row, so its category
+        # and internal part name can only come from the CSV resolver.
+        category = str(ref.get("category") or detail.get("category") or "")
         payload = _ref_payload(ref)
 
         description = ""
-        if is_weapon:
+        if item_type in _EQUIPMENT_STAT_TYPES:
+            # This helper resolves each referenced attribute id through the
+            # family's attribute_resolvers and does the leave-one-out delta.
             try:
                 description = (
-                    resolver.format_weapon_part_description(int(owner), part_id, decoded_full, lang, category) or ""
+                    resolver.format_equipment_part_description(
+                        decoded_full, item_type, key, lang, strict_delta=True
+                    )
+                    or ""
                 ).strip()
             except Exception:
                 description = ""
-        # Heavy Weapon counts as a weapon for naming but is driven by the
-        # equipment tables, so fall through when the weapon formatter says nothing.
-        if _blank(description) or description in NO_STAT_TEXTS:
-            if item_type in _EQUIPMENT_STAT_TYPES:
-                # Equipment parts have never had a per-part breakdown in the UI;
-                # this helper already does the leave-one-out delta.
-                try:
-                    equipment_text = (
-                        resolver.format_equipment_part_description(
-                            decoded_full, item_type, key, lang, strict_delta=True
-                        )
-                        or ""
-                    ).strip()
-                except Exception:
-                    equipment_text = ""
-                if equipment_text:
-                    description = equipment_text
+        elif item_type in _CSV_DETAIL_TYPES:
+            description = str(detail.get("text") or "").strip()
+
+        if (_blank(description) or description in NO_STAT_TEXTS) and (is_weapon or is_heavy):
+            try:
+                description = (
+                    resolver.format_weapon_part_description(
+                        int(owner),
+                        part_id,
+                        decoded_full,
+                        lang,
+                        # The 5th argument is the CSV "Part Type" column, not the
+                        # index category, so it has to be title case to hit the
+                        # intrinsic-part short circuit.
+                        "Body" if category == "body" else "",
+                    )
+                    or ""
+                ).strip()
+            except Exception:
+                description = ""
 
         if description in NO_STAT_TEXTS or _blank(description):
             # Separate "genuinely cosmetic" from "payload present but unmapped".
@@ -133,6 +269,13 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
             effect_state = "described"
 
         display_name = ""
+        # weapon_part_name despite its name is the better namer for every item
+        # type: it returns the curated ref["name"] on all 802 refs that have one,
+        # covers 9 equipment refs equipment_part_name misses (and none the other
+        # way), and leaks no {mod} placeholders where equipment_part_name leaks 19
+        # on class mod bodies. equipment_part_name puts the uistat title first,
+        # which collapses distinct parts onto a shared group label: all 10 of
+        # 243:22..26,47 become "元素抗性" where weapon_part_name keeps 橡胶/含铅/淬炼.
         try:
             display_name = resolver.weapon_part_name(int(owner), part_id, lang) or ""
         except Exception:
@@ -141,15 +284,19 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
             display_name = str(
                 names.get("zh" if resolver._lang_is_zh(lang) else "en") or names.get("en") or ""
             ).strip()
+        if _blank(display_name):
+            display_name = str(detail.get("name") or "").strip()
 
         rows.append(
             {
                 "key": key,
                 "owner": owner,
                 "part_id": part_id,
-                "known": bool(ref),
+                # 234:* perks resolve through Class_perk.csv even though the
+                # shipped index has no part_refs row for them, so they are known.
+                "known": bool(ref) or bool(detail),
                 "category": category,
-                "part": str(ref.get("part") or ""),
+                "part": str(ref.get("part") or detail.get("part") or ""),
                 "rarity": str(ref.get("rarity") or ""),
                 "name": display_name,
                 "name_en": str(names.get("en") or ""),
@@ -157,7 +304,7 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
                 "description": description,
                 "effect_state": effect_state,
                 "payload_count": payload,
-                "uistats": list(ref.get("uistats") or []),
+                "uistats": list(ref.get("uistats_include") or ref.get("uistats") or []),
                 "weapon_tags": list(ref.get("weapon_tags") or []),
                 "stat_modifiers": list(ref.get("weapon_stat_modifiers") or []),
                 "attribute_effects": list(ref.get("weapon_attribute_effects") or []),
