@@ -23,6 +23,13 @@ __all__ = ["card_html", "card_pixmap", "CARD_MAX_WIDTH"]
 # leave dead space, narrower ones wrap the stat rows badly.
 CARD_MAX_WIDTH = 560.0
 
+# The card HTML never sets a body text colour: in the item list the cards are
+# shown through QToolTip, which paints them with the stylesheet's
+# "QToolTip { color: #eef5f6 }". A QTextDocument has no stylesheet, so that text
+# fell back to the default black and was unreadable on the dark card. Apply the
+# same colour here so the rendered image matches the tooltip.
+CARD_TEXT_COLOR = "#eef5f6"
+
 
 def _card_builders() -> list[Callable[..., str]]:
     # Imported lazily: tabs.qt_items_tab pulls in widget classes, and core
@@ -86,7 +93,9 @@ def html_to_pixmap(html: str, scale: float = 2.0, max_width: float = CARD_MAX_WI
 
     document = QTextDocument()
     document.setDocumentMargin(0)
-    document.setHtml(html)
+    # Set as the document default so any span with its own colour still wins.
+    document.setDefaultStyleSheet("body,table,td,span,i,b { color: %s; }" % CARD_TEXT_COLOR)
+    document.setHtml("<body>%s</body>" % html)
     document.setTextWidth(max_width)
     size = document.size()
     width = max(1, int(size.width() * scale + 0.5))

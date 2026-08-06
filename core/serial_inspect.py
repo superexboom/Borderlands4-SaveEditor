@@ -14,6 +14,7 @@ the part list disagree with the rendered card.
 from __future__ import annotations
 
 import re
+from functools import lru_cache
 from typing import Any
 
 from core import b_encoder, bl4_functions, decoder_logic, lookup
@@ -121,6 +122,26 @@ def _plain_markup(value: Any) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
+@lru_cache(maxsize=64)
+def _classmod_skill_tiers(item_id: int) -> dict[str, int]:
+    """Map a Class Mod part id to the skill rank it grants.
+
+    Skills.csv has no tier column, but each row lists five part ids in
+    skill_ID_1..skill_ID_5, and the column index is the rank: selecting the id in
+    skill_ID_3 puts the skill at rank 3. Part ids are unique per class_ID, so the
+    mapping is unambiguous within one item.
+    """
+    tiers: dict[str, int] = {}
+    for row in resolver._rows_by_file("class_mods/Skills.csv"):
+        if (row.get("class_ID") or "").strip() != str(item_id):
+            continue
+        for rank in range(1, 6):
+            code = (row.get(f"skill_ID_{rank}") or "").strip()
+            if code:
+                tiers[code] = rank
+    return tiers
+
+
 def _csv_part_details(
     decoded_full: str, item_id: int, item_type: str, lang: str
 ) -> dict[str, dict[str, str]]:
@@ -160,20 +181,29 @@ def _csv_part_details(
             details = resolver.resolve_classmod_card_details(decoded_full, lang, 64) or {}
         except Exception:
             return out
+        tiers = _classmod_skill_tiers(item_id)
         for skill in details.get("skills") or []:
             lines = [_plain_markup(line) for line in (skill.get("stat_lines") or [])]
-            head = f"+{skill.get('points')}/{skill.get('max_points')}"
-            text = ", ".join(part for part in [head, *lines] if part and part.strip())
-            for code in skill.get("selected_codes") or []:
+            codes = skill.get("selected_codes") or []
+            max_points = int(skill.get("max_points") or 0)
+            for code in codes:
+                # One row per part, so the rank has to be this part's own rank,
+                # not the skill's total. Skills.csv has no tier column, but its
+                # skill_ID_1..skill_ID_5 columns are the ranks: the column a part
+                # id sits in is the rank that part grants. The card shows the
+                # summed total instead, which is right for the card and wrong here.
+                tier = tiers.get(str(code))
+                head = f"+{tier}/{max_points}" if tier and max_points else ""
                 out[f"{item_id}:{code}"] = {
-                    "text": text,
+                    "text": ", ".join(part for part in [head, *lines] if part and part.strip()),
                     "name": _plain_markup(skill.get("name")),
                 }
         for entry in [*(details.get("perks") or []), *(details.get("firmware") or [])]:
             name = _plain_markup(entry.get("name") or entry.get("text") or "")
-            count = int(entry.get("count") or 1)
+            # No "xN" suffix: the card collapses duplicate perks into one line and
+            # reports the count, but here each copy already has its own row.
             out[f"{_CLASSMOD_SHARED_OWNER}:{entry.get('id')}"] = {
-                "text": f"{name} x{count}" if count > 1 else name,
+                "text": name,
                 "name": name,
                 "category": str(entry.get("category") or ""),
                 "part": str(entry.get("internal") or ""),
