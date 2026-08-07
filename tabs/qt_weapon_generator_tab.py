@@ -162,7 +162,7 @@ class QtWeaponGeneratorTab(QWidget):
     # 部件容器内的布局：按武器结构顺序，主件在左、其附件/相关件在右
     PART_LAYOUT = {
         "Body": (0, 0), "Body Mechanism": (0, 1),
-        "Body Accessory": (1, 0),
+        "Body Accessory": (1, 0), "Special Element Set": (1, 1),
         "Barrel": (2, 0), "Barrel Accessory": (2, 1),
         "Magazine": (3, 0), "Magazine Accessory": (3, 1),
         "Grip": (4, 0), "Foregrip": (4, 1),
@@ -170,9 +170,16 @@ class QtWeaponGeneratorTab(QWidget):
         "Underbarrel": (6, 0), "Underbarrel Accessory": (6, 1),
         "Manufacturer Part": (7, 0), "Tediore Payload": (7, 1),
         "Tediore Throw Reload": (8, 0), "Borg Magazine Adapter": (8, 1),
-        "Special Element Set": (9, 0), "Stat Modifier": (9, 1),
+        "Stat Modifier": (9, 1),
     }
     CONDITIONAL_PART_TYPES = {"Tediore Throw Reload", "Borg Magazine Adapter", "Special Element Set"}
+    # elemental.csv only covers root 1, so other roots' element groups fall back to
+    # the resolver, which needs the display part type for the group.
+    _ELEMENT_GROUP_PART_TYPES = {
+        "body_ele": "Special Element Set",
+        "secondary_ele": "",
+        "pearl_elem": "",
+    }
     MULTI_SELECT_SLOTS = {
         "Body Accessory": 4, "Barrel Accessory": 4,
         "Manufacturer Part": 4, "Scope Accessory": 4,
@@ -1403,15 +1410,31 @@ class QtWeaponGeneratorTab(QWidget):
             group = str((part_refs.get(str(ref)) or {}).get("selection_group") or "").casefold()
             if group not in {"body_ele", "secondary_ele", "pearl_elem"}:
                 continue
-            _root, _sep, part_id = str(ref).partition(":")
-            if not part_id.isdigit():
+            root, _sep, part_id = str(ref).partition(":")
+            if not part_id.isdigit() or not root.isdigit():
                 continue
-            rows = self.elemental_df[self.elemental_df['Part_ID'] == int(part_id)]
+            # elemental.csv is keyed by Elemental_ID (the ref root), so it only
+            # describes parts of that root. Matching on Part_ID alone made other
+            # roots borrow root 1's text or come up empty.
+            rows = self.elemental_df[
+                (self.elemental_df['Elemental_ID'] == int(root))
+                & (self.elemental_df['Part_ID'] == int(part_id))
+            ]
             if rows.empty:
-                continue
-            value = str(rows.iloc[0].get(self.elemental_stat_col) or "").strip()
-            if group == "pearl_elem" and ':' in value:
-                value = value.split(':', 1)[1].strip()
+                value = item_display_resolver.format_weapon_part_description(
+                    int(root), part_id, "", self.current_lang,
+                    self._ELEMENT_GROUP_PART_TYPES.get(group, ""),
+                )
+                # Parts with no element at all (e.g. part_normal) resolve to the
+                # generic no-change placeholder, which does not belong on an
+                # element line.
+                if value == item_display_resolver.no_stat_changes_text(self.current_lang):
+                    value = ""
+            else:
+                value = str(rows.iloc[0].get(self.elemental_stat_col) or "").strip()
+                if group == "pearl_elem" and ':' in value:
+                    value = value.split(':', 1)[1].strip()
+            value = str(value or "").strip()
             if value and value not in values:
                 values.append(value)
         return " / ".join(values)

@@ -1086,13 +1086,18 @@ def _ammo_switch_description(ref: dict[str, Any], lang: str) -> list[str]:
     return lines
 
 
+def no_stat_changes_text(lang: str = "zh-CN") -> str:
+    """The placeholder shown when a part resolves to no stat effect at all."""
+    return "无属性变化" if _lang_is_zh(lang) else "No stat changes"
+
+
 def format_weapon_part_description(
     item_id: int, part_id: str, decoded_full: str = "", lang: str = "zh-CN", part_type: str = ""
 ) -> str:
     """Format only effects actually resolved for one weapon part."""
     index = _item_index()
     ref = (index.get("part_refs") or {}).get(f"{item_id}:{part_id}", {})
-    fallback = "无属性变化" if _lang_is_zh(lang) else "No stat changes"
+    fallback = no_stat_changes_text(lang)
     if not ref:
         return fallback
     if part_type == "Body":
