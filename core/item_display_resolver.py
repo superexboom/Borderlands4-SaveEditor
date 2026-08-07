@@ -948,6 +948,33 @@ def _base_value_description(ref: dict[str, Any], lang: str) -> list[str]:
 _UNFILLED_VALUE_SLOT = re.compile(r"\{\w+\}")
 
 
+def _fill_uistat_args(text: str, entry: dict[str, Any], index: dict[str, Any]) -> str:
+    """Substitute {token} slots from the uistat's own args when a value is known.
+
+    statvalue.args maps each token to an attribute name; when that attribute has a
+    literal default we can show the real number instead of dropping the whole
+    sentence. Tokens whose attribute is computed at runtime stay unfilled and the
+    caller discards the text.
+    """
+    args = ((entry.get("statvalue") or {}).get("args") or {})
+    if not args:
+        return text
+    defaults = (index.get("weapon_native_model") or {}).get("attribute_defaults") or {}
+    for token in set(_UNFILLED_VALUE_SLOT.findall(text)):
+        name = token[1:-1]
+        attribute = str(((args.get(name) or {}) if isinstance(args.get(name), dict) else {}).get("attribute") or "")
+        if not attribute:
+            continue
+        value = defaults.get(attribute.casefold())
+        if value is None:
+            continue
+        try:
+            text = text.replace(token, _part_number(float(value)))
+        except (TypeError, ValueError):
+            continue
+    return text
+
+
 def _part_behavior_text(ref: dict[str, Any], index: dict[str, Any], lang: str) -> str:
     key = "zh" if _lang_is_zh(lang) else "en"
     for uistat_id in [*ref.get("uistats_include", []), *ref.get("uistats", [])]:
@@ -959,6 +986,7 @@ def _part_behavior_text(ref: dict[str, Any], index: dict[str, Any], lang: str) -
             if separator in text:
                 text = text.split(separator, maxsplit=1)[1].strip()
                 break
+        text = _fill_uistat_args(text, entry, index)
         if _UNFILLED_VALUE_SLOT.search(text):
             # No number to put in the slot, and no way to excise it cleanly.
             continue
