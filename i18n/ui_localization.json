@@ -387,6 +387,12 @@
     }
   },
   "serial_inspector_tab": {
+    "part_carriers": {
+      "elemental_resist_base": "元素抗性基座",
+      "elemental_immunity_base": "元素免疫基座",
+      "elemental_splat_base": "元素喷溅基座",
+      "elemental_nova_base": "元素新星基座"
+    },
     "labels": {
       "input": "序列号（Base85 或解码字符串）",
       "summary": "概要",
@@ -1110,6 +1116,14 @@
     }
   },
   "repkit_tab": {
+    "augment_facets": {
+      "all": "全部",
+      "primary_augment": "主强化",
+      "secondary_augment": "副强化",
+      "augment_element_splat": "元素喷溅",
+      "augment_element_nova": "元素新星",
+      "other": "其他"
+    },
     "groups": {
       "perks": "技能",
       "prefix": "前缀 (单选)",

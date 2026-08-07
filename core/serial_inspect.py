@@ -17,7 +17,7 @@ import re
 from functools import lru_cache
 from typing import Any
 
-from core import b_encoder, bl4_functions, decoder_logic, lookup
+from core import b_encoder, bl4_functions, decoder_logic, lookup, resource_loader
 from core import item_display_resolver as resolver
 from core import weapon_display_stats
 from core.item_display_resolver import HEAVY_TYPE, WEAPON_TYPES
@@ -50,6 +50,51 @@ _CLASSMOD_SHARED_OWNER = "234"
 # Matches only bare word placeholders, so localized text containing braces for
 # other reasons is left alone.
 _UNFILLED_PLACEHOLDER_RE = re.compile(r"\{\w+\}")
+
+# Repkit elemental mechanics carriers. Each of the four effect families has a
+# primary and a secondary slot variant, and the effect parts themselves supply
+# the visible text ("Preheat: +50% cryo resistance for 15s"), so these carry
+# uistats: [] and would otherwise render as a blank row. Their values live in
+# RepKit_AugmentData, reachable only through datatable_refs, which no exporter
+# resolves; the loc key below names the mechanism instead of inventing numbers.
+# Verified over 592 repkit samples (245 epic / 151 legendary / 196 CT): every
+# elemental effect part co-occurs with exactly one of its family's two carriers,
+# and every carrier co-occurs with an effect part - zero counterexamples.
+_ELEMENTAL_CARRIERS = {
+    "243:53": "elemental_resist_base",
+    "243:76": "elemental_resist_base",
+    "243:55": "elemental_immunity_base",
+    "243:78": "elemental_immunity_base",
+    "243:72": "elemental_splat_base",
+    "243:95": "elemental_splat_base",
+    "243:66": "elemental_nova_base",
+    "243:89": "elemental_nova_base",
+}
+
+_ELEMENTAL_CARRIER_FALLBACK = {
+    "elemental_resist_base": {"zh": "元素抗性基座", "en": "Elemental Resistance Base"},
+    "elemental_immunity_base": {"zh": "元素免疫基座", "en": "Elemental Immunity Base"},
+    "elemental_splat_base": {"zh": "元素喷溅基座", "en": "Elemental Splat Base"},
+    "elemental_nova_base": {"zh": "元素新星基座", "en": "Elemental Nova Base"},
+}
+
+
+@lru_cache(maxsize=8)
+def _carrier_labels(lang: str) -> dict[str, str]:
+    """Localized carrier names, falling back to the built-in zh/en pair."""
+    try:
+        loc = resource_loader.load_json_resource(
+            resource_loader.get_ui_localization_file(lang)
+        ) or {}
+        table = ((loc.get("serial_inspector_tab") or {}).get("part_carriers")) or {}
+    except Exception:
+        table = {}
+    zh = resolver._lang_is_zh(lang)
+    out: dict[str, str] = {}
+    for key, pair in _ELEMENTAL_CARRIER_FALLBACK.items():
+        value = str(table.get(key) or "").strip()
+        out[key] = value or pair["zh" if zh else "en"]
+    return out
 
 
 def _blank(text: str) -> bool:
@@ -309,6 +354,13 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
                     candidate = ""
             if candidate:
                 description = candidate
+
+        if _blank(description) or description in NO_STAT_TEXTS:
+            # Elemental carriers legitimately have no stats of their own; name the
+            # mechanism rather than leaving a blank row or claiming "no changes".
+            carrier = _ELEMENTAL_CARRIERS.get(key)
+            if carrier:
+                description = _carrier_labels(lang).get(carrier, "")
 
         if description in NO_STAT_TEXTS or _blank(description):
             # Separate "genuinely cosmetic" from "payload present but unmapped".

@@ -387,6 +387,12 @@
     }
   },
   "serial_inspector_tab": {
+    "part_carriers": {
+      "elemental_resist_base": "Elemental Resistance Base",
+      "elemental_immunity_base": "Elemental Immunity Base",
+      "elemental_splat_base": "Elemental Splat Base",
+      "elemental_nova_base": "Elemental Nova Base"
+    },
     "labels": {
       "input": "Serial (Base85 or decoded)",
       "summary": "Summary",
@@ -1110,6 +1116,14 @@
     }
   },
   "repkit_tab": {
+    "augment_facets": {
+      "all": "All",
+      "primary_augment": "Primary",
+      "secondary_augment": "Secondary",
+      "augment_element_splat": "Elemental Splat",
+      "augment_element_nova": "Elemental Nova",
+      "other": "Other"
+    },
     "groups": {
       "perks": "Skills/Perks",
       "prefix": "Prefix (Single)",

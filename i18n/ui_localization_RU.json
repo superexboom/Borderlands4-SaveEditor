@@ -387,6 +387,12 @@
     }
   },
   "serial_inspector_tab": {
+    "part_carriers": {
+      "elemental_resist_base": "Базис стихийного сопротивления",
+      "elemental_immunity_base": "Базис стихийного иммунитета",
+      "elemental_splat_base": "Базис стихийного выброса",
+      "elemental_nova_base": "Базис стихийной новы"
+    },
     "labels": {
       "input": "Серийный код (Base85 или расшифрованный)",
       "summary": "Сводка",
@@ -1110,6 +1116,14 @@
     }
   },
   "repkit_tab": {
+    "augment_facets": {
+      "all": "Все",
+      "primary_augment": "Основное",
+      "secondary_augment": "Вторичное",
+      "augment_element_splat": "Стихийный выброс",
+      "augment_element_nova": "Стихийная нова",
+      "other": "Прочее"
+    },
     "groups": {
       "perks": "Навыки/Перки",
       "prefix": "Префикс (Одиночн.)",
