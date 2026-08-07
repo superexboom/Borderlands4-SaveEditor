@@ -1186,7 +1186,7 @@
       "element": "元素 (单选)",
       "firmware": "固件 (单选)",
       "barrel_acc": "枪管附件 (可多选/堆叠)",
-      "body_acc": "枪身附件 (可多选/堆叠)",
+      "body_acc": "基座附件 (可多选/堆叠)",
       "output": "Deserialize",
       "base_attrs": "基础属性"
     },

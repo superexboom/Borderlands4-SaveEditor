@@ -686,11 +686,11 @@ QGroupBox[title="Barrel Accessories"]::title, QGroupBox[title="枪管附件 (可
     color: #78909C;
 }
 
-/* Body Acc / 枪身附件 - 青灰 */
-QGroupBox[title="Body Accessories"], QGroupBox[title="枪身附件 (可多选/堆叠)"] {
+/* Body Acc / 基座附件 - 青灰 */
+QGroupBox[title="Body Accessories"], QGroupBox[title="基座附件 (可多选/堆叠)"] {
     border-left: 4px solid #37474F;
 }
-QGroupBox[title="Body Accessories"]::title, QGroupBox[title="枪身附件 (可多选/堆叠)"]::title {
+QGroupBox[title="Body Accessories"]::title, QGroupBox[title="基座附件 (可多选/堆叠)"]::title {
     color: #78909C;
 }
 
