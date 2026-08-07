@@ -1279,24 +1279,29 @@ def equipment_part_uistat_descriptions(
         text = str(ui.get("zh" if lang == "zh-CN" else "en") or ui.get("en") or "")
         placeholders = set(re.findall(r"\{(\w+)\}", text))
         args = ((ui.get("statvalue") or {}).get("args") or {})
-        failed = False
+        folded = {str(key).casefold(): value for key, value in args.items()}
         for placeholder in placeholders:
-            arg = args.get(placeholder) or {}
+            arg = args.get(placeholder)
+            if not isinstance(arg, dict):
+                arg = folded.get(placeholder.casefold())
+            arg = arg if isinstance(arg, dict) else {}
             attribute = _ref_name(arg.get("attribute"))
             value = display_modifier(attribute) if attribute else None
             if value is None:
                 value = resolve_attribute(attribute) if attribute else None
             if value is None:
-                failed = True
-                break
+                # Augment rolls, level formulas and runtime expressions have no
+                # static value. Dropping the sentence made the row fall back to
+                # "No stat changes", which falsely denies the augment does
+                # anything, so mark the one unknown quantity and keep the effect.
+                text = text.replace(f"{{{placeholder}}}", "?")
+                continue
             resolver_kind = _norm((((resolvers.get(attribute) or {}).get("definition") or {}).get("value") or {}).get("structtype"))
             display_arg = {**arg, "_inventory_augment": "inventoryaugmentattributevalueresolver" in resolver_kind}
             text = text.replace(
                 f"{{{placeholder}}}",
                 _display_uistat_number(value, attribute, _placeholder_context(text, placeholder), display_arg, lang),
             )
-        if failed:
-            continue
         text = " ".join(re.sub(r"\[[^\]]+\]", "", text).split())
         if text and not any((entry.get("text") if isinstance(entry, dict) else entry) == text for entry in output):
             output.append({"uistat": ui_key, "text": text} if with_ids else text)

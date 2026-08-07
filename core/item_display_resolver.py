@@ -949,20 +949,24 @@ def _base_value_description(ref: dict[str, Any], lang: str) -> list[str]:
 
 
 # Value slots in a uistat template are filled from statvalue.args, each of which
-# names an attribute to evaluate. A handful of templates point at balance
-# constants (weapon_atlas_dart_duration, weapon_atlas_grenade_duration) that no
-# part modifies and that appear nowhere in the export outside the template's own
-# reference, so there is no number to substitute - 80 of 8160 weapon part renders
-# used to show the raw "{damage}" / "{duration}s" to the user.
+# names an attribute to evaluate. Some resolve to a runtime expression, a level
+# balance formula, or a value rolled into the save's own serial, so no static
+# number exists for them.
 #
 # Editing the sentence around the slot was tried and rejected: removing the value
 # and its unit leaves mutilated claims such as "发射一架无人机，每枪，之后会爆炸"
 # and "Fires a Gravity Harpoon that and pulls in nearby enemies", because the slot
-# sits mid-clause and the surrounding grammar depends on it. Since the number is
-# unobtainable, the honest option is to drop the behaviour sentence entirely and
-# keep the part's real stat lines, which is what serial_inspect already does for
-# the same situation (see _UNFILLED_PLACEHOLDER_RE there).
+# sits mid-clause and the surrounding grammar depends on it.
+#
+# Dropping the whole sentence was also wrong: it made 113 parts fall through to
+# "No stat changes", which is a false claim about a shield augment that plainly
+# states it grants damage reduction. Substituting a visible placeholder keeps the
+# effect readable and only admits the one number we cannot compute.
 _UNFILLED_VALUE_SLOT = re.compile(r"\{\w+\}")
+
+# Marker for a value that genuinely has no static number. Kept as "?" so it reads
+# as a missing quantity in every language rather than looking like leaked markup.
+_UNKNOWN_VALUE_MARK = "?"
 
 
 @lru_cache(maxsize=1)
@@ -1035,9 +1039,7 @@ def _part_behavior_text(ref: dict[str, Any], index: dict[str, Any], lang: str) -
                 text = text.split(separator, maxsplit=1)[1].strip()
                 break
         text = _fill_uistat_args(text, entry, index)
-        if _UNFILLED_VALUE_SLOT.search(text):
-            # No number to put in the slot, and no way to excise it cleanly.
-            continue
+        text = _UNFILLED_VALUE_SLOT.sub(_UNKNOWN_VALUE_MARK, text)
         return text
     return ""
 
