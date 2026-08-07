@@ -1077,6 +1077,12 @@
     }
   },
   "shield_tab": {
+    "augment_facets": {
+      "all": "All",
+      "primary_augment": "Primary Slot",
+      "secondary_augment": "Secondary Slot",
+      "other": "Other"
+    },
     "groups": {
       "perks": "Perks",
       "element": "Elemental Resistance (Single)",

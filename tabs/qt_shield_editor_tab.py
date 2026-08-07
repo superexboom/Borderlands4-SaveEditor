@@ -71,13 +71,43 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
         self._populate_chip_group(self._group_cfgs["element"], df[df['Part_type'] == 'Elemental Resistance'], self._fmt_row)
         self._populate_chip_group(self._group_cfgs["firmware"], df[df['Part_type'] == 'Firmware'], self._fmt_row)
         self._group_pickles["universal"].set_source(self._perk_items(246))
+        for key in ("universal", "energy", "armor"):
+            picker = self._group_pickles.get(key)
+            if picker is not None:
+                picker.set_categories(self._augment_categories(), columns=4)
+
+    # Augments occupy two independent slots. Verified over 80 dumped shields:
+    # every real shield carries at most ONE primary and at most ONE secondary
+    # (observed 0/0 23x, 1/0 25x, 0/1 12x, 1/1 20x - never 2 on a side), and the
+    # two sides are never the same augment (0 same-source vs 20 cross-source), so
+    # they are separate slots rather than a matched pair. The pickers are flat and
+    # stackable, so stacking two primaries produces a shield the game cannot roll
+    # and whose mechanism yields no numbers. Faceting by slot makes the split
+    # visible; the count badge reports how many are selected per slot.
+    _AUGMENT_FACETS = ("primary_augment", "secondary_augment")
+
+    def _augment_facet(self, parent, part_id):
+        from core import item_display_resolver as resolver
+
+        ref = (resolver._item_index().get("part_refs") or {}).get(f"{parent}:{part_id}") or {}
+        category = str(ref.get("category") or "")
+        return category if category in self._AUGMENT_FACETS else "other"
+
+    def _augment_categories(self):
+        groups = (self.ui_loc or {}).get('augment_facets') or {}
+        cats = [("all", groups.get('all', 'All'))]
+        for key in self._AUGMENT_FACETS:
+            cats.append((key, groups.get(key, key)))
+        cats.append(("other", groups.get('other', 'Other')))
+        return cats
 
     def _perk_items(self, main_id):
         items = []
         df = self.df_main[(self.df_main['Shield_perk_main_ID'] == main_id) & (self.df_main['Part_type'] == 'Perk')]
         for _, r in df.iterrows():
             text, part_id = self._fmt_row(r)
-            items.append({"key": f"p{main_id}:{part_id}", "label": text, "category": None, "data": int(part_id)})
+            items.append({"key": f"p{main_id}:{part_id}", "label": text,
+                          "category": self._augment_facet(main_id, part_id), "data": int(part_id)})
         return items
 
     def _legendary_items(self, current_mfg):

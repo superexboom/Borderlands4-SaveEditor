@@ -1077,6 +1077,12 @@
     }
   },
   "shield_tab": {
+    "augment_facets": {
+      "all": "Все",
+      "primary_augment": "Основной слот",
+      "secondary_augment": "Второй слот",
+      "other": "Другое"
+    },
     "groups": {
       "perks": "Перки",
       "element": "Сопротивление стихиям (Одиночн.)",
