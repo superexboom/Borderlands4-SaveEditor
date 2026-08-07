@@ -1000,10 +1000,16 @@ def _fill_uistat_args(text: str, entry: dict[str, Any], index: dict[str, Any]) -
     args = ((entry.get("statvalue") or {}).get("args") or {})
     if not args:
         return text
+    # uistat_goremaster_desc writes {LowHPThreshold} but names the arg LowHpThreshold,
+    # so token lookup has to tolerate the source's own casing slip.
+    folded = {str(key).casefold(): value for key, value in args.items()}
     defaults = _all_attribute_defaults()
     for token in set(_UNFILLED_VALUE_SLOT.findall(text)):
         name = token[1:-1]
-        arg = args.get(name) if isinstance(args.get(name), dict) else {}
+        arg = args.get(name)
+        if not isinstance(arg, dict):
+            arg = folded.get(name.casefold())
+        arg = arg if isinstance(arg, dict) else {}
         attribute = str(arg.get("attribute") or "")
         if not attribute:
             continue
