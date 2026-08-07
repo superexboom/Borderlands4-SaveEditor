@@ -605,6 +605,23 @@ def _part_number(value: float, decimals: int = 3) -> str:
     return f"{value:.{decimals}f}".rstrip("0").rstrip(".")
 
 
+def _uistat_arg_number(value: float, arg: dict[str, Any]) -> str:
+    """Render a uistat arg the way the game does.
+
+    NumericDisplayValue carries its own formatting flags: bDisplayAsPercentage means
+    the stored fraction is shown scaled by 100 with a percent sign, and
+    bDisplayPlusSign prefixes gains with '+'. Without the flags the number is a plain
+    count (seconds, stacks, ammo) and must stay as-is.
+    """
+    if arg.get("bdisplayaspercentage"):
+        text = _part_number(value * 100.0, 2) + "%"
+    else:
+        text = _part_number(value)
+    if arg.get("bdisplayplussign") and value > 0:
+        text = "+" + text
+    return text
+
+
 def _part_row_value(row: Any, *keys: str) -> str:
     if row is None:
         return ""
@@ -948,28 +965,53 @@ def _base_value_description(ref: dict[str, Any], lang: str) -> list[str]:
 _UNFILLED_VALUE_SLOT = re.compile(r"\{\w+\}")
 
 
+@lru_cache(maxsize=1)
+def _all_attribute_defaults() -> dict[str, float]:
+    """Attribute defaults from every model, keyed case-insensitively.
+
+    Equipment models contribute their own attributes so grenade and repair-kit stats
+    resolve too, except for the ``*_modifier_base_*`` entries: those are the
+    multiplicative identity the game starts from before an augment's table row
+    supplies the real delta, so showing them as a stat would invent a number.
+    Weapon entries win over equipment ones so weapon rendering is unchanged.
+    """
+    index = _item_index()
+    merged: dict[str, float] = {}
+    for model in ((index.get("equipment_native_models") or {}).get("models") or {}).values():
+        for key, value in ((model or {}).get("attribute_defaults") or {}).items():
+            name = str(key).casefold()
+            if "_modifier_base_" in name:
+                continue
+            merged.setdefault(name, value)
+    for key, value in ((index.get("weapon_native_model") or {}).get("attribute_defaults") or {}).items():
+        merged[str(key).casefold()] = value
+    return merged
+
+
 def _fill_uistat_args(text: str, entry: dict[str, Any], index: dict[str, Any]) -> str:
     """Substitute {token} slots from the uistat's own args when a value is known.
 
     statvalue.args maps each token to an attribute name; when that attribute has a
     literal default we can show the real number instead of dropping the whole
-    sentence. Tokens whose attribute is computed at runtime stay unfilled and the
-    caller discards the text.
+    sentence. Grenade and repair-kit stats name attributes that live in the equipment
+    models rather than the weapon model, so both tables are consulted. Tokens whose
+    attribute is computed at runtime stay unfilled and the caller discards the text.
     """
     args = ((entry.get("statvalue") or {}).get("args") or {})
     if not args:
         return text
-    defaults = (index.get("weapon_native_model") or {}).get("attribute_defaults") or {}
+    defaults = _all_attribute_defaults()
     for token in set(_UNFILLED_VALUE_SLOT.findall(text)):
         name = token[1:-1]
-        attribute = str(((args.get(name) or {}) if isinstance(args.get(name), dict) else {}).get("attribute") or "")
+        arg = args.get(name) if isinstance(args.get(name), dict) else {}
+        attribute = str(arg.get("attribute") or "")
         if not attribute:
             continue
         value = defaults.get(attribute.casefold())
         if value is None:
             continue
         try:
-            text = text.replace(token, _part_number(float(value)))
+            text = text.replace(token, _uistat_arg_number(float(value), arg))
         except (TypeError, ValueError):
             continue
     return text
