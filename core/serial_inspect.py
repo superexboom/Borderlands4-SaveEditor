@@ -46,6 +46,11 @@ _CSV_DETAIL_TYPES = {"Enhancement", "Class Mod"}
 # be named through class_mods/Class_perk.csv via resolve_classmod_card_details.
 _CLASSMOD_SHARED_OWNER = "234"
 
+# A value slot the CSV resolver was supposed to fill, e.g. "弹匣容量增加{mod}".
+# Matches only bare word placeholders, so localized text containing braces for
+# other reasons is left alone.
+_UNFILLED_PLACEHOLDER_RE = re.compile(r"\{\w+\}")
+
 
 def _blank(text: str) -> bool:
     return not text or not text.strip()
@@ -274,9 +279,13 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
         elif item_type in _CSV_DETAIL_TYPES:
             description = str(detail.get("text") or "").strip()
 
-        if (_blank(description) or description in NO_STAT_TEXTS) and (is_weapon or is_heavy):
+        if _blank(description) or description in NO_STAT_TEXTS:
+            # The weapon formatter is the only source of text for a handful of
+            # refs that gear serials also reference: intrinsic bodies (247:76,
+            # 285:2, 321:10 ...) and the body_acc reload parts 12:3 / 3:4. Let
+            # every item type fall back to it rather than leave the row blank.
             try:
-                description = (
+                candidate = (
                     resolver.format_weapon_part_description(
                         int(owner),
                         part_id,
@@ -290,7 +299,16 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
                     or ""
                 ).strip()
             except Exception:
-                description = ""
+                candidate = ""
+            if candidate and not (is_weapon or is_heavy):
+                # On gear this is a fallback, not the owner of the text, so only
+                # take a real statement. "No stat changes" would replace a clean
+                # blank with noise on 1789 cosmetic rows, and an unsubstituted
+                # template would reintroduce the {mod} leak fixed in 0de99b2.
+                if candidate in NO_STAT_TEXTS or _UNFILLED_PLACEHOLDER_RE.search(candidate):
+                    candidate = ""
+            if candidate:
+                description = candidate
 
         if description in NO_STAT_TEXTS or _blank(description):
             # Separate "genuinely cosmetic" from "payload present but unmapped".
