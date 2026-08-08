@@ -990,29 +990,58 @@ def _candidate_serial(decoded: str, index: dict[str, Any], root_id: str, ref_key
 
 
 def _augment_value(model: dict[str, Any], parts: list[dict[str, Any]], tag: str, index: int) -> float | None:
-    suffix = _norm(tag).removeprefix("unv").removeprefix("eng").removeprefix("ra")
-    matches: list[dict[str, Any]] = []
-    for part in parts:
-        initializer = (model.get("part_initializers") or {}).get(str(part.get("_ref_key") or "")) or {}
-        row_norm = _norm(initializer.get("row"))
-        if row_norm and (row_norm == suffix or row_norm in suffix or suffix in row_norm):
-            matches.append(initializer)
-    if not matches:
+    """Resolve an InventoryAugmentAttribute value from the declared augment part data.
+
+    ``InventoryAugmentAttributeValueResolver`` supplies only ``AugmentTag`` and
+    ``AugmentIndex``; the values live in ``ShieldGlobals.ShieldAugmentPartData``, exported as
+    ``augment_part_data``. Each entry names its own ``attribute`` and carries the value for
+    each slot occupancy, so ``AugmentIndex`` is simply the ordinal among entries sharing a
+    tag -- no positional inference over table columns.
+
+    That distinction matters: deriving the value from column order mismatches 13 tags and
+    inverts two outright. ``ra_missile_swarm`` index 0 is the missile count (3) while the
+    row's first column is the damage scale (0.2), and ``eng_trigger_happy`` swaps fire rate
+    with reload speed, where the reload value is also negative.
+
+    Which slot applies depends on whether the build carries this augment in the primary
+    slot, the secondary slot, or both.
+    """
+    entries = [entry for entry in (model.get("augment_part_data") or ())
+               if isinstance(entry, dict) and _norm(entry.get("tag")) == _norm(tag)]
+    if not entries:
         return None
-    roles = {_norm(item.get("role")) for item in matches}
-    role = "both" if any("primary" in item for item in roles) and any("secondary" in item for item in roles) else (
-        "primary" if any("primary" in item for item in roles) else "secondary"
+    entries.sort(key=lambda entry: entry.get("index") or 0)
+    entry = next((item for item in entries if int(item.get("index") or 0) == index), None)
+    if entry is None:
+        return None
+
+    # Slot occupancy comes from the initializers of the parts that carry this augment.
+    roles: set[str] = set()
+    suffix = _norm(tag).removeprefix("unv").removeprefix("eng").removeprefix("ra")
+    for part in parts:
+        ref_key = str(part.get("_ref_key") or "")
+        initializer = (model.get("part_initializers") or {}).get(ref_key) or {}
+        part_name = _norm(initializer.get("part"))
+        if part_name and suffix and suffix in part_name:
+            roles.add(_norm(initializer.get("role")))
+    slot = "both" if any("primary" in role for role in roles) and any("secondary" in role for role in roles) else (
+        "primary" if any("primary" in role for role in roles) else
+        "secondary" if any("secondary" in role for role in roles) else None
     )
-    table_hint = "universal" if _norm(tag).startswith("unv") else "energy" if _norm(tag).startswith("eng") else "armor"
-    row_name = str(matches[0].get("row") or "")
-    column = f"augment_{role}" + (f"_{index + 1}" if index else "")
-    for table, rows in (model.get("payloads") or {}).items():
-        if table_hint not in _norm(table) or "init" in _norm(table):
-            continue
-        value = _column(_row(rows, row_name), column)
+    if slot is None:
+        return None
+    payload = (entry.get("values") or {}).get(slot)
+    if not isinstance(payload, dict):
+        return None
+    # The datatable cell is the live value; the constant is the fallback the engine ships
+    # for when the table lookup yields nothing.
+    reference = payload.get("datatable_ref")
+    if isinstance(reference, dict):
+        value = _number(reference.get("value"))
         if value is not None:
             return value
-    return None
+    return _number(payload.get("constant"))
+
 
 
 def _safe_arithmetic(expression: str, values: dict[str, float]) -> float | None:
