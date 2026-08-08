@@ -1437,6 +1437,12 @@ QListWidget::item:disabled {
     font-weight: bold;
 }
 
+/* Selected more of a slot than the game rolls naturally. Advisory only: the pick is
+   still allowed, this just stops a silently unrollable build looking normal. */
+#catalogCount[overLimit="true"] {
+    color: #B45309;
+}
+
 #catalogClearBtn {
     background-color: {button_bg};
     border: 1px solid {border_color};

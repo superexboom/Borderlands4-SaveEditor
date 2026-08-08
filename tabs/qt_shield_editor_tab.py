@@ -75,6 +75,18 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
             picker = self._group_pickles.get(key)
             if picker is not None:
                 picker.set_categories(self._augment_categories(), columns=4)
+                self._apply_augment_limit(picker)
+
+    def _apply_augment_limit(self, picker):
+        """Advertise the natural per-side augment budget without enforcing it.
+
+        Across 80 dumped shields no item ever carried more than one primary or more than
+        one secondary augment, and the two sides are always different augments, so the
+        natural budget is 1 per side (2 total across a picker that mixes both sides).
+        Shown as a hint only: the editor must still allow deliberately illegal builds.
+        """
+        hint = (self.ui_loc or {}).get('labels', {}).get('augment_limit_hint')
+        picker.set_count_limit(self.AUGMENT_SLOTS_PER_SIDE * 2, hint or "")
 
     # Augments occupy two independent slots. Verified over 80 dumped shields:
     # every real shield carries at most ONE primary and at most ONE secondary
@@ -85,6 +97,11 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
     # and whose mechanism yields no numbers. Faceting by slot makes the split
     # visible; the count badge reports how many are selected per slot.
     _AUGMENT_FACETS = ("primary_augment", "secondary_augment")
+
+    # Natural budget per augment side, measured over 80 dumped shields:
+    # (primary, secondary) counts observed were (0,0) 23x, (1,0) 25x, (0,1) 12x, (1,1) 20x
+    # -- never 2 on a side.
+    AUGMENT_SLOTS_PER_SIDE = 1
 
     def _augment_facet(self, parent, part_id):
         from core import item_display_resolver as resolver

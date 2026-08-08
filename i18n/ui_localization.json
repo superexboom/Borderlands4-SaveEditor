@@ -1098,6 +1098,7 @@
       "raw": "Deserialize:",
       "base85": "Base85:",
       "manufacturer": "制造商（注意护盾类型）:",
+      "augment_limit_hint": "自然生成的护盾每侧强化槽最多 1 件（主/副各 1）。超出仍可编辑，但游戏内不会出现。",
       "level": "等级:",
       "rarity": "稀有度:"
     },

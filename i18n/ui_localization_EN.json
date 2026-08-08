@@ -1098,6 +1098,7 @@
       "raw": "Deserialize:",
       "base85": "Base85:",
       "manufacturer": "Manufacturer (Note Shield Type):",
+      "augment_limit_hint": "Naturally rolled shields carry at most one augment per side (1 primary, 1 secondary). Exceeding this stays editable but cannot drop in game.",
       "level": "Level:",
       "rarity": "Rarity:"
     },

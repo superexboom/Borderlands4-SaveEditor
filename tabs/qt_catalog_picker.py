@@ -463,11 +463,34 @@ class CatalogPicker(QWidget):
     def set_search_placeholder(self, text):
         self.search.setPlaceholderText(text)
 
+    def set_count_limit(self, limit, tooltip=""):
+        """Show how many of this slot the game actually rolls, alongside the count.
+
+        Advisory only: nothing is disabled, because the editor is legitimately used to
+        build items the game would never drop. Verified over 80 dumped shields that each
+        augment side holds at most one part, so a picker reading "(2 / 1)" tells the user
+        their build cannot roll naturally rather than refusing the edit.
+        ``limit`` of None clears the hint.
+        """
+        self._count_limit = limit
+        if tooltip:
+            self.count_lbl.setToolTip(tooltip)
+        self._update_count()
+
     def _fmt_count(self, n):
-        return f"{self._sel_title}  ({n})" if self._sel_title else f"({n})"
+        limit = getattr(self, "_count_limit", None)
+        shown = f"{n}" if limit is None else f"{n} / {limit}"
+        return f"{self._sel_title}  ({shown})" if self._sel_title else f"({shown})"
 
     def _update_count(self):
-        self.count_lbl.setText(self._fmt_count(self.selected.count()))
+        count = self.selected.count()
+        self.count_lbl.setText(self._fmt_count(count))
+        limit = getattr(self, "_count_limit", None)
+        over = limit is not None and count > limit
+        if self.count_lbl.property("overLimit") != over:
+            self.count_lbl.setProperty("overLimit", over)
+            self.count_lbl.style().unpolish(self.count_lbl)
+            self.count_lbl.style().polish(self.count_lbl)
 
 
 class InlineCatalogRow(QFrame):
