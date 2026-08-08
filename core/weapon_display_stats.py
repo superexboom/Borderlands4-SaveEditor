@@ -8,7 +8,12 @@ from struct import pack, unpack
 from typing import Any, Iterable
 
 
-RARITY_STAT_SCALE = {
+# Fallback only. The live values come from the exported index via
+# ``load_rarity_stat_scale`` below, because a balance patch that retunes a tier -- or a
+# new tier -- would otherwise be silently ignored and every point-scaled stat would drift.
+# Verified identical to ``equipment_native_models.rarity_balance[*].stat_scale`` for all
+# six shipped tiers, so this literal is a safety net rather than a second source of truth.
+RARITY_STAT_SCALE_FALLBACK = {
     "common": 1.0,
     "uncommon": 1.2,
     "rare": 1.4,
@@ -17,6 +22,38 @@ RARITY_STAT_SCALE = {
     "pearl": 1.65,
     "pearlescent": 1.65,
 }
+
+RARITY_STAT_SCALE = dict(RARITY_STAT_SCALE_FALLBACK)
+
+
+def load_rarity_stat_scale(index: dict[str, Any] | None) -> dict[str, float]:
+    """Replace the rarity scale table with the values declared in the export.
+
+    ``rarity_balance`` is keyed by tier name and carries ``stat_scale``; anything the
+    export does not mention keeps its fallback so an incomplete export cannot erase a
+    tier. Aliases are preserved: the export says ``Pearl`` while save data and the UI may
+    say ``pearlescent``.
+    """
+    balance = ((index or {}).get("equipment_native_models") or {}).get("rarity_balance") or {}
+    resolved: dict[str, float] = {}
+    for tier, row in balance.items():
+        if not isinstance(row, dict):
+            continue
+        scale = row.get("stat_scale")
+        try:
+            scale = float(scale)
+        except (TypeError, ValueError):
+            continue
+        resolved[str(tier).casefold()] = scale
+    if not resolved:
+        return RARITY_STAT_SCALE
+    merged = dict(RARITY_STAT_SCALE_FALLBACK)
+    merged.update(resolved)
+    if "pearl" in resolved and "pearlescent" not in resolved:
+        merged["pearlescent"] = resolved["pearl"]
+    RARITY_STAT_SCALE.clear()
+    RARITY_STAT_SCALE.update(merged)
+    return RARITY_STAT_SCALE
 
 WEAPON_TYPE_BY_ROOT_SUFFIX = {"ps": "Pistol", "sg": "Shotgun", "ar": "AssaultRifle", "sm": "SMG", "sr": "Sniper"}
 PRIMARY_ELEMENT_COMPONENTS = frozenset(range(10, 15))

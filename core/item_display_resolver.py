@@ -169,7 +169,15 @@ def _group_sub_ids(components: list[dict[str, Any]], group_id: str) -> list[str]
 
 @lru_cache(maxsize=1)
 def _item_index() -> dict[str, Any]:
-    return resource_loader.load_item_json("item_name_index.json") or {}
+    index = resource_loader.load_item_json("item_name_index.json") or {}
+    # Point-scaled stats multiply by the rarity's declared stat_scale. Seed that table
+    # from the export here, at the single place the index is loaded, so the evaluator
+    # never relies on a literal that a balance patch could invalidate.
+    try:
+        weapon_display_stats.load_rarity_stat_scale(index)
+    except Exception:
+        pass
+    return index
 
 
 @lru_cache(maxsize=1)
