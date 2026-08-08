@@ -2424,6 +2424,19 @@ def render_skill_markup(value: Any) -> str:
     return re.sub(r"\[/?[a-z][a-z0-9_]*\]", "", text, flags=re.IGNORECASE).strip()
 
 
+def equipment_part_internal(ref_key: str) -> str:
+    """Return the index's internal part string (e.g. ``part_barrel_02_a``).
+
+    This is the authoritative, pipeline-exported identity of a part. The heavy tab
+    derives a barrel's T1/T2 subtype from it (``barrel_01``/``barrel_02``) instead of
+    the hand-written CSV ``String`` column, which is unreliable (e.g. 289:24 reads
+    ``Barrel_01_GammaVoid`` but is really ``part_barrel_02_gammavoid``).
+    """
+    index = _item_index()
+    ref = (index.get("part_refs") or {}).get(ref_key) or {}
+    return str(ref.get("part") or "")
+
+
 def equipment_part_name(ref_key: str, lang: str = "zh-CN", fallback: str = "") -> str:
     index = _item_index()
     ref = (index.get("part_refs") or {}).get(ref_key) or {}

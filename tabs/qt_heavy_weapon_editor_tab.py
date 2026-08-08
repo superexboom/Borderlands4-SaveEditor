@@ -1,11 +1,26 @@
 import pandas as pd
 from functools import lru_cache
 import random
+import re
 
 from PyQt6.QtCore import Qt
 
 from core import item_display_resolver, resource_loader
 from tabs.qt_equipment_base_tab import BaseEquipmentEditorTab
+
+# Heavy barrels and barrel accessories carry their subtype in the index's internal
+# part string: part_barrel_01_* is T1, part_barrel_02_* is T2. This is exported by
+# the pipeline and is authoritative; the CSV String column is hand-written and wrong
+# for several parts (289:24 says Barrel_01 but is really part_barrel_02_gammavoid), so
+# the tab must never derive the subtype from CSV. Special/unique barrels (javelin,
+# dahlfather, loiter) carry no 01/02 and get no marker.
+_BARREL_SUBTYPE_RE = re.compile(r"barrel_(01|02)")
+
+
+def _barrel_type_marker(ref_key):
+    """Return 'T1'/'T2' from a part's index internal string, or '' when it has no subtype."""
+    match = _BARREL_SUBTYPE_RE.search(item_display_resolver.equipment_part_internal(ref_key).lower())
+    return f"T{int(match.group(1))}" if match else ""
 
 
 @lru_cache(maxsize=None)
@@ -105,8 +120,17 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
     def _group_rows(self, key, mfg_id):
         if key == "barrel":
             df = self.df_mfg[(self.df_mfg['Part_type'] == 'Barrel') & (self.df_mfg['Manufacturer ID'] == mfg_id)]
-            return df, self._fmt_row
+            return df, self._fmt_barrel_row
         return None  # element/firmware populated once
+
+    def _fmt_barrel_row(self, r):
+        """Barrel chip label: T1/T2 marker + exported name (like the weapon tab)."""
+        ref_key = self._row_ref_key(r)
+        marker = _barrel_type_marker(ref_key)
+        name = item_display_resolver.equipment_part_name(ref_key, self.current_lang, self._(r['Stat']))
+        desc = self._row_description(r)
+        text = " - ".join(part for part in (marker, name, desc) if part)
+        return text, r['Part_ID']
 
     def _group_items(self, key, mfg_id):
         if key == "barrel_acc":
@@ -118,24 +142,15 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
     def _barrel_acc_items(self, mfg_id):
         items = []
         df = self.df_mfg[self.df_mfg['Part_type'] == 'Barrel Accessory'].copy()
-        df.dropna(subset=['String'], inplace=True)
         df = df.drop_duplicates(subset=['Part_ID', 'Manufacturer ID'])
-        df = df[df['Manufacturer ID'] == mfg_id].sort_values(by=['String', 'Part_ID'])
-        # barrel subtype names keyed by (mfg, string base)
-        subtype_names = {}
-        sub = self.df_mfg[(self.df_mfg['Part_type'] == 'Barrel') & (~self.df_mfg['Stat'].str.contains('（', na=False))]
-        for _, row in sub.iterrows():
-            if pd.notna(row['String']):
-                subtype_names[(row['Manufacturer ID'], row['String'])] = row['Stat']
+        df = df[df['Manufacturer ID'] == mfg_id].sort_values(by=['Part_ID'])
         for _, r in df.iterrows():
-            base = '_'.join(r['String'].split('_')[:2])
-            subtype = subtype_names.get((r['Manufacturer ID'], base), '')
-            name = item_display_resolver.equipment_part_name(
-                self._row_ref_key(r), self.current_lang, r['Stat']
-            )
+            ref_key = self._row_ref_key(r)
+            marker = _barrel_type_marker(ref_key)
+            name = item_display_resolver.equipment_part_name(ref_key, self.current_lang, r['Stat'])
             desc = self._row_description(r)
-            label = " - ".join(part for part in (subtype, name, desc, f"ID:{r['Part_ID']}") if part)
-            items.append({"key": f"ba{r['Part_ID']}", "label": label, "category": subtype or None,
+            label = " - ".join(part for part in (marker, name, desc, f"ID:{r['Part_ID']}") if part)
+            items.append({"key": f"ba{r['Part_ID']}", "label": label, "category": marker or None,
                           "data": int(r['Part_ID'])})
         return items
 
