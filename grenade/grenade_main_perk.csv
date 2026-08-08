@@ -1,24 +1,4 @@
 ﻿Grenade_perk_main_ID,Part_ID,Part_type,Stat_ZH,Stat_EN
-245,1,Firmware,弑神者,God Killer
-245,2,Firmware,沙包大拳头,Reel Big Fist
-245,3,Firmware,命脉,Lifeblood
-245,4,Firmware,空袭,Airstrike
-245,5,Firmware,大口径,High Caliber
-245,6,Firmware,装置启动,Gadget Ahoy
-245,7,Firmware,烘焙师,Baker
-245,8,Firmware,正在行动,Oscar Mike
-245,9,Firmware,橡皮筋人,Rubberband Man
-245,10,Firmware,神枪手,Deadeye
-245,11,Firmware,动能拳头,Action Fist
-245,12,Firmware,保命王牌,GooJFC
-245,13,Firmware,阿特拉斯E.X.,Atlas E.X.
-245,14,Firmware,阿特拉斯无限量,Atlas Infinum
-245,15,Firmware,花式射击,Trickshot
-245,16,Firmware,杰克式改造,Jacked
-245,17,Firmware,发球入场,Get Throwin'
-245,18,Firmware,加热升温,Heating Up
-245,19,Firmware,备用子弹,Bullets to Spare
-245,20,Firmware,大情圣,Daed-dy O'
 245,21,Perk,,
 245,22,Perk,,
 245,24,Element,腐蚀,Corrosive
@@ -79,7 +59,3 @@
 245,79,Perk,,
 245,80,Perk,,
 245,81,Perk,,
-245,87,Firmware,风险启用,Risky Boots
-245,88,Firmware,技能工艺,Skillcraft
-245,89,Firmware,主动开火,Active Fire
-245,90,Firmware,重击者,Bruiser

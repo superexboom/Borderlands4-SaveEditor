@@ -1,24 +1,4 @@
 ﻿Repkit_perk_main_ID,Part_ID,Part_type,Stat_ZH,Stat_EN,Description_ZH,Description_EN
-243,1,Firmware,弑神者,God Killer,,
-243,2,Firmware,沙包大拳头,Reel Big Fist,,
-243,3,Firmware,命脉,Lifeblood,,
-243,4,Firmware,空袭,Airstrike,,
-243,5,Firmware,大口径,High Caliber,,
-243,6,Firmware,装置启动,Gadget Ahoy,,
-243,7,Firmware,烘焙师,Baker,,
-243,8,Firmware,正在行动,Oscar Mike,,
-243,9,Firmware,橡皮筋人,Rubberband Man,,
-243,10,Firmware,神枪手,Deadeye,,
-243,11,Firmware,动能拳头,Action Fist,,
-243,12,Firmware,保命王牌,GooJFC,,
-243,13,Firmware,阿特拉斯E.X.,Atlas E.X.,,
-243,14,Firmware,阿特拉斯无限量,Atlas Infinum,,
-243,15,Firmware,花式射击,Trickshot,,
-243,16,Firmware,杰克式改造,Jacked,,
-243,17,Firmware,发球入场,Get Throwin',,
-243,18,Firmware,加热升温,Heating Up,,
-243,19,Firmware,备用子弹,Bullets to Spare,,
-243,20,Firmware,大情圣,Daed-dy O',,
 243,21,Perk,,,,
 243,22,Resistance,,,,
 243,23,Resistance,,,,
@@ -98,8 +78,4 @@
 243,104,Perfix,标准,Standard,无效果,No Stat Changes
 243,105,Perfix,大型,Large,更多回复量&持续回复&更长冷却时间,"More healing, longer cooldown"
 243,106,Perfix,兆,Mega,最多回复量&持续回复&最长冷却时间,"Even more healing, even longer cooldown"
-243,112,Firmware,风险启用,Risky Boots,,
-243,113,Firmware,技能工艺,Skillcraft,,
-243,114,Firmware,主动开火,Active Fire,,
 243,119,Perk,,,,
-243,120,Firmware,重击者,Bruiser,,

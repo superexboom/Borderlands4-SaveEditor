@@ -116,7 +116,7 @@ class QtRepkitEditorTab(BaseEquipmentEditorTab):
     def _populate_initial_extra(self):
         df = self._df243()
         self._populate_chip_group(self._group_cfgs["prefix"], df[df['Part_type'] == 'Perfix'], self._fmt_row)
-        self._populate_chip_group(self._group_cfgs["firmware"], df[df['Part_type'] == 'Firmware'], self._fmt_row)
+        self._populate_chip_group(self._group_cfgs["firmware"], self._firmware_group_df('Repkit_perk_main_ID', self.SECONDARY_PARENT), self._fmt_row)
         self._populate_chip_group(self._group_cfgs["resistance"], df[df['Part_type'].isin(['Resistance', 'Immunity'])], self._fmt_row)
         self._group_pickles["universal"].set_categories(self._universal_categories(), columns=3)
         self._group_pickles["universal"].set_source(self._universal_items())

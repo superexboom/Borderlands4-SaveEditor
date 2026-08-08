@@ -69,7 +69,7 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
     def _populate_initial_extra(self):
         df = self.df_main[self.df_main['Shield_perk_main_ID'] == 246]
         self._populate_chip_group(self._group_cfgs["element"], df[df['Part_type'] == 'Elemental Resistance'], self._fmt_row)
-        self._populate_chip_group(self._group_cfgs["firmware"], df[df['Part_type'] == 'Firmware'], self._fmt_row)
+        self._populate_chip_group(self._group_cfgs["firmware"], self._firmware_group_df('Shield_perk_main_ID', 246), self._fmt_row)
         self._group_pickles["universal"].set_source(self._perk_items(246))
         for key in ("universal", "energy", "armor"):
             picker = self._group_pickles.get(key)

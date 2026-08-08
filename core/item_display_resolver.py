@@ -223,6 +223,7 @@ def _rows_by_file(filename: str) -> list[dict[str, str]]:
         "repkit": resource_loader.get_repkit_data_path,
         "enhancement": resource_loader.get_enhancement_data_path,
         "class_mods": resource_loader.get_class_mods_data_path,
+        "Firmware": resource_loader.get_firmware_data_path,
     }.get(folder)
     return _read_csv(getter(name)) if getter else []
 
@@ -2478,10 +2479,36 @@ def equipment_part_internal(ref_key: str) -> str:
     return str(ref.get("part") or "")
 
 
+def equipment_firmware_parts(owner: Any) -> list[tuple[str, str]]:
+    """List ``(part_id, internal_part)`` for every firmware ref of one family owner.
+
+    The firmware pool is shared across the four equipment families but each family
+    assigns its own serial child ids (the DLC firmwares are 244:26-29 on heavy yet
+    245:87-90 on grenade), so pickers must enumerate the family's own refs from the
+    index rather than read a shared id list.
+    """
+    index = _item_index()
+    out: list[tuple[str, str]] = []
+    for key, ref in (index.get("part_refs") or {}).items():
+        owner_key, _, part_id = str(key).partition(":")
+        if owner_key == str(owner) and ref.get("category") == "firmware" and part_id.isdigit():
+            out.append((part_id, str(ref.get("part") or "")))
+    return sorted(out, key=lambda item: int(item[0]))
+
+
 def equipment_part_name(ref_key: str, lang: str = "zh-CN", fallback: str = "") -> str:
     index = _item_index()
     ref = (index.get("part_refs") or {}).get(ref_key) or {}
     key = "zh" if _lang_is_zh(lang) else "en"
+    if ref.get("category") == "firmware":
+        # Firmware names live in the shared table, keyed by the internal part string.
+        try:
+            entry = _equipment_firmware_entry(ref_key, "", lang)
+        except (KeyError, OSError, TypeError, ValueError):
+            entry = None
+        name = str((entry or {}).get("name") or "").strip()
+        if name:
+            return name
     for ui_id in ref.get("uistats_include") or ref.get("uistats", []):
         ui_key = str(ui_id).casefold()
         if any(marker in ui_key for marker in ("redtext", "red_text", "typeline", "_manu_")):
@@ -2577,17 +2604,25 @@ def format_equipment_part_description(
             pass
 
     if ref.get("category") == "firmware":
-        # Equipment firmware refs carry no uistats and no attribute effects in the
-        # index, so the stat machinery above yields nothing and the row rendered
-        # blank. The text exists only in the per-type *_main_perk.csv, which until
-        # now was reachable from the item-card resolver but not from here.
+        # Firmware text comes from the shared pipeline-exported table (see
+        # _equipment_firmware_entry). Descriptions are per stack level: a candidate
+        # shows its L1 effect, a selected firmware shows every level it has stacked to.
         try:
             entry = _equipment_firmware_entry(ref_key, item_type, lang)
         except (KeyError, OSError, TypeError, ValueError):
             entry = None
-        text = str((entry or {}).get("text") or "").strip()
-        if text and text not in lines:
-            lines.append(text)
+        descs = list((entry or {}).get("descs") or [])
+        if descs:
+            count = 1
+            try:
+                root_id, _level = equipment_display_stats._header(decoded_full)
+                present = weapon_display_stats._serial_part_keys(decoded_full, root_id)
+                count = max(1, sum(1 for key in present if key == ref_key))
+            except (KeyError, TypeError, ValueError):
+                count = 1
+            for text in descs[:count]:
+                if text and text not in lines:
+                    lines.append(text)
 
     try:
         root_id, _level = equipment_display_stats._header(decoded_full)
@@ -2636,12 +2671,11 @@ _EQUIPMENT_ELEMENT_KEYS = {
     "sonic": "sonic",
 }
 
-_EQUIPMENT_FIRMWARE_FILES = {
-    "Grenade": "grenade/grenade_main_perk.csv",
-    "Shield": "shield/shield_main_perk.csv",
-    "Repkit": "repkit/repkit_main_perk.csv",
-    HEAVY_TYPE: "heavy/heavy_main_perk.csv",
-}
+# Firmware names and per-level descriptions are shared across all four equipment
+# families (same internal parts, only the serial child ids differ per family), so they
+# live in one pipeline-exported table keyed by the internal part string instead of a
+# firmware section in every *_main_perk.csv.
+_EQUIPMENT_FIRMWARE_TABLE = "Firmware/firmware.csv"
 
 
 def limit_item_card_entries(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -2662,21 +2696,31 @@ def item_card_entry_kind(ref: dict[str, Any]) -> str:
 
 
 def _equipment_firmware_entry(ref_key: str, item_type: str, lang: str) -> dict[str, Any] | None:
-    _owner, _separator, part_id = ref_key.partition(":")
-    for row in _rows_by_file(_EQUIPMENT_FIRMWARE_FILES[item_type]):
-        if row.get("Part_ID", "").strip() != part_id or row.get("Part_type", "").strip().casefold() != "firmware":
-            continue
-        name = _text(row, lang)
-        return {
-            "id": part_id,
-            "name": name,
-            "text": name,
-            "internal": str((_item_index().get("part_refs") or {}).get(ref_key, {}).get("part") or ""),
-            "count": 1,
-            "level": 0,
-            "max_level": 3,
-        }
-    return None
+    internal = str((_item_index().get("part_refs") or {}).get(ref_key, {}).get("part") or "")
+    if not internal:
+        return None
+    row = next((r for r in _rows_by_file(_EQUIPMENT_FIRMWARE_TABLE) if (r.get("part") or "").strip() == internal), None)
+    if row is None:
+        return None
+    zh = _lang_is_zh(lang)
+
+    def pick(stem: str) -> str:
+        if zh:
+            return (row.get(f"{stem}_ZH") or "").strip() or (row.get(f"{stem}_EN") or "").strip()
+        return (row.get(f"{stem}_EN") or "").strip() or (row.get(f"{stem}_ZH") or "").strip()
+
+    name = pick("Name")
+    descs = [pick(f"Desc_L{level}") for level in (1, 2, 3)]
+    return {
+        "id": ref_key.partition(":")[2],
+        "name": name,
+        "text": name,
+        "internal": internal,
+        "descs": descs,
+        "count": 1,
+        "level": 0,
+        "max_level": 3,
+    }
 
 
 @lru_cache(maxsize=2048)

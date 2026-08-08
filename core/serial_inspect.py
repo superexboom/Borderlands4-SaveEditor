@@ -388,6 +388,13 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
             ).strip()
         if _blank(display_name):
             display_name = str(detail.get("name") or "").strip()
+        if _blank(display_name) and category == "firmware":
+            # Firmware names live in the shared catalog (equipment_part_name resolves
+            # them via the internal part string); the index itself carries no name.
+            try:
+                display_name = resolver.equipment_part_name(key, lang) or ""
+            except Exception:
+                display_name = ""
 
         rows.append(
             {

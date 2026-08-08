@@ -68,11 +68,16 @@ class QtGrenadeEditorTab(BaseEquipmentEditorTab):
     # Data -> group contents
     # ------------------------------------------------------------------ #
     def _populate_initial_extra(self):
-        # element / firmware / universal are mfg-independent (from df_main)
-        for key, ptype in (("element", "Element"), ("firmware", "Firmware")):
-            cfg = self._group_cfgs[key]
-            df = self.df_main[self.df_main['Part_type'] == ptype]
-            self._populate_chip_group(cfg, df, self._fmt_row)
+        # element / firmware / universal are mfg-independent; element rows come from
+        # df_main, firmware rows from the shared catalog via the index.
+        self._populate_chip_group(
+            self._group_cfgs["element"],
+            self.df_main[self.df_main['Part_type'] == 'Element'],
+            self._fmt_row)
+        self._populate_chip_group(
+            self._group_cfgs["firmware"],
+            self._firmware_group_df('Grenade_perk_main_ID', self.SECONDARY_PARENT),
+            self._fmt_row)
         self._group_pickles["universal"].set_source(self._universal_items())
 
     def _universal_items(self):

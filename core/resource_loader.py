@@ -454,14 +454,27 @@ def get_repkit_data_path(filename: str) -> Optional[Path]:
 def get_heavy_data_path(filename: str) -> Optional[Path]:
     """
     获取重武器数据文件的路径
-    
+
     Args:
         filename: 文件名
-        
+
     Returns:
         文件路径，失败时返回None
     """
     return get_resource_path(f"heavy/{filename}")
+
+
+def get_firmware_data_path(filename: str) -> Optional[Path]:
+    """
+    获取共享固件数据文件的路径（四族装备共用一份固件目录）。
+
+    Args:
+        filename: 文件名
+
+    Returns:
+        文件路径，失败时返回None
+    """
+    return get_resource_path(f"Firmware/{filename}")
 
 
 def load_item_json(filename: str) -> Optional[Dict[str, Any]]:

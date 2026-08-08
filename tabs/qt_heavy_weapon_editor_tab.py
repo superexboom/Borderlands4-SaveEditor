@@ -113,7 +113,7 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
             self._fmt_prefixed_row)
         self._populate_chip_group(
             self._group_cfgs["firmware"],
-            self.df_main[self.df_main['Heavy_perk_main_ID'] == self.FIRMWARE_PARENT],
+            self._firmware_group_df('Heavy_perk_main_ID', self.FIRMWARE_PARENT),
             self._fmt_prefixed_row)
 
     def _fmt_prefixed_row(self, r):

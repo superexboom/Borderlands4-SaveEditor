@@ -351,6 +351,22 @@ class BaseEquipmentEditorTab(QWidget):
     def _populate_initial_extra(self):
         """Hook: populate mfg-independent groups (element/firmware/etc)."""
 
+    def _firmware_group_df(self, owner_col, owner_id):
+        """Synthetic firmware rows for a chip group, enumerated from the index.
+
+        Firmware names/descriptions live in the shared Firmware/firmware.csv (keyed by
+        internal part string) since the pool is shared across families; only the serial
+        child ids are family-specific, which is why the rows come from the index for
+        this family's owner instead of a per-family CSV section. ``equipment_part_name``
+        resolves the shared name for category=firmware refs, so the standard row
+        formatters work unchanged on these rows.
+        """
+        rows = [
+            {owner_col: owner_id, "Part_ID": part_id, "Part_type": "Firmware", "Stat": "", "Description": ""}
+            for part_id, _internal in item_display_resolver.equipment_firmware_parts(owner_id)
+        ]
+        return pd.DataFrame(rows, columns=[owner_col, "Part_ID", "Part_type", "Stat", "Description"])
+
     def _current_mfg_id(self):
         try:
             return int(self.mfg_combo.currentText().split(' - ')[-1])
