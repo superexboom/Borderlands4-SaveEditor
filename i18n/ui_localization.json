@@ -1041,6 +1041,55 @@
       "base85_copied": "已复制 Base85"
     }
   },
+  "equipment_legit": {
+    "status_legal": "自然生成",
+    "status_incomplete": "待补全",
+    "status_modified": "魔改",
+    "status_conditional": "条件合法",
+    "status_unknown": "无法验证",
+    "status_gold": "金皮肤底层",
+    "reason_legal": "符合当前自然生成规则。",
+    "reason_count_below": "缺少{group}（{actual}/{limit}）",
+    "reason_count_above": "{group}过量（{actual}/{limit}）",
+    "reason_part_not_allowed": "存在不属于当前模板的配件",
+    "reason_duplicate_part": "存在重复配件",
+    "reason_missing_dependency": "配件依赖未满足",
+    "reason_conflict": "配件搭配互斥",
+    "reason_foreign_part": "存在跨类型或跨厂商配件",
+    "reason_unknown_part": "存在未知配件",
+    "reason_unknown_composition": "尚未选择可识别的物品模板",
+    "reason_multiple_compositions": "同时选择了多个物品模板",
+    "reason_rule_gap": "生成规则数据尚未覆盖完整",
+    "reason_conditional": "该构建依赖限定内容",
+    "reason_modified": "不符合自然生成规则",
+    "candidate_legal": "自然候选：{group}",
+    "candidate_slot_full": "属于{group}；替换已有配件可保持合法。",
+    "candidate_dependency": "属于{group}，但当前搭配或依赖未满足。",
+    "candidate_not_allowed": "不属于当前自然模板；仍可作为魔改配件选择。",
+    "slot_budget_hint": "显示当前数量与自然生成规则允许的数量；超出仍可编辑。",
+    "gold_reason": "金皮肤只是传奇皮肤底层，不属于自然构建模板；已关闭合法搭配指示。",
+    "groups": {
+      "barrel": "枪管",
+      "barrel_acc": "枪管附件",
+      "body": "枪身",
+      "body_acc": "基座附件",
+      "body_ele": "元素",
+      "element": "元素",
+      "firmware": "固件",
+      "payload": "载荷",
+      "payload_augment": "载荷强化",
+      "stat_augment": "数值强化",
+      "primary_augment": "主强化",
+      "secondary_augment": "副强化",
+      "augment_element_resist": "元素抗性",
+      "augment_element_immunity": "元素免疫",
+      "augment_element_splat": "元素喷溅",
+      "augment_element_nova": "元素新星",
+      "unique": "传奇专长",
+      "vile": "恶毒强化",
+      "other": "其他"
+    }
+  },
   "grenade_tab": {
     "groups": {
       "perks": "专长",
@@ -1066,7 +1115,8 @@
       "clear": "清空"
     },
     "misc": {
-      "none": "无"
+      "none": "无",
+      "all": "全部"
     },
     "dialogs": {
       "load_error": "错误: 手雷数据(grenade data)无法加载。",
@@ -1078,6 +1128,12 @@
     }
   },
   "shield_tab": {
+    "augment_sources": {
+      "all": "全部来源",
+      "universal": "通用",
+      "energy": "能量护盾",
+      "armor": "护甲护盾"
+    },
     "augment_facets": {
       "all": "全部",
       "primary_augment": "主强化槽",
@@ -1089,6 +1145,8 @@
       "element": "元素抗性 (单选)",
       "firmware": "固件 (单选)",
       "legendary": "传奇技能",
+      "primary": "主强化槽",
+      "secondary": "副强化槽",
       "energy": "能量护盾技能",
       "armor": "护甲护盾技能",
       "universal": "通用技能",
@@ -1110,6 +1168,7 @@
     },
     "misc": {
       "none": "无",
+      "all": "全部",
       "perk_type_mismatch": "当前护盾类型为{shield_type}，\n不允许添加{incompatible_type}类型perk",
       "shield_type_energy": "能量",
       "shield_type_armor": "护甲"
@@ -1135,7 +1194,8 @@
     "groups": {
       "perks": "技能",
       "prefix": "前缀 (单选)",
-      "resistance": "元素抗性/免疫 (单选)",
+      "resistance": "元素抗性 (单选)",
+      "immunity": "元素免疫 (单选)",
       "firmware": "固件 (单选)",
       "legendary": "传奇技能",
       "universal": "通用技能 (可多选/堆叠)",
@@ -1158,7 +1218,8 @@
       "random": "随机"
     },
     "misc": {
-      "none": "无"
+      "none": "无",
+      "all": "全部"
     },
     "dialogs": {
       "load_error": "错误: 修复套件数据(repkit data)无法加载。",
@@ -1207,7 +1268,8 @@
       "clear": "清空"
     },
     "misc": {
-      "none": "无"
+      "none": "无",
+      "all": "全部"
     },
     "dialogs": {
       "load_error": "错误: 重武器数据(heavy weapon data)无法加载。",

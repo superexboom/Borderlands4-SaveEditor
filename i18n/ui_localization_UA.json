@@ -966,6 +966,55 @@
       "base85_copied": "Base85 скопійовано"
     }
   },
+  "equipment_legit": {
+    "status_legal": "Природне",
+    "status_incomplete": "Не зібрано",
+    "status_modified": "Модиф.",
+    "status_conditional": "Умовно",
+    "status_unknown": "Без перевірки",
+    "status_gold": "Основа Gold",
+    "reason_legal": "Відповідає правилам природної генерації.",
+    "reason_count_below": "Бракує: {group} ({actual}/{limit})",
+    "reason_count_above": "Зайве: {group} ({actual}/{limit})",
+    "reason_part_not_allowed": "Є деталь поза поточним шаблоном",
+    "reason_duplicate_part": "Одну деталь вибрано повторно",
+    "reason_missing_dependency": "Не виконано залежність деталі",
+    "reason_conflict": "Вибрані деталі конфліктують",
+    "reason_foreign_part": "Є деталь іншого типу або виробника",
+    "reason_unknown_part": "Є невідома деталь",
+    "reason_unknown_composition": "Виберіть відомий шаблон предмета",
+    "reason_multiple_compositions": "Вибрано кілька шаблонів",
+    "reason_rule_gap": "Правила генерації неповні",
+    "reason_conditional": "Потрібен обмежений вміст",
+    "reason_modified": "Не відповідає природній генерації",
+    "candidate_legal": "Допустимо: {group}",
+    "candidate_slot_full": "Допустимо для {group}; замініть поточну деталь.",
+    "candidate_dependency": "Група {group}: не виконано поєднання або залежність.",
+    "candidate_not_allowed": "Поза природним шаблоном; можна вибрати як модифікацію.",
+    "slot_budget_hint": "Поточна кількість / природний ліміт; модифікації не блокуються.",
+    "gold_reason": "Gold Skin — лише основа легендарного скіна без природної збірки; підказки вимкнено.",
+    "groups": {
+      "barrel": "Ствол",
+      "barrel_acc": "Мод. ствола",
+      "body": "Корпус",
+      "body_acc": "Мод. корпусу",
+      "body_ele": "Стихія",
+      "element": "Стихія",
+      "firmware": "Прошивка",
+      "payload": "Заряд",
+      "payload_augment": "Мод. заряду",
+      "stat_augment": "Мод. статів",
+      "primary_augment": "Основний",
+      "secondary_augment": "Вторинний",
+      "augment_element_resist": "Опір",
+      "augment_element_immunity": "Імунітет",
+      "augment_element_splat": "Викид",
+      "augment_element_nova": "Нова",
+      "unique": "Легенд.",
+      "vile": "Vile",
+      "other": "Інше"
+    }
+  },
   "grenade_tab": {
     "groups": {
       "perks": "Перки",
@@ -991,7 +1040,8 @@
       "clear": "Очистити"
     },
     "misc": {
-      "none": "Немає"
+      "none": "Немає",
+      "all": "Усі"
     },
     "dialogs": {
       "load_error": "Помилка: Дані гранат не завантажено.",
@@ -1003,6 +1053,12 @@
     }
   },
   "shield_tab": {
+    "augment_sources": {
+      "all": "Усі джерела",
+      "universal": "Загальні",
+      "energy": "Енергощит",
+      "armor": "Бронещит"
+    },
     "augment_facets": {
       "all": "Все",
       "primary_augment": "Основний слот",
@@ -1014,6 +1070,8 @@
       "element": "Опір стихіям (Одиничн.)",
       "firmware": "Прошивка (Одиничн.)",
       "legendary": "Легендарні перки",
+      "primary": "Основний мод.",
+      "secondary": "Вторинний мод.",
       "energy": "Перки енергощита",
       "armor": "Перки бронещита",
       "universal": "Універсальні перки",
@@ -1035,6 +1093,7 @@
     },
     "misc": {
       "none": "Немає",
+      "all": "Усі",
       "perk_type_mismatch": "Поточний тип щита: {shield_type}.\nНе можна додати перки типу {incompatible_type}.",
       "shield_type_energy": "Енергощит",
       "shield_type_armor": "Бронещит"
@@ -1060,7 +1119,8 @@
     "groups": {
       "perks": "Навички/Перки",
       "prefix": "Префікс (Одиничн.)",
-      "resistance": "Опір/Імунітет (Одиничн.)",
+      "resistance": "Опір (Одиничн.)",
+      "immunity": "Імунітет (Одиничн.)",
       "firmware": "Прошивка (Одиничн.)",
       "legendary": "Легендарні перки",
       "universal": "Універсальні перки (Мульти)",
@@ -1083,7 +1143,8 @@
       "random": "Випадково"
     },
     "misc": {
-      "none": "Немає"
+      "none": "Немає",
+      "all": "Усі"
     },
     "dialogs": {
       "load_error": "Помилка: Дані ремкомплекту не завантажено.",
@@ -1132,7 +1193,8 @@
       "clear": "Очистити"
     },
     "misc": {
-      "none": "Немає"
+      "none": "Немає",
+      "all": "Усі"
     },
     "dialogs": {
       "load_error": "Помилка: Дані важкої зброї не завантажено.",

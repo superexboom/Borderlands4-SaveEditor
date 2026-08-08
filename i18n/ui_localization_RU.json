@@ -1041,6 +1041,55 @@
       "base85_copied": "Base85 скопирован"
     }
   },
+  "equipment_legit": {
+    "status_legal": "Естеств.",
+    "status_incomplete": "Не собрано",
+    "status_modified": "Модиф.",
+    "status_conditional": "Условно",
+    "status_unknown": "Нет проверки",
+    "status_gold": "Основа Gold",
+    "reason_legal": "Соответствует правилам естественной генерации.",
+    "reason_count_below": "Не хватает: {group} ({actual}/{limit})",
+    "reason_count_above": "Лишнее: {group} ({actual}/{limit})",
+    "reason_part_not_allowed": "Есть деталь вне текущего шаблона",
+    "reason_duplicate_part": "Одна деталь выбрана повторно",
+    "reason_missing_dependency": "Не выполнена зависимость детали",
+    "reason_conflict": "Выбранные детали конфликтуют",
+    "reason_foreign_part": "Есть деталь другого типа или производителя",
+    "reason_unknown_part": "Есть неизвестная деталь",
+    "reason_unknown_composition": "Выберите известный шаблон предмета",
+    "reason_multiple_compositions": "Выбрано несколько шаблонов",
+    "reason_rule_gap": "Правила генерации неполны",
+    "reason_conditional": "Нужен ограниченный контент",
+    "reason_modified": "Не соответствует естественной генерации",
+    "candidate_legal": "Допустимо: {group}",
+    "candidate_slot_full": "Допустимо для {group}; замените текущую деталь.",
+    "candidate_dependency": "Группа {group}: не выполнено сочетание или зависимость.",
+    "candidate_not_allowed": "Вне естественного шаблона; можно выбрать как модификацию.",
+    "slot_budget_hint": "Текущее число / естественный лимит; модификации не блокируются.",
+    "gold_reason": "Gold Skin — только основа легендарного скина без естественной сборки; подсказки отключены.",
+    "groups": {
+      "barrel": "Ствол",
+      "barrel_acc": "Мод. ствола",
+      "body": "Корпус",
+      "body_acc": "Мод. корпуса",
+      "body_ele": "Стихия",
+      "element": "Стихия",
+      "firmware": "Прошивка",
+      "payload": "Заряд",
+      "payload_augment": "Мод. заряда",
+      "stat_augment": "Мод. статов",
+      "primary_augment": "Основной",
+      "secondary_augment": "Вторичный",
+      "augment_element_resist": "Сопротивл.",
+      "augment_element_immunity": "Иммунитет",
+      "augment_element_splat": "Выброс",
+      "augment_element_nova": "Нова",
+      "unique": "Легенд.",
+      "vile": "Vile",
+      "other": "Другое"
+    }
+  },
   "grenade_tab": {
     "groups": {
       "perks": "Перки",
@@ -1066,7 +1115,8 @@
       "clear": "Очистить"
     },
     "misc": {
-      "none": "Нет"
+      "none": "Нет",
+      "all": "Все"
     },
     "dialogs": {
       "load_error": "Ошибка: Данные гранат не загружены.",
@@ -1078,6 +1128,12 @@
     }
   },
   "shield_tab": {
+    "augment_sources": {
+      "all": "Все источники",
+      "universal": "Общие",
+      "energy": "Энергощит",
+      "armor": "Бронещит"
+    },
     "augment_facets": {
       "all": "Все",
       "primary_augment": "Основной слот",
@@ -1089,6 +1145,8 @@
       "element": "Сопротивление стихиям (Одиночн.)",
       "firmware": "Прошивка (Одиночн.)",
       "legendary": "Легендарные перки",
+      "primary": "Основной мод.",
+      "secondary": "Вторичный мод.",
       "energy": "Перки энергощита",
       "armor": "Перки бронещита",
       "universal": "Универсальные перки",
@@ -1110,6 +1168,7 @@
     },
     "misc": {
       "none": "Нет",
+      "all": "Все",
       "perk_type_mismatch": "Текущий тип щита: {shield_type}.\nНельзя добавить перки типа {incompatible_type}.",
       "shield_type_energy": "Энергощит",
       "shield_type_armor": "Бронещит"
@@ -1135,7 +1194,8 @@
     "groups": {
       "perks": "Навыки/Перки",
       "prefix": "Префикс (Одиночн.)",
-      "resistance": "Сопротивление/Иммунитет (Одиночн.)",
+      "resistance": "Сопротивление (Одиночн.)",
+      "immunity": "Иммунитет (Одиночн.)",
       "firmware": "Прошивка (Одиночн.)",
       "legendary": "Легендарные перки",
       "universal": "Универсальные перки (Мульти)",
@@ -1158,7 +1218,8 @@
       "random": "Случайно"
     },
     "misc": {
-      "none": "Нет"
+      "none": "Нет",
+      "all": "Все"
     },
     "dialogs": {
       "load_error": "Ошибка: Данные ремкомплекта не загружены.",
@@ -1207,7 +1268,8 @@
       "clear": "Очистить"
     },
     "misc": {
-      "none": "Нет"
+      "none": "Нет",
+      "all": "Все"
     },
     "dialogs": {
       "load_error": "Ошибка: Данные тяжелого оружия не загружены.",

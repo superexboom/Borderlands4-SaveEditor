@@ -67,27 +67,27 @@
 66,+45% Shotgun Damage,+45% 霰弹枪伤害,stat2_shotgun_damage,weapon
 67,+2231 Maximum Shield Capacity,+2231 最大护盾容量,stat2_shield_capacity,defense
 68,+45% Sniper Damage,+45% 狙击步枪伤害,stat2_sniper_damage,weapon
-74,Risky Boots-Firmware,风险启用-固件,part_firmware_risky_boots,firmware
-75,God Killer-Firmware,弑神者-固件,part_firmware_god_killer,firmware
-76,Reel Big Fist-Firmware,沙包大拳头-固件,part_firmware_reel_big_fist,firmware
-77,Lifeblood-Firmware,命脉-固件,part_firmware_lifeblood,firmware
-78,Airstrike-Firmware,空袭-固件,part_firmware_airstrike,firmware
-79,High Caliber-Firmware,大口径-固件,part_firmware_high_caliber,firmware
-80,Gadget Ahoy-Firmware,装置启动-固件,part_firmware_gadget_ahoy,firmware
-81,Baker-Firmware,烘焙师-固件,part_firmware_baker,firmware
-82,Osacar Mike-Firmware,正在行动-固件,part_firmware_oscar_mike,firmware
-83,Rubberband Man-Firmware,橡皮筋人-固件,part_firmware_rubberband_man,firmware
-84,Deadeye-Firmware,神枪手-固件,part_firmware_deadeye,firmware
-85,Action Fist-Firmware,动能拳头-固件,part_firmware_action_fist,firmware
-86,GOOJFC-Firmware,保命王牌-固件,part_firmware_goojfc,firmware
-87,Atlas E.X.-Firmware,阿特拉斯E.X.-固件,part_firmware_atlas_ex,firmware
-88,Atlas Infinum-Firmware,阿特拉斯无限量-固件,part_firmware_atlas_infinum,firmware
-89,Trickshot-Firmware,花式射击-固件,part_firmware_trickshot,firmware
-90,Jacked-Firmware,杰克式改造-固件,part_firmware_jacked,firmware
-91,Get Throwin'-Firmware,发球入场-固件,part_firmware_get_throwin,firmware
-92,Heating Up-Firmware,加热升温-固件,part_firmware_heating_up,firmware
-93,Bullets to Spare-Firmware,备用子弹-固件,part_firmware_bullets_to_spare,firmware
-94,Daed-dy O'-Firmware,大情圣-固件,part_firmware_daeddy_o,firmware
+74,,,part_firmware_risky_boots,firmware
+75,,,part_firmware_god_killer,firmware
+76,,,part_firmware_reel_big_fist,firmware
+77,,,part_firmware_lifeblood,firmware
+78,,,part_firmware_airstrike,firmware
+79,,,part_firmware_high_caliber,firmware
+80,,,part_firmware_gadget_ahoy,firmware
+81,,,part_firmware_baker,firmware
+82,,,part_firmware_oscar_mike,firmware
+83,,,part_firmware_rubberband_man,firmware
+84,,,part_firmware_deadeye,firmware
+85,,,part_firmware_action_fist,firmware
+86,,,part_firmware_goojfc,firmware
+87,,,part_firmware_atlas_ex,firmware
+88,,,part_firmware_atlas_infinum,firmware
+89,,,part_firmware_trickshot,firmware
+90,,,part_firmware_jacked,firmware
+91,,,part_firmware_get_throwin,firmware
+92,,,part_firmware_heating_up,firmware
+93,,,part_firmware_bullets_to_spare,firmware
+94,,,part_firmware_daeddy_o,firmware
 95,+60% Stasis Damage,+60% 静止术伤害,statspecial_stasis_damage,element
 96,+60% Hazard Damage,+60% 危害源伤害,statspecial_puddle_damage,element
 97,+60% Forgeskill Damage,+60% 锻造技艺伤害,statspecial_forgeskill_damage,skill
@@ -96,9 +96,9 @@
 100,+45% Forgedrone Duration,+45% 锻造无人机持续时间,statspecial_forgedrone_duration,skill
 101,+45% Incendiary Damage,+45% 火焰伤害,statspecial_incendiary_damage,element
 102,+10% Melee Critical Hit Chance,+10% 近战暴击率,stat_criticalhitchance_melee,utility
-103,Skillcraft-Firmware,技能工艺-固件,part_firmware_skillcraft,firmware
-104,Active Fire-Firmware,主动开火-固件,part_firmware_active_fire,firmware
+103,,,part_firmware_skillcraft,firmware
+104,,,part_firmware_active_fire,firmware
 CLASSMOD.statspecial_gliding_damage,+105% Damage while Gliding,滑翔时造成+105%伤害,statspecial_gliding_damage,utility
 CLASSMOD.statspecial_ricochet_damage,+30% Ricochet Damage,+30% 跳弹伤害,statspecial_ricochet_damage,utility
-106,Bruiser-Firmware,重击者-固件,part_firmware_bruiser,firmware
+106,,,part_firmware_bruiser,firmware
 105,+20% Movement Speed,+20% 移动速度,statspecial_movementspeed,utility

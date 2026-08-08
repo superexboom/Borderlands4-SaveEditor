@@ -114,7 +114,11 @@ def _title_from_text(text: str) -> str:
 
 
 def _valid_name(text: str) -> bool:
-    return bool(text and text not in {"/", "Unknown", "未知", "N/A"})
+    return bool(
+        text
+        and text not in {"/", "Unknown", "未知", "N/A"}
+        and str(text).strip().casefold() not in {"nan", "<na>", "none"}
+    )
 
 
 def _parse_components(component_str: str) -> list[dict[str, Any]]:
@@ -395,6 +399,7 @@ def _component_part_refs(item_id: int, components: list[dict[str, Any]]) -> list
 
 
 def _name_part_text(name_part: str, lang: str) -> tuple[str, float]:
+    name_part = str(name_part or "").strip().rstrip("'").rsplit("'", 1)[-1]
     entry = (_item_index().get("inv_name_parts") or {}).get(str(name_part).lower(), {})
     key = "zh" if _lang_is_zh(lang) else "en"
     text = entry.get(key) or entry.get("en") or ""
@@ -409,12 +414,37 @@ def _nonweapon_name(item_id: int, components: list[dict[str, Any]], lang: str) -
     sections: dict[str, list[tuple[float, int, str]]] = {"prefix": [], "title": [], "suffix": []}
     seen: set[tuple[str, str]] = set()
     part_refs = _component_part_refs(item_id, components)
+    family = ""
+    root: dict[str, Any] = {}
+    for family_name, model in ((_item_index().get("equipment_native_models") or {}).get("models") or {}).items():
+        if not isinstance(model, dict):
+            continue
+        candidate = (model.get("roots") or {}).get(str(item_id))
+        if candidate is not None:
+            family, root = str(family_name), candidate
+            break
+    class_data = root.get("class_data") or {}
     disable_prefixes = any(str(ref.get("disable_prefixes", "")).casefold() == "true" for ref in part_refs)
     has_named_composition = any(
         ref.get("category") == "inv_comp"
         and _valid_name(((ref.get("name") or {}).get("zh" if _lang_is_zh(lang) else "en") or (ref.get("name") or {}).get("en", "")))
         for ref in part_refs
     )
+    root_name_parts: dict[str, list[str]] = {"prefix": [], "title": [], "suffix": []}
+    for aspect in class_data.get("aspects") or []:
+        if not isinstance(aspect, dict):
+            continue
+        for section in root_name_parts:
+            root_name_parts[section].extend(aspect.get(f"{section}partlist") or [])
+    for section in root_name_parts:
+        root_name_parts[section].extend(class_data.get(f"{section}partlist") or [])
+        for name_part in root_name_parts[section]:
+            if family == "grenade" and has_named_composition and section == "suffix":
+                continue
+            text, priority = _name_part_text(name_part, lang)
+            if _valid_name(text):
+                sections[section].append((priority, -1, text))
+                seen.add((section, str(name_part).lower()))
     for order, ref in enumerate(part_refs):
         for section in sections:
             if section == "prefix" and has_named_composition and ref.get("category") == "payload":
@@ -428,12 +458,19 @@ def _nonweapon_name(item_id: int, components: list[dict[str, Any]], lang: str) -
                 if _valid_name(text):
                     sections[section].append((priority, order, text))
 
-    for values in sections.values():
-        values.sort(key=lambda item: (-item[0], item[1]))
-    prefixes = [] if disable_prefixes else [item[2] for item in sections["prefix"][:2]]
+    for section, values in sections.items():
+        # Equal-priority naming aspects are applied last-in-first-out by the
+        # inventory namer on Repkits/Shields; Grenade stat prefixes preserve
+        # their serialized order instead (e.g. Ancient Booming UAV).
+        values.sort(key=lambda item: (-item[0], item[1] if family == "grenade" and section == "prefix" else -item[1]))
+    max_prefixes = int(
+        class_data.get("maxnumprefixes", class_data.get("maxnumsuffixes", 2)) or 0
+    )
+    max_suffixes = int(class_data.get("maxnumsuffixes", 1) or 0)
+    prefixes = [] if disable_prefixes else [item[2] for item in sections["prefix"][:max_prefixes]]
     title = sections["title"][0][2] if sections["title"] else ""
-    suffix = sections["suffix"][0][2] if sections["suffix"] else ""
-    name = " ".join([*prefixes, title, suffix]).strip()
+    suffixes = [item[2] for item in sections["suffix"][:max_suffixes]]
+    name = " ".join([*prefixes, title, *suffixes]).strip()
     return name, "native_name_parts" if name else ""
 
 
@@ -2075,7 +2112,7 @@ _HEAVY_CANON_MAP = {
     "barrel_01": {"a": "13", "b": "14", "c": "15", "d": "16"},
     "barrel_02": {"a": "17", "b": "18", "c": "19", "d": "20"},
 }
-_HEAVY_CANON_RE = re.compile(r"part_(body|barrel_01|barrel_02)_([a-d])(?:x[a-d])?$")
+_HEAVY_CANON_RE = re.compile(r"part_(body|barrel_01|barrel_02)_([a-d])(?:x([a-d]))?$")
 
 
 def _heavy_canonical_parts(item_id: int, ids: list[str]) -> dict[str, list[str]]:
@@ -2086,15 +2123,34 @@ def _heavy_canonical_parts(item_id: int, ids: list[str]) -> dict[str, list[str]]
     barrels carry no canonical id and so do not participate here.
     """
     sections: dict[str, list[str]] = {"body": [], "barrel_01": [], "barrel_02": []}
+    variants: dict[str, list[tuple[str, str]]] = {"body": [], "barrel_01": [], "barrel_02": []}
     for part_id in ids:
         internal = str(_part_ref(item_id, part_id).get("part") or "").lower()
         match = _HEAVY_CANON_RE.fullmatch(internal)
         if not match:
             continue
-        group, letter = match.group(1), match.group(2)
-        canon = _HEAVY_CANON_MAP[group].get(letter)
+        group = match.group(1)
+        if match.group(3):
+            variants[group].append((match.group(2), match.group(3)))
+            continue
+        canon = _HEAVY_CANON_MAP[group].get(match.group(2))
         if canon and canon not in sections[group]:
             sections[group].append(canon)
+    for group, pairs in variants.items():
+        present = {
+            letter
+            for letter, canon in _HEAVY_CANON_MAP[group].items()
+            if canon in sections[group]
+        }
+        for base, suffix in pairs:
+            # The x-part supplies the counterpart of the ordinary accessory
+            # serialized beside it.  Without that companion, the x suffix is
+            # the active single component.
+            letter = base if suffix in present and base not in present else suffix
+            canon = _HEAVY_CANON_MAP[group].get(letter)
+            if canon and canon not in sections[group]:
+                sections[group].append(canon)
+                present.add(letter)
     return sections
 
 
@@ -2509,6 +2565,9 @@ def equipment_part_name(ref_key: str, lang: str = "zh-CN", fallback: str = "") -
         name = str((entry or {}).get("name") or "").strip()
         if name:
             return name
+    name = (ref.get("name") or {}).get(key) or (ref.get("name") or {}).get("en") or ""
+    if ref.get("category") == "barrel" and _valid_name(name):
+        return name
     for ui_id in ref.get("uistats_include") or ref.get("uistats", []):
         ui_key = str(ui_id).casefold()
         if any(marker in ui_key for marker in ("redtext", "red_text", "typeline", "_manu_")):
@@ -2517,10 +2576,12 @@ def equipment_part_name(ref_key: str, lang: str = "zh-CN", fallback: str = "") -
         title = _title_from_text(ui.get(key) or ui.get("en") or "")
         if _valid_name(title):
             return title
-    name = (ref.get("name") or {}).get(key) or (ref.get("name") or {}).get("en") or ""
     if _valid_name(name):
         return name
-    return re.split(r"\s+[-–—]\s+|(?<=\S)-(?=\S)", str(fallback or ""), maxsplit=1)[0].strip()
+    fallback = str(fallback or "").strip()
+    if not _valid_name(fallback):
+        return ""
+    return re.split(r"\s+[-–—]\s+", fallback, maxsplit=1)[0].strip()
 
 
 def _serial_without_equipment_part(decoded: str, root_id: str, ref_key: str) -> str:
@@ -2605,22 +2666,16 @@ def format_equipment_part_description(
 
     if ref.get("category") == "firmware":
         # Firmware text comes from the shared pipeline-exported table (see
-        # _equipment_firmware_entry). Descriptions are per stack level: a candidate
-        # shows its L1 effect, a selected firmware shows every level it has stacked to.
+        # _equipment_firmware_entry). The serial contains one firmware identity,
+        # not three repeated tokens, so show the complete L1/L2/L3 progression.
         try:
             entry = _equipment_firmware_entry(ref_key, item_type, lang)
         except (KeyError, OSError, TypeError, ValueError):
             entry = None
         descs = list((entry or {}).get("descs") or [])
         if descs:
-            count = 1
-            try:
-                root_id, _level = equipment_display_stats._header(decoded_full)
-                present = weapon_display_stats._serial_part_keys(decoded_full, root_id)
-                count = max(1, sum(1 for key in present if key == ref_key))
-            except (KeyError, TypeError, ValueError):
-                count = 1
-            for text in descs[:count]:
+            for level, text in enumerate(descs, 1):
+                text = f"L{level}: {text}" if text else ""
                 if text and text not in lines:
                     lines.append(text)
 
@@ -2715,8 +2770,14 @@ def _equipment_firmware_entry(ref_key: str, item_type: str, lang: str) -> dict[s
         "id": ref_key.partition(":")[2],
         "name": name,
         "text": name,
+        "category": "firmware",
         "internal": internal,
         "descs": descs,
+        "level_descs": [
+            {"level": level, "text": text}
+            for level, text in enumerate(descs, 1)
+            if text
+        ],
         "count": 1,
         "level": 0,
         "max_level": 3,
@@ -3111,7 +3172,26 @@ def resolve_classmod_card_details(
     perks = []
     firmware = []
     for perk_id in dict.fromkeys(perk_ids):
+        ref_key = f"234:{perk_id}"
+        ref = _part_ref(234, perk_id)
         row = perk_rows.get(perk_id)
+        if ref.get("category") == "firmware":
+            entry = _equipment_firmware_entry(ref_key, "Class Mod", lang)
+            if entry:
+                firmware.append({**entry, "count": perk_counts[perk_id]})
+            elif row:
+                name = row.get("perk_name_ZH" if _lang_is_zh(lang) else "perk_name_EN", "") or row.get("perk_name_EN", "")
+                firmware.append({
+                    "id": perk_id,
+                    "name": name,
+                    "text": name,
+                    "count": perk_counts[perk_id],
+                    "category": "firmware",
+                    "internal": row.get("perk_internal", ""),
+                    "level": 0,
+                    "max_level": 3,
+                })
+            continue
         if not row:
             continue
         entry = {
@@ -3122,7 +3202,8 @@ def resolve_classmod_card_details(
             "internal": row.get("perk_internal", ""),
         }
         if entry["category"] == "firmware":
-            firmware.append({**entry, "level": 0, "max_level": 3})
+            shared = _equipment_firmware_entry(ref_key, "Class Mod", lang)
+            firmware.append({**(shared or entry), "count": perk_counts[perk_id], "level": 0, "max_level": 3})
         else:
             perks.append(entry)
 
@@ -3222,20 +3303,30 @@ def resolve_enhancement_card_details(decoded_full: str, lang: str = "zh-CN") -> 
     for part_id in shared_ids:
         ref = _part_ref(247, part_id)
         category = ref.get("category")
+        if category == "firmware":
+            entry = _equipment_firmware_entry(f"247:{part_id}", "Enhancement", lang)
+            if entry:
+                firmware.append(entry)
+            else:
+                row = shared_rows.get(part_id)
+                if row:
+                    text = row.get(localized, "") or row.get("perk_name_EN", "")
+                    firmware.append({
+                        "id": part_id,
+                        "text": text,
+                        "name": text,
+                        "category": "firmware",
+                        "internal": str(ref.get("part") or ""),
+                        "level": 0,
+                        "max_level": 3,
+                    })
+            continue
         row = shared_rows.get(part_id)
         if not row:
             continue
         text = row.get(localized, "") or row.get("perk_name_EN", "")
         entry = {"id": part_id, "text": text}
-        if category == "firmware":
-            firmware.append({
-                **entry,
-                "name": text,
-                "internal": str(ref.get("part") or ""),
-                "level": 0,
-                "max_level": 3,
-            })
-        elif category in {"stat_group1", "stat_group2", "stat_group3"}:
+        if category in {"stat_group1", "stat_group2", "stat_group3"}:
             entry["group"] = category
             stats.append(entry)
 

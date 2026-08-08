@@ -1,111 +1,113 @@
 ﻿Manufacturer ID,Part_ID,Part_type,Stat_ZH,Stat_EN,Description_ZH,Description_EN
 263,1,Perk,,,,
 263,2,Perk,,,,
-263,3,Perk,马里旺,Maliwan,手雷会粘在敌人身上，如掉落地面，则会自动飞向最近的来袭敌人,"Grenades stick to enemies; if they hit the ground, they automatically fly towards the nearest incoming enemy"
+263,3,Perk,,,,
 263,4,Rarity,Common,Common,,
 263,5,Rarity,Uncommon,Uncommon,,
 263,6,Rarity,Rare,Rare,,
 263,7,Rarity,Epic,Epic,,
-263,8,Rarity,Legendary,Legendary,金皮肤,Gold skin
-263,9,Rarity,Legendary,Legendary,毁灭迪斯科皮肤,Destructive Disco skin
+263,8,Rarity,Legendary,Legendary,金皮肤,Gold Skin
+263,9,Rarity,Legendary,Legendary,毁灭迪斯科皮肤,Destructo Disco Skin
 263,10,Legendary Perk,,,,
-263,11,Rarity,Legendary,Legendary,递归皮肤,Recursive skin
+263,11,Rarity,Legendary,Legendary,递归皮肤,Recursive Skin
 263,12,Legendary Perk,,,,
 263,13,Perk,,,,
-267,1,Perk,雅各布斯,Jakobs,手雷击中弱点时会造成暴击伤害,Grenades deal critical damage when hitting weak points
+267,1,Perk,,,,
 267,2,Perk,,,,
 267,3,Perk,,,,
 267,4,Rarity,Common,Common,,
 267,5,Rarity,Uncommon,Uncommon,,
 267,6,Rarity,Rare,Rare,,
 267,7,Rarity,Epic,Epic,,
-267,8,Rarity,Legendary,Legendary,金皮肤,Gold skin
+267,8,Rarity,Legendary,Legendary,金皮肤,Gold Skin
 267,9,Legendary Perk,,,,
 267,10,Rarity,Legendary,Legendary,旋转刀刃皮肤,Spinning Blade skin
 267,11,Legendary Perk,,,,
-267,12,Rarity,Legendary,Legendary,翔苦无皮肤,Sho Kunai skin
+267,12,Rarity,Legendary,Legendary,翔苦无皮肤,Sho Kunai Skin
 267,13,Perk,,,,
 267,14,Legendary Perk,,,,
 267,15,Legendary Perk,,,,
 267,16,Legendary Perk,,,,
 267,17,Legendary Perk,,,,
 267,18,Legendary Perk,,,,
-267,19,Perk,雅各布斯,Jakobs,手雷击中弱点时会造成暴击伤害（铋尖匕首）,Grenades deal critical damage when hitting weak points(Bismuth)
-267,20,Rarity,Legendary,Legendary,铋尖匕首皮肤,Bismuth skin
+267,19,Legendary Perk,,,,
+267,20,Rarity,Legendary,Legendary,铋尖匕首皮肤,Bismuth-Tipped Dagger Skin
 270,1,Rarity,Common,Common,,
 270,2,Rarity,Uncommon,Uncommon,,
 270,3,Rarity,Rare,Rare,,
 270,4,Rarity,Epic,Epic,,
-270,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+270,5,Rarity,Legendary,Legendary,金皮肤,Gold Skin
 270,6,Legendary Perk,,,,
-270,7,Rarity,Legendary,Legendary,震颤斧皮肤,Buzz Axe skin
+270,7,Rarity,Legendary,Legendary,震颤斧皮肤,Buzz Axe Skin
 270,8,Legendary Perk,,,,
-270,9,Rarity,Legendary,Legendary,导火索皮肤,Fuse skin
-270,10,Perk,代达洛斯,Daedalus,手雷在手持时会开始计时，并在固定时间后爆炸,Grenade timer starts when held and explodes after a fixed time
+270,9,Rarity,Legendary,Legendary,导火索皮肤,Fuse Skin
+270,10,Perk,,,,
 270,11,Legendary Perk,,,,
 270,12,Rarity,Legendary,Legendary,高压锅皮肤,Pressure Kettle Skin
-272,1,Perk,教团,Order,手雷会自动追踪附近敌人,Grenades automatically track nearby enemies
+272,1,Perk,,,,
 272,2,Rarity,Common,Common,,
 272,3,Rarity,Uncommon,Uncommon,,
 272,4,Rarity,Rare,Rare,,
 272,5,Rarity,Epic,Epic,,
-272,6,Rarity,Legendary,Legendary,金皮肤,Gold skin
+272,6,Rarity,Legendary,Legendary,金皮肤,Gold Skin
 272,7,Legendary Perk,,,,
-272,8,Rarity,Legendary,Legendary,蜂群皮肤,Swarm skin
+272,8,Rarity,Legendary,Legendary,蜂群皮肤,Swarm Skin
 272,9,Legendary Perk,,,,
-272,10,Rarity,Legendary,Legendary,乔穆尔基皮肤,Chaumurky skin
+272,10,Rarity,Legendary,Legendary,乔穆尔基皮肤,Chaumurky Skin
 272,11,Legendary Perk,,,,
-272,12,Rarity,Legendary,Legendary,骷髅皮肤,Skully skin
+272,12,Rarity,Legendary,Legendary,骷髅皮肤,Skully Skin
 278,1,Perk,,,,
-278,2,Perk,开颅者,Skullcracker,手雷会传送至目的地,Grenade teleports to destination
+278,2,Perk,,,,
 278,3,Perk,,,,
 278,4,Rarity,Common,Common,,
 278,5,Rarity,Uncommon,Uncommon,,
 278,6,Rarity,Rare,Rare,,
 278,7,Rarity,Epic,Epic,,
-278,8,Rarity,Legendary,Legendary,金皮肤,Gold skin
-278,9,Rarity,Legendary,Legendary,果冻皮肤,Jelly skin
+278,8,Rarity,Legendary,Legendary,金皮肤,Gold Skin
+278,9,Rarity,Legendary,Legendary,果冻皮肤,Jelly Skin
 278,10,Legendary Perk,,,,
 278,11,Legendary Perk,,,,
-278,12,Rarity,Legendary,Legendary,浮标皮肤,Buoy skin
+278,12,Rarity,Legendary,Legendary,浮标皮肤,Buoy Skin
 278,13,Perk,,,,
+278,14,Legendary Perk,,,,
+278,15,Rarity,Legendary,Legendary,发射器皮肤,Transmitter Skin
 278,16,Legendary Perk,,,,
 278,17,Rarity,Legendary,Legendary,火炮球体皮肤,Artillery Sphere Skin
 291,1,Rarity,Common,Common,,
 291,2,Rarity,Uncommon,Uncommon,,
 291,3,Rarity,Rare,Rare,,
 291,4,Rarity,Epic,Epic,,
-291,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+291,5,Rarity,Legendary,Legendary,金皮肤,Gold Skin
 291,6,Legendary Perk,,,,
-291,7,Rarity,Legendary,Legendary,一鸣惊人皮肤,Blockbuster skin
+291,7,Rarity,Legendary,Legendary,一鸣惊人皮肤,Blockbuster Skin
 291,8,Legendary Perk,,,,
-291,9,Rarity,Legendary,Legendary,瀑布皮肤,Waterfall skin
-291,10,Perk,弗拉多夫,Vladof,撞击时手雷爆炸,Grenade explodes on impact
+291,9,Rarity,Legendary,Legendary,瀑布皮肤,Waterfall Skin
+291,10,Perk,,,,
 291,11,Legendary Perk,,,,
-291,12,Rarity,Legendary,Legendary,芭芭拉皮肤,Barb'ara skin
+291,12,Rarity,Legendary,Legendary,芭芭拉皮肤,Barb'ara Skin
 298,1,Rarity,Common,Common,,
 298,2,Rarity,Uncommon,Uncommon,,
 298,3,Rarity,Rare,Rare,,
 298,4,Rarity,Epic,Epic,,
-298,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+298,5,Rarity,Legendary,Legendary,金皮肤,Gold Skin
 298,6,Legendary Perk,,,,
-298,7,Rarity,Legendary,Legendary,火锅皮肤,Firepot skin
+298,7,Rarity,Legendary,Legendary,火锅皮肤,Firepot Skin
 298,8,Legendary Perk,,,,
-298,9,Rarity,Legendary,Legendary,滑溜溜皮肤,Slippy skin
-298,10,Perk,托格,Torgue,撞击敌人时手雷爆炸,Grenade explodes on impacting enemy
+298,9,Rarity,Legendary,Legendary,滑溜溜皮肤,Slippy Skin
+298,10,Perk,,,,
 298,11,Legendary Perk,,,,
 298,12,Rarity,Legendary,Legendary,反制措施皮肤,Countermeasure Skin
 311,1,Rarity,Common,Common,,
 311,2,Rarity,Uncommon,Uncommon,,
 311,3,Rarity,Rare,Rare,,
 311,4,Rarity,Epic,Epic,,
-311,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+311,5,Rarity,Legendary,Legendary,金皮肤,Gold Skin
 311,6,Legendary Perk,,,,
-311,7,Rarity,Legendary,Legendary,雷管故障皮肤,Faulty Detonator skin
+311,7,Rarity,Legendary,Legendary,雷管故障皮肤,Faulty Detonator Skin
 311,8,Legendary Perk,,,,
-311,9,Rarity,Legendary,Legendary,无人机皮肤,UAV skin
-311,10,Perk,泰迪尔,Tediore,轻按两次远程引爆投掷的手雷,Double tap to remotely detonate thrown grenades
+311,9,Rarity,Legendary,Legendary,无人机皮肤,UAV Skin
+311,10,Perk,,,,
 311,11,Legendary Perk,,,,
-311,12,Rarity,Legendary,Legendary,海胆皮肤,Urchin skin
+311,12,Rarity,Legendary,Legendary,海胆皮肤,Urchin Skin
 311,13,Rarity,Legendary,Legendary,条例皮肤,Ordinance Skin
 311,14,Legendary Perk,,,,

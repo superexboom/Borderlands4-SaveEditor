@@ -77,9 +77,21 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
     # 0/1/2 and body_acc is max 0/1/2/3 depending on the composition, which a constant
     # could not express.
     RULE_GROUPS_BY_PICKER = {
+        "barrel": ("barrel",),
+        "element": ("body_ele",),
+        "firmware": ("firmware",),
         "barrel_acc": ("barrel_acc",),
         "body_acc": ("body_acc",),
     }
+
+    def _generation_ref_for_option(self, key, data):
+        value = str(data or "")
+        if not value:
+            return ""
+        if ":" in value:
+            return value
+        mfg_id = self._current_mfg_id()
+        return f"{mfg_id}:{value}" if mfg_id is not None else ""
 
     def load_data(self, lang):
         return load_heavy_weapon_data(lang)
@@ -115,6 +127,10 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
             self._group_cfgs["firmware"],
             self._firmware_group_df('Heavy_perk_main_ID', self.FIRMWARE_PARENT),
             self._fmt_prefixed_row)
+        self._group_pickles["barrel_acc"].set_categories(
+            [("all", self.ui_loc.get("misc", {}).get("all", "All")), ("T1", "T1"), ("T2", "T2")],
+            columns=3,
+        )
 
     def _fmt_prefixed_row(self, r):
         """Format a heavy row; part_id becomes 'main_id:part_id' when applicable."""

@@ -45,6 +45,9 @@ repkit_files = collect_data_files('repkit', ('.csv', '.json'))
 # 动态收集heavy目录下的所有.csv和.json文件
 heavy_files = collect_data_files('heavy', ('.csv', '.json'))
 
+# 四类装备共用的固件名称与逐级描述
+firmware_files = collect_data_files('Firmware', ('.csv',))
+
 # 动态收集loadout目录下的所有.csv和.json文件
 loadout_files = collect_data_files('loadout', ('.csv', '.json'))
 
@@ -77,7 +80,7 @@ a = Analysis(
     [r'{str(BASE_DIR / "main_window.py")}'],
     pathex=[r'{str(BASE_DIR)}'],
     binaries=[],
-    datas={classmod_files} + {enhancement_files} + {weapon_files} + {grenade_files} + {shield_files} + {repkit_files} + {heavy_files} + {loadout_files} + {item_files} + {i18n_files} + {core_data_files} + {assets_files},
+    datas={classmod_files} + {enhancement_files} + {weapon_files} + {grenade_files} + {shield_files} + {repkit_files} + {heavy_files} + {firmware_files} + {loadout_files} + {item_files} + {i18n_files} + {core_data_files} + {assets_files},
     hiddenimports=[
         'pandas',
         'yaml',

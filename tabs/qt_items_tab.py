@@ -439,16 +439,43 @@ def _element_card_text(stats: Dict[str, Any], element: str, current_lang: str, s
     return (_ELEMENT_NAMES.get(element) or {}).get(lang_key, "")
 
 
+def _repkit_element_card_modes(
+    element: str,
+    entries: List[Dict[str, Any]],
+) -> List[tuple[str, str]]:
+    """Return every visible Repkit resistance/immunity pair in serial order."""
+    refs = item_display_resolver._item_index().get("part_refs") or {}
+    modes: List[tuple[str, str]] = []
+    for entry in entries:
+        category = str(entry.get("category") or "")
+        if category not in {"augment_element_resist", "augment_element_immunity"}:
+            continue
+        ref = refs.get(str(entry.get("ref_key") or "")) or {}
+        part_name = str(ref.get("part") or "").casefold()
+        key = next((name for name in _ELEMENT_NAMES if name != "kinetic" and name in part_name), "")
+        if key:
+            modes.append((key, "immunity" if category == "augment_element_immunity" else "resistance"))
+    if not modes and element:
+        immunity = any(entry.get("category") == "augment_element_immunity" for entry in entries)
+        modes.append((element, "immunity" if immunity else "resistance"))
+    return list(dict.fromkeys(modes))
+
+
 def _repkit_element_card_text(element: str, entries: List[Dict[str, Any]], current_lang: str) -> str:
-    if not element:
+    modes = _repkit_element_card_modes(element, entries)
+    if not modes:
         return ""
     lang_key = "zh" if current_lang == "zh-CN" else "en"
-    base = (_ELEMENT_NAMES.get(element) or {}).get(lang_key, "")
-    base = base.removesuffix("伤害") if current_lang == "zh-CN" else base.removesuffix(" Damage")
-    immunity = any(entry.get("category") == "augment_element_immunity" for entry in entries)
-    if current_lang == "zh-CN":
-        return f"{base}{'免疫' if immunity else '抗性'}"
-    return f"{base} {'Immunity' if immunity else 'Resistance'}"
+    labels = []
+    for key, mode in modes:
+        base = (_ELEMENT_NAMES.get(key) or {}).get(lang_key, "")
+        base = base.removesuffix("伤害") if current_lang == "zh-CN" else base.removesuffix(" Damage")
+        labels.append(
+            f"{base}{'免疫' if mode == 'immunity' else '抗性'}"
+            if current_lang == "zh-CN"
+            else f"{base} {'Immunity' if mode == 'immunity' else 'Resistance'}"
+        )
+    return " / ".join(labels)
 
 
 def _part_element_keys(part_name: str) -> List[str]:
@@ -873,12 +900,16 @@ def equipment_card_html(
     )
 
     element_key = str(details.get("element") or "")
-    element_text = (
-        _repkit_element_card_text(element_key, details.get("entries", []), current_lang)
-        if item_type == "Repkit"
-        else str(details.get("element_text") or "") or _element_card_text(stats, element_key, current_lang)
-    )
-    element_row = _element_row_html(element_text, [element_key], element_key)
+    if item_type == "Repkit":
+        repkit_modes = _repkit_element_card_modes(element_key, details.get("entries", []))
+        element_keys = [key for key, _mode in repkit_modes]
+        element_text = _repkit_element_card_text(element_key, details.get("entries", []), current_lang)
+        primary_element = element_keys[0] if element_keys else element_key
+    else:
+        element_keys = [element_key]
+        primary_element = element_key
+        element_text = str(details.get("element_text") or "") or _element_card_text(stats, element_key, current_lang)
+    element_row = _element_row_html(element_text, element_keys, primary_element)
 
     red_rows = "".join(
         f"<tr><td colspan='2' align='center' style='padding:4px 18px; color:#f33a47; font-size:14px'><i>{escape(text)}</i></td></tr>"

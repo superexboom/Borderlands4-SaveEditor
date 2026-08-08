@@ -356,9 +356,20 @@ class CatalogPicker(QWidget):
                 continue
             if query and query not in str(it.get("label", "")).lower():
                 continue
-            lwi = QListWidgetItem(it.get("label", ""))
+            candidate = it.get("candidate") or {}
+            marker = str(candidate.get("marker") or "").strip()
+            label = str(it.get("label", ""))
+            lwi = QListWidgetItem(f"{marker}  {label}" if marker else label)
             lwi.setData(Qt.ItemDataRole.UserRole, it)
-            lwi.setToolTip(it.get("label", ""))
+            tooltip = [str(candidate.get("hint") or ""), str(it.get("tooltip") or label)]
+            lwi.setToolTip("\n\n".join(filter(None, tooltip)))
+            if candidate.get("kind") == "legal":
+                font = lwi.font()
+                font.setBold(True)
+                lwi.setFont(font)
+                lwi.setBackground(QColor(74, 144, 226, 38))
+            elif candidate.get("kind") == "warning":
+                lwi.setBackground(QColor(230, 164, 57, 30))
             if self._disable_selected_source and it.get("key") in self._selected_keys:
                 lwi.setFlags(lwi.flags() & ~Qt.ItemFlag.ItemIsEnabled & ~Qt.ItemFlag.ItemIsSelectable)
             self.avail.addItem(lwi)
@@ -483,7 +494,10 @@ class CatalogPicker(QWidget):
         return f"{self._sel_title}  ({shown})" if self._sel_title else f"({shown})"
 
     def _update_count(self):
-        count = self.selected.count()
+        count = 0
+        for index in range(self.selected.count()):
+            row = self.selected.itemWidget(self.selected.item(index))
+            count += row.count() if row is not None else 1
         self.count_lbl.setText(self._fmt_count(count))
         limit = getattr(self, "_count_limit", None)
         over = limit is not None and count > limit

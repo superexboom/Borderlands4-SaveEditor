@@ -1,99 +1,99 @@
 ﻿Manufacturer ID,Part_ID,Part_type,Stat_ZH,Stat_EN,Description_ZH,Description_EN
 279,1,Legendary Perk,,,,
-279,2,Model,/,/,,
-279,3,Rarity,Common,Common,,
-279,4,Rarity,Uncommon,Uncommon,,
-279,5,Rarity,Rare,Rare,,
-279,6,Rarity,Epic,Epic,,
-279,7,Rarity,Legendary,Legendary,金皮肤,Gold skin
+279,2,Model,,,,
+279,3,Rarity,Common,Common,大门皮肤,Gate Skin
+279,4,Rarity,Uncommon,Uncommon,栅栏皮肤,Fence Skin
+279,5,Rarity,Rare,Rare,防护槽皮肤,Cullis Skin
+279,6,Rarity,Epic,Epic,支柱皮肤,Stanchion Skin
+279,7,Rarity,Legendary,Legendary,金皮肤,Gold Skin
 279,8,Legendary Perk,,,,
-279,9,Rarity,Legendary,Legendary,潘多拉纪念品皮肤,Pandoran Memento skin
-279,10,Rarity,Legendary,Legendary,超大中杯皮肤,Extra Medium skin
+279,9,Rarity,Legendary,Legendary,潘多拉纪念品皮肤,Pandoran Memento Skin
+279,10,Rarity,Legendary,Legendary,超大中杯皮肤,Extra Medium Skin
 279,11,Legendary Perk,,,,
-279,12,Rarity,Legendary,Legendary,厄尔皮斯之星皮肤,Elpis Star skin
-283,1,Rarity,Common,Common,,
-283,2,Rarity,Uncommon,Uncommon,,
-283,3,Rarity,Rare,Rare,,
-283,4,Rarity,Epic,Epic,,
-283,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+279,12,Rarity,Legendary,Legendary,厄尔皮斯之星皮肤,Elpis Star Skin
+283,1,Rarity,Common,Common,蛋壳皮肤,Eggiweg Skin
+283,2,Rarity,Uncommon,Uncommon,布鲁尼皮肤,Broony Skin
+283,3,Rarity,Rare,Rare,嘴炮皮肤,Nagaveet Skin
+283,4,Rarity,Epic,Epic,穹壳皮肤,Domy Skin
+283,5,Rarity,Legendary,Legendary,金皮肤,Gold Skin
 283,6,Legendary Perk,,,,
-283,7,Rarity,Legendary,Legendary,囤积者皮肤,Hoarder skin
+283,7,Rarity,Legendary,Legendary,囤积者皮肤,Hoarder Skin
 283,8,Legendary Perk,,,,
-283,9,Rarity,Legendary,Legendary,重量级皮肤,Heavyweight skin
-283,10,Model,/,/,,
+283,9,Rarity,Legendary,Legendary,重量级皮肤,Heavyweight Skin
+283,10,Model,,,,
 283,11,Legendary Perk,,,,
-283,12,Rarity,Legendary,Legendary,下部护盾金皮肤,Undershield skin
-287,1,Rarity,Common,Common,,
-287,2,Rarity,Uncommon,Uncommon,,
-287,3,Rarity,Rare,Rare,,
-287,4,Rarity,Epic,Epic,,
-287,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+283,12,Rarity,Legendary,Legendary,下部护盾皮肤,Undershield Skin
+287,1,Rarity,Common,Common,治疗皮肤,Treatment Skin
+287,2,Rarity,Uncommon,Uncommon,涂层皮肤,Coating Skin
+287,3,Rarity,Rare,Rare,套管皮肤,Casing Skin
+287,4,Rarity,Epic,Epic,层压板皮肤,Laminate Skin
+287,5,Rarity,Legendary,Legendary,金皮肤,Gold Skin
 287,6,Legendary Perk,,,,
-287,7,Rarity,Legendary,Legendary,首要皮肤,Principal skin
-287,8,Rarity,Legendary,Legendary,时间尊者新护盾皮肤,Timekeeper's New skin
+287,7,Rarity,Legendary,Legendary,首要皮肤,Principal Skin
+287,8,Rarity,Legendary,Legendary,时间尊者新护盾皮肤,Timekeeper's New Shield Skin
 287,9,Legendary Perk,,,,
-287,10,Model,/,/,,
-287,11,Rarity,Legendary,Legendary,跳房子皮肤,Hopscotch skin
+287,10,Model,,,,
+287,11,Rarity,Legendary,Legendary,跳房子皮肤,Hopscotch Skin
 287,12,Legendary Perk,,,,
 287,13,Legendary Perk,,,,
 287,14,Rarity,Legendary,Legendary,小妹妹皮肤,Little Sister Skin
 293,1,Legendary Perk,,,,
 293,2,Legendary Perk,,,,
-293,3,Rarity,Legendary,Legendary,变形细胞皮肤,Protean Cell skin
-293,4,Model,/,/,,
-293,5,Rarity,Common,Common,,
-293,6,Rarity,Uncommon,Uncommon,,
-293,7,Rarity,Rare,Rare,,
-293,8,Rarity,Epic,Epic,,
-293,9,Rarity,Legendary,Legendary,金皮肤,Gold skin
-293,10,Rarity,Legendary,Legendary,灰烬壳皮肤,Cindershelly skin
-293,11,Rarity,Legendary,Legendary,收藏家皮肤,Collector skin
-293,12,Legendary Perk,欧米伽,Omega,能量护盾启动时，每秒恢复7041生命值,"When energy shields are active, regenerates 7041 Health/s"
-300,1,Rarity,Common,Common,,
-300,2,Rarity,Uncommon,Uncommon,,
-300,3,Rarity,Rare,Rare,,
-300,4,Rarity,Epic,Epic,,
-300,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+293,3,Rarity,Legendary,Legendary,变形细胞皮肤,Protean Cell Skin
+293,4,Model,,,,
+293,5,Rarity,Common,Common,蒸馏器皮肤,Alembic Skin
+293,6,Rarity,Uncommon,Uncommon,牛黄皮肤,Bezoar Skin
+293,7,Rarity,Rare,Rare,反击皮肤,Retort Skin
+293,8,Rarity,Epic,Epic,炼星皮肤,Regulus Skin
+293,9,Rarity,Legendary,Legendary,金皮肤,Gold Skin
+293,10,Rarity,Legendary,Legendary,灰烬壳皮肤,Cindershelly Skin
+293,11,Legendary Perk,,,,
+293,12,Rarity,Legendary,Legendary,收藏家皮肤,Collector Skin
+300,1,Rarity,Common,Common,结疤皮肤,Scab Skin
+300,2,Rarity,Uncommon,Uncommon,结痂皮肤,Callus Skin
+300,3,Rarity,Rare,Rare,硬壳皮肤,Crust Skin
+300,4,Rarity,Epic,Epic,瘢痕皮肤,Scar Skin
+300,5,Rarity,Legendary,Legendary,金皮肤,Gold Skin
 300,6,Legendary Perk,,,,
-300,7,Rarity,Legendary,Legendary,电光护盾皮肤,Sparky Shield skin
+300,7,Rarity,Legendary,Legendary,电光护盾皮肤,Sparky Shield Skin
 300,8,Legendary Perk,,,,
-300,9,Rarity,Legendary,Legendary,通电晚餐皮肤,Watts 4 Dinner skin
-300,10,Model,/,/,,
+300,9,Rarity,Legendary,Legendary,通电晚餐皮肤,Watts 4 Dinner Skin
+300,10,Model,,,,
 300,11,Legendary Perk,,,,
-300,12,Rarity,Legendary,Legendary,防火线皮肤,Firebreak skin
+300,12,Rarity,Legendary,Legendary,防火线皮肤,Firebreak Skin
 300,13,Legendary Perk,,,,
 300,14,Rarity,Legendary,Legendary,蜂群过境皮肤,Over Swarm Skin
-306,1,Rarity,Common,Common,,
-306,2,Rarity,Uncommon,Uncommon,,
-306,3,Rarity,Rare,Rare,,
-306,4,Rarity,Epic,Epic,,
-306,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
-306,6,Rarity,Legendary,Legendary,陈年橡木桶皮肤,Aged Cask skin
+306,1,Rarity,Common,Common,豪饮皮肤,Stein Skin
+306,2,Rarity,Uncommon,Uncommon,猪头桶皮肤,Hogshead Skin
+306,3,Rarity,Rare,Rare,大酿桶皮肤,Barrel Skin
+306,4,Rarity,Epic,Epic,木桶皮肤,Cask Skin
+306,5,Rarity,Legendary,Legendary,金皮肤,Gold Skin
+306,6,Rarity,Legendary,Legendary,陈年橡木桶皮肤,Oak-Aged Cask Skin
 306,7,Legendary Perk,,,,
 306,8,Legendary Perk,,,,
-306,9,Rarity,Legendary,Legendary,洋葱皮肤,Onion skin
-306,10,Model,/,/,,
-312,1,Rarity,Common,Common,,
-312,2,Rarity,Uncommon,Uncommon,,
-312,3,Rarity,Rare,Rare,,
-312,4,Rarity,Epic,Epic,,
-312,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+306,9,Rarity,Legendary,Legendary,洋葱皮肤,Onion Skin
+306,10,Model,,,,
+312,1,Rarity,Common,Common,掩护皮肤,Cover Skin
+312,2,Rarity,Uncommon,Uncommon,壕沟皮肤,Foxhole Skin
+312,3,Rarity,Rare,Rare,药盒皮肤,Pillbox Skin
+312,4,Rarity,Epic,Epic,掩体皮肤,Bunker Skin
+312,5,Rarity,Legendary,Legendary,金皮肤,Gold Skin
 312,6,Legendary Perk,,,,
-312,7,Rarity,Legendary,Legendary,守护天使皮肤,Guardian Angel skin
+312,7,Rarity,Legendary,Legendary,守护天使皮肤,Guardian Angel Skin
 312,8,Legendary Perk,,,,
-312,9,Rarity,Legendary,Legendary,超级士兵皮肤,Super Soldier skin
-312,10,Model,/,/,,
-312,11,Rarity,Legendary,Legendary,蜜獾皮肤,Honey Badger skin
+312,9,Rarity,Legendary,Legendary,超级士兵皮肤,Super Soldier Skin
+312,10,Model,,,,
+312,11,Rarity,Legendary,Legendary,蜜獾皮肤,Honey Badger Skin
 312,12,Legendary Perk,,,,
-321,1,Rarity,Common,Common,,
-321,2,Rarity,Uncommon,Uncommon,,
-321,3,Rarity,Rare,Rare,,
-321,4,Rarity,Epic,Epic,,
-321,5,Rarity,Legendary,Legendary,金皮肤,Gold skin
+321,1,Rarity,Common,Common,保护皮肤,Protection Skin
+321,2,Rarity,Uncommon,Uncommon,橡胶皮肤,Rubber Skin
+321,3,Rarity,Rare,Rare,保险帽皮肤,Jimmy Cap Skin
+321,4,Rarity,Epic,Epic,预防性皮肤,Prophylactic Skin
+321,5,Rarity,Legendary,Legendary,金皮肤,Gold Skin
 321,6,Legendary Perk,,,,
-321,7,Rarity,Legendary,Legendary,烟火表演皮肤,Firewerks skin
-321,8,Rarity,Legendary,Legendary,完成皮肤,Compleation skin
+321,7,Rarity,Legendary,Legendary,烟火表演皮肤,Firewerks Skin
+321,8,Rarity,Legendary,Legendary,完成皮肤,Compleation Skin
 321,9,Legendary Perk,,,,
-321,10,Model,/,/,,
+321,10,Model,,,,
 321,11,Legendary Perk,,,,
 321,12,Rarity,Legendary,Legendary,水力机械皮肤,Hydrowerks Skin

@@ -1207,6 +1207,23 @@ QDialogButtonBox QPushButton {
 #genBuildStatus[ruleStatus="modified"] { background-color: #B91C1C; }
 #genBuildStatus[ruleStatus="conditional"] { background-color: #6D28D9; }
 #genBuildStatus[ruleStatus="unknown"] { background-color: #475569; }
+#genBuildStatus[ruleStatus="suppressed"] { background-color: #475569; }
+
+#equipmentLegitCard {
+    background-color: {bg_panel};
+    border: 1px solid {border_color};
+    border-radius: 10px;
+}
+
+#equipmentLegitReason {
+    color: {text_primary};
+    font-weight: bold;
+}
+
+#equipmentLegitGroups {
+    color: {text_secondary};
+    font-size: 9pt;
+}
 
 #inspectorInput {
     font-family: Consolas, monospace;

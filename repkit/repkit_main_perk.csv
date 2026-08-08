@@ -42,7 +42,6 @@
 243,63,Perk,,,,
 243,64,Perk,,,,
 243,65,Perk,,,,
-243,66,Perk,教团,Order,该修复套件拥有2个能量点（仅在教团针上生效）,The Repkit have 2 Repkit Charge(Only in Order)
 243,67,Perk,,,,
 243,68,Perk,,,,
 243,69,Perk,,,,
@@ -69,13 +68,12 @@
 243,94,Perk,,,,
 243,96,Perk,,,,
 243,97,Perk,,,,
-243,98,Model Plus,/,Fire,/,No Stat Changes
-243,99,Model Plus,/,Radiation,/,No Stat Changes
-243,100,Model Plus,/,Corrosive,/,No Stat Changes
-243,101,Model Plus,/,Shock,/,No Stat Changes
-243,102,Model Plus,/,Cryo,/,No Stat Changes
-243,103,Perfix,小型,Mini,更少回复量&持续回复&更短冷却时间,Lower healing amount and cooldown
-243,104,Perfix,标准,Standard,无效果,No Stat Changes
-243,105,Perfix,大型,Large,更多回复量&持续回复&更长冷却时间,"More healing, longer cooldown"
-243,106,Perfix,兆,Mega,最多回复量&持续回复&最长冷却时间,"Even more healing, even longer cooldown"
+243,103,Perfix,,,,
+243,104,Perfix,,,,
+243,105,Perfix,,,,
+243,106,Perfix,,,,
+243,115,Perk,,,,
+243,116,Perk,,,,
+243,117,Perk,,,,
+243,118,Perk,,,,
 243,119,Perk,,,,

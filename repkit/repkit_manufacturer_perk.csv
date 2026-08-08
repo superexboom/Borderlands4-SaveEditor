@@ -1,20 +1,18 @@
 ﻿Manufacturer ID,Part_ID,Part_type,Stat_ZH,Stat_EN,Description_ZH,Description_EN
-277,1,Legendary Perk,,,,
-277,2,Model,/,Stim,,
-277,3,Rarity,Common,Common,,
-277,4,Rarity,Uncommon,Uncommon,,
-277,5,Rarity,Rare,Rare,,
-277,6,Rarity,Epic,Epic,,
-277,7,Rarity,Legendary,Legendary,起搏器皮肤,Pacemaker Skin
-277,8,Legendary Perk,,,,
-277,9,Rarity,Legendary,Legendary,生命值提升器皮肤,Healthraiser Skin
+261,1,Rarity,Common,Common,,
+261,2,Rarity,Uncommon,Uncommon,,
+261,3,Rarity,Rare,Rare,,
+261,4,Rarity,Epic,Epic,,
+261,5,Rarity,Legendary,Legendary,闪亮战妆皮肤,War Paint Skin
+261,6,Legendary Perk,,,,
+261,7,Model,,,,
 265,1,Rarity,Common,Common,,
 265,2,Rarity,Uncommon,Uncommon,,
 265,3,Rarity,Rare,Rare,,
 265,4,Rarity,Epic,Epic,,
 265,5,Rarity,Legendary,Legendary,除颤仪皮肤,Defibrillator Skin
 265,6,Legendary Perk,,,,
-265,7,Model,/,Tonic,,
+265,7,Model,,,,
 265,8,Legendary Perk,,,,
 265,9,Rarity,Legendary,Legendary,鲜血皮肤,Vitae Skin
 266,1,Rarity,Common,Common,,
@@ -23,19 +21,19 @@
 266,4,Rarity,Epic,Epic,,
 266,5,Rarity,Legendary,Legendary,血液分析仪皮肤,Blood Analyzer Skin
 266,6,Legendary Perk,,,,
-266,7,Model,/,Refresher,,
+266,7,Model,,,,
 266,8,Rarity,Legendary,Legendary,盖革类固醇皮肤,Geiger-Roid Skin
-285,1,Legendary Perk,,,,
-285,2,Model,/,Recorporator,,
-285,3,Rarity,Common,Common,,
-285,4,Rarity,Uncommon,Uncommon,,
-285,5,Rarity,Rare,Rare,,
-285,6,Rarity,Epic,Epic,,
-285,7,Rarity,Legendary,Legendary,三重旁通皮肤,Triple Bypass Skin
-285,8,Legendary Perk,,,,
-285,9,Rarity,Legendary,Legendary,血月皮肤,Blood Moon Skin
+269,1,Rarity,Common,Common,,
+269,2,Rarity,Uncommon,Uncommon,,
+269,3,Rarity,Rare,Rare,,
+269,4,Rarity,Epic,Epic,,
+269,5,Rarity,Legendary,Legendary,肾上腺素泵皮肤,Adrenaline Pump Skin
+269,6,Legendary Perk,,,,
+269,7,Model,,,,
+269,8,Legendary Perk,,,,
+269,9,Rarity,Legendary,Legendary,氧化皮肤,Oxidation Skin
 274,1,Legendary Perk,,,,
-274,2,Model,/,Scabber,,
+274,2,Model,,,,
 274,3,Rarity,Common,Common,,
 274,4,Rarity,Uncommon,Uncommon,,
 274,5,Rarity,Rare,Rare,,
@@ -43,26 +41,28 @@
 274,7,Rarity,Legendary,Legendary,义体AF1000皮肤,AF1000 Skin
 274,8,Legendary Perk,,,,
 274,9,Rarity,Legendary,Legendary,,Hugger Skin
+277,1,Legendary Perk,,,,
+277,2,Model,,,,
+277,3,Rarity,Common,Common,,
+277,4,Rarity,Uncommon,Uncommon,,
+277,5,Rarity,Rare,Rare,,
+277,6,Rarity,Epic,Epic,,
+277,7,Rarity,Legendary,Legendary,起搏器皮肤,Pacemaker Skin
+277,8,Legendary Perk,,,,
+277,9,Rarity,Legendary,Legendary,生命值提升器皮肤,Healthraiser Skin
+285,1,Legendary Perk,,,,
+285,2,Model,,,,
+285,3,Rarity,Common,Common,,
+285,4,Rarity,Uncommon,Uncommon,,
+285,5,Rarity,Rare,Rare,,
+285,6,Rarity,Epic,Epic,,
+285,7,Rarity,Legendary,Legendary,三重旁通皮肤,Triple Bypass Skin
+285,8,Legendary Perk,,,,
+285,9,Rarity,Legendary,Legendary,血月皮肤,Blood Moon Skin
 290,1,Legendary Perk,,,,
-290,2,Model,/,Pocket Doc,,
+290,2,Model,,,,
 290,3,Rarity,Common,Common,,
 290,4,Rarity,Uncommon,Uncommon,,
 290,5,Rarity,Rare,Rare,,
 290,6,Rarity,Epic,Epic,,
 290,7,Rarity,Legendary,Legendary,杀戮之春皮肤,Kill Spring Skin
-261,1,Rarity,Common,Common,,
-261,2,Rarity,Uncommon,Uncommon,,
-261,3,Rarity,Rare,Rare,,
-261,4,Rarity,Epic,Epic,,
-261,5,Rarity,Legendary,Legendary,闪亮战妆皮肤,War Paint Skin
-261,6,Legendary Perk,,,,
-261,7,Model,/,Juicer,,
-269,1,Rarity,Common,Common,,
-269,2,Rarity,Uncommon,Uncommon,,
-269,3,Rarity,Rare,Rare,,
-269,4,Rarity,Epic,Epic,,
-269,5,Rarity,Legendary,Legendary,肾上腺素泵皮肤,Adrenaline Pump Skin
-269,6,Legendary Perk,,,,
-269,7,Model,/,Sobirat,,
-269,8,Legendary Perk,,,,
-269,9,Rarity,Legendary,Legendary,氧化皮肤,Oxidation Skin

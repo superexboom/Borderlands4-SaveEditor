@@ -15,9 +15,10 @@ import pandas as pd
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel,
     QLineEdit, QPushButton, QGroupBox, QComboBox, QRadioButton, QCheckBox,
-    QListWidgetItem, QScrollArea, QMessageBox, QSpinBox,
+    QListWidgetItem, QScrollArea, QMessageBox, QSpinBox, QFrame, QSizePolicy,
 )
 from PyQt6.QtCore import pyqtSignal, Qt
+from PyQt6.QtGui import QColor, QFont
 
 from core import b_encoder
 from core import resource_loader
@@ -55,6 +56,8 @@ class OptionCombo(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._base_labels = []
+        self._base_tooltips = []
         lay = QVBoxLayout(self)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(0)
@@ -71,16 +74,53 @@ class OptionCombo(QWidget):
         selected = self.selected_pid() if preserve else None
         self.combo.blockSignals(True)
         self.combo.clear()
-        for pid, label in options:
+        self._base_labels = []
+        self._base_tooltips = []
+        for option in options:
+            pid, label = option[:2]
+            tooltip = option[2] if len(option) > 2 else label
             self.combo.addItem(label, pid)
             idx = self.combo.count() - 1
-            self.combo.setItemData(idx, label, Qt.ItemDataRole.ToolTipRole)
+            self.combo.setItemData(idx, tooltip, Qt.ItemDataRole.ToolTipRole)
+            self._base_labels.append(str(label))
+            self._base_tooltips.append(str(tooltip))
         match = next(
             (index for index in range(self.combo.count()) if self.combo.itemData(index) == selected),
             0,
         )
         self.combo.setCurrentIndex(match)
         self.combo.blockSignals(False)
+
+    def set_candidate_states(self, states):
+        """Decorate options with advisory natural-generation hints.
+
+        Options are never disabled: these editors intentionally support modified
+        equipment.  The marker/background only tells the user which choices fit the
+        currently selected natural composition.
+        """
+        states = states or {}
+        for index in range(self.combo.count()):
+            pid = self.combo.itemData(index)
+            base = self._base_labels[index] if index < len(self._base_labels) else self.combo.itemText(index)
+            state = states.get(pid) or {}
+            marker = str(state.get("marker") or "").strip()
+            self.combo.setItemText(index, f"{marker}  {base}" if marker else base)
+            hint = str(state.get("hint") or "").strip()
+            detail = self._base_tooltips[index] if index < len(self._base_tooltips) else base
+            self.combo.setItemData(
+                index,
+                "\n\n".join(filter(None, (hint, detail))),
+                Qt.ItemDataRole.ToolTipRole,
+            )
+            self.combo.setItemData(index, None, Qt.ItemDataRole.BackgroundRole)
+            self.combo.setItemData(index, None, Qt.ItemDataRole.ForegroundRole)
+            font = QFont(self.combo.font())
+            font.setBold(state.get("kind") == "legal")
+            self.combo.setItemData(index, font, Qt.ItemDataRole.FontRole)
+            if state.get("kind") == "legal":
+                self.combo.setItemData(index, QColor(74, 144, 226, 48), Qt.ItemDataRole.BackgroundRole)
+            elif state.get("kind") == "warning":
+                self.combo.setItemData(index, QColor(230, 164, 57, 38), Qt.ItemDataRole.BackgroundRole)
 
     def selected_pid(self):
         return self.combo.currentData()
@@ -174,7 +214,9 @@ class BaseEquipmentEditorTab(QWidget):
     def _load_ui_localization(self):
         loc_file = resource_loader.get_ui_localization_file(self.current_lang)
         full_loc = resource_loader.load_json_resource(loc_file) or {}
+        self._full_loc = full_loc
         self.ui_loc = full_loc.get(self.UI_LOC_KEY, {})
+        self.legit_loc = full_loc.get("equipment_legit", {})
 
     def _(self, text):
         return self.localization.get(str(text), str(text))
@@ -198,6 +240,7 @@ class BaseEquipmentEditorTab(QWidget):
         self._create_source_bar(layout)
         self._create_output_group(layout)
         self._create_top_controls(layout)
+        self._create_generation_guidance(layout)
 
         self.perks_group = QGroupBox(self.ui_loc['groups']['perks'])
         perks_layout = QGridLayout(self.perks_group)
@@ -330,6 +373,33 @@ class BaseEquipmentEditorTab(QWidget):
         controls_layout.addStretch()
         layout.addWidget(self.base_attrs_group)
 
+    def _create_generation_guidance(self, layout):
+        self.generation_guidance = QFrame()
+        self.generation_guidance.setObjectName("equipmentLegitCard")
+        row = QHBoxLayout(self.generation_guidance)
+        row.setContentsMargins(12, 9, 12, 9)
+        row.setSpacing(12)
+
+        self.generation_status_badge = QLabel("—")
+        self.generation_status_badge.setObjectName("genBuildStatus")
+        self.generation_status_badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.generation_status_badge.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
+        row.addWidget(self.generation_status_badge)
+
+        text_col = QVBoxLayout()
+        text_col.setContentsMargins(0, 0, 0, 0)
+        text_col.setSpacing(2)
+        self.generation_reason_label = QLabel("")
+        self.generation_reason_label.setObjectName("equipmentLegitReason")
+        self.generation_reason_label.setWordWrap(True)
+        self.generation_groups_label = QLabel("")
+        self.generation_groups_label.setObjectName("equipmentLegitGroups")
+        self.generation_groups_label.setWordWrap(True)
+        text_col.addWidget(self.generation_reason_label)
+        text_col.addWidget(self.generation_groups_label)
+        row.addLayout(text_col, 1)
+        layout.addWidget(self.generation_guidance)
+
     def _connect_signals(self):
         self.mfg_combo.currentTextChanged.connect(self.on_mfg_change)
         self.level_edit.textChanged.connect(self.rebuild_output)
@@ -362,7 +432,7 @@ class BaseEquipmentEditorTab(QWidget):
         formatters work unchanged on these rows.
         """
         rows = [
-            {owner_col: owner_id, "Part_ID": part_id, "Part_type": "Firmware", "Stat": "", "Description": ""}
+            {owner_col: owner_id, "Part_ID": int(part_id), "Part_type": "Firmware", "Stat": "", "Description": ""}
             for part_id, _internal in item_display_resolver.equipment_firmware_parts(owner_id)
         ]
         return pd.DataFrame(rows, columns=[owner_col, "Part_ID", "Part_type", "Stat", "Description"])
@@ -382,7 +452,15 @@ class BaseEquipmentEditorTab(QWidget):
         # rarity
         self.rarity_combo.blockSignals(True)
         self.rarity_combo.clear()
-        for _, r in self.df_mfg[(self.df_mfg['Manufacturer ID'] == mfg_id) & (self.df_mfg['Part_type'] == 'Rarity')].iterrows():
+        rarity_rows = self.df_mfg[
+            (self.df_mfg['Manufacturer ID'] == mfg_id) & (self.df_mfg['Part_type'] == 'Rarity')
+        ].copy()
+        rarity_order = {"common": 0, "uncommon": 1, "rare": 2, "epic": 3, "legendary": 4, "pearl": 5}
+        rarity_rows["_sort_rarity"] = rarity_rows["Stat"].map(
+            lambda value: rarity_order.get(str(value).strip().casefold(), 99)
+        )
+        rarity_rows = rarity_rows.sort_values(["_sort_rarity", "Part_ID"], kind="stable")
+        for _, r in rarity_rows.iterrows():
             desc = r['Description']
             self.rarity_combo.addItem(f"{self._(r['Stat'])} - {desc if pd.notna(desc) else ''}".strip(" -"), r['Part_ID'])
         self.rarity_combo.blockSignals(False)
@@ -426,7 +504,15 @@ class BaseEquipmentEditorTab(QWidget):
         options = [(None, self.ui_loc['misc']['none'])]
         for _, r in df.iterrows():
             text, part_id = fmt(r)
-            options.append((part_id, text))
+            if cfg.get("key") == "firmware":
+                name = item_display_resolver.equipment_part_name(
+                    self._row_ref_key(r), self.current_lang, self._(r.get('Stat', ''))
+                )
+                match = re.search(r"(?:^|,\s*)L1:\s*(.*?)(?=,\s*L2:|$)", text)
+                compact = " - ".join(filter(None, (name, match.group(1).strip() if match else ""))) or name or text
+                options.append((part_id, compact, text))
+            else:
+                options.append((part_id, text))
         cfg["_chip"].set_options(options, preserve=self._refreshing_descriptions)
 
     def _populate_button_group(self, cfg, df, fmt):
@@ -565,39 +651,233 @@ class BaseEquipmentEditorTab(QWidget):
     # Empty mapping = the family opts out and no badge is shown.
     RULE_GROUPS_BY_PICKER: dict[str, tuple[str, ...]] = {}
 
+    def _legit_text(self, key, fallback):
+        return str((self.legit_loc or {}).get(key) or fallback)
+
+    def _generation_group_text(self, group):
+        groups = (self.legit_loc or {}).get("groups") or {}
+        return str(groups.get(str(group), group))
+
+    @staticmethod
+    def _generation_range(spec):
+        low = int(spec.get("effective_min", spec.get("min", 0)))
+        high = int(spec.get("effective_max", spec.get("max", 0)))
+        return str(low) if low == high else f"{low}–{high}"
+
+    def _is_gold_skin_selected(self):
+        mfg_id = self._current_mfg_id()
+        part_id = self.rarity_combo.currentData() if hasattr(self, "rarity_combo") else None
+        if mfg_id is None or part_id is None:
+            return False
+        try:
+            rows = self.df_mfg[
+                (self.df_mfg['Manufacturer ID'] == int(mfg_id))
+                & (self.df_mfg['Part_ID'] == int(part_id))
+                & (self.df_mfg['Part_type'] == 'Rarity')
+            ]
+        except (KeyError, TypeError, ValueError):
+            return False
+        if rows.empty:
+            return False
+        row = rows.iloc[0]
+        values = [row.get("Description", ""), row.get("Description_ZH", ""), row.get("Description_EN", "")]
+        normalized = {str(value).strip().casefold() for value in values if pd.notna(value)}
+        return bool(normalized.intersection({"gold skin", "goldskin", "金皮肤"}))
+
+    def _generation_ref_for_option(self, key, data):
+        """Subclass hook: turn one picker/chip payload into ``owner:part``."""
+        return ""
+
+    def _generation_violation_text(self, violation):
+        code = str(violation.get("code") or "")
+        group = self._generation_group_text(violation.get("group") or "")
+        if code == "count_below":
+            template = self._legit_text("reason_count_below", "Missing {group} ({actual}/{limit})")
+            return template.format(group=group, actual=violation.get("actual", 0), limit=violation.get("min", 0))
+        if code == "count_above":
+            template = self._legit_text("reason_count_above", "Too many {group} ({actual}/{limit})")
+            return template.format(group=group, actual=violation.get("actual", 0), limit=violation.get("max", 0))
+        mapping = {
+            "part_not_allowed": "reason_part_not_allowed",
+            "duplicate_part": "reason_duplicate_part",
+            "missing_required_tag": "reason_missing_dependency",
+            "excluded_tag_conflict": "reason_conflict",
+            "foreign_root_part": "reason_foreign_part",
+            "unknown_part": "reason_unknown_part",
+            "unknown_composition": "reason_unknown_composition",
+            "multiple_compositions": "reason_multiple_compositions",
+            "unresolved_rule_parts": "reason_rule_gap",
+            "conditional_availability": "reason_conditional",
+        }
+        fallbacks = {
+            "reason_part_not_allowed": "A selected part is outside this natural template",
+            "reason_duplicate_part": "The same part is selected more than once",
+            "reason_missing_dependency": "A selected part is missing its dependency",
+            "reason_conflict": "Selected parts conflict",
+            "reason_foreign_part": "A cross-family part is selected",
+            "reason_unknown_part": "An unknown part is present",
+            "reason_unknown_composition": "Select a recognized item template",
+            "reason_multiple_compositions": "More than one item template is selected",
+            "reason_rule_gap": "Generation rules are incomplete",
+            "reason_conditional": "This build requires conditional content",
+        }
+        key = mapping.get(code, "reason_modified")
+        return self._legit_text(key, fallbacks.get(key, "Does not match the natural-generation rules"))
+
+    def _candidate_state(self, ref, rule_keys, groups):
+        ref = str(ref or "")
+        if not ref:
+            return {}
+        matched = [groups[key] for key in rule_keys if key in groups and ref in set(groups[key].get("allowed") or [])]
+        if not matched:
+            return {
+                "kind": "neutral",
+                "marker": "",
+                "hint": self._legit_text("candidate_not_allowed", "Not part of this natural template; still selectable as a modified part."),
+            }
+        if not any(int(spec.get("effective_max", spec.get("max", 0))) > 0 or ref in set(spec.get("selected") or []) for spec in matched):
+            return {
+                "kind": "neutral",
+                "marker": "",
+                "hint": self._legit_text("candidate_not_allowed", "Not active in this natural template; still selectable as a modified part."),
+            }
+        selected = any(ref in set(spec.get("selected") or []) for spec in matched)
+        remaining = any(ref in set(spec.get("remaining_eligible_refs") or []) for spec in matched)
+        eligible = any(ref in set(spec.get("eligible_refs") or []) for spec in matched)
+        names = " / ".join(self._generation_group_text(key) for key in rule_keys if key in groups and ref in set(groups[key].get("allowed") or []))
+        if selected or remaining:
+            template = self._legit_text("candidate_legal", "Natural candidate: {group}")
+            return {"kind": "legal", "marker": "✓", "hint": template.format(group=names)}
+        if eligible:
+            template = self._legit_text("candidate_slot_full", "Natural candidate for {group}; replace an existing part to stay legal.")
+            return {"kind": "warning", "marker": "!", "hint": template.format(group=names)}
+        template = self._legit_text("candidate_dependency", "Belongs to {group}, but the current pairing or dependency is not satisfied.")
+        return {"kind": "warning", "marker": "!", "hint": template.format(group=names)}
+
+    def _set_group_guidance(self, key, rule_keys, groups, ready):
+        cfg = self._group_cfgs.get(key) or {}
+        group_box = cfg.get("_group_box")
+        base_title = self.ui_loc.get('groups', {}).get(cfg.get("title_key"), cfg.get("title_key", key))
+        if not ready:
+            if group_box is not None:
+                group_box.setTitle(base_title)
+            picker = self._group_pickles.get(key)
+            if picker is not None:
+                if hasattr(picker, "set_count_limit"):
+                    picker.set_count_limit(None)
+                source = []
+                for item in picker._source:
+                    undecorated = dict(item)
+                    undecorated.pop("candidate", None)
+                    source.append(undecorated)
+                picker.set_source(source)
+            if cfg.get("mode") == "chip" and cfg.get("_chip"):
+                cfg["_chip"].set_candidate_states({})
+            return
+
+        specs = [(rule_key, groups.get(rule_key)) for rule_key in rule_keys]
+        specs = [(rule_key, spec) for rule_key, spec in specs if isinstance(spec, dict)]
+        visible = [
+            (rule_key, spec)
+            for rule_key, spec in specs
+            if int(spec.get("effective_max", spec.get("max", 0))) > 0 or spec.get("selected")
+        ]
+        bits = []
+        for rule_key, spec in visible:
+            actual = len(spec.get("selected") or [])
+            value = f"{actual}/{self._generation_range(spec)}"
+            if len(visible) > 1:
+                value = f"{self._generation_group_text(rule_key)} {value}"
+            bits.append(value)
+        if group_box is not None:
+            group_box.setTitle(f"{base_title} · {' · '.join(bits)}" if bits else f"{base_title} · —")
+
+        picker = self._group_pickles.get(key)
+        if picker is not None:
+            maximum = sum(int(spec.get("effective_max", spec.get("max", 0))) for _, spec in visible)
+            if hasattr(picker, "set_count_limit"):
+                picker.set_count_limit(maximum if visible else 0, self._legit_text("slot_budget_hint", "Natural slot budget"))
+            source = []
+            for item in picker._source:
+                decorated = dict(item)
+                ref = self._generation_ref_for_option(key, item.get("data"))
+                decorated["candidate"] = self._candidate_state(ref, rule_keys, groups)
+                source.append(decorated)
+            picker.set_source(source)
+        elif cfg.get("mode") == "chip" and cfg.get("_chip"):
+            states = {}
+            for pid in cfg["_chip"].option_pids():
+                ref = self._generation_ref_for_option(key, pid)
+                states[pid] = self._candidate_state(ref, rule_keys, groups)
+            cfg["_chip"].set_candidate_states(states)
+
     def _update_generation_guidance(self, decoded):
         mapping = self.RULE_GROUPS_BY_PICKER
         if not mapping or not decoded:
             return
+        if self._is_gold_skin_selected():
+            self.generation_status_badge.setText(self._legit_text("status_gold", "Gold skin"))
+            self.generation_status_badge.setProperty("ruleStatus", "suppressed")
+            self.generation_reason_label.setText(self._legit_text(
+                "gold_reason",
+                "Gold Skin is only a legendary-skin foundation, so natural-build guidance is disabled.",
+            ))
+            self.generation_groups_label.clear()
+            self.generation_status_badge.setToolTip(self.generation_reason_label.text())
+            self.generation_status_badge.style().unpolish(self.generation_status_badge)
+            self.generation_status_badge.style().polish(self.generation_status_badge)
+            for key, rule_keys in mapping.items():
+                self._set_group_guidance(key, rule_keys, {}, False)
+            return
         try:
             result = item_display_resolver.validate_weapon_generation(decoded, allow_incomplete=True)
-        except Exception:
+        except Exception as exc:
+            self.generation_status_badge.setText(self._legit_text("status_unknown", "Unknown"))
+            self.generation_status_badge.setProperty("ruleStatus", "unknown")
+            self.generation_reason_label.setText(str(exc))
             return
         groups = result.get("groups") or {}
         ready = bool(result.get("rules_available") and result.get("composition_ref"))
-        hint = (self.ui_loc or {}).get('labels', {}).get('slot_budget_hint') or ""
+        status = str(result.get("status") or "unknown")
+        status_labels = {
+            "legal": self._legit_text("status_legal", "Natural"),
+            "incomplete": self._legit_text("status_incomplete", "Incomplete"),
+            "modified": self._legit_text("status_modified", "Modified"),
+            "conditional": self._legit_text("status_conditional", "Conditional"),
+            "unknown": self._legit_text("status_unknown", "Unknown"),
+        }
+        reasons = list(dict.fromkeys(self._generation_violation_text(item) for item in result.get("violations") or []))
+        if not reasons:
+            reasons = [self._legit_text("reason_legal", "Matches the current natural-generation rules.")]
+        self.generation_status_badge.setText(status_labels.get(status, status_labels["unknown"]))
+        self.generation_status_badge.setProperty("ruleStatus", status if status in status_labels else "unknown")
+        self.generation_status_badge.style().unpolish(self.generation_status_badge)
+        self.generation_status_badge.style().polish(self.generation_status_badge)
+        self.generation_reason_label.setText(" · ".join(reasons[:2]))
+        tooltip = "\n".join(reasons)
+        self.generation_status_badge.setToolTip(tooltip)
+        self.generation_reason_label.setToolTip(tooltip)
+
+        ordered = []
+        for rule_keys in mapping.values():
+            for rule_key in rule_keys:
+                if rule_key not in ordered:
+                    ordered.append(rule_key)
+        group_bits = []
+        for rule_key in ordered:
+            spec = groups.get(rule_key)
+            if not isinstance(spec, dict):
+                continue
+            maximum = int(spec.get("effective_max", spec.get("max", 0)))
+            actual = len(spec.get("selected") or [])
+            if maximum <= 0 and actual <= 0:
+                continue
+            group_bits.append(
+                f"{self._generation_group_text(rule_key)} {actual}/{self._generation_range(spec)}"
+            )
+        self.generation_groups_label.setText(" · ".join(group_bits))
         for picker_key, rule_keys in mapping.items():
-            picker = self._group_pickles.get(picker_key)
-            if picker is None or not hasattr(picker, "set_count_limit"):
-                continue
-            if not ready:
-                picker.set_count_limit(None)
-                continue
-            total = 0
-            seen = False
-            for rk in rule_keys:
-                spec = groups.get(rk)
-                if not isinstance(spec, dict):
-                    continue
-                limit = spec.get("effective_max")
-                if limit is None:
-                    limit = spec.get("max")
-                try:
-                    total += int(limit)
-                    seen = True
-                except (TypeError, ValueError):
-                    continue
-            picker.set_count_limit(total if seen else None, hint)
+            self._set_group_guidance(picker_key, rule_keys, groups, ready)
 
     def _default_new_header(self, mfg_id, level):
         return f"{mfg_id}, 0, 1, {level}| 2, {self._source_seed}"
@@ -707,6 +987,7 @@ class BaseEquipmentEditorTab(QWidget):
             self._source_name = name
             self._preserved_tokens = []
             self._preserved_children = self._initial_preserved_children()
+            self._extra_reset_state()
             mfg_index = next(
                 (i for i in range(self.mfg_combo.count())
                  if self.mfg_combo.itemText(i).rstrip().endswith(f" - {parsed['mfg_id']}")),

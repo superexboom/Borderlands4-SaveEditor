@@ -217,11 +217,14 @@ def _csv_part_details(
             out[f"{entry.get('manufacturer_id')}:{entry.get('id')}"] = {
                 "text": f"{text} x{count}" if count > 1 else text
             }
-        # stats and firmware are always resolved against shared owner 247.
-        for entry in [*(details.get("stats") or []), *(details.get("firmware") or [])]:
+        # Secondary stats and firmware are always resolved against shared owner 247.
+        for entry in details.get("stats") or []:
             out[f"247:{entry.get('id')}"] = {
-                "text": _plain_markup(entry.get("text") or entry.get("name") or "")
+                "text": _plain_markup(entry.get("text") or "")
             }
+        for entry in details.get("firmware") or []:
+            ref_key = f"247:{entry.get('id')}"
+            out[ref_key] = _firmware_csv_detail(ref_key, item_type, lang, entry)
         return out
 
     if item_type == "Class Mod":
@@ -248,7 +251,7 @@ def _csv_part_details(
                     "text": ", ".join(part for part in [head, *lines] if part and part.strip()),
                     "name": _plain_markup(skill.get("name")),
                 }
-        for entry in [*(details.get("perks") or []), *(details.get("firmware") or [])]:
+        for entry in details.get("perks") or []:
             name = _plain_markup(entry.get("name") or entry.get("text") or "")
             # No "xN" suffix: the card collapses duplicate perks into one line and
             # reports the count, but here each copy already has its own row.
@@ -258,6 +261,9 @@ def _csv_part_details(
                 "category": str(entry.get("category") or ""),
                 "part": str(entry.get("internal") or ""),
             }
+        for entry in details.get("firmware") or []:
+            ref_key = f"{_CLASSMOD_SHARED_OWNER}:{entry.get('id')}"
+            out[ref_key] = _firmware_csv_detail(ref_key, item_type, lang, entry)
         # Legendary class mod bodies carry the item-wide effect text and red text.
         body_text = ", ".join(
             part
@@ -274,6 +280,32 @@ def _csv_part_details(
         return out
 
     return out
+
+
+def _firmware_csv_detail(
+    ref_key: str,
+    item_type: str,
+    lang: str,
+    fallback: dict[str, Any] | None = None,
+) -> dict[str, str]:
+    """Use the shared firmware catalog for Inspector names and all three tiers."""
+    try:
+        entry = resolver._equipment_firmware_entry(ref_key, item_type, lang)
+    except (KeyError, OSError, TypeError, ValueError):
+        entry = None
+    entry = entry or fallback or {}
+    name = _plain_markup(entry.get("name") or entry.get("text") or "")
+    descriptions = [
+        f"L{level}: {_plain_markup(text)}"
+        for level, text in enumerate(entry.get("descs") or [], 1)
+        if _plain_markup(text)
+    ]
+    return {
+        "text": ", ".join(descriptions) or name,
+        "name": name,
+        "category": "firmware",
+        "part": str(entry.get("internal") or ""),
+    }
 
 
 def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-CN") -> list[dict[str, Any]]:

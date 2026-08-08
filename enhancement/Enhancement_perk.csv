@@ -1,24 +1,24 @@
 manufacturers_ID,perk_ID,perk_name_EN,perk_name_ZH
-247,1,God Killer,弑神者 -固件
-247,2,Reel Big Fist,沙包大拳头 -固件
-247,3,Lifeblood,命脉 -固件
-247,4,Airstrike,空袭 -固件
-247,5,High Caliber,大口径 -固件
-247,6,Gadget Ahoy,装置启动 -固件
-247,7,Baker,烘焙师 -固件
-247,8,Oscar Mike,正在行动 -固件
-247,9,Rubberband Man,橡皮筋人 -固件
-247,10,Dead Eye,神枪手 -固件
-247,11,Action Fist,动能拳头 -固件
-247,12,GOOJFC,保命王牌 -固件
-247,13,Atlas E.X,阿特拉斯E.X. -固件
-247,14,Atlas Infinum,阿特拉斯无限量 -固件
-247,15,Trickshot,花式射击 -固件
-247,16,Jacked,杰克式改造 -固件
-247,17,Get Throwin',发球入场 -固件
-247,18,Heating Up,加热升温 -固件
-247,19,Bullet Spare,备用子弹 -固件
-247,20,Dead-dy O',大情圣 -固件
+247,1,,
+247,2,,
+247,3,,
+247,4,,
+247,5,,
+247,6,,
+247,7,,
+247,8,,
+247,9,,
+247,10,,
+247,11,,
+247,12,,
+247,13,,
+247,14,,
+247,15,,
+247,16,,
+247,17,,
+247,18,,
+247,19,,
+247,20,,
 247,21,Sniper Mag +75%,狙击枪弹匣容量 +75%
 247,22,Shotgun Mag +75%,霰弹枪弹匣容量 +75%
 247,23,SMG Mag +75%,冲锋枪弹匣容量 +75%
@@ -90,7 +90,7 @@ manufacturers_ID,perk_ID,perk_name_EN,perk_name_ZH
 247,94,Shotgun Reload +38%,霰弹枪装填速度 +38%
 247,95,AR Reload +38%,突击步枪装填速度 +38%
 247,96,Pistol Reload +38%,手枪装填速度 +38%
-247,103,Risky Boots,风险启用 -固件
+247,103,,
 247,104,Sniper Status Effect DMG +38%,狙击枪状态效果伤害 +38%
 247,105,Sniper Status Effect Chance +38%,狙击枪状态效果率 +38%
 247,106,Sniper Spalsh Radius +75%,狙击枪溅射半径 +75%
@@ -235,6 +235,6 @@ manufacturers_ID,perk_ID,perk_name_EN,perk_name_ZH
 247,245,Sniper Splash Radius +75%,狙击枪溅射半径 +75%
 247,246,Sniper Status Effect Chance +38%,狙击枪状态效果率 +38%
 247,247,Sniper Status Effect DMG +38%,狙击枪状态效果伤害 +38%
-247,248,Skillcraft,技能工艺 -固件
-247,249,Active Fire-Firmware,主动开火-固件
-247,250,Bruiser-Firmware,重击者-固件
+247,248,,
+247,249,,
+247,250,,

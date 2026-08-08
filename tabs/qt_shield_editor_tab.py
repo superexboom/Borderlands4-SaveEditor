@@ -52,9 +52,8 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
             {"key": "element", "mode": "chip", "title_key": "element", "columns": 3, "grid": (0, 0, 1, 1)},
             {"key": "firmware", "mode": "chip", "title_key": "firmware", "columns": 3, "grid": (0, 1, 1, 1)},
             {"key": "legendary", "mode": "picker", "title_key": "legendary", "stackable": False, "grid": (1, 0, 1, 2)},
-            {"key": "energy", "mode": "picker", "title_key": "energy", "stackable": True, "grid": (2, 0, 1, 2)},
-            {"key": "armor", "mode": "picker", "title_key": "armor", "stackable": True, "grid": (3, 0, 1, 2)},
-            {"key": "universal", "mode": "picker", "title_key": "universal", "stackable": True, "grid": (4, 0, 1, 2)},
+            {"key": "primary", "mode": "picker", "title_key": "primary", "stackable": True, "grid": (2, 0, 1, 2)},
+            {"key": "secondary", "mode": "picker", "title_key": "secondary", "stackable": True, "grid": (3, 0, 1, 2)},
         ]
 
     def _initial_preserved_children(self):
@@ -70,22 +69,35 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
         df = self.df_main[self.df_main['Shield_perk_main_ID'] == 246]
         self._populate_chip_group(self._group_cfgs["element"], df[df['Part_type'] == 'Elemental Resistance'], self._fmt_row)
         self._populate_chip_group(self._group_cfgs["firmware"], self._firmware_group_df('Shield_perk_main_ID', 246), self._fmt_row)
-        self._group_pickles["universal"].set_source(self._perk_items(246))
-        for key in ("universal", "energy", "armor"):
+        for key in ("primary", "secondary"):
             picker = self._group_pickles.get(key)
             if picker is not None:
-                picker.set_categories(self._augment_categories(), columns=4)
+                picker.set_categories(self._augment_source_categories(), columns=4)
 
     # Each augment picker mixes both slots, so its budget is the sum of the two sides as
     # declared for the current composition. The generation rules say max=1 per side, which
     # matches what 80 dumped shields show, but the rules are the source: a retuned or new
     # composition changes the badge without a code edit.
     RULE_GROUPS_BY_PICKER = {
-        "universal": ("primary_augment", "secondary_augment"),
-        "energy": ("primary_augment", "secondary_augment"),
-        "armor": ("primary_augment", "secondary_augment"),
+        "element": ("element",),
+        "firmware": ("firmware",),
+        "primary": ("primary_augment",),
+        "secondary": ("secondary_augment",),
         "legendary": ("unique",),
     }
+
+    def _generation_ref_for_option(self, key, data):
+        if data is None:
+            return ""
+        if key in {"element", "firmware"}:
+            return f"{self.ELEMENT_PARENT}:{int(data)}"
+        if key in {"primary", "secondary"}:
+            parent, part_id = data
+            return f"{int(parent)}:{int(part_id)}"
+        if key == "legendary":
+            part_id, owner = data
+            return f"{int(owner)}:{int(part_id)}"
+        return ""
 
     # Augments occupy two independent slots, confirmed twice over: the rules declare
     # primary_augment and secondary_augment separately with max=1 each, and across 80
@@ -103,13 +115,14 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
         category = str(ref.get("category") or "")
         return category if category in self._AUGMENT_FACETS else "other"
 
-    def _augment_categories(self):
-        groups = (self.ui_loc or {}).get('augment_facets') or {}
-        cats = [("all", groups.get('all', 'All'))]
-        for key in self._AUGMENT_FACETS:
-            cats.append((key, groups.get(key, key)))
-        cats.append(("other", groups.get('other', 'Other')))
-        return cats
+    def _augment_source_categories(self):
+        groups = (self.ui_loc or {}).get('augment_sources') or {}
+        return [
+            ("all", groups.get("all", "All")),
+            ("universal", groups.get("universal", "Universal")),
+            ("energy", groups.get("energy", "Energy")),
+            ("armor", groups.get("armor", "Armor")),
+        ]
 
     def _perk_items(self, main_id):
         items = []
@@ -119,6 +132,37 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
             items.append({"key": f"p{main_id}:{part_id}", "label": text,
                           "category": self._augment_facet(main_id, part_id), "data": int(part_id)})
         return items
+
+    def _augment_items(self, mfg_id, slot):
+        labels = (self.ui_loc or {}).get('augment_sources') or {}
+        source_names = {
+            246: labels.get("universal", "Universal"),
+            248: labels.get("energy", "Energy"),
+            237: labels.get("armor", "Armor"),
+        }
+        source_keys = {246: "universal", 248: "energy", 237: "armor"}
+        current_type = self.MFG_TYPE_BASE.get(mfg_id)
+        rows = []
+        for parent in (246, 248, 237):
+            df = self.df_main[
+                (self.df_main['Shield_perk_main_ID'] == parent)
+                & (self.df_main['Part_type'] == 'Perk')
+            ]
+            for _, row in df.iterrows():
+                part_id = int(row['Part_ID'])
+                if self._augment_facet(parent, part_id) != slot:
+                    continue
+                text, _ = self._fmt_row(row)
+                source_key = source_keys[parent]
+                preferred = parent == 246 or source_key.casefold() == str(current_type or "").casefold()
+                rows.append((0 if preferred else 1, parent, part_id, {
+                    "key": f"{slot}:{parent}:{part_id}",
+                    "label": f"[{source_names[parent]}] {text}",
+                    "category": source_key,
+                    "data": (parent, part_id),
+                }))
+        rows.sort(key=lambda item: (item[0], item[1], item[2]))
+        return [item[-1] for item in rows]
 
     def _legendary_items(self, current_mfg):
         items = []
@@ -137,27 +181,18 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
     def _group_items(self, key, mfg_id):
         if key == "legendary":
             return self._legendary_items(mfg_id)
-        if key == "energy":
-            return self._perk_items(248)
-        if key == "armor":
-            return self._perk_items(237)
-        if key == "universal":
-            return self._perk_items(246)
+        if key in {"primary", "secondary"}:
+            return self._augment_items(mfg_id, f"{key}_augment")
         return []
 
     def _group_rows(self, key, mfg_id):
         return None  # element/firmware populated once in _populate_initial_extra
 
     def _on_mfg_changed_extra(self, mfg_id):
-        # enable/disable energy vs armor pickers based on shield type
-        mfg_type = self.MFG_TYPE_BASE.get(mfg_id)
-        energy_on = mfg_type == "Energy"
-        armor_on = mfg_type == "Armor"
-        for key, on in (("energy", energy_on), ("armor", armor_on)):
-            picker = self._group_pickles.get(key)
-            if picker is not None:
-                picker.setEnabled(on)
-                picker.parentWidget().setEnabled(on)
+        # Both natural and modified parts remain selectable.  Current-type and
+        # universal augments are sorted first; the rule highlighter marks the rest.
+        for key in ("primary", "secondary"):
+            self._group_pickles[key].set_source(self._group_items(key, mfg_id))
 
     # ------------------------------------------------------------------ #
     # Output
@@ -168,7 +203,7 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
         # Model part
         if self._imported_copy and self._source_model_present:
             skill_parts.append(f"{{{self.mfg_model_map[mfg_id]}}}")
-        elif not leg_entries and mfg_id in self.mfg_model_map:
+        elif not self._imported_copy and not leg_entries and mfg_id in self.mfg_model_map:
             skill_parts.append(f"{{{self.mfg_model_map[mfg_id]}}}")
         # legendary (cross-mfg -> {mfg:[ids]})
         other_mfg = {}
@@ -185,15 +220,14 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
         # element + firmware -> 246
         for pid in self._checked_part_ids("element", "firmware"):
             secondary.setdefault(self.ELEMENT_PARENT, []).append(pid)
-        # perk lists -> their parent ids (respect enable state)
-        mfg_type = self.MFG_TYPE_BASE.get(mfg_id)
-        for key, parent in self.GROUP_PARENT.items():
+        # Primary and secondary are independent natural slots.  Each candidate keeps
+        # its real parent id so universal/energy/armor augments serialize correctly.
+        for key in ("primary", "secondary"):
             picker = self._group_pickles.get(key)
-            if picker is None or not picker.isEnabled():
-                continue
             for e in self._picker_entries(key):
+                parent, part_id = e["data"]
                 for _ in range(self._count_of(e)):
-                    secondary.setdefault(parent, []).append(e["data"])
+                    secondary.setdefault(parent, []).append(part_id)
         return skill_parts, secondary
 
     @property
@@ -212,11 +246,9 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
         from tabs.qt_serial_import import parse_components
         mfg_id = self._current_mfg_id()
         rarity_ids = self._rarity_index_map()
-        universal = self._picker_item_map("universal")
-        energy = self._picker_item_map("energy")
-        armor = self._picker_item_map("armor")
+        primary = self._picker_item_map("primary")
+        secondary_picker = self._picker_item_map("secondary")
         legendary = self._picker_item_map("legendary")
-        shield_type = self.MFG_TYPE_BASE.get(mfg_id)
         model_id = self.mfg_model_map.get(mfg_id)
 
         for token in parse_components(component):
@@ -244,20 +276,19 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
                         pass
                     elif self._select_group_pid("firmware", part_id):
                         pass
-                    elif part_id in universal:
-                        self._picker_add("universal", universal[part_id])
+                    elif (parent_id, part_id) in primary:
+                        self._picker_add("primary", primary[(parent_id, part_id)])
+                    elif (parent_id, part_id) in secondary_picker:
+                        self._picker_add("secondary", secondary_picker[(parent_id, part_id)])
                     else:
                         self._preserved_children[246].append(part_id)
-                elif parent_id == 248:
-                    if shield_type == 'Energy' and part_id in energy:
-                        self._picker_add("energy", energy[part_id])
+                elif parent_id in (248, 237):
+                    if (parent_id, part_id) in primary:
+                        self._picker_add("primary", primary[(parent_id, part_id)])
+                    elif (parent_id, part_id) in secondary_picker:
+                        self._picker_add("secondary", secondary_picker[(parent_id, part_id)])
                     else:
-                        self._preserved_children[248].append(part_id)
-                elif parent_id == 237:
-                    if shield_type == 'Armor' and part_id in armor:
-                        self._picker_add("armor", armor[part_id])
-                    else:
-                        self._preserved_children[237].append(part_id)
+                        self._preserved_children[parent_id].append(part_id)
                 elif (part_id, parent_id) in legendary:
                     self._picker_add("legendary", legendary[(part_id, parent_id)])
                 else:

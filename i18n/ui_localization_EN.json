@@ -1041,6 +1041,55 @@
       "base85_copied": "Base85 copied"
     }
   },
+  "equipment_legit": {
+    "status_legal": "Natural",
+    "status_incomplete": "Incomplete",
+    "status_modified": "Modified",
+    "status_conditional": "Conditional",
+    "status_unknown": "Unknown",
+    "status_gold": "Gold foundation",
+    "reason_legal": "Matches the current natural-generation rules.",
+    "reason_count_below": "Missing {group} ({actual}/{limit})",
+    "reason_count_above": "Too many {group} ({actual}/{limit})",
+    "reason_part_not_allowed": "A selected part is outside this template",
+    "reason_duplicate_part": "The same part is selected more than once",
+    "reason_missing_dependency": "A part dependency is not satisfied",
+    "reason_conflict": "Selected parts conflict",
+    "reason_foreign_part": "A cross-family or cross-manufacturer part is selected",
+    "reason_unknown_part": "An unknown part is present",
+    "reason_unknown_composition": "Select a recognized item template",
+    "reason_multiple_compositions": "More than one item template is selected",
+    "reason_rule_gap": "Generation rules are incomplete",
+    "reason_conditional": "This build requires conditional content",
+    "reason_modified": "Does not match natural-generation rules",
+    "candidate_legal": "Natural candidate: {group}",
+    "candidate_slot_full": "Natural for {group}; replace an existing part to stay legal.",
+    "candidate_dependency": "Belongs to {group}, but the current pairing or dependency is not satisfied.",
+    "candidate_not_allowed": "Outside this natural template; still selectable as a modified part.",
+    "slot_budget_hint": "Shows current count against the natural slot budget; modified counts remain editable.",
+    "gold_reason": "Gold Skin is only a legendary-skin foundation and has no natural build; guidance is disabled.",
+    "groups": {
+      "barrel": "Barrel",
+      "barrel_acc": "Barrel Acc.",
+      "body": "Body",
+      "body_acc": "Body Acc.",
+      "body_ele": "Element",
+      "element": "Element",
+      "firmware": "Firmware",
+      "payload": "Payload",
+      "payload_augment": "Payload Aug.",
+      "stat_augment": "Stat Aug.",
+      "primary_augment": "Primary",
+      "secondary_augment": "Secondary",
+      "augment_element_resist": "Resistance",
+      "augment_element_immunity": "Immunity",
+      "augment_element_splat": "Splat",
+      "augment_element_nova": "Nova",
+      "unique": "Legendary",
+      "vile": "Vile",
+      "other": "Other"
+    }
+  },
   "grenade_tab": {
     "groups": {
       "perks": "Perks",
@@ -1066,7 +1115,8 @@
       "clear": "Clear"
     },
     "misc": {
-      "none": "None"
+      "none": "None",
+      "all": "All"
     },
     "dialogs": {
       "load_error": "Error: Grenade data unable to load.",
@@ -1078,6 +1128,12 @@
     }
   },
   "shield_tab": {
+    "augment_sources": {
+      "all": "All sources",
+      "universal": "Universal",
+      "energy": "Energy",
+      "armor": "Armor"
+    },
     "augment_facets": {
       "all": "All",
       "primary_augment": "Primary Slot",
@@ -1089,6 +1145,8 @@
       "element": "Elemental Resistance (Single)",
       "firmware": "Firmware (Single)",
       "legendary": "Legendary Perks",
+      "primary": "Primary Augment",
+      "secondary": "Secondary Augment",
       "energy": "Energy Shield Perks",
       "armor": "Armor Shield Perks",
       "universal": "Universal Perks",
@@ -1110,6 +1168,7 @@
     },
     "misc": {
       "none": "None",
+      "all": "All",
       "perk_type_mismatch": "Current shield type is {shield_type}.\nCannot add {incompatible_type} type perks.",
       "shield_type_energy": "Energy",
       "shield_type_armor": "Armor"
@@ -1135,7 +1194,8 @@
     "groups": {
       "perks": "Skills/Perks",
       "prefix": "Prefix (Single)",
-      "resistance": "Elemental Resistance/Immunity (Single)",
+      "resistance": "Elemental Resistance (Single)",
+      "immunity": "Elemental Immunity (Single)",
       "firmware": "Firmware (Single)",
       "legendary": "Legendary Perks",
       "universal": "Universal Perks (Multi-select/Stacking)",
@@ -1158,7 +1218,8 @@
       "random": "Randomize"
     },
     "misc": {
-      "none": "None"
+      "none": "None",
+      "all": "All"
     },
     "dialogs": {
       "load_error": "Error: Repkit data unable to load.",
@@ -1207,7 +1268,8 @@
       "clear": "Clear"
     },
     "misc": {
-      "none": "None"
+      "none": "None",
+      "all": "All"
     },
     "dialogs": {
       "load_error": "Error: Heavy weapon data unable to load.",
