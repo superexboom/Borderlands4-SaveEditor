@@ -337,7 +337,11 @@ def dynamic_item_kind(item_id: int) -> tuple[str, str] | None:
 
 def _csv_rows_for_type(item_type: str) -> list[dict[str, str]]:
     if item_type == "Heavy Weapon":
-        return _rows_by_file("heavy/heavy_manufacturer_perk.csv")
+        # Heavy rarity/skin rows live in their own file (heavy_rarity.csv) since the part
+        # file was split to carry ids+names only. The naming resolver needs both: the
+        # rarity row tells it whether a special barrel gets its legendary skin name.
+        return [*_rows_by_file("heavy/heavy_manufacturer_perk.csv"),
+                *_rows_by_file("heavy/heavy_rarity.csv")]
     if item_type == "Grenade":
         return _rows_by_file("grenade/manufacturer_rarity_perk.csv")
     if item_type == "Shield":
@@ -2059,15 +2063,61 @@ def _rarity_from_csv(item_id: int, ids: list[str], item_type: str, lang: str) ->
     return ""
 
 
+# Canonical naming ids for heavy parts, defined by the pipeline's HEAVY_IDS and keyed off
+# the index's internal part string (authoritative), never the hand-written CSV String.
+#   part_body_a..d        -> body id    7/8/9/10      (drives the name prefix)
+#   part_barrel_01_a..d   -> barrel1 id 13/14/15/16   (drives a T1 barrel base name)
+#   part_barrel_02_a..d   -> barrel2 id 17/18/19/20   (drives a T2 barrel base name)
+# x-variants (part_barrel_01_axb etc.) stay on their base letter's id.
+_HEAVY_CANON_MAP = {
+    "body": {"a": "7", "b": "8", "c": "9", "d": "10"},
+    "barrel_01": {"a": "13", "b": "14", "c": "15", "d": "16"},
+    "barrel_02": {"a": "17", "b": "18", "c": "19", "d": "20"},
+}
+_HEAVY_CANON_RE = re.compile(r"part_(body|barrel_01|barrel_02)_([a-d])(?:x[a-d])?$")
+
+
+def _heavy_canonical_parts(item_id: int, ids: list[str]) -> dict[str, list[str]]:
+    """Group present parts into the three naming sections using the index internal string.
+
+    Returns {"body": [ids...], "barrel_01": [...], "barrel_02": [...]} with canonical ids.
+    Base barrels (part_barrel_01 / part_barrel_02, no a-d suffix) and special/legendary
+    barrels carry no canonical id and so do not participate here.
+    """
+    sections: dict[str, list[str]] = {"body": [], "barrel_01": [], "barrel_02": []}
+    for part_id in ids:
+        internal = str(_part_ref(item_id, part_id).get("part") or "").lower()
+        match = _HEAVY_CANON_RE.fullmatch(internal)
+        if not match:
+            continue
+        group, letter = match.group(1), match.group(2)
+        canon = _HEAVY_CANON_MAP[group].get(letter)
+        if canon and canon not in sections[group]:
+            sections[group].append(canon)
+    return sections
+
+
+def _combo_word(ids: list[str], rules: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Pick the naming rule whose id set exactly matches the stacked parts of one section.
+
+    ``rules[].ids`` is the exact set of canonical ids that stack to produce that name
+    (a row like ``body_mod_a.body_mod_b`` plus a column gives the pair {7,8}). The correct
+    match is therefore the largest rule whose id set is a subset of the section's present
+    ids — never "first rule containing any present id", which lets ids from other sections
+    bleed in and corrupts the name.
+    """
+    present = {str(x) for x in ids}
+    best = None
+    for rule in rules:
+        combo = {str(item) for item in rule.get("ids", [])}
+        if combo and combo.issubset(present) and (best is None or len(combo) > len(best[0])):
+            best = (combo, rule)
+    return best[1] if best else None
+
+
 def _first_combo(ids: list[str], rules: list[dict[str, Any]]) -> tuple[int, dict[str, Any]] | None:
-    seen: set[str] = set()
-    for pos, part_id in enumerate(ids):
-        seen.add(part_id)
-        for rule in rules:
-            combo = [str(item) for item in rule.get("ids", [])]
-            if part_id in combo and all(item in seen for item in combo):
-                return pos, rule
-    return None
+    rule = _combo_word(ids, rules)
+    return (0, rule) if rule else None
 
 
 def _first_single(ids: list[str], singles: list[dict[str, Any]]) -> dict[str, Any] | None:
@@ -2088,22 +2138,6 @@ def _heavy_strategy_word(item_id: int, ids: list[str], section: str, lang: str) 
     return (rule.get(key) or rule.get("en", "")).strip() if rule else ""
 
 
-def _heavy_canonical_ids(item_id: int, ids: list[str]) -> list[str]:
-    canonical: list[str] = []
-    suffix_map = {
-        "body": {"a": "7", "b": "8", "c": "9", "d": "10"},
-        "barrel_01": {"a": "13", "b": "14", "c": "15", "d": "16"},
-        "barrel_02": {"a": "17", "b": "18", "c": "19", "d": "20"},
-    }
-    for part_id in ids:
-        row = _find_csv_part(item_id, part_id, HEAVY_TYPE)
-        part_string = (row or {}).get("String", "").strip().lower()
-        match = re.fullmatch(r"(body|barrel_01|barrel_02)_([a-d])", part_string)
-        if match:
-            canonical.append(suffix_map[match.group(1)][match.group(2)])
-    return canonical
-
-
 def _heavy_barrel_row(item_id: int, ids: list[str]) -> dict[str, str] | None:
     for part_id in ids:
         row = _find_csv_part(item_id, part_id, HEAVY_TYPE)
@@ -2119,31 +2153,6 @@ def _heavy_has_legendary_rarity(item_id: int, ids: list[str]) -> bool:
             if (row.get("Stat_EN") or row.get("Stat") or "").strip().lower() == "legendary":
                 return True
     return False
-
-
-def _heavy_barrel_section(part_string: str) -> str:
-    text = part_string.strip().lower()
-    if text.startswith("barrel_01") or text.startswith("part_barrel_01"):
-        return "barrel1"
-    if text.startswith("barrel_02") or text.startswith("part_barrel_02"):
-        return "barrel2"
-    if text.startswith("barrel_"):
-        return "barrel1"
-    return ""
-
-
-def _heavy_regular_barrel_name(item_id: int, section: str, lang: str) -> str:
-    target = {"barrel1": "barrel_01", "barrel2": "barrel_02"}.get(section)
-    if not target:
-        return ""
-    for row in _csv_rows_for_type(HEAVY_TYPE):
-        if row.get("Manufacturer ID", "").strip() != str(item_id):
-            continue
-        if (row.get("Part_type") or "").strip() != "Barrel":
-            continue
-        if row.get("String", "").strip().lower() == target:
-            return _title_from_text(_text(row, lang))
-    return ""
 
 
 def _strip_skin_suffix(text: str) -> str:
@@ -2165,26 +2174,58 @@ def _heavy_legendary_skin_name(item_id: int, ids: list[str], lang: str) -> str:
     return ""
 
 
+def _heavy_barrel_internal(item_id: int, ids: list[str]) -> str:
+    """The internal part string of the present barrel, from the index (authoritative)."""
+    for part_id in ids:
+        ref = _part_ref(item_id, part_id)
+        if str(ref.get("category") or "").strip() == "barrel":
+            return str(ref.get("part") or "").lower()
+    return ""
+
+
+def _heavy_barrel_kind(internal: str) -> tuple[str, bool]:
+    """Classify a barrel's internal string -> (section, is_special).
+
+    section is "barrel1"/"barrel2"/"" ; is_special is True for a named (non-base) barrel.
+    Base barrels are exactly part_barrel_01 / part_barrel_02. Anything else with a 01/02
+    (splatoon, flak, ravenfire...) is a special barrel on that subtype; barrels with no
+    subtype at all (javelin, dahlfather, loiter) have section "" and are always special.
+    """
+    if internal in ("part_barrel_01", "part_barrel_02"):
+        return ("barrel1" if internal.endswith("_01") else "barrel2"), False
+    match = re.search(r"barrel_(01|02)", internal)
+    if match:
+        return ("barrel1" if match.group(1) == "01" else "barrel2"), True
+    return "", True
+
+
 def _heavy_name(item_id: int, ids: list[str], lang: str) -> tuple[str, str]:
-    canonical_ids = _heavy_canonical_ids(item_id, ids)
-    prefix = _heavy_strategy_word(item_id, canonical_ids, "body", lang)
+    # Prefix comes only from the body section (body_acc stacking); barrel ids must not
+    # leak into it (that is how an effect word like "+伤害" used to corrupt the name).
+    sections = _heavy_canonical_parts(item_id, ids)
+    prefix = _heavy_strategy_word(item_id, sections["body"], "body", lang)
     if any(str(_part_ref(item_id, part_id).get("disable_prefixes", "")).casefold() == "true" for part_id in ids):
         prefix = ""
-    barrel_row = _heavy_barrel_row(item_id, ids)
+
+    internal = _heavy_barrel_internal(item_id, ids)
+    section, is_special = _heavy_barrel_kind(internal)
     barrel_name = ""
     source = "heavy_strategy"
 
-    if barrel_row:
-        barrel_string = barrel_row.get("String", "").strip().lower()
-        section = _heavy_barrel_section(barrel_string)
-        is_special = barrel_string not in {"barrel_01", "barrel_02"}
+    if internal:
+        barrel_row = _heavy_barrel_row(item_id, ids)
         if is_special and _heavy_has_legendary_rarity(item_id, ids):
-            barrel_name = _heavy_legendary_skin_name(item_id, ids, lang) or _title_from_text(_text(barrel_row, lang))
+            barrel_name = _heavy_legendary_skin_name(item_id, ids, lang) or (
+                _title_from_text(_text(barrel_row, lang)) if barrel_row else "")
             source = "heavy_skin"
         elif section:
-            barrel_name = _heavy_strategy_word(item_id, canonical_ids, section, lang)
-        if not barrel_name:
-            barrel_name = _heavy_regular_barrel_name(item_id, section, lang) if is_special else _title_from_text(_text(barrel_row, lang))
+            # Base barrel: name from that section's stacked accessories.
+            section_key = "barrel1" if section == "barrel1" else "barrel2"
+            barrel_name = _heavy_strategy_word(item_id, sections["barrel_01" if section == "barrel1" else "barrel_02"], section_key, lang)
+        if not barrel_name and barrel_row:
+            # Special barrel without a legendary rarity, or a section with no naming rule:
+            # keep the pipeline-exported base name (CSV Stat), like the weapon tab does.
+            barrel_name = _title_from_text(_text(barrel_row, lang))
             source = "heavy_csv"
 
     if not barrel_name:

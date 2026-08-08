@@ -16,10 +16,22 @@ from tabs.qt_equipment_base_tab import BaseEquipmentEditorTab
 # dahlfather, loiter) carry no 01/02 and get no marker.
 _BARREL_SUBTYPE_RE = re.compile(r"barrel_(01|02)")
 
+# Torgue special barrels carry no 01/02 in their internal string, but in-game their
+# subtype icon is the T1 style. Confirmed by inspection, so hardcode them to T1 rather
+# than leave them unmarked.
+_SPECIAL_BARREL_T1 = {
+    "part_barrel_javelin",
+    "part_barrel_dahlfather",
+    "part_barrel_loiter",
+}
+
 
 def _barrel_type_marker(ref_key):
     """Return 'T1'/'T2' from a part's index internal string, or '' when it has no subtype."""
-    match = _BARREL_SUBTYPE_RE.search(item_display_resolver.equipment_part_internal(ref_key).lower())
+    internal = item_display_resolver.equipment_part_internal(ref_key).lower()
+    if internal in _SPECIAL_BARREL_T1:
+        return "T1"
+    match = _BARREL_SUBTYPE_RE.search(internal)
     return f"T{int(match.group(1))}" if match else ""
 
 

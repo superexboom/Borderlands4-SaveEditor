@@ -1,10 +1,10 @@
 ﻿Manufacturer ID,Part_ID,Part_type,String,Stat_ZH,Stat_EN
 282,2,Barrel,Barrel_02_Splatoon,,
 282,6,Body,Body,/,
-282,7,Body Accessory,Body_A,+弹容,Mad
-282,8,Body Accessory,Body_B,+射速,Wide
-282,9,Body Accessory,Body_C,-冷却时间,Thorough
-282,10,Body Accessory,Body_D,无效果,Tinged
+282,7,Body Accessory,Body_A,,
+282,8,Body Accessory,Body_B,,
+282,9,Body Accessory,Body_C,,
+282,10,Body Accessory,Body_D,,
 282,12,Barrel,Barrel_02,机炮,Cannon Barrel
 282,13,Barrel Accessory,Barrel_01_A,,
 282,14,Barrel Accessory,Barrel_01_B,,
@@ -36,10 +36,10 @@
 273,12,Barrel Accessory,Barrel_01_A,,
 273,22,Barrel Accessory,Barrel_01_A,,
 273,14,Body,Body,/,
-273,15,Body Accessory,Body_A,+伤害,Blasting
-273,16,Body Accessory,Body_B,+爆炸范围,Covering
-273,17,Body Accessory,Body_C,-冷却时间,Eager
-273,18,Body Accessory,Body_D,无效果,Itchy
+273,15,Body Accessory,Body_A,,
+273,16,Body Accessory,Body_B,,
+273,17,Body Accessory,Body_C,,
+273,18,Body Accessory,Body_D,,
 273,20,Barrel,Barrel_01,火箭筒,Rocket Launcher
 273,21,Barrel,Barrel_02,蜂巢火箭,Micro Missile Launcher
 273,26,Barrel Accessory,Barrel_02_A,,
@@ -65,10 +65,10 @@
 275,8,Barrel Accessory,Barrel_02_A,,
 275,22,Barrel Accessory,Barrel_02_A,,
 275,11,Body,Body,/,
-275,12,Body Accessory,Body_A,+伤害,Chosen
-275,13,Body Accessory,Body_B,+弹容,Bestowed
-275,14,Body Accessory,Body_C,-冷却时间,Ritualized
-275,15,Body Accessory,Body_D,无效果,Strange
+275,12,Body Accessory,Body_A,,
+275,13,Body Accessory,Body_B,,
+275,14,Body Accessory,Body_C,,
+275,15,Body Accessory,Body_D,,
 275,16,Barrel,Barrel_01,光束枪,Beam Rifle
 275,17,Barrel,Barrel_02,飞盘发射器,Disc Launcher
 275,19,Barrel Accessory,Barrel_01_B,,
@@ -82,10 +82,10 @@
 289,3,Barrel Accessory,Barrel_02_D,,
 289,19,Barrel Accessory,Barrel_02_D,,
 289,5,Body,Body,/,
-289,6,Body Accessory,Body_A,+弹容,High-Capacity
-289,7,Body Accessory,Body_B,+伤害,High-Energy
-289,8,Body Accessory,Body_C,--冷却时间,Shunted
-289,9,Body Accessory,Body_D,无效果,Abnormal
+289,6,Body Accessory,Body_A,,
+289,7,Body Accessory,Body_B,,
+289,8,Body Accessory,Body_C,,
+289,9,Body Accessory,Body_D,,
 289,10,Barrel,Barrel_01,能量弹,Energy Bolt
 289,11,Barrel,Barrel_02,能量魔球,Energy Orb
 289,12,Barrel Accessory,Barrel_01_A,,
