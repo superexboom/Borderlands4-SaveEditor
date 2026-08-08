@@ -24,87 +24,87 @@
 246,24,Elemental Resistance,点燃,Fire,,15% Resist
 246,25,Elemental Resistance,辐射,Radiation,,15% Resist
 246,26,Elemental Resistance,电击,Shock,,15% Resist
-246,27,Perk,实用程序,Utility,护盾为0时，获得+20%枪械操控和+10%移动速度,"+20% Gun Handling, +10% Movement Speed when shield is empty"
-246,28,Perk,实用程序,Utility,护盾为0时，获得+28%枪械操控和+15%移动速度,"+28% Gun Handling, +15% Movement Speed when shield is empty"
-246,29,Perk,龟盾,Turtle,装备时获得+40%护盾容量和-10%最大生命值,"+40% Shield Capacity, -10% Maximum Health"
-246,30,Perk,龟盾,Turtle,装备时获得+65%护盾容量和-15%最大生命值,"+65% Shield Capacity, -15% Maximum Health"
-246,31,Perk,坚固,Sturdy,伤害敌人时，有5%几率获得+20%伤害减免，持续5秒,5% Chance to grant +20% Damage Reduction for 5s when damaging enemies
-246,32,Perk,坚固,Sturdy,伤害敌人时，有8%几率获得+28%伤害减免持续5秒,8% Chance to grant +28% Damage Reduction for 5s when damaging enemies
-246,33,Perk,钉刺,Spike,如在护盾启用时受到近战伤害，则向敌人反弹2974伤害,2974 Damage is reflected back to enemies when receiving Melle Damage and Shield is active
-246,34,Perk,钉刺,Spike,如在护盾启用时受到近战伤害，则向敌人反弹4461伤害,4461 Damage is reflected back to enemies when receiving Melle Damage and Shield is active
-246,35,Perk,抵抗,Resistant,启用护盾时，获得+17%元素伤害抗性,+17% Resistance to Elemental Damage when Shield is active
-246,36,Perk,抵抗,Resistant,启用护盾时，获得+22%元素伤害抗性,+22% Resistance to Elemental Damage when Shield is active
-246,37,Perk,反射,Reflect,启用护盾时有15%几率反射射弹,15% Chance to reflect Projectiles when Shield is active
-246,38,Perk,反射,Reflect,启用护盾时有30%几率反射射弹,30% Chance to reflect Projectiles when Shield is active
-246,39,Perk,力量增强器,Power Booster,受到伤害时，有20%几率生成力量增强器，获得+10%枪械伤害，持续5秒,20% Chance for Power Booster that grants +10% Gun Damage for 5s when damaged
-246,40,Perk,力量增强器,Power Booster,受到伤害时，有30%几率生成力量增强器，获得+20%枪械伤害，持续5秒,30% Chance for Power Booster that grants +20% Gun Damage for 5s when damaged
-246,41,Perk,精确定位,Pinpoint,护盾为0时，获得+20%精准度、+20%枪械操控和+25%射弹速度,"+20% Accuracy, +20% Gun Handling, +25% Projectile Speed when Shield is empty"
-246,42,Perk,精确定位,Pinpoint,护盾为0时，获得+28%精准度、+28%枪械操控和+35%射弹速度,"+28% Accuracy, +28% Gun Handling, +35% Projectile Speed when Shield is empty"
-246,43,Perk,超强护盾增强器,Overshield Booster,击杀时有10%几率生成超强护盾增强器并获得2862超强护盾,10% Chance for Overshield Booster that grants 1398 Overshield on kill
-246,44,Perk,超强护盾增强器,Overshield Booster,击杀时有15%几率生成超强护盾增强器并获得4294超强护盾,15% Chance for Overshield Booster that grants 2098 Overshield on kill
-246,45,Perk,弹匣增强器,Magazine Booster,击杀时有10%几率生成弹匣增强器，并立即补充枪械弹药,10% Chance for Magazine Booster tha refills your Gun on kill
-246,46,Perk,弹匣增强器,Magazine Booster,击杀时有15%几率生成弹匣增强器，并立即补充枪械弹药,15% Chance for Magazine Booster tha refills your Gun on kill
-246,47,Perk,生命值增强器,Health Booster,受到伤害时，有20%几率生成生命值增强器，最高补充15%生命值,20% Chance for Health Booster that restores up to 15% Health on kill
-246,48,Perk,生命值增强器,Health Booster,受到伤害时，有30%几率生成生命值增强器，最高补充25%生命值,30% Chance for Health Booster that restores up to 25% Health on kill
-246,49,Perk,健康人士,Healthy,装备时获得+10%最大生命值,+10% Maximum Health
-246,50,Perk,健康人士,Healthy,装备时获得+25%最大生命值,+25% Maximum Health
-246,51,Perk,闪避,Evasive,伤害敌人时，有5%几率获得+10%移动速度，持续5秒,5% Chance for +10% Movement Speed for 5s when damaging enemies
-246,52,Perk,闪避,Evasive,伤害敌人时，有8%几率获得+15%移动速度持续5秒,8% Chance for +15% Movement Speed for 5s when damaging enemies
-246,53,Perk,容量,Capacity,装备时获得+25%护盾容量,+25% Shield Capacity
-246,54,Perk,容量,Capacity,装备时获得+50%护盾容量,+50% Shield Capacity
-246,55,Perk,适应性,Adaptive,装备时获得+8%最大生命值。启用护盾时，获得+20%抗性（针对最后所受伤害类型），持续3秒,+8% Maximum Health. +20% Resistance to last damage type received for 3s when shield is active
-246,56,Perk,适应性,Adaptive,装备时获得+16%最大生命值。启用护盾时，获得+40%抗性（针对最后所受伤害类型），持续4秒,+16% Maximum Health. +40% Resistance to last damage type received for 4s when shield is active
-246,57,Perk,吸收,Absorb,装备时有+15%几率吸收子弹，并将其加入弹药数中,"+15% Chance to absorb bullets, adding the to your Ammo count"
-246,58,Perk,吸收,Absorb,装备时有+30%几率吸收子弹，并将其加入弹药数中,"+30% Chance to absorb bullets, adding the to your Ammo count"
+246,27,Perk,,,,
+246,28,Perk,,,,
+246,29,Perk,,,,
+246,30,Perk,,,,
+246,31,Perk,,,,
+246,32,Perk,,,,
+246,33,Perk,,,,
+246,34,Perk,,,,
+246,35,Perk,,,,
+246,36,Perk,,,,
+246,37,Perk,,,,
+246,38,Perk,,,,
+246,39,Perk,,,,
+246,40,Perk,,,,
+246,41,Perk,,,,
+246,42,Perk,,,,
+246,43,Perk,,,,
+246,44,Perk,,,,
+246,45,Perk,,,,
+246,46,Perk,,,,
+246,47,Perk,,,,
+246,48,Perk,,,,
+246,49,Perk,,,,
+246,50,Perk,,,,
+246,51,Perk,,,,
+246,52,Perk,,,,
+246,53,Perk,,,,
+246,54,Perk,,,,
+246,55,Perk,,,,
+246,56,Perk,,,,
+246,57,Perk,,,,
+246,58,Perk,,,,
 246,64,Firmware,风险启用,Risky Boots,,
 246,65,Firmware,技能工艺,Skillcraft,,
 246,66,Firmware,主动开火,Active Fire,,
 246,67,Firmware,重击者,Bruiser,,
-248,1,Perk,漂泊者,Vagabond,能量护盾全满时，获得+28%移动速度,+28% Movement Speed when Energy Shields are full
-248,2,Perk,护盾增强器,Shield Booster,受到伤害时，有10%几率生成护盾增强器，最高补充13%护盾容量,10% Chance for Shield Booster that refills up to 13% of Shield Capacity when damaged
-248,3,Perk,护盾增强器,Shield Booster,受到伤害时，有15%几率生成护盾增强器，最高补充18%护盾容量,15% Chance for Shield Booster that refills up to 18% of Shield Capacity when damaged
-248,4,Perk,狂战士,Berserker,能量护盾为0时，获得+20%近战伤害,+20% Melee Damage when Energy Shields are empty
-248,5,Perk,狂战士,Berserker,能量护盾为0时，获得+30%近战伤害,+30% Melee Damage when Energy Shields are empty
-248,6,Perk,虹吸,Siphon,造成伤害时，有5%几率获得1457超强护盾,5% Chance for 716 Overshield when dealing Damage
-248,7,Perk,虹吸,Siphon,造成伤害时，有10%几率获得2915超强护盾,10% Chance for 1431 Overshield when dealing Damage
-248,8,Perk,扳机狂人,Trigger Happy,能量护盾为0时，获得+20%射速和+20%装填速度,"+20% Fire Rate, +20% Reload Speed when Energy Shields are empty"
-248,9,Perk,扳机狂人,Trigger Happy,能量护盾为0时，获得+28%射速和+28%装填速度,"+28% Fire Rate, +28% Reload Speed when Energy Shields are empty"
-248,10,Perk,星爆,Nova,能量护盾破裂时，触发星爆并造成7436伤害,Triggers a Nova that deals 7436 Damage when Energy Shield breaks
-248,11,Perk,星爆,Nova,能量护盾破裂时，触发星爆并造成11154伤害,Triggers a Nova that deals 11154 Damage when Energy Shield breaks
-248,12,Perk,迅捷,Fleeting,能量护盾为0时，获得+20%移动速度,+20% Movement Speed when Energy Shields are empty
-248,13,Perk,迅捷,Fleeting,能量护盾为0时，获得+28%移动速度,+28% Movement Speed when Energy Shields are empty
-248,14,Perk,满溢,Brimming,能量护盾全满时，每秒恢复149生命值,Regenerates 149 Health/s when Energy Shields are full
-248,15,Perk,满溢,Brimming,能量护盾全满时，每秒恢复260生命值,Regenerates 260 Health/s when Energy Shields are full
-248,16,Perk,增强,Amp,能量护盾全满时，射击将消耗护盾的20%造成+50%枪械伤害,Shots drain 20% of Shields for +50% Gun Damage when Energy Shields are full
-248,17,Perk,增强,Amp,能量护盾全满时，射击将消耗护盾的28%，造成+100%枪械伤害,Shots drain 28% of Shields for +100% Gun Damage when Energy Shields are full
-248,18,Perk,充能速率,Recharge Rate,装备时获得+20%护盾充能速率,+20% Shield Recharge Rate
-248,19,Perk,充能速率,Recharge Rate,装备时获得+30%护盾充能速率,+30% Shield Recharge Rate
-248,20,Perk,充能延迟,Recharge Delay,装备时获得-10%护盾充能延迟,-10% Shield Recharge Delay
-248,21,Perk,充能延迟,Recharge Delay,装备时获得-20%护盾充能延迟,-20% Shield Recharge Delay
-248,27,Perk,漂泊者,Vagabond,能量护盾全满时，获得+20%移动速度,+20% Movement Speed when Energy Shields are full
-237,1,Perk,拾荒者,Scavenger,护甲段填充完毕时，最高补充当前枪械弹匣容量20%的弹药,Refill up to 20% of current Gun's Magazine on Armor Segment filled
-237,2,Perk,加强,Reinforced,护甲段填充完毕时，获得651超强护盾,Grants +Overshield on Armor Segment filled
-237,3,Perk,加强,Reinforced,护甲段填充完毕时，获得929超强护盾,Grants ++Overshield on Armor Segment filled
-237,4,Perk,正向加强,Positive Reinforcement,击杀时敌人有15%几率掉落1块护甲碎片,15% Chance for Armor Shard on kill
-237,5,Perk,正向加强,Positive Reinforcement,击杀时敌人有25%几率掉落1块护甲碎片,25% Chance for Armor Shard on kill
-237,6,Perk,迷你星爆,Mini Nova,护甲段破裂时，触发星爆并造成1859伤害,Triggers a Nova that deals 1859 Damage on Armor Segment break
-237,7,Perk,迷你星爆,Mini Nova,护甲段破裂时，触发星爆并造成2788伤害,Triggers a Nova that deals 2788 Damage on Armor Segment break
-237,8,Perk,导弹集群,Missile Swarm,护甲段破裂时，发射2枚导弹，每枚造成744伤害,"Launches 2 Missles, each dealing 744 Damage on Armor Segment break"
-237,9,Perk,导弹集群,Missile Swarm,护甲段破裂时，发射2枚导弹，每枚造成1487伤害,"Launches 3 Missles, each dealing 1487 Damage on Armor Segment break"
-237,10,Perk,击退,Knockback,护甲段破裂时，击退敌人并获得+30%移动速度，持续5秒,Knocks back enemies and grants +30% Movement Speed for 5s on Armor Segment break
-237,11,Perk,击退,Knockback,护甲段破裂时，击退敌人并获得+40%移动速度，持续5秒,Knocks back enemies and grants +40% Movement Speed for 5s on Armor Segment break
-237,12,Perk,重型防御,Heavy Plating,获得最高+20%伤害减免，根据破裂的护甲段调整,"Up to +20% Damage Reduction, scaling with broken Armor Segments"
-237,13,Perk,重型防御,Heavy Plating,获得最高+35%伤害减免，根据破裂的护甲段调整,"Up to +35% Damage Reduction, scaling with broken Armor Segments"
-237,14,Perk,勇气十足,Spunky,获得最高+10%伤害输出，根据破裂的护甲段调整,"Up to +10% Damage Dealt, scaling with broken Armor Segments"
-237,15,Perk,勇气十足,Spunky,获得最高+20%伤害输出，根据破裂的护甲段调整,"Up to +20% Damage Dealt, scaling with broken Armor Segments"
-237,16,Perk,剑刃,Bladed,护甲段填充完毕时，获得+13%枪械伤害，持续5秒,+13% Gun Damage for 5s on Armor Segment filled
-237,17,Perk,剑刃,Bladed,护甲段填充完毕时，获得+20%枪械伤害，持续5秒,+20% Gun Damage for 5s on Armor Segment filled
-237,18,Perk,护甲强度,Armor Strength,启用护甲护盾时，获得+10%伤害减免,+10% Damage Reduction when Armor Shield is active
-237,19,Perk,护甲强度,Armor Strength,启用护甲护盾时，获得+20%伤害减免,+20% Damage Reduction when Armor Shield is active
-237,20,Perk,护甲段,Armor Segment,获得+1护甲段,+1 Armor Segment(s)
-237,21,Perk,护甲段,Armor Segment,获得+1护甲段,+1 Armor Segment(s)
-237,22,Perk,侧翼攻击,Flanking,获得最高+10%移动速度，根据破裂的护甲段调整,"Up to +10% Movement Speed, scaling with broken Armor Segments"
-237,23,Perk,侧翼攻击,Flanking,获得最高+18%移动速度，根据破裂的护甲段调整,"Up to +18% Movement Speed, scaling with broken Armor Segments"
-237,24,Perk,拳击手,Boxer,近战攻击时，消耗1个护甲段以提升+20%伤害,Consume an Armor Segment on Melee Hit to increase Damage Dealt by +20%
-237,25,Perk,拳击手,Boxer,近战攻击时，消耗1个护甲段以提升+30%伤害,Consume an Armor Segment on Melee Hit to increase Damage Dealt by +30%
-237,31,Perk,拾荒者,Scavenger,护甲段填充完毕时，最高补充当前枪械弹匣容量10%的弹药,Refill up to 10% of current Gun's Magazine on Armor Segment filled
+248,1,Perk,,,,
+248,2,Perk,,,,
+248,3,Perk,,,,
+248,4,Perk,,,,
+248,5,Perk,,,,
+248,6,Perk,,,,
+248,7,Perk,,,,
+248,8,Perk,,,,
+248,9,Perk,,,,
+248,10,Perk,,,,
+248,11,Perk,,,,
+248,12,Perk,,,,
+248,13,Perk,,,,
+248,14,Perk,,,,
+248,15,Perk,,,,
+248,16,Perk,,,,
+248,17,Perk,,,,
+248,18,Perk,,,,
+248,19,Perk,,,,
+248,20,Perk,,,,
+248,21,Perk,,,,
+248,27,Perk,,,,
+237,1,Perk,,,,
+237,2,Perk,,,,
+237,3,Perk,,,,
+237,4,Perk,,,,
+237,5,Perk,,,,
+237,6,Perk,,,,
+237,7,Perk,,,,
+237,8,Perk,,,,
+237,9,Perk,,,,
+237,10,Perk,,,,
+237,11,Perk,,,,
+237,12,Perk,,,,
+237,13,Perk,,,,
+237,14,Perk,,,,
+237,15,Perk,,,,
+237,16,Perk,,,,
+237,17,Perk,,,,
+237,18,Perk,,,,
+237,19,Perk,,,,
+237,20,Perk,,,,
+237,21,Perk,,,,
+237,22,Perk,,,,
+237,23,Perk,,,,
+237,24,Perk,,,,
+237,25,Perk,,,,
+237,31,Perk,,,,

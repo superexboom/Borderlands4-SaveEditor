@@ -19,76 +19,76 @@
 243,18,Firmware,加热升温,Heating Up,,
 243,19,Firmware,备用子弹,Bullets to Spare,,
 243,20,Firmware,大情圣,Daed-dy O',,
-243,21,Perk,永恒,Everlasting,修复套件的治疗容量和持续时间增加+20%,+20% Capacity and Duration
-243,22,Resistance,元素抗性,Shock Resistance,使用时获得+50%电击抗性，持续8秒,+50% Shock Resistance for 10s
-243,23,Resistance,元素抗性,Radiation Resistance,使用时获得+50%辐射抗性，持续8秒,+50% Radiation Resistance for 10s
-243,24,Resistance,元素抗性,Fire Resistance,使用时获得+50%燃烧抗性，持续8秒,+50% Fire Resistance for 10s
-243,25,Resistance,元素抗性,Cryo Resistance,使用时获得+50%冰冻抗性，持续8秒,+50% Cryo Resistance for 10s
-243,26,Resistance,元素抗性,Corrosive Resistance,使用时获得+50%腐蚀抗性，持续8秒,+50% Corrosive Resistance for 10s
-243,27,Immunity,元素免疫,Shock Immunity,使用时免疫电击伤害，持续3秒,Shock Immunity for 3s
-243,28,Immunity,元素免疫,Radiation Immunity,使用时免疫辐射伤害，持续3秒,Radiation Immunity for 3s
-243,29,Immunity,元素免疫,Fire Immunity,使用时免疫燃烧伤害，持续3秒,Fire Immunity for 3s
-243,30,Immunity,元素免疫,Cryo Immunity,使用时免疫冰冻伤害，持续3秒,Cryo Immunity for 3s
-243,31,Immunity,元素免疫,Corrosive Immunity,使用时免疫腐蚀伤害，持续3秒,Corrosive Immunity for 3s
-243,32,Perk,喷溅,Shock Splat,使用时生成电击喷溅,Spawns a Shock Splat
-243,33,Perk,喷溅,Radiation Splat,使用时生成辐射喷溅,Spawns a Radiation Splat
-243,34,Perk,喷溅,Cryo Splat,使用时生成冰冻喷溅,Spawns a Cryo Splat
-243,35,Perk,喷溅,Corrosive Splat,使用时生成腐蚀喷溅,Spawns a Corrosive Splat
-243,36,Perk,喷溅,Fire Splat,使用时生成燃烧喷溅,Spawns a Fire Splat
-243,37,Perk,星爆,Corrosive Nova,使用时释放腐蚀星爆,Releases a Corrosive Nova
-243,38,Perk,星爆,Cryo Nova,使用时释放冰冻星爆,Releases a Cryo Nova
-243,39,Perk,星爆,Fire Nova,使用时释放燃烧星爆,Releases a Fire Nova
-243,40,Perk,星爆,Radiation Nova,使用时释放辐射星爆,Releases a Radiation Nova
-243,41,Perk,星爆,Shock Nova,使用时释放电击星爆,Releases a Shock Nova
-243,42,Immunity,元素免疫,Shock,使用时免疫电击伤害，持续3秒,Shock Immunity for 3s
-243,43,Immunity,元素免疫,Radiation,使用时免疫辐射伤害，持续3秒,Radiation Immunity for 3s
-243,44,Immunity,元素免疫,Fire,使用时免疫燃烧伤害，持续3秒,Fire Immunity for 3s
-243,45,Immunity,元素免疫,Cryo,使用时免疫冰冻伤害，持续3秒,Cryo Immunity for 3s
-243,46,Immunity,元素免疫,Corrosive,使用时免疫腐蚀伤害，持续3秒,Corrosive Immunity for 3s
-243,47,Resistance,元素抗性,Radiation,使用时获得+50%辐射抗性，持续8秒,+50% Radiation Resistance for 10s
-243,48,Resistance,元素抗性,Cryo,使用时获得+50%冰冻抗性，持续8秒,+50% Cryo Resistance for 10s
-243,49,Resistance,元素抗性,Shock,使用时获得+50%电击抗性，持续8秒,+50% Shock Resistance for 10s
-243,50,Resistance,元素抗性,Fire,使用时获得+50%燃烧抗性，持续8秒,+50% Fire Resistance for 10s
-243,51,Resistance,元素抗性,Corrosive,使用时获得+50%腐蚀抗性，持续8秒,+50% Corrosive Resistance for 10s
-243,52,Perk,医护兵,Medic,使用时，附近友方获得来自修复套件治疗量50%的治疗,Heals nearby allies for 50% of the healing amount
-243,54,Perk,超强护盾,Overshield,使用时不进行治疗，而是获得数值等同于修复套件初始治疗量的超强护盾,Overshield of initial heal amount instead of healing
-243,56,Perk,生命大爆发,Health Burst,使用时，在8秒后获得一次额外爆发，数值等同于修复套件初始治疗量的50%,Additional burst of 50% of initial value after 8s
-243,57,Perk,能量循环,Power Cycle,使用时立即为装备的能量护盾充能,Instantly start recharging Energy Shield
-243,58,Perk,吸血,Leech,使用时获得30%吸血，持续8秒,30% Lifesteal for 8s
-243,59,Perk,坦克,Tank,使用时受到的伤害减少-50%，持续8秒,-50% Damage Taken for 8s
-243,60,Perk,永恒,Everlasting,修复套件的治疗容量和持续时间增加+20%,+20% Capacity and Duration
-243,61,Perk,激怒,Enrage,使用时造成的所有伤害提升+30%，受到的所有伤害提升+15%，持续8秒,"+30% Damage Dealt, +15% Damage Taken for 8s"
-243,62,Perk,加速器,Accelerator,使用时主动技能冷却速率提升+100%，持续8秒,+100% Action Skill Cooldown Rate for 8s
-243,63,Perk,元素适配性,Elemental Affinity,使用时造成的元素伤害提升+25%，持续8秒,+25% Elemental Damage for 8s
-243,64,Perk,溅射伤害,Splash Damage,使用时造成的溅射伤害提升+25%，持续8秒,+25% Splash Damage for 8s
-243,65,Perk,装填速度,Reload Speed,使用时装填速度提升25%，持续8秒,+25% Reload speed for 8s
+243,21,Perk,,,,
+243,22,Resistance,,,,
+243,23,Resistance,,,,
+243,24,Resistance,,,,
+243,25,Resistance,,,,
+243,26,Resistance,,,,
+243,27,Immunity,,,,
+243,28,Immunity,,,,
+243,29,Immunity,,,,
+243,30,Immunity,,,,
+243,31,Immunity,,,,
+243,32,Perk,,,,
+243,33,Perk,,,,
+243,34,Perk,,,,
+243,35,Perk,,,,
+243,36,Perk,,,,
+243,37,Perk,,,,
+243,38,Perk,,,,
+243,39,Perk,,,,
+243,40,Perk,,,,
+243,41,Perk,,,,
+243,42,Immunity,,,,
+243,43,Immunity,,,,
+243,44,Immunity,,,,
+243,45,Immunity,,,,
+243,46,Immunity,,,,
+243,47,Resistance,,,,
+243,48,Resistance,,,,
+243,49,Resistance,,,,
+243,50,Resistance,,,,
+243,51,Resistance,,,,
+243,52,Perk,,,,
+243,54,Perk,,,,
+243,56,Perk,,,,
+243,57,Perk,,,,
+243,58,Perk,,,,
+243,59,Perk,,,,
+243,60,Perk,,,,
+243,61,Perk,,,,
+243,62,Perk,,,,
+243,63,Perk,,,,
+243,64,Perk,,,,
+243,65,Perk,,,,
 243,66,Perk,教团,Order,该修复套件拥有2个能量点（仅在教团针上生效）,The Repkit have 2 Repkit Charge(Only in Order)
-243,67,Perk,速度,Speed,使用时移动速度增加+40%，持续8秒,+40% Movement Speed for 8s
-243,68,Perk,G型神器,Go Go Gadget,使用时炮械冷却速率提升+50%，持续8秒,+50% Ordnance Cooldown Rate for 8s
-243,69,Perk,强力打击者,Hard Hitter,使用时造成的近战伤害提升+50%，持续8秒,+50% Melee Damage for 8s
-243,70,Perk,药物过量,Overdose,使用时受到的所有治疗量提升+45%，持续8秒,+45% All Healing Recieved for 8s
-243,71,Perk,射速,Fire Rate,使用时射速提升+15%，持续8秒,+15% Fire Rate for 8s
-243,73,Perk,增强,Amp,使用时下一次射击提升+200%伤害,+200% Damage for next shot
-243,74,Perk,修复套件冷却,Repkit Cooling,修复套件的冷却时间减少-33%,-33% Repkit Cooldown Duration
-243,75,Perk,医护兵,Medic,使用时，附近友方获得来自修复套件治疗量50%的治疗,Heals nearby allies for 50% of the healing amount
-243,77,Perk,超强护盾,Overshield,使用时不进行治疗，而是获得数值等同于修复套件初始治疗量的超强护盾,Overshield of initial heal amount instead of healing
-243,79,Perk,生命大爆发,Health Burst,使用时，在8秒后获得一次额外爆发，数值等同于修复套件初始治疗量的50%,Additional burst of 50% of initial value after 8s
-243,80,Perk,能量循环,Power Cycle,使用时立即为装备的能量护盾充能,Instantly start recharging Energy Shield
-243,81,Perk,吸血,Leech,使用时获得30%吸血，持续8秒,30% Lifesteal for 8s
-243,82,Perk,坦克,Tank,使用时受到的伤害减少-50%，持续8秒,-50% Damage Taken for 8s
-243,83,Perk,永恒,Everlasting,修复套件的治疗容量和持续时间增加+20%,+20% Capacity and Duration
-243,84,Perk,激怒,Enrage,使用时造成的所有伤害提升+30%，受到的所有伤害提升+15%，持续8秒,"+30% Damage Dealt, +15% Damage Taken for 8s"
-243,85,Perk,加速器,Accelerator,使用时主动技能冷却速率提升+100%，持续8秒,+100% Action Skill Cooldown Rate for 8s
-243,86,Perk,元素适配性,Elemental Affinity,使用时造成的元素伤害提升+25%，持续8秒,+25% Elemental Damage for 8s
-243,87,Perk,溅射伤害,Splash Damage,使用时造成的溅射伤害提升+25%，持续8秒,+25% Splash Damage for 8s
-243,88,Perk,装填速度,Reload Speed,使用时装填速度提升25%，持续8秒,+25% Reload speed for 8s
-243,90,Perk,速度,Speed,使用时移动速度增加+40%，持续8秒,+40% Movement Speed for 8s
-243,91,Perk,G型神器,Go Go Gadget,使用时炮械冷却速率提升+50%，持续8秒,+50% Ordnance Cooldown Rate for 8s
-243,92,Perk,强力打击者,Hard Hitter,使用时造成的近战伤害提升+50%，持续8秒,+50% Melee Damage for 8s
-243,93,Perk,药物过量,Overdose,使用时受到的所有治疗量提升+45%，持续8秒,+45% All Healing Recieved for 8s
-243,94,Perk,射速,Fire Rate,使用时射速提升+15%，持续8秒,+15% Fire Rate for 8s
-243,96,Perk,增强,Amp,使用时下一次射击提升+200%伤害,+200% Damage for next shot
-243,97,Perk,修复套件冷却,Repkit Cooling,修复套件的冷却时间减少-33%,-33% Repkit Cooldown Duration
+243,67,Perk,,,,
+243,68,Perk,,,,
+243,69,Perk,,,,
+243,70,Perk,,,,
+243,71,Perk,,,,
+243,73,Perk,,,,
+243,74,Perk,,,,
+243,75,Perk,,,,
+243,77,Perk,,,,
+243,79,Perk,,,,
+243,80,Perk,,,,
+243,81,Perk,,,,
+243,82,Perk,,,,
+243,83,Perk,,,,
+243,84,Perk,,,,
+243,85,Perk,,,,
+243,86,Perk,,,,
+243,87,Perk,,,,
+243,88,Perk,,,,
+243,90,Perk,,,,
+243,91,Perk,,,,
+243,92,Perk,,,,
+243,93,Perk,,,,
+243,94,Perk,,,,
+243,96,Perk,,,,
+243,97,Perk,,,,
 243,98,Model Plus,/,Fire,/,No Stat Changes
 243,99,Model Plus,/,Radiation,/,No Stat Changes
 243,100,Model Plus,/,Corrosive,/,No Stat Changes
@@ -101,5 +101,5 @@
 243,112,Firmware,风险启用,Risky Boots,,
 243,113,Firmware,技能工艺,Skillcraft,,
 243,114,Firmware,主动开火,Active Fire,,
-243,119,Perk,类固醇狂怒,Roid Rage,使时获得5层类固醇狂怒，该叠加会持续衰减。每次叠加失效时，都会生成腐蚀星爆，造成3122伤害,On use applies 5 stacks of Roid-Rage that decay over time. Each time a stack expires spawn a Repkit Element Nova dealing 3122 damage
+243,119,Perk,,,,
 243,120,Firmware,重击者,Bruiser,,
