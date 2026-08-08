@@ -1,135 +1,100 @@
-﻿Manufacturer ID,Part_ID,Part_type,String,Stat_ZH,Stat_EN,Description_ZH,Description_EN
-282,1,Rarity,,Legendary,Legendary,迹象皮肤,Inkling Skin
-282,2,Barrel,Barrel_02_Splatoon,（机炮）迹象,Inklink - Fires bouncing Projectiles that leave an Elemental Splat on Bounce,发射反弹射弹，在反弹时留下元素喷溅,
-282,3,Rarity,,Legendary,Legendary,金皮肤,Gold Skin
-282,6,Body,Body,/,,,No Stat Changes
-282,7,Body Accessory,Body_A,+弹容,Mad,,+Ammo
-282,8,Body Accessory,Body_B,+射速,Wide,,+Fire Rate
-282,9,Body Accessory,Body_C,-冷却时间,Thorough,,-Cooldown
-282,10,Body Accessory,Body_D,无效果,Tinged,,No Stat Changes
-282,12,Barrel,Barrel_02,机炮,Cannon Barrel,,
-282,13,Barrel Accessory,Barrel_01_A,附加枪管,"Additional Barrel - Adds 1 additional barrel, increasing Fire Rate by +17%",增加1根额外枪管，提高+17%射速,"-Cooldown, +Damage, +Fire Rate"
-282,14,Barrel Accessory,Barrel_01_B,天使份额,Angel's Share - Every 6th shot doesn't cost Ammo,每6次射击的最后一发不消耗弹药,-Cooldown
-282,15,Barrel Accessory,Barrel_01_C,魔法子弹,Magic Bullet - Every 6th shot is homing,每6次射击的最后一发将自动追踪,"+Cooldown, +Damage"
-282,16,Barrel Accessory,Barrel_01_A_D,恶魔份额,Devil's Share - Every 6th shot deals +100% Damage,每6次射击的最后一发造成+100%伤害,+Damage
-282,17,Barrel Accessory,Barrel_02_A,附加枪管,"Additional Barrels - Adds 2 additional barrels, increasing Fire Rate by -65%",增加2根额外枪管，提升-65%射速,"-Cooldown, +Fire Rate"
-282,18,Barrel Accessory,Barrel_02_B,爆炸弹,Explosive Rounds - Explosive Rounds - Increases Damage by +125% and Damage Radius by +200%,提升+125%伤害和+200%伤害半径,+Splash Radius
-282,19,Barrel Accessory,Barrel_02_C,双射,Two Shot - Two-Shot - 2 barrels fire simultaneously,两根枪管同时开火,+Damage
-282,20,Barrel Accessory,Barrel_02_D,穿透,Penetration - Penetration - Projectiles pierce through enemies,射弹穿透敌人,"-Cooldown, +Damage"
-282,21,Rarity,,Common,Common,,
-282,22,Rarity,,Uncommon,Uncommon,,
-282,23,Rarity,,Rare,Rare,,
-282,24,Rarity,,Epic,Epic,,
-282,25,Barrel,Barrel_01_Atlinggun,（加特林）吹哨人,Whistler,持续射击时射速逐渐加速，且子弹自动追踪准心范围内的已攻击目标,
-282,26,Rarity,,Legendary,Legendary,阿特林机枪皮肤,Atling Gun Skin
-282,27,Barrel Accessory,Barrel_01_C,魔法子弹,Magic Bullet - Every 6th shot is homing,每6次射击的最后一发将自动追踪,"-Cooldown, -Damage"
-282,28,Barrel Accessory,Barrel_01_A_D,恶魔份额,Devil's Share - Every 6th shot deals +100% Damage,每6次射击的最后一发造成+100%伤害,+Damage
-282,29,Barrel,Barrel_01,加特林,Minigun Barrel,,
-282,30,Barrel,part_barrel_02_flak,高射爆,Flakking Good,,
-282,31,Rarity,,Legendary,Legendary,高射炮皮肤,Flak Cannon Skin
-273,1,Barrel Accessory,Barrel_01_D,准星追踪,Reticle Homing - Rocket homes in on the Reticle's target,火箭会追踪准星目标,No Stat Changes
-273,2,Barrel Accessory,Barrel_01_D,准星追踪,Reticle Homing - Rocket homes in on the Reticle's target,火箭会追踪准星目标,No Stat Changes
-273,3,Barrel Accessory,Barrel_01_D,准星追踪,Reticle Homing - Rocket homes in on the Reticle's target,火箭会追踪准星目标,No Stat Changes
-273,25,Barrel Accessory,Barrel_01_D,准星追踪,Reticle Homing - Rocket homes in on the Reticle's target,火箭会追踪准星目标,No Stat Changes
-273,4,Barrel Accessory,Barrel_01_C,空中爆炸,Air Burst - Rockets explode when in proximity of an enemy,火箭在靠近敌人时爆炸,"-Cooldown, -Damage"
-273,7,Barrel Accessory,Barrel_01_C,空中爆炸,Air Burst - Rockets explode when in proximity of an enemy,火箭在靠近敌人时爆炸,"-Cooldown, -Damage"
-273,10,Barrel Accessory,Barrel_01_C,空中爆炸,Air Burst - Rockets explode when in proximity of an enemy,火箭在靠近敌人时爆炸,"-Cooldown, -Damage"
-273,24,Barrel Accessory,Barrel_01_C,空中爆炸,Air Burst - Rockets explode when in proximity of an enemy,火箭在靠近敌人时爆炸,"-Cooldown, -Damage"
-273,5,Barrel Accessory,Barrel_01_B,破片火箭,"Shrapnel Rockets - On exploding, propels shrapnel forward",爆炸时弹片向前飞行,"-Cooldown, +Damage"
-273,8,Barrel Accessory,Barrel_01_B,破片火箭,"Shrapnel Rockets - On exploding, propels shrapnel forward",爆炸时弹片向前飞行,"-Cooldown, +Damage"
-273,11,Barrel Accessory,Barrel_01_B,破片火箭,"Shrapnel Rockets - On exploding, propels shrapnel forward",爆炸时弹片向前飞行,"-Cooldown, +Damage"
-273,23,Barrel Accessory,Barrel_01_B,破片火箭,"Shrapnel Rockets - On exploding, propels shrapnel forward",爆炸时弹片向前飞行,"-Cooldown, +Damage"
-273,6,Barrel Accessory,Barrel_01_A,三管枪,"Triple Barrel - Fires swirling Rockets, or charge up to fire all of them at once",发射旋转火箭，或通过充能进行三管齐射,-Damage
-273,9,Barrel Accessory,Barrel_01_A,三管枪,"Triple Barrel - Fires swirling Rockets, or charge up to fire all of them at once",发射旋转火箭，或通过充能进行三管齐射,-Damage
-273,12,Barrel Accessory,Barrel_01_A,三管枪,"Triple Barrel - Fires swirling Rockets, or charge up to fire all of them at once",发射旋转火箭，或通过充能进行三管齐射,-Damage
-273,22,Barrel Accessory,Barrel_01_A,三管枪,"Triple Barrel - Fires swirling Rockets, or charge up to fire all of them at once",发射旋转火箭，或通过充能进行三管齐射,-Damage
-273,13,Rarity,,Legendary,Legendary,金皮肤,Gold Skin
-273,14,Body,Body,/,,,No Stat Changes
-273,15,Body Accessory,Body_A,+伤害,Blasting,,"-Cooldown, +Damage"
-273,16,Body Accessory,Body_B,+爆炸范围,Covering,,+Splash Radius
-273,17,Body Accessory,Body_C,-冷却时间,Eager,,-Cooldown
-273,18,Body Accessory,Body_D,无效果,Itchy,,No Stat Changes
-273,20,Barrel,Barrel_01,火箭筒,Rocket Launcher,,
-273,21,Barrel,Barrel_02,蜂巢火箭,Micro Missile Launcher,,
-273,26,Barrel Accessory,Barrel_02_A,双射-1次性发射2枚火箭,Two Shot - Fires 2 Rockets at a time,,+Damage
-273,27,Barrel Accessory,Barrel_02_B,射速,Fire Rate - Fire Rate is increased by +30%,射速提升+30%,"-Cooldown, +Fire Rate"
-273,28,Barrel Accessory,Barrel_02_C,增大弹匣,Extended Magazine - Magazine Size is increased by +25%,弹匣容量增加+25%,+Ammo
-273,29,Barrel Accessory,Barrel_02_D,扫描,Scanning - Rockets home toward nearby targets,火箭自动追踪附近目标,-Damage
-273,30,Rarity,,Common,Common,,
-273,31,Rarity,,Uncommon,Uncommon,,
-273,32,Rarity,,Rare,Rare,,
-273,33,Rarity,,Epic,Epic,,
-273,34,Rarity,,Legendary,Legendary,风流倜傥皮肤,Sprezzatura Skin
-273,35,Barrel,Barrel_01_Javelin,（蜂巢）永恒之枪,Gungnir,子弹飞向空中后再像流星般直线攻击目标,
-273,36,Rarity,,Legendary,Legendary,渡鸦之火皮肤,Ravenfire Skin
-273,40,Barrel,Barrel_02_Ravenfire,（火箭筒）621,621 - Explosions radiate outward from the point of impact,爆炸会从撞击点向外辐射扩散,
-273,42,Barrel,Barrel_dahlfather,（火箭筒）诡计,Rig - Fires Dahl Soldier heads that attack nearby enemies,发射达尔士兵头颅攻击附近敌人,
-273,43,Rarity,,Legendary,Legendary,海姆达尔皮肤,Heimdahl Skin
-273,44,Barrel,part_barrel_loiter,剥削者,Sploiter,,
-273,45,Rarity,,Legendary,Legendary,徘徊剥削者皮肤,Loiter Sploiter Skin
-275,1,Barrel,Barrel_01_Streamer,（光束）委托模式,Delegation - Launches stationary Projectiles that each fire a Beam forward,发射会向前射出光束的静止射弹,
-275,2,Barrel Accessory,Barrel_01_A,爆炸,Explosive - Damage splashes to other enemies near the target,伤害溅射至目标附近的其他敌人,-Damage
-275,18,Barrel Accessory,Barrel_01_A,爆炸,Explosive - Damage splashes to other enemies near the target,伤害溅射至目标附近的其他敌人,-Damage
-275,3,Barrel Accessory,Barrel_01_D,分束器,Beam Splitter - The beam splits up to 2 other nearby targets,光束会分裂并攻击附近最多2个额外目标,-Damage
-275,21,Barrel Accessory,Barrel_01_D,分束器,Beam Splitter - The beam splits up to 2 other nearby targets,光束会分裂并攻击附近最多2个额外目标,-Damage
-275,4,Barrel Accessory,Barrel_02_C,复合,Compound - Deals increased Damage per enemy hit,每次击中敌人后提升伤害,-Damage
-275,9,Barrel Accessory,Barrel_02_C,复合,Compound - Deals increased Damage per enemy hit,每次击中敌人后提升伤害,-Damage
-275,24,Barrel Accessory,Barrel_02_C,复合,Compound - Deals increased Damage per enemy hit,每次击中敌人后提升伤害,-Damage
-275,5,Barrel Accessory,Barrel_02_D,跳弹,Ricochet - Projectiles bounce off of surfaces,射弹在表面反弹,"-Cooldown, +Damage"
-275,7,Barrel Accessory,Barrel_02_D,跳弹,Ricochet - Projectiles bounce off of surfaces,射弹在表面反弹,"-Cooldown, +Damage"
-275,25,Barrel Accessory,Barrel_02_D,跳弹,Ricochet - Projectiles bounce off of surfaces,射弹在表面反弹,"-Cooldown, +Damage"
-275,6,Barrel Accessory,Barrel_02_A,宽大圆盘,Wide Disk - Increases the Projectile width,增加射弹宽度,+Damage
-275,8,Barrel Accessory,Barrel_02_A,宽大圆盘,Wide Disk - Increases the Projectile width,增加射弹宽度,+Damage
-275,22,Barrel Accessory,Barrel_02_A,宽大圆盘,Wide Disk - Increases the Projectile width,增加射弹宽度,+Damage
-275,10,Rarity,,Legendary,Legendary,金皮肤,Gold Skin
-275,11,Body,Body,/,,,No Stat Changes
-275,12,Body Accessory,Body_A,+伤害,Chosen,,+Damage
-275,13,Body Accessory,Body_B,+弹容,Bestowed,,+Ammo
-275,14,Body Accessory,Body_C,-冷却时间,Ritualized,,-Cooldown
-275,15,Body Accessory,Body_D,无效果,Strange,,No Stat Changes
-275,16,Barrel,Barrel_01,光束枪,Beam Rifle,,
-275,17,Barrel,Barrel_02,飞盘发射器,Disc Launcher,,
-275,19,Barrel Accessory,Barrel_01_B,热对流,Thermal Convection - Damage increases the longer the beam is fired,光束发射时间越长，伤害越高,-Damage
-275,20,Barrel Accessory,Barrel_01_C,散热器,Heat Sink - Magazine Size is increased by 25%,弹匣容量增加+25%,+Ammo
-275,23,Barrel Accessory,Barrel_02_B,热交换,Heat Exchange - Fires full auto after the initial charge,初次充能后以全自动模式开火,"-Cooldown, +Damage"
-275,26,Rarity,,Common,Common,,
-275,27,Rarity,,Uncommon,Uncommon,,
-275,28,Rarity,,Rare,Rare,,
-275,29,Rarity,,Epic,Epic,,
-275,30,Barrel,Barrel_02_DiscJockey,（飞盘）反弹饼干,"Bouncing Biscuits - Energy disc Projectiles bounce up to 5 times, and gain +20% Damage per bounce",能量圆盘射弹最多反弹5次，每次反弹后获得+20%伤害,
-275,31,Rarity,,Legendary,Legendary,唱片骑师皮肤,Disc Jockey Skin
-275,32,Rarity,,Legendary,Legendary,直播网红皮肤,Streamer Skin
-275,35,Barrel,Barrel_02_jetset,（飞盘）飞行常客,Frequent Flyer,,
-275,36,Rarity,,Legendary,Legendary,环球旅行家皮肤,Jetsetter skin
-275,37,Barrel,part_barrel_02_draupner,（飞盘）回波,Return Wave,,
-275,38,Rarity,,Legendary,Legendary,德劳普纳皮肤,Draupner Skin
-289,1,Rarity,,Legendary,Legendary,瓶装闪电皮肤,Bottled Lightning Skin
-289,2,Barrel Accessory,Barrel_02_C,分裂式,MIRV - Spawns 3 MIRV Orbs on explosion,爆炸时生成3颗分裂式魔球,No Stat Changes
-289,16,Barrel Accessory,Barrel_02_C,分裂式,MIRV - Spawns 3 MIRV Orbs on explosion,爆炸时生成3颗分裂式魔球,No Stat Changes
-289,3,Barrel Accessory,Barrel_02_D,感应追踪,Proxy Homing - Homes in on a nearby target before exploding,在爆炸前自动追踪附近目标,No Stat Changes
-289,19,Barrel Accessory,Barrel_02_D,感应追踪,Proxy Homing - Homes in on a nearby target before exploding,在爆炸前自动追踪附近目标,No Stat Changes
-289,4,Rarity,,Legendary,Legendary,金皮肤,Gold Skin
-289,5,Body,Body,/,,,No Stat Changes
-289,6,Body Accessory,Body_A,+弹容,High-Capacity,,+Ammo
-289,7,Body Accessory,Body_B,+伤害,High-Energy,,+Damage
-289,8,Body Accessory,Body_C,--冷却时间,Shunted,,--Cooldown
-289,9,Body Accessory,Body_D,无效果,Abnormal,,No Stat Changes
-289,10,Barrel,Barrel_01,能量弹,Energy Bolt,,
-289,11,Barrel,Barrel_02,能量魔球,Energy Orb,,
-289,12,Barrel Accessory,Barrel_01_A,跳弹,Ricochet - Projectiles bounce off of surfaces,射弹在表面反弹,No Stat Changes
-289,13,Barrel Accessory,Barrel_01_B,穿透,Penetration - Projectiles pierce through enemies,射弹穿透敌人,No Stat Changes
-289,14,Barrel Accessory,Barrel_01_C,快速装填器,Speed Loader - Fire Rate is increased by 30%,射速提升30%,"-Cooldown, +Damage, +Fire Rate"
-289,15,Barrel Accessory,Barrel_01_D,过载,Overload - Directly damaged enemies explode for additional Damage after a delay,被直接命中的敌人在延迟后爆炸，造成额外伤害,No Stat Changes
-289,17,Barrel Accessory,Barrel_02_A,双射,Two Shot - Fires 2 Projectiles at a time,每次发射2颗射弹,+Damage
-289,18,Barrel Accessory,Barrel_02_B,空气动力学,Aerodynamics - Projectile Speed is increased by +100%,射弹速度提升+100%,-Cooldown
-289,20,Rarity,,Common,Common,,
-289,21,Rarity,,Uncommon,Uncommon,,
-289,22,Rarity,,Rare,Rare,,
-289,23,Rarity,,Epic,Epic,,
-289,24,Barrel,Barrel_01_GammaVoid,（能量魔球）辐射暴露,"Radiation Exposure - Creates a Singularity for 6s, in which enemies take +50% Radiation Damage over time",生成奇点并持续6秒，使敌人持续受到+50%辐射伤害,
-289,25,Rarity,,Legendary,Legendary,伽马虚空皮肤,Gamma Void Skin
-289,26,Barrel,Barrel_02_BottledLightning,（能量魔球）得手两次,Strike Twice,蓄力后射出一个能量球，能量球朝前缓慢飞行，并对沿途周围释放闪电,
-289,27,Barrel,Barrel_01_ichor,（能量弹）致命危害,Deihazard - Deals Incendiary and Corrosive Damage,造成燃烧和腐蚀伤害,
-289,28,Rarity,,Legendary,Legendary,灵液皮肤,Ichor Skin
-289,29,Rarity,,Legendary,Legendary,库珀欺诈者皮肤,Cooper Duper Skin
-289,30,Barrel,part_barrel_02_barrel,（能量魔球）全息爆桶,"Holo-Barrel - Shoots holographic barrels that pierce enemies and attach to the world. Shooting attached barrels causes it to explode, dealing 16730 damage.","发射全息爆桶,其会穿透敌人并附着在场景中。射击附着的爆桶会引起爆炸,造成16730伤害",
+﻿Manufacturer ID,Part_ID,Part_type,String,Stat_ZH,Stat_EN
+282,2,Barrel,Barrel_02_Splatoon,（机炮）迹象,Inklink - Fires bouncing Projectiles that leave an Elemental Splat on Bounce
+282,6,Body,Body,/,
+282,7,Body Accessory,Body_A,+弹容,Mad
+282,8,Body Accessory,Body_B,+射速,Wide
+282,9,Body Accessory,Body_C,-冷却时间,Thorough
+282,10,Body Accessory,Body_D,无效果,Tinged
+282,12,Barrel,Barrel_02,机炮,Cannon Barrel
+282,13,Barrel Accessory,Barrel_01_A,附加枪管,"Additional Barrel - Adds 1 additional barrel, increasing Fire Rate by +17%"
+282,14,Barrel Accessory,Barrel_01_B,天使份额,Angel's Share - Every 6th shot doesn't cost Ammo
+282,15,Barrel Accessory,Barrel_01_C,魔法子弹,Magic Bullet - Every 6th shot is homing
+282,16,Barrel Accessory,Barrel_01_A_D,恶魔份额,Devil's Share - Every 6th shot deals +100% Damage
+282,17,Barrel Accessory,Barrel_02_A,附加枪管,"Additional Barrels - Adds 2 additional barrels, increasing Fire Rate by -65%"
+282,18,Barrel Accessory,Barrel_02_B,爆炸弹,Explosive Rounds - Explosive Rounds - Increases Damage by +125% and Damage Radius by +200%
+282,19,Barrel Accessory,Barrel_02_C,双射,Two Shot - Two-Shot - 2 barrels fire simultaneously
+282,20,Barrel Accessory,Barrel_02_D,穿透,Penetration - Penetration - Projectiles pierce through enemies
+282,25,Barrel,Barrel_01_Atlinggun,（加特林）吹哨人,Whistler
+282,27,Barrel Accessory,Barrel_01_C,魔法子弹,Magic Bullet - Every 6th shot is homing
+282,28,Barrel Accessory,Barrel_01_A_D,恶魔份额,Devil's Share - Every 6th shot deals +100% Damage
+282,29,Barrel,Barrel_01,加特林,Minigun Barrel
+282,30,Barrel,part_barrel_02_flak,高射爆,Flakking Good
+273,1,Barrel Accessory,Barrel_01_D,准星追踪,Reticle Homing - Rocket homes in on the Reticle's target
+273,2,Barrel Accessory,Barrel_01_D,准星追踪,Reticle Homing - Rocket homes in on the Reticle's target
+273,3,Barrel Accessory,Barrel_01_D,准星追踪,Reticle Homing - Rocket homes in on the Reticle's target
+273,25,Barrel Accessory,Barrel_01_D,准星追踪,Reticle Homing - Rocket homes in on the Reticle's target
+273,4,Barrel Accessory,Barrel_01_C,空中爆炸,Air Burst - Rockets explode when in proximity of an enemy
+273,7,Barrel Accessory,Barrel_01_C,空中爆炸,Air Burst - Rockets explode when in proximity of an enemy
+273,10,Barrel Accessory,Barrel_01_C,空中爆炸,Air Burst - Rockets explode when in proximity of an enemy
+273,24,Barrel Accessory,Barrel_01_C,空中爆炸,Air Burst - Rockets explode when in proximity of an enemy
+273,5,Barrel Accessory,Barrel_01_B,破片火箭,"Shrapnel Rockets - On exploding, propels shrapnel forward"
+273,8,Barrel Accessory,Barrel_01_B,破片火箭,"Shrapnel Rockets - On exploding, propels shrapnel forward"
+273,11,Barrel Accessory,Barrel_01_B,破片火箭,"Shrapnel Rockets - On exploding, propels shrapnel forward"
+273,23,Barrel Accessory,Barrel_01_B,破片火箭,"Shrapnel Rockets - On exploding, propels shrapnel forward"
+273,6,Barrel Accessory,Barrel_01_A,三管枪,"Triple Barrel - Fires swirling Rockets, or charge up to fire all of them at once"
+273,9,Barrel Accessory,Barrel_01_A,三管枪,"Triple Barrel - Fires swirling Rockets, or charge up to fire all of them at once"
+273,12,Barrel Accessory,Barrel_01_A,三管枪,"Triple Barrel - Fires swirling Rockets, or charge up to fire all of them at once"
+273,22,Barrel Accessory,Barrel_01_A,三管枪,"Triple Barrel - Fires swirling Rockets, or charge up to fire all of them at once"
+273,14,Body,Body,/,
+273,15,Body Accessory,Body_A,+伤害,Blasting
+273,16,Body Accessory,Body_B,+爆炸范围,Covering
+273,17,Body Accessory,Body_C,-冷却时间,Eager
+273,18,Body Accessory,Body_D,无效果,Itchy
+273,20,Barrel,Barrel_01,火箭筒,Rocket Launcher
+273,21,Barrel,Barrel_02,蜂巢火箭,Micro Missile Launcher
+273,26,Barrel Accessory,Barrel_02_A,双射-1次性发射2枚火箭,Two Shot - Fires 2 Rockets at a time
+273,27,Barrel Accessory,Barrel_02_B,射速,Fire Rate - Fire Rate is increased by +30%
+273,28,Barrel Accessory,Barrel_02_C,增大弹匣,Extended Magazine - Magazine Size is increased by +25%
+273,29,Barrel Accessory,Barrel_02_D,扫描,Scanning - Rockets home toward nearby targets
+273,35,Barrel,Barrel_01_Javelin,（蜂巢）永恒之枪,Gungnir
+273,40,Barrel,Barrel_02_Ravenfire,（火箭筒）621,621 - Explosions radiate outward from the point of impact
+273,42,Barrel,Barrel_dahlfather,（火箭筒）诡计,Rig - Fires Dahl Soldier heads that attack nearby enemies
+273,44,Barrel,part_barrel_loiter,剥削者,Sploiter
+275,1,Barrel,Barrel_01_Streamer,（光束）委托模式,Delegation - Launches stationary Projectiles that each fire a Beam forward
+275,2,Barrel Accessory,Barrel_01_A,爆炸,Explosive - Damage splashes to other enemies near the target
+275,18,Barrel Accessory,Barrel_01_A,爆炸,Explosive - Damage splashes to other enemies near the target
+275,3,Barrel Accessory,Barrel_01_D,分束器,Beam Splitter - The beam splits up to 2 other nearby targets
+275,21,Barrel Accessory,Barrel_01_D,分束器,Beam Splitter - The beam splits up to 2 other nearby targets
+275,4,Barrel Accessory,Barrel_02_C,复合,Compound - Deals increased Damage per enemy hit
+275,9,Barrel Accessory,Barrel_02_C,复合,Compound - Deals increased Damage per enemy hit
+275,24,Barrel Accessory,Barrel_02_C,复合,Compound - Deals increased Damage per enemy hit
+275,5,Barrel Accessory,Barrel_02_D,跳弹,Ricochet - Projectiles bounce off of surfaces
+275,7,Barrel Accessory,Barrel_02_D,跳弹,Ricochet - Projectiles bounce off of surfaces
+275,25,Barrel Accessory,Barrel_02_D,跳弹,Ricochet - Projectiles bounce off of surfaces
+275,6,Barrel Accessory,Barrel_02_A,宽大圆盘,Wide Disk - Increases the Projectile width
+275,8,Barrel Accessory,Barrel_02_A,宽大圆盘,Wide Disk - Increases the Projectile width
+275,22,Barrel Accessory,Barrel_02_A,宽大圆盘,Wide Disk - Increases the Projectile width
+275,11,Body,Body,/,
+275,12,Body Accessory,Body_A,+伤害,Chosen
+275,13,Body Accessory,Body_B,+弹容,Bestowed
+275,14,Body Accessory,Body_C,-冷却时间,Ritualized
+275,15,Body Accessory,Body_D,无效果,Strange
+275,16,Barrel,Barrel_01,光束枪,Beam Rifle
+275,17,Barrel,Barrel_02,飞盘发射器,Disc Launcher
+275,19,Barrel Accessory,Barrel_01_B,热对流,Thermal Convection - Damage increases the longer the beam is fired
+275,20,Barrel Accessory,Barrel_01_C,散热器,Heat Sink - Magazine Size is increased by 25%
+275,23,Barrel Accessory,Barrel_02_B,热交换,Heat Exchange - Fires full auto after the initial charge
+275,30,Barrel,Barrel_02_DiscJockey,（飞盘）反弹饼干,"Bouncing Biscuits - Energy disc Projectiles bounce up to 5 times, and gain +20% Damage per bounce"
+275,35,Barrel,Barrel_02_jetset,（飞盘）飞行常客,Frequent Flyer
+275,37,Barrel,part_barrel_02_draupner,（飞盘）回波,Return Wave
+289,2,Barrel Accessory,Barrel_02_C,分裂式,MIRV - Spawns 3 MIRV Orbs on explosion
+289,16,Barrel Accessory,Barrel_02_C,分裂式,MIRV - Spawns 3 MIRV Orbs on explosion
+289,3,Barrel Accessory,Barrel_02_D,感应追踪,Proxy Homing - Homes in on a nearby target before exploding
+289,19,Barrel Accessory,Barrel_02_D,感应追踪,Proxy Homing - Homes in on a nearby target before exploding
+289,5,Body,Body,/,
+289,6,Body Accessory,Body_A,+弹容,High-Capacity
+289,7,Body Accessory,Body_B,+伤害,High-Energy
+289,8,Body Accessory,Body_C,--冷却时间,Shunted
+289,9,Body Accessory,Body_D,无效果,Abnormal
+289,10,Barrel,Barrel_01,能量弹,Energy Bolt
+289,11,Barrel,Barrel_02,能量魔球,Energy Orb
+289,12,Barrel Accessory,Barrel_01_A,跳弹,Ricochet - Projectiles bounce off of surfaces
+289,13,Barrel Accessory,Barrel_01_B,穿透,Penetration - Projectiles pierce through enemies
+289,14,Barrel Accessory,Barrel_01_C,快速装填器,Speed Loader - Fire Rate is increased by 30%
+289,15,Barrel Accessory,Barrel_01_D,过载,Overload - Directly damaged enemies explode for additional Damage after a delay
+289,17,Barrel Accessory,Barrel_02_A,双射,Two Shot - Fires 2 Projectiles at a time
+289,18,Barrel Accessory,Barrel_02_B,空气动力学,Aerodynamics - Projectile Speed is increased by +100%
+289,24,Barrel,Barrel_01_GammaVoid,（能量魔球）辐射暴露,"Radiation Exposure - Creates a Singularity for 6s, in which enemies take +50% Radiation Damage over time"
+289,26,Barrel,Barrel_02_BottledLightning,（能量魔球）得手两次,Strike Twice
+289,27,Barrel,Barrel_01_ichor,（能量弹）致命危害,Deihazard - Deals Incendiary and Corrosive Damage
+289,30,Barrel,part_barrel_02_barrel,（能量魔球）全息爆桶,"Holo-Barrel - Shoots holographic barrels that pierce enemies and attach to the world. Shooting attached barrels causes it to explode, dealing 16730 damage."

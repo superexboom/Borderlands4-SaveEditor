@@ -12,7 +12,15 @@ from tabs.qt_equipment_base_tab import BaseEquipmentEditorTab
 def load_heavy_weapon_data(lang='zh-CN'):
     try:
         df_main = resource_loader.load_localized_csv_resource('heavy/heavy_main_perk.csv', lang)
-        df_mfg = resource_loader.load_localized_csv_resource('heavy/heavy_manufacturer_perk.csv', lang)
+        df_parts = resource_loader.load_localized_csv_resource('heavy/heavy_manufacturer_perk.csv', lang)
+        # Rarity rows live in their own file, as they already do for the other three
+        # equipment families (grenade/manufacturer_rarity_perk.csv, shield/manufacturer_perk.csv,
+        # repkit/repkit_manufacturer_perk.csv). Keeping them out of the part file lets the
+        # part file carry ids and names only, with descriptions coming from the index. The
+        # rarity file keeps its Description column because that is where the legendary skin
+        # names live, and those have no other source.
+        df_rarity = resource_loader.load_localized_csv_resource('heavy/heavy_rarity.csv', lang)
+        df_mfg = pd.concat([df_parts, df_rarity], ignore_index=True)
         df_mfg['Manufacturer ID'] = pd.to_numeric(df_mfg['Manufacturer ID'], errors='coerce')
         df_mfg.dropna(subset=['Manufacturer ID'], inplace=True)
         df_mfg['Manufacturer ID'] = df_mfg['Manufacturer ID'].astype(int)
