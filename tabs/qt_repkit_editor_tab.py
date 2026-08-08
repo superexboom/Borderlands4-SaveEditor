@@ -32,6 +32,16 @@ class QtRepkitEditorTab(BaseEquipmentEditorTab):
     ITEM_LABEL = "Repkit"
 
     SECONDARY_PARENT = 243
+
+    # The universal picker serves the CSV's 51 "Perk" rows, which resolve to four rule
+    # groups: secondary_augment (21), primary_augment (20), augment_element_splat (5) and
+    # augment_element_nova (5). Its budget is therefore the sum of those groups as declared
+    # for the current composition, read from the generation rules so a retuned or new
+    # composition needs no code change.
+    RULE_GROUPS_BY_PICKER = {
+        "universal": ("primary_augment", "secondary_augment",
+                      "augment_element_splat", "augment_element_nova"),
+    }
     # resistance/immunity part_id -> derived "Model Plus" id
     _DERIVED_MAP = {}
     for _ids, _derived in (({24, 50, 29, 44}, 98), ({23, 47, 28, 43}, 99),

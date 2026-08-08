@@ -1053,6 +1053,7 @@
       "base_attrs": "Base Attributes"
     },
     "labels": {
+      "slot_budget_hint": "The natural generation rules for the current template allow at most this many in this slot. Exceeding it stays editable but cannot drop in game.",
       "raw": "Deserialize:",
       "base85": "Base85:",
       "manufacturer": "Manufacturer:",
@@ -1095,10 +1096,10 @@
       "base_attrs": "Base Attributes"
     },
     "labels": {
+      "slot_budget_hint": "The natural generation rules for the current template allow at most this many in this slot. Exceeding it stays editable but cannot drop in game.",
       "raw": "Deserialize:",
       "base85": "Base85:",
       "manufacturer": "Manufacturer (Note Shield Type):",
-      "augment_limit_hint": "Naturally rolled shields carry at most one augment per side (1 primary, 1 secondary). Exceeding this stays editable but cannot drop in game.",
       "level": "Level:",
       "rarity": "Rarity:"
     },
@@ -1142,6 +1143,7 @@
       "base_attrs": "Base Attributes"
     },
     "labels": {
+      "slot_budget_hint": "The natural generation rules for the current template allow at most this many in this slot. Exceeding it stays editable but cannot drop in game.",
       "raw": "Deserialize:",
       "base85": "Base85:",
       "manufacturer": "Manufacturer:",
@@ -1192,6 +1194,7 @@
       "base_attrs": "Base Attributes"
     },
     "labels": {
+      "slot_budget_hint": "The natural generation rules for the current template allow at most this many in this slot. Exceeding it stays editable but cannot drop in game.",
       "raw": "Deserialize:",
       "base85": "Base85:",
       "manufacturer": "Manufacturer:",

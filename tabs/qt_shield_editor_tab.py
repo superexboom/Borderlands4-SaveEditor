@@ -75,33 +75,26 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
             picker = self._group_pickles.get(key)
             if picker is not None:
                 picker.set_categories(self._augment_categories(), columns=4)
-                self._apply_augment_limit(picker)
 
-    def _apply_augment_limit(self, picker):
-        """Advertise the natural per-side augment budget without enforcing it.
+    # Each augment picker mixes both slots, so its budget is the sum of the two sides as
+    # declared for the current composition. The generation rules say max=1 per side, which
+    # matches what 80 dumped shields show, but the rules are the source: a retuned or new
+    # composition changes the badge without a code edit.
+    RULE_GROUPS_BY_PICKER = {
+        "universal": ("primary_augment", "secondary_augment"),
+        "energy": ("primary_augment", "secondary_augment"),
+        "armor": ("primary_augment", "secondary_augment"),
+        "legendary": ("unique",),
+    }
 
-        Across 80 dumped shields no item ever carried more than one primary or more than
-        one secondary augment, and the two sides are always different augments, so the
-        natural budget is 1 per side (2 total across a picker that mixes both sides).
-        Shown as a hint only: the editor must still allow deliberately illegal builds.
-        """
-        hint = (self.ui_loc or {}).get('labels', {}).get('augment_limit_hint')
-        picker.set_count_limit(self.AUGMENT_SLOTS_PER_SIDE * 2, hint or "")
-
-    # Augments occupy two independent slots. Verified over 80 dumped shields:
-    # every real shield carries at most ONE primary and at most ONE secondary
-    # (observed 0/0 23x, 1/0 25x, 0/1 12x, 1/1 20x - never 2 on a side), and the
-    # two sides are never the same augment (0 same-source vs 20 cross-source), so
-    # they are separate slots rather than a matched pair. The pickers are flat and
-    # stackable, so stacking two primaries produces a shield the game cannot roll
-    # and whose mechanism yields no numbers. Faceting by slot makes the split
-    # visible; the count badge reports how many are selected per slot.
+    # Augments occupy two independent slots, confirmed twice over: the rules declare
+    # primary_augment and secondary_augment separately with max=1 each, and across 80
+    # dumped shields the observed (primary, secondary) counts were (0,0) 23x, (1,0) 25x,
+    # (0,1) 12x, (1,1) 20x -- never 2 on a side -- with the two sides never holding the
+    # same augment. The pickers are flat and stackable, so stacking two primaries makes a
+    # shield the game cannot roll and whose mechanism yields no numbers; faceting by slot
+    # makes the split visible and the count badge reports the declared budget.
     _AUGMENT_FACETS = ("primary_augment", "secondary_augment")
-
-    # Natural budget per augment side, measured over 80 dumped shields:
-    # (primary, secondary) counts observed were (0,0) 23x, (1,0) 25x, (0,1) 12x, (1,1) 20x
-    # -- never 2 on a side.
-    AUGMENT_SLOTS_PER_SIDE = 1
 
     def _augment_facet(self, parent, part_id):
         from core import item_display_resolver as resolver

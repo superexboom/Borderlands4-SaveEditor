@@ -36,6 +36,16 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
     ELEMENT_PARENT = 1
     FIRMWARE_PARENT = 244
 
+    # Each picker serves exactly one rule group here (56 Barrel Accessory rows all resolve
+    # to barrel_acc, 16 Body Accessory rows all to body_acc), so the badge shows that
+    # group's declared budget for the current composition. Both vary: barrel_acc is max
+    # 0/1/2 and body_acc is max 0/1/2/3 depending on the composition, which a constant
+    # could not express.
+    RULE_GROUPS_BY_PICKER = {
+        "barrel_acc": ("barrel_acc",),
+        "body_acc": ("body_acc",),
+    }
+
     def load_data(self, lang):
         return load_heavy_weapon_data(lang)
 

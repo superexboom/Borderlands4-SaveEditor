@@ -33,6 +33,17 @@ class QtGrenadeEditorTab(BaseEquipmentEditorTab):
     # secondary token parent id for element/firmware/universal
     SECONDARY_PARENT = 245
 
+    # Rule group names map 1:1 onto part_refs categories (verified: every group's selected
+    # parts land in the identically named category across 82 dumped grenades). The
+    # universal picker is not single-category though -- its 55 Perk rows resolve to
+    # payload_augment (32), stat_augment (12) and payload (11) -- so its budget is the sum
+    # of those three groups as declared for the current composition. stat_augment alone is
+    # max 1 in most compositions and 2 in three of them, which is why the number has to
+    # come from the rules per composition rather than from a constant.
+    RULE_GROUPS_BY_PICKER = {
+        "universal": ("payload_augment", "stat_augment", "payload"),
+    }
+
     def load_data(self, lang):
         return load_grenade_data(lang)
 

@@ -532,8 +532,56 @@ class BaseEquipmentEditorTab(QWidget):
             self._encode_error = bool(err)
             self.b85_output_edit.setText(f"{self.ui_loc.get('dialogs', {}).get('error', 'Error')}: {err}" if err else encoded)
             self._refresh_dynamic_descriptions()
+            self._update_generation_guidance(final_str)
         except Exception as e:
             print(f"Rebuild error ({self.EQUIP_TYPE}): {e}")
+
+    # ------------------------------------------------------------------ #
+    # Natural-generation guidance (advisory, never enforced)
+    # ------------------------------------------------------------------ #
+    # Slot budgets are declared per composition in
+    # weapon_generation_rules.weapons[root].compositions[*].groups[*].{min,max}, and the
+    # same validator the inspector uses resolves them for the current build. Reading them
+    # here means a balance patch or a new item type flows through automatically; measuring
+    # budgets from sample items would break on the first new item.
+    #
+    # Mapping a tab picker onto rule groups is per-family, so subclasses declare it.
+    # Empty mapping = the family opts out and no badge is shown.
+    RULE_GROUPS_BY_PICKER: dict[str, tuple[str, ...]] = {}
+
+    def _update_generation_guidance(self, decoded):
+        mapping = self.RULE_GROUPS_BY_PICKER
+        if not mapping or not decoded:
+            return
+        try:
+            result = item_display_resolver.validate_weapon_generation(decoded, allow_incomplete=True)
+        except Exception:
+            return
+        groups = result.get("groups") or {}
+        ready = bool(result.get("rules_available") and result.get("composition_ref"))
+        hint = (self.ui_loc or {}).get('labels', {}).get('slot_budget_hint') or ""
+        for picker_key, rule_keys in mapping.items():
+            picker = self._group_pickles.get(picker_key)
+            if picker is None or not hasattr(picker, "set_count_limit"):
+                continue
+            if not ready:
+                picker.set_count_limit(None)
+                continue
+            total = 0
+            seen = False
+            for rk in rule_keys:
+                spec = groups.get(rk)
+                if not isinstance(spec, dict):
+                    continue
+                limit = spec.get("effective_max")
+                if limit is None:
+                    limit = spec.get("max")
+                try:
+                    total += int(limit)
+                    seen = True
+                except (TypeError, ValueError):
+                    continue
+            picker.set_count_limit(total if seen else None, hint)
 
     def _default_new_header(self, mfg_id, level):
         return f"{mfg_id}, 0, 1, {level}| 2, {self._source_seed}"
