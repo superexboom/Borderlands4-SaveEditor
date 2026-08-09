@@ -121,6 +121,7 @@
       "batch_success": "Successfully added {count} items.",
       "batch_fail": "Batch Add Failed",
       "batch_fail_msg": "Failed to add any items. Failed count: {count}.",
+      "batch_busy": "Another batch-add task is already running. Please wait for it to finish.",
       "iter_complete": "Iteration Add Complete",
       "iter_success": "Successfully added {count} items.",
       "iter_fail": "Iteration Add Failed",
@@ -965,6 +966,17 @@
       "available_parts_hint": "Available Parts (click to preview, double-click to add)"
     }
   },
+  "equipment_roll": {
+    "main_page": "Editor",
+    "results_page": "Roll Results",
+    "named_item": "Named Item",
+    "generated": "Generated {count} legal item(s)",
+    "no_results": "No roll results yet",
+    "select_result": "Select an item on the left",
+    "add_one": "Add This Item",
+    "shield_type": "Shield Type",
+    "live_stats": "Live Stats"
+  },
   "weapon_gen_tab": {
     "labels": {
       "serial_decoded": "Deserialize:",
@@ -1269,7 +1281,8 @@
     },
     "misc": {
       "none": "None",
-      "all": "All"
+      "all": "All",
+      "element_base_required": "Requires elemental base accessory ID:{id}."
     },
     "dialogs": {
       "load_error": "Error: Heavy weapon data unable to load.",

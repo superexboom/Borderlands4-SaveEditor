@@ -100,6 +100,7 @@ _FALLBACK_LOC: dict[str, Any] = {
         "modified": "Modified",
         "conditional": "Conditional",
         "unknown": "Unknown",
+        "gold": "Gold foundation",
     },
     "roundtrip": {
         "match": "re-encodes identically",
@@ -145,6 +146,8 @@ _FALLBACK_LOC: dict[str, Any] = {
         "core_augment": "Core Augment",
         "payload": "Payload",
         "payload_augment": "Payload Augment",
+        "manufacturer_perk": "Manufacturer Perk",
+        "firmware": "Firmware",
         "element": "Element",
         "augment_element_resist": "Elemental Resistance",
         "augment_element_immunity": "Elemental Immunity",
@@ -182,6 +185,8 @@ _EXTRA_CATEGORY_COLORS = {
     "core_augment": "#29B6F6",
     "payload": "#FFA726",
     "payload_augment": "#FFB74D",
+    "manufacturer_perk": "#FF8A65",
+    "firmware": "#29B6F6",
     "element": "#EF9A9A",
     "body_ele": "#EF9A9A",
     "augment_element_resist": "#E57373",
@@ -543,10 +548,15 @@ class QtSerialInspectorTab(QWidget):
         counts = report.get("part_counts") or {}
         # Two rows: identity on top, encoding facts below. Laid out horizontally
         # so the summary costs ~2 lines of height instead of 13.
+        type_text = "%s / %s" % (report.get("type") or "", report.get("type_en") or "")
+        if subtype := str(report.get("equipment_subtype") or ""):
+            localized = self._shield_type_label(subtype)
+            english = subtype.title()
+            type_text += " · %s" % (localized if localized == english else f"{localized} / {english}")
         first = [
             ("name", report.get("display_name")),
             ("rarity", report.get("rarity")),
-            ("type", "%s / %s" % (report.get("type") or "", report.get("type_en") or "")),
+            ("type", type_text),
             ("manufacturer", "%s / %s" % (report.get("manufacturer") or "", report.get("manufacturer_en") or "")),
             ("level", report.get("level")),
         ]
@@ -611,8 +621,13 @@ class QtSerialInspectorTab(QWidget):
         if not report.get("ok") or not status:
             self.status_badge.setVisible(False)
             return
-        self.status_badge.setText(_tr(self.loc, "status", status) or status)
-        self.status_badge.setProperty("ruleStatus", status)
+        text = (
+            str(self.equipment_legit_loc.get("status_gold") or _tr(self.loc, "status", status))
+            if status == "gold"
+            else _tr(self.loc, "status", status)
+        )
+        self.status_badge.setText(text or status)
+        self.status_badge.setProperty("ruleStatus", "suppressed" if status == "gold" else status)
         # Qt does not restyle on a dynamic property change by itself.
         self.status_badge.style().unpolish(self.status_badge)
         self.status_badge.style().polish(self.status_badge)
@@ -651,10 +666,11 @@ class QtSerialInspectorTab(QWidget):
         layout.setContentsMargins(6, 4, 6, 4)
 
         category = str(part.get("category") or "")
+        display_category = str(part.get("display_category") or category)
         state = str(part.get("effect_state") or "")
         if not part.get("known"):
             state = "unknown"
-        colour = self._category_color(category)
+        colour = self._category_color(display_category)
 
         header = QHBoxLayout()
         header.setSpacing(6)
@@ -663,7 +679,7 @@ class QtSerialInspectorTab(QWidget):
         ordinal.setObjectName("PartIdBadge")
         header.addWidget(ordinal)
 
-        type_label = QLabel(self._category_label(category))
+        type_label = QLabel(self._category_label(display_category))
         type_label.setObjectName("PartTypeBadge")
         type_label.setProperty("partColor", colour)
         type_label.setStyleSheet("color: %s; border-color: %s;" % (colour, colour))
@@ -738,6 +754,12 @@ class QtSerialInspectorTab(QWidget):
         if not category:
             return "-"
         key = category.casefold()
+        if key == "manufacturer_perk":
+            return str(self.grenade_group_loc.get("mfg_perks") or "Manufacturer Perk")
+        if key == "firmware":
+            return str(self.equipment_group_loc.get("firmware") or "Firmware")
+        if key in self.equipment_group_loc:
+            return str(self.equipment_group_loc[key])
         # Categories outside the firearm taxonomy (class-mod skills, augments,
         # stat groups) have no weapon-editor entry, so they carry their own
         # localized names here rather than showing a raw key like "inv_comp".
@@ -756,6 +778,14 @@ class QtSerialInspectorTab(QWidget):
 
         if not report.get("ok"):
             self.rules_view.setPlainText("")
+            return
+
+        if report.get("guidance_suppressed") == "gold_skin":
+            reason = str(
+                self.equipment_legit_loc.get("gold_reason")
+                or "Gold Skin is only a legendary-skin foundation; generation guidance is disabled."
+            )
+            self.rules_view.setHtml("<p style='opacity:0.8;'>%s</p>" % escape(reason))
             return
 
         generation = report.get("generation") or {}
@@ -840,8 +870,9 @@ class QtSerialInspectorTab(QWidget):
         violations = report.get("violations") or []
         html.append("<p style='margin:8px 0 2px 0;font-weight:bold;'>%s</p>" % escape(label("violations")))
         if violations:
+            violation_texts = list(dict.fromkeys(self._violation_text(item) for item in violations))
             html.append("<ul style='margin:0;'>")
-            html.extend("<li>%s</li>" % escape(self._violation_text(item)) for item in violations)
+            html.extend("<li>%s</li>" % escape(text) for text in violation_texts)
             html.append("</ul>")
         else:
             html.append(
@@ -896,6 +927,20 @@ class QtSerialInspectorTab(QWidget):
 
     def _violation_text(self, violation: dict[str, Any]) -> str:
         code = str(violation.get("code") or "")
+        shield_type = str(violation.get("shield_type") or "")
+        incompatible = str(violation.get("incompatible_shield_type") or "")
+        if shield_type and incompatible:
+            template = str(
+                self.shield_misc_loc.get("perk_type_mismatch")
+                or "Current shield type is {shield_type}; cannot add {incompatible_type} shield augments."
+            ).replace("\n", " ")
+            text = template.format(
+                shield_type=self._shield_type_label(shield_type),
+                incompatible_type=self._shield_type_label(incompatible),
+            )
+            refs = violation.get("parts") or [violation.get("part")]
+            refs = [str(ref) for ref in refs if ref]
+            return text + (" · " + ", ".join(refs) if refs else "")
         # "foreign" splits into cross-manufacturer and cross-type; the generic
         # code is only used when a root's identity is unknown.
         foreign_kind = str(violation.get("foreign_kind") or "")
@@ -931,6 +976,12 @@ class QtSerialInspectorTab(QWidget):
                 if other:
                     text += " (%s \u2192 %s)" % (own, other) if own else " (%s)" % other
         return text
+
+    def _shield_type_label(self, subtype: str) -> str:
+        return str(
+            self.shield_misc_loc.get("shield_type_" + str(subtype).casefold())
+            or str(subtype).title()
+        )
 
     # ------------------------------------------------------------------- card
 
@@ -1044,6 +1095,10 @@ class QtSerialInspectorTab(QWidget):
         # weapon tabs; reuse them so the rules pane needs no duplicate strings.
         self.rule_loc: dict[str, Any] = {}
         self.taxonomy_loc: dict[str, Any] = {}
+        self.equipment_legit_loc: dict[str, Any] = {}
+        self.equipment_group_loc: dict[str, Any] = {}
+        self.grenade_group_loc: dict[str, Any] = {}
+        self.shield_misc_loc: dict[str, Any] = {}
         try:
             data = resource_loader.load_json_resource(
                 resource_loader.get_ui_localization_file(self.current_lang)
@@ -1056,6 +1111,18 @@ class QtSerialInspectorTab(QWidget):
         taxonomy = ((data or {}).get("weapon_editor_tab") or {}).get("taxonomy")
         if isinstance(taxonomy, dict):
             self.taxonomy_loc = taxonomy
+        equipment_legit = (data or {}).get("equipment_legit")
+        if isinstance(equipment_legit, dict):
+            self.equipment_legit_loc = equipment_legit
+            groups = equipment_legit.get("groups")
+            if isinstance(groups, dict):
+                self.equipment_group_loc = groups
+        grenade_groups = ((data or {}).get("grenade_tab") or {}).get("groups")
+        if isinstance(grenade_groups, dict):
+            self.grenade_group_loc = grenade_groups
+        shield_misc = ((data or {}).get("shield_tab") or {}).get("misc")
+        if isinstance(shield_misc, dict):
+            self.shield_misc_loc = shield_misc
         section = (data or {}).get(UI_LOC_KEY)
         if isinstance(section, dict):
             merged = dict(_FALLBACK_LOC)

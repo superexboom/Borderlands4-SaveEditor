@@ -806,23 +806,27 @@ class MainWindow(QMainWindow):
 
         self.weapon_generator_tab = QtWeaponGeneratorTab()
         self.weapon_generator_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
-        self.weapon_generator_tab.batch_add_to_backpack_requested.connect(self.handle_weapon_generator_batch_add)
+        self.weapon_generator_tab.batch_add_to_backpack_requested.connect(self.handle_roll_batch_add)
         self.add_tab(self.weapon_generator_tab, self.loc['tabs']['weapon_generator'], "🔫")
 
         self.grenade_tab = QtGrenadeEditorTab(main_app=self)
         self.grenade_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
+        self.grenade_tab.batch_add_to_backpack_requested.connect(self.handle_roll_batch_add)
         self.add_tab(self.grenade_tab, self.loc['tabs']['grenade'], "💣")
 
         self.shield_tab = QtShieldEditorTab(main_app=self)
         self.shield_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
+        self.shield_tab.batch_add_to_backpack_requested.connect(self.handle_roll_batch_add)
         self.add_tab(self.shield_tab, self.loc['tabs']['shield'], "🛡️")
 
         self.repkit_tab = QtRepkitEditorTab(main_app=self)
         self.repkit_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
+        self.repkit_tab.batch_add_to_backpack_requested.connect(self.handle_roll_batch_add)
         self.add_tab(self.repkit_tab, self.loc['tabs']['repkit'], "🛠️")
 
         self.heavy_weapon_tab = QtHeavyWeaponEditorTab(main_app=self)
         self.heavy_weapon_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
+        self.heavy_weapon_tab.batch_add_to_backpack_requested.connect(self.handle_roll_batch_add)
         self.add_tab(self.heavy_weapon_tab, self.loc['tabs']['heavy_weapon'], "🚀")
 
         self._add_nav_separator()
@@ -1418,11 +1422,29 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, self.loc['dialogs']['no_save'], self.loc['dialogs']['decrypt_save_first'])
             self.converter_tab.finalize_batch_add(0, 0)
             return
-        self._start_batch_add_worker(
+        started = self._start_batch_add_worker(
             lines, flag, self.converter_tab.update_batch_add_status, self.on_batch_add_finished
         )
+        if started is False:
+            self.converter_tab.finalize_batch_add(0, 0)
+            QMessageBox.warning(
+                self,
+                self.loc['dialogs']['warning'],
+                self.loc['dialogs'].get(
+                    'batch_busy', 'Another batch-add task is already running.'
+                ),
+            )
 
     def _start_batch_add_worker(self, lines, flag, progress_slot, finished_slot):
+        if getattr(self, '_batch_add_active', False):
+            return False
+        current_thread = getattr(self, 'batch_add_thread', None)
+        try:
+            if current_thread is not None and current_thread.isRunning():
+                return False
+        except RuntimeError:
+            # The previous Qt wrapper may already be scheduled for deletion.
+            pass
         self.batch_add_thread = QThread()
         self.batch_add_worker = BatchAddWorker(self.controller, lines, flag)
         self.batch_add_worker.moveToThread(self.batch_add_thread)
@@ -1436,29 +1458,47 @@ class MainWindow(QMainWindow):
         self.batch_add_thread.finished.connect(self.batch_add_thread.deleteLater)
 
         self._suspend_autosave(True)
+        self._batch_add_active = True
         self.batch_add_thread.start()
+        return True
 
     @pyqtSlot(list, str)
-    def handle_weapon_generator_batch_add(self, lines: list, flag: str):
+    def handle_roll_batch_add(self, lines: list, flag: str):
+        source_tab = self.sender()
+        if not hasattr(source_tab, 'finalize_roll_batch_add'):
+            return
         if not self.controller.yaml_obj:
             QMessageBox.critical(self, self.loc['dialogs']['no_save'], self.loc['dialogs']['decrypt_save_first'])
-            self.weapon_generator_tab.finalize_roll_batch_add(0, len(lines))
+            source_tab.finalize_roll_batch_add(0, len(lines))
             return
-        self._start_batch_add_worker(
+        started = self._start_batch_add_worker(
             lines,
             flag,
-            self.weapon_generator_tab.update_roll_add_progress,
-            self.on_weapon_generator_batch_add_finished,
+            source_tab.update_roll_add_progress,
+            self.on_roll_batch_add_finished,
         )
+        if started is False:
+            message = self.loc['dialogs'].get(
+                'batch_busy', 'Another batch-add task is already running.'
+            )
+            source_tab.reject_roll_batch_add(message)
+            QMessageBox.warning(self, self.loc['dialogs']['warning'], message)
+            return
+        self._roll_batch_source_tab = source_tab
 
-    def on_weapon_generator_batch_add_finished(self, success_count, fail_count):
+    def on_roll_batch_add_finished(self, success_count, fail_count):
+        self._batch_add_active = False
         self._suspend_autosave(False)
-        self.weapon_generator_tab.finalize_roll_batch_add(success_count, fail_count)
+        source_tab = getattr(self, '_roll_batch_source_tab', None)
+        self._roll_batch_source_tab = None
+        if source_tab is not None:
+            source_tab.finalize_roll_batch_add(success_count, fail_count)
         if success_count > 0:
             self.invalidate_items_snapshot()
             self._refresh_inventory_view(self.content_stack.currentIndex())
 
     def on_batch_add_finished(self, success_count, fail_count):
+        self._batch_add_active = False
         self._suspend_autosave(False)
         self.converter_tab.finalize_batch_add(success_count, fail_count)
         if success_count > 0:

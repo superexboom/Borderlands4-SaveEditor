@@ -14,10 +14,20 @@ via ``set_source`` and read the current selection back via ``entries``.
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit,
     QPushButton, QListWidget, QListWidgetItem, QButtonGroup, QSizePolicy,
-    QFrame, QScrollArea, QSplitter
+    QFrame, QScrollArea, QSplitter, QComboBox
 )
 from PyQt6.QtCore import pyqtSignal, Qt, QSize, QTimer
 from PyQt6.QtGui import QColor
+
+
+class PopupOnlyWheelComboBox(QComboBox):
+    """Ignore wheel selection changes unless the popup list is open."""
+
+    def wheelEvent(self, event):
+        if self.view().isVisible():
+            super().wheelEvent(event)
+        else:
+            event.ignore()
 
 
 class ContainedWheelListWidget(QListWidget):
@@ -362,6 +372,8 @@ class CatalogPicker(QWidget):
             lwi = QListWidgetItem(f"{marker}  {label}" if marker else label)
             lwi.setData(Qt.ItemDataRole.UserRole, it)
             tooltip = [str(candidate.get("hint") or ""), str(it.get("tooltip") or label)]
+            if it.get("disabled_reason"):
+                tooltip.insert(0, str(it["disabled_reason"]))
             lwi.setToolTip("\n\n".join(filter(None, tooltip)))
             if candidate.get("kind") == "legal":
                 font = lwi.font()
@@ -370,6 +382,8 @@ class CatalogPicker(QWidget):
                 lwi.setBackground(QColor(74, 144, 226, 38))
             elif candidate.get("kind") == "warning":
                 lwi.setBackground(QColor(230, 164, 57, 30))
+            if it.get("disabled"):
+                lwi.setFlags(lwi.flags() & ~Qt.ItemFlag.ItemIsEnabled & ~Qt.ItemFlag.ItemIsSelectable)
             if self._disable_selected_source and it.get("key") in self._selected_keys:
                 lwi.setFlags(lwi.flags() & ~Qt.ItemFlag.ItemIsEnabled & ~Qt.ItemFlag.ItemIsSelectable)
             self.avail.addItem(lwi)

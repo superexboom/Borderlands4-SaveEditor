@@ -93,6 +93,61 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
         mfg_id = self._current_mfg_id()
         return f"{mfg_id}:{value}" if mfg_id is not None else ""
 
+    def _element_base_part_id(self):
+        mfg_id = self._current_mfg_id()
+        if mfg_id is None:
+            return None
+        picker = self._group_pickles.get("body_acc")
+        if picker is None:
+            return None
+        refs = item_display_resolver._item_index().get("part_refs") or {}
+        for item in picker._source:
+            part_id = int(item["data"])
+            tags = (refs.get(f"{mfg_id}:{part_id}") or {}).get("selection_tags") or {}
+            if "body_acc_ele" in set(tags.get("adds") or []):
+                return part_id
+        return None
+
+    def _candidate_state_for_option(self, key, data, ref, rule_keys, groups):
+        state = super()._candidate_state_for_option(key, data, ref, rule_keys, groups)
+        refs = item_display_resolver._item_index().get("part_refs") or {}
+        element_pid = self._selected_button_pid("element")
+        element_ref = self._generation_ref_for_option("element", element_pid)
+        element_tags = (refs.get(element_ref) or {}).get("selection_tags") or {}
+        needs_base = "body_acc_ele" in set(element_tags.get("requires") or [])
+        base_id = self._element_base_part_id()
+        selected_body = {int(entry["data"]) for entry in self._picker_entries("body_acc")}
+        missing_base = needs_base and base_id is not None and base_id not in selected_body
+        if key == "element":
+            spec = groups.get("body_ele") or {}
+            if ref not in set(spec.get("allowed") or []):
+                return state
+            option_tags = (refs.get(ref) or {}).get("selection_tags") or {}
+            if "body_acc_ele" in set(option_tags.get("requires") or []) and base_id not in selected_body:
+                return {
+                    "kind": "warning",
+                    "marker": "!",
+                    "hint": self._element_base_hint(base_id),
+                }
+            return {
+                "kind": "legal",
+                "marker": "✓",
+                "hint": self._legit_text("candidate_legal", "Natural candidate: {group}").format(
+                    group=self._generation_group_text("body_ele")
+                ),
+            }
+        elif key == "body_acc" and missing_base and int(data) != base_id:
+            return {
+                "kind": "warning",
+                "marker": "!",
+                "hint": self._element_base_hint(base_id),
+            }
+        return state
+
+    def _element_base_hint(self, part_id):
+        template = str((self.ui_loc.get("misc") or {}).get("element_base_required") or "Requires elemental base accessory ID:{id}")
+        return template.format(id=part_id)
+
     def load_data(self, lang):
         return load_heavy_weapon_data(lang)
 
@@ -120,10 +175,6 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
     # ------------------------------------------------------------------ #
     def _populate_initial_extra(self):
         self._populate_chip_group(
-            self._group_cfgs["element"],
-            self.df_main[self.df_main['Heavy_perk_main_ID'] == self.ELEMENT_PARENT],
-            self._fmt_prefixed_row)
-        self._populate_chip_group(
             self._group_cfgs["firmware"],
             self._firmware_group_df('Heavy_perk_main_ID', self.FIRMWARE_PARENT),
             self._fmt_prefixed_row)
@@ -149,7 +200,45 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
         if key == "barrel":
             df = self.df_mfg[(self.df_mfg['Part_type'] == 'Barrel') & (self.df_mfg['Manufacturer ID'] == mfg_id)]
             return df, self._fmt_barrel_row
-        return None  # element/firmware populated once
+        if key == "element":
+            rows = self.df_main[self.df_main['Heavy_perk_main_ID'] == self.ELEMENT_PARENT].copy()
+            normal_ref = next(
+                (
+                    ref_key
+                    for ref_key, ref in (item_display_resolver._item_index().get("part_refs") or {}).items()
+                    if ref_key.startswith(f"{mfg_id}:")
+                    and ref.get("category") == "body_ele"
+                    and str(ref.get("part") or "").casefold() == "part_normal"
+                ),
+                "",
+            )
+            if normal_ref:
+                no_element = str(
+                    (((self._full_loc.get("weapon_gen_tab") or {}).get("labels") or {}).get("no_element"))
+                    or "No Element"
+                )
+                rows = pd.concat(
+                    [
+                        rows,
+                        pd.DataFrame([{
+                            "Heavy_perk_main_ID": mfg_id,
+                            "Part_ID": int(normal_ref.partition(":")[2]),
+                            "Part_type": "Element",
+                            "Stat": no_element,
+                            "Description": "",
+                        }]),
+                    ],
+                    ignore_index=True,
+                )
+            return rows, self._fmt_element_row
+        return None  # firmware is populated once; the element catalog is manufacturer-aware
+
+    def _fmt_element_row(self, row):
+        text, part_id = self._fmt_prefixed_row(row)
+        owner = int(row['Heavy_perk_main_ID'])
+        if owner == self._current_mfg_id():
+            part_id = int(row['Part_ID'])
+        return text, part_id
 
     def _fmt_barrel_row(self, r):
         """Barrel chip label: T1/T2 marker + exported name (like the weapon tab)."""
@@ -192,7 +281,7 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
             name = item_display_resolver.equipment_part_name(
                 self._row_ref_key(r), self.current_lang, r['Stat']
             )
-            desc = self._row_description(r)
+            desc = self._row_description(r) or item_display_resolver.no_stat_changes_text(self.current_lang)
             label = " - ".join(part for part in (mfg_name, name, desc, f"ID:{r['Part_ID']}") if part)
             items.append({"key": f"ba2{r['Part_ID']}", "label": label, "category": None, "data": int(r['Part_ID'])})
         return items
@@ -246,6 +335,8 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
                     self._picker_add("barrel_acc", barrel_acc[part_id])
                 elif part_id in body_acc:
                     self._picker_add("body_acc", body_acc[part_id])
+                elif self._select_group_pid("element", part_id):
+                    pass
                 else:
                     self._preserved_tokens.append(f"{{{part_id}}}")
                 continue

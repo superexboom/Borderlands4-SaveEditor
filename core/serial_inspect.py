@@ -78,6 +78,26 @@ _ELEMENTAL_CARRIER_FALLBACK = {
     "elemental_nova_base": {"zh": "元素新星基座", "en": "Elemental Nova Base"},
 }
 
+_ELEMENTAL_CARRIER_CATEGORIES = {
+    "elemental_resist_base": "augment_element_resist",
+    "elemental_immunity_base": "augment_element_immunity",
+    "elemental_splat_base": "augment_element_splat",
+    "elemental_nova_base": "augment_element_nova",
+}
+
+_ELEMENT_LABELS = {
+    "normal": {"zh": "无元素", "en": "No Element"},
+    "corrosive": {"zh": "腐蚀", "en": "Corrosive"},
+    "cryo": {"zh": "冰冻", "en": "Cryo"},
+    "fire": {"zh": "燃烧", "en": "Incendiary"},
+    "radiation": {"zh": "辐射", "en": "Radiation"},
+    "shock": {"zh": "电击", "en": "Shock"},
+    "kinetic": {"zh": "动能", "en": "Kinetic"},
+    "sonic": {"zh": "声波", "en": "Sonic"},
+}
+
+_SHIELD_PART_SUBTYPES = {"237": "armor", "248": "energy"}
+
 
 @lru_cache(maxsize=8)
 def _carrier_labels(lang: str) -> dict[str, str]:
@@ -99,6 +119,68 @@ def _carrier_labels(lang: str) -> dict[str, str]:
 
 def _blank(text: str) -> bool:
     return not text or not text.strip()
+
+
+def _element_part_label(ref: dict[str, Any], item_type: str, lang: str) -> str:
+    part = str(ref.get("part") or "").casefold()
+    element = next(
+        (name for name in _ELEMENT_LABELS if f"_{name}" in part or part.endswith(name)),
+        "",
+    )
+    if not element:
+        return ""
+    label = _ELEMENT_LABELS[element]["zh" if resolver._lang_is_zh(lang) else "en"]
+    if item_type == "Shield" and element == "normal":
+        return "无元素抗性" if resolver._lang_is_zh(lang) else "No Elemental Resistance"
+    return label
+
+
+def _gold_skin_selected(item_id: int, item_type: str, rows: list[dict[str, Any]]) -> bool:
+    selected = {str(row.get("key") or "") for row in rows}
+    try:
+        catalog = resolver._csv_rows_for_type(item_type)
+    except (KeyError, OSError, TypeError, ValueError):
+        return False
+    for row in catalog:
+        if str(row.get("Part_type") or "").casefold() != "rarity":
+            continue
+        if str(row.get("Description_EN") or "").strip().casefold() != "gold skin":
+            continue
+        ref_key = f"{row.get('Manufacturer ID')}:{row.get('Part_ID')}"
+        if str(row.get("Manufacturer ID") or "") == str(item_id) and ref_key in selected:
+            return True
+    return False
+
+
+def _shield_subtype(generation: dict[str, Any]) -> str:
+    weapon_type = str(generation.get("weapon_type") or "").casefold()
+    if "energy" in weapon_type:
+        return "energy"
+    if "armor" in weapon_type:
+        return "armor"
+    return ""
+
+
+def _annotate_shield_violations(
+    violations: list[dict[str, Any]], subtype: str
+) -> list[dict[str, Any]]:
+    if not subtype:
+        return violations
+    annotated: list[dict[str, Any]] = []
+    for violation in violations:
+        item = dict(violation)
+        refs = [str(item.get("part") or ""), *(str(ref) for ref in item.get("parts") or [])]
+        incompatible = {
+            part_type
+            for ref in refs
+            if (part_type := _SHIELD_PART_SUBTYPES.get(ref.partition(":")[0]))
+            and part_type != subtype
+        }
+        if len(incompatible) == 1:
+            item["shield_type"] = subtype
+            item["incompatible_shield_type"] = incompatible.pop()
+        annotated.append(item)
+    return annotated
 
 
 def _decode_any(text: str) -> tuple[str, str, str]:
@@ -338,6 +420,12 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
         # The shared Class Mod perk owner has no part_refs row, so its category
         # and internal part name can only come from the CSV resolver.
         category = str(ref.get("category") or detail.get("category") or "")
+        carrier = _ELEMENTAL_CARRIERS.get(key)
+        display_category = (
+            "manufacturer_perk"
+            if item_type == "Grenade" and category == "body"
+            else _ELEMENTAL_CARRIER_CATEGORIES.get(carrier, category)
+        )
         payload = _ref_payload(ref)
 
         description = ""
@@ -390,9 +478,15 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
         if _blank(description) or description in NO_STAT_TEXTS:
             # Elemental carriers legitimately have no stats of their own; name the
             # mechanism rather than leaving a blank row or claiming "no changes".
-            carrier = _ELEMENTAL_CARRIERS.get(key)
             if carrier:
                 description = _carrier_labels(lang).get(carrier, "")
+
+        if key == "243:104" and (_blank(description) or description in NO_STAT_TEXTS):
+            description = (
+                "基准治疗载荷（治疗量、持续时间与冷却均为 1x）"
+                if resolver._lang_is_zh(lang)
+                else "Baseline healing payload (1x healing, duration and cooldown)"
+            )
 
         if description in NO_STAT_TEXTS or _blank(description):
             # Separate "genuinely cosmetic" from "payload present but unmapped".
@@ -420,6 +514,10 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
             ).strip()
         if _blank(display_name):
             display_name = str(detail.get("name") or "").strip()
+        if _blank(display_name) and category in {"element", "body_ele"}:
+            display_name = _element_part_label(ref, item_type, lang)
+        if _blank(display_name) and carrier:
+            display_name = _carrier_labels(lang).get(carrier, "")
         if _blank(display_name) and category == "firmware":
             # Firmware names live in the shared catalog (equipment_part_name resolves
             # them via the internal part string); the index itself carries no name.
@@ -437,6 +535,7 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
                 # shipped index has no part_refs row for them, so they are known.
                 "known": bool(ref) or bool(detail),
                 "category": category,
+                "display_category": display_category,
                 "part": str(ref.get("part") or detail.get("part") or ""),
                 "rarity": str(ref.get("rarity") or ""),
                 "name": display_name,
@@ -582,6 +681,8 @@ def inspect_serial(text: str, lang: str = "zh-CN") -> dict[str, Any]:
         "roundtrip": {},
         "generation": {},
         "status": "",
+        "equipment_subtype": "",
+        "guidance_suppressed": "",
         "violations": [],
         "warnings": [],
     }
@@ -659,8 +760,18 @@ def inspect_serial(text: str, lang: str = "zh-CN") -> dict[str, Any]:
         generation = resolver.validate_weapon_generation(decoded, allow_incomplete=True) or {}
         if generation.get("rules_available") and generation.get("weapon_known"):
             report["generation"] = generation
-            report["status"] = str(generation.get("status") or "")
-            report["violations"] = list(generation.get("violations") or [])
+            subtype = _shield_subtype(generation) if item_type == "Shield" else ""
+            report["equipment_subtype"] = subtype
+            violations = list(generation.get("violations") or [])
+            if subtype:
+                violations = _annotate_shield_violations(violations, subtype)
+            if _gold_skin_selected(item_id, item_type, rows):
+                report["status"] = "gold"
+                report["guidance_suppressed"] = "gold_skin"
+                report["violations"] = []
+            else:
+                report["status"] = str(generation.get("status") or "")
+                report["violations"] = violations
     except Exception as exc:
         report["warnings"].append(f"validate_weapon_generation failed: {type(exc).__name__}: {exc}")
 

@@ -6,6 +6,7 @@ from typing import Any, Iterable
 
 from PyQt6 import QtCore, QtGui, QtWidgets
 
+from .qt_catalog_picker import PopupOnlyWheelComboBox
 from .qt_items_tab import WEAPON_CARD_RARITY_COLORS
 
 
@@ -28,12 +29,13 @@ class WeaponRollOptionsWidget(QtWidgets.QWidget):
     roll_requested = QtCore.pyqtSignal(dict, int)
 
     def __init__(self, catalog: Iterable[dict[str, Any]], parent=None, texts=None,
-                 constraints=None, count=5):
+                 constraints=None, count=5, show_weapon_type=True):
         super().__init__(parent)
         self.setObjectName("weaponRollOptionsWidget")
         self._catalog = [dict(row) for row in catalog]
         self._t = dict(texts or {})
         self._syncing_named = False
+        self._show_weapon_type = bool(show_weapon_type)
         self.setMinimumWidth(390)
 
         root = QtWidgets.QVBoxLayout(self)
@@ -50,9 +52,13 @@ class WeaponRollOptionsWidget(QtWidgets.QWidget):
         self.count_spin.setRange(1, 50)
         self.count_spin.setValue(max(1, min(50, int(count))))
         form.addRow(self._t.get("manufacturer", "Manufacturer"), self.manufacturer_combo)
-        form.addRow(self._t.get("weapon_type", "Weapon Type"), self.weapon_type_combo)
+        if self._show_weapon_type:
+            form.addRow(self._t.get("weapon_type", "Weapon Type"), self.weapon_type_combo)
         form.addRow(self._t.get("rarity", "Rarity"), self.rarity_combo)
-        form.addRow(self._t.get("named_weapon", "Named Weapon"), self.named_weapon_combo)
+        form.addRow(
+            self._t.get("named_item") or self._t.get("named_weapon", "Named Weapon"),
+            self.named_weapon_combo,
+        )
         form.addRow(self._t.get("count", "Quantity"), self.count_spin)
         root.addLayout(form)
 
@@ -87,7 +93,7 @@ class WeaponRollOptionsWidget(QtWidgets.QWidget):
         self._on_named_changed()
 
     def _combo(self, value_key, label_key):
-        combo = QtWidgets.QComboBox()
+        combo = PopupOnlyWheelComboBox()
         combo.addItem(self._t.get("random", "Random"), None)
         values = {}
         for row in self._catalog:
@@ -99,7 +105,7 @@ class WeaponRollOptionsWidget(QtWidgets.QWidget):
         return combo
 
     def _named_combo(self):
-        combo = QtWidgets.QComboBox()
+        combo = PopupOnlyWheelComboBox()
         combo.addItem(self._t.get("random", "Random"), None)
         rows = []
         for row in self._catalog:
@@ -167,11 +173,13 @@ class WeaponRollResultsPage(QtWidgets.QWidget):
     close_requested = QtCore.pyqtSignal()
     _STAT_KEYS = ("damage", "dps", "accuracy", "fire_rate", "reload_time", "magazine")
 
-    def __init__(self, parent=None, texts=None):
+    def __init__(self, parent=None, texts=None, stat_keys=None, stat_columns=3):
         super().__init__(parent)
         self.setObjectName("weaponRollResultsPage")
         self._t = dict(texts or {})
         self._results = []
+        self._stat_keys = tuple(stat_keys or self._STAT_KEYS)
+        self._stat_columns = max(1, int(stat_columns))
 
         root = QtWidgets.QVBoxLayout(self)
         root.setContentsMargins(0, 0, 0, 0)
@@ -226,13 +234,14 @@ class WeaponRollResultsPage(QtWidgets.QWidget):
         stats_grid.setContentsMargins(0, 0, 0, 0)
         stats_grid.setSpacing(1)
         self.stat_values = {}
-        for index, key in enumerate(self._STAT_KEYS):
-            row, column = divmod(index, 3)
+        self.stat_labels = {}
+        for index, key in enumerate(self._stat_keys):
+            row, column = divmod(index, self._stat_columns)
             cell = QtWidgets.QFrame()
             cell.setObjectName("rollStatCell")
             cell_layout = QtWidgets.QVBoxLayout(cell)
             cell_layout.setContentsMargins(8, 8, 8, 8)
-            label = QtWidgets.QLabel(self._t.get(key, key))
+            label = QtWidgets.QLabel(self._stat_label(key))
             label.setObjectName("rollStatName")
             label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
             value = QtWidgets.QLabel("—")
@@ -242,6 +251,7 @@ class WeaponRollResultsPage(QtWidgets.QWidget):
             cell_layout.addWidget(value)
             stats_grid.addWidget(cell, row, column)
             stats_grid.setColumnStretch(column, 1)
+            self.stat_labels[key] = label
             self.stat_values[key] = value
         detail.addWidget(stats_frame)
 
@@ -265,12 +275,12 @@ class WeaponRollResultsPage(QtWidgets.QWidget):
         footer = QtWidgets.QHBoxLayout()
         self.status_label = QtWidgets.QLabel("")
         footer.addWidget(self.status_label, 1)
-        close_button = QtWidgets.QPushButton(self._t.get("close", "Close"))
+        self.close_button = QtWidgets.QPushButton(self._t.get("close", "Close"))
         self.add_all_button = QtWidgets.QPushButton(self._t.get("add_all", "Add All"))
         self.add_all_button.setObjectName("genAddButton")
-        close_button.clicked.connect(self.close_requested)
+        self.close_button.clicked.connect(self.close_requested)
         self.add_all_button.clicked.connect(self._add_all)
-        footer.addWidget(close_button)
+        footer.addWidget(self.close_button)
         footer.addWidget(self.add_all_button)
         root.addLayout(footer)
         self._show_result(-1)
@@ -278,6 +288,23 @@ class WeaponRollResultsPage(QtWidgets.QWidget):
     @staticmethod
     def _serial(result):
         return _text((result or {}).get("serial"))
+
+    def _stat_label(self, key):
+        defaults = {
+            "damage": "Damage", "dps": "DPS", "accuracy": "Accuracy",
+            "fire_rate": "Fire Rate", "reload_time": "Reload", "magazine": "Magazine",
+        }
+        return self._t.get(key, defaults.get(key, key.replace("_", " ").title()))
+
+    def update_texts(self, texts):
+        """Update reusable labels without rebuilding the result page."""
+        self._t.update(texts or {})
+        for key, label in self.stat_labels.items():
+            label.setText(self._stat_label(key))
+        self.add_one_button.setText(self._t.get("add_one", "Add This"))
+        self.copy_button.setText(self._t.get("copy_base85", "Copy Base85"))
+        self.close_button.setText(self._t.get("close", "Close"))
+        self.add_all_button.setText(self._t.get("add_all", "Add All"))
 
     def set_results(self, results: Iterable[dict[str, Any]], summary="", scope=""):
         self._results = [dict(result) for result in results]
@@ -288,14 +315,10 @@ class WeaponRollResultsPage(QtWidgets.QWidget):
                 result.get("manufacturer"), result.get("weapon_type"),
                 result.get("rarity"), result.get("element") or self._t.get("no_element", "No Element"),
             )))
-            stats = " · ".join((
-                f"{self._t.get('damage', 'Damage')} {formatted.get('damage') or '—'}",
-                f"DPS {formatted.get('dps') or '—'}",
-                f"{self._t.get('accuracy', 'Accuracy')} {formatted.get('accuracy') or '—'}",
-                f"{self._t.get('fire_rate', 'Fire Rate')} {formatted.get('fire_rate') or '—'}",
-                f"{self._t.get('reload_time', 'Reload')} {formatted.get('reload_time') or '—'}",
-                f"{self._t.get('magazine', 'Magazine')} {formatted.get('magazine') or '—'}",
-            ))
+            stats = " · ".join(
+                f"{self._stat_label(key)} {formatted.get(key) or '—'}"
+                for key in self._stat_keys
+            )
             item = QtWidgets.QListWidgetItem(f"{result.get('name') or '—'}\n{meta}\n{stats}")
             item.setData(QtCore.Qt.ItemDataRole.UserRole, result)
             item.setToolTip(_text(result.get("tooltip")))

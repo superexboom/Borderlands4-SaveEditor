@@ -5,7 +5,7 @@ from functools import lru_cache
 
 from PyQt6.QtCore import Qt
 
-from core import resource_loader
+from core import item_display_resolver, resource_loader
 from tabs.qt_equipment_base_tab import BaseEquipmentEditorTab
 
 
@@ -97,6 +97,68 @@ class QtRepkitEditorTab(BaseEquipmentEditorTab):
             part_id, owner = data
             return f"{int(owner)}:{int(part_id)}"
         return f"{self.SECONDARY_PARENT}:{int(data)}"
+
+    def _element_macro_bundle(self, part_id):
+        part_id = int(part_id)
+        carrier = self._CARRIER_FIXED.get(part_id)
+        derived = self._DERIVED_MAP.get(part_id)
+        if carrier is None or derived is None:
+            return []
+        refs = item_display_resolver._item_index().get("part_refs") or {}
+        bundle = []
+        for ref in (f"{self.SECONDARY_PARENT}:{part_id}",
+                    f"{self.SECONDARY_PARENT}:{carrier}",
+                    f"{self.SECONDARY_PARENT}:{derived}"):
+            category = str((refs.get(ref) or {}).get("category") or "")
+            if category:
+                bundle.append((category, ref))
+        return bundle
+
+    def _candidate_state_for_option(self, key, data, ref, rule_keys, groups):
+        if key not in {"resistance", "immunity"} or data is None:
+            return super()._candidate_state_for_option(key, data, ref, rule_keys, groups)
+        bundle = self._element_macro_bundle(data)
+        if not bundle:
+            return super()._candidate_state_for_option(key, data, ref, rule_keys, groups)
+
+        replaced = set()
+        current = self._selected_button_pid(key)
+        if current is not None:
+            replaced = {bundle_ref for _group, bundle_ref in self._element_macro_bundle(current)}
+
+        group_names = []
+        for group, bundle_ref in bundle:
+            spec = groups.get(group) or {}
+            allowed = set(spec.get("allowed") or [])
+            maximum = int(spec.get("max", 0))
+            if bundle_ref not in allowed or maximum <= 0:
+                return {
+                    "kind": "warning",
+                    "marker": "!",
+                    "hint": self._legit_text(
+                        "candidate_dependency",
+                        "This macro is not active for the current rarity or slot layout.",
+                    ).format(group=self._generation_group_text(group)),
+                }
+            selected = set(spec.get("selected") or []) - replaced
+            if bundle_ref not in selected and len(selected) >= maximum:
+                return {
+                    "kind": "warning",
+                    "marker": "!",
+                    "hint": self._legit_text(
+                        "candidate_slot_full",
+                        "Natural candidate for {group}; replace an existing part to stay legal.",
+                    ).format(group=self._generation_group_text(group)),
+                }
+            group_names.append(self._generation_group_text(group))
+
+        return {
+            "kind": "legal",
+            "marker": "✓",
+            "hint": self._legit_text("candidate_legal", "Natural candidate: {group}").format(
+                group=" / ".join(dict.fromkeys(group_names))
+            ),
+        }
 
     def load_data(self, lang):
         return load_repkit_data(lang)

@@ -38,6 +38,11 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
     def load_data(self, lang):
         return load_shield_data(lang)
 
+    def _manufacturer_option_label(self, mfg_id):
+        type_key = "shield_type_energy" if self.MFG_TYPE_BASE.get(mfg_id) == "Energy" else "shield_type_armor"
+        shield_type = str((self.ui_loc.get("misc") or {}).get(type_key) or self.MFG_TYPE_BASE.get(mfg_id) or "")
+        return f"{self._get_mfg_name(mfg_id)} ({shield_type}) - {mfg_id}"
+
     def __init__(self, main_app=None, parent=None):
         self._source_model_present = False
         super().__init__(main_app, parent)
@@ -155,14 +160,26 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
                 text, _ = self._fmt_row(row)
                 source_key = source_keys[parent]
                 preferred = parent == 246 or source_key.casefold() == str(current_type or "").casefold()
+                incompatible_type = "Armor" if current_type == "Energy" else "Energy"
+                mismatch = str((self.ui_loc.get("misc") or {}).get("perk_type_mismatch") or "Incompatible shield type")
+                disabled_reason = mismatch.format(
+                    shield_type=self._shield_type_text(current_type),
+                    incompatible_type=self._shield_type_text(incompatible_type),
+                ) if not preferred else ""
                 rows.append((0 if preferred else 1, parent, part_id, {
                     "key": f"{slot}:{parent}:{part_id}",
                     "label": f"[{source_names[parent]}] {text}",
                     "category": source_key,
                     "data": (parent, part_id),
+                    "disabled": not preferred,
+                    "disabled_reason": disabled_reason,
                 }))
         rows.sort(key=lambda item: (item[0], item[1], item[2]))
         return [item[-1] for item in rows]
+
+    def _shield_type_text(self, shield_type):
+        key = "shield_type_energy" if shield_type == "Energy" else "shield_type_armor"
+        return str((self.ui_loc.get("misc") or {}).get(key) or shield_type or "")
 
     def _legendary_items(self, current_mfg):
         items = []
@@ -189,8 +206,17 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
         return None  # element/firmware populated once in _populate_initial_extra
 
     def _on_mfg_changed_extra(self, mfg_id):
-        # Both natural and modified parts remain selectable.  Current-type and
-        # universal augments are sorted first; the rule highlighter marks the rest.
+        allowed_parents = {246, 248 if self.MFG_TYPE_BASE.get(mfg_id) == "Energy" else 237}
+        if not self._imported_copy:
+            # Imported copies preserve their original (possibly modified) tokens.
+            # New builds must not carry an Armor augment across a manufacturer
+            # switch into an Energy shield, or vice versa.
+            for key in ("primary", "secondary"):
+                picker = self._group_pickles[key]
+                for entry in list(picker.entries()):
+                    parent, _part_id = entry["data"]
+                    if int(parent) not in allowed_parents:
+                        picker.remove_key(entry["key"])
         for key in ("primary", "secondary"):
             self._group_pickles[key].set_source(self._group_items(key, mfg_id))
 

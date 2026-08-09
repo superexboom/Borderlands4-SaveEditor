@@ -61,6 +61,11 @@ class QtGrenadeEditorTab(BaseEquipmentEditorTab):
         mfg_id = self._current_mfg_id()
         return f"{mfg_id}:{int(data)}" if mfg_id is not None else ""
 
+    def _generation_group_text(self, group):
+        if str(group) == "body":
+            return str((self.ui_loc.get("groups") or {}).get("mfg_perks") or "Manufacturer Perks")
+        return super()._generation_group_text(group)
+
     def _augment_facet(self, part_id):
         from core import item_display_resolver as resolver
 

@@ -111,3 +111,42 @@ Only request these if offline evidence cannot close the last verification:
 - Heavy: Sidewinder and Heavy Turret.
 - Grenade: Transmitter and uncovered `245:80/81` modifier examples.
 - Repkit: non-corrosive Geiger-Roid variants.
+
+## 2026-08-09 follow-up
+
+- [x] Remove the obsolete picker-side count label; keep the rule-backed group count as the single source of truth.
+- [x] Rename the Grenade `body` legality group to the localized manufacturer-perk label.
+- [x] Stop Pipeline rarity export from appending `Skin/皮肤` below Legendary/Pearl, and clean the existing Shield catalog.
+- [x] Restore Energy/Armor annotations in the Shield manufacturer selector.
+- [x] Hard-disable cross-type Shield augments for new builds and remove incompatible selections after a manufacturer-type switch; imported modified serials remain lossless.
+- [x] Evaluate Repkit resistance/immunity candidates as their full effect + carrier + derived-element bundles.
+- [x] Add Heavy `273:19` / `282:11` no-element parts, explain the required elemental base accessory, and display no-effect base accessories as `No Stat Changes`.
+- [x] Synchronize Serial Inspector categories, Shield subtype violations, equipment element names, Repkit derived/carrier parts, Gold Skin suppression, and the `243:104` baseline payload.
+
+Verification:
+
+- `sav_edit`: 147/147 unit/UI tests passed.
+- `bl4_update_pipeline`: 40/40 tests passed.
+- Real editor import/rebuild replay: Heavy 204/204, Grenade 208/208, Shield 214/214, Repkit 196/196; all 822 preserve header identity and part-reference counts.
+- Serial Inspector: all 822 equipment samples parse successfully.
+- Chinese, English, Russian, and Ukrainian editor/Inspector construction smoke passed.
+- Explicit push authorization was received after the follow-up regression gates passed.
+
+## 2026-08-09 random-roll and live-preview follow-up
+
+- [x] Make every equipment selector ignore wheel changes while its popup is closed, allowing the parent page to keep scrolling.
+- [x] Add one shared compact live-stat preview to Grenade, Shield, Repkit, and Heavy Weapon editors.
+- [x] Reuse the native composition sampler and final legality validator for `I'm Feeling Lucky`; do not drive or scrape visible picker controls.
+- [x] Support quick rolls plus manufacturer, subtype, rarity, named-item, and quantity constraints where applicable.
+- [x] Exclude Gold Skin foundations from natural random builds.
+- [x] Reuse the Weapon Generator result page and batch-add worker for single-item and bulk backpack insertion.
+- [x] Reject a second in-flight batch globally so results and autosave state cannot cross between tabs.
+- [x] Preserve all existing Weapon Generator behavior while sharing popup-only combo and result components.
+
+Final verification:
+
+- `sav_edit`: 157/157 unit/UI tests passed.
+- `bl4_update_pipeline`: 40/40 tests passed.
+- Rollable natural catalog: Grenade 57, Shield 57, Repkit 46, Heavy Weapon 33; every composition produced a validated legal serial under bounded retry.
+- Real editor import/rebuild replay remains Heavy 204/204, Grenade 208/208, Shield 214/214, Repkit 196/196; all 822 preserve manufacturer, level, seed, and the complete part-reference multiset.
+- Five batch-add signal sources (Weapon Generator plus four equipment editors) route progress and completion back to the correct source page.

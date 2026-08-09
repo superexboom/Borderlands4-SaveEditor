@@ -11,23 +11,8 @@ from PyQt6.QtGui import QColor
 
 from core import b_encoder, item_display_resolver, resource_loader
 from core.weapon_generation_logic import sample_composition_parts
+from .qt_catalog_picker import PopupOnlyWheelComboBox
 from .qt_weapon_roll_dialog import WeaponRollOptionsWidget, WeaponRollResultsPage
-
-
-class NoScrollComboBox(QComboBox):
-    """下拉框：仅在获得焦点（已点选/展开过）时才响应滚轮改值，
-    否则把滚轮事件交给父级 QScrollArea 用于滚动页面，避免误切换选项。"""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # 悬停不抢焦点，必须点击才聚焦
-        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
-
-    def wheelEvent(self, event):
-        if self.hasFocus():
-            super().wheelEvent(event)
-        else:
-            event.ignore()
 
 
 class ElidedChipButton(QPushButton):
@@ -433,8 +418,8 @@ class QtWeaponGeneratorTab(QWidget):
         config_grid.setHorizontalSpacing(14)
         config_grid.setVerticalSpacing(4)
 
-        self.manufacturer_combo = NoScrollComboBox()
-        self.weapon_type_combo = NoScrollComboBox()
+        self.manufacturer_combo = PopupOnlyWheelComboBox()
+        self.weapon_type_combo = PopupOnlyWheelComboBox()
         self.level_var = QLineEdit(self._character_level)
         self.seed_var = QLineEdit(str(random.randint(100, 9999)))
         random_seed_btn = QPushButton("🎲"); random_seed_btn.setFixedWidth(34)
@@ -456,7 +441,7 @@ class QtWeaponGeneratorTab(QWidget):
         config_grid.addLayout(seed_row, 1, 3)
 
         # Flag 选择 + 添加到背包（并入配置卡片右侧，取代原底部操作条）
-        self.flag_combo = NoScrollComboBox()
+        self.flag_combo = PopupOnlyWheelComboBox()
         flags = resource_loader.get_flag_labels(self.current_lang)
         self.flag_combo.addItems([flags[k] for k in ("1", "3", "5", "17", "33", "65", "129")])
         self.flag_combo.setCurrentText(flags["3"])
@@ -702,7 +687,7 @@ class QtWeaponGeneratorTab(QWidget):
             self.part_rule_badges[part_type_en] = badge
 
             for i in range(num_slots):
-                combo = NoScrollComboBox()
+                combo = PopupOnlyWheelComboBox()
                 self._configure_part_combo(combo)
                 combo.addItem(self.get_localized_string(self._NONE_VALUE), None)
                 for _, part_row in group_df.iterrows():
@@ -1057,7 +1042,7 @@ class QtWeaponGeneratorTab(QWidget):
         if name == "Legendary Type": self.legendary_frame = field
         if name == "Pearl Type": self.pearl_frame = field
 
-        combo = NoScrollComboBox()
+        combo = PopupOnlyWheelComboBox()
         
         values = [self.get_localized_string(self._NONE_VALUE)]
         if name == "Rarity":
@@ -1624,6 +1609,10 @@ class QtWeaponGeneratorTab(QWidget):
             ).format(success=success, fail=fail),
             busy=False,
         )
+
+    def reject_roll_batch_add(self, message):
+        self._roll_add_busy = False
+        self.roll_results_page.set_add_status(str(message), busy=False)
 
     def generate_weapon(self, *args):
         try:
