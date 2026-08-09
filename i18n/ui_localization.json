@@ -522,7 +522,9 @@
     },
     "search": {
       "placeholder": "搜索键或值…",
-      "count": "{current}/{total}"
+      "count": "{current}/{total}",
+      "previous_tooltip": "上一个搜索结果",
+      "next_tooltip": "下一个搜索结果"
     },
     "inspector": {
       "path": "当前节点",
@@ -536,6 +538,7 @@
       "manufacturer": "制造商",
       "container": "位置",
       "slot": "槽位",
+      "state_flags": "状态标志",
       "unresolved": "未识别"
     },
     "ops": {
@@ -562,7 +565,9 @@
       "range_confirm": "删除",
       "delete_confirm": "确认删除 {count} 个节点？",
       "error": "错误",
-      "delete": "删除"
+      "delete": "删除",
+      "confirm": "确定",
+      "cancel": "取消"
     },
     "types": {
       "str": "字符串",
@@ -582,6 +587,13 @@
       "list_items": "列表 · {count} 项",
       "flags_bits": "位 {bits}",
       "serial_ok": "已解码 · Lv{level} {name}"
+    },
+    "tooltips": {
+      "undo": "撤销 (Ctrl+Z)",
+      "redo": "重做 (Ctrl+Y)"
+    },
+    "shortcuts": {
+      "hint": "Ctrl+Z 撤销 · Ctrl+F 搜索 · F2 重命名 · Del 删除"
     }
   },
   "class_mod_tab": {
@@ -1129,7 +1141,8 @@
     },
     "misc": {
       "none": "无",
-      "all": "全部"
+      "all": "全部",
+      "available": "可选"
     },
     "dialogs": {
       "load_error": "错误: 手雷数据(grenade data)无法加载。",
@@ -1182,6 +1195,7 @@
     "misc": {
       "none": "无",
       "all": "全部",
+      "available": "可选",
       "base": "基座",
       "perk_type_mismatch": "当前护盾类型为{shield_type}，\n不允许添加{incompatible_type}类型perk",
       "shield_type_energy": "能量",
@@ -1233,7 +1247,8 @@
     },
     "misc": {
       "none": "无",
-      "all": "全部"
+      "all": "全部",
+      "available": "可选"
     },
     "dialogs": {
       "load_error": "错误: 修复套件数据(repkit data)无法加载。",
@@ -1284,6 +1299,7 @@
     "misc": {
       "none": "无",
       "all": "全部",
+      "available": "可选",
       "element_base_required": "需要先选择元素基座附件 ID:{id}。"
     },
     "dialogs": {

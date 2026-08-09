@@ -522,7 +522,9 @@
     },
     "search": {
       "placeholder": "Пошук ключів чи значень…",
-      "count": "{current}/{total}"
+      "count": "{current}/{total}",
+      "previous_tooltip": "Попередній результат пошуку",
+      "next_tooltip": "Наступний результат пошуку"
     },
     "inspector": {
       "path": "Поточний вузол",
@@ -536,6 +538,7 @@
       "manufacturer": "Виробник",
       "container": "Місце",
       "slot": "Слот",
+      "state_flags": "Прапорці стану",
       "unresolved": "Не розпізнано"
     },
     "ops": {
@@ -562,7 +565,9 @@
       "range_confirm": "Видалити",
       "delete_confirm": "Видалити вузлів: {count}?",
       "error": "Помилка",
-      "delete": "Видалити"
+      "delete": "Видалити",
+      "confirm": "Гаразд",
+      "cancel": "Скасувати"
     },
     "types": {
       "str": "Рядок",
@@ -582,6 +587,13 @@
       "list_items": "список · {count}",
       "flags_bits": "біти {bits}",
       "serial_ok": "Розшифровано · Lv{level} {name}"
+    },
+    "tooltips": {
+      "undo": "Скасувати (Ctrl+Z)",
+      "redo": "Повторити (Ctrl+Y)"
+    },
+    "shortcuts": {
+      "hint": "Ctrl+Z Скасувати · Ctrl+F Пошук · F2 Перейменувати · Del Видалити"
     }
   },
   "class_mod_tab": {
@@ -1054,7 +1066,8 @@
     },
     "misc": {
       "none": "Немає",
-      "all": "Усі"
+      "all": "Усі",
+      "available": "Доступно"
     },
     "dialogs": {
       "load_error": "Помилка: Дані гранат не завантажено.",
@@ -1107,6 +1120,7 @@
     "misc": {
       "none": "Немає",
       "all": "Усі",
+      "available": "Доступно",
       "base": "Основа",
       "perk_type_mismatch": "Поточний тип щита: {shield_type}.\nНе можна додати перки типу {incompatible_type}.",
       "shield_type_energy": "Енергощит",
@@ -1158,7 +1172,8 @@
     },
     "misc": {
       "none": "Немає",
-      "all": "Усі"
+      "all": "Усі",
+      "available": "Доступно"
     },
     "dialogs": {
       "load_error": "Помилка: Дані ремкомплекту не завантажено.",
@@ -1209,6 +1224,7 @@
     "misc": {
       "none": "Немає",
       "all": "Усі",
+      "available": "Доступно",
       "element_base_required": "Потрібен базовий елементальний модуль ID:{id}."
     },
     "dialogs": {

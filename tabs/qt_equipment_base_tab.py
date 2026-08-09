@@ -1721,6 +1721,7 @@ class BaseEquipmentEditorTab(QWidget):
                 picker.set_search_placeholder(self._search_placeholder())
                 picker.clear_btn.setText(self.ui_loc['buttons'].get('clear', 'Clear'))
                 if mode == "picker":
+                    picker.set_available_title(self._avail_title())
                     picker.add_sel_btn.setText(self._add_selected_text())
                     picker._sel_title = title
                     picker._update_count()

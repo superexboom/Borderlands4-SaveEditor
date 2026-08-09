@@ -522,7 +522,9 @@
     },
     "search": {
       "placeholder": "Поиск по ключам и значениям…",
-      "count": "{current}/{total}"
+      "count": "{current}/{total}",
+      "previous_tooltip": "Предыдущий результат поиска",
+      "next_tooltip": "Следующий результат поиска"
     },
     "inspector": {
       "path": "Текущий узел",
@@ -536,6 +538,7 @@
       "manufacturer": "Производитель",
       "container": "Место",
       "slot": "Слот",
+      "state_flags": "Флаги состояния",
       "unresolved": "Не распознано"
     },
     "ops": {
@@ -562,7 +565,9 @@
       "range_confirm": "Удалить",
       "delete_confirm": "Удалить узлов: {count}?",
       "error": "Ошибка",
-      "delete": "Удалить"
+      "delete": "Удалить",
+      "confirm": "ОК",
+      "cancel": "Отмена"
     },
     "types": {
       "str": "Строка",
@@ -582,6 +587,13 @@
       "list_items": "список · {count}",
       "flags_bits": "биты {bits}",
       "serial_ok": "Расшифрован · Lv{level} {name}"
+    },
+    "tooltips": {
+      "undo": "Отменить (Ctrl+Z)",
+      "redo": "Повторить (Ctrl+Y)"
+    },
+    "shortcuts": {
+      "hint": "Ctrl+Z Отменить · Ctrl+F Поиск · F2 Переименовать · Del Удалить"
     }
   },
   "class_mod_tab": {
@@ -1129,7 +1141,8 @@
     },
     "misc": {
       "none": "Нет",
-      "all": "Все"
+      "all": "Все",
+      "available": "Доступно"
     },
     "dialogs": {
       "load_error": "Ошибка: Данные гранат не загружены.",
@@ -1182,6 +1195,7 @@
     "misc": {
       "none": "Нет",
       "all": "Все",
+      "available": "Доступно",
       "base": "Основа",
       "perk_type_mismatch": "Текущий тип щита: {shield_type}.\nНельзя добавить перки типа {incompatible_type}.",
       "shield_type_energy": "Энергощит",
@@ -1233,7 +1247,8 @@
     },
     "misc": {
       "none": "Нет",
-      "all": "Все"
+      "all": "Все",
+      "available": "Доступно"
     },
     "dialogs": {
       "load_error": "Ошибка: Данные ремкомплекта не загружены.",
@@ -1284,6 +1299,7 @@
     "misc": {
       "none": "Нет",
       "all": "Все",
+      "available": "Доступно",
       "element_base_required": "Требуется базовый элементальный модуль ID:{id}."
     },
     "dialogs": {

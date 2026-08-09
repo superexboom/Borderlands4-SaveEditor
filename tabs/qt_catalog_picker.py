@@ -263,10 +263,10 @@ class CatalogPicker(QWidget):
         avail_v = QVBoxLayout(avail_card)
         avail_v.setContentsMargins(8, 8, 8, 8)
         avail_v.setSpacing(6)
-        if avail_title:
-            lbl = QLabel(avail_title)
-            lbl.setObjectName("catalogColTitle")
-            avail_v.addWidget(lbl)
+        self.avail_title_lbl = QLabel(avail_title)
+        self.avail_title_lbl.setObjectName("catalogColTitle")
+        self.avail_title_lbl.setVisible(bool(avail_title))
+        avail_v.addWidget(self.avail_title_lbl)
         self.avail = ContainedWheelListWidget()
         self.avail.setMinimumHeight(200)
         self.avail.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -487,6 +487,10 @@ class CatalogPicker(QWidget):
 
     def set_search_placeholder(self, text):
         self.search.setPlaceholderText(text)
+
+    def set_available_title(self, text):
+        self.avail_title_lbl.setText(text)
+        self.avail_title_lbl.setVisible(bool(text))
 
     def set_count_limit(self, limit, tooltip=""):
         """Show how many of this slot the game actually rolls, alongside the count.

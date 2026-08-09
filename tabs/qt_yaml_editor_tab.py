@@ -251,12 +251,17 @@ class YamlEditDelegate(QStyledItemDelegate):
             value = index.model()._value_of(item)
             if isinstance(value, bool):
                 combo = QComboBox(parent)
+                combo.setStyleSheet("padding: 0 4px;")
                 combo.addItems(["true", "false"])
                 combo.setCurrentText("true" if value else "false")
                 return combo
         editor = QLineEdit(parent)
         editor.setFrame(False)
+        editor.setStyleSheet("padding: 0 4px;")
         return editor
+
+    def updateEditorGeometry(self, editor, option, index):
+        editor.setGeometry(option.rect.adjusted(0, 1, 0, -1))
 
     def setEditorData(self, editor, index):
         value = index.data(Qt.ItemDataRole.DisplayRole)
@@ -326,12 +331,14 @@ class QtYamlEditorTab(QWidget):
             "tree_headers": {"key": "键", "value": "值", "note": "备注"},
             "buttons": {"tree_view": "树状", "source_view": "源码", "split_view": "分屏",
                         "diff": "变更对比", "yaml_view": "YAML视图"},
-            "search": {"placeholder": "搜索键或值…", "count": "{current}/{total}"},
+            "search": {"placeholder": "搜索键或值…", "count": "{current}/{total}",
+                       "previous_tooltip": "上一个搜索结果", "next_tooltip": "下一个搜索结果"},
             "inspector": {"path": "当前节点", "no_selection": "未选择节点",
                           "serial_title": "Serial 解码预览", "ops_title": "节点操作",
                           "open_in_editor": "在物品编辑器中打开", "pinned": "常用路径：",
                           "level": "等级", "type": "类型", "manufacturer": "制造商",
-                          "container": "位置", "slot": "槽位", "unresolved": "未识别"},
+                          "container": "位置", "slot": "槽位", "state_flags": "状态标志",
+                          "unresolved": "未识别"},
             "ops": {"set_value": "修改值", "rename": "重命名键", "add_child": "添加子节点",
                     "delete": "删除", "duplicate": "复制节点", "copy_path": "复制路径",
                     "copy_value": "复制值", "range_delete": "批量删除槽位范围…"},
@@ -340,13 +347,16 @@ class QtYamlEditorTab(QWidget):
                         "range_delete_title": "批量删除背包槽位", "range_from": "起始槽位：",
                         "range_to": "结束槽位：", "range_preview": "将删除 {count} 个物品（slot_{from} ~ slot_{to}）",
                         "range_none": "该范围内没有物品", "range_confirm": "删除",
-                        "delete_confirm": "确认删除 {count} 个节点？", "error": "错误"},
+                        "delete_confirm": "确认删除 {count} 个节点？", "error": "错误",
+                        "delete": "删除", "confirm": "确定", "cancel": "取消"},
             "types": {"str": "字符串", "int": "整数", "float": "小数", "bool": "布尔",
                       "null": "null", "dict": "对象", "list": "列表"},
             "status": {"valid": "YAML 有效", "invalid": "YAML 无效：{error}",
                        "nodes": "共 {count} 个节点", "modified": "● {count} 处未保存修改",
                        "object_items": "对象 · {count} 项", "list_items": "列表 · {count} 项",
                        "flags_bits": "位 {bits}", "serial_ok": "已解码 · Lv{level} {name}"},
+            "tooltips": {"undo": "撤销 (Ctrl+Z)", "redo": "重做 (Ctrl+Y)"},
+            "shortcuts": {"hint": "Ctrl+Z 撤销 · Ctrl+F 搜索 · F2 重命名 · Del 删除"},
         }
         loc = (data or {}).get("yaml_tab") or {}
         # 深合并：fallback 为底，i18n 覆盖
@@ -383,13 +393,40 @@ class QtYamlEditorTab(QWidget):
 
     def _refresh_ui_text(self):
         b = self.loc['buttons']
+        ops = self.loc['ops']
+        ins = self.loc['inspector']
         self.model.set_headers((self.loc['tree_headers']['key'],
                                 self.loc['tree_headers']['value'],
                                 self.loc['tree_headers']['note']))
+        self.model.dataChanged.emit(QModelIndex(), QModelIndex(), [])
         self.tree_btn.setText(b['tree_view'])
         self.source_btn.setText(b['source_view'])
         self.split_btn.setText(b['split_view'])
         self.search_edit.setPlaceholderText(self.loc['search']['placeholder'])
+        self.prev_btn.setToolTip(self.loc['search']['previous_tooltip'])
+        self.prev_btn.setAccessibleName(self.loc['search']['previous_tooltip'])
+        self.next_btn.setToolTip(self.loc['search']['next_tooltip'])
+        self.next_btn.setAccessibleName(self.loc['search']['next_tooltip'])
+        self.undo_action.setToolTip(self.loc['tooltips']['undo'])
+        self.redo_action.setToolTip(self.loc['tooltips']['redo'])
+        self.undo_btn.setToolTip(self.loc['tooltips']['undo'])
+        self.redo_btn.setToolTip(self.loc['tooltips']['redo'])
+        self.undo_btn.setAccessibleName(self.loc['tooltips']['undo'])
+        self.redo_btn.setAccessibleName(self.loc['tooltips']['redo'])
+        self.hint_label.setText(self.loc['shortcuts']['hint'])
+        self.path_title.setText(ins['path'])
+        self.serial_title.setText(ins['serial_title'])
+        self.open_editor_btn.setText(ins['open_in_editor'])
+        self.ops_title.setText(ins['ops_title'])
+        self.add_child_btn.setText(ops['add_child'])
+        self.rename_btn.setText(ops['rename'])
+        self.duplicate_btn.setText(ops['duplicate'])
+        self.copy_path_btn.setText(ops['copy_path'])
+        self.copy_value_btn.setText(ops['copy_value'])
+        self.delete_btn.setText(ops['delete'])
+        self.range_delete_btn.setText(ops['range_delete'])
+        self.pinned_label.setText(ins['pinned'] + "  " + " · ".join(
+            ["state.currencies", "state.experience", "state.ammo", "state.inventory"]))
         self._update_diff_button_text()
         self._update_status_bar()
         self._update_inspector(self.tree_view.currentIndex())
@@ -414,9 +451,9 @@ class QtYamlEditorTab(QWidget):
         self.search_count_label = QLabel("")
         self.search_count_label.setMinimumWidth(52)
         toolbar.addWidget(self.search_count_label)
-        prev_btn = QToolButton(); prev_btn.setText("↑"); prev_btn.clicked.connect(lambda: self._cycle_search(-1))
-        next_btn = QToolButton(); next_btn.setText("↓"); next_btn.clicked.connect(lambda: self._cycle_search(1))
-        toolbar.addWidget(prev_btn); toolbar.addWidget(next_btn)
+        self.prev_btn = QToolButton(); self.prev_btn.setText("↑"); self.prev_btn.clicked.connect(lambda: self._cycle_search(-1))
+        self.next_btn = QToolButton(); self.next_btn.setText("↓"); self.next_btn.clicked.connect(lambda: self._cycle_search(1))
+        toolbar.addWidget(self.prev_btn); toolbar.addWidget(self.next_btn)
         QShortcut(QKeySequence.StandardKey.Find, self, self.search_edit.setFocus)
 
         toolbar.addSpacing(12)
@@ -429,13 +466,17 @@ class QtYamlEditorTab(QWidget):
         toolbar.addWidget(self.tree_btn); toolbar.addWidget(self.source_btn); toolbar.addWidget(self.split_btn)
 
         toolbar.addSpacing(12)
-        undo_action = self.undo_stack.createUndoAction(self)
-        undo_action.setShortcut(QKeySequence.StandardKey.Undo)
-        redo_action = self.undo_stack.createRedoAction(self)
-        redo_action.setShortcut(QKeySequence.StandardKey.Redo)
-        self.addActions([undo_action, redo_action])
-        self.undo_btn = QToolButton(); self.undo_btn.setDefaultAction(undo_action); self.undo_btn.setText("↩")
-        self.redo_btn = QToolButton(); self.redo_btn.setDefaultAction(redo_action); self.redo_btn.setText("↪")
+        self.undo_action = self.undo_stack.createUndoAction(self)
+        self.undo_action.setShortcut(QKeySequence.StandardKey.Undo)
+        self.redo_action = self.undo_stack.createRedoAction(self)
+        self.redo_action.setShortcut(QKeySequence.StandardKey.Redo)
+        self.addActions([self.undo_action, self.redo_action])
+        self.undo_btn = QToolButton(); self.undo_btn.setText("↩"); self.undo_btn.clicked.connect(self.undo_stack.undo)
+        self.redo_btn = QToolButton(); self.redo_btn.setText("↪"); self.redo_btn.clicked.connect(self.undo_stack.redo)
+        self.undo_btn.setEnabled(self.undo_stack.canUndo())
+        self.redo_btn.setEnabled(self.undo_stack.canRedo())
+        self.undo_stack.canUndoChanged.connect(self.undo_btn.setEnabled)
+        self.undo_stack.canRedoChanged.connect(self.redo_btn.setEnabled)
         toolbar.addWidget(self.undo_btn); toolbar.addWidget(self.redo_btn)
 
         toolbar.addSpacing(12)
@@ -484,7 +525,7 @@ class QtYamlEditorTab(QWidget):
         self.valid_label = QLabel()
         self.node_count_label = QLabel()
         self.modified_label = QLabel()
-        self.hint_label = QLabel("Ctrl+Z 撤销 · Ctrl+F 搜索 · F2 重命名 · Del 删除")
+        self.hint_label = QLabel()
         status.addWidget(self.valid_label)
         status.addSpacing(14)
         status.addWidget(self.node_count_label)
@@ -503,7 +544,8 @@ class QtYamlEditorTab(QWidget):
         v.setContentsMargins(8, 8, 8, 8)
         v.setSpacing(10)
 
-        v.addWidget(QLabel(self.loc['inspector']['path']))
+        self.path_title = QLabel(self.loc['inspector']['path'])
+        v.addWidget(self.path_title)
         self.breadcrumb = QLabel("—")
         self.breadcrumb.setWordWrap(True)
         self.breadcrumb.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
@@ -528,7 +570,8 @@ class QtYamlEditorTab(QWidget):
         ops_box = QFrame()
         ops_box.setFrameShape(QFrame.Shape.StyledPanel)
         op_layout = QVBoxLayout(ops_box)
-        op_layout.addWidget(QLabel(self.loc['inspector']['ops_title']))
+        self.ops_title = QLabel(self.loc['inspector']['ops_title'])
+        op_layout.addWidget(self.ops_title)
         ops_grid = QGridLayout()
         ops_grid.setSpacing(6)
         self.add_child_btn = QPushButton(self.loc['ops']['add_child'])
@@ -817,7 +860,8 @@ class QtYamlEditorTab(QWidget):
                 f"{ins['type']}: {info_item.get('type', '?')}  ·  "
                 f"{ins['manufacturer']}: {info_item.get('manufacturer', '?')}\n"
                 f"{ins['container']}: {info_item.get('container', '?')}  ·  "
-                f"{ins['slot']}: {info_item.get('slot', '?')}  ·  state_flags: {info_item.get('state_flags', '')}"
+                f"{ins['slot']}: {info_item.get('slot', '?')}  ·  "
+                f"{ins['state_flags']}: {info_item.get('state_flags', '')}"
             )
             self.serial_box.setVisible(True)
             self._pending_open_item = info_item
@@ -854,9 +898,14 @@ class QtYamlEditorTab(QWidget):
         if not paths:
             return
         if len(paths) > 1:
-            reply = QMessageBox.question(self, self.loc['dialogs']['delete'],
-                                         self.loc['dialogs']['delete_confirm'].format(count=len(paths)))
-            if reply != QMessageBox.StandardButton.Yes:
+            box = QMessageBox(QMessageBox.Icon.Question, self.loc['dialogs']['delete'],
+                              self.loc['dialogs']['delete_confirm'].format(count=len(paths)),
+                              QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, self)
+            yes_btn = box.button(QMessageBox.StandardButton.Yes)
+            yes_btn.setText(self.loc['dialogs']['delete'])
+            box.button(QMessageBox.StandardButton.No).setText(self.loc['dialogs']['cancel'])
+            box.exec()
+            if box.standardButton(box.clickedButton()) != QMessageBox.StandardButton.Yes:
                 return
         self.undo_stack.push(_CmdDelete(self, paths, f"{self.loc['ops']['delete']} ({len(paths)})"))
 
@@ -915,6 +964,8 @@ class QtYamlEditorTab(QWidget):
         form.addRow(self.loc['dialogs']['child_type'], type_combo)
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok |
                                    QDialogButtonBox.StandardButton.Cancel)
+        buttons.button(QDialogButtonBox.StandardButton.Ok).setText(self.loc['dialogs']['confirm'])
+        buttons.button(QDialogButtonBox.StandardButton.Cancel).setText(self.loc['dialogs']['cancel'])
         buttons.accepted.connect(dlg.accept)
         buttons.rejected.connect(dlg.reject)
         form.addRow(buttons)
@@ -991,6 +1042,7 @@ class QtYamlEditorTab(QWidget):
                                    QDialogButtonBox.StandardButton.Cancel)
         ok_btn = buttons.button(QDialogButtonBox.StandardButton.Ok)
         ok_btn.setText(self.loc['dialogs']['range_confirm'])
+        buttons.button(QDialogButtonBox.StandardButton.Cancel).setText(self.loc['dialogs']['cancel'])
         buttons.accepted.connect(dlg.accept)
         buttons.rejected.connect(dlg.reject)
         form.addRow(buttons)

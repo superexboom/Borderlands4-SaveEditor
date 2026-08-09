@@ -522,7 +522,9 @@
     },
     "search": {
       "placeholder": "Search keys or values…",
-      "count": "{current}/{total}"
+      "count": "{current}/{total}",
+      "previous_tooltip": "Previous search result",
+      "next_tooltip": "Next search result"
     },
     "inspector": {
       "path": "Current node",
@@ -536,6 +538,7 @@
       "manufacturer": "Manufacturer",
       "container": "Container",
       "slot": "Slot",
+      "state_flags": "State flags",
       "unresolved": "Unresolved"
     },
     "ops": {
@@ -562,7 +565,9 @@
       "range_confirm": "Delete",
       "delete_confirm": "Delete {count} node(s)?",
       "error": "Error",
-      "delete": "Delete"
+      "delete": "Delete",
+      "confirm": "OK",
+      "cancel": "Cancel"
     },
     "types": {
       "str": "String",
@@ -582,6 +587,13 @@
       "list_items": "list · {count}",
       "flags_bits": "bits {bits}",
       "serial_ok": "Decoded · Lv{level} {name}"
+    },
+    "tooltips": {
+      "undo": "Undo (Ctrl+Z)",
+      "redo": "Redo (Ctrl+Y)"
+    },
+    "shortcuts": {
+      "hint": "Ctrl+Z Undo · Ctrl+F Search · F2 Rename · Del Delete"
     }
   },
   "class_mod_tab": {
@@ -1129,7 +1141,8 @@
     },
     "misc": {
       "none": "None",
-      "all": "All"
+      "all": "All",
+      "available": "Available"
     },
     "dialogs": {
       "load_error": "Error: Grenade data unable to load.",
@@ -1182,6 +1195,7 @@
     "misc": {
       "none": "None",
       "all": "All",
+      "available": "Available",
       "base": "Base",
       "perk_type_mismatch": "Current shield type is {shield_type}.\nCannot add {incompatible_type} type perks.",
       "shield_type_energy": "Energy",
@@ -1233,7 +1247,8 @@
     },
     "misc": {
       "none": "None",
-      "all": "All"
+      "all": "All",
+      "available": "Available"
     },
     "dialogs": {
       "load_error": "Error: Repkit data unable to load.",
@@ -1284,6 +1299,7 @@
     "misc": {
       "none": "None",
       "all": "All",
+      "available": "Available",
       "element_base_required": "Requires elemental base accessory ID:{id}."
     },
     "dialogs": {
