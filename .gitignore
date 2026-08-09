@@ -43,4 +43,5 @@ config.json
 xp_calc.py
 CsvMergeAutomationPlan.md
 ItemIdPartOverview.md
+EQUIPMENT_DATA_REPAIR_PLAN.md
 tests/
