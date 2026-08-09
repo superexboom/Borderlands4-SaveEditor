@@ -253,7 +253,6 @@ class QtClassModEditorTab(QWidget):
             }
 
     def update_language(self, lang):
-        print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
         imported = self.full_string_output.text() if self._imported and hasattr(self, 'full_string_output') else ""
         import_name = self._import_source_name
         import_flag = self.flag_combo.currentText().split(" ")[0] if self._imported and hasattr(self, 'flag_combo') else None
@@ -271,8 +270,6 @@ class QtClassModEditorTab(QWidget):
         elif curr_seed and hasattr(self, 'seed_edit'):
             self.seed_edit.setText(curr_seed)
         
-        print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
-
     def _create_top_controls(self):
         top_controls_layout = QHBoxLayout()
         

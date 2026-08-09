@@ -622,7 +622,6 @@ class QtConverterTab(QWidget):
             }
 
     def update_language(self, lang):
-        print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
         self.current_lang = lang
         self._load_localization()
         
@@ -678,4 +677,3 @@ class QtConverterTab(QWidget):
         # Combo boxes (refresh items)
         self._populate_batch_flags()
         self._populate_yaml_flags()
-        print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")

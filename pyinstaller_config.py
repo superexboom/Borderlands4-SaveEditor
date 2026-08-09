@@ -70,6 +70,48 @@ assets_files += collect_data_files('assets/item_card', ('.png',))
 assets_files += collect_data_files('assets/item_card_icons', ('.png',))
 
 
+DATA_FILE_GROUPS = (
+    classmod_files, enhancement_files, weapon_files, grenade_files, shield_files,
+    repkit_files, heavy_files, firmware_files, loadout_files, item_files,
+    i18n_files, core_data_files, assets_files,
+)
+
+# Small runtime contract: these are the entry-point resources whose absence makes a
+# successful PyInstaller build unusable even though Analysis itself can still finish.
+REQUIRED_PACKAGED_FILES = {
+    'assets/stylesheet.qss',
+    'assets/BL4.ico',
+    'assets/bg.jpg',
+    'item/item_name_index.json',
+    'Firmware/firmware.csv',
+    'class_mods/Skills.csv',
+    'core/data/unlock_presets.json',
+    'i18n/ui_localization.json',
+    'i18n/ui_localization_EN.json',
+    'i18n/ui_localization_RU.json',
+    'i18n/ui_localization_UA.json',
+}
+
+
+def validate_data_files() -> list[tuple[str, str]]:
+    """Fail before packaging when a declared or essential runtime asset is missing."""
+    entries = [entry for group in DATA_FILE_GROUPS for entry in group]
+    missing_sources = [source for source, _target in entries if not Path(source).is_file()]
+    packaged = [str(Path(target) / Path(source).name).replace('\\', '/') for source, target in entries]
+    duplicates = sorted({path for path in packaged if packaged.count(path) > 1})
+    missing_required = sorted(REQUIRED_PACKAGED_FILES - set(packaged))
+    errors = []
+    if missing_sources:
+        errors.append('missing sources: ' + ', '.join(missing_sources))
+    if duplicates:
+        errors.append('duplicate package destinations: ' + ', '.join(duplicates))
+    if missing_required:
+        errors.append('missing required package files: ' + ', '.join(missing_required))
+    if errors:
+        raise RuntimeError('PyInstaller data validation failed; ' + '; '.join(errors))
+    return entries
+
+
 # PyInstaller spec文件内容
 SPEC_CONTENT = f'''
 # -*- mode: python ; coding: utf-8 -*-
@@ -112,6 +154,7 @@ a = Analysis(
         'tabs.qt_yaml_editor_tab',
         'tabs.qt_serial_import',
         'tabs.qt_catalog_picker',
+        'tabs.qt_equipment_base_tab',
         'tabs.qt_class_mod_editor_tab',
         'tabs.qt_enhancement_editor_tab',
         'tabs.qt_weapon_editor_tab',
@@ -161,6 +204,7 @@ exe = EXE(
 
 def create_spec_file():
     """创建PyInstaller spec文件"""
+    validate_data_files()
     spec_path = BASE_DIR / 'BL4SaveEditor.spec'
     # 使用f-string来格式化SPEC_CONTENT
     with open(spec_path, 'w', encoding='utf-8') as f:

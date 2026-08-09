@@ -268,7 +268,6 @@ class QtWeaponGeneratorTab(QWidget):
             self._handle_error(template.format(error=e))
 
     def update_language(self, lang):
-        print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
         self.current_lang = lang
         self.load_data(lang)
         
@@ -298,7 +297,6 @@ class QtWeaponGeneratorTab(QWidget):
             self.weapon_type_combo.setCurrentIndex(current_wt_idx)
         if hasattr(self, 'level_var'): self.level_var.setText(current_level)
         if hasattr(self, 'seed_var') and current_seed: self.seed_var.setText(current_seed)
-        print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
 
     def get_localized_string(self, key, default=''):
         if self.ui_loc:

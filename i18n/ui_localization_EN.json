@@ -220,6 +220,7 @@
       "reload_time": "Reload Time",
       "magazine": "Magazine",
       "critical_damage": "Critical Damage",
+      "critical_chance": "Critical Chance",
       "ammo_cost": "Ammo Cost",
       "splash_radius": "Splash Radius",
       "ads_time": "ADS Time",

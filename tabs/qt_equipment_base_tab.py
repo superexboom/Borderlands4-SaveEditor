@@ -1063,6 +1063,7 @@ class BaseEquipmentEditorTab(QWidget):
                 "Manufacturer: {manufacturer} · Type: {weapon_type} · Rarity: {rarity}",
             ),
             "roll": buttons.get("roll", "Roll"),
+            "lucky": buttons.get("lucky", "I'm Feeling Lucky"),
             "cancel": buttons.get("cancel", "Cancel"),
             "close": buttons.get("close", "Close"),
             "add_one": generic.get("add_one", buttons.get("add_one", "Add This")),
@@ -1186,7 +1187,7 @@ class BaseEquipmentEditorTab(QWidget):
             self._roll_count = self._roll_options_widget.count_spin.value()
         texts = self._roll_texts()
         catalog = self._equipment_roll_catalog()
-        self.lucky_button.setText(f"🎲 {((self._full_loc.get('weapon_gen_tab') or {}).get('labels') or {}).get('lucky', 'Lucky')}")
+        self.lucky_button.setText(f"🎲 {texts['lucky']}")
         self.lucky_button.setToolTip(texts["roll_scope_tip"])
         self._roll_menu = QMenu(self.lucky_button)
         self._roll_options_widget = WeaponRollOptionsWidget(
@@ -1732,7 +1733,7 @@ class BaseEquipmentEditorTab(QWidget):
             try:
                 self._load_serial_copy(imported_serial, name=imported_name, state_flags=imported_flag)
             except ValueError as exc:
-                print(f"DEBUG: restore after language change failed: {exc}")
+                print(f"Warning: restore after language change failed: {exc}")
                 self._reset_import_source()
         else:
             self.on_mfg_change()

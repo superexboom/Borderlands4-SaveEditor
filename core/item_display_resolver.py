@@ -2190,8 +2190,11 @@ def _heavy_strategy_word(item_id: int, ids: list[str], section: str, lang: str) 
     if not strategy:
         return ""
     key = "zh" if _lang_is_zh(lang) else "en"
-    item = _first_combo(ids, strategy.get(section, {}).get("rules", []))
-    rule = item[1] if item else _first_single(ids, strategy.get(section, {}).get("singles", []))
+    section_data = strategy.get(section, {})
+    item = _first_combo(ids, section_data.get("rules", []))
+    rule = item[1] if item else _first_single(ids, section_data.get("singles", []))
+    if not rule:
+        rule = section_data.get("default")
     return (rule.get(key) or rule.get("en", "")).strip() if rule else ""
 
 

@@ -220,6 +220,7 @@
       "reload_time": "Перезаряджання",
       "magazine": "Магазин",
       "critical_damage": "Крит. шкода",
+      "critical_chance": "Шанс крита",
       "ammo_cost": "Витрата боєприпасів",
       "splash_radius": "Радіус вибуху",
       "ads_time": "Час прицілювання",

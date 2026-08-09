@@ -191,7 +191,6 @@ class SaveSelectorWidget(QWidget):
         self.status_label.setText(self.loc['labels']['status_found_saves'].format(count=len(save_files)))
 
     def update_language(self, lang):
-        print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
         self.current_lang = lang
         self._load_localization()
         
@@ -208,8 +207,6 @@ class SaveSelectorWidget(QWidget):
         # Re-render the list to update headers and status text
         self.update_view(self.current_save_files)
         
-        print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
-
     def _on_selection_changed(self):
         selection_model = self.tree_view.selectionModel()
         if not selection_model.hasSelection():

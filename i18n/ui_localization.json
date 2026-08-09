@@ -220,6 +220,7 @@
       "reload_time": "装填时间",
       "magazine": "弹容量",
       "critical_damage": "暴击伤害",
+      "critical_chance": "暴击几率",
       "ammo_cost": "弹药消耗",
       "splash_radius": "爆炸范围",
       "ads_time": "开镜时间",

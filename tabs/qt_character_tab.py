@@ -317,7 +317,6 @@ class QtCharacterTab(QWidget):
         return self.loc['labels'].get('vault_card_tokens', 'Vault Card {number} Tokens:').format(number=number)
 
     def update_language(self, lang):
-        print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
         self.current_lang = lang
         self._load_localization()
         
@@ -354,7 +353,6 @@ class QtCharacterTab(QWidget):
             btn.setText(self.loc['presets'][key])
 
         self._apply_preset_button_state()
-        print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
 
     def _apply_preset_button_state(self):
         for _, btn in self.world_btns_widgets:

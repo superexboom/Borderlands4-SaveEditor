@@ -66,7 +66,6 @@ class QtEnhancementEditorTab(QWidget):
         return self.localization_data.get(text, text)
 
     def update_language(self, lang):
-        print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
         imported = self.raw_output_var.text() if self._imported and hasattr(self, 'raw_output_var') else ''
         import_name = self._import_source_name
         import_flag = self.flag_var.currentText().split(' ')[0] if self._imported and hasattr(self, 'flag_var') else None
@@ -79,8 +78,6 @@ class QtEnhancementEditorTab(QWidget):
 
         if imported:
             self._load_decoded_copy(imported, source_name=import_name, state_flags=import_flag, show_error=False)
-        
-        print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
 
     def _load_ui_localization(self, lang=None):
         if lang is None: lang = self.current_lang

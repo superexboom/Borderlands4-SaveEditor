@@ -2,8 +2,8 @@ from html import escape
 import re
 from typing import Any, Dict, List, Optional
 
-from PyQt6.QtCore import QEvent, QModelIndex, Qt, pyqtSignal
-from PyQt6.QtGui import QStandardItem, QStandardItemModel
+from PyQt6.QtCore import QEvent, QModelIndex, Qt, QTimer, pyqtSignal
+from PyQt6.QtGui import QCursor, QStandardItem, QStandardItemModel
 from PyQt6.QtWidgets import (
     QApplication,
     QAbstractItemView,
@@ -15,6 +15,7 @@ from PyQt6.QtWidgets import (
     QMenu,
     QMessageBox,
     QPushButton,
+    QStyle,
     QToolTip,
     QTreeView,
     QVBoxLayout,
@@ -1149,6 +1150,13 @@ class QtItemsTab(QWidget):
         self.current_selected_item: Optional[Dict[str, Any]] = None
         self._card_cache: Dict[tuple[str, ...], str] = {}
         self._hover_card_key: Optional[tuple[str, ...]] = None
+        self._pending_hover_key: Optional[tuple[str, ...]] = None
+        self._pending_hover_item: Optional[Dict[str, Any]] = None
+        self._hover_timer = QTimer(self)
+        self._hover_timer.setSingleShot(True)
+        wake_up_delay = self.style().styleHint(QStyle.StyleHint.SH_ToolTip_WakeUpDelay)
+        self._hover_timer.setInterval(wake_up_delay if wake_up_delay > 0 else 700)
+        self._hover_timer.timeout.connect(self._show_pending_hover_card)
         self.character_level: Optional[int] = None
 
         self.ui_labels: Dict[str, QLabel] = {}
@@ -1218,6 +1226,7 @@ class QtItemsTab(QWidget):
         )
 
     def update_tree(self, items: List[Dict[str, Any]]):
+        self._hide_hover_card()
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self._headers())
         self.item_lookup.clear()
@@ -1282,23 +1291,44 @@ class QtItemsTab(QWidget):
         if watched is self.tree_view.viewport():
             event_type = event.type()
             if event_type == QEvent.Type.MouseMove:
-                self._update_hover_card(event.position().toPoint(), event.globalPosition().toPoint())
+                self._update_hover_card(event.position().toPoint())
             elif event_type in (QEvent.Type.Leave, QEvent.Type.Hide, QEvent.Type.Wheel):
                 self._hide_hover_card()
             elif event_type == QEvent.Type.ToolTip:
                 return True
         return super().eventFilter(watched, event)
 
-    def _update_hover_card(self, pos, global_pos):
+    def _update_hover_card(self, pos):
         item = self._item_data_from_index(self.tree_view.indexAt(pos))
         if not item:
             self._hide_hover_card()
             return
-        cache_key = (
-            self.current_lang,
-            str(self.character_level or ""),
-            str(item.get("serial") or item.get("decoded_full") or ""),
-        )
+        cache_key = self._hover_cache_key(item)
+        if cache_key == self._hover_card_key and QToolTip.isVisible():
+            return
+        if cache_key == self._pending_hover_key and self._hover_timer.isActive():
+            return
+
+        self._hide_hover_card()
+        self._pending_hover_key = cache_key
+        self._pending_hover_item = item
+        self._hover_timer.start()
+
+    def _show_pending_hover_card(self):
+        self._hover_timer.stop()
+        item = self._pending_hover_item
+        cache_key = self._pending_hover_key
+        self._pending_hover_item = None
+        self._pending_hover_key = None
+        if not item or not cache_key:
+            return
+
+        global_pos = QCursor.pos()
+        pos = self.tree_view.viewport().mapFromGlobal(global_pos)
+        current_item = self._item_data_from_index(self.tree_view.indexAt(pos))
+        if not current_item or self._hover_cache_key(current_item) != cache_key:
+            return
+
         card = self._card_cache.get(cache_key)
         if card is None:
             card = (
@@ -1309,12 +1339,6 @@ class QtItemsTab(QWidget):
             )
             self._card_cache[cache_key] = card
         if not card:
-            self._hide_hover_card()
-            return
-        if cache_key != self._hover_card_key:
-            if self._hover_card_key is not None:
-                self._hide_hover_card()
-        elif QToolTip.isVisible():
             return
         QToolTip.showText(global_pos, card, self.tree_view)
         for widget in QApplication.topLevelWidgets():
@@ -1322,7 +1346,17 @@ class QtItemsTab(QWidget):
                 widget.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
         self._hover_card_key = cache_key
 
+    def _hover_cache_key(self, item: Dict[str, Any]) -> tuple[str, ...]:
+        return (
+            self.current_lang,
+            str(self.character_level or ""),
+            str(item.get("serial") or item.get("decoded_full") or ""),
+        )
+
     def _hide_hover_card(self):
+        self._hover_timer.stop()
+        self._pending_hover_key = None
+        self._pending_hover_item = None
         self._hover_card_key = None
         QToolTip.hideText()
         for widget in QApplication.topLevelWidgets():
@@ -1528,6 +1562,7 @@ class QtItemsTab(QWidget):
         }
 
     def update_language(self, lang):
+        self._hide_hover_card()
         self.current_lang = lang
         self._load_localization()
         self._card_cache.clear()

@@ -4,7 +4,7 @@ import re
 
 from PyQt6.QtCore import Qt
 
-from core import resource_loader
+from core import item_display_resolver, resource_loader
 from tabs.qt_equipment_base_tab import BaseEquipmentEditorTab
 
 
@@ -109,9 +109,41 @@ class QtGrenadeEditorTab(BaseEquipmentEditorTab):
     def _populate_initial_extra(self):
         # element / firmware / universal are mfg-independent; element rows come from
         # df_main, firmware rows from the shared catalog via the index.
+        element_rows = self.df_main[self.df_main['Part_type'] == 'Element'].copy()
+        normal_ref = next(
+            (
+                ref_key
+                for ref_key, ref in (item_display_resolver._item_index().get("part_refs") or {}).items()
+                if ref_key.startswith(f"{self.SECONDARY_PARENT}:")
+                and ref.get("category") == "element"
+                and str(ref.get("part") or "").casefold() == "part_normal"
+            ),
+            "",
+        )
+        if normal_ref:
+            normal_id = int(normal_ref.partition(":")[2])
+            existing = {int(value) for value in element_rows['Part_ID'] if pd.notna(value)}
+            if normal_id not in existing:
+                no_element = str(
+                    (((self._full_loc.get("weapon_gen_tab") or {}).get("labels") or {}).get("no_element"))
+                    or "No Element"
+                )
+                element_rows = pd.concat(
+                    [
+                        pd.DataFrame([{
+                            "Grenade_perk_main_ID": self.SECONDARY_PARENT,
+                            "Part_ID": normal_id,
+                            "Part_type": "Element",
+                            "Stat": no_element,
+                            "Description": "",
+                        }]),
+                        element_rows,
+                    ],
+                    ignore_index=True,
+                )
         self._populate_chip_group(
             self._group_cfgs["element"],
-            self.df_main[self.df_main['Part_type'] == 'Element'],
+            element_rows,
             self._fmt_row)
         self._populate_chip_group(
             self._group_cfgs["firmware"],

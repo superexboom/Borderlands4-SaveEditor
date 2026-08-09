@@ -372,7 +372,6 @@ class WeaponEditorTab(QtWidgets.QWidget):
             self.setEnabled(False)
 
     def update_language(self, lang):
-        print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
         self.current_lang = lang
         self.load_data(lang)
         
@@ -403,7 +402,6 @@ class WeaponEditorTab(QtWidgets.QWidget):
         if current_decoded:
              self.serial_decoded_entry.setText(current_decoded) # Set text first so it's available if parse fails
              self.parse_and_display_weapon(current_decoded)
-        print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
 
     def create_widgets(self):
         # Clean up old content

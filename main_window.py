@@ -21,7 +21,7 @@ for _stream_name in ("stdout", "stderr"):
         except (AttributeError, ValueError):
             pass
 
-VERSION = "3.9.3"
+VERSION = "3.9.4"
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QMessageBox, QFileDialog,
@@ -774,12 +774,6 @@ class MainWindow(QMainWindow):
         self.items_tab.add_item_requested.connect(self.handle_add_to_backpack)
         self.add_tab(self.items_tab, self.loc['tabs']['items'], "🎒")
 
-        self.converter_tab = QtConverterTab()
-        self.converter_tab.batch_add_requested.connect(self.handle_batch_add)
-        self.converter_tab.iterator_requested.connect(self.handle_iterator_request)
-        self.converter_tab.iterator_add_to_backpack_requested.connect(self.handle_iterator_add_to_backpack)
-        self.add_tab(self.converter_tab, self.loc['tabs']['converter'], "🔧")
-
         self.serial_inspector_tab = QtSerialInspectorTab()
         self.add_tab(self.serial_inspector_tab, self.loc['tabs'].get('serial_inspector', 'Inspector'), "🔍")
 
@@ -832,6 +826,12 @@ class MainWindow(QMainWindow):
         self._add_nav_separator()
         self.loadout_manager_tab = QtLoadoutManagerTab()
         self.add_tab(self.loadout_manager_tab, self.loc['tabs'].get('loadout_manager', '配置管理'), "📋")
+
+        self.converter_tab = QtConverterTab()
+        self.converter_tab.batch_add_requested.connect(self.handle_batch_add)
+        self.converter_tab.iterator_requested.connect(self.handle_iterator_request)
+        self.converter_tab.iterator_add_to_backpack_requested.connect(self.handle_iterator_add_to_backpack)
+        self.add_tab(self.converter_tab, self.loc['tabs']['converter'], "🔧")
 
         self._refresh_nav_bar()
         if self.nav_button_group.buttons():
@@ -1603,7 +1603,6 @@ class MainWindow(QMainWindow):
         if self.current_language == lang_code:
             return
 
-        print(f"DEBUG: change_language started. New: {lang_code}")
         self.current_language = lang_code
         self._settings.setValue('language', lang_code)
         
@@ -1619,17 +1618,13 @@ class MainWindow(QMainWindow):
         # Update tabs
         for tab in self._all_content_tabs():
             if hasattr(tab, 'update_language'):
-                print(f"DEBUG: Updating language for tab {tab.__class__.__name__}")
                 try:
                     tab.update_language(self.current_language)
-                    print(f"DEBUG: Updated language for tab {tab.__class__.__name__}")
                 except Exception as e:
-                    print(f"DEBUG: Error updating language for tab {tab.__class__.__name__}: {e}")
+                    print(f"Warning: failed to update {tab.__class__.__name__} language: {e}")
         
         # Refresh all tabs to re-fetch items with new localization
         self.refresh_all_tabs(invalidate_items=False)
-        
-        print("DEBUG: change_language finished")
         
     def update_ui_text(self):
         if getattr(self.controller, 'save_path', None):
@@ -1659,9 +1654,9 @@ class MainWindow(QMainWindow):
         # Order must match the add_tab() call order in _add_tabs(); index i is
         # looked up directly in nav_button_group.
         tab_keys = [
-            'select_save', 'character', 'items', 'converter', 'serial_inspector',
+            'select_save', 'character', 'items', 'serial_inspector',
             'yaml_editor', 'class_mod', 'enhancement', 'weapon_editor', 'weapon_generator',
-            'grenade', 'shield', 'repkit', 'heavy_weapon', 'loadout_manager'
+            'grenade', 'shield', 'repkit', 'heavy_weapon', 'loadout_manager', 'converter'
         ]
 
         for i, key in enumerate(tab_keys):
