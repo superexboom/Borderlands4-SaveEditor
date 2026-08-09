@@ -88,7 +88,7 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
         "firmware": ("firmware",),
         "primary": ("primary_augment",),
         "secondary": ("secondary_augment",),
-        "legendary": ("unique",),
+        "legendary": ("body", "unique"),
     }
 
     def _generation_ref_for_option(self, key, data):
@@ -103,6 +103,22 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
             part_id, owner = data
             return f"{int(owner)}:{int(part_id)}"
         return ""
+
+    @staticmethod
+    def _legendary_facet(data):
+        from core import item_display_resolver as resolver
+
+        part_id, owner = data
+        ref = (resolver._item_index().get("part_refs") or {}).get(f"{int(owner)}:{int(part_id)}") or {}
+        category = str(ref.get("category") or "")
+        return category if category in {"body", "unique"} else "other"
+
+    def _candidate_state_for_option(self, key, data, ref, rule_keys, groups):
+        if key == "legendary":
+            facet = self._legendary_facet(data)
+            if facet in {"body", "unique"}:
+                return self._candidate_state(ref, (facet,), groups)
+        return super()._candidate_state_for_option(key, data, ref, rule_keys, groups)
 
     # Augments occupy two independent slots, confirmed twice over: the rules declare
     # primary_augment and secondary_augment separately with max=1 each, and across 80
@@ -226,10 +242,14 @@ class QtShieldEditorTab(BaseEquipmentEditorTab):
     def _build_skill_parts(self, mfg_id):
         skill_parts, secondary = [], {}
         leg_entries = self._picker_entries("legendary")
+        has_legendary_body = any(
+            int(entry["data"][1]) == int(mfg_id) and self._legendary_facet(entry["data"]) == "body"
+            for entry in leg_entries
+        )
         # Model part
         if self._imported_copy and self._source_model_present:
             skill_parts.append(f"{{{self.mfg_model_map[mfg_id]}}}")
-        elif not self._imported_copy and not leg_entries and mfg_id in self.mfg_model_map:
+        elif not self._imported_copy and not has_legendary_body and mfg_id in self.mfg_model_map:
             skill_parts.append(f"{{{self.mfg_model_map[mfg_id]}}}")
         # legendary (cross-mfg -> {mfg:[ids]})
         other_mfg = {}

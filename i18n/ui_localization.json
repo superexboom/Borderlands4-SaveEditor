@@ -1182,6 +1182,7 @@
     "misc": {
       "none": "无",
       "all": "全部",
+      "base": "基座",
       "perk_type_mismatch": "当前护盾类型为{shield_type}，\n不允许添加{incompatible_type}类型perk",
       "shield_type_energy": "能量",
       "shield_type_armor": "护甲"

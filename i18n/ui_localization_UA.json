@@ -1107,6 +1107,7 @@
     "misc": {
       "none": "Немає",
       "all": "Усі",
+      "base": "Основа",
       "perk_type_mismatch": "Поточний тип щита: {shield_type}.\nНе можна додати перки типу {incompatible_type}.",
       "shield_type_energy": "Енергощит",
       "shield_type_armor": "Бронещит"

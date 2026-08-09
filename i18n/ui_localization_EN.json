@@ -1182,6 +1182,7 @@
     "misc": {
       "none": "None",
       "all": "All",
+      "base": "Base",
       "perk_type_mismatch": "Current shield type is {shield_type}.\nCannot add {incompatible_type} type perks.",
       "shield_type_energy": "Energy",
       "shield_type_armor": "Armor"

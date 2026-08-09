@@ -754,6 +754,8 @@ class QtSerialInspectorTab(QWidget):
         if not category:
             return "-"
         key = category.casefold()
+        if key == "body" and str(self._report.get("type_en") or "").casefold() == "shield":
+            return self._group_label(category)
         if key == "manufacturer_perk":
             return str(self.grenade_group_loc.get("mfg_perks") or "Manufacturer Perk")
         if key == "firmware":
@@ -899,6 +901,11 @@ class QtSerialInspectorTab(QWidget):
     def _group_label(self, group: str) -> str:
         """Localize a selection group through the weapon editor's taxonomy keys,
         so the inspector names groups exactly like the weapon editor does."""
+        if (
+            str(group).casefold() == "body"
+            and str(self._report.get("type_en") or "").casefold() == "shield"
+        ):
+            return str(self.shield_misc_loc.get("base") or "Base")
         part_type = self._group_types().get(str(group).casefold())
         taxonomy_key = self._taxonomy_keys().get(part_type or "")
         text = self.taxonomy_loc.get(taxonomy_key or "")

@@ -793,6 +793,8 @@ class BaseEquipmentEditorTab(QWidget):
         return str((self.legit_loc or {}).get(key) or fallback)
 
     def _generation_group_text(self, group):
+        if self.EQUIP_TYPE == "shield" and str(group) == "body":
+            return str(((self.ui_loc or {}).get("misc") or {}).get("base") or "Base")
         groups = (self.legit_loc or {}).get("groups") or {}
         return str(groups.get(str(group), group))
 
