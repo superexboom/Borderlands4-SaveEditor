@@ -238,6 +238,26 @@ class IteratorWorker(QObject):
             time.sleep(0.005)
         self.finished_generation.emit('\n'.join(final_output))
 
+class _LiveFetchWorker(QThread):
+    """Fetch live items off the GUI thread; emits the save-shaped dict back."""
+
+    loaded = pyqtSignal(object, object)  # (yaml_like, err)
+
+    def __init__(self, bridge, parent=None):
+        super().__init__(parent)
+        self._bridge = bridge
+
+    def run(self):
+        from live.adapter import fetch_live_yaml
+        try:
+            yaml_like = fetch_live_yaml(self._bridge)
+            err = None
+        except Exception as e:
+            yaml_like = None
+            err = f"{type(e).__name__}: {e}"
+        self.loaded.emit(yaml_like, err)
+
+
 class BatchAddWorker(QObject):
     progress = pyqtSignal(int, int, int, int) # current, total, success, fail
     finished = pyqtSignal(int, int) # success, fail
@@ -303,6 +323,10 @@ class MainWindow(QMainWindow):
         self.controller = SaveGameController()
         self._items_snapshot = None
         self._dirty_item_views = {"items", "weapon", "yaml"}
+        # --- live (online) mode state ---
+        self._live_active = False
+        self._live_bridge = None
+        self._live_thread = None
         screen = QApplication.primaryScreen()
         screen_width = screen.availableGeometry().width() if screen else 1600
         if self._settings.contains(self._NAV_STATE_KEY):
@@ -692,6 +716,22 @@ class MainWindow(QMainWindow):
             button.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
             header_layout.addWidget(button)
 
+        # --- live (online) mode: toggle + manual refresh, inserted before stretch ---
+        self.live_toggle_button = QPushButton("离线")
+        self.live_toggle_button.setObjectName("headerActionButton")
+        self.live_toggle_button.setToolTip("在线模式:连接运行中的游戏(127.0.0.1:28777),仅读取背包/银行")
+        self.live_toggle_button.setProperty("headerControl", True)
+        self.live_toggle_button.clicked.connect(self._toggle_live_mode)
+        header_layout.addWidget(self.live_toggle_button)
+
+        self.live_refresh_button = QPushButton("⟳")
+        self.live_refresh_button.setObjectName("headerActionButton")
+        self.live_refresh_button.setToolTip("手动刷新游戏内物品(仅在线模式)")
+        self.live_refresh_button.setProperty("headerControl", True)
+        self.live_refresh_button.setEnabled(False)
+        self.live_refresh_button.clicked.connect(self._live_refresh)
+        header_layout.addWidget(self.live_refresh_button)
+
         header_layout.addStretch()
 
         self.minimize_button = QPushButton("—")
@@ -1080,6 +1120,133 @@ class MainWindow(QMainWindow):
             self.log(f"CRITICAL: An exception occurred during refresh_all_tabs: {e}", force_popup=True)
         self._refresh_inventory_view(self.content_stack.currentIndex())
         self.log("Main window: Finished refreshing all tabs.")
+
+    # ------------------------------------------------------------------
+    # live (online) mode
+    # ------------------------------------------------------------------
+    def _toggle_live_mode(self):
+        if not self._live_active:
+            self._enter_live_mode()
+        else:
+            self._exit_live_mode()
+
+    def _enter_live_mode(self):
+        try:
+            from live.bridge import Bridge  # noqa
+            from live.adapter import fetch_live_yaml  # noqa
+        except Exception as e:
+            self.log(f"Live mode unavailable (live/ package): {e}", force_popup=True)
+            return
+
+        self._live_bridge = Bridge()
+        if not self._live_bridge.ping():
+            self._live_bridge = None
+            QMessageBox.warning(
+                self, "在线模式",
+                "无法连接到游戏 (127.0.0.1:28777)。\n"
+                "请确认游戏正在运行、已进入存档,且已加载 bl4_live mod。",
+            )
+            return
+
+        self.live_toggle_button.setEnabled(False)
+        self.live_toggle_button.setText("连接中…")
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+
+        self._live_watchdog = QTimer(self)
+        self._live_watchdog.setSingleShot(True)
+        self._live_watchdog.timeout.connect(self._on_live_timeout)
+        self._live_watchdog.start(15000)
+
+        worker = _LiveFetchWorker(self._live_bridge, self)
+        worker.loaded.connect(self._on_live_loaded)
+        worker.finished.connect(worker.deleteLater)
+        self._live_thread = worker
+        worker.start()
+
+    def _on_live_loaded(self, yaml_like, err):
+        self._stop_live_watchdog()
+        QApplication.restoreOverrideCursor()
+        self.live_toggle_button.setEnabled(True)
+        if err is not None or yaml_like is None:
+            self._live_bridge = None
+            self.live_toggle_button.setText("离线")
+            self.log(f"Live fetch failed: {err}", force_popup=True)
+            return
+
+        self._live_active = True
+        self.controller.yaml_obj = yaml_like
+        self.controller.mark_clean()
+
+        self.live_toggle_button.setText("在线")
+        self.live_refresh_button.setEnabled(True)
+        self._apply_live_ui_state()
+        self.setWindowTitle(f"{self.loc['window_title']} V{VERSION} - [在线]")
+        self.refresh_all_tabs()
+        self.log("在线模式:已同步游戏内背包/银行物品。")
+
+    def _stop_live_watchdog(self):
+        wd = getattr(self, "_live_watchdog", None)
+        if wd is not None:
+            wd.stop()
+
+    def _on_live_timeout(self):
+        """Failsafe: if the worker never reports back, never leave the cursor spinning."""
+        QApplication.restoreOverrideCursor()
+        self.live_toggle_button.setEnabled(True)
+        self.live_refresh_button.setEnabled(self._live_active)
+        self.live_toggle_button.setText("在线" if self._live_active else "离线")
+        self.log("在线模式:获取超时(15s)。游戏可能未运行,或 bl4_live 未加载。", force_popup=True)
+
+    def _live_refresh(self):
+        if not self._live_active or self._live_bridge is None:
+            return
+        self.live_refresh_button.setEnabled(False)
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+
+        self._live_watchdog = QTimer(self)
+        self._live_watchdog.setSingleShot(True)
+        self._live_watchdog.timeout.connect(self._on_live_timeout)
+        self._live_watchdog.start(15000)
+
+        worker = _LiveFetchWorker(self._live_bridge, self)
+        worker.loaded.connect(self._on_live_refreshed)
+        worker.finished.connect(worker.deleteLater)
+        self._live_thread = worker
+        worker.start()
+
+    def _on_live_refreshed(self, yaml_like, err):
+        self._stop_live_watchdog()
+        QApplication.restoreOverrideCursor()
+        self.live_refresh_button.setEnabled(True)
+        if err is not None or yaml_like is None:
+            self.log(f"在线刷新失败: {err}", force_popup=True)
+            return
+        self.controller.yaml_obj = yaml_like
+        self.controller.mark_clean()
+        self.refresh_all_tabs()
+        self.log("在线模式:已刷新。")
+
+    def _exit_live_mode(self):
+        self._live_active = False
+        self._live_bridge = None
+        self.controller.yaml_obj = None
+        self.controller.mark_clean()
+
+        self.live_toggle_button.setText("离线")
+        self.live_refresh_button.setEnabled(False)
+        self._apply_live_ui_state()
+        self.setWindowTitle(f"{self.loc['window_title']} V{VERSION}")
+        self.refresh_all_tabs()
+        self.log("已退出在线模式。")
+
+    def _apply_live_ui_state(self):
+        """In live mode there is no save file, so disk save is meaningless."""
+        is_live = self._live_active
+        for btn in (self.save_button, self.save_as_button):
+            btn.setEnabled(not is_live)
+            btn.setToolTip("在线模式下不可用(无存档文件)" if is_live else "")
+        if hasattr(self, 'autosave_checkbox'):
+            self.autosave_checkbox.setEnabled(not is_live)
 
     def log(self, message, force_popup=False):
         print(message)
