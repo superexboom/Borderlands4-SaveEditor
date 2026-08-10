@@ -775,6 +775,7 @@ class MainWindow(QMainWindow):
         self.add_tab(self.items_tab, self.loc['tabs']['items'], "🎒")
 
         self.serial_inspector_tab = QtSerialInspectorTab()
+        self.serial_inspector_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
         self.add_tab(self.serial_inspector_tab, self.loc['tabs'].get('serial_inspector', 'Inspector'), "🔍")
 
         self.yaml_editor_tab = QtYamlEditorTab(self)

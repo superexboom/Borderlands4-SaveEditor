@@ -85,13 +85,13 @@ REQUIRED_PACKAGED_FILES = {
     'item/item_name_index.json',
     'Firmware/firmware.csv',
     'class_mods/Skills.csv',
+    'core/data/embedded_serial_catalog.json',
     'core/data/unlock_presets.json',
     'i18n/ui_localization.json',
     'i18n/ui_localization_EN.json',
     'i18n/ui_localization_RU.json',
     'i18n/ui_localization_UA.json',
 }
-
 
 def validate_data_files() -> list[tuple[str, str]]:
     """Fail before packaging when a declared or essential runtime asset is missing."""

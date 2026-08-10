@@ -147,6 +147,123 @@ def _parse_components(component_str: str) -> list[dict[str, Any]]:
     return components
 
 
+@lru_cache(maxsize=1)
+def _string_part_aliases() -> dict[str, tuple[str, ...]]:
+    """Reverse index internal NCS part names to canonical ``root:part`` refs."""
+    aliases: dict[str, set[str]] = {}
+    for ref_key, ref in (_item_index().get("part_refs") or {}).items():
+        parent = str(ref.get("parent") or "").strip().casefold()
+        part = str(ref.get("part") or "").strip().casefold()
+        if not part:
+            continue
+        for alias in (part, f"{parent}.{part}" if parent else ""):
+            if alias:
+                aliases.setdefault(alias, set()).add(str(ref_key))
+    return {key: tuple(sorted(values)) for key, values in aliases.items()}
+
+
+def _catalog_canonical_aliases(entry: dict[str, Any] | None) -> dict[str, str]:
+    """Accept optional pipeline-provided aliases without requiring one schema revision."""
+    out: dict[str, str] = {}
+    if not isinstance(entry, dict):
+        return out
+    for key in ("canonical_refs", "component_refs", "part_refs"):
+        value = entry.get(key)
+        if isinstance(value, dict):
+            for token, ref in value.items():
+                if isinstance(ref, str) and re.fullmatch(r"\d+:\d+", ref.strip()):
+                    out[str(token).strip().strip('"').casefold()] = ref.strip()
+        elif isinstance(value, list):
+            for row in value:
+                if not isinstance(row, dict):
+                    continue
+                token = row.get("token") or row.get("internal") or row.get("part")
+                ref = row.get("ref") or row.get("canonical_ref")
+                if token and isinstance(ref, str) and re.fullmatch(r"\d+:\d+", ref.strip()):
+                    out[str(token).strip().strip('"').casefold()] = ref.strip()
+    return out
+
+
+def _resolve_string_part_ref(
+    token: str,
+    root_ref: str,
+    catalog_aliases: dict[str, str],
+) -> str:
+    normalized = str(token or "").strip().strip('"').casefold()
+    if not normalized:
+        return ""
+    if normalized in catalog_aliases:
+        return catalog_aliases[normalized]
+
+    aliases = _string_part_aliases()
+    candidates: list[str] = []
+    relative = normalized.startswith(".") or "." not in normalized
+    bare = normalized.lstrip(".")
+    if relative:
+        candidates.extend(
+            ref for ref in aliases.get(bare, ()) if ref.partition(":")[0] == str(root_ref)
+        )
+    else:
+        candidates.extend(aliases.get(normalized, ()))
+    if len(candidates) == 1:
+        return candidates[0]
+    return ""
+
+
+def canonicalize_decoded_serial(
+    decoded_full: str,
+    item_id: int,
+    catalog_entry: dict[str, Any] | None = None,
+) -> tuple[str, list[str]]:
+    """Return a numeric, analysis-only view of an official string-token serial.
+
+    The original decoded text and Base85 are never changed. This view exists so
+    the existing name/stat/rule resolvers can consume official profile and actor
+    templates whose header or components were serialized as NCS internal names.
+    """
+    if not decoded_full or "||" not in decoded_full:
+        return decoded_full, []
+    explicit = str((catalog_entry or {}).get("canonical_decoded") or "").strip()
+    if explicit and "||" in explicit:
+        return explicit, []
+
+    header, component = decoded_full.split("||", 1)
+    header = re.sub(r'^\s*"[^"]+"', str(item_id), header, count=1)
+    aliases = _catalog_canonical_aliases(catalog_entry)
+    matches = list(re.finditer(r'"([^"]+)"', component))
+    replacements: list[tuple[int, int, str]] = []
+    unresolved: list[str] = []
+    index = 0
+    while index < len(matches):
+        match = matches[index]
+        token = match.group(1)
+        end = match.end()
+        consumed = 1
+        # Cosmetic skin syntax is already canonical and deliberately string-based:
+        # ``"c", "Cosmetics_..."``. Leave both tokens untouched and do not report
+        # them as unresolved inventory parts.
+        if token.casefold() == "c" and index + 1 < len(matches):
+            index += 2
+            continue
+        if token.endswith(".") and index + 1 < len(matches):
+            next_match = matches[index + 1]
+            token += next_match.group(1)
+            end = next_match.end()
+            consumed = 2
+        ref = _resolve_string_part_ref(token, str(item_id), aliases)
+        if ref:
+            owner, _, part_id = ref.partition(":")
+            replacement = f"{{{part_id}}}" if owner == str(item_id) else f"{{{owner}:{part_id}}}"
+            replacements.append((match.start(), end, replacement))
+        else:
+            unresolved.append(token)
+        index += consumed
+
+    for start, end, replacement in reversed(replacements):
+        component = component[:start] + replacement + component[end:]
+    return f"{header}||{component}", unresolved
+
+
 def _ordered_ids(components: list[dict[str, Any]]) -> list[str]:
     ids: list[str] = []
     for part in components:

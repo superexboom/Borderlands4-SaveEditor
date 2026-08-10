@@ -187,6 +187,7 @@ class QtWeaponGeneratorTab(QWidget):
         self.weapon_taxonomy = {}
         self.item_index = {}
         self.weapon_rules = {}
+        self.preferred_parts = {}
         self.part_combos = {}
         self.part_combo_rows = {}
         self.part_group_boxes = {}
@@ -258,6 +259,9 @@ class QtWeaponGeneratorTab(QWidget):
             self.rarity_desc_col = 'Description_ZH' if lang == 'zh-CN' else 'Description'
             self.item_index = resource_loader.load_item_json('item_name_index.json') or {}
             self.weapon_rules = self.item_index.get('weapon_generation_rules') or {}
+            catalog = resource_loader.load_json_resource('core/data/embedded_serial_catalog.json') or {}
+            preferred_parts = catalog.get('preferred_parts') if isinstance(catalog, dict) else None
+            self.preferred_parts = preferred_parts if isinstance(preferred_parts, dict) else {}
             
             self.weapon_localization = {}
             if lang == 'zh-CN':
@@ -734,8 +738,15 @@ class QtWeaponGeneratorTab(QWidget):
         combo.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         combo.view().setMinimumWidth(620)
 
-    def _apply_part_rule_colors(self, part_type, item_id, eligible_refs=(), allowed_refs=()):
-        eligible_refs, allowed_refs = set(eligible_refs), set(allowed_refs)
+    def _apply_part_rule_colors(
+        self, part_type, item_id, eligible_refs=(), allowed_refs=(), preferred_refs=()
+    ):
+        eligible_refs, allowed_refs, preferred_refs = (
+            set(eligible_refs), set(allowed_refs), set(preferred_refs)
+        )
+        preferred_tip = self._rule_message(
+            "preferred_part", "官方推荐搭配", "Official recommended pairing"
+        )
         for key, combo in self.part_combos.items():
             if not key.startswith(f"{part_type}_") or not isinstance(combo, QComboBox):
                 continue
@@ -743,11 +754,24 @@ class QtWeaponGeneratorTab(QWidget):
                 combo.setItemData(index, None, Qt.ItemDataRole.BackgroundRole)
                 combo.setItemData(index, None, Qt.ItemDataRole.ForegroundRole)
                 combo.setItemData(index, None, Qt.ItemDataRole.FontRole)
+                tooltip = str(combo.itemData(index, Qt.ItemDataRole.ToolTipRole) or "")
+                tooltip = "\n".join(line for line in tooltip.splitlines() if line != preferred_tip)
+                combo.setItemData(index, tooltip, Qt.ItemDataRole.ToolTipRole)
                 part_id = combo.itemData(index)
                 if item_id is None or part_id is None:
                     continue
                 ref = f"{item_id}:{part_id}"
-                if ref in eligible_refs:
+                if ref in preferred_refs:
+                    font = combo.font()
+                    font.setBold(True)
+                    combo.setItemData(index, QColor("#7C3AED"), Qt.ItemDataRole.BackgroundRole)
+                    combo.setItemData(index, QColor("#F5F3FF"), Qt.ItemDataRole.ForegroundRole)
+                    combo.setItemData(index, font, Qt.ItemDataRole.FontRole)
+                    combo.setItemData(
+                        index, "\n".join(filter(None, (tooltip, preferred_tip))),
+                        Qt.ItemDataRole.ToolTipRole,
+                    )
+                elif ref in eligible_refs:
                     font = combo.font()
                     font.setBold(True)
                     combo.setItemData(index, QColor("#0E7490"), Qt.ItemDataRole.BackgroundRole)
@@ -774,6 +798,19 @@ class QtWeaponGeneratorTab(QWidget):
             if part_id is not None and str(part_id).isdigit():
                 adds.update(item_display_resolver.weapon_part_selection_tags(item_id, str(part_id)).get("adds", []))
         return adds
+
+    def _preferred_refs_for_composition(self, composition_ref):
+        entry = self.preferred_parts.get(str(composition_ref))
+        if not isinstance(entry, dict):
+            return set()
+        return {str(ref) for ref in entry.get("refs", ()) if str(ref)}
+
+    def _selected_part_refs(self, item_id):
+        return {
+            f"{item_id}:{combo.currentData()}"
+            for combo in self.part_combos.values()
+            if isinstance(combo, QComboBox) and combo.currentData() is not None
+        }
 
     def _refresh_conditional_part_options(self):
         item_id = self._current_m_id()
@@ -928,15 +965,24 @@ class QtWeaponGeneratorTab(QWidget):
             self._rule_violation_text(item)
             for item in result.get("violations", [])
         ]
-        self.generation_rule_badge.setToolTip(
-            "\n".join(violations) or self._rule_message(
-                "matches_rules", "符合当前自然生成规则", "Matches the current generation rules"
-            )
-        )
+        item_id = self._current_m_id()
+        preferred_refs = self._preferred_refs_for_composition(result.get("composition_ref"))
+        status_lines = violations or [self._rule_message(
+            "matches_rules", "符合当前自然生成规则", "Matches the current generation rules"
+        )]
+        if preferred_refs and item_id is not None:
+            selected = len(preferred_refs & self._selected_part_refs(item_id))
+            status_lines.append(self._rule_message(
+                "preferred_selected_count",
+                "已选 {selected}/{total} 个官方推荐件",
+                "Selected {selected}/{total} recommended parts",
+                selected=selected,
+                total=len(preferred_refs),
+            ))
+        self.generation_rule_badge.setToolTip("\n".join(status_lines))
 
         rules_ready = bool(result.get("rules_available") and result.get("composition_ref"))
         groups = result.get("groups") or {}
-        item_id = self._current_m_id()
         display_matches = {}
         group_categories = {}
         if rules_ready and item_id is not None:
@@ -964,7 +1010,7 @@ class QtWeaponGeneratorTab(QWidget):
                     "select_composition", "选择武器模板后显示合法范围", "Select a composition to show its legal range"
                 ))
                 self._set_part_group_rule_title(part_type, current, "—")
-                self._apply_part_rule_colors(part_type, item_id)
+                self._apply_part_rule_colors(part_type, item_id, preferred_refs=preferred_refs)
                 continue
 
             rows, candidate_refs, matched_groups = display_matches.get(part_type, (None, set(), []))
@@ -975,7 +1021,7 @@ class QtWeaponGeneratorTab(QWidget):
                     "no_group_rule", "该显示分组没有独立生成规则", "No separate generation rule for this display group"
                 ))
                 self._set_part_group_rule_title(part_type, current, "—")
-                self._apply_part_rule_colors(part_type, item_id)
+                self._apply_part_rule_colors(part_type, item_id, preferred_refs=preferred_refs)
                 continue
 
             matched = [groups[group] for group in matched_groups]
@@ -1008,7 +1054,9 @@ class QtWeaponGeneratorTab(QWidget):
                 for ref in group_rule.get("allowed") or []
                 if ref in candidate_refs
             }
-            self._apply_part_rule_colors(part_type, item_id, eligible, allowed)
+            self._apply_part_rule_colors(
+                part_type, item_id, eligible, allowed, preferred_refs
+            )
             lines = [
                 self._rule_message("current", "当前：{current}", "Current: {current}", current=current),
                 self._rule_message("legal_count", "合法数量：{range}", "Legal count: {range}", range=legal_range),
@@ -1352,8 +1400,20 @@ class QtWeaponGeneratorTab(QWidget):
                     continue
                 if "npc_weapon" in {str(tag).casefold() for tag in composition.get("base_tags", ())}:
                     continue
-                rarity = str(composition.get("rarity") or "")
+                # The engine ships an unnamed ``comp_05_legendary`` foundation for
+                # most inventory roots.  It is a rarity/material base used by
+                # cinematics and internal construction, not a named world-drop.
+                # Keep it manually selectable for research, but never let Lucky
+                # generate it as though it were a complete legendary weapon.
                 names = composition.get("name") or {}
+                if (
+                    str(composition.get("part") or "").casefold() == "comp_05_legendary"
+                    and not str(names.get("en") or "").strip()
+                    and not str(names.get("zh") or "").strip()
+                    and not composition.get("forced_part_refs")
+                ):
+                    continue
+                rarity = str(composition.get("rarity") or "")
                 named = bool(str(names.get("en") or "").strip() or str(names.get("zh") or "").strip())
                 preferred_name = names.get("zh") if self.current_lang == 'zh-CN' else names.get("en")
                 name = str(preferred_name or names.get("en") or names.get("zh") or "").strip()

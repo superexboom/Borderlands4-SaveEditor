@@ -418,7 +418,9 @@
       "components": "Components",
       "roundtrip": "Round-trip",
       "part_total": "Parts",
-      "implicit_level_one": "Implicit level 1"
+      "implicit_level_one": "Implicit level 1",
+      "provenance": "Source",
+      "catalog_empty": "The embedded serial catalog is unavailable or empty."
     },
     "buttons": {
       "inspect": "Inspect",
@@ -428,7 +430,46 @@
       "clear": "Clear",
       "copy_json": "Copy JSON",
       "export_json": "Export JSON",
-      "save_card": "Save card image"
+      "save_card": "Save card image",
+      "catalog": "Internal / NPC / Mission presets"
+    },
+    "provenance_tags": {
+      "official_loadout": "Official loadout",
+      "mission": "Mission",
+      "npc": "NPC / Cinematic",
+      "skill": "Skill actor",
+      "ui": "UI preview",
+      "historical": "Historical",
+      "orphan": "Orphan / Legacy"
+    },
+    "catalog": {
+      "title": "Internal / NPC / Mission presets",
+      "warning": "Internal and scene-only data may be rejected, corrected or removed by the game. Inspect before using it.",
+      "search": "Filter by name, type, source or context...",
+      "name": "Name",
+      "type": "Type",
+      "context": "Scene / Context",
+      "level": "Level",
+      "details": "Details",
+      "load": "Inspect",
+      "copy": "Copy Base85",
+      "add": "Add to backpack",
+      "close": "Close",
+      "no_selection": "Select an entry to see its source and rule data.",
+      "no_serial": "Rule-only entry; no serial is embedded.",
+      "copy_title": "Copy internal serial?",
+      "copy_warning": "This is internal or scene-derived content. It may not be safe as a player item. Copy Base85 anyway?",
+      "add_title": "Add internal serial?",
+      "add_warning": "This is internal or scene-derived content. The game may remove, correct or reject it. Add it to the backpack anyway?",
+      "add_blocked": "This entry is inspect-only and cannot be added to a player backpack.",
+      "groups": {
+        "official_loadout": "Official starter / loadout",
+        "npc_mission": "NPC / mission / cinematic",
+        "skill_ui": "Skill actor / UI preview",
+        "history": "Historical / orphan",
+        "rules_only": "Rule-only compositions",
+        "other": "Other embedded data"
+      }
     },
     "parts_columns": [
       "#",
@@ -469,6 +510,8 @@
       "tag_limits": "Tag limits",
       "groups": "Part groups",
       "violations": "Issues",
+      "catalog_rule": "Embedded read-only rule",
+      "preferred_parts": "Preferred parts",
       "yes": "yes",
       "no": "no"
     },
@@ -813,7 +856,9 @@
     "violation_forced_part_missing": "Forced composition part is missing",
     "violation_conditional_availability": "Available only in a special context",
     "violation_unresolved_rule_parts": "Rule contains unresolved parts",
-    "violation_inheritance_cycle": "Composition rule inheritance cycle"
+    "violation_inheritance_cycle": "Composition rule inheritance cycle",
+    "preferred_part": "Official recommended pairing",
+    "preferred_selected_count": "Selected {selected}/{total} recommended parts"
   },
   "weapon_editor_tab": {
     "labels": {

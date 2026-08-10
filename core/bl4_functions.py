@@ -1,7 +1,7 @@
 # bl4_functions.py
 
 from typing import Any, Dict, List, Optional, Tuple, Union
-from . import b_encoder
+from . import b_encoder, lookup
 from .unlock_data import VAULT_CARD_TOKENS
 
 
@@ -152,7 +152,6 @@ def apply_character_and_currency_changes(data: Dict[str, Any], yaml_data: Dict[s
 # ── Item Processing Logic ─────────────────────────────────────────────────────
 from . import decoder_logic
 from . import item_display_resolver
-from . import lookup
 from typing import TypedDict, List
 from .resource_loader import load_json_resource, get_ui_localization_file
 
@@ -214,6 +213,7 @@ class ProcessedItem(TypedDict):
     level: int
     serial: str
     decoded_full: str
+    canonical_decoded: str
     decoded_parts: str
     weapon_stats: Dict[str, Any]
     equipment_stats: Dict[str, Any]
@@ -240,12 +240,73 @@ def _walk_for_serials(
     return found_items
 
 
+_STRING_ROOT_MANUFACTURERS = {
+    "atl": lookup.Atlas,
+    "bor": lookup.Ripper,
+    "borg": lookup.Ripper,
+    "cov": lookup.CoV,
+    "dad": lookup.Daedalus,
+    "hyp": lookup.Hyperion,
+    "jak": lookup.Jakobs,
+    "mal": lookup.Maliwan,
+    "ord": lookup.Order,
+    "ted": lookup.Tediore,
+    "tor": lookup.Torgue,
+    "vla": lookup.Vladof,
+}
+
+_STRING_ROOT_TYPES = {
+    "enhancement": lookup.Enhancement,
+    "grenade_gadget": lookup.Grenade,
+    "repair_kit": lookup.Repkit,
+    "shield": lookup.Shield,
+}
+
+
+def _decoded_root_id(value: str) -> Optional[int]:
+    """Resolve either a numeric root or the string roots used by official templates.
+
+    UVHM starter data is serialized with roots such as ``"dad_repair_kit"``
+    instead of the normal numeric inventory root. Derive the current numeric id
+    through the shared lookup table so the parser does not maintain a second id
+    map and future string-root manufacturers/types follow the same path.
+    """
+    token = str(value or "").strip().strip('"').casefold()
+    try:
+        return int(token)
+    except ValueError:
+        pass
+    prefix, separator, suffix = token.partition("_")
+    if not separator:
+        return None
+    manufacturer = _STRING_ROOT_MANUFACTURERS.get(prefix)
+    item_type = _STRING_ROOT_TYPES.get(suffix)
+    if not manufacturer or not item_type:
+        return None
+    return lookup.ID_MAP.get((manufacturer, item_type))
+
+
 def parse_decoded_item_header(decoded_full: str) -> Optional[Dict[str, Any]]:
-    """Parse the item header, including game-canonical Lv1 headers without marker 1."""
+    """Parse numeric and official string-root item headers.
+
+    The returned ``mfg_id`` is always the canonical numeric root. ``root_token``
+    preserves what the original serial contained so read-only tools can explain
+    the unusual representation without rewriting it.
+    """
     try:
         header_part, component_part = decoded_full.split("||", 1)
         segments = [segment.strip() for segment in header_part.strip().split("|") if segment.strip()]
-        fields = [[int(value.strip()) for value in segment.split(",")] for segment in segments]
+        if not segments:
+            return None
+        root_token, *first_tail = [value.strip() for value in segments[0].split(",")]
+        root_id = _decoded_root_id(root_token)
+        if root_id is None:
+            return None
+        fields = [[root_id, *(int(value) for value in first_tail)]]
+        fields.extend(
+            [int(value.strip()) for value in segment.split(",")]
+            for segment in segments[1:]
+        )
         if not fields or len(fields[0]) < 4:
             return None
 
@@ -258,6 +319,8 @@ def parse_decoded_item_header(decoded_full: str) -> Optional[Dict[str, Any]]:
             "seed": first[3] if implicit_level_one else (seed_fields[1] if len(seed_fields) > 1 else None),
             "implicit_level_one": implicit_level_one,
             "component": component_part,
+            "root_token": root_token.strip().strip('"'),
+            "string_root": not root_token.strip().lstrip("+-").isdigit(),
         }
     except (AttributeError, TypeError, ValueError):
         return None
@@ -301,11 +364,12 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
         header = parse_decoded_item_header(formatted_str)
         if not header:
             continue
-        parts_part = header["component"]
-
         try:
             item_id = header["mfg_id"]
             item_level = header["level"]
+            canonical_str, _unresolved = item_display_resolver.canonicalize_decoded_serial(
+                formatted_str, item_id
+            )
 
             manufacturer, item_type, found = lookup.get_kind_enums(item_id)
             if not found:
@@ -320,13 +384,13 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
                 item_id,
                 localized_manufacturer,
                 item_type,
-                formatted_str,
+                canonical_str,
                 current_localization_lang,
             )
             item_name = display_info.get("display_name") or base_item_name
             if display_info.get("display_source") == "fallback":
                 item_name = base_item_name
-            display_parts = parts_part.strip()
+            display_parts = canonical_str.split("||", 1)[1].strip()
 
             # Determine container and slot from the path
             container_name = "Unknown"
@@ -364,13 +428,14 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
                 "state_flags": str(item_data.get("state_flags", "")),
                 "serial": serial,
                 "decoded_full": formatted_str,
+                "canonical_decoded": canonical_str,
                 "decoded_parts": display_parts,
                 "weapon_stats": (
-                    item_display_resolver.resolve_weapon_stats(formatted_str)
+                    item_display_resolver.resolve_weapon_stats(canonical_str)
                     if item_type in item_display_resolver.WEAPON_TYPES
                     else {}
                 ),
-                "equipment_stats": item_display_resolver.resolve_equipment_stats(formatted_str, item_type),
+                "equipment_stats": item_display_resolver.resolve_equipment_stats(canonical_str, item_type),
             }
             all_items.append(processed_item)
 

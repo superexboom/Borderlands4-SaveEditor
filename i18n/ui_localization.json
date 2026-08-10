@@ -418,7 +418,9 @@
       "components": "组件段",
       "roundtrip": "往返校验",
       "part_total": "配件数",
-      "implicit_level_one": "隐式 1 级"
+      "implicit_level_one": "隐式 1 级",
+      "provenance": "来源",
+      "catalog_empty": "内置序列目录尚未生成或为空。"
     },
     "buttons": {
       "inspect": "检视",
@@ -428,7 +430,46 @@
       "clear": "清空",
       "copy_json": "复制 JSON",
       "export_json": "导出 JSON",
-      "save_card": "保存卡片图"
+      "save_card": "保存卡片图",
+      "catalog": "内部 / NPC / 任务预设"
+    },
+    "provenance_tags": {
+      "official_loadout": "官方配置",
+      "mission": "任务",
+      "npc": "NPC / 过场",
+      "skill": "技能实体",
+      "ui": "界面预览",
+      "historical": "历史数据",
+      "orphan": "孤立 / 遗留"
+    },
+    "catalog": {
+      "title": "内部 / NPC / 任务预设",
+      "warning": "内部与场景专用数据可能被游戏拒绝、纠正或移除，请先检视再使用。",
+      "search": "按名称、类型、来源或场景筛选……",
+      "name": "名称",
+      "type": "类型",
+      "context": "场景 / 上下文",
+      "level": "等级",
+      "details": "详情",
+      "load": "检视",
+      "copy": "复制 Base85",
+      "add": "加入背包",
+      "close": "关闭",
+      "no_selection": "选择条目以查看来源和规则数据。",
+      "no_serial": "该条目仅包含规则，没有内置序列。",
+      "copy_title": "复制内部序列？",
+      "copy_warning": "这是内部或场景来源内容，作为玩家物品可能并不安全。仍要复制 Base85 吗？",
+      "add_title": "加入内部序列？",
+      "add_warning": "这是内部或场景来源内容，游戏可能移除、纠正或拒绝它。仍要加入背包吗？",
+      "add_blocked": "该条目仅供检视，不能加入玩家背包。",
+      "groups": {
+        "official_loadout": "官方初始 / 跳过流程配置",
+        "npc_mission": "NPC / 任务 / 过场",
+        "skill_ui": "技能实体 / 界面预览",
+        "history": "历史 / 孤立数据",
+        "rules_only": "仅规则模板",
+        "other": "其他内置数据"
+      }
     },
     "parts_columns": [
       "#",
@@ -469,6 +510,8 @@
       "tag_limits": "标签上限",
       "groups": "配件分组",
       "violations": "问题",
+      "catalog_rule": "内置只读规则",
+      "preferred_parts": "推荐配件",
       "yes": "是",
       "no": "否"
     },
@@ -813,7 +856,9 @@
     "violation_forced_part_missing": "缺少模板固有配件",
     "violation_conditional_availability": "仅在特定条件下生成",
     "violation_unresolved_rule_parts": "规则仍有未解析配件",
-    "violation_inheritance_cycle": "模板规则继承异常"
+    "violation_inheritance_cycle": "模板规则继承异常",
+    "preferred_part": "官方推荐搭配",
+    "preferred_selected_count": "已选 {selected}/{total} 个官方推荐件"
   },
   "weapon_editor_tab": {
     "labels": {

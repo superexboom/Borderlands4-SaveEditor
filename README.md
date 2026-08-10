@@ -69,7 +69,7 @@ Features dedicated tabs for deep customization of various gear types:
 - **Code Converter**: Supports conversion between Base85 encoding and Deserialized data.
 - **Batch Processing**: Batch convert codes and batch import lists of codes into the backpack.
 - **Iterator Generator**: Supports batch generating item sequences by setting value ranges (e.g., generating all skins, iterating through all part combinations).
-- **Serial Inspector**: Inspect one Base85 or decoded serial with item summary, part IDs, names, effects, legality rules, rendered item card, and JSON/card export.
+- **Serial Inspector**: Inspect one Base85 or decoded serial with item summary, part IDs, names, effects, legality rules, rendered item card, and JSON/card export. It also includes game-data-derived official loadouts, mission/NPC weapons, and internal inspection presets with provenance, scenario labels, and safe add restrictions.
 - **YAML Editor**: Provides editable lazy tree, source, and split views with search, inline validation, undo/redo, change highlighting, serial previews, item-editor routing, and backpack slot-range deletion.
 
 ---
