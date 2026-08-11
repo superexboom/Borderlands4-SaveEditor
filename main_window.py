@@ -1433,7 +1433,12 @@ class MainWindow(QMainWindow):
         if not self.controller.yaml_obj: 
             QMessageBox.warning(self, self.loc['dialogs']['no_save'], self.loc['dialogs']['load_save_first'])
             return
-        
+
+        # --- online (live) mode: spawn a new item into the game's backpack ---
+        if self._live_active and self._live_bridge is not None:
+            self._live_add_to_backpack(serial_input)
+            return
+
         try:
             if serial_input.strip().startswith('@U'):
                 final_serial = serial_input
@@ -1455,11 +1460,47 @@ class MainWindow(QMainWindow):
 
         except Exception as e:
             self.log(self.loc['dialogs']['add_error'].format(error=e), force_popup=True)
+
+    def _live_add_to_backpack(self, serial_input: str):
+        """Online add: spawn a new item into the running game's backpack."""
+        try:
+            if serial_input.strip().startswith('@U'):
+                final_serial = serial_input.strip()
+            else:
+                encoded_serial, err = b_encoder.encode_to_base85(serial_input)
+                if err:
+                    QMessageBox.critical(self, self.loc['dialogs']['encode_failed'],
+                                         self.loc['dialogs']['encode_failed_msg'].format(error=err))
+                    return
+                final_serial = encoded_serial
+        except Exception as e:
+            self.log(f"在线添加编码失败: {e}", force_popup=True)
+            return
+
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+        try:
+            res = self._live_bridge.spawn(final_serial, "BackpackItems")
+        except Exception as e:
+            QApplication.restoreOverrideCursor()
+            self.log(f"在线生成失败: {type(e).__name__}: {e}", force_popup=True)
+            return
+        QApplication.restoreOverrideCursor()
+
+        if res.get('ok'):
+            QMessageBox.information(self, "在线模式", "已生成新物品到游戏背包。")
+            self.invalidate_items_snapshot()
+            self._refresh_inventory_view(self.content_stack.currentIndex())
+        else:
+            self.log(f"在线生成被游戏拒绝: {res.get('error')}", force_popup=True)
     
     @pyqtSlot(dict)
     def handle_update_item(self, payload: dict):
         if not self.controller.yaml_obj:
             QMessageBox.warning(self, self.loc['dialogs']['no_save'], self.loc['dialogs']['load_save_first'])
+            return
+        # --- online (live) mode: write straight into the running game ---
+        if self._live_active and self._live_bridge is not None:
+            self._live_update_item(payload)
             return
         try:
             # The controller's update_item method is designed to handle the logic 
@@ -1476,6 +1517,53 @@ class MainWindow(QMainWindow):
         except Exception as e:
             # Catch potential crashes from C-extensions and show an error dialog
             self.log(self.loc['dialogs']['update_error'].format(error=e), force_popup=True)
+
+    def _live_update_item(self, payload: dict):
+        """Online overwrite: apply the new serial to the live game item."""
+        new_serial = (payload.get('new_item_data') or {}).get('serial', '')
+        if not new_serial.startswith('@U'):
+            QMessageBox.critical(self, "在线模式", f"序列号无效: {new_serial[:40]}")
+            return
+        # item_path ends with 'slot_<n>' -> backpack index n
+        path = payload.get('item_path') or []
+        idx = None
+        for part in reversed(path):
+            if isinstance(part, str) and part.startswith('slot_'):
+                try:
+                    idx = int(part.split('_', 1)[1])
+                except ValueError:
+                    idx = None
+                break
+        if idx is None:
+            QMessageBox.critical(self, "在线模式", "无法定位背包槽位（item_path 缺少 slot_N）")
+            return
+        container = "BankItems" if any(p == "bank" for p in path) else "BackpackItems"
+
+        self.log(f"在线覆写: {container}[{idx}] -> {new_serial[:40]}...")
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+        try:
+            res = self._live_bridge.apply(idx, new_serial, container)
+        except Exception as e:
+            QApplication.restoreOverrideCursor()
+            self.log(f"在线覆写失败: {type(e).__name__}: {e}", force_popup=True)
+            return
+        QApplication.restoreOverrideCursor()
+
+        if res.get('ok'):
+            warn = ""
+            if res.get('missing_parts'):
+                warn = f"\n\n注意: {len(res['missing_parts'])} 个配件未能映射。"
+            QMessageBox.information(
+                self, "在线模式",
+                f"已实时应用到游戏内物品 (槽位 {idx})。\n"
+                f"配件即时生效;序列号已同步(存档/重载一致)。{warn}",
+            )
+            # reflect the change in the editor's in-memory data too
+            node = self.controller.get_node(path[:-1]) if hasattr(self.controller, 'get_node') else None
+            self.invalidate_items_snapshot()
+            self._refresh_inventory_view(self.content_stack.currentIndex())
+        else:
+            self.log(f"在线覆写被游戏拒绝: {res.get('error')}", force_popup=True)
 
     @pyqtSlot(dict)
     def handle_character_update(self, data: dict):

@@ -1,7 +1,7 @@
 """Live-mode bridge for sav_edit.
 
-Connects the editor to the bl4_live mod running inside Borderlands 4.
-Read-only for now -- no writes until the write semantics are validated.
+Connects the editor to the bl4_live mod running inside Borderlands 4 over
+localhost TCP (127.0.0.1:28777). Read + write (apply) + spawn.
 
 Usage (headless):
     from live.bridge import Bridge
@@ -9,8 +9,9 @@ Usage (headless):
 
     b = Bridge()
     if b.ping():
-        yaml_like = fetch_live_yaml(b)
-        # feed yaml_like into core.bl4_functions.process_and_load_items(...)
+        yaml_like = fetch_live_yaml(b)   # feed into process_and_load_items(...)
+        res = b.apply(idx, new_serial)   # live part overwrite + serial sync
+        res = b.spawn(new_serial)        # add a new item to the backpack
 """
 
 from .bridge import Bridge, BridgeError

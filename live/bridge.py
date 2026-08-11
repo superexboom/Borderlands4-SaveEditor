@@ -87,6 +87,32 @@ class Bridge:
             raise BridgeError(str(resp.get("error", "read failed")))
         return list(resp.get("items", []))
 
+    def apply(self, idx: int, serial: str, container: str = "BackpackItems",
+              expect_old: str | None = None) -> dict[str, Any]:
+        """
+        LIVE overwrite: rewrite an item's part pointers (live) + serial text.
+        The part change takes effect immediately; the serial keeps save/reload
+        consistent. Returns the server's result dict (ok / parts / serial / verify).
+        """
+        req: dict[str, Any] = {"id": 1, "op": "apply", "container": container,
+                               "idx": idx, "serial": serial}
+        if expect_old is not None:
+            req["expect_old"] = expect_old
+        resp = self._roundtrip(req, timeout=30)
+        if "ok" not in resp:
+            raise BridgeError("malformed apply response")
+        return resp
+
+    def spawn(self, serial: str, container: str = "BackpackItems") -> dict[str, Any]:
+        """Spawn a NEW item into the backpack from a serial (trainer path)."""
+        resp = self._roundtrip(
+            {"id": 1, "op": "spawn", "container": container, "serial": serial},
+            timeout=30,
+        )
+        if "ok" not in resp:
+            raise BridgeError("malformed spawn response")
+        return resp
+
     def available(self) -> bool:
         """Quick connect check -- is the game bridge up?"""
         try:
