@@ -2689,7 +2689,7 @@ def equipment_part_name(ref_key: str, lang: str = "zh-CN", fallback: str = "") -
     if ref.get("category") == "firmware":
         # Firmware names live in the shared table, keyed by the internal part string.
         try:
-            entry = _equipment_firmware_entry(ref_key, "", lang)
+            entry = equipment_firmware_entry(ref_key, "", lang)
         except (KeyError, OSError, TypeError, ValueError):
             entry = None
         name = str((entry or {}).get("name") or "").strip()
@@ -2796,10 +2796,10 @@ def format_equipment_part_description(
 
     if ref.get("category") == "firmware":
         # Firmware text comes from the shared pipeline-exported table (see
-        # _equipment_firmware_entry). The serial contains one firmware identity,
+        # equipment_firmware_entry). The serial contains one firmware identity,
         # not three repeated tokens, so show the complete L1/L2/L3 progression.
         try:
-            entry = _equipment_firmware_entry(ref_key, item_type, lang)
+            entry = equipment_firmware_entry(ref_key, item_type, lang)
         except (KeyError, OSError, TypeError, ValueError):
             entry = None
         descs = list((entry or {}).get("descs") or [])
@@ -2880,7 +2880,8 @@ def item_card_entry_kind(ref: dict[str, Any]) -> str:
     return "normal"
 
 
-def _equipment_firmware_entry(ref_key: str, item_type: str, lang: str) -> dict[str, Any] | None:
+def equipment_firmware_entry(ref_key: str, item_type: str, lang: str) -> dict[str, Any] | None:
+    """Resolve one family-specific firmware ID through the shared catalog."""
     internal = str((_item_index().get("part_refs") or {}).get(ref_key, {}).get("part") or "")
     if not internal:
         return None
@@ -2912,8 +2913,6 @@ def _equipment_firmware_entry(ref_key: str, item_type: str, lang: str) -> dict[s
         "level": 0,
         "max_level": 3,
     }
-
-
 @lru_cache(maxsize=2048)
 def resolve_equipment_card_details(
     decoded_full: str,
@@ -2944,7 +2943,7 @@ def resolve_equipment_card_details(
             existing = next((entry for entry in firmware if entry["id"] == ref_key.partition(":")[2]), None)
             if existing:
                 existing["count"] += 1
-            elif entry := _equipment_firmware_entry(ref_key, item_type, lang):
+            elif entry := equipment_firmware_entry(ref_key, item_type, lang):
                 firmware.append(entry)
             continue
         if category in {"element", "body_ele"}:
@@ -3306,7 +3305,7 @@ def resolve_classmod_card_details(
         ref = _part_ref(234, perk_id)
         row = perk_rows.get(perk_id)
         if ref.get("category") == "firmware":
-            entry = _equipment_firmware_entry(ref_key, "Class Mod", lang)
+            entry = equipment_firmware_entry(ref_key, "Class Mod", lang)
             if entry:
                 firmware.append({**entry, "count": perk_counts[perk_id]})
             elif row:
@@ -3332,7 +3331,7 @@ def resolve_classmod_card_details(
             "internal": row.get("perk_internal", ""),
         }
         if entry["category"] == "firmware":
-            shared = _equipment_firmware_entry(ref_key, "Class Mod", lang)
+            shared = equipment_firmware_entry(ref_key, "Class Mod", lang)
             firmware.append({**(shared or entry), "count": perk_counts[perk_id], "level": 0, "max_level": 3})
         else:
             perks.append(entry)
@@ -3434,7 +3433,7 @@ def resolve_enhancement_card_details(decoded_full: str, lang: str = "zh-CN") -> 
         ref = _part_ref(247, part_id)
         category = ref.get("category")
         if category == "firmware":
-            entry = _equipment_firmware_entry(f"247:{part_id}", "Enhancement", lang)
+            entry = equipment_firmware_entry(f"247:{part_id}", "Enhancement", lang)
             if entry:
                 firmware.append(entry)
             else:

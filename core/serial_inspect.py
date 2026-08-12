@@ -573,7 +573,7 @@ def _firmware_csv_detail(
 ) -> dict[str, str]:
     """Use the shared firmware catalog for Inspector names and all three tiers."""
     try:
-        entry = resolver._equipment_firmware_entry(ref_key, item_type, lang)
+        entry = resolver.equipment_firmware_entry(ref_key, item_type, lang)
     except (KeyError, OSError, TypeError, ValueError):
         entry = None
     entry = entry or fallback or {}

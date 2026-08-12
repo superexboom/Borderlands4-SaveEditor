@@ -870,8 +870,28 @@ class QtClassModEditorTab(QWidget):
             perk_zh = perk_row.get('perk_name_ZH', '')
             internal = perk_row.get('perk_internal', '')
             category = perk_row.get('perk_category', 'other') or 'other'
-            display_name = perk_zh if self.current_lang == 'zh-CN' and perk_zh else perk_en
-            detail = f"{internal}  ·  ID {perk_id}" if internal else f"ID {perk_id}"
+            firmware = (
+                item_display_resolver.equipment_firmware_entry(
+                    f"234:{perk_id}", "Class Mod", self.current_lang
+                )
+                if category == "firmware"
+                else None
+            )
+            if firmware:
+                display_name = firmware["name"]
+                descs = firmware.get("descs") or []
+                detail = next((text for text in descs if text), "")
+                tooltip_lines = [f"{internal}  ·  ID {perk_id}"]
+                tooltip_lines.extend(
+                    f"L{level}: {text}" for level, text in enumerate(descs, 1) if text
+                )
+                search_text = " ".join((perk_id, internal, display_name, *descs))
+                tooltip = "\n".join(tooltip_lines)
+            else:
+                display_name = perk_zh if self.current_lang == 'zh-CN' and perk_zh else perk_en
+                detail = f"{internal}  ·  ID {perk_id}" if internal else f"ID {perk_id}"
+                search_text = f"{perk_id} {internal} {perk_en} {perk_zh}"
+                tooltip = detail
 
             items.append({
                 "key": perk_id,
@@ -879,8 +899,8 @@ class QtClassModEditorTab(QWidget):
                 "detail": detail,
                 "category": category,
                 "accent": "blue" if category == "firmware" else None,
-                "search_text": f"{perk_id} {internal} {perk_en} {perk_zh}",
-                "tooltip": escape(detail),
+                "search_text": search_text,
+                "tooltip": tooltip,
                 "data": {"perk_id": perk_id},
             })
         self.perk_picker.set_source(items)
