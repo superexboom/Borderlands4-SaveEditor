@@ -8,6 +8,7 @@ import sys
 import json
 import ast
 import csv
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
@@ -477,6 +478,7 @@ def get_firmware_data_path(filename: str) -> Optional[Path]:
     return get_resource_path(f"Firmware/{filename}")
 
 
+@lru_cache(maxsize=4)
 def load_item_json(filename: str) -> Optional[Dict[str, Any]]:
     """
     加载物品浏览器JSON索引文件。

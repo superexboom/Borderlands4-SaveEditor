@@ -152,7 +152,8 @@
       "character_info": "角色",
       "currency": "货币",
       "world_presets": "Profile/共享预设",
-      "char_presets": "角色存档预设"
+      "char_presets": "角色存档预设",
+      "live_runtime": "在线运行时"
     },
     "labels": {
       "name": "名称:",
@@ -169,12 +170,50 @@
       "character_only_hint": "仅普通角色存档可用；Profile 存档会自动灰置。",
       "preset_mode_profile": "当前存档类型：Profile。Profile 预设可用，角色预设已灰置。",
       "preset_mode_character": "当前存档类型：普通角色存档。角色预设可用，Profile 预设已灰置。",
+      "live_runtime_hint": "以下控制只影响当前游戏会话；武器参数会在换枪后自动应用，关闭后恢复原值。",
+      "live_runtime_idle": "等待操作。",
+      "live_dedicated_drop_hint": "仅从被击败敌人的 NCS 专属池额外抽取；倍率决定额外抽取次数，不会追加世界掉落池。",
+      "live_survival": "生存与移动",
+      "live_weapon": "武器操控",
+      "live_cooldown": "冷却",
+      "live_tuning": "倍率与容量",
+      "live_loot": "掉落稀有度",
+      "fire_rate_scale": "射速倍率",
+      "movement_speed_scale": "移动倍率",
+      "jump_height_scale": "跳跃倍率",
+      "critical_damage_scale": "暴击伤害倍率",
+      "dedicated_drop_multiplier": "专属池额外掉落",
+      "backpack_size": "背包容量",
       "preset_credit": ""
     },
     "buttons": {
       "apply_changes": "应用角色与货币更改",
       "apply_profile_changes": "应用 Profile 货币更改",
-      "sync_levels": "同步背包所有物品等级至当前角色等级"
+      "sync_levels": "同步背包所有物品等级至当前角色等级",
+      "toggle_infinite_ammo": "切换无限弹药",
+      "toggle_demigod": "切换锁血",
+      "toggle_health_lock": "锁定生命",
+      "toggle_shield_lock": "锁定护盾",
+      "toggle_stamina_lock": "无限体力",
+      "toggle_instant_reload": "瞬间装填",
+      "toggle_no_overheat": "武器不过热",
+      "toggle_no_spread": "无扩散",
+      "toggle_no_recoil": "无后座",
+      "toggle_guaranteed_crit": "必定暴击",
+      "toggle_repairkit_no_cd": "修复套件无冷却",
+      "toggle_skill_no_cd": "技能无冷却",
+      "toggle_gadget_no_cd": "装备栏无冷却",
+      "toggle_dedicated_drop_100": "专属池必掉",
+      "apply_fire_rate": "应用",
+      "apply_movement_speed": "应用",
+      "apply_jump_height": "应用",
+      "apply_critical_damage": "应用",
+      "apply_backpack_size": "应用",
+      "apply_dedicated_drop_multiplier": "应用",
+      "rarity_legendary": "仅传奇掉落",
+      "rarity_pearlescent": "仅珠光掉落",
+      "rarity_reset": "重置爆率",
+      "reset_runtime_modifiers": "重置会话修改"
     },
     "warnings": {
       "sync_warning": "警告：此操作可能导致已装备的物品被卸下，要从背包里重新装备。"
@@ -991,6 +1030,7 @@
       "move_up": "上移",
       "move_down": "下移",
       "drag_part": "拖动以调整顺序",
+      "toggle_internal_names": "显示或隐藏配件内部字段",
       "remove_part": "移除"
     },
     "parts": {
@@ -1020,6 +1060,10 @@
       "facet_part_type": "配件类型",
       "facet_manufacturer": "制造商",
       "facet_weapon_type": "武器类型",
+      "same_model": "同当前枪管模型（{model}）",
+      "cross_model": "跨模型配件：当前 {current}，候选 {candidate}",
+      "same_model_badge": "同模型 {model}",
+      "cross_model_badge": "跨模型 {model}",
       "result_count": "匹配 {n} / {total}",
       "available_parts_hint": "可用部件（单击预览，双击添加）"
     }

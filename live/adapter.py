@@ -25,7 +25,10 @@ from typing import Any
 from .bridge import Bridge
 
 
-def items_to_yaml(items: list[dict[str, Any]]) -> dict[str, Any]:
+def items_to_yaml(
+    items: list[dict[str, Any]],
+    player: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Wrap live item records in the save-shaped dict the editor expects.
 
@@ -49,15 +52,32 @@ def items_to_yaml(items: list[dict[str, Any]]) -> dict[str, Any]:
         else:
             backpack[f"slot_{idx}"] = node
 
-    return {
-        "state": {
-            "inventory": {
-                "items": {
-                    "backpack": backpack,
-                    "bank": bank,
-                },
+    state: dict[str, Any] = {
+        "inventory": {
+            "items": {
+                "backpack": backpack,
+                "bank": bank,
             },
         },
+    }
+    if player and player.get("ok"):
+        state["char_name"] = str(player.get("name") or "")
+        state["experience"] = [
+            {
+                "type": "Character",
+                "level": int(player.get("level") or 0),
+                "points": int(player.get("experience_points") or 0),
+            },
+            {
+                "type": "Specialization",
+                "level": int(player.get("specialization_level") or 0),
+                "points": int(player.get("specialization_points") or 0),
+            },
+        ]
+        state["live_runtime"] = True
+
+    return {
+        "state": state,
     }
 
 
@@ -65,7 +85,13 @@ def fetch_live_yaml(bridge: Bridge | None = None) -> dict[str, Any]:
     """Pull all items from the running game and return the save-shaped dict."""
     b = bridge or Bridge()
     items = b.read(container="All")
-    return items_to_yaml(items)
+    try:
+        player = b.player()
+    except Exception:
+        # Keep compatibility with an older live mod: inventory editing remains
+        # usable, while generators fall back to their existing default level.
+        player = None
+    return items_to_yaml(items, player)
 
 
 def fetch_live_items(bridge: Bridge | None = None) -> list[dict[str, Any]]:

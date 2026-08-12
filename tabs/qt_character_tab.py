@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton,
     QGroupBox, QFormLayout, QComboBox, QDialog, QDialogButtonBox, QSizePolicy,
-    QScrollArea
+    QScrollArea, QGridLayout
 )
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6.QtGui import QIntValidator
@@ -40,6 +40,7 @@ class QtCharacterTab(QWidget):
     character_data_changed = pyqtSignal(dict)
     sync_levels_requested = pyqtSignal()
     unlock_requested = pyqtSignal(str, dict)  # action_name, params
+    runtime_action_requested = pyqtSignal(str, object)
 
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
@@ -55,6 +56,7 @@ class QtCharacterTab(QWidget):
         self.vault_card_widgets = []
         self.vault_card_edits = {}
         self.is_profile_save = False
+        self._live_mode = False
 
         # --- UI元素直接定义为实例属性 ---
         self.name_edit = QLineEdit(self)
@@ -232,6 +234,158 @@ class QtCharacterTab(QWidget):
         presets_layout.addWidget(self.ui_groups['char_presets'])
         
         main_layout.addLayout(presets_layout)
+
+        # Online mode reuses this page for a compact runtime control panel.
+        # Save-file presets are deliberately hidden because they cannot mutate
+        # the running game's profile/mission state safely.
+        self.ui_groups['live_runtime'] = QGroupBox(self.loc['groups']['live_runtime'])
+        live_layout = QGridLayout(self.ui_groups['live_runtime'])
+        live_layout.setHorizontalSpacing(8)
+        live_layout.setVerticalSpacing(6)
+        self.ui_labels['live_runtime_hint'] = QLabel(self.loc['labels']['live_runtime_hint'])
+        self.ui_labels['live_runtime_hint'].setWordWrap(True)
+        live_layout.addWidget(self.ui_labels['live_runtime_hint'], 0, 0, 1, 4)
+
+        self.live_runtime_buttons = {}
+        self.live_runtime_button_keys = {}
+        self.live_runtime_section_labels = {}
+        self.live_runtime_value_labels = {}
+        self.live_runtime_toggle_actions = {
+            'toggle_no_spread', 'toggle_no_recoil', 'toggle_instant_reload',
+            'toggle_no_overheat', 'toggle_health_lock',
+            'toggle_shield_lock', 'toggle_repairkit_no_cd', 'toggle_skill_no_cd',
+            'toggle_gadget_no_cd', 'toggle_stamina_lock', 'toggle_guaranteed_crit',
+            'toggle_dedicated_drop_100',
+        }
+
+        def add_section(row, key):
+            label = QLabel(self.loc['labels'][key])
+            label.setObjectName('liveRuntimeSection')
+            live_layout.addWidget(label, row, 0, 1, 4)
+            self.live_runtime_section_labels[key] = label
+            return row + 1
+
+        def add_actions(row, actions):
+            for index, (key, action) in enumerate(actions):
+                button = QPushButton(self.loc['buttons'][key])
+                if action in self.live_runtime_toggle_actions:
+                    button.setCheckable(True)
+                    button.clicked.connect(
+                        lambda checked=False, value=action: self.runtime_action_requested.emit(
+                            value, {'enabled': bool(checked)}
+                        )
+                    )
+                else:
+                    button.clicked.connect(
+                        lambda checked=False, value=action: self.runtime_action_requested.emit(value, {})
+                    )
+                live_layout.addWidget(button, row + index // 4, index % 4)
+                if action == 'toggle_dedicated_drop_100':
+                    button.setToolTip(self.loc['labels']['live_dedicated_drop_hint'])
+                self.live_runtime_buttons[action] = button
+                self.live_runtime_button_keys[action] = key
+            return row + (len(actions) + 3) // 4
+
+        row = 1
+        row = add_section(row, 'live_survival')
+        row = add_actions(row, (
+            ('toggle_health_lock', 'toggle_health_lock'),
+            ('toggle_shield_lock', 'toggle_shield_lock'),
+            ('toggle_demigod', 'toggle_demigod'),
+            ('toggle_stamina_lock', 'toggle_stamina_lock'),
+        ))
+        row = add_section(row, 'live_weapon')
+        row = add_actions(row, (
+            ('toggle_infinite_ammo', 'toggle_infinite_ammo'),
+            ('toggle_instant_reload', 'toggle_instant_reload'),
+            ('toggle_no_overheat', 'toggle_no_overheat'),
+            ('toggle_no_spread', 'toggle_no_spread'),
+            ('toggle_no_recoil', 'toggle_no_recoil'),
+            ('toggle_guaranteed_crit', 'toggle_guaranteed_crit'),
+        ))
+        row = add_section(row, 'live_cooldown')
+        row = add_actions(row, (
+            ('toggle_repairkit_no_cd', 'toggle_repairkit_no_cd'),
+            ('toggle_skill_no_cd', 'toggle_skill_no_cd'),
+            ('toggle_gadget_no_cd', 'toggle_gadget_no_cd'),
+        ))
+
+        row = add_section(row, 'live_tuning')
+        self.live_fire_rate_combo = QComboBox(self)
+        for value in (1, 2, 5, 10, 20):
+            self.live_fire_rate_combo.addItem(f'{value}x', float(value))
+        self.live_movement_combo = QComboBox(self)
+        for value in (1, 1.5, 2, 3, 5, 10):
+            self.live_movement_combo.addItem(f'{value:g}x', float(value))
+        self.live_jump_combo = QComboBox(self)
+        for value in (1, 1.5, 2, 3, 5, 10):
+            self.live_jump_combo.addItem(f'{value:g}x', float(value))
+        self.live_critical_damage_combo = QComboBox(self)
+        for value in (1, 2, 5, 10, 20, 50):
+            self.live_critical_damage_combo.addItem(f'{value:g}x', float(value))
+        self.live_backpack_edit = QLineEdit(self)
+        self.live_backpack_edit.setValidator(QIntValidator(20, 5000, self))
+        self.live_backpack_edit.setText('999')
+
+        tuning_rows = (
+            ('fire_rate_scale', self.live_fire_rate_combo, 'apply_fire_rate', 'set_fire_rate',
+             lambda: {'value': self.live_fire_rate_combo.currentData()}),
+            ('movement_speed_scale', self.live_movement_combo, 'apply_movement_speed', 'set_movement_speed',
+             lambda: {'value': self.live_movement_combo.currentData()}),
+            ('jump_height_scale', self.live_jump_combo, 'apply_jump_height', 'set_jump_height',
+             lambda: {'value': self.live_jump_combo.currentData()}),
+            ('critical_damage_scale', self.live_critical_damage_combo, 'apply_critical_damage', 'set_critical_damage',
+             lambda: {'value': self.live_critical_damage_combo.currentData()}),
+            ('backpack_size', self.live_backpack_edit, 'apply_backpack_size', 'set_backpack_size',
+             lambda: {'value': int(self.live_backpack_edit.text() or 0)}),
+        )
+        for label_key, editor, button_key, action, params in tuning_rows:
+            label = QLabel(self.loc['labels'][label_key])
+            self.live_runtime_value_labels[label_key] = label
+            button = QPushButton(self.loc['buttons'][button_key])
+            button.clicked.connect(
+                lambda checked=False, value=action, make_params=params: self.runtime_action_requested.emit(
+                    value, make_params()
+                )
+            )
+            live_layout.addWidget(label, row, 0)
+            live_layout.addWidget(editor, row, 1, 1, 2)
+            live_layout.addWidget(button, row, 3)
+            self.live_runtime_buttons[action] = button
+            self.live_runtime_button_keys[action] = button_key
+            row += 1
+
+        row = add_section(row, 'live_loot')
+        self.live_dedicated_drop_combo = QComboBox(self)
+        for value in range(1, 11):
+            self.live_dedicated_drop_combo.addItem(f'{value}x', value)
+        dedicated_label = QLabel(self.loc['labels']['dedicated_drop_multiplier'])
+        self.live_runtime_value_labels['dedicated_drop_multiplier'] = dedicated_label
+        dedicated_apply = QPushButton(self.loc['buttons']['apply_dedicated_drop_multiplier'])
+        dedicated_apply.clicked.connect(
+            lambda checked=False: self.runtime_action_requested.emit(
+                'set_dedicated_drop_multiplier',
+                {'value': int(self.live_dedicated_drop_combo.currentData() or 1)},
+            )
+        )
+        live_layout.addWidget(dedicated_label, row, 0)
+        live_layout.addWidget(self.live_dedicated_drop_combo, row, 1, 1, 2)
+        live_layout.addWidget(dedicated_apply, row, 3)
+        self.live_runtime_buttons['set_dedicated_drop_multiplier'] = dedicated_apply
+        self.live_runtime_button_keys['set_dedicated_drop_multiplier'] = 'apply_dedicated_drop_multiplier'
+        row += 1
+        row = add_actions(row, (
+            ('toggle_dedicated_drop_100', 'toggle_dedicated_drop_100'),
+            ('rarity_legendary', 'rarity_legendary'),
+            ('rarity_pearlescent', 'rarity_pearlescent'),
+            ('rarity_reset', 'rarity_reset'),
+            ('reset_runtime_modifiers', 'reset_runtime_modifiers'),
+        ))
+
+        self.ui_labels['live_runtime_status'] = QLabel(self.loc['labels']['live_runtime_idle'])
+        self.ui_labels['live_runtime_status'].setWordWrap(True)
+        live_layout.addWidget(self.ui_labels['live_runtime_status'], row, 0, 1, 4)
+        main_layout.addWidget(self.ui_groups['live_runtime'])
         self._apply_preset_button_state()
 
     def _show_change_class_popup(self):
@@ -269,7 +423,7 @@ class QtCharacterTab(QWidget):
         else:
             # Fallback
             self.loc = {
-                "groups": {"character_info": "Character", "currency": "Currency", "world_presets": "Profile / Shared", "char_presets": "Character Save"},
+                "groups": {"character_info": "Character", "currency": "Currency", "world_presets": "Profile / Shared", "char_presets": "Character Save", "live_runtime": "Live Runtime"},
                 "labels": {
                     "name": "Name:", "difficulty": "Difficulty:", "level": "Level:", "xp": "XP:",
                     "spec_level": "Spec Level:", "spec_points": "Spec Points:", "money": "Money:", "eridium": "Eridium:",
@@ -279,9 +433,23 @@ class QtCharacterTab(QWidget):
                     "character_only_hint": "Character save only. Disabled on profile saves.",
                     "preset_mode_profile": "Current save type: Profile. Profile presets enabled, character presets disabled.",
                     "preset_mode_character": "Current save type: Character save. Character presets enabled, profile presets disabled.",
+                    "live_runtime_hint": "Runtime controls affect only the current game session and automatically follow weapon swaps.",
+                    "live_runtime_idle": "Ready.",
+                    "live_dedicated_drop_hint": "Adds guaranteed draws only from the defeated actor's NCS dedicated pool. The multiplier controls the extra draws; world-drop pools are not added.",
+                    "live_survival": "Survival / movement",
+                    "live_weapon": "Weapon handling",
+                    "live_cooldown": "Cooldowns",
+                    "live_tuning": "Scalars / capacity",
+                    "live_loot": "Loot rarity",
+                    "fire_rate_scale": "Fire rate",
+                    "movement_speed_scale": "Movement speed",
+                    "jump_height_scale": "Jump height",
+                    "critical_damage_scale": "Critical damage",
+                    "dedicated_drop_multiplier": "Dedicated drop multiplier",
+                    "backpack_size": "Backpack capacity",
                     "preset_credit": ""
                 },
-                "buttons": {"apply_changes": "Apply Changes", "apply_profile_changes": "Apply Profile Currency Changes", "sync_levels": "Sync Item Levels"},
+                "buttons": {"apply_changes": "Apply Changes", "apply_profile_changes": "Apply Profile Currency Changes", "sync_levels": "Sync Item Levels", "toggle_infinite_ammo": "Toggle Infinite Ammo", "toggle_demigod": "Toggle Demigod", "toggle_health_lock": "Health Lock", "toggle_shield_lock": "Shield Lock", "toggle_stamina_lock": "Unlimited Vault Power", "toggle_instant_reload": "Instant Reload", "toggle_no_overheat": "No Overheat", "toggle_no_spread": "No Spread", "toggle_no_recoil": "No Recoil", "toggle_guaranteed_crit": "Guaranteed Crit", "toggle_repairkit_no_cd": "Repkit No CD", "toggle_skill_no_cd": "Skill No CD", "toggle_gadget_no_cd": "Gear No CD", "toggle_dedicated_drop_100": "Dedicated Drop 100%", "apply_fire_rate": "Apply", "apply_movement_speed": "Apply", "apply_jump_height": "Apply", "apply_critical_damage": "Apply", "apply_backpack_size": "Apply", "apply_dedicated_drop_multiplier": "Apply", "rarity_legendary": "Legendary Drops", "rarity_pearlescent": "Pearlescent Drops", "rarity_reset": "Reset Drop Rates", "reset_runtime_modifiers": "Reset Session Mods"},
                 "warnings": {"sync_warning": "Warning: May unequip items."},
                 "presets": {"clear_fog": "Clear Fog", "discover_locs": "Discover Locations", "unlock_safehouses": "Unlock Safehouses", 
                             "unlock_collectibles": "Unlock Collectibles", "complete_challenges": "Complete Challenges", 
@@ -301,14 +469,46 @@ class QtCharacterTab(QWidget):
 
         self.loc["groups"].setdefault("world_presets", "Profile / Shared")
         self.loc["groups"].setdefault("char_presets", "Character Save")
+        self.loc["groups"].setdefault("live_runtime", "Live Runtime")
 
         self.loc["labels"].setdefault("profile_only_hint", "Profile save only. Disabled on character saves.")
         self.loc["labels"].setdefault("character_only_hint", "Character save only. Disabled on profile saves.")
         self.loc["labels"].setdefault("preset_mode_profile", "Current save type: Profile. Profile presets enabled, character presets disabled.")
         self.loc["labels"].setdefault("preset_mode_character", "Current save type: Character save. Character presets enabled, profile presets disabled.")
+        self.loc["labels"].setdefault("live_runtime_hint", "Runtime controls affect only the current game session and automatically follow weapon swaps.")
+        self.loc["labels"].setdefault("live_runtime_idle", "Ready.")
+        self.loc["labels"].setdefault("live_dedicated_drop_hint", "Adds guaranteed draws only from the defeated actor's NCS dedicated pool. The multiplier controls the extra draws; world-drop pools are not added.")
+        for key, value in {
+            "live_survival": "Survival / movement", "live_weapon": "Weapon handling",
+            "live_cooldown": "Cooldowns", "live_tuning": "Scalars / capacity",
+            "live_loot": "Loot rarity", "fire_rate_scale": "Fire rate",
+            "movement_speed_scale": "Movement speed", "backpack_size": "Backpack capacity",
+            "jump_height_scale": "Jump height", "critical_damage_scale": "Critical damage",
+            "dedicated_drop_multiplier": "Dedicated drop multiplier",
+        }.items():
+            self.loc["labels"].setdefault(key, value)
         self.loc["labels"].setdefault("preset_credit", "")
         self.loc["labels"].setdefault("vault_card_tokens", "Vault Card {number} Tokens:")
         self.loc["buttons"].setdefault("apply_profile_changes", "Apply Profile Currency Changes")
+        self.loc["buttons"].setdefault("toggle_infinite_ammo", "Toggle Infinite Ammo")
+        self.loc["buttons"].setdefault("toggle_demigod", "Toggle Demigod")
+        for key, value in {
+            "toggle_health_lock": "Health Lock", "toggle_shield_lock": "Shield Lock",
+            "toggle_stamina_lock": "Unlimited Vault Power",
+            "toggle_instant_reload": "Instant Reload", "toggle_no_overheat": "No Overheat",
+            "toggle_no_spread": "No Spread", "toggle_no_recoil": "No Recoil",
+            "toggle_guaranteed_crit": "Guaranteed Crit", "toggle_repairkit_no_cd": "Repkit No CD",
+            "toggle_skill_no_cd": "Skill No CD", "toggle_gadget_no_cd": "Gear No CD",
+            "toggle_dedicated_drop_100": "Dedicated Drop 100%",
+            "apply_fire_rate": "Apply", "apply_movement_speed": "Apply",
+            "apply_jump_height": "Apply", "apply_critical_damage": "Apply",
+            "apply_backpack_size": "Apply", "apply_dedicated_drop_multiplier": "Apply",
+            "reset_runtime_modifiers": "Reset Session Mods",
+        }.items():
+            self.loc["buttons"].setdefault(key, value)
+        self.loc["buttons"].setdefault("rarity_legendary", "Legendary Drops")
+        self.loc["buttons"].setdefault("rarity_pearlescent", "Pearlescent Drops")
+        self.loc["buttons"].setdefault("rarity_reset", "Reset Drop Rates")
         self.loc["presets"].setdefault("unlock_vault_cards", "Unlock All Vault Card Rewards")
         self.loc["presets"].setdefault("max_ammo", "Refill Ammo")
 
@@ -325,6 +525,7 @@ class QtCharacterTab(QWidget):
         self.ui_groups['currency'].setTitle(self.loc['groups']['currency'])
         self.ui_groups['world_presets'].setTitle(self.loc['groups']['world_presets'])
         self.ui_groups['char_presets'].setTitle(self.loc['groups']['char_presets'])
+        self.ui_groups['live_runtime'].setTitle(self.loc['groups']['live_runtime'])
         
         # Labels
         self.ui_labels['name'].setText(self.loc['labels']['name'])
@@ -341,6 +542,9 @@ class QtCharacterTab(QWidget):
         self.ui_labels['sync_warning'].setText(self.loc['warnings']['sync_warning'])
         self.ui_labels['profile_only_hint'].setText(self.loc['labels']['profile_only_hint'])
         self.ui_labels['character_only_hint'].setText(self.loc['labels']['character_only_hint'])
+        self.ui_labels['live_runtime_hint'].setText(self.loc['labels']['live_runtime_hint'])
+        self.ui_labels['live_runtime_status'].setText(self.loc['labels']['live_runtime_idle'])
+        self.ui_labels['live_runtime_status'].setStyleSheet("")
         
         # Buttons
         self.ui_buttons['sync_levels'].setText(self.loc['buttons']['sync_levels'])
@@ -352,9 +556,35 @@ class QtCharacterTab(QWidget):
         for key, btn in self.char_btns_widgets:
             btn.setText(self.loc['presets'][key])
 
+        for action, btn in self.live_runtime_buttons.items():
+            key = self.live_runtime_button_keys.get(action, action)
+            btn.setText(self.loc['buttons'][key])
+        dedicated_button = self.live_runtime_buttons.get('toggle_dedicated_drop_100')
+        if dedicated_button is not None:
+            dedicated_button.setToolTip(self.loc['labels']['live_dedicated_drop_hint'])
+        for key, label in self.live_runtime_section_labels.items():
+            label.setText(self.loc['labels'][key])
+        for key, label in self.live_runtime_value_labels.items():
+            label.setText(self.loc['labels'][key])
+
         self._apply_preset_button_state()
 
     def _apply_preset_button_state(self):
+        if self._live_mode:
+            for _, btn in self.world_btns_widgets + self.char_btns_widgets:
+                btn.setEnabled(False)
+            self.ui_groups['character_info'].setVisible(True)
+            self.ui_groups['currency'].setVisible(False)
+            self.ui_groups['world_presets'].setVisible(False)
+            self.ui_groups['char_presets'].setVisible(False)
+            self.ui_groups['live_runtime'].setVisible(True)
+            self.ui_buttons['apply_changes'].setVisible(False)
+            self.ui_buttons['sync_levels'].setVisible(False)
+            self.ui_labels['sync_warning'].setVisible(False)
+            self.ui_labels['preset_mode_hint'].setVisible(False)
+            self.ui_labels['xp_auto_hint'].setVisible(False)
+            return
+
         for _, btn in self.world_btns_widgets:
             btn.setEnabled(self.is_profile_save)
 
@@ -362,6 +592,13 @@ class QtCharacterTab(QWidget):
             btn.setEnabled(not self.is_profile_save)
 
         self.ui_groups['character_info'].setVisible(not self.is_profile_save)
+        self.ui_groups['currency'].setVisible(True)
+        self.ui_groups['world_presets'].setVisible(True)
+        self.ui_groups['char_presets'].setVisible(True)
+        self.ui_groups['live_runtime'].setVisible(False)
+        self.ui_buttons['apply_changes'].setVisible(True)
+        self.ui_labels['preset_mode_hint'].setVisible(True)
+        self.ui_labels['xp_auto_hint'].setVisible(not self.is_profile_save)
         for widget in self.character_currency_widgets:
             widget.setVisible(not self.is_profile_save)
         for _, label, edit in self.vault_card_widgets:
@@ -382,6 +619,55 @@ class QtCharacterTab(QWidget):
             self.ui_labels['preset_mode_hint'].setText(f"{mode_text}\n{credit_text}")
         else:
             self.ui_labels['preset_mode_hint'].setText(mode_text)
+
+    def set_live_mode(self, enabled: bool):
+        self._live_mode = bool(enabled)
+        edits = [
+            self.name_edit, self.difficulty_edit, self.level_edit, self.xp_edit,
+            self.spec_level_edit, self.spec_points_edit, self.money_edit,
+            self.eridium_edit, *self.vault_card_edits.values(),
+        ]
+        for edit in edits:
+            edit.setReadOnly(self._live_mode or edit is self.xp_edit)
+        self._apply_preset_button_state()
+
+    def set_runtime_result(self, message: str, ok: bool = True):
+        label = self.ui_labels['live_runtime_status']
+        label.setText(str(message or self.loc['labels']['live_runtime_idle']))
+        label.setStyleSheet("color: #78dba9;" if ok else "color: #ff6b6b;")
+
+    def apply_runtime_state(self, state: Dict[str, Any]):
+        if not isinstance(state, dict):
+            return
+        action_to_feature = {
+            'toggle_no_spread': 'no_spread', 'toggle_no_recoil': 'no_recoil',
+            'toggle_instant_reload': 'instant_reload',
+            'toggle_no_overheat': 'no_overheat', 'toggle_health_lock': 'health_lock',
+            'toggle_shield_lock': 'shield_lock', 'toggle_repairkit_no_cd': 'repairkit_no_cd',
+            'toggle_skill_no_cd': 'skill_no_cd', 'toggle_gadget_no_cd': 'gadget_no_cd',
+            'toggle_stamina_lock': 'stamina_lock', 'toggle_guaranteed_crit': 'guaranteed_crit',
+            'toggle_dedicated_drop_100': 'dedicated_drop_100',
+        }
+        for action, feature in action_to_feature.items():
+            button = self.live_runtime_buttons.get(action)
+            if button is not None:
+                button.blockSignals(True)
+                button.setChecked(bool(state.get(feature, False)))
+                button.blockSignals(False)
+        for combo, key in (
+            (self.live_fire_rate_combo, 'fire_rate_scale'),
+            (self.live_movement_combo, 'movement_speed_scale'),
+            (self.live_jump_combo, 'jump_height_scale'),
+            (self.live_critical_damage_combo, 'critical_damage_scale'),
+            (self.live_dedicated_drop_combo, 'dedicated_drop_multiplier'),
+        ):
+            value = float(state.get(key, 1.0) or 1.0)
+            index = combo.findData(value)
+            if index >= 0:
+                combo.setCurrentIndex(index)
+        size = int(state.get('backpack_size', 0) or 0)
+        if size > 0:
+            self.live_backpack_edit.setText(str(size))
 
     def update_fields(self, data: Dict[str, Any]):
         """用从控制器获取的数据填充UI字段。"""

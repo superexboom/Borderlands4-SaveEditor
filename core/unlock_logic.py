@@ -7,6 +7,7 @@ from .unlock_data import (
     CHARACTER_UNLOCKABLES, STAT_TARGETS, EXPLORATION, POSTGAME,
     PROFILE_UNLOCKABLES, VAULT_CARD_PURCHASES, VAULT_CARD_REWARD_UNLOCKABLES
 )
+from .unlock_data import ensure_legacy_unlock_data
 
 # --- Helper Functions ---
 
@@ -29,6 +30,7 @@ def get_profile_local(data):
     return get_or_create_dict(domains, 'local')
 
 def merge_profile_unlockable_entries(data, key, prefix=''):
+    ensure_legacy_unlock_data()
     local = get_profile_local(data)
     unlockables = get_or_create_dict(local, 'unlockables')
     section = get_or_create_dict(unlockables, key)
@@ -217,6 +219,7 @@ def complete_all_collectibles(data):
         update_sdu_points(data)
         return
 
+    ensure_legacy_unlock_data()
     stats = get_or_create_dict(data, 'stats')
     openworld = get_or_create_dict(stats, 'openworld')
     collectibles = get_or_create_dict(openworld, 'collectibles')
@@ -292,6 +295,7 @@ def set_story_values(data):
 # --- Missions Logic ---
 
 def get_missionsets_with_prefix(prefix):
+    ensure_legacy_unlock_data()
     result = {}
     for key, value in MISSIONSETS.items():
         if key.startswith(prefix):
@@ -378,6 +382,7 @@ def stage_epilogue_mission(data):
     }
 
 def open_all_vault_doors(data):
+    ensure_legacy_unlock_data()
     stats = get_or_create_dict(data, 'stats')
     openworld = get_or_create_dict(stats, 'openworld')
     collectibles = get_or_create_dict(openworld, 'collectibles')

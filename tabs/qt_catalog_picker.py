@@ -23,6 +23,12 @@ from PyQt6.QtGui import QColor
 class PopupOnlyWheelComboBox(QComboBox):
     """Ignore wheel selection changes unless the popup list is open."""
 
+    popupAboutToShow = pyqtSignal()
+
+    def showPopup(self):
+        self.popupAboutToShow.emit()
+        super().showPopup()
+
     def wheelEvent(self, event):
         if self.view().isVisible():
             super().wheelEvent(event)
@@ -263,7 +269,9 @@ class CatalogPicker(QWidget):
         avail_v = QVBoxLayout(avail_card)
         avail_v.setContentsMargins(8, 8, 8, 8)
         avail_v.setSpacing(6)
-        self.avail_title_lbl = QLabel(avail_title)
+        # Parent immediately.  Calling setVisible() on an unparented widget
+        # briefly creates a real top-level window before the layout reparents it.
+        self.avail_title_lbl = QLabel(avail_title, avail_card)
         self.avail_title_lbl.setObjectName("catalogColTitle")
         self.avail_title_lbl.setVisible(bool(avail_title))
         avail_v.addWidget(self.avail_title_lbl)
@@ -1093,6 +1101,10 @@ class FacetedCatalogPicker(QWidget):
                 lwi.setBackground(QColor(74, 144, 226, 38))
             elif candidate.get("kind") == "warning":
                 lwi.setBackground(QColor(230, 164, 57, 30))
+            if it.get("model_kind") == "same":
+                lwi.setForeground(QColor("#39aee8"))
+            elif it.get("model_kind") == "cross":
+                lwi.setForeground(QColor("#d99a3e"))
             self.avail.addItem(lwi)
         self.result_lbl.setText(self._result_fmt.format(n=matched, total=len(self._source)))
         if self.avail.count():

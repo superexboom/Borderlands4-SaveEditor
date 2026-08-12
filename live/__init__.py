@@ -10,8 +10,11 @@ Usage (headless):
     b = Bridge()
     if b.ping():
         yaml_like = fetch_live_yaml(b)   # feed into process_and_load_items(...)
-        res = b.apply(idx, new_serial)   # live part overwrite + serial sync
-        res = b.spawn(new_serial)        # add a new item to the backpack
+        res = b.apply(idx, new_serial)   # identity overwrite; weapons reload fully on re-entry
+        res = b.spawn(new_serial)        # game materializes one final serial
+        res = b.spawn_many(serials)      # compact native batch delivery
+        player = b.player()              # live name / character level / spec level
+        res = b.runtime_action(action)   # bounded session-only runtime action
 """
 
 from .bridge import Bridge, BridgeError

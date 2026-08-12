@@ -5,6 +5,7 @@ import re
 import sys
 from collections import Counter, defaultdict
 from functools import partial
+from html import escape
 
 from core import bl4_functions as bl4f
 from core import b_encoder
@@ -227,6 +228,10 @@ class WeaponEditorTab(QtWidgets.QWidget):
     add_to_backpack_requested = QtCore.pyqtSignal(str, str)
     update_item_requested = QtCore.pyqtSignal(dict)
     WEAPON_BROWSER_ROW_HEIGHT = 112
+    INTERNAL_NAME_SKIP_TYPES = {
+        "Elemental", "Element", "Element Switch", "Underbarrel Element Switch",
+        "Pearl Elements", "Pearl Stat", "Special Element Set",
+    }
     
     # Colors are keyed by stable raw part types, never translated display text.
     PART_TYPE_COLORS = {
@@ -313,6 +318,10 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.current_lang = 'zh-CN'
         self._weapon_legality_decoded = None
         self._weapon_legality_result = None
+        self._settings = QtCore.QSettings('SuperExboom', 'BL4SaveEditor')
+        self._show_internal_part_names = self._settings.value(
+            'weapon_editor/show_internal_part_names', False, type=bool
+        )
         
         # Main layout
         self.main_layout = QtWidgets.QVBoxLayout(self)
@@ -564,10 +573,20 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self.refresh_parts_btn.setFixedSize(34, 34)
         self.refresh_parts_btn.setToolTip(self._loc('tooltips', 'refresh_parts', "Refresh parts"))
         parts_header_layout.addWidget(self.refresh_parts_btn, 0, 1, QtCore.Qt.AlignmentFlag.AlignRight)
+        self.internal_names_btn = QtWidgets.QPushButton("</>")
+        self.internal_names_btn.setObjectName("PartActionButton")
+        self.internal_names_btn.setCheckable(True)
+        self.internal_names_btn.setChecked(self._show_internal_part_names)
+        self.internal_names_btn.setFixedSize(42, 34)
+        self.internal_names_btn.setToolTip(self._loc(
+            'tooltips', 'toggle_internal_names', "Show or hide internal part names"
+        ))
+        self.internal_names_btn.toggled.connect(self._toggle_internal_part_names)
+        parts_header_layout.addWidget(self.internal_names_btn, 0, 2, QtCore.Qt.AlignmentFlag.AlignRight)
         self.add_part_btn = QtWidgets.QPushButton(self.get_localized_string("add_part")); self.add_part_btn.setMinimumWidth(100)
-        parts_header_layout.addWidget(self.add_part_btn, 0, 2, QtCore.Qt.AlignmentFlag.AlignRight)
+        parts_header_layout.addWidget(self.add_part_btn, 0, 3, QtCore.Qt.AlignmentFlag.AlignRight)
         self.add_skin_btn = QtWidgets.QPushButton(self.get_localized_string("add_skin")); self.add_skin_btn.setMinimumWidth(100)
-        parts_header_layout.addWidget(self.add_skin_btn, 0, 3, QtCore.Qt.AlignmentFlag.AlignRight)
+        parts_header_layout.addWidget(self.add_skin_btn, 0, 4, QtCore.Qt.AlignmentFlag.AlignRight)
         parts_layout.addWidget(parts_header_frame)
         
         self.parts_list_widget = PartOrderListWidget()
@@ -1056,11 +1075,32 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 item.setData(QtCore.Qt.ItemDataRole.UserRole, i)
                 item.setData(QtCore.Qt.ItemDataRole.UserRole + 1, id(part_info))
                 name_label = frame.findChild(QtWidgets.QLabel, "PartName")
-                item.setData(QtCore.Qt.ItemDataRole.AccessibleTextRole, name_label.text() if name_label else str(part_info.get('id', '')))
+                item.setData(
+                    QtCore.Qt.ItemDataRole.AccessibleTextRole,
+                    (name_label.accessibleName() or name_label.text()) if name_label else str(part_info.get('id', '')),
+                )
                 item.setSizeHint(QtCore.QSize(0, max(68, frame.sizeHint().height() + 4)))
                 self.parts_list_widget.addItem(item)
                 self.parts_list_widget.setItemWidget(item, frame)
         self.parts_list_widget.sync_content_height()
+
+    def _toggle_internal_part_names(self, checked):
+        self._show_internal_part_names = bool(checked)
+        self._settings.setValue('weapon_editor/show_internal_part_names', self._show_internal_part_names)
+        self.display_parts(self._current_manufacturer_id())
+
+    @staticmethod
+    def _part_name_markup(name, internal):
+        name, internal = str(name or ""), str(internal or "")
+        if not internal:
+            return escape(name)
+        muted = f'<span style="color:#87929d;font-weight:normal;">{escape(internal)}</span>'
+        return f"{escape(name)}&nbsp;&nbsp;{muted}" if name else muted
+
+    def _internal_part_name(self, owner_id, part_id, raw_type):
+        if not self._show_internal_part_names or raw_type in self.INTERNAL_NAME_SKIP_TYPES:
+            return ""
+        return item_display_resolver.weapon_part_internal(owner_id, part_id)
 
     def _set_parts_placeholder(self, text):
         self.parts_list_widget.clear()
@@ -1149,6 +1189,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
                     'str': name or (self._loc('parts', 'unnamed_barrel', "Unnamed Barrel") if str(row['Part Type']) == "Barrel" else ""),
                     'stat': description,
                 })
+        internal = "" if is_skin or is_elemental else self._internal_part_name(m_id, part_id, info['raw_type'])
         display_text = f"  {part_id}  " if not is_elemental else f"  {part_info['id']}:{part_info['sub_id']}  "
         header = QtWidgets.QHBoxLayout()
         id_label = QtWidgets.QLabel(display_text); id_label.setObjectName("PartIdBadge")
@@ -1157,8 +1198,10 @@ class WeaponEditorTab(QtWidgets.QWidget):
         drag_label = PartDragHandle(self.parts_list_widget, self._loc('tooltips', 'drag_part', "Drag to reorder"))
         header.addWidget(drag_label)
         header.addWidget(type_label)
-        if info['str']:
-            name_label = QtWidgets.QLabel(str(info['str'])); name_label.setObjectName("PartName"); name_label.setWordWrap(True)
+        if info['str'] or internal:
+            name_label = QtWidgets.QLabel(self._part_name_markup(info['str'], internal)); name_label.setObjectName("PartName"); name_label.setWordWrap(True)
+            name_label.setToolTip(internal)
+            name_label.setAccessibleName(" ".join(filter(None, (str(info['str']), internal))))
             header.addWidget(name_label, 1)
         else:
             header.addStretch(1)
@@ -1224,7 +1267,12 @@ class WeaponEditorTab(QtWidgets.QWidget):
                     p_type = self.get_localized_string(row['Part Type'])
                     p_str = name or (self._loc('parts', 'unnamed_barrel', "Unnamed Barrel") if str(row['Part Type']) == "Barrel" else "")
                     p_stat = description
-            name_label = QtWidgets.QLabel(" · ".join(value for value in (p_type, p_str) if value)); name_label.setObjectName("PartName"); name_label.setWordWrap(True)
+            raw_type = "Elemental" if group_id == 1 or d.empty else str(row['Part Type'])
+            internal = "" if group_id == 1 else self._internal_part_name(group_id, sub_id, raw_type)
+            display_name = " · ".join(value for value in (p_type, p_str) if value)
+            name_label = QtWidgets.QLabel(self._part_name_markup(display_name, internal)); name_label.setObjectName("PartName"); name_label.setWordWrap(True)
+            name_label.setToolTip(internal)
+            name_label.setAccessibleName(" ".join(filter(None, (display_name, internal))))
             stat_label = QtWidgets.QLabel(str(p_stat)); stat_label.setObjectName("PartDescription"); stat_label.setWordWrap(True)
             sub_layout.addWidget(name_label, 0, 1); sub_layout.addWidget(stat_label, 1, 1)
             content_layout.addWidget(sub_frame)
@@ -1533,17 +1581,21 @@ class WeaponEditorTab(QtWidgets.QWidget):
             name = name or (self._loc('parts', 'unnamed_barrel', "Unnamed Barrel") if part_type == "Barrel" else "")
             detail = " · ".join(value for value in (name, description) if value)
             metadata = " / ".join(self.get_localized_string(value) for value in (manufacturer, weapon_type, part_type))
+            internal = item_display_resolver.weapon_part_internal(item_id, part_id)
+            model = self._part_model_for_ref(item_id, part_id)
             id_label = f"ID {part_id}"
             display_name = name or part_type
-            label = f"{detail or display_name}  [{metadata}] [{id_label}]"
+            label = "  ".join(filter(None, (detail or display_name, f"[{model}]" if model else "", f"[{id_label}]")))
             source.append({
                 "key": f"normal:{item_id}:{part_id}", "label": label, "category": part_type,
                 "subcategory": manufacturer, "tertiary": weapon_type,
-                "title": f"[{id_label}] {display_name}", "detail": description,
+                "title": " ".join(filter(None, (f"[{id_label}]", f"[{model}]" if model else "", display_name))),
+                "detail": "\n".join(filter(None, (description, internal))),
                 "badges": [self.get_localized_string(manufacturer),
                            self.get_localized_string(weapon_type),
                            self.get_localized_string(part_type)],
-                "search_text": metadata,
+                "search_text": " ".join(filter(None, (metadata, internal, model))),
+                "_model": model,
                 "_rule_ref": f"{item_id}:{part_id}",
                 "data": {"id": part_id, "mfg_id": item_id, "type": "normal"},
             })
@@ -1574,7 +1626,99 @@ class WeaponEditorTab(QtWidgets.QWidget):
         self._append_missing_generation_candidates(
             source, context, part_types, manufacturers, weapon_types, level
         )
+        self._decorate_model_context(source)
         return source, part_types, manufacturers, weapon_types, self._apply_generation_candidate_hints(source, context)
+
+    @staticmethod
+    def _part_model_label(internal):
+        match = re.search(r"part_barrel_(01|02)(?:_([^_]+))?(?:_([^_]+))?", str(internal or ""), re.I)
+        if not match:
+            return ""
+        first, second = (match.group(2) or "").casefold(), (match.group(3) or "").casefold()
+        variant = re.fullmatch(r"([a-d])x([a-d])", first)
+        if variant:
+            suffix = f"{variant.group(1).upper()}×{variant.group(2).upper()}"
+        elif re.fullmatch(r"[a-d]", first):
+            suffix = first.upper() + (f"×{second.upper()}" if re.fullmatch(r"[a-d]", second) else "")
+        else:
+            suffix = ""
+        return f"B{match.group(1)}" + (f"-{suffix}" if suffix else "")
+
+    def _part_model_for_ref(self, owner_id, part_id):
+        label = self._part_model_label(item_display_resolver.weapon_part_internal(owner_id, part_id))
+        if label:
+            return label
+        tags = item_display_resolver.weapon_part_selection_tags(owner_id, part_id)
+        for tag in (*tags.get("adds", []), *tags.get("requires", [])):
+            match = re.fullmatch(r"barrel_(01|02)", str(tag), re.I)
+            if match:
+                return f"B{match.group(1)}"
+        return ""
+
+    def _current_barrel_family(self):
+        root = self._current_manufacturer_id()
+        try:
+            selected = (
+                item_display_resolver.weapon_generation_context(self.serial_decoded_entry.text())
+                .get("groups", {}).get("barrel", {}).get("selected", [])
+            )
+        except Exception:
+            selected = []
+        if not selected:
+            try:
+                selected = item_display_resolver.weapon_generation_context(
+                    self.serial_decoded_entry.text()
+                ).get("selected_part_refs", [])
+            except Exception:
+                selected = []
+        for ref in selected:
+            owner, sep, part_id = str(ref).partition(':')
+            if sep and owner.isdigit() and item_display_resolver.weapon_part_category(
+                int(owner), part_id
+            ) == "barrel":
+                label = self._part_model_for_ref(int(owner), part_id)
+                if label:
+                    return label.split('-', 1)[0]
+        for part in self.parts_data:
+            if not isinstance(part, dict) or part.get('type') != 'simple':
+                continue
+            rows = self.all_weapon_parts_df[
+                (self.all_weapon_parts_df['Manufacturer & Weapon Type ID'] == root)
+                & (self.all_weapon_parts_df['Part ID'] == part.get('id'))
+            ]
+            if rows.empty or str(rows.iloc[0]['Part Type']) != 'Barrel':
+                continue
+            label = self._part_model_for_ref(root, part.get('id'))
+            if label:
+                return label.split('-', 1)[0]
+        return ""
+
+    def _model_context(self, model, current=""):
+        family = str(model or "").split('-', 1)[0]
+        current = current or self._current_barrel_family()
+        if not family or not current:
+            return "", ""
+        if family == current:
+            return "same", self._loc('catalog', 'same_model', "Same model as current barrel ({model})", model=current)
+        return "cross", self._loc(
+            'catalog', 'cross_model', "Cross-model part: current {current}, candidate {candidate}",
+            current=current, candidate=family,
+        )
+
+    def _decorate_model_context(self, source):
+        current = self._current_barrel_family()
+        for item in source:
+            model = str(item.get("_model") or "")
+            kind, hint = self._model_context(model, current)
+            item["model_kind"], item["model_hint"] = kind, hint
+            if hint:
+                badge = self._loc(
+                    'catalog', 'same_model_badge' if kind == "same" else 'cross_model_badge',
+                    "Same {model}" if kind == "same" else "Cross {model}", model=model.split('-', 1)[0],
+                )
+                item["badges"] = [badge, *(item.get("badges") or [])]
+                item["tooltip"] = "\n".join(filter(None, (hint, item.get("detail"))))
+        source.sort(key=lambda item: {"same": 0, "": 1, "cross": 2}.get(item.get("model_kind", ""), 1))
 
     @staticmethod
     def _generation_count_range(minimum, maximum):
@@ -1613,20 +1757,23 @@ class WeaponEditorTab(QtWidgets.QWidget):
                 metadata = " / ".join(
                     self.get_localized_string(value) for value in (manufacturer, weapon_type, part_type)
                 )
+                internal = item_display_resolver.weapon_part_internal(item_id, part_id)
+                model = self._part_model_for_ref(item_id, part_id)
                 id_label = f"ID {part_id}"
                 display_name = name or part_type
                 source.append({
                     "key": f"{data_type}:{item_id}:{part_id}",
-                    "label": f"{detail or display_name}  [{metadata}] [{id_label}]",
+                    "label": "  ".join(filter(None, (detail or display_name, f"[{model}]" if model else "", f"[{id_label}]"))),
                     "category": part_type,
                     "subcategory": manufacturer,
                     "tertiary": weapon_type,
-                    "title": f"[{id_label}] {display_name}",
-                    "detail": description,
+                    "title": " ".join(filter(None, (f"[{id_label}]", f"[{model}]" if model else "", display_name))),
+                    "detail": "\n".join(filter(None, (description, internal))),
                     "badges": [self.get_localized_string(manufacturer),
                                self.get_localized_string(weapon_type),
                                self.get_localized_string(part_type)],
-                    "search_text": metadata,
+                    "search_text": " ".join(filter(None, (metadata, internal, model))),
+                    "_model": model,
                     "_rule_ref": ref,
                     "data": {"id": part_id, "mfg_id": item_id, "type": data_type},
                 })

@@ -1,0 +1,1265 @@
+{
+  "version": 1,
+  "source_folder": "2026-08-01",
+  "scope": "dedicated_itempoollist_only",
+  "spawn_pattern": "SpawnPattern_Enemies_Named",
+  "source_files": [
+    "pakchunk0-Windows_18_P-Nexus-Data-gbx_ue_data_table0.json",
+    "pakchunk4-Windows_18_P-Nexus-Data-gbx_ue_data_table4.json",
+    "pakchunk6-Windows_18_P-Nexus-Data-gbx_ue_data_table6.json"
+  ],
+  "tables": [
+    "Table_Banjo_DedicatedDrops",
+    "Table_Cello_DedicatedDrops",
+    "Table_Cowbell_DedicatedDrops",
+    "Table_DedicatedDrops",
+    "Table_Harp_DedicatedDrops",
+    "Table_Mandolin_DedicatedDrops",
+    "Table_Raid1_DedicatedDrops",
+    "Table_Raid2_DedicatedDrops",
+    "Table_Tuba_DedicatedDrops"
+  ],
+  "character_count": 177,
+  "mapping_count": 177,
+  "characters": {
+    "Char_Bat_Kraggula_BossRift": [
+      {
+        "pool": "ItemPoolList_Nightmare_AllBosses",
+        "row": "Nightmare_Kraggula",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_Bat_Mine_Boss_Destroyer": [
+      {
+        "pool": "ItemPoolList_Destroyer",
+        "row": "Destroyer",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Bat_Mine_Boss_DestroyerTRUE": [
+      {
+        "pool": "ItemPoolList_Destroyer_TrueBoss",
+        "row": "Destroyer_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Bat_PlotMount1_Boss_Matriarch": [
+      {
+        "pool": "ItemPoolList_BatMatriarch",
+        "row": "Bat_Matriarch",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Bat_PlotMount1_Boss_MatriarchTRUE": [
+      {
+        "pool": "ItemPoolList_BatMatriarch_TrueBoss",
+        "row": "Bat_Matriarch_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Beast_Drill_Boss_Battlewagon": [
+      {
+        "pool": "ItemPoolList_BattleWagon",
+        "row": "Battle_Wagon",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Beast_Drill_Boss_Battlewagon_TRUE": [
+      {
+        "pool": "ItemPoolList_BattleWagon_TrueBoss",
+        "row": "Battle_Wagon_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Beast_Mine_Boss_Backhive": [
+      {
+        "pool": "ItemPoolList_Backhive",
+        "row": "Backhive",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Beast_Mine_Boss_Backhive_TRUE": [
+      {
+        "pool": "ItemPoolList_Backhive_TrueBoss",
+        "row": "Backhive_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_BigBoss_TRUE": [
+      {
+        "pool": "ItemPoolList_Raid2_Thol_True",
+        "row": "Raid2_Uber_Thol_TRUE",
+        "table": "Table_Raid2_DedicatedDrops"
+      }
+    ],
+    "Char_Brute_BountyPack1_Boss_MercenaryDay": [
+      {
+        "pool": "ItemPoolList_Donk",
+        "row": "Donk",
+        "table": "Table_Banjo_DedicatedDrops"
+      }
+    ],
+    "Char_Brute_BountyPack1_Boss_MercenaryDayTRUE": [
+      {
+        "pool": "ItemPoolList_Donk_TrueBoss",
+        "row": "Donk_TrueBoss",
+        "table": "Table_Banjo_DedicatedDrops"
+      }
+    ],
+    "Char_Brute_Bunker_Boss_Mountains": [
+      {
+        "pool": "ItemPoolList_BlasterBrute",
+        "row": "Blaster_Brute",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Brute_Bunker_Boss_MountainsTRUE": [
+      {
+        "pool": "ItemPoolList_BlasterBrute_TrueBoss",
+        "row": "Blaster_Brute_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Brute_PlotGrass2b_Boss_Motherbase": [
+      {
+        "pool": "ItemPoolList_KOTOMotherbaseBrute",
+        "row": "KOTO_Motherbase_Brute",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Brute_PlotGrass2b_Boss_MotherbaseTRUE": [
+      {
+        "pool": "ItemPoolList_KOTOMotherbaseBrute_TrueBoss",
+        "row": "KOTO_Motherbase_Brute_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Cat_Mine_Boss_CityCat": [
+      {
+        "pool": "ItemPoolList_CityCat",
+        "row": "City_Cat",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Cat_Mine_Boss_CityCat_TRUE": [
+      {
+        "pool": "ItemPoolList_CityCat_TrueBoss",
+        "row": "City_Cat_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Cat_Mine_Boss_StealthPredator": [
+      {
+        "pool": "ItemPoolList_StealthPredator",
+        "row": "Stealth_Predator",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Cat_Mine_Boss_StealthPredator_TRUE": [
+      {
+        "pool": "ItemPoolList_StealthPredator_TrueBoss",
+        "row": "Stealth_Predator_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Cat_OrdiniteInfused_MiniBoss": [
+      {
+        "pool": "ItemPoolList_Ordonite_Cat",
+        "row": "Ordonite_Cat",
+        "table": "Table_Cello_DedicatedDrops"
+      }
+    ],
+    "Char_Cat_OrdiniteInfused_MiniBossTRUE": [
+      {
+        "pool": "ItemPoolList_Ordonite_Cat_TRUE",
+        "row": "Ordonite_Cat_TRUE",
+        "table": "Table_Cello_DedicatedDrops"
+      }
+    ],
+    "Char_CrazyEarl_Boss": [
+      {
+        "pool": "ItemPoolList_CrazyEarl",
+        "row": "Crazy_Earl",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_CrazyEarl_Boss_Replay": [
+      {
+        "pool": "ItemPoolList_CrazyEarl",
+        "row": "Crazy_Earl_REPLAY",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_CrazyEarl_Boss_Replay_True": [
+      {
+        "pool": "ItemPoolList_CrazyEarl_True",
+        "row": "Crazy_Early_TRUE",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_CreepRaid1": [
+      {
+        "pool": "ItemPoolList_Bloomreaper",
+        "row": "Bloomreaper",
+        "table": "Table_Raid1_DedicatedDrops"
+      }
+    ],
+    "Char_CreepRaid1_TRUE": [
+      {
+        "pool": "ItemPoolList_Bloomreaper_TRUE",
+        "row": "Bloomreaper_TRUE",
+        "table": "Table_Raid1_DedicatedDrops"
+      }
+    ],
+    "Char_Creep_Bitterblight_BossRift": [
+      {
+        "pool": "ItemPoolList_Nightmare_AllBosses",
+        "row": "Nightmare_Bitterblight",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_Creep_Mine_Boss_SkullOrchid": [
+      {
+        "pool": "ItemPoolList_SkullOrchid",
+        "row": "Skull_Orchid",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Creep_Mine_Boss_SkullOrchid_TRUE": [
+      {
+        "pool": "ItemPoolList_SkullOrchid_TrueBoss",
+        "row": "Skull_Orchid_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Creep_SideCity_ExperimentA_Runnable": [
+      {
+        "pool": "ItemPoolList_SideCity_Psycho",
+        "row": "CreepExperimentA",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Creep_SideCity_ExperimentA_TRUE": [
+      {
+        "pool": "ItemPoolList_SideCity_Psycho_TrueBoss",
+        "row": "CreepExperimentA_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Creep_SideCity_ExperimentB_Runnable": [
+      {
+        "pool": "ItemPoolList_SideCity_Psycho",
+        "row": "CreepExperimentB",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Creep_SideCity_ExperimentB_TRUE": [
+      {
+        "pool": "ItemPoolList_SideCity_Psycho_TrueBoss",
+        "row": "CreepExperimentB_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_DNMGrunt_Mission04_BossMini": [
+      {
+        "pool": "ItemPoolList_Crash",
+        "row": "Crash",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_DNMGrunt_Mission04_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_Crash",
+        "row": "Crash_REPLAY",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_DNMGrunt_Mission04_BossMini_Replay_True": [
+      {
+        "pool": "ItemPoolList_Crash_True",
+        "row": "Crash_TRUE",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_DahlFather_Boss": [
+      {
+        "pool": "ItemPoolList_dAHLfATHER",
+        "row": "Dahl_Father",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_DahlFather_Boss_Replay": [
+      {
+        "pool": "ItemPoolList_dAHLfATHER",
+        "row": "Dahl_Father_REPLAY",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_DahlFather_Boss_Replay_True": [
+      {
+        "pool": "ItemPoolList_DahlFather_True",
+        "row": "Dahl_Father_TRUE",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_DahlMech_Mission02_BossMini": [
+      {
+        "pool": "ItemPoolList_DahlMech",
+        "row": "Dahl_Mech",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_DahlMech_Mission02_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_DahlMech",
+        "row": "Dahl_Mech_REPLAY",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_DahlMech_Mission02_BossMini_Replay_True": [
+      {
+        "pool": "ItemPoolList_DahlMech_True",
+        "row": "Dahl_Mech_TRUE",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_DigiZaneKiller_Boss_FloatingHead_ZaneAttachment": [
+      {
+        "pool": "ItemPoolList_Murderer",
+        "row": "Murderer",
+        "table": "Table_Mandolin_DedicatedDrops"
+      }
+    ],
+    "Char_DigiZaneKiller_Boss_FloatingHead_ZaneAttachmentTRUE": [
+      {
+        "pool": "ItemPoolList_Murderer_TRUE",
+        "row": "Murderer_TRUE",
+        "table": "Table_Mandolin_DedicatedDrops"
+      }
+    ],
+    "Char_Drone_Bunker_Boss_Keeper": [
+      {
+        "pool": "ItemPoolList_DroneKeeper",
+        "row": "Drone_Keeper",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Drone_Bunker_Boss_KeeperTRUE": [
+      {
+        "pool": "ItemPoolList_DroneKeeper_TrueBoss",
+        "row": "Drone_Keeper_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_GrassBoss": [
+      {
+        "pool": "ItemPoolList_Grasslands_Commander",
+        "row": "Grasslands_Commander",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_GrassBoss_TrueBoss": [
+      {
+        "pool": "ItemPoolList_Grasslands_Commander_TrueBoss",
+        "row": "Grasslands_Commander_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_GrassGuard": [
+      {
+        "pool": "ItemPoolList_Grasslands_Guardian",
+        "row": "Grasslands_Guardian",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_GrassGuard_TrueBoss": [
+      {
+        "pool": "ItemPoolList_Grasslands_Guardian_TrueBoss",
+        "row": "Grasslands_Guardian_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Grunt_Slithertongue_BossRift": [
+      {
+        "pool": "ItemPoolList_Nightmare_AllBosses",
+        "row": "Nightmare_Slithertongue",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_GunShip_PlotGrass2a_Boss_MeatPlant": [
+      {
+        "pool": "ItemPoolList_MeatPlantGunship",
+        "row": "Meat_Plant_Gunship",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_GunShip_PlotGrass2a_Boss_MeatPlantTRUE": [
+      {
+        "pool": "ItemPoolList_MeatPlantGunship_TrueBoss",
+        "row": "Meat_Plant_Gunship_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_GunToterMale_OrdiniteInfused_PearlGearGen": [
+      {
+        "pool": "ItemPoolList_Ordonite_PGG_Activity",
+        "row": "PearlGearGen_Ordonite_Guntoter",
+        "table": "Table_Cello_DedicatedDrops"
+      }
+    ],
+    "Char_GunToter_MaxxxSupreme_BossMini": [
+      {
+        "pool": "ItemPoolList_MaxxxSupreme",
+        "row": "MaxxxSupremeNoOlives",
+        "table": "Table_Harp_DedicatedDrops"
+      }
+    ],
+    "Char_GunToter_MaxxxSupreme_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_MaxxxSupreme",
+        "row": "REPLAY_MaxxSupreme",
+        "table": "Table_Harp_DedicatedDrops"
+      }
+    ],
+    "Char_GunToter_MaxxxSupreme_BossMini_ReplayTRUE": [
+      {
+        "pool": "ItemPoolList_MaxxxSupreme_TRUE",
+        "row": "TRUE_MaxxSupreme",
+        "table": "Table_Harp_DedicatedDrops"
+      }
+    ],
+    "Char_Guntoter_MeatheadJockeyBoss": [
+      {
+        "pool": "ItemPoolList_MeatheadRider_Jockey",
+        "row": "Meathead_Riders_Jockey",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Guntoter_MeatheadJockeyBossTRUE": [
+      {
+        "pool": "ItemPoolList_MeatheadRider_Jockey_TrueBoss",
+        "row": "Meathead_Riders_Jockey_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Kraggon_Eldritch_BossRift": [
+      {
+        "pool": "ItemPoolList_Nightmare_AllBosses",
+        "row": "Nightmare_Kragthulu",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_Kraggon_Fulgur_BossRift": [
+      {
+        "pool": "ItemPoolList_Nightmare_AllBosses",
+        "row": "Nightmare_Fulgur",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_Leader_BountyPack1_Boss_MercenaryDay": [
+      {
+        "pool": "ItemPoolList_MinisterScrew",
+        "row": "MinisterScrew",
+        "table": "Table_Banjo_DedicatedDrops"
+      }
+    ],
+    "Char_Leader_BountyPack1_Boss_MercenaryDayTRUE": [
+      {
+        "pool": "ItemPoolList_MinisterScrew_TrueBoss",
+        "row": "MinisterScrew_TrueBoss",
+        "table": "Table_Banjo_DedicatedDrops"
+      }
+    ],
+    "Char_Leader_Bunker_Boss_Cloning": [
+      {
+        "pool": "ItemPoolList_CloningLeader",
+        "row": "Cloning_Leader",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Leader_Bunker_Boss_CloningTRUE": [
+      {
+        "pool": "ItemPoolList_CloningLeader_TrueBoss",
+        "row": "Cloning_Leader_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Leader_Bunker_Boss_Hologram": [
+      {
+        "pool": "ItemPoolList_LeaderHologram",
+        "row": "Leader_Hologram",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Leader_Bunker_Boss_HologramTRUE": [
+      {
+        "pool": "ItemPoolList_LeaderHologram_TrueBoss",
+        "row": "Leader_Hologram_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Leader_PlotGrass1_Boss_KOTOLieutenant": [
+      {
+        "pool": "ItemPoolList_KotoLieutenant",
+        "row": "KOTO_Lieutenant",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Leader_PlotGrass1_Boss_KOTOLieutenantTRUE": [
+      {
+        "pool": "ItemPoolList_KotoLieutenant_TrueBoss",
+        "row": "KOTO_Lieutenant_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Leader_PlotPrison_Boss_FirstLeader": [
+      {
+        "pool": "ItemPoolList_PrisonFirstLeader",
+        "row": "Prison_First_Leader",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_MeatHeadFrackingBoss": [
+      {
+        "pool": "ItemPoolList_FoundryFreak_MeatheadFrackingBoss",
+        "row": "Foundry_Freaks_Meathead",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_MeatHeadFrackingBossTRUE": [
+      {
+        "pool": "ItemPoolList_FoundryFreak_MeatheadFrackingBoss_TrueBoss",
+        "row": "Foundry_Freaks_Meathead_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_MeatHeadRider": [
+      {
+        "pool": "ItemPoolList_MeatheadRider",
+        "row": "Meathead_Riders",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_MeatHeadRiderTRUE": [
+      {
+        "pool": "ItemPoolList_MeatheadRider_TrueBoss",
+        "row": "Meathead_Riders_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_MeatHead_SkaHead_BossMini": [
+      {
+        "pool": "ItemPoolList_SkankEyes",
+        "row": "Skank_Eyes",
+        "table": "Table_Harp_DedicatedDrops"
+      }
+    ],
+    "Char_MeatHead_SkaHead_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_SkankEyes",
+        "row": "REPLAY_Skank_Eyes",
+        "table": "Table_Harp_DedicatedDrops"
+      }
+    ],
+    "Char_MeatHead_SkaHead_BossMini_ReplayTRUE": [
+      {
+        "pool": "ItemPoolList_SkankEyes_TRUE",
+        "row": "TRUE_Skank_Eyes",
+        "table": "Table_Harp_DedicatedDrops"
+      }
+    ],
+    "Char_Meathead_OrdiniteInfused_MiniBoss": [
+      {
+        "pool": "ItemPoolList_Ordonite_Meathead",
+        "row": "Ordonite_Meathead",
+        "table": "Table_Cello_DedicatedDrops"
+      }
+    ],
+    "Char_Meathead_OrdiniteInfused_MiniBossTRUE": [
+      {
+        "pool": "ItemPoolList_Ordonite_Meathead_TRUE",
+        "row": "Ordonite_Meathead_TRUE",
+        "table": "Table_Cello_DedicatedDrops"
+      }
+    ],
+    "Char_Meathead_OrdiniteInfused_PearlGearGen": [
+      {
+        "pool": "ItemPoolList_Ordonite_PGG_Activity",
+        "row": "PearlGearGen_Ordonite_Meathead",
+        "table": "Table_Cello_DedicatedDrops"
+      }
+    ],
+    "Char_Meathead_PlotShat2a_Boss_Drillerhole": [
+      {
+        "pool": "ItemPoolList_Drillerhole",
+        "row": "Drillerhole",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Meathead_PlotShat2a_Boss_DrillerholeTRUE": [
+      {
+        "pool": "ItemPoolList_Drillerhole_TrueBoss",
+        "row": "Drillerhole_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Mech_DroneCaptain_BossMini": [
+      {
+        "pool": "ItemPoolList_DroneCaptain",
+        "row": "Bunker_Drone_Captain",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_MountBoss": [
+      {
+        "pool": "ItemPoolList_MountainCommander",
+        "row": "Mountain_Commander",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_MountBoss_TrueBoss": [
+      {
+        "pool": "ItemPoolList_MountainCommander_TrueBoss",
+        "row": "Mountain_Commander_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_MountGuard_V02": [
+      {
+        "pool": "ItemPoolList_MountainGuardian",
+        "row": "Mountain_Guardian",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_MountGuard_V02_TrueBoss": [
+      {
+        "pool": "ItemPoolList_MountainGuardian_TrueBoss",
+        "row": "Mountain_Guardian_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_MutantCrab": [
+      {
+        "pool": "ItemPoolList_Tuba_hybrids_Crab",
+        "row": "Tuba_Hybrids_Crab",
+        "table": "Table_Tuba_DedicatedDrops"
+      }
+    ],
+    "Char_MutantFish": [
+      {
+        "pool": "ItemPoolList_Tuba_hybrids_Fish",
+        "row": "Tuba_Hybrids_Fish",
+        "table": "Table_Tuba_DedicatedDrops"
+      }
+    ],
+    "Char_MutantThresher": [
+      {
+        "pool": "ItemPoolList_Tuba_hybrids_Thresher",
+        "row": "Tuba_Hybrids_Thresher",
+        "table": "Table_Tuba_DedicatedDrops"
+      }
+    ],
+    "Char_OldThrash_BossRift": [
+      {
+        "pool": "ItemPoolList_Nightmare_AllBosses",
+        "row": "Micro_Old_Thrash",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_OldThrash_Named": [
+      {
+        "pool": "ItemPoolList_Nightmare_AllBosses",
+        "row": "OldThrash_Mission",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_Pangolin_BountyPack2_Boss_OrdiniteInfused": [
+      {
+        "pool": "ItemPoolList_Ordonite_Pangolin",
+        "row": "PangolinBoss",
+        "table": "Table_Cello_DedicatedDrops"
+      }
+    ],
+    "Char_Pangolin_BountyPack2_Boss_OrdiniteInfusedtrue": [
+      {
+        "pool": "ItemPoolList_Ordonite_Pangolin_TRUE",
+        "row": "PangolinBoss_TRUE",
+        "table": "Table_Cello_DedicatedDrops"
+      }
+    ],
+    "Char_Pangolin_Drill_Boss_Bango": [
+      {
+        "pool": "ItemPoolList_Bango",
+        "row": "Bango",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Pangolin_Drill_Boss_BangoTRUE": [
+      {
+        "pool": "ItemPoolList_Bango_TrueBoss",
+        "row": "Bango_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Pangolin_Drill_Boss_Pango": [
+      {
+        "pool": "ItemPoolList_Pango",
+        "row": "Pango",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Pangolin_Drill_Boss_PangoTRUE": [
+      {
+        "pool": "ItemPoolList_Pango_TrueBoss",
+        "row": "Pango_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Pangolin_Mine_Boss_RockAndROllTRUE": [
+      {
+        "pool": "ItemPoolList_RockAndRoll_TrueBoss",
+        "row": "Rock_and_Roll_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Pangolin_Mine_Boss_RockAndRoll": [
+      {
+        "pool": "ItemPoolList_RockAndRoll",
+        "row": "Rock_and_Roll",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Phalanx_OrdiniteInfused_MiniBoss": [
+      {
+        "pool": "ItemPoolList_Ordonite_Phalanx",
+        "row": "Ordonite_Phalanx",
+        "table": "Table_Cello_DedicatedDrops"
+      }
+    ],
+    "Char_Phalanx_OrdiniteInfused_MiniBossTRUE": [
+      {
+        "pool": "ItemPoolList_Ordonite_Phalanx_TRUE",
+        "row": "Ordonite_Phalanx_TRUE",
+        "table": "Table_Cello_DedicatedDrops"
+      }
+    ],
+    "Char_Phalanx_OrdiniteInfused_PearlGearGen": [
+      {
+        "pool": "ItemPoolList_Ordonite_PGG_Activity",
+        "row": "PearlGearGen_Ordonite_Phalanx",
+        "table": "Table_Cello_DedicatedDrops"
+      }
+    ],
+    "Char_Phalanx_OrdiniteInfused_PearlGearGenTutorial": [
+      {
+        "pool": "ItemPoolList_Ordonite_PGG_Mission",
+        "row": "PearlGearGen_Mission_Miniboss",
+        "table": "Table_Cello_DedicatedDrops"
+      }
+    ],
+    "Char_PrisonBuddyBoss": [
+      {
+        "pool": "ItemPoolList_Arjay",
+        "row": "Arjay_Mission",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_PrisonBuddyBoss_Runnable": [
+      {
+        "pool": "ItemPoolList_Arjay",
+        "row": "Arjay_Runnable",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_PrisonBuddyBoss_RunnableTRUE": [
+      {
+        "pool": "ItemPoolList_Arjay_TrueBoss",
+        "row": "Arjay_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_PsychoFrackingLieutenant": [
+      {
+        "pool": "ItemPoolList_FoundryFreak_Psycho",
+        "row": "Foundry_Freaks_Psycho",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_PsychoFrackingLieutenantTRUE": [
+      {
+        "pool": "ItemPoolList_FoundryFreak_Psycho_TrueBoss",
+        "row": "Foundry_Freaks_Psycho_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Psycho_BlasphemerBoss": [
+      {
+        "pool": "ItemPoolList_BetaMaxxx",
+        "row": "Betamaxxx",
+        "table": "Table_Harp_DedicatedDrops"
+      }
+    ],
+    "Char_Psycho_BlasphemerBossReplay": [
+      {
+        "pool": "ItemPoolList_BetaMaxxx",
+        "row": "REPLAY_Betamaxx",
+        "table": "Table_Harp_DedicatedDrops"
+      }
+    ],
+    "Char_Psycho_BlasphemerBossTRUE": [
+      {
+        "pool": "ItemPoolList_BetaMaxxx_TRUE",
+        "row": "TRUE_BetaMaxxx",
+        "table": "Table_Harp_DedicatedDrops"
+      }
+    ],
+    "Char_Psycho_HovercartRider": [
+      {
+        "pool": "ItemPoolList_Hovercart",
+        "row": "Hovercart",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Psycho_HovercartRiderDuo": [
+      {
+        "pool": "ItemPoolList_Hovercart",
+        "row": "Hovercart_Duo",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Psycho_HovercartRiderDuoTRUE": [
+      {
+        "pool": "ItemPoolList_Hovercart_TrueBoss",
+        "row": "Hovercart_Duo_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Psycho_HovercartRiderTRUE": [
+      {
+        "pool": "ItemPoolList_Hovercart_TrueBoss",
+        "row": "Hovercart_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Psycho_HovercartRiderTrio": [
+      {
+        "pool": "ItemPoolList_Hovercart",
+        "row": "Hovercart_Trio",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Psycho_HovercartRiderTrioTRUE": [
+      {
+        "pool": "ItemPoolList_Hovercart_TrueBoss",
+        "row": "Hovercart_Trio_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Psycho_OrdiniteInfused_PearlGearGen": [
+      {
+        "pool": "ItemPoolList_Ordonite_PGG_Activity",
+        "row": "PearlGearGen_Ordonite_Psycho",
+        "table": "Table_Cello_DedicatedDrops"
+      }
+    ],
+    "Char_Psycho_PlotGrass1_Boss_GlidePack": [
+      {
+        "pool": "ItemPoolList_GlidePackPsycho",
+        "row": "Glide_Pack_Psycho",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Psycho_PlotGrass1_Boss_GlidePackTRUE": [
+      {
+        "pool": "ItemPoolList_GlidePackPsycho_TrueBoss",
+        "row": "Glide_Pack_Psycho_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Psycho_PlotMount2b_Boss_FirstCorrupt": [
+      {
+        "pool": "ItemPoolList_FirstCorrupt",
+        "row": "First_Corrupt",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Psycho_PlotMount2b_Boss_FirstCorruptTRUE": [
+      {
+        "pool": "ItemPoolList_FirstCorrupt_TrueBoss",
+        "row": "First_Corrupt_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Scav_AirRaiderSteve_BossMini": [
+      {
+        "pool": "ItemPoolList_SiphonScavOne",
+        "row": "Siphon_Scav_1",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_Scav_BoneBoogy_BossRift": [
+      {
+        "pool": "ItemPoolList_Nightmare_AllBosses",
+        "row": "Nightmare_BoneBoogy",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_Scav_Botpopper_BossRift": [
+      {
+        "pool": "ItemPoolList_Nightmare_AllBosses",
+        "row": "Nightmare_BotPopper",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_Scav_HeavySplice_BossMini": [
+      {
+        "pool": "ItemPoolList_SiphonScavTwo",
+        "row": "Siphon_Scav_2",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_Scav_ScrapFusRo_BossRift": [
+      {
+        "pool": "ItemPoolList_Nightmare_AllBosses",
+        "row": "Nightmare_ScrapFuRo",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_ShatterBoss_Elpis": [
+      {
+        "pool": "ItemPoolList_ShatterlandsCommanderElpis",
+        "row": "Shatterlands_Commander_Elpis",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_ShatterBoss_Elpis_TrueBoss": [
+      {
+        "pool": "ItemPoolList_ShatterlandsCommanderElpis_TrueBoss",
+        "row": "Shatterlands_Commander_Elpis_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_ShatterBoss_Shared": [
+      {
+        "pool": "ItemPoolList_ShatterlandsCommanderFortress",
+        "row": "Shatterlands_Commander_Fortress",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_ShatterBoss_Shared_TrueBoss": [
+      {
+        "pool": "ItemPoolList_ShatterlandsCommanderFortress_TrueBoss",
+        "row": "Shatterlands_Commander_Fortress_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_ShatterGuard": [
+      {
+        "pool": "ItemPoolList_ShatterlandsGuardian",
+        "row": "Shatterlands_Guardian",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_ShatterGuard_TrueBoss": [
+      {
+        "pool": "ItemPoolList_ShatterlandsGuardian_TrueBoss",
+        "row": "Shatterlands_Guardian_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_SideCity_Psycho_CorruptTED_Runnable": [
+      {
+        "pool": "ItemPoolList_SideCity_Psycho",
+        "row": "CorruptTED",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_SideCity_Psycho_CorruptTED_TRUE": [
+      {
+        "pool": "ItemPoolList_SideCity_Psycho_TrueBoss",
+        "row": "CorruptTED_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Soldier_Bunker_Boss_Ancient": [
+      {
+        "pool": "ItemPoolList_SoldierAncient",
+        "row": "Soldier_Ancient",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Soldier_Bunker_Boss_AncientTRUE": [
+      {
+        "pool": "ItemPoolList_SoldierAncient_TrueBoss",
+        "row": "Soldier_Ancient_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Soldier_Bunker_Boss_RedGuard": [
+      {
+        "pool": "ItemPoolList_Redguard",
+        "row": "Red_Guard",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Soldier_Bunker_Boss_RedGuardTRUE": [
+      {
+        "pool": "ItemPoolList_Redguard_TrueBoss",
+        "row": "Red_Guard_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Soldier_SideShatterlands_ElectiMole": [
+      {
+        "pool": "ItemPoolList_UpgradedElectiMole",
+        "row": "Upgraded_Electi_Mole",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Soldier_SideShatterlands_ElectiMoleTRUE": [
+      {
+        "pool": "ItemPoolList_UpgradedElectiMole_TrueBoss",
+        "row": "Upgraded_Electi_Mole_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_SpliceFrackingEngineer": [
+      {
+        "pool": "ItemPoolList_FoundryFreak_Splice",
+        "row": "Foundry_Freaks_Splice",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_SpliceFrackingEngineerTRUE": [
+      {
+        "pool": "ItemPoolList_FoundryFreak_Splice_TrueBoss",
+        "row": "Foundry_Freaks_Splice_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Splice_BombSplice": [
+      {
+        "pool": "ItemPoolList_InfamousDave",
+        "row": "Infamous_Dave",
+        "table": "Table_Harp_DedicatedDrops"
+      }
+    ],
+    "Char_Splice_BombSpliceReplay": [
+      {
+        "pool": "ItemPoolList_InfamousDave",
+        "row": "REPLAY_Infamous_Dave",
+        "table": "Table_Harp_DedicatedDrops"
+      }
+    ],
+    "Char_Splice_BombSpliceTRUE": [
+      {
+        "pool": "ItemPoolList_InfamousDave_TRUE",
+        "row": "TRUE_Infamous_Dave",
+        "table": "Table_Harp_DedicatedDrops"
+      }
+    ],
+    "Char_Splice_Drill_Boss_SpiderJumbo": [
+      {
+        "pool": "ItemPoolList_SpiderJumbo",
+        "row": "Spider_Jumbo",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Splice_Drill_Boss_SpiderJumboTRUE": [
+      {
+        "pool": "ItemPoolList_SpiderJumbo_TrueBoss",
+        "row": "Spider_Jumbo_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Splice_OrdiniteInfused_MiniBoss": [
+      {
+        "pool": "ItemPoolList_Ordonite_Splice",
+        "row": "Ordonite_Splice",
+        "table": "Table_Cello_DedicatedDrops"
+      }
+    ],
+    "Char_Splice_OrdiniteInfused_MiniBossTRUE": [
+      {
+        "pool": "ItemPoolList_Ordonite_Splice_TRUE",
+        "row": "Ordonite_Splice_TRUE",
+        "table": "Table_Cello_DedicatedDrops"
+      }
+    ],
+    "Char_Splice_OrdiniteInfused_PearlGearGen": [
+      {
+        "pool": "ItemPoolList_Ordonite_PGG_Activity",
+        "row": "PearlGearGen_Ordonite_Splice",
+        "table": "Table_Cello_DedicatedDrops"
+      }
+    ],
+    "Char_Striker_Bunker_Boss_Splitter": [
+      {
+        "pool": "ItemPoolList_StrikerSplitter",
+        "row": "Striker_Splitter",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Striker_Bunker_Boss_SplitterTRUE": [
+      {
+        "pool": "ItemPoolList_StrikerSplitter_TrueBoss",
+        "row": "Striker_Splitter_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Striker_Cleaner_BossMini": [
+      {
+        "pool": "ItemPoolList_GlitchCleaner",
+        "row": "Glitch_Cleaner",
+        "table": "Table_Mandolin_DedicatedDrops"
+      }
+    ],
+    "Char_Striker_Cleaner_BossMini_Replay_True": [
+      {
+        "pool": "ItemPoolList_GlitchCleaner_TRUE",
+        "row": "Glitch_Cleaner_TRUE",
+        "table": "Table_Mandolin_DedicatedDrops"
+      }
+    ],
+    "Char_Striker_Fixer_BossMini": [
+      {
+        "pool": "ItemPoolList_GlitchFixer",
+        "row": "Glitch_Fixer",
+        "table": "Table_Mandolin_DedicatedDrops"
+      }
+    ],
+    "Char_Striker_Fixer_BossMini_Replay_True": [
+      {
+        "pool": "ItemPoolList_GlitchFixer_TRUE",
+        "row": "Glitch_Fixer_TRUE",
+        "table": "Table_Mandolin_DedicatedDrops"
+      }
+    ],
+    "Char_TKBoss": [
+      {
+        "pool": "ItemPoolList_Timekeeper_TKBoss",
+        "row": "City_Time_Keeper",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_ThreshOWar_BossRift": [
+      {
+        "pool": "ItemPoolList_Nightmare_AllBosses",
+        "row": "Nightmare_ThreshOWar",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_Thresher_BioArmoredBig_Runnable": [
+      {
+        "pool": "ItemPoolList_Thresher_BioArmoredBig",
+        "row": "BioArmorThresher",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Thresher_BioArmoredBig_RunnableTRUE": [
+      {
+        "pool": "ItemPoolList_Thresher_BioArmoredBig_TrueBoss",
+        "row": "BioArmorThresher_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Thresher_Fireskull_BossRift": [
+      {
+        "pool": "ItemPoolList_Nightmare_AllBosses",
+        "row": "Nightmare_FireSkull",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_Thresher_Icemaw_BossRift": [
+      {
+        "pool": "ItemPoolList_Nightmare_AllBosses",
+        "row": "Nightmare_IceMaw",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_Thresher_Icemaw_Named": [
+      {
+        "pool": "ItemPoolList_Nightmare_AllBosses",
+        "row": "IceMaw_Mission",
+        "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_Thresher_Mine_Boss_SurpriseAttack": [
+      {
+        "pool": "ItemPoolList_SurpriseAttack",
+        "row": "Surprise_Attack",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Thresher_Mine_Boss_SurpriseAttack_TRUE": [
+      {
+        "pool": "ItemPoolList_SurpriseAttack_TrueBoss",
+        "row": "Surprise_Attack_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Thresher_SideGrass_Trash": [
+      {
+        "pool": "ItemPoolList_TrashThresher",
+        "row": "Trash_Thresher",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Thresher_SideGrass_Trash_True": [
+      {
+        "pool": "ItemPoolList_TrashThresher_TrueBoss",
+        "row": "Trash_Thresher_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_TkBoss_TrueBoss": [
+      {
+        "pool": "ItemPoolList_Timekeeper_TKBoss_TrueBoss",
+        "row": "City_Time_Keeper_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_TkGuard": [
+      {
+        "pool": "ItemPoolList_Timekeeper_Guardian",
+        "row": "City_Time_Keeper_Guardian",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_TkGuard_TrueBoss": [
+      {
+        "pool": "ItemPoolList_Timekeeper_Guardian_TrueBoss",
+        "row": "City_Time_Keeper_Guardian_TrueBoss",
+        "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_TubaBoss": [
+      {
+        "pool": "ItemPoolList_Tuba_Terra",
+        "row": "Tuba_Terra",
+        "table": "Table_Tuba_DedicatedDrops"
+      }
+    ],
+    "Char_UberBigBoss": [
+      {
+        "pool": "ItemPoolList_Raid2_Thol",
+        "row": "Raid2_UberThol",
+        "table": "Table_Raid2_DedicatedDrops"
+      }
+    ],
+    "Char_UberLeaderP": [
+      {
+        "pool": "ItemPoolList_Raid2_Subjugator",
+        "row": "Raid2_UberSubjugator",
+        "table": "Table_Raid2_DedicatedDrops"
+      }
+    ],
+    "Char_UberLeaderP_TRUE": [
+      {
+        "pool": "ItemPoolList_Raid2_Subjugator_True",
+        "row": "Raid2_UberSubjugator_TRUE",
+        "table": "Table_Raid2_DedicatedDrops"
+      }
+    ]
+  }
+}

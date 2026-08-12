@@ -152,7 +152,8 @@
       "character_info": "Character",
       "currency": "Currency",
       "world_presets": "Profile / Shared Presets",
-      "char_presets": "Character Save Presets"
+      "char_presets": "Character Save Presets",
+      "live_runtime": "Live Runtime"
     },
     "labels": {
       "name": "Name:",
@@ -169,12 +170,50 @@
       "character_only_hint": "Character save only. Disabled on profile saves.",
       "preset_mode_profile": "Current save type: Profile. Profile presets enabled, character presets disabled.",
       "preset_mode_character": "Current save type: Character save. Character presets enabled, profile presets disabled.",
+      "live_runtime_hint": "These controls affect only the current game session. Weapon modifiers follow weapon swaps and restore their original values when disabled.",
+      "live_runtime_idle": "Ready.",
+      "live_dedicated_drop_hint": "Adds guaranteed draws only from the defeated actor's NCS dedicated pool. The multiplier controls the extra draws; world-drop pools are not added.",
+      "live_survival": "Survival / movement",
+      "live_weapon": "Weapon handling",
+      "live_cooldown": "Cooldowns",
+      "live_tuning": "Scalars / capacity",
+      "live_loot": "Loot rarity",
+      "fire_rate_scale": "Fire-rate scale",
+      "movement_speed_scale": "Movement scale",
+      "jump_height_scale": "Jump-height scale",
+      "critical_damage_scale": "Critical-damage scale",
+      "dedicated_drop_multiplier": "Dedicated extra drops",
+      "backpack_size": "Backpack capacity",
       "preset_credit": ""
     },
     "buttons": {
       "apply_changes": "Apply Character & Currency Changes",
       "apply_profile_changes": "Apply Profile Currency Changes",
-      "sync_levels": "Sync All Backpack Item Levels to Character Level"
+      "sync_levels": "Sync All Backpack Item Levels to Character Level",
+      "toggle_infinite_ammo": "Toggle Infinite Ammo",
+      "toggle_demigod": "Toggle Demigod",
+      "toggle_health_lock": "Health Lock",
+      "toggle_shield_lock": "Shield Lock",
+      "toggle_stamina_lock": "Unlimited Vault Power",
+      "toggle_instant_reload": "Instant Reload",
+      "toggle_no_overheat": "No Overheat",
+      "toggle_no_spread": "No Spread",
+      "toggle_no_recoil": "No Recoil",
+      "toggle_guaranteed_crit": "Guaranteed Crit",
+      "toggle_repairkit_no_cd": "Repkit No CD",
+      "toggle_skill_no_cd": "Skill No CD",
+      "toggle_gadget_no_cd": "Gear No CD",
+      "toggle_dedicated_drop_100": "Dedicated Drop 100%",
+      "apply_fire_rate": "Apply",
+      "apply_movement_speed": "Apply",
+      "apply_jump_height": "Apply",
+      "apply_critical_damage": "Apply",
+      "apply_backpack_size": "Apply",
+      "apply_dedicated_drop_multiplier": "Apply",
+      "rarity_legendary": "Legendary Drops",
+      "rarity_pearlescent": "Pearlescent Drops",
+      "rarity_reset": "Reset Drop Rates",
+      "reset_runtime_modifiers": "Reset Session Mods"
     },
     "warnings": {
       "sync_warning": "Warning: This may cause equipped items to be unequipped. You may need to re-equip them from the backpack."
@@ -991,6 +1030,7 @@
       "move_up": "Move up",
       "move_down": "Move down",
       "drag_part": "Drag to reorder",
+      "toggle_internal_names": "Show or hide internal part names",
       "remove_part": "Remove"
     },
     "parts": {
@@ -1020,6 +1060,10 @@
       "facet_part_type": "Part Type",
       "facet_manufacturer": "Manufacturer",
       "facet_weapon_type": "Weapon Type",
+      "same_model": "Same model as current barrel ({model})",
+      "cross_model": "Cross-model part: current {current}, candidate {candidate}",
+      "same_model_badge": "Same {model}",
+      "cross_model_badge": "Cross {model}",
       "result_count": "{n} / {total} matched",
       "available_parts_hint": "Available Parts (click to preview, double-click to add)"
     }

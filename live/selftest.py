@@ -34,24 +34,45 @@ def main() -> int:
     try:
         info = b.info()
         print("OK", info)
-    except BridgeError as e:
+    except (BridgeError, OSError, ValueError) as e:
         print("FAILED:", e)
         return 1
 
-    print("[3] list ...", end=" ", flush=True)
+    print("[3] player ...", end=" ", flush=True)
+    try:
+        player = b.player()
+        print(
+            "OK",
+            f"name={player.get('name')!r}",
+            f"level={player.get('level')}",
+            f"spec={player.get('specialization_level')}",
+        )
+    except (BridgeError, OSError, ValueError) as e:
+        print("FAILED:", e)
+        return 1
+
+    print("[4] runtime state ...", end=" ", flush=True)
+    try:
+        runtime = b.runtime_action("state")
+        print("OK", f"features={len(runtime.get('state', {}))}")
+    except (BridgeError, OSError, ValueError) as e:
+        print("FAILED:", e)
+        return 1
+
+    print("[5] list ...", end=" ", flush=True)
     try:
         lst = b.list()
         for c in lst.get("containers", []):
             print(f"     {c['container']}: {c['slots']} slots")
-    except BridgeError as e:
+    except (BridgeError, OSError, ValueError) as e:
         print("FAILED:", e)
         return 1
 
-    print("[4] read all items ...", end=" ", flush=True)
+    print("[6] read all items ...", end=" ", flush=True)
     t0 = time.perf_counter()
     try:
         yaml_like = fetch_live_yaml(b)
-    except BridgeError as e:
+    except (BridgeError, OSError, ValueError) as e:
         print("FAILED:", e)
         return 1
     dt = time.perf_counter() - t0
@@ -60,7 +81,7 @@ def main() -> int:
     n_bank = len(inv["bank"])
     print(f"OK  backpack={n_bp} bank={n_bank}  ({dt*1000:.0f} ms)")
 
-    print("[5] feed into editor pipeline (process_and_load_items) ...", end=" ", flush=True)
+    print("[7] feed into editor pipeline (process_and_load_items) ...", end=" ", flush=True)
     t0 = time.perf_counter()
     import core.bl4_functions as f  # noqa: E402
     items = f.process_and_load_items(yaml_like)

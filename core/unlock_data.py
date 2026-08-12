@@ -1,7 +1,6 @@
 import base64
 import json
 import zlib
-import yaml
 import sys
 from pathlib import Path
 
@@ -29,6 +28,7 @@ def load_yaml_blob(blob_str):
     decompressed_text = decompress_blob(blob_str)
     if decompressed_text:
         try:
+            import yaml
             return yaml.safe_load(decompressed_text)
         except yaml.YAMLError as e:
             print(f"Error parsing YAML: {e}")
@@ -73,17 +73,6 @@ def _load_project_json(filename: str) -> dict:
 
 # --- Loaded Data ---
 
-COLLECTIBLES_COMPRESSED = _load_project_blob("collectibles_compressed.txt", COLLECTIBLES_COMPRESSED)
-MISSIONSETS_COMPRESSED = _load_project_blob("missions_compressed.txt", MISSIONSETS_COMPRESSED)
-UNLOCKABLES_COMPRESSED = _load_project_blob("unlockables_compressed.txt", UNLOCKABLES_COMPRESSED)
-LOCATIONS_COMPRESSED = _load_project_blob("locations_compressed.txt", LOCATIONS_COMPRESSED)
-
-COLLECTIBLES = load_yaml_blob(COLLECTIBLES_COMPRESSED)
-MISSIONSETS = load_yaml_blob(MISSIONSETS_COMPRESSED)
-UNLOCKABLES = load_yaml_blob(UNLOCKABLES_COMPRESSED)
-LOCATIONS = load_array_blob(LOCATIONS_COMPRESSED)
-# REWARDS = load_array_blob(REWARDS_COMPRESSED) # Not used in logic
-
 UNLOCK_PRESETS = _load_project_json("unlock_presets.json")
 PROFILE_UNLOCKABLES = UNLOCK_PRESETS.get("profile_unlockables", {})
 CHARACTER_UNLOCKABLES = UNLOCK_PRESETS.get("character_unlockables", {})
@@ -92,6 +81,36 @@ EXPLORATION = UNLOCK_PRESETS.get("exploration", {})
 POSTGAME = UNLOCK_PRESETS.get("postgame", {})
 PROFILE_EDITABLES = UNLOCK_PRESETS.get("profile_editables", {})
 PROFILE_UNLOCKS = UNLOCK_PRESETS.get("profile_unlocks", {})
+
+# The generated catalog covers normal startup and almost every preset.  Keep
+# mutable containers because unlock_logic imports these objects by reference;
+# legacy YAML is filled only when an operation that still needs it is used.
+COLLECTIBLES = {}
+MISSIONSETS = {}
+UNLOCKABLES = {}
+LOCATIONS = []
+_LEGACY_UNLOCK_DATA_LOADED = False
+
+
+def ensure_legacy_unlock_data():
+    global _LEGACY_UNLOCK_DATA_LOADED
+    if _LEGACY_UNLOCK_DATA_LOADED:
+        return
+    _LEGACY_UNLOCK_DATA_LOADED = True
+
+    collectibles = load_yaml_blob(_load_project_blob("collectibles_compressed.txt", COLLECTIBLES_COMPRESSED)) or {}
+    missions = load_yaml_blob(_load_project_blob("missions_compressed.txt", MISSIONSETS_COMPRESSED)) or {}
+    unlockables = load_yaml_blob(_load_project_blob("unlockables_compressed.txt", UNLOCKABLES_COMPRESSED)) or {}
+    if isinstance(collectibles, dict):
+        COLLECTIBLES.update(collectibles)
+    if isinstance(missions, dict):
+        MISSIONSETS.update(missions)
+    if isinstance(unlockables, dict):
+        generated = dict(UNLOCKABLES)
+        UNLOCKABLES.update(unlockables)
+        UNLOCKABLES.update(generated)
+    if not LOCATIONS:
+        LOCATIONS.extend(load_array_blob(_load_project_blob("locations_compressed.txt", LOCATIONS_COMPRESSED)))
 
 VAULT_CARD_TOKENS = PROFILE_EDITABLES.get("vault_card_tokens", [])
 if not isinstance(VAULT_CARD_TOKENS, list) or not VAULT_CARD_TOKENS:
@@ -111,7 +130,11 @@ for _namespace, _entries in PROFILE_UNLOCKABLES.items():
         UNLOCKABLES[_namespace] = {"entries": _entries}
 
 if isinstance(EXPLORATION.get("locations"), list) and EXPLORATION["locations"]:
-    LOCATIONS = EXPLORATION["locations"]
+    LOCATIONS.extend(EXPLORATION["locations"])
+
+# Old source checkouts without the generated snapshot keep their prior behavior.
+if not UNLOCK_PRESETS:
+    ensure_legacy_unlock_data()
 
 # --- Constants from ui.js ---
 

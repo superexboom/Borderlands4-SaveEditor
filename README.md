@@ -31,6 +31,12 @@ This tool allows you to modify character data, manage inventory items, unlock ga
 - Edit all currently available Vault Card token balances from a Profile save.
 - One-click synchronization of all backpack item levels to the current character level.
 
+#### Optional Live Mode
+- Connects to the separately distributed `BL4 Live` SDK mod over localhost.
+- Pulls the current character, backpack, and bank into the editor without opening a save file.
+- Supports applying edited items and spawning generated gear directly in the running game.
+- Provides session-only gameplay controls and dedicated-drop-pool tuning that can be reset without modifying the save.
+
 #### Unlocks & Presets
 Provides various one-click unlock functions:
 - Uses built-in offline preset data that can be updated alongside game content.
@@ -53,7 +59,7 @@ Provides various one-click unlock functions:
 
 #### Gear Generation & Editing
 Features dedicated tabs for deep customization of various gear types:
-- **Weapon Editor**: Search existing weapons, inspect live stats, and modify parts, skins, elements, Pearlescent overrides, and other properties through filterable part catalogs.
+- **Weapon Editor**: Search existing weapons, inspect live stats, and modify parts, skins, elements, Pearlescent overrides, and other properties through filterable part catalogs. Optional internal-name display and barrel-model markers help distinguish same-model and cross-model attachments.
 - **Weapon Generator**: Generate custom weapons from scratch with live stat previews, responsive part selectors, and detailed part effect scales.
 - **Class Mod**: Customize class, rarity, skill bonuses, and passive perks through searchable catalogs with class and skill-tree color filters, descriptions, and selected-state highlighting.
 - **Enhancement**: Customize manufacturer, rarity, and perk stacking.

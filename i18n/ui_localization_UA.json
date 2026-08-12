@@ -152,7 +152,8 @@
       "character_info": "Персонаж (Info)",
       "currency": "Валюта (Currency)",
       "world_presets": "Пресети Profile / Shared",
-      "char_presets": "Пресети персонажа"
+      "char_presets": "Пресети персонажа",
+      "live_runtime": "Онлайн-функції"
     },
     "labels": {
       "name": "Ім'я:",
@@ -169,12 +170,50 @@
       "character_only_hint": "Лише для збереження персонажа. У Profile кнопки будуть неактивні.",
       "preset_mode_profile": "Тип збереження: Profile. Пресети Profile активні, пресети персонажа вимкнені.",
       "preset_mode_character": "Тип збереження: персонаж. Пресети персонажа активні, пресети Profile вимкнені.",
+      "live_runtime_hint": "Ці функції діють лише в поточній сесії. Модифікатори зброї застосовуються після зміни зброї та відновлюються після вимкнення.",
+      "live_runtime_idle": "Готово.",
+      "live_dedicated_drop_hint": "Гарантовані спроби лише з особистого пулу ворога NCS. Множник задає кількість додаткових спроб; світовий пул не додається.",
+      "live_survival": "Виживання / рух",
+      "live_weapon": "Зброя",
+      "live_cooldown": "Відновлення",
+      "live_tuning": "Множники / місткість",
+      "live_loot": "Рідкість здобичі",
+      "fire_rate_scale": "Темп стрільби",
+      "movement_speed_scale": "Швидкість руху",
+      "jump_height_scale": "Висота стрибка",
+      "critical_damage_scale": "Шкода крита",
+      "dedicated_drop_multiplier": "Дод. особиста здобич",
+      "backpack_size": "Розмір рюкзака",
       "preset_credit": ""
     },
     "buttons": {
       "apply_changes": "Застосувати зміни персонажа та валюти",
       "apply_profile_changes": "Застосувати валюти Profile",
-      "sync_levels": "Синхронізувати рівні предметів у рюкзаку з персонажем"
+      "sync_levels": "Синхронізувати рівні предметів у рюкзаку з персонажем",
+      "toggle_infinite_ammo": "Нескінченні набої",
+      "toggle_demigod": "Безсмертя",
+      "toggle_health_lock": "Фікс. здоров'я",
+      "toggle_shield_lock": "Фікс. щит",
+      "toggle_stamina_lock": "Нескінченна витривалість",
+      "toggle_instant_reload": "Миттєва перезарядка",
+      "toggle_no_overheat": "Без перегріву",
+      "toggle_no_spread": "Без розкиду",
+      "toggle_no_recoil": "Без віддачі",
+      "toggle_guaranteed_crit": "Завжди крит",
+      "toggle_repairkit_no_cd": "Ремкомплект без КД",
+      "toggle_skill_no_cd": "Навички без КД",
+      "toggle_gadget_no_cd": "Спорядження без КД",
+      "toggle_dedicated_drop_100": "Особиста здобич 100%",
+      "apply_fire_rate": "Застосувати",
+      "apply_movement_speed": "Застосувати",
+      "apply_jump_height": "Застосувати",
+      "apply_critical_damage": "Застосувати",
+      "apply_backpack_size": "Застосувати",
+      "apply_dedicated_drop_multiplier": "Застосувати",
+      "rarity_legendary": "Лише легендарні",
+      "rarity_pearlescent": "Лише перлинні",
+      "rarity_reset": "Скинути шанс",
+      "reset_runtime_modifiers": "Скинути модифікатори"
     },
     "warnings": {
       "sync_warning": "Увага: Це може призвести до зняття екіпірованих предметів. Вам доведеться одягнути їх знову з рюкзака."
@@ -914,6 +953,7 @@
       "move_up": "Вгору",
       "move_down": "Вниз",
       "drag_part": "Перетягніть, щоб змінити порядок",
+      "toggle_internal_names": "Показати або приховати внутрішні назви деталей",
       "remove_part": "Видалити"
     },
     "parts": {
@@ -943,6 +983,10 @@
       "facet_part_type": "Тип деталі",
       "facet_manufacturer": "Виробник",
       "facet_weapon_type": "Тип зброї",
+      "same_model": "Та сама модель ствола ({model})",
+      "cross_model": "Інша модель: поточна {current}, кандидат {candidate}",
+      "same_model_badge": "Та сама {model}",
+      "cross_model_badge": "Інша {model}",
       "result_count": "Знайдено: {n} / {total}",
       "available_parts_hint": "Доступні деталі (клік — перегляд, подвійний клік — додати)"
     }

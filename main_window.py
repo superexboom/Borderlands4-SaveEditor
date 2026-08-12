@@ -3,6 +3,7 @@ import sys
 import time
 import itertools
 import os
+from importlib import import_module
 from pathlib import Path
 
 # Force UTF-8 stdio so the app's bilingual (Chinese) log prints don't crash a
@@ -21,7 +22,7 @@ for _stream_name in ("stdout", "stderr"):
         except (AttributeError, ValueError):
             pass
 
-VERSION = "3.9.5"
+VERSION = "4.0.0"
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QMessageBox, QFileDialog,
@@ -37,15 +38,6 @@ from core import resource_loader
 from core import bl4_functions as bl4f
 from core import SaveGameController, SaveSelectorWidget, ThemeManager, infer_user_id_from_save_path
 
-from tabs import (
-    QtCharacterTab, QtItemsTab, QtWeaponGeneratorTab, QtConverterTab,
-    QtClassModEditorTab, QtHeavyWeaponEditorTab, QtShieldEditorTab,
-    QtGrenadeEditorTab, QtRepkitEditorTab, QtYamlEditorTab,
-    QtEnhancementEditorTab, WeaponEditorTab as QtWeaponEditorTab,
-    QtLoadoutManagerTab, QtSerialInspectorTab
-)
-
-
 class BackgroundWidget(QLabel):
     """Widget that displays a blurred background image for frosted glass effect."""
     
@@ -59,7 +51,9 @@ class BackgroundWidget(QLabel):
         self.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Ignored)
         from PyQt6.QtCore import QSettings
         self.settings = QSettings('SuperExboom', 'BL4SaveEditor')
-        self._load_background_image()
+        self.setStyleSheet("background-color: #1a1a20;")
+        # Let the first frame paint before decoding a multi-megabyte custom/background image.
+        QTimer.singleShot(100, self._load_background_image)
         
     def _load_background_image(self):
         """Load and apply the background image with blur effect."""
@@ -72,21 +66,18 @@ class BackgroundWidget(QLabel):
         if bg_path and bg_path.exists():
             self._original_pixmap = QPixmap(str(bg_path))
             self._apply_blur()
+            self._update_scaled_pixmap()
         else:
             # Fallback: solid dark background
             self.setStyleSheet("background-color: #1a1a20;")
 
     def set_custom_image(self, bg_path):
-        from PyQt6.QtGui import QResizeEvent
         if bg_path and Path(bg_path).exists():
             self.settings.setValue('custom_background', str(bg_path))
         else:
             self.settings.remove('custom_background')
             
         self._load_background_image()
-        if self.isVisible():
-            # Trigger a resize event to ensure scaling is maintained
-            self.resizeEvent(QResizeEvent(self.size(), self.size()))
     
     def _apply_blur(self):
         """Apply blur effect to the background."""
@@ -101,6 +92,10 @@ class BackgroundWidget(QLabel):
     def resizeEvent(self, event):
         """Handle resize to scale background - maintains aspect ratio, crops to fill."""
         super().resizeEvent(event)
+        self._update_scaled_pixmap()
+
+    def _update_scaled_pixmap(self):
+        """Scale the loaded image immediately, including after deferred loading."""
         if self._original_pixmap:
             # Use KeepAspectRatioByExpanding to maintain aspect ratio and crop excess
             scaled_pixmap = self._original_pixmap.scaled(
@@ -258,6 +253,67 @@ class _LiveFetchWorker(QThread):
         self.loaded.emit(yaml_like, err)
 
 
+class _LiveBatchSpawnWorker(QThread):
+    """Materialize rolled items in compact native batches without blocking Qt."""
+
+    progress = pyqtSignal(int, int, int, int)
+    batch_finished = pyqtSignal(int, int)
+
+    def __init__(self, bridge, lines, parent=None):
+        super().__init__(parent)
+        self._bridge = bridge
+        self._lines = list(lines)
+
+    def run(self):
+        success = 0
+        fail = 0
+        total = len(self._lines)
+        serials = []
+        for line in self._lines:
+            try:
+                if line.strip().startswith('@U'):
+                    serial = line.strip()
+                else:
+                    serial, err = b_encoder.encode_to_base85(line)
+                    if err:
+                        raise ValueError(err)
+                serials.append(serial)
+            except Exception:
+                fail += 1
+        completed = fail
+        self.progress.emit(completed, total, success, fail)
+
+        # Keep one game transaction modest: large reward payloads cause more UI
+        # churn and are harder to verify atomically. This is independent of any
+        # third-party mod's batching implementation.
+        chunks = []
+        current = []
+        current_chars = 0
+        for serial in serials:
+            size = len(serial)
+            if current and (len(current) >= 20 or current_chars + size > 18000):
+                chunks.append(current)
+                current = []
+                current_chars = 0
+            current.append(serial)
+            current_chars += size
+        if current:
+            chunks.append(current)
+
+        for chunk in chunks:
+            try:
+                result = self._bridge.spawn_many(chunk, "BackpackItems")
+                if result.get("ok"):
+                    success += len(chunk)
+                else:
+                    fail += len(chunk)
+            except Exception:
+                fail += len(chunk)
+            completed += len(chunk)
+            self.progress.emit(completed, total, success, fail)
+        self.batch_finished.emit(success, fail)
+
+
 class BatchAddWorker(QObject):
     progress = pyqtSignal(int, int, int, int) # current, total, success, fail
     finished = pyqtSignal(int, int) # success, fail
@@ -303,6 +359,13 @@ class MainWindow(QMainWindow):
     _NAV_HORIZONTAL_CHROME = 46
     _RESIZE_MARGIN = 8
 
+    def __getattr__(self, name):
+        """Keep the historical ``window.foo_tab`` API while tabs are lazy."""
+        lazy_attrs = self.__dict__.get("_lazy_tab_attrs", {})
+        if name in lazy_attrs:
+            return self._ensure_tab(lazy_attrs[name])
+        raise AttributeError(name)
+
     def __init__(self):
         super().__init__()
         from PyQt6.QtCore import QSettings
@@ -323,6 +386,12 @@ class MainWindow(QMainWindow):
         self.controller = SaveGameController()
         self._items_snapshot = None
         self._dirty_item_views = {"items", "weapon", "yaml"}
+        self._lazy_tab_specs = {}
+        self._lazy_tab_attrs = {}
+        self._lazy_tab_indexes = {}
+        self._loaded_tabs = {}
+        self._character_data = None
+        self._character_level = ""
         # --- live (online) mode state ---
         self._live_active = False
         self._live_bridge = None
@@ -716,21 +785,31 @@ class MainWindow(QMainWindow):
             button.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
             header_layout.addWidget(button)
 
-        # --- live (online) mode: toggle + manual refresh, inserted before stretch ---
-        self.live_toggle_button = QPushButton("离线")
-        self.live_toggle_button.setObjectName("headerActionButton")
-        self.live_toggle_button.setToolTip("在线模式:连接运行中的游戏(127.0.0.1:28777),仅读取背包/银行")
-        self.live_toggle_button.setProperty("headerControl", True)
-        self.live_toggle_button.clicked.connect(self._toggle_live_mode)
-        header_layout.addWidget(self.live_toggle_button)
+        # Compact live controls share one header slot so the existing 911px
+        # small-screen/DPI layout does not gain two full-width action buttons.
+        live_controls = QWidget(self.header_bar)
+        live_controls.setObjectName("liveHeaderControls")
+        live_layout = QHBoxLayout(live_controls)
+        live_layout.setContentsMargins(0, 0, 0, 0)
+        live_layout.setSpacing(4)
 
-        self.live_refresh_button = QPushButton("⟳")
-        self.live_refresh_button.setObjectName("headerActionButton")
+        self.live_toggle_button = QPushButton("○")
+        self.live_toggle_button.setObjectName("headerActionButton")
+        self.live_toggle_button.setToolTip("在线模式:连接运行中的游戏(127.0.0.1:28777),读取并实时修改背包物品")
+        self.live_toggle_button.setProperty("liveControl", True)
+        self.live_toggle_button.setAccessibleName("在线模式")
+        self.live_toggle_button.clicked.connect(self._toggle_live_mode)
+        live_layout.addWidget(self.live_toggle_button)
+
+        self.live_refresh_button = QPushButton("↻")
+        self.live_refresh_button.setObjectName("liveRefreshButton")
         self.live_refresh_button.setToolTip("手动刷新游戏内物品(仅在线模式)")
-        self.live_refresh_button.setProperty("headerControl", True)
+        self.live_refresh_button.setProperty("liveControl", True)
+        self.live_refresh_button.setAccessibleName("刷新在线物品")
         self.live_refresh_button.setEnabled(False)
         self.live_refresh_button.clicked.connect(self._live_refresh)
-        header_layout.addWidget(self.live_refresh_button)
+        live_layout.addWidget(self.live_refresh_button)
+        header_layout.addWidget(live_controls)
 
         header_layout.addStretch()
 
@@ -804,79 +883,104 @@ class MainWindow(QMainWindow):
         self.selector_page.refresh_button.clicked.connect(self.scan_for_saves)
         self.add_tab(self.selector_page, self.loc['tabs']['select_save'], "📁")
 
-        self.character_tab = QtCharacterTab()
-        self.character_tab.character_data_changed.connect(self.handle_character_update)
-        self.character_tab.sync_levels_requested.connect(self.handle_sync_levels)
-        self.character_tab.unlock_requested.connect(self.handle_unlock_request)
-        self.add_tab(self.character_tab, self.loc['tabs']['character'], "👤")
-
-        self.items_tab = QtItemsTab()
-        self.items_tab.add_item_requested.connect(self.handle_add_to_backpack)
-        self.add_tab(self.items_tab, self.loc['tabs']['items'], "🎒")
-
-        self.serial_inspector_tab = QtSerialInspectorTab()
-        self.serial_inspector_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
-        self.add_tab(self.serial_inspector_tab, self.loc['tabs'].get('serial_inspector', 'Inspector'), "🔍")
-
-        self.yaml_editor_tab = QtYamlEditorTab(self)
-        self.yaml_editor_tab.yaml_text_changed.connect(self.handle_yaml_update)
-        self.yaml_editor_tab.structure_changed.connect(self.handle_yaml_structure_changed)
-        self.yaml_editor_tab.open_item_requested.connect(self.handle_open_item_from_yaml)
-        self.yaml_editor_tab.apply_theme(self.theme_manager.is_dark())
-        self.add_tab(self.yaml_editor_tab, self.loc['tabs']['yaml_editor'], "📄")
+        self._add_lazy_tab('character', 'character_tab', 'qt_character_tab', 'QtCharacterTab', "👤")
+        self._add_lazy_tab('items', 'items_tab', 'qt_items_tab', 'QtItemsTab', "🎒")
+        self._add_lazy_tab('serial_inspector', 'serial_inspector_tab', 'qt_serial_inspector_tab', 'QtSerialInspectorTab', "🔍")
+        self._add_lazy_tab('yaml_editor', 'yaml_editor_tab', 'qt_yaml_editor_tab', 'QtYamlEditorTab', "📄", pass_main=True)
         self._add_nav_separator()
 
-        self.class_mod_tab = QtClassModEditorTab(main_app=self)
-        self.class_mod_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
-        self.add_tab(self.class_mod_tab, self.loc['tabs']['class_mod'], "🌟")
-
-        self.enhancement_tab = QtEnhancementEditorTab(main_app=self)
-        self.enhancement_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
-        self.add_tab(self.enhancement_tab, self.loc['tabs']['enhancement'], "✨")
-
-        self.weapon_editor_tab = QtWeaponEditorTab(self)
-        self.weapon_editor_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
-        self.weapon_editor_tab.update_item_requested.connect(self.handle_update_item)
-        self.add_tab(self.weapon_editor_tab, self.loc['tabs']['weapon_editor'], "🔧")
-
-        self.weapon_generator_tab = QtWeaponGeneratorTab()
-        self.weapon_generator_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
-        self.weapon_generator_tab.batch_add_to_backpack_requested.connect(self.handle_roll_batch_add)
-        self.add_tab(self.weapon_generator_tab, self.loc['tabs']['weapon_generator'], "🔫")
-
-        self.grenade_tab = QtGrenadeEditorTab(main_app=self)
-        self.grenade_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
-        self.grenade_tab.batch_add_to_backpack_requested.connect(self.handle_roll_batch_add)
-        self.add_tab(self.grenade_tab, self.loc['tabs']['grenade'], "💣")
-
-        self.shield_tab = QtShieldEditorTab(main_app=self)
-        self.shield_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
-        self.shield_tab.batch_add_to_backpack_requested.connect(self.handle_roll_batch_add)
-        self.add_tab(self.shield_tab, self.loc['tabs']['shield'], "🛡️")
-
-        self.repkit_tab = QtRepkitEditorTab(main_app=self)
-        self.repkit_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
-        self.repkit_tab.batch_add_to_backpack_requested.connect(self.handle_roll_batch_add)
-        self.add_tab(self.repkit_tab, self.loc['tabs']['repkit'], "🛠️")
-
-        self.heavy_weapon_tab = QtHeavyWeaponEditorTab(main_app=self)
-        self.heavy_weapon_tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
-        self.heavy_weapon_tab.batch_add_to_backpack_requested.connect(self.handle_roll_batch_add)
-        self.add_tab(self.heavy_weapon_tab, self.loc['tabs']['heavy_weapon'], "🚀")
+        self._add_lazy_tab('class_mod', 'class_mod_tab', 'qt_class_mod_editor_tab', 'QtClassModEditorTab', "🌟", main_app=True)
+        self._add_lazy_tab('enhancement', 'enhancement_tab', 'qt_enhancement_editor_tab', 'QtEnhancementEditorTab', "✨", main_app=True)
+        self._add_lazy_tab('weapon_editor', 'weapon_editor_tab', 'qt_weapon_editor_tab', 'WeaponEditorTab', "🔧", pass_main=True)
+        self._add_lazy_tab('weapon_generator', 'weapon_generator_tab', 'qt_weapon_generator_tab', 'QtWeaponGeneratorTab', "🔫")
+        self._add_lazy_tab('grenade', 'grenade_tab', 'qt_grenade_editor_tab', 'QtGrenadeEditorTab', "💣", main_app=True)
+        self._add_lazy_tab('shield', 'shield_tab', 'qt_shield_editor_tab', 'QtShieldEditorTab', "🛡️", main_app=True)
+        self._add_lazy_tab('repkit', 'repkit_tab', 'qt_repkit_editor_tab', 'QtRepkitEditorTab', "🛠️", main_app=True)
+        self._add_lazy_tab('heavy_weapon', 'heavy_weapon_tab', 'qt_heavy_weapon_editor_tab', 'QtHeavyWeaponEditorTab', "🚀", main_app=True)
 
         self._add_nav_separator()
-        self.loadout_manager_tab = QtLoadoutManagerTab()
-        self.add_tab(self.loadout_manager_tab, self.loc['tabs'].get('loadout_manager', '配置管理'), "📋")
-
-        self.converter_tab = QtConverterTab()
-        self.converter_tab.batch_add_requested.connect(self.handle_batch_add)
-        self.converter_tab.iterator_requested.connect(self.handle_iterator_request)
-        self.converter_tab.iterator_add_to_backpack_requested.connect(self.handle_iterator_add_to_backpack)
-        self.add_tab(self.converter_tab, self.loc['tabs']['converter'], "🔧")
+        self._add_lazy_tab('loadout_manager', 'loadout_manager_tab', 'qt_loadout_manager_tab', 'QtLoadoutManagerTab', "📋")
+        self._add_lazy_tab('converter', 'converter_tab', 'qt_converter_tab', 'QtConverterTab', "🔧")
 
         self._refresh_nav_bar()
         if self.nav_button_group.buttons():
             self.nav_button_group.buttons()[0].click()
+
+    def _add_lazy_tab(self, key, attr, module, class_name, icon, *, pass_main=False, main_app=False):
+        placeholder = QWidget()
+        index = self.add_tab(placeholder, self.loc['tabs'][key], icon)
+        self._lazy_tab_specs[key] = (attr, module, class_name, pass_main, main_app)
+        self._lazy_tab_attrs[attr] = key
+        self._lazy_tab_indexes[key] = index
+
+    def _loaded_tab(self, key):
+        return self._loaded_tabs.get(key)
+
+    def _ensure_tab(self, key):
+        loaded = self._loaded_tab(key)
+        if loaded is not None:
+            return loaded
+        attr, module_name, class_name, pass_main, main_app = self._lazy_tab_specs[key]
+        tab_class = getattr(import_module(f"tabs.{module_name}"), class_name)
+        if main_app:
+            tab = tab_class(main_app=self)
+        elif pass_main:
+            tab = tab_class(self)
+        else:
+            tab = tab_class()
+        self._connect_tab(key, tab)
+        if self.current_language != 'zh-CN' and hasattr(tab, 'update_language'):
+            tab.update_language(self.current_language)
+        if key == 'yaml_editor':
+            tab.apply_theme(self.theme_manager.is_dark())
+
+        index = self._lazy_tab_indexes[key]
+        placeholder = self.content_stack.widget(index)
+        self.content_stack.removeWidget(placeholder)
+        self.content_stack.insertWidget(index, tab)
+        placeholder.deleteLater()
+        self._loaded_tabs[key] = tab
+        self.__dict__[attr] = tab
+        self._hydrate_tab(key, tab)
+        self._apply_live_ui_state(tab_only=(key, tab))
+        return tab
+
+    def _connect_tab(self, key, tab):
+        if key == 'character':
+            tab.character_data_changed.connect(self.handle_character_update)
+            tab.sync_levels_requested.connect(self.handle_sync_levels)
+            tab.unlock_requested.connect(self.handle_unlock_request)
+            tab.runtime_action_requested.connect(self.handle_live_runtime_action)
+        elif key == 'items':
+            tab.add_item_requested.connect(self.handle_add_to_backpack)
+        elif key in {'serial_inspector', 'class_mod', 'enhancement', 'weapon_editor', 'weapon_generator', 'grenade', 'shield', 'repkit', 'heavy_weapon'}:
+            tab.add_to_backpack_requested.connect(self.handle_add_to_backpack)
+        if key == 'yaml_editor':
+            tab.yaml_text_changed.connect(self.handle_yaml_update)
+            tab.structure_changed.connect(self.handle_yaml_structure_changed)
+            tab.open_item_requested.connect(self.handle_open_item_from_yaml)
+        elif key == 'weapon_editor':
+            tab.update_item_requested.connect(self.handle_update_item)
+        elif key in {'weapon_generator', 'grenade', 'shield', 'repkit', 'heavy_weapon'}:
+            tab.batch_add_to_backpack_requested.connect(self.handle_roll_batch_add)
+        elif key == 'converter':
+            tab.batch_add_requested.connect(self.handle_batch_add)
+            tab.iterator_requested.connect(self.handle_iterator_request)
+            tab.iterator_add_to_backpack_requested.connect(self.handle_iterator_add_to_backpack)
+
+    def _hydrate_tab(self, key, tab):
+        if self._character_level and hasattr(tab, 'set_character_level'):
+            tab.set_character_level(self._character_level)
+        if not self.controller.yaml_obj:
+            return
+        if key == 'character':
+            tab.update_fields(self._character_data or self.controller.get_character_data())
+        elif key == 'yaml_editor':
+            tab.sync_from_controller()
+            self._dirty_item_views.discard('yaml')
+        elif key == 'loadout_manager':
+            save_path = str(self.controller.save_path) if self.controller.save_path else None
+            tab.set_data(self.controller.yaml_obj, save_path, dirty_callback=self.controller.mark_dirty)
 
     def add_tab(self, widget: QWidget, text: str, icon_char: str):
         index = self.content_stack.addWidget(widget)
@@ -894,6 +998,7 @@ class MainWindow(QMainWindow):
         button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.nav_buttons_layout.addWidget(button)
         self.nav_button_group.addButton(button, index)
+        return index
 
     def _add_nav_separator(self):
         separator = QWidget()
@@ -944,6 +1049,9 @@ class MainWindow(QMainWindow):
     
     def switch_to_tab(self, index: int):
         if 0 <= index < self.content_stack.count():
+            key = next((key for key, value in self._lazy_tab_indexes.items() if value == index), None)
+            if key is not None:
+                self._ensure_tab(key)
             self.content_stack.setCurrentIndex(index)
             self._refresh_inventory_view(index)
             
@@ -958,6 +1066,9 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot(int)
     def handle_nav_click(self, index: int):
+        key = next((key for key, value in self._lazy_tab_indexes.items() if value == index), None)
+        if key is not None:
+            self._ensure_tab(key)
         self.content_stack.setCurrentIndex(index)
         self._refresh_inventory_view(index)
         self.update_action_states()
@@ -975,15 +1086,18 @@ class MainWindow(QMainWindow):
         if not hasattr(self, "content_stack") or not (0 <= index < self.content_stack.count()):
             return
         current = self.content_stack.widget(index)
-        if current is getattr(self, "items_tab", None) and "items" in self._dirty_item_views:
-            self.items_tab.update_tree(self.get_items_snapshot())
+        items_tab = self._loaded_tab('items')
+        weapon_tab = self._loaded_tab('weapon_editor')
+        yaml_tab = self._loaded_tab('yaml_editor')
+        if current is items_tab and "items" in self._dirty_item_views:
+            items_tab.update_tree(self.get_items_snapshot())
             self._dirty_item_views.discard("items")
-        elif current is getattr(self, "weapon_editor_tab", None) and "weapon" in self._dirty_item_views:
-            self.weapon_editor_tab.refresh_backpack_items(self.get_items_snapshot())
+        elif current is weapon_tab and "weapon" in self._dirty_item_views:
+            weapon_tab.refresh_backpack_items(self.get_items_snapshot())
             self._dirty_item_views.discard("weapon")
-        elif current is getattr(self, "yaml_editor_tab", None) and "yaml" in self._dirty_item_views:
+        elif current is yaml_tab and "yaml" in self._dirty_item_views:
             if self.controller.yaml_obj:
-                self.yaml_editor_tab.sync_from_controller()
+                yaml_tab.sync_from_controller()
             self._dirty_item_views.discard("yaml")
 
     def browse_and_open_save(self):
@@ -1072,14 +1186,14 @@ class MainWindow(QMainWindow):
                     return
 
     def update_action_states(self):
-        has_save = self.controller.yaml_obj is not None
+        has_save = self.controller.yaml_obj is not None and not self._live_active
         self.save_action.setEnabled(has_save)
         self.save_as_action.setEnabled(has_save)
         self.save_button.setEnabled(has_save)
         self.save_as_button.setEnabled(has_save)
 
     def _all_content_tabs(self):
-        return [self.content_stack.widget(i) for i in range(self.content_stack.count())]
+        return [self.selector_page, *self._loaded_tabs.values()]
 
     @pyqtSlot()
     def scan_for_saves(self):
@@ -1094,27 +1208,29 @@ class MainWindow(QMainWindow):
             if invalidate_items:
                 self.invalidate_items_snapshot()
             char_data = self.controller.get_character_data()
-            self.character_tab.update_fields(char_data)
-            self.log("  - Character tab refreshed.")
+            self._character_data = char_data
+            character_tab = self._loaded_tab('character')
+            if character_tab is not None:
+                character_tab.update_fields(char_data)
+                self.log("  - Character tab refreshed.")
             # 同步角色等级到所有编辑器Tab的默认等级
             char_level = char_data.get("角色等级", "") if char_data else ""
             if char_level:
-                level_sync_tabs = [
-                    self.items_tab, self.class_mod_tab, self.enhancement_tab,
-                    self.grenade_tab, self.shield_tab, self.repkit_tab,
-                    self.heavy_weapon_tab, self.weapon_generator_tab,
-                ]
-                for tab in level_sync_tabs:
+                self._character_level = str(char_level)
+                for tab in self._loaded_tabs.values():
                     if hasattr(tab, 'set_character_level'):
                         tab.set_character_level(char_level)
                 self.log(f"  - Character level ({char_level}) synced to editor tabs.")
-            self.yaml_editor_tab.sync_from_controller()
-            self._dirty_item_views.discard("yaml")
-            self.log("  - YAML editor tab refreshed.")
-            if hasattr(self, 'loadout_manager_tab'):
+            yaml_tab = self._loaded_tab('yaml_editor')
+            if yaml_tab is not None:
+                yaml_tab.sync_from_controller()
+                self._dirty_item_views.discard("yaml")
+                self.log("  - YAML editor tab refreshed.")
+            loadout_tab = self._loaded_tab('loadout_manager')
+            if loadout_tab is not None:
                 save_path = str(self.controller.save_path) if self.controller.save_path else None
-                self.loadout_manager_tab.set_data(self.controller.yaml_obj, save_path,
-                                                  dirty_callback=self.controller.mark_dirty)
+                loadout_tab.set_data(self.controller.yaml_obj, save_path,
+                                     dirty_callback=self.controller.mark_dirty)
                 self.log("  - Loadout manager tab data set.")
         except Exception as e:
             self.log(f"CRITICAL: An exception occurred during refresh_all_tabs: {e}", force_popup=True)
@@ -1149,7 +1265,7 @@ class MainWindow(QMainWindow):
             return
 
         self.live_toggle_button.setEnabled(False)
-        self.live_toggle_button.setText("连接中…")
+        self.live_toggle_button.setText("…")
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
 
         self._live_watchdog = QTimer(self)
@@ -1169,7 +1285,7 @@ class MainWindow(QMainWindow):
         self.live_toggle_button.setEnabled(True)
         if err is not None or yaml_like is None:
             self._live_bridge = None
-            self.live_toggle_button.setText("离线")
+            self.live_toggle_button.setText("○")
             self.log(f"Live fetch failed: {err}", force_popup=True)
             return
 
@@ -1177,11 +1293,16 @@ class MainWindow(QMainWindow):
         self.controller.yaml_obj = yaml_like
         self.controller.mark_clean()
 
-        self.live_toggle_button.setText("在线")
+        self.live_toggle_button.setText("●")
         self.live_refresh_button.setEnabled(True)
         self._apply_live_ui_state()
         self.setWindowTitle(f"{self.loc['window_title']} V{VERSION} - [在线]")
         self.refresh_all_tabs()
+        try:
+            runtime = self._live_bridge.runtime_action('state')
+            self._ensure_tab('character').apply_runtime_state(runtime.get('state', {}))
+        except Exception as exc:
+            self.log(f"在线运行时状态读取失败: {exc}")
         self.log("在线模式:已同步游戏内背包/银行物品。")
 
     def _stop_live_watchdog(self):
@@ -1194,7 +1315,7 @@ class MainWindow(QMainWindow):
         QApplication.restoreOverrideCursor()
         self.live_toggle_button.setEnabled(True)
         self.live_refresh_button.setEnabled(self._live_active)
-        self.live_toggle_button.setText("在线" if self._live_active else "离线")
+        self.live_toggle_button.setText("●" if self._live_active else "○")
         self.log("在线模式:获取超时(15s)。游戏可能未运行,或 bl4_live 未加载。", force_popup=True)
 
     def _live_refresh(self):
@@ -1232,21 +1353,90 @@ class MainWindow(QMainWindow):
         self.controller.yaml_obj = None
         self.controller.mark_clean()
 
-        self.live_toggle_button.setText("离线")
+        self.live_toggle_button.setText("○")
         self.live_refresh_button.setEnabled(False)
         self._apply_live_ui_state()
         self.setWindowTitle(f"{self.loc['window_title']} V{VERSION}")
         self.refresh_all_tabs()
         self.log("已退出在线模式。")
 
-    def _apply_live_ui_state(self):
-        """In live mode there is no save file, so disk save is meaningless."""
+    def _apply_live_ui_state(self, tab_only=None):
+        """Disable save-only inputs while the controller holds a live snapshot."""
         is_live = self._live_active
         for btn in (self.save_button, self.save_as_button):
             btn.setEnabled(not is_live)
             btn.setToolTip("在线模式下不可用(无存档文件)" if is_live else "")
+        self.save_action.setEnabled(not is_live and self.controller.yaml_obj is not None)
+        self.save_as_action.setEnabled(not is_live and self.controller.yaml_obj is not None)
         if hasattr(self, 'autosave_checkbox'):
             self.autosave_checkbox.setEnabled(not is_live)
+        character_tab = self._loaded_tab('character')
+        if character_tab is not None:
+            character_tab.set_live_mode(is_live)
+
+        # Flags belong to serialized save entries. The live bridge materializes
+        # runtime items directly and intentionally ignores them, so leaving the
+        # selectors active would promise an effect that cannot exist online.
+        owners = dict(self._loaded_tabs)
+        if tab_only is not None:
+            owners = {tab_only[0]: tab_only[1]}
+        flag_widgets = tuple(
+            (owners.get(key), widget_name)
+            for key, widget_names in {
+                'items': ('add_flag_combo',), 'class_mod': ('flag_combo',),
+                'enhancement': ('flag_var',), 'weapon_editor': ('flag_combo',),
+                'weapon_generator': ('flag_combo',), 'grenade': ('flag_combo',),
+                'shield': ('flag_combo',), 'repkit': ('flag_combo',),
+                'heavy_weapon': ('flag_combo',),
+                'converter': ('batch_add_flag_combo', 'yaml_flag_combo'),
+            }.items()
+            for widget_name in widget_names
+        )
+        for owner, name in flag_widgets:
+            widget = getattr(owner, name, None) if owner is not None else None
+            if widget is not None:
+                if widget.property('offlineToolTip') is None:
+                    widget.setProperty('offlineToolTip', widget.toolTip())
+                widget.setEnabled(not is_live)
+                widget.setToolTip(
+                    "在线模式不使用存档 Flag"
+                    if is_live else str(widget.property('offlineToolTip') or "")
+                )
+
+    @pyqtSlot(str, object)
+    def handle_live_runtime_action(self, action: str, params=None):
+        if not self._live_active or self._live_bridge is None:
+            return
+        character_tab = self._ensure_tab('character')
+        button = getattr(character_tab, 'live_runtime_buttons', {}).get(action)
+        label = button.text() if button is not None else action
+        try:
+            request_params = dict(params or {})
+            if action == 'toggle_dedicated_drop_100' and request_params.get('enabled'):
+                catalog = resource_loader.load_json_resource('core/data/dedicated_drop_pools.json')
+                if not catalog:
+                    raise RuntimeError('dedicated_drop_pools.json missing or invalid')
+                request_params['catalog'] = catalog
+            result = self._live_bridge.runtime_action(action, **request_params)
+            if result.get('ok'):
+                character_tab.apply_runtime_state(result.get('state', {}))
+                character_tab.set_runtime_result(f"{label}: OK", True)
+                self.log(f"在线运行时操作完成: {action}")
+            else:
+                error = str(result.get('error', 'failed'))
+                try:
+                    state = self._live_bridge.runtime_action('state').get('state', {})
+                    character_tab.apply_runtime_state(state)
+                except Exception:
+                    pass
+                character_tab.set_runtime_result(f"{label}: {error}", False)
+        except Exception as exc:
+            try:
+                state = self._live_bridge.runtime_action('state').get('state', {})
+                character_tab.apply_runtime_state(state)
+            except Exception:
+                pass
+            character_tab.set_runtime_result(f"{label}: {exc}", False)
 
     def log(self, message, force_popup=False):
         print(message)
@@ -1435,7 +1625,7 @@ class MainWindow(QMainWindow):
             return
 
         # --- online (live) mode: spawn a new item into the game's backpack ---
-        if self._live_active and self._live_bridge is not None:
+        if getattr(self, '_live_active', False) and getattr(self, '_live_bridge', None) is not None:
             self._live_add_to_backpack(serial_input)
             return
 
@@ -1488,8 +1678,7 @@ class MainWindow(QMainWindow):
 
         if res.get('ok'):
             QMessageBox.information(self, "在线模式", "已生成新物品到游戏背包。")
-            self.invalidate_items_snapshot()
-            self._refresh_inventory_view(self.content_stack.currentIndex())
+            self._live_refresh()
         else:
             self.log(f"在线生成被游戏拒绝: {res.get('error')}", force_popup=True)
     
@@ -1555,13 +1744,11 @@ class MainWindow(QMainWindow):
                 warn = f"\n\n注意: {len(res['missing_parts'])} 个配件未能映射。"
             QMessageBox.information(
                 self, "在线模式",
-                f"已实时应用到游戏内物品 (槽位 {idx})。\n"
-                f"配件即时生效;序列号已同步(存档/重载一致)。{warn}",
+                f"已覆写游戏内物品 (槽位 {idx})，序列与配件数组已核验。\n"
+                "非武器通常可直接读取新状态；武器的 ItemCard、手持模型和实际行为由游戏另行缓存，"
+                f"请小退到主菜单后重新进入使其完整生效。{warn}",
             )
-            # reflect the change in the editor's in-memory data too
-            node = self.controller.get_node(path[:-1]) if hasattr(self.controller, 'get_node') else None
-            self.invalidate_items_snapshot()
-            self._refresh_inventory_view(self.content_stack.currentIndex())
+            self._live_refresh()
         else:
             self.log(f"在线覆写被游戏拒绝: {res.get('error')}", force_popup=True)
 
@@ -1611,7 +1798,10 @@ class MainWindow(QMainWindow):
         if self.controller.update_yaml_object(yaml_string):
             self.invalidate_items_snapshot()
             try:
-                self.character_tab.update_fields(self.controller.get_character_data())
+                character_tab = self._loaded_tab('character')
+                if character_tab is not None:
+                    self._character_data = self.controller.get_character_data()
+                    character_tab.update_fields(self._character_data)
             except Exception:
                 pass
             self._refresh_inventory_view(self.content_stack.currentIndex())
@@ -1621,7 +1811,10 @@ class MainWindow(QMainWindow):
         """YAML 树编辑后的联动：失效物品快照 + 轻量刷新当前视图。"""
         self.invalidate_items_snapshot()
         try:
-            self.character_tab.update_fields(self.controller.get_character_data())
+            character_tab = self._loaded_tab('character')
+            if character_tab is not None:
+                self._character_data = self.controller.get_character_data()
+                character_tab.update_fields(self._character_data)
         except Exception:
             pass
         self._refresh_inventory_view(self.content_stack.currentIndex())
@@ -1643,12 +1836,15 @@ class MainWindow(QMainWindow):
         }
         try:
             if type_en in WEAPON_TYPES:
-                self.weapon_editor_tab.refresh_backpack_items(self.get_items_snapshot())
+                weapon_tab = self._ensure_tab('weapon_editor')
+                weapon_tab.refresh_backpack_items(self.get_items_snapshot())
                 self._dirty_item_views.discard("weapon")
-                self._switch_to_widget(self.weapon_editor_tab)
-                self.weapon_editor_tab.load_weapon_data(item)
+                self._switch_to_widget(weapon_tab)
+                weapon_tab.load_weapon_data(item)
                 return
-            tab = getattr(self, route.get(type_en, ''), None)
+            key_by_attr = {attr: key for key, (attr, *_rest) in self._lazy_tab_specs.items()}
+            target_attr = route.get(type_en, '')
+            tab = self._ensure_tab(key_by_attr[target_attr]) if target_attr in key_by_attr else None
             if tab is not None and hasattr(tab, 'open_item_serial'):
                 self._switch_to_widget(tab)
                 tab.open_item_serial(item)
@@ -1656,10 +1852,11 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.log(f"Open item in editor failed, fallback to items tab: {e}")
         # 回退：物品总览页选中
-        self.items_tab.update_tree(self.get_items_snapshot())
+        items_tab = self._ensure_tab('items')
+        items_tab.update_tree(self.get_items_snapshot())
         self._dirty_item_views.discard("items")
-        self._switch_to_widget(self.items_tab)
-        if not self.items_tab.select_item_by_path(item.get("original_path")):
+        self._switch_to_widget(items_tab)
+        if not items_tab.select_item_by_path(item.get("original_path")):
             QMessageBox.warning(
                 self,
                 self.loc.get('dialogs', {}).get('warning', "Warning"),
@@ -1723,6 +1920,24 @@ class MainWindow(QMainWindow):
         source_tab = self.sender()
         if not hasattr(source_tab, 'finalize_roll_batch_add'):
             return
+        if getattr(self, '_live_active', False) and getattr(self, '_live_bridge', None) is not None:
+            current = getattr(self, '_live_batch_spawn_worker', None)
+            if current is not None and current.isRunning():
+                message = self.loc['dialogs'].get(
+                    'batch_busy', 'Another batch-add task is already running.'
+                )
+                source_tab.reject_roll_batch_add(message)
+                QMessageBox.warning(self, self.loc['dialogs']['warning'], message)
+                return
+            self._roll_batch_source_tab = source_tab
+            self._batch_add_active = True
+            worker = _LiveBatchSpawnWorker(self._live_bridge, lines, self)
+            worker.progress.connect(source_tab.update_roll_add_progress)
+            worker.batch_finished.connect(self._on_live_roll_batch_finished)
+            worker.finished.connect(worker.deleteLater)
+            self._live_batch_spawn_worker = worker
+            worker.start()
+            return
         if not self.controller.yaml_obj:
             QMessageBox.critical(self, self.loc['dialogs']['no_save'], self.loc['dialogs']['decrypt_save_first'])
             source_tab.finalize_roll_batch_add(0, len(lines))
@@ -1741,6 +1956,16 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, self.loc['dialogs']['warning'], message)
             return
         self._roll_batch_source_tab = source_tab
+
+    def _on_live_roll_batch_finished(self, success_count, fail_count):
+        self._batch_add_active = False
+        source_tab = getattr(self, '_roll_batch_source_tab', None)
+        self._roll_batch_source_tab = None
+        self._live_batch_spawn_worker = None
+        if source_tab is not None:
+            source_tab.finalize_roll_batch_add(success_count, fail_count)
+        if success_count > 0:
+            self._live_refresh()
 
     def on_roll_batch_add_finished(self, success_count, fail_count):
         self._batch_add_active = False
@@ -1943,8 +2168,9 @@ class MainWindow(QMainWindow):
         self.theme_manager.toggle_theme()
         self._apply_themed_stylesheet()
         self._update_theme_button()
-        if hasattr(self, 'yaml_editor_tab'):
-            self.yaml_editor_tab.apply_theme(self.theme_manager.is_dark())
+        yaml_tab = self._loaded_tab('yaml_editor')
+        if yaml_tab is not None:
+            yaml_tab.apply_theme(self.theme_manager.is_dark())
 
     def _get_theme_tooltip(self):
         """Get the tooltip text for the theme button."""

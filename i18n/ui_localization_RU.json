@@ -152,7 +152,8 @@
       "character_info": "Персонаж (Info)",
       "currency": "Валюта (Currency)",
       "world_presets": "Пресеты Profile / Shared",
-      "char_presets": "Пресеты персонажа"
+      "char_presets": "Пресеты персонажа",
+      "live_runtime": "Онлайн-функции"
     },
     "labels": {
       "name": "Имя:",
@@ -169,12 +170,50 @@
       "character_only_hint": "Только для сохранения персонажа. В Profile кнопки будут неактивны.",
       "preset_mode_profile": "Тип сохранения: Profile. Пресеты Profile активны, пресеты персонажа отключены.",
       "preset_mode_character": "Тип сохранения: персонаж. Пресеты персонажа активны, пресеты Profile отключены.",
+      "live_runtime_hint": "Эти функции действуют только в текущей сессии. Модификаторы оружия применяются после смены оружия и восстанавливаются при отключении.",
+      "live_runtime_idle": "Готово.",
+      "live_dedicated_drop_hint": "Гарантированные попытки только из личного пула врага NCS. Множитель задаёт число дополнительных попыток; мировой пул не добавляется.",
+      "live_survival": "Выживание / движение",
+      "live_weapon": "Оружие",
+      "live_cooldown": "Перезарядка умений",
+      "live_tuning": "Множители / вместимость",
+      "live_loot": "Редкость добычи",
+      "fire_rate_scale": "Темп стрельбы",
+      "movement_speed_scale": "Скорость движения",
+      "jump_height_scale": "Высота прыжка",
+      "critical_damage_scale": "Урон крита",
+      "dedicated_drop_multiplier": "Доп. личный дроп",
+      "backpack_size": "Размер рюкзака",
       "preset_credit": ""
     },
     "buttons": {
       "apply_changes": "Применить изменения персонажа и валюты",
       "apply_profile_changes": "Применить валюты Profile",
-      "sync_levels": "Синхронизировать ур. предметов в рюкзаке с персонажем"
+      "sync_levels": "Синхронизировать ур. предметов в рюкзаке с персонажем",
+      "toggle_infinite_ammo": "Бесконечные патроны",
+      "toggle_demigod": "Бессмертие",
+      "toggle_health_lock": "Фикс. здоровье",
+      "toggle_shield_lock": "Фикс. щит",
+      "toggle_stamina_lock": "Беск. выносливость",
+      "toggle_instant_reload": "Мгн. перезарядка",
+      "toggle_no_overheat": "Без перегрева",
+      "toggle_no_spread": "Без разброса",
+      "toggle_no_recoil": "Без отдачи",
+      "toggle_guaranteed_crit": "Всегда крит",
+      "toggle_repairkit_no_cd": "Ремкомплект без КД",
+      "toggle_skill_no_cd": "Навыки без КД",
+      "toggle_gadget_no_cd": "Снаряжение без КД",
+      "toggle_dedicated_drop_100": "Личный дроп 100%",
+      "apply_fire_rate": "Применить",
+      "apply_movement_speed": "Применить",
+      "apply_jump_height": "Применить",
+      "apply_critical_damage": "Применить",
+      "apply_backpack_size": "Применить",
+      "apply_dedicated_drop_multiplier": "Применить",
+      "rarity_legendary": "Только легендарные",
+      "rarity_pearlescent": "Только жемчужные",
+      "rarity_reset": "Сбросить шанс",
+      "reset_runtime_modifiers": "Сбросить модификаторы"
     },
     "warnings": {
       "sync_warning": "Внимание: Это может привести к снятию экипированных предметов. Вам придется надеть их заново из рюкзака."
@@ -991,6 +1030,7 @@
       "move_up": "Вверх",
       "move_down": "Вниз",
       "drag_part": "Перетащите для изменения порядка",
+      "toggle_internal_names": "Показать или скрыть внутренние имена деталей",
       "remove_part": "Удалить"
     },
     "parts": {
@@ -1020,6 +1060,10 @@
       "facet_part_type": "Тип детали",
       "facet_manufacturer": "Производитель",
       "facet_weapon_type": "Тип оружия",
+      "same_model": "Та же модель ствола ({model})",
+      "cross_model": "Другая модель: текущая {current}, кандидат {candidate}",
+      "same_model_badge": "Та же {model}",
+      "cross_model_badge": "Другая {model}",
       "result_count": "Найдено: {n} / {total}",
       "available_parts_hint": "Доступные детали (клик — предпросмотр, двойной клик — добавить)"
     }

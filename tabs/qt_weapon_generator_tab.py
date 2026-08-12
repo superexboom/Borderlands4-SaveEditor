@@ -565,15 +565,15 @@ class QtWeaponGeneratorTab(QWidget):
         self.parts_scroll_area.setWidget(scroll_content)
         generator_layout.addWidget(self.parts_scroll_area, 1)
 
-        # --- 连接信号 ---
+        # Populate first: adding the initial manufacturer used to emit a full
+        # rebuild before setup had finished, then rebuild everything again.
+        self._populate_initial_selectors()
         self.manufacturer_combo.currentTextChanged.connect(self.on_main_selection_change)
         self.weapon_type_combo.currentTextChanged.connect(self.on_main_selection_change)
         self.level_var.textChanged.connect(self.generate_weapon)
         self.seed_var.textChanged.connect(self.generate_weapon)
         random_seed_btn.clicked.connect(self.randomize_seed)
         add_to_backpack_btn.clicked.connect(self._on_add_to_backpack)
-        
-        self._populate_initial_selectors()
         self.on_main_selection_change()
 
     def _populate_initial_selectors(self):
@@ -598,7 +598,6 @@ class QtWeaponGeneratorTab(QWidget):
     def on_main_selection_change(self, _=None):
         self._populate_weapon_types()
         self._create_part_dropdowns()
-        self.generate_weapon()
 
     def _get_m_id(self, mfg_en, wt_en):
         if not mfg_en or not wt_en: return None
@@ -695,13 +694,16 @@ class QtWeaponGeneratorTab(QWidget):
                 for _, part_row in group_df.iterrows():
                     part_id = str(part_row['Part ID'])
                     if part_id:
-                        combo.addItem(self._part_option_text(m_id, part_id, part_row), part_id)
+                        combo.addItem(self._part_option_label(m_id, part_id, part_row), part_id)
                         combo.setItemData(combo.count() - 1, combo.itemText(combo.count() - 1), Qt.ItemDataRole.ToolTipRole)
                 # Add to dict BEFORE connecting signals
                 combo_key = f"{part_type_en}_{i}"
                 self.part_combos[combo_key] = combo
                 self.part_combo_rows[combo_key] = group_df
                 combo.currentTextChanged.connect(self.generate_weapon)
+                combo.popupAboutToShow.connect(
+                    lambda combo=combo, rows=group_df: self._populate_combo_descriptions(combo, rows)
+                )
                 # 下挂变化会影响元素2 的可选项（元素切换下挂）
                 if part_type_en == "Underbarrel":
                     combo.currentTextChanged.connect(self._refresh_element2)
@@ -729,6 +731,29 @@ class QtWeaponGeneratorTab(QWidget):
         return item_display_resolver.format_weapon_part_option(
             int(item_id), str(part_id), decoded_str, self.current_lang, row
         )
+
+    def _part_option_label(self, item_id, part_id, row):
+        name = item_display_resolver.weapon_part_name(int(item_id), str(part_id), self.current_lang, row)
+        return f"{part_id} - {name}" if name else str(part_id)
+
+    def _populate_combo_descriptions(self, combo, rows):
+        """Resolve the expensive candidate effects only for the popup being opened."""
+        item_id = self._current_m_id()
+        if item_id is None:
+            return
+        decoded = self.serial_decoded_entry.text() if hasattr(self, "serial_decoded_entry") else ""
+        combo.blockSignals(True)
+        try:
+            for index in range(1, combo.count()):
+                part_id = str(combo.itemData(index) or "")
+                matches = rows[rows['Part ID'] == part_id]
+                if matches.empty:
+                    continue
+                text = self._part_option_text(item_id, part_id, matches.iloc[0], decoded)
+                combo.setItemText(index, text)
+                combo.setItemData(index, text, Qt.ItemDataRole.ToolTipRole)
+        finally:
+            combo.blockSignals(False)
 
     @staticmethod
     def _configure_part_combo(combo):
@@ -829,7 +854,7 @@ class QtWeaponGeneratorTab(QWidget):
             combo.addItem(none_text, None)
             for _, row in rows.iterrows():
                 part_id = str(row['Part ID'])
-                combo.addItem(self._part_option_text(item_id, part_id, row, decoded), part_id)
+                combo.addItem(self._part_option_label(item_id, part_id, row), part_id)
                 combo.setItemData(combo.count() - 1, combo.itemText(combo.count() - 1), Qt.ItemDataRole.ToolTipRole)
             selected_index = combo.findData(selected)
             combo.setCurrentIndex(selected_index if selected_index >= 0 else 0)
@@ -846,15 +871,6 @@ class QtWeaponGeneratorTab(QWidget):
             combo = self.part_combos.get(key)
             if not isinstance(combo, QComboBox):
                 continue
-            combo.blockSignals(True)
-            for index in range(1, combo.count()):
-                part_id = str(combo.itemData(index) or "")
-                matches = rows[rows['Part ID'] == part_id]
-                if not matches.empty:
-                    text = self._part_option_text(item_id, part_id, matches.iloc[0], decoded_str)
-                    combo.setItemText(index, text)
-                    combo.setItemData(index, text, Qt.ItemDataRole.ToolTipRole)
-            combo.blockSignals(False)
             detail = self.part_detail_labels.get(key)
             selected = combo.currentData()
             if detail is not None and selected is not None:
@@ -863,6 +879,11 @@ class QtWeaponGeneratorTab(QWidget):
                     int(item_id), str(selected), decoded_str, self.current_lang,
                     str(matches.iloc[0]['Part Type']) if not matches.empty else "",
                 )
+                if not matches.empty:
+                    selected_index = combo.currentIndex()
+                    text = self._part_option_text(item_id, str(selected), matches.iloc[0], decoded_str)
+                    combo.setItemText(selected_index, text)
+                    combo.setItemData(selected_index, text, Qt.ItemDataRole.ToolTipRole)
                 detail.setText(description)
                 detail.setToolTip(description)
                 detail.setVisible(bool(description))

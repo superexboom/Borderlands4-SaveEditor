@@ -1411,6 +1411,16 @@ def weapon_part_selection_tags(item_id: int, part_id: str) -> dict[str, list[str
     }
 
 
+def weapon_part_internal(item_id: int, part_id: str) -> str:
+    """Return the pipeline-exported internal name used by diagnostic UIs."""
+    return str(_part_ref(item_id, part_id).get("part") or "")
+
+
+def weapon_part_category(item_id: int, part_id: str) -> str:
+    """Return the stable pipeline category for one weapon part."""
+    return str(_part_ref(item_id, part_id).get("category") or "")
+
+
 def _weapon_generation_refs(decoded: str, root_ref: str) -> list[str]:
     component_text = decoded.split("||", 1)[1] if "||" in decoded else ""
     refs: list[str] = []

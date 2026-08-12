@@ -112,10 +112,46 @@ QMainWindow {
     color: {text_disabled};
 }
 
+/* Compact online status/refresh pair; keep the header usable at 911px. */
+#headerBar QPushButton[liveControl="true"] {
+    background-color: {button_bg};
+    border: 1px solid {border_color};
+    padding: 0px;
+    border-radius: 5px;
+    min-width: 34px;
+    max-width: 34px;
+    min-height: 32px;
+    max-height: 32px;
+    color: {text_primary};
+}
+
+#headerBar QPushButton[liveControl="true"]:hover {
+    background-color: {button_hover};
+    border-color: {accent};
+}
+
+#headerBar QPushButton[liveControl="true"]:disabled {
+    background-color: {bg_input};
+    color: {text_disabled};
+}
+
 /* Labels ---------------------------------------------------------------- */
 QLabel {
     background-color: transparent;
     color: {text_primary};
+}
+
+#liveRuntimeSection {
+    color: {accent};
+    font-size: 10.5pt;
+    padding-top: 5px;
+    border-bottom: 1px solid {border_color};
+}
+
+QGroupBox QPushButton:checked {
+    background-color: {accent};
+    color: {bg_primary};
+    border-color: {accent};
 }
 
 /* Buttons --------------------------------------------------------------- */

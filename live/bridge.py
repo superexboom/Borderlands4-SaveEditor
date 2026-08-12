@@ -73,6 +73,25 @@ class Bridge:
     def info(self) -> dict[str, Any]:
         return self._roundtrip({"id": 1, "op": "info"}, timeout=5)
 
+    def player(self) -> dict[str, Any]:
+        """Read the active character's lightweight runtime identity/levels."""
+        resp = self._roundtrip({"id": 1, "op": "player"}, timeout=5)
+        if not resp.get("ok"):
+            raise BridgeError(str(resp.get("error", "player read failed")))
+        return resp
+
+    def runtime_action(self, action: str, **params: Any) -> dict[str, Any]:
+        """Run one bounded gameplay convenience action exposed by the SDK mod."""
+        req = {"id": 1, "op": "runtime", "action": str(action or "").strip()}
+        req.update(params)
+        resp = self._roundtrip(
+            req,
+            timeout=5,
+        )
+        if "ok" not in resp:
+            raise BridgeError("malformed runtime response")
+        return resp
+
     def list(self) -> dict[str, Any]:
         return self._roundtrip({"id": 1, "op": "list"}, timeout=5)
 
@@ -90,9 +109,10 @@ class Bridge:
     def apply(self, idx: int, serial: str, container: str = "BackpackItems",
               expect_old: str | None = None) -> dict[str, Any]:
         """
-        LIVE overwrite: rewrite an item's part pointers (live) + serial text.
-        The part change takes effect immediately; the serial keeps save/reload
-        consistent. Returns the server's result dict (ok / parts / serial / verify).
+        Persistent overwrite: rewrite identity part pointers + serial text.
+        Inventory thumbnails may update immediately, but weapon actors and card
+        caches can require a main-menu reload. The response reports verification
+        of the stored identity, not a claim that every derived runtime object rebuilt.
         """
         req: dict[str, Any] = {"id": 1, "op": "apply", "container": container,
                                "idx": idx, "serial": serial}
@@ -101,16 +121,49 @@ class Bridge:
         resp = self._roundtrip(req, timeout=30)
         if "ok" not in resp:
             raise BridgeError("malformed apply response")
+        if resp.get("ok") and not (resp.get("verify_serial") and resp.get("verify_parts")):
+            resp["ok"] = False
+            resp.setdefault("error", "apply was not verified by the live inventory")
         return resp
 
     def spawn(self, serial: str, container: str = "BackpackItems") -> dict[str, Any]:
-        """Spawn a NEW item into the backpack from a serial (trainer path)."""
+        """Ask the game to materialize one NEW item from its final serial."""
         resp = self._roundtrip(
             {"id": 1, "op": "spawn", "container": container, "serial": serial},
             timeout=30,
         )
         if "ok" not in resp:
             raise BridgeError("malformed spawn response")
+        if resp.get("ok") and not (
+            resp.get("verify_serial")
+            and resp.get("verify_parts")
+            and resp.get("verify_level")
+            and isinstance(resp.get("new_index"), int)
+            and int(resp.get("after_count", 0)) > int(resp.get("before_count", 0))
+        ):
+            resp["ok"] = False
+            resp.setdefault("error", "spawn was not verified by the live backpack")
+        return resp
+
+    def spawn_many(self, serials: list[str], container: str = "BackpackItems") -> dict[str, Any]:
+        """Materialize a small batch in one native delivery transaction."""
+        values = [str(value or "").strip() for value in serials if str(value or "").strip()]
+        resp = self._roundtrip(
+            {"id": 1, "op": "spawn_many", "container": container, "serials": values},
+            timeout=45,
+        )
+        if "ok" not in resp:
+            raise BridgeError("malformed spawn_many response")
+        if resp.get("ok") and not (
+            int(resp.get("added_count", 0)) == len(values)
+            and resp.get("verify_serial")
+            and resp.get("verify_parts")
+            and resp.get("verify_level")
+            and int(resp.get("after_count", 0))
+                >= int(resp.get("before_count", 0)) + len(values)
+        ):
+            resp["ok"] = False
+            resp.setdefault("error", "batch materialization was not verified by the live backpack")
         return resp
 
     def available(self) -> bool:

@@ -454,7 +454,10 @@ class BaseEquipmentEditorTab(QWidget):
         self.stats_preview_values = {}
         labels = self._equipment_stat_labels()
         for key in self._preview_stat_keys():
-            cell = QFrame()
+            # Keep preview cells owned while the grid is being assembled.  An
+            # unparented cell shown by the initial stats refresh becomes a
+            # transient white top-level window on Windows.
+            cell = QFrame(self.stats_preview)
             cell.setObjectName("rollStatCell")
             cell_layout = QVBoxLayout(cell)
             cell_layout.setContentsMargins(7, 5, 7, 5)
