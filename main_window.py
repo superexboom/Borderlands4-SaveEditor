@@ -394,6 +394,7 @@ class MainWindow(QMainWindow):
         self._character_level = ""
         # --- live (online) mode state ---
         self._live_active = False
+        self._live_connecting = False
         self._live_bridge = None
         self._live_thread = None
         screen = QApplication.primaryScreen()
@@ -714,7 +715,7 @@ class MainWindow(QMainWindow):
         self.header_bar.setObjectName("headerBar")
         header_layout = QHBoxLayout(self.header_bar)
         header_layout.setContentsMargins(15, 5, 10, 5)
-        header_layout.setSpacing(10)
+        header_layout.setSpacing(8)
 
         title_vbox = QVBoxLayout()
         title_vbox.setSpacing(0) 
@@ -785,31 +786,21 @@ class MainWindow(QMainWindow):
             button.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
             header_layout.addWidget(button)
 
-        # Compact live controls share one header slot so the existing 911px
-        # small-screen/DPI layout does not gain two full-width action buttons.
-        live_controls = QWidget(self.header_bar)
-        live_controls.setObjectName("liveHeaderControls")
-        live_layout = QHBoxLayout(live_controls)
-        live_layout.setContentsMargins(0, 0, 0, 0)
-        live_layout.setSpacing(4)
-
-        self.live_toggle_button = QPushButton("○")
+        self.live_toggle_button = QPushButton()
         self.live_toggle_button.setObjectName("headerActionButton")
-        self.live_toggle_button.setToolTip("在线模式:连接运行中的游戏(127.0.0.1:28777),读取并实时修改背包物品")
-        self.live_toggle_button.setProperty("liveControl", True)
-        self.live_toggle_button.setAccessibleName("在线模式")
+        self.live_toggle_button.setProperty("headerControl", True)
+        self.live_toggle_button.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         self.live_toggle_button.clicked.connect(self._toggle_live_mode)
-        live_layout.addWidget(self.live_toggle_button)
+        header_layout.addWidget(self.live_toggle_button)
 
-        self.live_refresh_button = QPushButton("↻")
-        self.live_refresh_button.setObjectName("liveRefreshButton")
-        self.live_refresh_button.setToolTip("手动刷新游戏内物品(仅在线模式)")
-        self.live_refresh_button.setProperty("liveControl", True)
-        self.live_refresh_button.setAccessibleName("刷新在线物品")
+        self.live_refresh_button = QPushButton()
+        self.live_refresh_button.setObjectName("headerActionButton")
+        self.live_refresh_button.setProperty("headerControl", True)
+        self.live_refresh_button.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         self.live_refresh_button.setEnabled(False)
         self.live_refresh_button.clicked.connect(self._live_refresh)
-        live_layout.addWidget(self.live_refresh_button)
-        header_layout.addWidget(live_controls)
+        header_layout.addWidget(self.live_refresh_button)
+        self._update_live_header_text()
 
         header_layout.addStretch()
 
@@ -1240,6 +1231,36 @@ class MainWindow(QMainWindow):
     # ------------------------------------------------------------------
     # live (online) mode
     # ------------------------------------------------------------------
+    def _live_text(self, key, fallback, **values):
+        text = self.loc.get('live', {}).get(key, fallback)
+        return text.format(**values) if values else text
+
+    def _update_live_header_text(self):
+        if not hasattr(self, 'live_toggle_button'):
+            return
+        if self._live_connecting:
+            symbol, state = "…", self._live_text('connecting', 'Connecting…')
+        elif self._live_active:
+            symbol, state = "●", self._live_text('online', 'Online')
+        else:
+            symbol, state = "○", self._live_text('offline', 'Offline')
+        self.live_toggle_button.setText(f"{symbol} {state}")
+        self.live_toggle_button.setToolTip(self._live_text(
+            'toggle_tooltip',
+            'Connect to the running game (127.0.0.1:28777) to read and edit inventory items.',
+        ))
+        self.live_toggle_button.setAccessibleName(self._live_text('mode_accessible', 'Live mode'))
+        active_changed = self.live_toggle_button.property('liveActive') != self._live_active
+        self.live_toggle_button.setProperty('liveActive', self._live_active)
+        if active_changed:
+            self.live_toggle_button.style().unpolish(self.live_toggle_button)
+            self.live_toggle_button.style().polish(self.live_toggle_button)
+        self.live_refresh_button.setText(f"↻ {self._live_text('refresh', 'Refresh')}")
+        self.live_refresh_button.setToolTip(self._live_text(
+            'refresh_tooltip', 'Refresh items from the running game (live mode only).'
+        ))
+        self.live_refresh_button.setAccessibleName(self._live_text('refresh_accessible', 'Refresh live items'))
+
     def _toggle_live_mode(self):
         if not self._live_active:
             self._enter_live_mode()
@@ -1251,21 +1272,27 @@ class MainWindow(QMainWindow):
             from live.bridge import Bridge  # noqa
             from live.adapter import fetch_live_yaml  # noqa
         except Exception as e:
-            self.log(f"Live mode unavailable (live/ package): {e}", force_popup=True)
+            self.log(self._live_text(
+                'unavailable', 'Live mode is unavailable (live/ package): {error}', error=e
+            ), force_popup=True)
             return
 
         self._live_bridge = Bridge()
         if not self._live_bridge.ping():
             self._live_bridge = None
             QMessageBox.warning(
-                self, "在线模式",
-                "无法连接到游戏 (127.0.0.1:28777)。\n"
-                "请确认游戏正在运行、已进入存档,且已加载 bl4_live mod。",
+                self, self._live_text('title', 'Live Mode'),
+                self._live_text(
+                    'connection_failed',
+                    'Could not connect to the game (127.0.0.1:28777).\n'
+                    'Make sure the game is running, a character is loaded, and the bl4_live mod is active.',
+                ),
             )
             return
 
+        self._live_connecting = True
         self.live_toggle_button.setEnabled(False)
-        self.live_toggle_button.setText("…")
+        self._update_live_header_text()
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
 
         self._live_watchdog = QTimer(self)
@@ -1282,28 +1309,33 @@ class MainWindow(QMainWindow):
     def _on_live_loaded(self, yaml_like, err):
         self._stop_live_watchdog()
         QApplication.restoreOverrideCursor()
+        self._live_connecting = False
         self.live_toggle_button.setEnabled(True)
         if err is not None or yaml_like is None:
             self._live_bridge = None
-            self.live_toggle_button.setText("○")
-            self.log(f"Live fetch failed: {err}", force_popup=True)
+            self._update_live_header_text()
+            self.log(self._live_text('fetch_failed', 'Live fetch failed: {error}', error=err), force_popup=True)
             return
 
         self._live_active = True
         self.controller.yaml_obj = yaml_like
         self.controller.mark_clean()
 
-        self.live_toggle_button.setText("●")
         self.live_refresh_button.setEnabled(True)
+        self._update_live_header_text()
         self._apply_live_ui_state()
-        self.setWindowTitle(f"{self.loc['window_title']} V{VERSION} - [在线]")
+        self.setWindowTitle(
+            f"{self.loc['window_title']} V{VERSION} - [{self._live_text('online', 'Online')}]"
+        )
         self.refresh_all_tabs()
         try:
             runtime = self._live_bridge.runtime_action('state')
             self._ensure_tab('character').apply_runtime_state(runtime.get('state', {}))
         except Exception as exc:
-            self.log(f"在线运行时状态读取失败: {exc}")
-        self.log("在线模式:已同步游戏内背包/银行物品。")
+            self.log(self._live_text(
+                'runtime_state_failed', 'Failed to read live runtime state: {error}', error=exc
+            ))
+        self.log(self._live_text('synced', 'Live backpack and bank items synchronized.'))
 
     def _stop_live_watchdog(self):
         wd = getattr(self, "_live_watchdog", None)
@@ -1313,10 +1345,13 @@ class MainWindow(QMainWindow):
     def _on_live_timeout(self):
         """Failsafe: if the worker never reports back, never leave the cursor spinning."""
         QApplication.restoreOverrideCursor()
+        self._live_connecting = False
         self.live_toggle_button.setEnabled(True)
         self.live_refresh_button.setEnabled(self._live_active)
-        self.live_toggle_button.setText("●" if self._live_active else "○")
-        self.log("在线模式:获取超时(15s)。游戏可能未运行,或 bl4_live 未加载。", force_popup=True)
+        self._update_live_header_text()
+        self.log(self._live_text(
+            'timeout', 'Live fetch timed out after 15 seconds. The game or bl4_live may not be running.'
+        ), force_popup=True)
 
     def _live_refresh(self):
         if not self._live_active or self._live_bridge is None:
@@ -1340,32 +1375,36 @@ class MainWindow(QMainWindow):
         QApplication.restoreOverrideCursor()
         self.live_refresh_button.setEnabled(True)
         if err is not None or yaml_like is None:
-            self.log(f"在线刷新失败: {err}", force_popup=True)
+            self.log(self._live_text('refresh_failed', 'Live refresh failed: {error}', error=err), force_popup=True)
             return
         self.controller.yaml_obj = yaml_like
         self.controller.mark_clean()
         self.refresh_all_tabs()
-        self.log("在线模式:已刷新。")
+        self.log(self._live_text('refreshed', 'Live items refreshed.'))
 
     def _exit_live_mode(self):
         self._live_active = False
+        self._live_connecting = False
         self._live_bridge = None
         self.controller.yaml_obj = None
         self.controller.mark_clean()
 
-        self.live_toggle_button.setText("○")
         self.live_refresh_button.setEnabled(False)
+        self._update_live_header_text()
         self._apply_live_ui_state()
         self.setWindowTitle(f"{self.loc['window_title']} V{VERSION}")
         self.refresh_all_tabs()
-        self.log("已退出在线模式。")
+        self.log(self._live_text('exited', 'Live mode exited.'))
 
     def _apply_live_ui_state(self, tab_only=None):
         """Disable save-only inputs while the controller holds a live snapshot."""
         is_live = self._live_active
+        self._update_live_header_text()
         for btn in (self.save_button, self.save_as_button):
             btn.setEnabled(not is_live)
-            btn.setToolTip("在线模式下不可用(无存档文件)" if is_live else "")
+            btn.setToolTip(self._live_text(
+                'save_disabled', 'Unavailable in live mode (no save file).'
+            ) if is_live else "")
         self.save_action.setEnabled(not is_live and self.controller.yaml_obj is not None)
         self.save_as_action.setEnabled(not is_live and self.controller.yaml_obj is not None)
         if hasattr(self, 'autosave_checkbox'):
@@ -1399,7 +1438,7 @@ class MainWindow(QMainWindow):
                     widget.setProperty('offlineToolTip', widget.toolTip())
                 widget.setEnabled(not is_live)
                 widget.setToolTip(
-                    "在线模式不使用存档 Flag"
+                    self._live_text('flag_disabled', 'Save flags are not used in live mode.')
                     if is_live else str(widget.property('offlineToolTip') or "")
                 )
 
@@ -1421,7 +1460,9 @@ class MainWindow(QMainWindow):
             if result.get('ok'):
                 character_tab.apply_runtime_state(result.get('state', {}))
                 character_tab.set_runtime_result(f"{label}: OK", True)
-                self.log(f"在线运行时操作完成: {action}")
+                self.log(self._live_text(
+                    'runtime_action_done', 'Live runtime action completed: {action}', action=action
+                ))
             else:
                 error = str(result.get('error', 'failed'))
                 try:
@@ -1664,7 +1705,9 @@ class MainWindow(QMainWindow):
                     return
                 final_serial = encoded_serial
         except Exception as e:
-            self.log(f"在线添加编码失败: {e}", force_popup=True)
+            self.log(self._live_text(
+                'add_encode_failed', 'Failed to encode the live item: {error}', error=e
+            ), force_popup=True)
             return
 
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
@@ -1672,15 +1715,25 @@ class MainWindow(QMainWindow):
             res = self._live_bridge.spawn(final_serial, "BackpackItems")
         except Exception as e:
             QApplication.restoreOverrideCursor()
-            self.log(f"在线生成失败: {type(e).__name__}: {e}", force_popup=True)
+            self.log(self._live_text(
+                'spawn_failed', 'Live item spawn failed: {error}',
+                error=f"{type(e).__name__}: {e}",
+            ), force_popup=True)
             return
         QApplication.restoreOverrideCursor()
 
         if res.get('ok'):
-            QMessageBox.information(self, "在线模式", "已生成新物品到游戏背包。")
+            QMessageBox.information(
+                self,
+                self._live_text('title', 'Live Mode'),
+                self._live_text('spawn_success', 'A new item was spawned into the game backpack.'),
+            )
             self._live_refresh()
         else:
-            self.log(f"在线生成被游戏拒绝: {res.get('error')}", force_popup=True)
+            self.log(self._live_text(
+                'spawn_rejected', 'The game rejected the live item spawn: {error}',
+                error=res.get('error'),
+            ), force_popup=True)
     
     @pyqtSlot(dict)
     def handle_update_item(self, payload: dict):
@@ -1711,7 +1764,11 @@ class MainWindow(QMainWindow):
         """Online overwrite: apply the new serial to the live game item."""
         new_serial = (payload.get('new_item_data') or {}).get('serial', '')
         if not new_serial.startswith('@U'):
-            QMessageBox.critical(self, "在线模式", f"序列号无效: {new_serial[:40]}")
+            QMessageBox.critical(
+                self,
+                self._live_text('title', 'Live Mode'),
+                self._live_text('invalid_serial', 'Invalid serial: {serial}', serial=new_serial[:40]),
+            )
             return
         # item_path ends with 'slot_<n>' -> backpack index n
         path = payload.get('item_path') or []
@@ -1724,33 +1781,56 @@ class MainWindow(QMainWindow):
                     idx = None
                 break
         if idx is None:
-            QMessageBox.critical(self, "在线模式", "无法定位背包槽位（item_path 缺少 slot_N）")
+            QMessageBox.critical(
+                self,
+                self._live_text('title', 'Live Mode'),
+                self._live_text(
+                    'slot_missing', 'Could not locate the inventory slot (item_path has no slot_N).'
+                ),
+            )
             return
         container = "BankItems" if any(p == "bank" for p in path) else "BackpackItems"
 
-        self.log(f"在线覆写: {container}[{idx}] -> {new_serial[:40]}...")
+        self.log(self._live_text(
+            'overwrite_started', 'Live overwrite: {container}[{slot}] -> {serial}...',
+            container=container, slot=idx, serial=new_serial[:40],
+        ))
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         try:
             res = self._live_bridge.apply(idx, new_serial, container)
         except Exception as e:
             QApplication.restoreOverrideCursor()
-            self.log(f"在线覆写失败: {type(e).__name__}: {e}", force_popup=True)
+            self.log(self._live_text(
+                'overwrite_failed', 'Live overwrite failed: {error}',
+                error=f"{type(e).__name__}: {e}",
+            ), force_popup=True)
             return
         QApplication.restoreOverrideCursor()
 
         if res.get('ok'):
             warn = ""
             if res.get('missing_parts'):
-                warn = f"\n\n注意: {len(res['missing_parts'])} 个配件未能映射。"
+                warn = "\n\n" + self._live_text(
+                    'missing_parts', 'Warning: {count} part(s) could not be mapped.',
+                    count=len(res['missing_parts']),
+                )
             QMessageBox.information(
-                self, "在线模式",
-                f"已覆写游戏内物品 (槽位 {idx})，序列与配件数组已核验。\n"
-                "非武器通常可直接读取新状态；武器的 ItemCard、手持模型和实际行为由游戏另行缓存，"
-                f"请小退到主菜单后重新进入使其完整生效。{warn}",
+                self,
+                self._live_text('title', 'Live Mode'),
+                self._live_text(
+                    'overwrite_success',
+                    'The game item in slot {slot} was overwritten and its serial and part array were verified.\n'
+                    'Non-weapons usually update immediately. Weapons cache their Item Card, held model, and behavior; '
+                    'return to the main menu and load the character again for the change to fully apply.',
+                    slot=idx,
+                ) + warn,
             )
             self._live_refresh()
         else:
-            self.log(f"在线覆写被游戏拒绝: {res.get('error')}", force_popup=True)
+            self.log(self._live_text(
+                'overwrite_rejected', 'The game rejected the live overwrite: {error}',
+                error=res.get('error'),
+            ), force_popup=True)
 
     @pyqtSlot(dict)
     def handle_character_update(self, data: dict):
@@ -2103,12 +2183,18 @@ class MainWindow(QMainWindow):
                     tab.update_language(self.current_language)
                 except Exception as e:
                     print(f"Warning: failed to update {tab.__class__.__name__} language: {e}")
+        if self._live_active:
+            self._apply_live_ui_state()
         
         # Refresh all tabs to re-fetch items with new localization
         self.refresh_all_tabs(invalidate_items=False)
         
     def update_ui_text(self):
-        if getattr(self.controller, 'save_path', None):
+        if self._live_active:
+            self.setWindowTitle(
+                f"{self.loc['window_title']} V{VERSION} - [{self._live_text('online', 'Online')}]"
+            )
+        elif getattr(self.controller, 'save_path', None):
             self.setWindowTitle(f"{self.loc['window_title']} V{VERSION} - {self.controller.save_path.name}")
         else:
             self.setWindowTitle(f"{self.loc['window_title']} V{VERSION}")
@@ -2127,6 +2213,7 @@ class MainWindow(QMainWindow):
             )
             self._set_autosave_indicator()
         self.lang_button.setText(self._get_lang_button_text())
+        self._update_live_header_text()
         # Update tooltips for theme and background buttons
         self.theme_button.setToolTip(self._get_theme_tooltip())
         self.bg_button.setToolTip(self.loc.get('header', {}).get('change_bg', 'Change Background'))

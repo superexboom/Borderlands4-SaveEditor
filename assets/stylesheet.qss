@@ -90,9 +90,9 @@ QMainWindow {
 #headerBar QPushButton[headerControl="true"] {
     background-color: {button_bg};
     border: 1px solid {border_color};
-    padding: 4px 10px;
+    padding: 4px 8px;
     border-radius: 5px;
-    min-width: 64px;
+    min-width: 58px;
     min-height: 30px;
     max-height: 30px;
     color: {text_primary};
@@ -112,27 +112,11 @@ QMainWindow {
     color: {text_disabled};
 }
 
-/* Compact online status/refresh pair; keep the header usable at 911px. */
-#headerBar QPushButton[liveControl="true"] {
-    background-color: {button_bg};
-    border: 1px solid {border_color};
-    padding: 0px;
-    border-radius: 5px;
-    min-width: 34px;
-    max-width: 34px;
-    min-height: 32px;
-    max-height: 32px;
-    color: {text_primary};
-}
-
-#headerBar QPushButton[liveControl="true"]:hover {
-    background-color: {button_hover};
+#headerBar QPushButton[headerControl="true"][liveActive="true"] {
+    background-color: {accent};
     border-color: {accent};
-}
-
-#headerBar QPushButton[liveControl="true"]:disabled {
-    background-color: {bg_input};
-    color: {text_disabled};
+    color: {bg_primary};
+    font-weight: 600;
 }
 
 /* Labels ---------------------------------------------------------------- */
