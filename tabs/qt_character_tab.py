@@ -242,8 +242,13 @@ class QtCharacterTab(QWidget):
         live_layout = QGridLayout(self.ui_groups['live_runtime'])
         live_layout.setHorizontalSpacing(8)
         live_layout.setVerticalSpacing(6)
+        for column in range(4):
+            live_layout.setColumnStretch(column, 1)
         self.ui_labels['live_runtime_hint'] = QLabel(self.loc['labels']['live_runtime_hint'])
         self.ui_labels['live_runtime_hint'].setWordWrap(True)
+        self.ui_labels['live_runtime_hint'].setSizePolicy(
+            QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred
+        )
         live_layout.addWidget(self.ui_labels['live_runtime_hint'], 0, 0, 1, 4)
 
         self.live_runtime_buttons = {}
@@ -255,17 +260,19 @@ class QtCharacterTab(QWidget):
             'toggle_no_overheat', 'toggle_health_lock',
             'toggle_shield_lock', 'toggle_repairkit_no_cd', 'toggle_skill_no_cd',
             'toggle_gadget_no_cd', 'toggle_stamina_lock', 'toggle_guaranteed_crit',
-            'toggle_dedicated_drop_100',
+            'toggle_dedicated_drop_100', 'toggle_infinite_jump',
         }
 
         def add_section(row, key):
             label = QLabel(self.loc['labels'][key])
             label.setObjectName('liveRuntimeSection')
+            label.setWordWrap(True)
+            label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
             live_layout.addWidget(label, row, 0, 1, 4)
             self.live_runtime_section_labels[key] = label
             return row + 1
 
-        def add_actions(row, actions):
+        def add_actions(row, actions, columns=2):
             for index, (key, action) in enumerate(actions):
                 button = QPushButton(self.loc['buttons'][key])
                 if action in self.live_runtime_toggle_actions:
@@ -279,12 +286,14 @@ class QtCharacterTab(QWidget):
                     button.clicked.connect(
                         lambda checked=False, value=action: self.runtime_action_requested.emit(value, {})
                     )
-                live_layout.addWidget(button, row + index // 4, index % 4)
+                live_layout.addWidget(button, row + index // columns, index % columns)
                 if action == 'toggle_dedicated_drop_100':
                     button.setToolTip(self.loc['labels']['live_dedicated_drop_hint'])
+                elif action == 'max_sdu_tokens':
+                    button.setToolTip(self.loc['labels']['live_max_sdu_tokens_hint'])
                 self.live_runtime_buttons[action] = button
                 self.live_runtime_button_keys[action] = key
-            return row + (len(actions) + 3) // 4
+            return row + (len(actions) + columns - 1) // columns
 
         row = 1
         row = add_section(row, 'live_survival')
@@ -310,6 +319,16 @@ class QtCharacterTab(QWidget):
             ('toggle_gadget_no_cd', 'toggle_gadget_no_cd'),
         ))
 
+        row = add_section(row, 'live_progress')
+        row = add_actions(row, (
+            ('max_money', 'max_currency'),
+            ('max_eridium', 'max_eridium'),
+            ('max_level', 'max_level'),
+            ('max_specialization', 'max_specialization'),
+            ('max_sdu_tokens', 'max_sdu_tokens'),
+            ('toggle_infinite_jump', 'toggle_infinite_jump'),
+        ))
+
         row = add_section(row, 'live_tuning')
         self.live_fire_rate_combo = QComboBox(self)
         for value in (1, 2, 5, 10, 20):
@@ -323,6 +342,16 @@ class QtCharacterTab(QWidget):
         self.live_critical_damage_combo = QComboBox(self)
         for value in (1, 2, 5, 10, 20, 50):
             self.live_critical_damage_combo.addItem(f'{value:g}x', float(value))
+        self.live_experience_reward_combo = QComboBox(self)
+        self.live_cash_reward_combo = QComboBox(self)
+        self.live_eridium_reward_combo = QComboBox(self)
+        for combo in (
+            self.live_experience_reward_combo,
+            self.live_cash_reward_combo,
+            self.live_eridium_reward_combo,
+        ):
+            for value in (1, 2, 3, 5, 10):
+                combo.addItem(f'{value}x', float(value))
         self.live_backpack_edit = QLineEdit(self)
         self.live_backpack_edit.setValidator(QIntValidator(20, 5000, self))
         self.live_backpack_edit.setText('999')
@@ -336,11 +365,23 @@ class QtCharacterTab(QWidget):
              lambda: {'value': self.live_jump_combo.currentData()}),
             ('critical_damage_scale', self.live_critical_damage_combo, 'apply_critical_damage', 'set_critical_damage',
              lambda: {'value': self.live_critical_damage_combo.currentData()}),
+            ('experience_reward_scale', self.live_experience_reward_combo,
+             'apply_experience_multiplier', 'set_experience_multiplier',
+             lambda: {'value': self.live_experience_reward_combo.currentData()}),
+            ('cash_reward_scale', self.live_cash_reward_combo,
+             'apply_cash_multiplier', 'set_cash_multiplier',
+             lambda: {'value': self.live_cash_reward_combo.currentData()}),
+            ('eridium_reward_scale', self.live_eridium_reward_combo,
+             'apply_eridium_multiplier', 'set_eridium_multiplier',
+             lambda: {'value': self.live_eridium_reward_combo.currentData()}),
             ('backpack_size', self.live_backpack_edit, 'apply_backpack_size', 'set_backpack_size',
              lambda: {'value': int(self.live_backpack_edit.text() or 0)}),
         )
         for label_key, editor, button_key, action, params in tuning_rows:
             label = QLabel(self.loc['labels'][label_key])
+            label.setWordWrap(True)
+            label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
+            editor.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
             self.live_runtime_value_labels[label_key] = label
             button = QPushButton(self.loc['buttons'][button_key])
             button.clicked.connect(
@@ -360,6 +401,11 @@ class QtCharacterTab(QWidget):
         for value in range(1, 11):
             self.live_dedicated_drop_combo.addItem(f'{value}x', value)
         dedicated_label = QLabel(self.loc['labels']['dedicated_drop_multiplier'])
+        dedicated_label.setWordWrap(True)
+        dedicated_label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
+        self.live_dedicated_drop_combo.setSizePolicy(
+            QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed
+        )
         self.live_runtime_value_labels['dedicated_drop_multiplier'] = dedicated_label
         dedicated_apply = QPushButton(self.loc['buttons']['apply_dedicated_drop_multiplier'])
         dedicated_apply.clicked.connect(
@@ -384,6 +430,9 @@ class QtCharacterTab(QWidget):
 
         self.ui_labels['live_runtime_status'] = QLabel(self.loc['labels']['live_runtime_idle'])
         self.ui_labels['live_runtime_status'].setWordWrap(True)
+        self.ui_labels['live_runtime_status'].setSizePolicy(
+            QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred
+        )
         live_layout.addWidget(self.ui_labels['live_runtime_status'], row, 0, 1, 4)
         main_layout.addWidget(self.ui_groups['live_runtime'])
         self._apply_preset_button_state()
@@ -436,20 +485,25 @@ class QtCharacterTab(QWidget):
                     "live_runtime_hint": "Runtime controls affect only the current game session and automatically follow weapon swaps.",
                     "live_runtime_idle": "Ready.",
                     "live_dedicated_drop_hint": "Adds guaranteed draws only from the defeated actor's NCS dedicated pool. The multiplier controls the extra draws; world-drop pools are not added.",
+                    "live_max_sdu_tokens_hint": "Tops up ECHO/SDU tokens without reducing existing higher values or forcing mission/equipment-slot unlocks.",
                     "live_survival": "Survival / movement",
                     "live_weapon": "Weapon handling",
                     "live_cooldown": "Cooldowns",
+                    "live_progress": "Progression / currency",
                     "live_tuning": "Scalars / capacity",
                     "live_loot": "Loot rarity",
                     "fire_rate_scale": "Fire rate",
                     "movement_speed_scale": "Movement speed",
                     "jump_height_scale": "Jump height",
                     "critical_damage_scale": "Critical damage",
+                    "experience_reward_scale": "Combat XP multiplier",
+                    "cash_reward_scale": "Cash multiplier",
+                    "eridium_reward_scale": "Eridium multiplier",
                     "dedicated_drop_multiplier": "Dedicated drop multiplier",
                     "backpack_size": "Backpack capacity",
                     "preset_credit": ""
                 },
-                "buttons": {"apply_changes": "Apply Changes", "apply_profile_changes": "Apply Profile Currency Changes", "sync_levels": "Sync Item Levels", "toggle_infinite_ammo": "Toggle Infinite Ammo", "toggle_demigod": "Toggle Demigod", "toggle_health_lock": "Health Lock", "toggle_shield_lock": "Shield Lock", "toggle_stamina_lock": "Unlimited Vault Power", "toggle_instant_reload": "Instant Reload", "toggle_no_overheat": "No Overheat", "toggle_no_spread": "No Spread", "toggle_no_recoil": "No Recoil", "toggle_guaranteed_crit": "Guaranteed Crit", "toggle_repairkit_no_cd": "Repkit No CD", "toggle_skill_no_cd": "Skill No CD", "toggle_gadget_no_cd": "Gear No CD", "toggle_dedicated_drop_100": "Dedicated Drop 100%", "apply_fire_rate": "Apply", "apply_movement_speed": "Apply", "apply_jump_height": "Apply", "apply_critical_damage": "Apply", "apply_backpack_size": "Apply", "apply_dedicated_drop_multiplier": "Apply", "rarity_legendary": "Legendary Drops", "rarity_pearlescent": "Pearlescent Drops", "rarity_reset": "Reset Drop Rates", "reset_runtime_modifiers": "Reset Session Mods"},
+                "buttons": {"apply_changes": "Apply Changes", "apply_profile_changes": "Apply Profile Currency Changes", "sync_levels": "Sync Item Levels", "toggle_infinite_ammo": "Toggle Infinite Ammo", "toggle_demigod": "Toggle Demigod", "toggle_health_lock": "Health Lock", "toggle_shield_lock": "Shield Lock", "toggle_stamina_lock": "Unlimited Vault Power", "toggle_instant_reload": "Instant Reload", "toggle_no_overheat": "No Overheat", "toggle_no_spread": "No Spread", "toggle_no_recoil": "No Recoil", "toggle_guaranteed_crit": "Guaranteed Crit", "toggle_repairkit_no_cd": "Repkit No CD", "toggle_skill_no_cd": "Skill No CD", "toggle_gadget_no_cd": "Gear No CD", "toggle_dedicated_drop_100": "Dedicated Drop 100%", "max_money": "Max Money", "max_eridium": "Max Eridium", "max_level": "Max Character Level", "max_specialization": "Max Specialization", "max_sdu_tokens": "Max SDU Tokens", "toggle_infinite_jump": "Infinite Jump", "apply_fire_rate": "Apply", "apply_movement_speed": "Apply", "apply_jump_height": "Apply", "apply_critical_damage": "Apply", "apply_experience_multiplier": "Apply", "apply_cash_multiplier": "Apply", "apply_eridium_multiplier": "Apply", "apply_backpack_size": "Apply", "apply_dedicated_drop_multiplier": "Apply", "rarity_legendary": "Legendary Drops", "rarity_pearlescent": "Pearlescent Drops", "rarity_reset": "Reset Drop Rates", "reset_runtime_modifiers": "Reset Session Mods"},
                 "warnings": {"sync_warning": "Warning: May unequip items."},
                 "presets": {"clear_fog": "Clear Fog", "discover_locs": "Discover Locations", "unlock_safehouses": "Unlock Safehouses", 
                             "unlock_collectibles": "Unlock Collectibles", "complete_challenges": "Complete Challenges", 
@@ -478,12 +532,16 @@ class QtCharacterTab(QWidget):
         self.loc["labels"].setdefault("live_runtime_hint", "Runtime controls affect only the current game session and automatically follow weapon swaps.")
         self.loc["labels"].setdefault("live_runtime_idle", "Ready.")
         self.loc["labels"].setdefault("live_dedicated_drop_hint", "Adds guaranteed draws only from the defeated actor's NCS dedicated pool. The multiplier controls the extra draws; world-drop pools are not added.")
+        self.loc["labels"].setdefault("live_max_sdu_tokens_hint", "Tops up ECHO/SDU tokens without reducing existing higher values or forcing mission/equipment-slot unlocks.")
         for key, value in {
             "live_survival": "Survival / movement", "live_weapon": "Weapon handling",
-            "live_cooldown": "Cooldowns", "live_tuning": "Scalars / capacity",
+            "live_cooldown": "Cooldowns", "live_progress": "Progression / currency",
+            "live_tuning": "Scalars / capacity",
             "live_loot": "Loot rarity", "fire_rate_scale": "Fire rate",
             "movement_speed_scale": "Movement speed", "backpack_size": "Backpack capacity",
             "jump_height_scale": "Jump height", "critical_damage_scale": "Critical damage",
+            "experience_reward_scale": "Combat XP multiplier",
+            "cash_reward_scale": "Cash multiplier", "eridium_reward_scale": "Eridium multiplier",
             "dedicated_drop_multiplier": "Dedicated drop multiplier",
         }.items():
             self.loc["labels"].setdefault(key, value)
@@ -500,8 +558,14 @@ class QtCharacterTab(QWidget):
             "toggle_guaranteed_crit": "Guaranteed Crit", "toggle_repairkit_no_cd": "Repkit No CD",
             "toggle_skill_no_cd": "Skill No CD", "toggle_gadget_no_cd": "Gear No CD",
             "toggle_dedicated_drop_100": "Dedicated Drop 100%",
+            "max_money": "Max Money", "max_eridium": "Max Eridium",
+            "max_level": "Max Character Level", "max_specialization": "Max Specialization",
+            "max_sdu_tokens": "Max SDU Tokens",
+            "toggle_infinite_jump": "Infinite Jump",
             "apply_fire_rate": "Apply", "apply_movement_speed": "Apply",
             "apply_jump_height": "Apply", "apply_critical_damage": "Apply",
+            "apply_experience_multiplier": "Apply", "apply_cash_multiplier": "Apply",
+            "apply_eridium_multiplier": "Apply",
             "apply_backpack_size": "Apply", "apply_dedicated_drop_multiplier": "Apply",
             "reset_runtime_modifiers": "Reset Session Mods",
         }.items():
@@ -562,6 +626,9 @@ class QtCharacterTab(QWidget):
         dedicated_button = self.live_runtime_buttons.get('toggle_dedicated_drop_100')
         if dedicated_button is not None:
             dedicated_button.setToolTip(self.loc['labels']['live_dedicated_drop_hint'])
+        sdu_button = self.live_runtime_buttons.get('max_sdu_tokens')
+        if sdu_button is not None:
+            sdu_button.setToolTip(self.loc['labels']['live_max_sdu_tokens_hint'])
         for key, label in self.live_runtime_section_labels.items():
             label.setText(self.loc['labels'][key])
         for key, label in self.live_runtime_value_labels.items():
@@ -647,6 +714,7 @@ class QtCharacterTab(QWidget):
             'toggle_skill_no_cd': 'skill_no_cd', 'toggle_gadget_no_cd': 'gadget_no_cd',
             'toggle_stamina_lock': 'stamina_lock', 'toggle_guaranteed_crit': 'guaranteed_crit',
             'toggle_dedicated_drop_100': 'dedicated_drop_100',
+            'toggle_infinite_jump': 'infinite_jump',
         }
         for action, feature in action_to_feature.items():
             button = self.live_runtime_buttons.get(action)
@@ -659,6 +727,9 @@ class QtCharacterTab(QWidget):
             (self.live_movement_combo, 'movement_speed_scale'),
             (self.live_jump_combo, 'jump_height_scale'),
             (self.live_critical_damage_combo, 'critical_damage_scale'),
+            (self.live_experience_reward_combo, 'experience_reward_scale'),
+            (self.live_cash_reward_combo, 'cash_reward_scale'),
+            (self.live_eridium_reward_combo, 'eridium_reward_scale'),
             (self.live_dedicated_drop_combo, 'dedicated_drop_multiplier'),
         ):
             value = float(state.get(key, 1.0) or 1.0)
