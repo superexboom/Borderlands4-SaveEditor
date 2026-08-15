@@ -18,6 +18,7 @@ _EXPORTS = {
     "QtEnhancementEditorTab": ("qt_enhancement_editor_tab", "QtEnhancementEditorTab"),
     "WeaponEditorTab": ("qt_weapon_editor_tab", "WeaponEditorTab"),
     "QtWeaponGeneratorTab": ("qt_weapon_generator_tab", "QtWeaponGeneratorTab"),
+    "QtGodRollTab": ("qt_god_roll_tab", "QtGodRollTab"),
     "QtGrenadeEditorTab": ("qt_grenade_editor_tab", "QtGrenadeEditorTab"),
     "QtShieldEditorTab": ("qt_shield_editor_tab", "QtShieldEditorTab"),
     "QtRepkitEditorTab": ("qt_repkit_editor_tab", "QtRepkitEditorTab"),

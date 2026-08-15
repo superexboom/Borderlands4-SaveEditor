@@ -319,10 +319,13 @@ class WeaponRollResultsPage(QtWidgets.QWidget):
                 f"{self._stat_label(key)} {formatted.get(key) or '—'}"
                 for key in self._stat_keys
             )
-            item = QtWidgets.QListWidgetItem(f"{result.get('name') or '—'}\n{meta}\n{stats}")
+            lines = [str(result.get('name') or '—'), meta, stats]
+            if result.get("variant_summary"):
+                lines.append(str(result["variant_summary"]))
+            item = QtWidgets.QListWidgetItem("\n".join(lines))
             item.setData(QtCore.Qt.ItemDataRole.UserRole, result)
             item.setToolTip(_text(result.get("tooltip")))
-            item.setSizeHint(QtCore.QSize(0, 96))
+            item.setSizeHint(QtCore.QSize(0, 112 if result.get("variant_summary") else 96))
             rarity_key = _text(result.get("rarity_key") or result.get("rarity")).casefold()
             color = QtGui.QColor(WEAPON_CARD_RARITY_COLORS.get(rarity_key, "#78909C"))
             background = QtGui.QColor(color)

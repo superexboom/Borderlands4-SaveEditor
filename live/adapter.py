@@ -25,6 +25,88 @@ from typing import Any
 from .bridge import Bridge
 
 
+_CONTAINER_KEYS = {
+    "BackpackItems": "backpack",
+    "BankItems": "bank",
+}
+
+
+def _copy_live_identity(node: dict[str, Any], record: dict[str, Any]) -> None:
+    """Keep the current-session item token beside the save-shaped serial."""
+    for source, target in (
+        ("handle", "_live_handle"),
+        ("instance_id", "_live_instance_id"),
+        ("stable_identity_supported", "_live_identity_supported"),
+    ):
+        value = record.get(source)
+        if value is not None:
+            node[target] = value
+
+
+def patch_live_yaml_items(
+    yaml_like: dict[str, Any],
+    records: list[dict[str, Any]],
+    *,
+    require_existing: bool,
+    expected_serials: dict[tuple[str, int], str] | None = None,
+) -> list[list[str]] | None:
+    """Atomically patch verified live records into an existing save-shaped snapshot.
+
+    ``None`` means the response cannot be safely reconciled with the snapshot;
+    callers should perform one authoritative live refresh instead.
+    """
+    try:
+        containers = yaml_like["state"]["inventory"]["items"]
+    except (KeyError, TypeError):
+        return None
+    if not records:
+        return None
+
+    staged: list[tuple[dict[str, Any], str, str, dict[str, Any], list[str]]] = []
+    seen: set[tuple[str, int]] = set()
+    expected_serials = expected_serials or {}
+    for record in records:
+        container = str(record.get("container") or "")
+        branch_name = _CONTAINER_KEYS.get(container)
+        serial = record.get("serial")
+        idx = record.get("idx", record.get("index"))
+        if branch_name is None or not isinstance(serial, str) or not serial.startswith("@U"):
+            return None
+        if isinstance(idx, bool) or not isinstance(idx, int) or idx < 0:
+            return None
+        identity = (container, idx)
+        if identity in seen:
+            return None
+        seen.add(identity)
+
+        branch = containers.get(branch_name)
+        if not isinstance(branch, dict):
+            return None
+        slot = f"slot_{idx}"
+        current = branch.get(slot)
+        if require_existing:
+            if not isinstance(current, dict):
+                return None
+            expected = expected_serials.get(identity)
+            if expected and current.get("serial") != expected:
+                return None
+        elif current is not None:
+            return None
+        staged.append((
+            branch, slot, serial, record,
+            ["state", "inventory", "items", branch_name, slot],
+        ))
+
+    for branch, slot, serial, record, _path in staged:
+        if require_existing:
+            branch[slot]["serial"] = serial
+            _copy_live_identity(branch[slot], record)
+        else:
+            branch[slot] = {"serial": serial, "flags": 0}
+            _copy_live_identity(branch[slot], record)
+    return [path for _branch, _slot, _serial, _record, path in staged]
+
+
 def items_to_yaml(
     items: list[dict[str, Any]],
     player: dict[str, Any] | None = None,
@@ -47,6 +129,7 @@ def items_to_yaml(
         container = rec.get("container", "BackpackItems")
         idx = int(rec.get("idx", 0))
         node = {"serial": rec["serial"], "flags": 0}
+        _copy_live_identity(node, rec)
         if container == "BankItems":
             bank[f"slot_{idx}"] = node
         else:

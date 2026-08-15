@@ -163,6 +163,7 @@ a = Analysis(
         'tabs.qt_enhancement_editor_tab',
         'tabs.qt_weapon_editor_tab',
         'tabs.qt_weapon_generator_tab',
+        'tabs.qt_god_roll_tab',
         'tabs.qt_weapon_roll_dialog',
         'tabs.qt_grenade_editor_tab',
         'tabs.qt_shield_editor_tab',

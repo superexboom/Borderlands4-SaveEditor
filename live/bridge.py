@@ -82,15 +82,97 @@ class Bridge:
 
     def runtime_action(self, action: str, **params: Any) -> dict[str, Any]:
         """Run one bounded gameplay convenience action exposed by the SDK mod."""
-        req = {"id": 1, "op": "runtime", "action": str(action or "").strip()}
+        action = str(action or "").strip()
+        req = {"id": 1, "op": "runtime", "action": action}
         req.update(params)
         resp = self._roundtrip(
             req,
-            timeout=5,
+            timeout=(90 if action == "apply_loadout"
+                     else 30 if action in {"rebuild_item_cache", "publish_backpack_item"}
+                     else 15 if action == "claim_lost_loot" else 5),
         )
         if "ok" not in resp:
             raise BridgeError("malformed runtime response")
         return resp
+
+    def loadout_capabilities(self) -> dict[str, Any]:
+        """Report whether the current live player exposes the safe loadout read chain."""
+        return self.runtime_action("loadout_capabilities")
+
+    def loadout_snapshot(self) -> dict[str, Any]:
+        """Read equipped slots joined to their current backpack items and actors."""
+        return self.runtime_action("loadout_snapshot")
+
+    def loadout_recovery(self) -> dict[str, Any]:
+        """Read the backend's unresolved loadout transaction journal, if any."""
+        return self.runtime_action("loadout_recovery")
+
+    def clear_loadout_recovery(
+        self, *, epoch: str, snapshot_hash: str,
+    ) -> dict[str, Any]:
+        """Acknowledge a reviewed recovery journal against one fresh snapshot."""
+        return self.runtime_action(
+            "clear_loadout_recovery",
+            acknowledge=True,
+            epoch=str(epoch or ""),
+            snapshot_hash=str(snapshot_hash or ""),
+        )
+
+    def apply_loadout(
+        self,
+        *,
+        epoch: str,
+        snapshot_hash: str,
+        entries: list[dict[str, Any]],
+        active_weapon_slot: int | None = None,
+    ) -> dict[str, Any]:
+        """Apply a preset against one fresh, optimistic-concurrency snapshot."""
+        params: dict[str, Any] = {
+            "epoch": str(epoch or ""),
+            "snapshot_hash": str(snapshot_hash or ""),
+            "entries": list(entries or []),
+        }
+        if active_weapon_slot is not None:
+            params["active_weapon_slot"] = int(active_weapon_slot)
+        return self.runtime_action("apply_loadout", **params)
+
+    def resolve_live_item(self, **criteria: Any) -> dict[str, Any]:
+        """Resolve one current-session inventory item; duplicates remain ambiguous."""
+        return self.runtime_action("resolve_live_item", **criteria)
+
+    def probe_item_runtime_cache(self, **criteria: Any) -> dict[str, Any]:
+        """Compare a container identity with its equipped runtime actor, without writes."""
+        return self.runtime_action("probe_item_runtime_cache", **criteria)
+
+    def rebuild_item_cache(
+        self, *, handle: int, serial_sha256: str, instance_id: int,
+        epoch: str, player_state: str, active_weapon_slot: int | None,
+    ) -> dict[str, Any]:
+        """Round-trip one equipped item through a compatible donor to rebuild its actor cache."""
+        params: dict[str, Any] = {
+            "handle": int(handle),
+            "serial_sha256": str(serial_sha256 or ""),
+            "instance_id": int(instance_id),
+            "epoch": str(epoch or ""),
+            "player_state": str(player_state or ""),
+        }
+        if active_weapon_slot is not None:
+            params["active_weapon_slot"] = int(active_weapon_slot)
+        return self.runtime_action("rebuild_item_cache", **params)
+
+    def publish_backpack_item(
+        self, *, handle: int, serial_sha256: str, instance_id: int,
+        epoch: str, player_state: str,
+    ) -> dict[str, Any]:
+        """Publish one unequipped backpack identity through the native inventory path."""
+        return self.runtime_action(
+            "publish_backpack_item",
+            handle=int(handle),
+            serial_sha256=str(serial_sha256 or ""),
+            instance_id=int(instance_id),
+            epoch=str(epoch or ""),
+            player_state=str(player_state or ""),
+        )
 
     def list(self) -> dict[str, Any]:
         return self._roundtrip({"id": 1, "op": "list"}, timeout=5)
@@ -107,7 +189,8 @@ class Bridge:
         return list(resp.get("items", []))
 
     def apply(self, idx: int, serial: str, container: str = "BackpackItems",
-              expect_old: str | None = None) -> dict[str, Any]:
+              expect_old: str | None = None, *, expect_handle: int | None = None,
+              expect_instance_id: int | None = None) -> dict[str, Any]:
         """
         Persistent overwrite: rewrite identity part pointers + serial text.
         Inventory thumbnails may update immediately, but weapon actors and card
@@ -118,6 +201,11 @@ class Bridge:
                                "idx": idx, "serial": serial}
         if expect_old is not None:
             req["expect_old"] = expect_old
+        if (expect_handle is None) != (expect_instance_id is None):
+            raise BridgeError("stable item identity requires both handle and instance_id")
+        if expect_handle is not None and expect_instance_id is not None:
+            req["expect_handle"] = int(expect_handle)
+            req["expect_instance_id"] = int(expect_instance_id)
         resp = self._roundtrip(req, timeout=30)
         if "ok" not in resp:
             raise BridgeError("malformed apply response")
@@ -137,7 +225,6 @@ class Bridge:
         if resp.get("ok") and not (
             resp.get("verify_serial")
             and resp.get("verify_parts")
-            and resp.get("verify_level")
             and isinstance(resp.get("new_index"), int)
             and int(resp.get("after_count", 0)) > int(resp.get("before_count", 0))
         ):
@@ -158,7 +245,6 @@ class Bridge:
             int(resp.get("added_count", 0)) == len(values)
             and resp.get("verify_serial")
             and resp.get("verify_parts")
-            and resp.get("verify_level")
             and int(resp.get("after_count", 0))
                 >= int(resp.get("before_count", 0)) + len(values)
         ):
