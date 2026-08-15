@@ -13,12 +13,17 @@ from core import b_encoder, item_display_resolver
 AUTO = "*"
 NONE = ""
 ELEMENT_GROUPS = ("body_ele", "secondary_ele", "pearl_elem")
+WEAPON_TYPE_ALIASES = {
+    "weapon_sm": "SMG",
+    "weapon_ar": "Assault Rifle",
+    "AssaultRifle": "Assault Rifle",
+}
 TORGUE_TAGS = {
     # ``torgue_mag_*`` also appears on ordinary stat parts which merely inherit
     # the licensed mode's damage.  The exact tags below identify the actual
     # Torgue normal/sticky authorization part requested by the user.
-    "sticky": frozenset({"torgue_sticky"}),
-    "impact": frozenset({"torgue_normal"}),
+    "sticky": frozenset({"torgue_sticky", "torgue_mag_sticky"}),
+    "impact": frozenset({"torgue_normal", "torgue_mag_normal"}),
 }
 
 
@@ -94,13 +99,15 @@ class WeaponGodRollOptimizer:
         self.selection_tags = self.rules.get("part_selection_tags") or {}
         self.excluded_refs = set((self.rules.get("part_availability") or {}).keys())
         self._pool_cache: dict[tuple[str, str], dict[str, list[str]]] = {}
+        self._capability_cache: dict[tuple[str, str, str, str, str], dict[str, Any]] = {}
+        self._unrestricted_torgue_cache: dict[tuple[str, str, str, str], dict[str, bool]] = {}
         self._search_cache: dict[tuple[Any, ...], dict[str, Any]] = {}
 
     def catalog(self) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
         for root_id, weapon in self.weapons.items():
-            weapon_type = str(weapon.get("weapon_type") or "")
-            if weapon_type not in {"Pistol", "Shotgun", "AssaultRifle", "Sniper", "weapon_sm", "SMG"}:
+            weapon_type = self._normalized_type(weapon)
+            if weapon_type not in {"Pistol", "Shotgun", "Assault Rifle", "Sniper", "SMG"}:
                 continue
             for composition_ref, composition in (weapon.get("compositions") or {}).items():
                 if composition.get("availability") != "coregame" or composition.get("internal_only"):
@@ -120,7 +127,7 @@ class WeaponGodRollOptimizer:
                     "root_id": str(root_id),
                     "composition_ref": str(composition_ref),
                     "manufacturer": str(weapon.get("manufacturer") or ""),
-                    "weapon_type": "SMG" if weapon_type == "weapon_sm" else weapon_type,
+                    "weapon_type": weapon_type,
                     "rarity": str(composition.get("rarity") or ""),
                     "name_en": str(names.get("en") or "").strip(),
                     "name_zh": str(names.get("zh") or "").strip(),
@@ -157,7 +164,291 @@ class WeaponGodRollOptimizer:
     @staticmethod
     def _normalized_type(weapon: Mapping[str, Any]) -> str:
         value = str(weapon.get("weapon_type") or "")
-        return "SMG" if value == "weapon_sm" else value
+        return WEAPON_TYPE_ALIASES.get(value, value)
+
+    def _composition_for_mode(
+        self,
+        root_id: str,
+        composition_ref: str,
+        mode: str,
+    ) -> dict[str, Any]:
+        weapon = self.weapons[str(root_id)]
+        original = weapon["compositions"][str(composition_ref)]
+        composition = copy.deepcopy(original)
+        if mode != "unrestricted":
+            return composition
+        merged_rules: dict[frozenset[str], int] = {
+            frozenset(str(tag).casefold() for tag in row.get("tags", ())): int(row.get("max", 1))
+            for row in original.get("tag_rules", ())
+            if row.get("tags")
+        }
+        target_type = self._normalized_type(weapon)
+        for other in self.weapons.values():
+            if self._normalized_type(other) != target_type:
+                continue
+            for other_comp in (other.get("compositions") or {}).values():
+                if other_comp.get("availability") != "coregame" or other_comp.get("internal_only"):
+                    continue
+                for row in other_comp.get("tag_rules", ()):
+                    tags = frozenset(str(tag).casefold() for tag in row.get("tags", ()))
+                    if tags:
+                        merged_rules.setdefault(tags, int(row.get("max", 1)))
+        composition["tag_rules"] = [
+            {"tags": sorted(tags), "max": maximum}
+            for tags, maximum in sorted(merged_rules.items(), key=lambda item: tuple(sorted(item[0])))
+        ]
+        return composition
+
+    def _legal_capabilities(
+        self,
+        root_id: str,
+        composition_ref: str,
+        *,
+        mode: str = "legal",
+        fixed_barrel_ref: str | None = None,
+        base_element_ref: str | None = AUTO,
+    ) -> dict[str, Any]:
+        """Exact lightweight DP over legal part/tag states.
+
+        This reuses the optimizer's group/tag-rule transition engine but drops
+        complete part lists after every group. It is fast enough for UI gating
+        and cannot invent Torgue/secondary-element combinations which no legal
+        final build can reach.
+        """
+        key = (
+            str(root_id),
+            str(composition_ref),
+            str(mode),
+            str(fixed_barrel_ref or ""),
+            str(base_element_ref if base_element_ref is not None else AUTO),
+        )
+        cached = self._capability_cache.get(key)
+        if cached is not None:
+            return copy.deepcopy(cached)
+
+        weapon = self.weapons[str(root_id)]
+        composition = self._composition_for_mode(str(root_id), str(composition_ref), str(mode))
+        pools = self._group_pool(str(root_id), str(composition_ref), str(mode))
+        groups = {
+            str(group).casefold(): rule
+            for group, rule in (composition.get("groups") or {}).items()
+        }
+        for group, rule in groups.items():
+            rule["allowed_part_refs"] = list(pools.get(group, ()))
+        ordered = _unique(str(group).casefold() for group in weapon.get("part_types", ()))
+        ordered.extend(group for group in sorted(groups) if group not in ordered)
+        ordered = [group for group in ordered if group in groups]
+        tag_rules = [
+            (frozenset(str(tag).casefold() for tag in rule.get("tags", ())), int(rule.get("max", 1)))
+            for rule in composition.get("tag_rules", ())
+        ]
+        required: dict[str, frozenset[str]] = {}
+        if fixed_barrel_ref:
+            required["barrel"] = frozenset({str(fixed_barrel_ref)})
+        if base_element_ref not in (None, AUTO, NONE):
+            required["body_ele"] = frozenset({str(base_element_ref)})
+
+        if base_element_ref == NONE and "body_ele" in groups:
+            groups["body_ele"]["min"] = groups["body_ele"]["max"] = 0
+
+        # Keep only tags which can still affect a later requires/excludes check.
+        # Carrying every cosmetic/identity tag made common rarity templates fan
+        # out into hundreds of thousands of otherwise equivalent UI states.
+        needed_from: list[frozenset[str]] = [frozenset() for _ in range(len(ordered) + 1)]
+        needed: set[str] = set()
+        for index in range(len(ordered) - 1, -1, -1):
+            for ref in groups[ordered[index]].get("allowed_part_refs", ()):
+                tags = self._part_selection_tags(ref)
+                needed.update(tags["requires"])
+                needed.update(tags["excludes"])
+            needed_from[index] = frozenset(needed)
+
+        base_tags = {str(tag).casefold() for tag in composition.get("base_tags", ())}
+        inherited_refs = [str(composition_ref), *map(str, composition.get("forced_part_refs", ()))]
+        inherited_semantic = set().union(
+            *(self._part_semantic_tags(ref) for ref in inherited_refs)
+        ) if inherited_refs else set()
+        semantic_seed = base_tags | inherited_semantic
+
+        # active tags, tag-rule counters, selected element refs, and Torgue
+        # semantic flags.  Element refs remain until the terminal state because
+        # the UI needs the exact reachable choices; all other part identities
+        # are deliberately discarded.
+        states: set[tuple[
+            frozenset[str], tuple[int, ...], tuple[str, ...], tuple[str, ...], tuple[str, ...], bool, bool,
+        ]] = {
+            (
+                frozenset(base_tags & set(needed_from[0])),
+                tuple(0 for _ in tag_rules),
+                (), (), (),
+                bool(semantic_seed & TORGUE_TAGS["sticky"]),
+                bool(semantic_seed & TORGUE_TAGS["impact"]),
+            )
+        }
+        marker_index = {"body_ele": 2, "secondary_ele": 3, "pearl_elem": 4}
+        transition_cache: dict[
+            tuple[str, frozenset[str], tuple[int, ...]],
+            tuple[tuple[tuple[str, ...], frozenset[str], tuple[int, ...]], ...],
+        ] = {}
+        for group_index, group in enumerate(ordered):
+            next_states = set()
+            for state in states:
+                active, counts = state[0], state[1]
+                transition_key = (group, active, counts)
+                transitions = transition_cache.get(transition_key)
+                if transitions is None:
+                    transitions = tuple(self._enumerate_group_choices(
+                        groups[group], active, tag_rules, counts,
+                        required.get(group, frozenset()), lambda: False,
+                    ))
+                    transition_cache[transition_key] = transitions
+                for picked, next_active, next_counts in transitions:
+                    markers = [state[2], state[3], state[4]]
+                    if group in marker_index:
+                        markers[marker_index[group] - 2] = tuple(picked)
+                    semantic = set().union(
+                        *(self._part_semantic_tags(ref) for ref in picked)
+                    ) if picked else set()
+                    next_states.add((
+                        frozenset(set(next_active) & set(needed_from[group_index + 1])),
+                        next_counts,
+                        *markers,
+                        state[5] or bool(semantic & TORGUE_TAGS["sticky"]),
+                        state[6] or bool(semantic & TORGUE_TAGS["impact"]),
+                    ))
+            states = next_states
+            if not states:
+                break
+
+        body_refs = {ref for state in states for ref in state[2]}
+        secondary_refs = {ref for state in states for ref in state[3]}
+        pearl_refs = {ref for state in states for ref in state[4]}
+        native_torgue = str(weapon.get("manufacturer") or "").casefold() == "torgue"
+        sticky = any(state[5] for state in states)
+        impact = any(
+            not state[5]
+            if native_torgue
+            else state[6]
+            for state in states
+        )
+        result = {
+            "body_ele": body_refs,
+            "secondary_ele": secondary_refs if base_element_ref not in (None, AUTO, NONE) else set(),
+            "pearl_elem": pearl_refs,
+            "element_none_legal": {
+                "body_ele": any(not state[2] for state in states),
+                "secondary_ele": any(not state[3] for state in states),
+                "pearl_elem": any(not state[4] for state in states),
+            },
+            "torgue_modes": {"sticky": sticky, "impact": impact},
+            "state_count": len(states),
+        }
+        self._capability_cache[key] = copy.deepcopy(result)
+        return result
+
+    def _unrestricted_torgue_modes(
+        self,
+        root_id: str,
+        composition_ref: str,
+        *,
+        fixed_barrel_ref: str | None = None,
+        base_element_ref: str | None = AUTO,
+    ) -> dict[str, bool]:
+        """Find unrestricted Torgue witnesses without enumerating every UI state."""
+        key = (
+            str(root_id), str(composition_ref), str(fixed_barrel_ref or ""),
+            str(base_element_ref if base_element_ref is not None else AUTO),
+        )
+        cached = self._unrestricted_torgue_cache.get(key)
+        if cached is not None:
+            return dict(cached)
+
+        weapon = self.weapons[str(root_id)]
+        composition = self._composition_for_mode(str(root_id), str(composition_ref), "unrestricted")
+        pools = self._group_pool(str(root_id), str(composition_ref), "unrestricted")
+        groups = {
+            str(group).casefold(): rule
+            for group, rule in (composition.get("groups") or {}).items()
+        }
+        for group, rule in groups.items():
+            rule["allowed_part_refs"] = list(pools.get(group, ()))
+        required: dict[str, set[str]] = {}
+        if fixed_barrel_ref and "barrel" in groups:
+            groups["barrel"]["allowed_part_refs"] = [str(fixed_barrel_ref)]
+            groups["barrel"]["min"] = groups["barrel"]["max"] = 1
+            required["barrel"] = {str(fixed_barrel_ref)}
+        if base_element_ref not in (None, AUTO, NONE) and "body_ele" in groups:
+            groups["body_ele"]["allowed_part_refs"] = [str(base_element_ref)]
+            groups["body_ele"]["min"] = groups["body_ele"]["max"] = 1
+            required["body_ele"] = {str(base_element_ref)}
+        elif base_element_ref == NONE and "body_ele" in groups:
+            groups["body_ele"]["min"] = groups["body_ele"]["max"] = 0
+
+        ordered = _unique(str(group).casefold() for group in weapon.get("part_types", ()))
+        ordered.extend(group for group in sorted(groups) if group not in ordered)
+        ordered = [group for group in ordered if group in groups]
+        tag_rules = [
+            (frozenset(str(tag).casefold() for tag in rule.get("tags", ())), int(rule.get("max", 1)))
+            for rule in composition.get("tag_rules", ())
+        ]
+        base_tags = {str(tag).casefold() for tag in composition.get("base_tags", ())}
+        inherited_refs = [str(composition_ref), *map(str, composition.get("forced_part_refs", ()))]
+        inherited = set().union(
+            *(self._part_semantic_tags(ref) for ref in inherited_refs)
+        ) if inherited_refs else set()
+        inherited.update(set().union(*(
+            self._part_semantic_tags(ref)
+            for refs in required.values()
+            for ref in refs
+        )) if required else set())
+        native_torgue = str(weapon.get("manufacturer") or "").casefold() == "torgue"
+
+        def blocked_by_zero_rule(ref: str) -> bool:
+            adds = self._part_selection_tags(ref)["adds"]
+            return any(adds & bucket and limit <= 0 for bucket, limit in tag_rules)
+
+        possible_before: dict[str, set[str]] = {}
+        possible = set(base_tags)
+        for group in ordered:
+            possible_before[group] = set(possible)
+            rule = groups[group]
+            if int(rule.get("max", 0)) <= 0:
+                continue
+            refs = list(rule.get("allowed_part_refs", ()))
+            changed = True
+            while changed:
+                changed = False
+                for ref in refs:
+                    tags = self._part_selection_tags(ref)
+                    if blocked_by_zero_rule(ref) or not tags["requires"] <= possible:
+                        continue
+                    before = len(possible)
+                    possible.update(tags["adds"])
+                    changed = changed or len(possible) != before
+
+        def feasible(group: str, ref: str) -> bool:
+            tags = self._part_selection_tags(ref)
+            return bool(
+                not blocked_by_zero_rule(ref)
+                and tags["requires"] <= possible_before.get(group, base_tags)
+                and not tags["excludes"] & base_tags
+            )
+
+        reachable = {
+            mode: bool(inherited & tags) or any(
+                self._part_semantic_tags(ref) & tags and feasible(group, ref)
+                for group in ordered
+                for ref in groups[group].get("allowed_part_refs", ())
+            )
+            for mode, tags in TORGUE_TAGS.items()
+        }
+        if native_torgue:
+            # Cross-manufacturer mode can replace ordinary group choices; only
+            # a forced/fixed sticky semantic makes impact structurally impossible.
+            reachable["impact"] = not bool(inherited & TORGUE_TAGS["sticky"])
+        result = {mode: bool(reachable.get(mode)) for mode in ("sticky", "impact")}
+        self._unrestricted_torgue_cache[key] = dict(result)
+        return result
 
     def _group_pool(self, root_id: str, composition_ref: str, mode: str) -> dict[str, list[str]]:
         key = (f"{root_id}:{composition_ref}", mode)
@@ -199,10 +490,36 @@ class WeaponGodRollOptimizer:
         self._pool_cache[key] = copy.deepcopy(pools)
         return pools
 
-    def composition_options(self, root_id: str, composition_ref: str, mode: str = "legal") -> dict[str, Any]:
+    def composition_options(
+        self,
+        root_id: str,
+        composition_ref: str,
+        mode: str = "legal",
+        *,
+        fixed_barrel_ref: str | None = None,
+        base_element_ref: str | None = AUTO,
+    ) -> dict[str, Any]:
         weapon = self.weapons[str(root_id)]
         composition = weapon["compositions"][str(composition_ref)]
         pools = self._group_pool(str(root_id), str(composition_ref), mode)
+        if mode == "unrestricted":
+            capabilities = {
+                **{group: set() for group in ELEMENT_GROUPS},
+                "element_none_legal": {group: True for group in ELEMENT_GROUPS},
+                "torgue_modes": self._unrestricted_torgue_modes(
+                    str(root_id), str(composition_ref),
+                    fixed_barrel_ref=fixed_barrel_ref,
+                    base_element_ref=base_element_ref,
+                ),
+            }
+        else:
+            capabilities = self._legal_capabilities(
+                str(root_id),
+                str(composition_ref),
+                mode=mode,
+                fixed_barrel_ref=fixed_barrel_ref,
+                base_element_ref=base_element_ref,
+            )
         validation_groups = (self._composition_validation(str(root_id), str(composition_ref)).get("groups") or {})
         groups: dict[str, Any] = {}
         target_type = self._normalized_type(weapon)
@@ -232,7 +549,7 @@ class WeaponGodRollOptimizer:
 
         def element_options(group: str) -> list[dict[str, Any]]:
             native_rule = (composition.get("groups") or {}).get(group)
-            native_refs = set(pools.get(group, ())) if native_rule is not None else set()
+            native_refs = set(capabilities.get(group, ())) if native_rule is not None else set()
             if native_rule is None or int(native_rule.get("max", 0)) <= 0:
                 native_refs.clear()
             if group == "pearl_elem" and "pearlescent" not in base_tags:
@@ -244,17 +561,16 @@ class WeaponGodRollOptimizer:
                 and ref not in self.excluded_refs
             )
             refs = _unique([*pools.get(group, ()), *global_refs])
-            return self._part_options(refs, legal_refs=native_refs if mode == "legal" else refs)
-
-        none_legal: dict[str, bool] = {}
-        for group in ELEMENT_GROUPS:
-            rule = (composition.get("groups") or {}).get(group)
-            validation_group = validation_groups.get(group) or {}
-            none_legal[group] = bool(
-                rule is None
-                or int(rule.get("max", 0)) <= 0
-                or int(rule.get("min", 0)) <= 0
+            return self._part_options(
+                refs,
+                legal_refs=refs if mode == "unrestricted" else native_refs,
             )
+
+        none_legal = (
+            {group: True for group in ELEMENT_GROUPS}
+            if mode == "unrestricted"
+            else dict(capabilities.get("element_none_legal") or {})
+        )
         legal_barrels = self._legal_barrels(str(root_id), str(composition_ref))
         return {
             "barrels": self._part_options(legal_barrels),
@@ -262,42 +578,18 @@ class WeaponGodRollOptimizer:
             "secondary_elements": element_options("secondary_ele"),
             "pearl_elements": element_options("pearl_elem"),
             "element_none_legal": none_legal,
-            "torgue_modes": {
-                mode_name: self._semantic_mode_reachable(composition, pools, tags)
-                for mode_name, tags in TORGUE_TAGS.items()
-            },
+            "torgue_modes": dict(capabilities["torgue_modes"]),
             "groups": groups,
         }
-
-    def _semantic_mode_reachable(
-        self,
-        composition: Mapping[str, Any],
-        pools: Mapping[str, Iterable[str]],
-        semantic_tags: set[str] | frozenset[str],
-    ) -> bool:
-        refs = _unique(ref for values in pools.values() for ref in values)
-        active = {str(tag).casefold() for tag in composition.get("base_tags", ())}
-        changed = True
-        while changed:
-            changed = False
-            for ref in refs:
-                row = self._part_selection_tags(ref)
-                if row["requires"] <= active and not row["excludes"] & active:
-                    before = len(active)
-                    active.update(row["adds"])
-                    changed |= len(active) != before
-        return any(
-            self._part_semantic_tags(ref) & semantic_tags
-            and self._part_selection_tags(ref)["requires"] <= active
-            and not self._part_selection_tags(ref)["excludes"] & active
-            for ref in refs
-        )
 
     def _legal_barrels(self, root_id: str, composition_ref: str) -> list[str]:
         validation = self._composition_validation(root_id, composition_ref)
         barrel = (validation.get("groups") or {}).get("barrel") or {}
         refs = barrel.get("initial_eligible_refs") or barrel.get("eligible_refs") or ()
         return _unique(refs)
+
+    def barrel_options(self, root_id: str, composition_ref: str) -> list[dict[str, Any]]:
+        return self._part_options(self._legal_barrels(str(root_id), str(composition_ref)))
 
     def _composition_validation(self, root_id: str, composition_ref: str) -> dict[str, Any]:
         token = self._serial_token(composition_ref, root_id)
@@ -331,34 +623,16 @@ class WeaponGodRollOptimizer:
 
     def _synthetic_composition(self, request: GodRollRequest) -> tuple[dict[str, Any], dict[str, set[str]], list[str]]:
         weapon = self.weapons[str(request.root_id)]
-        original = weapon["compositions"][str(request.composition_ref)]
-        composition = copy.deepcopy(original)
-        if request.mode == "unrestricted":
-            merged_rules: dict[frozenset[str], int] = {
-                frozenset(str(tag).casefold() for tag in row.get("tags", ())): int(row.get("max", 1))
-                for row in original.get("tag_rules", ())
-                if row.get("tags")
-            }
-            target_type = self._normalized_type(weapon)
-            for other in self.weapons.values():
-                if self._normalized_type(other) != target_type:
-                    continue
-                for other_comp in (other.get("compositions") or {}).values():
-                    if other_comp.get("availability") != "coregame" or other_comp.get("internal_only"):
-                        continue
-                    for row in other_comp.get("tag_rules", ()):
-                        tags = frozenset(str(tag).casefold() for tag in row.get("tags", ()))
-                        if not tags:
-                            continue
-                        maximum = int(row.get("max", 1))
-                        merged_rules.setdefault(tags, maximum)
-            composition["tag_rules"] = [
-                {"tags": sorted(tags), "max": maximum}
-                for tags, maximum in sorted(merged_rules.items(), key=lambda item: tuple(sorted(item[0])))
-            ]
+        composition = self._composition_for_mode(
+            request.root_id, request.composition_ref, request.mode
+        )
         pools = self._group_pool(request.root_id, request.composition_ref, request.mode)
         option_data = self.composition_options(
-            request.root_id, request.composition_ref, request.mode
+            request.root_id,
+            request.composition_ref,
+            request.mode,
+            fixed_barrel_ref=request.fixed_barrel_ref,
+            base_element_ref=request.base_element_ref,
         )
         option_groups = option_data["groups"]
         legal_element_refs = {
@@ -369,6 +643,12 @@ class WeaponGodRollOptimizer:
         required: dict[str, set[str]] = {}
         forced_elements: list[str] = []
         groups = composition.get("groups") or {}
+        if (
+            request.mode == "legal"
+            and request.torgue_mode in TORGUE_TAGS
+            and not option_data["torgue_modes"].get(request.torgue_mode)
+        ):
+            raise ValueError("selected Torgue mode is not legal for this weapon")
         for group, rule in groups.items():
             group_key = str(group).casefold()
             rule["allowed_part_refs"] = list(pools.get(group_key, ()))
@@ -460,6 +740,24 @@ class WeaponGodRollOptimizer:
             pool[:] = [candidate for candidate in pool if can_pick(candidate)]
         return selected
 
+    def _torgue_matches_parts(
+        self,
+        root_id: str,
+        composition_ref: str,
+        composition: Mapping[str, Any],
+        selected: Iterable[str],
+        mode: str,
+    ) -> bool:
+        if mode not in TORGUE_TAGS:
+            return True
+        refs = [str(composition_ref), *map(str, composition.get("forced_part_refs", ())), *map(str, selected)]
+        tags = set().union(*(self._part_semantic_tags(ref) for ref in refs)) if refs else set()
+        native_torgue = str(self.weapons[str(root_id)].get("manufacturer") or "").casefold() == "torgue"
+        has_sticky = bool(tags & TORGUE_TAGS["sticky"])
+        if native_torgue:
+            return has_sticky if mode == "sticky" else not has_sticky
+        return bool(tags & TORGUE_TAGS[mode])
+
     def _sample_parts(
         self,
         request: GodRollRequest,
@@ -479,7 +777,11 @@ class WeaponGodRollOptimizer:
         counts = [0] * len(tag_rules)
         required = {group: set(refs) for group, refs in fixed_required.items()}
 
-        if request.torgue_mode in TORGUE_TAGS:
+        native_torgue_impact = (
+            request.torgue_mode == "impact"
+            and str(weapon.get("manufacturer") or "").casefold() == "torgue"
+        )
+        if request.torgue_mode in TORGUE_TAGS and not native_torgue_impact:
             tags_needed = TORGUE_TAGS[request.torgue_mode]
             inherited = [request.composition_ref, *composition.get("forced_part_refs", ())]
             if not any(self._part_semantic_tags(ref) & tags_needed for ref in inherited):
@@ -503,10 +805,14 @@ class WeaponGodRollOptimizer:
             if picked is None:
                 return None
             selected.extend(picked)
-        if request.torgue_mode in TORGUE_TAGS:
-            tags_needed = TORGUE_TAGS[request.torgue_mode]
-            if not any(self._part_semantic_tags(ref) & tags_needed for ref in selected):
-                return None
+        if not self._torgue_matches_parts(
+            request.root_id,
+            request.composition_ref,
+            composition,
+            selected,
+            request.torgue_mode,
+        ):
+            return None
         return selected
 
     def _enumerate_group_choices(
@@ -535,6 +841,11 @@ class WeaponGodRollOptimizer:
         order_sensitive = int(rule.get("max", 1)) > 1 and any(
             self._part_order_sensitive(ref) for ref in allowed
         )
+        group_adds = set().union(*(row["adds"] for row in tags.values())) if tags else set()
+        group_conditions = set().union(*(
+            row["requires"] | row["excludes"] for row in tags.values()
+        )) if tags else set()
+        combination_safe = not order_sensitive and not bool(group_adds & group_conditions)
         allowed_order = {ref: index for index, ref in enumerate(allowed)}
 
         def walk(
@@ -559,7 +870,7 @@ class WeaponGodRollOptimizer:
             missing = len(required - set(selected))
             if missing > target - len(selected):
                 return
-            for ref in pool:
+            for position, ref in enumerate(pool):
                 if should_stop():
                     return
                 row = tags[ref]
@@ -570,9 +881,12 @@ class WeaponGodRollOptimizer:
                 for index, (bucket, _limit) in enumerate(tag_rules):
                     next_counts[index] += bool(row["adds"] & bucket)
                 next_counts_tuple = tuple(next_counts)
+                candidates = pool[position + 1:] if combination_safe else tuple(
+                    candidate for candidate in pool if candidate != ref
+                )
                 remaining = tuple(
-                    candidate for candidate in pool
-                    if candidate != ref and can_pick(candidate, next_active, next_counts_tuple)
+                    candidate for candidate in candidates
+                    if can_pick(candidate, next_active, next_counts_tuple)
                 )
                 yield from walk(
                     (*selected, ref), remaining, next_active, next_counts_tuple, target
@@ -696,9 +1010,18 @@ class WeaponGodRollOptimizer:
             for key in item_display_resolver.WEAPON_STAT_KEYS
         }
         status_label = "Legal" if status == "legal" else ("Element-only Modified" if element_only else "Modified")
-        semantic_tags = set().union(*(self._part_semantic_tags(ref) for ref in final_refs)) if final_refs else set()
-        torgue_label = "Sticky" if semantic_tags & TORGUE_TAGS["sticky"] else (
-            "Impact" if semantic_tags & TORGUE_TAGS["impact"] else ""
+        semantic_refs = [
+            str(request.composition_ref),
+            *map(str, composition.get("forced_part_refs", ())),
+            *map(str, final_refs),
+        ]
+        semantic_tags = set().union(
+            *(self._part_semantic_tags(ref) for ref in semantic_refs)
+        ) if semantic_refs else set()
+        has_sticky = bool(semantic_tags & TORGUE_TAGS["sticky"])
+        native_torgue = str(weapon.get("manufacturer") or "").casefold() == "torgue"
+        torgue_label = "Sticky" if has_sticky else (
+            "Impact" if native_torgue or semantic_tags & TORGUE_TAGS["impact"] else ""
         )
         important_groups = {
             "body_acc", "barrel_acc", "magazine", "magazine_acc", "grip",
@@ -721,10 +1044,14 @@ class WeaponGodRollOptimizer:
             "serial": serial,
             "decoded": decoded,
             "selected_refs": list(final_refs),
+            "root_id": str(request.root_id),
+            "composition_ref": str(request.composition_ref),
             "level": int(request.level),
             "name": name,
             "manufacturer": str(weapon.get("manufacturer") or ""),
+            "manufacturer_key": str(weapon.get("manufacturer") or ""),
             "weapon_type": self._normalized_type(weapon),
+            "weapon_type_key": self._normalized_type(weapon),
             "rarity": rarity,
             "rarity_key": rarity,
             "element": self._element_text(final_refs),
@@ -813,13 +1140,12 @@ class WeaponGodRollOptimizer:
             )
 
         def torgue_matches(selected: Iterable[str]) -> bool:
-            if request.torgue_mode not in TORGUE_TAGS:
-                return True
-            tags_needed = TORGUE_TAGS[request.torgue_mode]
-            inherited = [request.composition_ref, *composition.get("forced_part_refs", ())]
-            return any(
-                self._part_semantic_tags(ref) & tags_needed
-                for ref in [*inherited, *selected]
+            return self._torgue_matches_parts(
+                request.root_id,
+                request.composition_ref,
+                composition,
+                selected,
+                request.torgue_mode,
             )
 
         def consider(selected: list[str]) -> None:
