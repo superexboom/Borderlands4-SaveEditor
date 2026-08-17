@@ -171,6 +171,7 @@ class WeaponRollResultsPage(QtWidgets.QWidget):
 
     add_requested = QtCore.pyqtSignal(list)
     close_requested = QtCore.pyqtSignal()
+    open_editor_requested = QtCore.pyqtSignal(dict)
     _STAT_KEYS = ("damage", "dps", "accuracy", "fire_rate", "reload_time", "magazine")
 
     def __init__(self, parent=None, texts=None, stat_keys=None, stat_columns=3):
@@ -259,10 +260,15 @@ class WeaponRollResultsPage(QtWidgets.QWidget):
         self.add_one_button = QtWidgets.QPushButton(self._t.get("add_one", "Add This"))
         self.add_one_button.setObjectName("genAddButton")
         self.copy_button = QtWidgets.QPushButton(self._t.get("copy_base85", "Copy Base85"))
+        self.open_editor_button = QtWidgets.QPushButton(self._t.get("open_editor", "Open in Weapon Editor"))
+        self.open_editor_button.setObjectName("genOpenEditorButton")
+        self.open_editor_button.setVisible(False)
         self.add_one_button.clicked.connect(self._add_current)
         self.copy_button.clicked.connect(self._copy_current)
+        self.open_editor_button.clicked.connect(self._open_editor)
         actions.addWidget(self.add_one_button)
         actions.addWidget(self.copy_button)
+        actions.addWidget(self.open_editor_button)
         actions.addStretch()
         detail.addLayout(actions)
         detail.addStretch()
@@ -303,6 +309,7 @@ class WeaponRollResultsPage(QtWidgets.QWidget):
             label.setText(self._stat_label(key))
         self.add_one_button.setText(self._t.get("add_one", "Add This"))
         self.copy_button.setText(self._t.get("copy_base85", "Copy Base85"))
+        self.open_editor_button.setText(self._t.get("open_editor", "Open in Weapon Editor"))
         self.close_button.setText(self._t.get("close", "Close"))
         self.add_all_button.setText(self._t.get("add_all", "Add All"))
 
@@ -320,6 +327,11 @@ class WeaponRollResultsPage(QtWidgets.QWidget):
                 for key in self._stat_keys
             )
             lines = [str(result.get('name') or '—'), meta, stats]
+            if result.get("score") is not None:
+                lines.append(
+                    f"{self._t.get('score_short', 'Score')} "
+                    f"{float(result.get('score') or 0):.2f}"
+                )
             if result.get("variant_summary"):
                 lines.append(str(result["variant_summary"]))
             item = QtWidgets.QListWidgetItem("\n".join(lines))
@@ -348,6 +360,10 @@ class WeaponRollResultsPage(QtWidgets.QWidget):
         enabled = bool(result and self._serial(result))
         self.add_one_button.setEnabled(enabled)
         self.copy_button.setEnabled(enabled)
+        # Hidden on the generic generator page, visible on God Roll.  Do not
+        # use isVisible() here: a stacked page is legitimately hidden while
+        # its current result is being populated.
+        self.open_editor_button.setEnabled(enabled)
         if not result:
             self.detail_name.setText("—")
             self.detail_meta.setText(self._t.get("select_result", "Select a generated weapon"))
@@ -387,6 +403,11 @@ class WeaponRollResultsPage(QtWidgets.QWidget):
         if serial:
             QtWidgets.QApplication.clipboard().setText(serial)
             self.status_label.setText(self._t.get("copied", "Base85 copied"))
+
+    def _open_editor(self):
+        result = self._current_result()
+        if result and self._serial(result):
+            self.open_editor_requested.emit(dict(result))
 
     def set_add_status(self, text: str, busy: bool = False):
         self.status_label.setText(text)

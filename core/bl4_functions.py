@@ -211,6 +211,8 @@ class ProcessedItem(TypedDict):
     manufacturer_en: str
     id: int
     level: int
+    rarity: str
+    rarity_en: str
     serial: str
     decoded_full: str
     canonical_decoded: str
@@ -423,6 +425,7 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
                 "id": item_id,
                 "level": item_level,
                 "rarity": display_info.get("rarity", ""),
+                "rarity_en": display_info.get("rarity_en") or display_info.get("rarity", ""),
                 "display_source": display_info.get("display_source", ""),
                 "parts_summary": display_info.get("parts_summary", ""),
                 "state_flags": str(item_data.get("state_flags", "")),

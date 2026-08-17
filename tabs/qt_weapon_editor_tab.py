@@ -411,6 +411,8 @@ class WeaponEditorTab(QtWidgets.QWidget):
         if current_decoded:
              self.serial_decoded_entry.setText(current_decoded) # Set text first so it's available if parse fails
              self.parse_and_display_weapon(current_decoded)
+        if hasattr(self, "update_weapon_btn"):
+            self.update_weapon_btn.setEnabled(bool(self.selected_weapon_path))
 
     def create_widgets(self):
         # Clean up old content
@@ -486,6 +488,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         act_frame = QtWidgets.QFrame()
         act_layout = QtWidgets.QGridLayout(act_frame)
         self.update_weapon_btn = QtWidgets.QPushButton(self.get_localized_string("update_weapon"))
+        self.update_weapon_btn.setEnabled(False)
         self.add_to_backpack_btn = QtWidgets.QPushButton(self.get_localized_string("add_to_backpack"))
         self.flag_combo = QtWidgets.QComboBox()
         
@@ -796,7 +799,7 @@ class WeaponEditorTab(QtWidgets.QWidget):
         if not decoded_str:
             QtWidgets.QMessageBox.critical(self, self.get_localized_string("error"), self.get_localized_string("no_valid_decoded_data")); return
         self.parse_and_display_weapon(decoded_str)
-        self.serial_b85_entry.setReadOnly(True); self.update_weapon_btn.setEnabled(True)
+        self.serial_b85_entry.setReadOnly(True); self.update_weapon_btn.setEnabled(bool(self.selected_weapon_path))
 
     def parse_and_display_weapon(self, decoded_str):
         try:

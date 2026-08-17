@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import heapq
 import random
+import re
 import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Iterable, Mapping
@@ -44,6 +45,37 @@ class GodRollRequest:
     max_samples: int = 20_000
     time_limit: float = 8.0
     seed: int | None = None
+    score_profile: str = "sustained_dps"
+
+
+SCORE_PROFILES = {
+    "sustained_dps": {
+        "keys": (("dps", 1.0),),
+        "label": "Sustained DPS",
+    },
+    "burst": {
+        "keys": (("damage", 0.55), ("fire_rate", 0.25), ("magazine", 0.20)),
+        "label": "Burst Damage",
+    },
+    "crit_element": {
+        "keys": (("dps", 0.50), ("critical_damage", 0.25), ("elemental_dps", 0.25)),
+        "label": "Crit / Element",
+    },
+    "balanced": {
+        "keys": (("dps", 0.45), ("damage", 0.20), ("fire_rate", 0.15), ("magazine", 0.10), ("reload_time", 0.10)),
+        "label": "Balanced",
+    },
+}
+_SCORE_REFERENCES = {
+    "damage": 5000.0,
+    "dps": 20000.0,
+    "fire_rate": 8.0,
+    "magazine": 30.0,
+    "critical_damage": 50.0,
+    "elemental_dps": 5000.0,
+    "reload_time": 2.5,
+}
+_SCORE_INVERSE_KEYS = {"reload_time"}
 
 
 def _unique(values: Iterable[str]) -> list[str]:
@@ -970,6 +1002,7 @@ class WeaponGodRollOptimizer:
         final_refs: list[str] | None = None,
         decoded: str | None = None,
         stats: Mapping[str, Any] | None = None,
+        score_info: Mapping[str, Any] | None = None,
     ) -> dict[str, Any] | None:
         final_refs = list(final_refs) if final_refs is not None else self._final_refs(
             request, selected, forced_elements
@@ -1035,6 +1068,11 @@ class WeaponGodRollOptimizer:
         variant_bits = [value for value in (torgue_label, *important[:4]) if value]
         variant_summary = " · ".join(variant_bits)
         tooltip_lines = [name, f"DPS: {formatted.get('dps')}", status_label]
+        if score_info:
+            tooltip_lines.append(
+                f"Score ({score_info.get('profile') or request.score_profile}): "
+                f"{float(score_info.get('score') or 0):.2f}"
+            )
         for violation in validation.get("violations", ()):
             detail = violation.get("group") or violation.get("part") or ", ".join(map(str, violation.get("parts") or ()))
             tooltip_lines.append(f"{violation.get('code')}: {detail}" if detail else str(violation.get("code")))
@@ -1063,7 +1101,73 @@ class WeaponGodRollOptimizer:
             "violations": list(validation.get("violations") or ()),
             "stats": stats,
             "formatted_stats": formatted,
+            "score_profile": str((score_info or {}).get("profile") or request.score_profile),
+            "score": float((score_info or {}).get("score") or 0.0),
+            "score_sort": float((score_info or {}).get("sort_score") or (score_info or {}).get("score") or 0.0),
+            "score_breakdown": list((score_info or {}).get("breakdown") or ()),
+            "score_warnings": list((score_info or {}).get("warnings") or ()),
             "tooltip": "\n".join(tooltip_lines),
+        }
+
+    @staticmethod
+    def _numeric_stat(value: Any, key: str = "") -> float | None:
+        if isinstance(value, bool):
+            return float(value)
+        if isinstance(value, (int, float)):
+            return float(value)
+        text = str(value or "").replace(",", "").strip()
+        pair = re.fullmatch(r"(-?\d+(?:\.\d+)?)\s*[x×]\s*(\d+(?:\.\d+)?)", text, re.IGNORECASE)
+        if pair and key == "damage":
+            return float(pair.group(1)) * float(pair.group(2))
+        match = re.search(r"-?\d+(?:\.\d+)?", text)
+        return float(match.group(0)) if match else None
+
+    def _score_stats(self, stats: Mapping[str, Any], profile: str, language: str = "zh-CN") -> dict[str, Any]:
+        profile_key = str(profile or "sustained_dps")
+        if profile_key not in SCORE_PROFILES:
+            profile_key = "sustained_dps"
+        spec = SCORE_PROFILES[profile_key]
+        breakdown: list[dict[str, Any]] = []
+        warnings: list[str] = []
+        weighted_total = 0.0
+        weight_total = sum(float(weight) for _key, weight in spec["keys"])
+        for key, weight in spec["keys"]:
+            raw = stats.get(key)
+            numeric = self._numeric_stat(raw, key)
+            reference = float(_SCORE_REFERENCES.get(key, 1.0))
+            missing = numeric is None or (key in _SCORE_INVERSE_KEYS and numeric <= 0)
+            raw_display = raw
+            if raw_display is None or raw_display == "":
+                raw_display = "—"
+            elif not isinstance(raw_display, str) or "x" not in str(raw_display).lower():
+                raw_display = item_display_resolver.format_weapon_stat(key, numeric, language) or str(raw_display)
+            if missing:
+                warnings.append(key)
+                normalized = 0.0
+                contribution = 0.0
+            else:
+                ratio = max(0.0, numeric / reference)
+                normalized = (1.0 / (1.0 + ratio)) if key in _SCORE_INVERSE_KEYS else (ratio / (1.0 + ratio))
+                contribution = normalized * float(weight) * 100.0
+                weighted_total += contribution
+            breakdown.append({
+                "key": key,
+                "raw": numeric,
+                "raw_display": raw_display,
+                "weight": float(weight),
+                "normalized": normalized,
+                "contribution": contribution,
+                "missing": missing,
+            })
+        score = weighted_total / weight_total if weight_total else 0.0
+        if warnings:
+            warnings = [f"missing:{key}" for key in warnings]
+        return {
+            "profile": profile_key,
+            "score": round(score, 2),
+            "sort_score": score,
+            "breakdown": breakdown,
+            "warnings": warnings,
         }
 
     def _final_refs(
@@ -1102,6 +1206,8 @@ class WeaponGodRollOptimizer:
     ) -> dict[str, Any]:
         if request.mode not in {"legal", "unrestricted"}:
             raise ValueError("mode must be legal or unrestricted")
+        if str(request.score_profile or "sustained_dps") not in SCORE_PROFILES:
+            raise ValueError("unknown score profile")
         if str(request.root_id) not in self.weapons:
             raise ValueError("unknown weapon root")
         weapon = self.weapons[str(request.root_id)]
@@ -1113,7 +1219,7 @@ class WeaponGodRollOptimizer:
             request.secondary_element_ref, request.pearl_element_ref,
             bool(request.allow_illegal_elements),
             tuple(sorted((str(group), int(bounds[0]), int(bounds[1])) for group, bounds in request.group_limits.items())),
-            int(request.top_n), str(language),
+            int(request.top_n), str(language), str(request.score_profile or "sustained_dps"),
         )
         cached = self._search_cache.get(cache_key)
         if cached is not None:
@@ -1167,12 +1273,14 @@ class WeaponGodRollOptimizer:
                 rejected += 1
                 return
             accepted += 1
-            score = float(stats["dps"])
+            score_info = self._score_stats(stats, request.score_profile, language)
+            score = float(score_info.get("sort_score") or 0.0)
             if len(heap) >= top_n and score <= heap[0][0]:
                 return
             candidate = self._candidate(
                 request, selected, forced_elements, seed, language,
                 final_refs=final_refs, decoded=decoded, stats=stats,
+                score_info=score_info,
             )
             if candidate is None:
                 rejected += 1
@@ -1187,7 +1295,11 @@ class WeaponGodRollOptimizer:
                     "attempted": attempted,
                     "accepted": accepted,
                     "rejected": rejected,
-                    "best_dps": max((item[0] for item in heap), default=0.0),
+                    "best_dps": max(
+                        (float(self._numeric_stat(item[2].get("stats", {}).get("dps"), "dps") or 0.0) for item in heap),
+                        default=0.0,
+                    ),
+                    "best_score": max((item[0] for item in heap), default=0.0),
                     "elapsed": time.perf_counter() - start,
                 })
 
@@ -1228,6 +1340,11 @@ class WeaponGodRollOptimizer:
         results = [row[2] for row in sorted(heap, key=lambda item: (-item[0], item[1]))]
         for index, candidate in enumerate(results, 1):
             candidate["rank"] = index
+        best_dps = max(
+            (float(self._numeric_stat(item.get("stats", {}).get("dps"), "dps") or 0.0) for item in results),
+            default=0.0,
+        )
+        best_score = max((float(item.get("score_sort") or item.get("score") or 0.0) for item in results), default=0.0)
         elapsed = time.perf_counter() - start
         result = {
             "results": results,
@@ -1240,6 +1357,9 @@ class WeaponGodRollOptimizer:
             "complete": complete,
             "search_kind": "exact_legal" if complete else "budgeted_anytime",
             "mode": request.mode,
+            "score_profile": str(request.score_profile or "sustained_dps"),
+            "best_dps": best_dps,
+            "best_score": best_score,
         }
         if complete:
             self._search_cache[cache_key] = copy.deepcopy(result)

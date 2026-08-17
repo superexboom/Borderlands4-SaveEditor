@@ -29,6 +29,12 @@ class GodRollResultsPage(WeaponRollResultsPage):
 
     def __init__(self, parent=None, texts=None):
         super().__init__(parent=parent, texts=texts)
+        self.open_editor_button.setVisible(True)
+        self.score_title = QLabel()
+        self.score_title.setObjectName("genSectionTitle")
+        self.score_label = QLabel()
+        self.score_label.setObjectName("rollScoreExplanation")
+        self.score_label.setWordWrap(True)
         self.parts_title = QLabel()
         self.parts_title.setObjectName("genSectionTitle")
         self.parts_scroll = QScrollArea()
@@ -40,16 +46,52 @@ class GodRollResultsPage(WeaponRollResultsPage):
         self.parts_layout.setSpacing(6)
         self.parts_scroll.setWidget(self.parts_body)
         detail_layout = self.detail_card.layout()
-        detail_layout.insertWidget(3, self.parts_title)
-        detail_layout.insertWidget(4, self.parts_scroll, 1)
+        detail_layout.insertWidget(3, self.score_title)
+        detail_layout.insertWidget(4, self.score_label)
+        detail_layout.insertWidget(5, self.parts_title)
+        detail_layout.insertWidget(6, self.parts_scroll, 1)
         self.update_texts(texts or {})
+        self._render_score()
         self._render_parts()
 
     def update_texts(self, texts):
         super().update_texts(texts)
         if hasattr(self, "parts_title"):
             self.parts_title.setText(self._t.get("parts_title", "Part Details"))
+            self.score_title.setText(self._t.get("score_explanation", "Score explanation"))
+            self._render_score()
             self._render_parts()
+
+    def _render_score(self):
+        if not hasattr(self, "score_label"):
+            return
+        result = self._current_result()
+        if not result:
+            self.score_label.setText("—")
+            return
+        profile = str(result.get("score_profile") or "sustained_dps")
+        profile_label = self._t.get(f"score_profile_{profile}", profile)
+        lines = [
+            f"{self._t.get('score_total', 'Score')}: {float(result.get('score') or 0):.2f}",
+            f"{self._t.get('score_profile', 'Profile')}: {profile_label}",
+        ]
+        for row in result.get("score_breakdown") or ():
+            key = str(row.get("key") or "")
+            label = self._t.get(f"score_metric_{key}", key)
+            raw = row.get("raw_display")
+            if raw in (None, ""):
+                raw = "—"
+            weight = float(row.get("weight") or 0.0)
+            lines.append(
+                f"{label} × {weight:.0%}: {float(row.get('contribution') or 0):+.2f} "
+                f"({raw})"
+            )
+        lines.append(self._t.get("score_warning", "Paper score; some mechanics are not modeled."))
+        missing = [str(value).split(":", 1)[1] for value in (result.get("score_warnings") or ()) if str(value).startswith("missing:")]
+        if missing:
+            labels = [self._t.get(f"score_metric_{key}", key) for key in missing]
+            lines.append(self._t.get("score_missing", "Unavailable metrics: {metrics}").format(metrics=", ".join(labels)))
+        self.score_label.setText("\n".join(lines))
 
     def _clear_parts(self):
         if not hasattr(self, "parts_layout"):
@@ -101,6 +143,7 @@ class GodRollResultsPage(WeaponRollResultsPage):
 
     def _show_result(self, row):
         super()._show_result(row)
+        self._render_score()
         self._render_parts()
 
 
@@ -136,6 +179,7 @@ class _GodRollWorker(QThread):
 class QtGodRollTab(QWidget):
     add_to_backpack_requested = pyqtSignal(str, str)
     batch_add_to_backpack_requested = pyqtSignal(list, str)
+    open_editor_requested = pyqtSignal(dict)
     worker_started = pyqtSignal(object)
 
     _FALLBACK = {
@@ -163,7 +207,25 @@ class QtGodRollTab(QWidget):
         "none": "No element",
         "force_element": "Allow forced illegal element",
         "force_hint": "The result is marked modified when only the element violates the native build rules.",
-        "score_note": "Ranking uses verified paper sustained DPS; some red-text, ricochet, and delayed sticky mechanics are not fully modeled.",
+        "score_note": "Ranking uses a paper stat model; red-text, ricochet, and delayed sticky mechanics are not fully modeled.",
+        "score_profile": "Score profile",
+        "score_profile_sustained_dps": "Sustained DPS",
+        "score_profile_burst": "Burst Damage",
+        "score_profile_crit_element": "Crit / Element",
+        "score_profile_balanced": "Balanced",
+        "score_explanation": "Score explanation",
+        "score_total": "Score",
+        "score_short": "Score",
+        "score_metric_dps": "Sustained DPS",
+        "score_metric_damage": "Damage",
+        "score_metric_fire_rate": "Fire Rate",
+        "score_metric_magazine": "Magazine",
+        "score_metric_critical_damage": "Critical Damage",
+        "score_metric_elemental_dps": "Elemental DPS",
+        "score_metric_reload_time": "Reload",
+        "score_warning": "Paper score; red text, ricochet, and delayed sticky mechanics are not modeled.",
+        "score_missing": "Unavailable metrics: {metrics}",
+        "open_editor": "Open in Weapon Editor",
         "limits": "Unrestricted group limits",
         "group": "Group",
         "pool": "Pool",
@@ -177,7 +239,7 @@ class QtGodRollTab(QWidget):
         "search": "Find God Rolls",
         "cancel": "Cancel",
         "idle": "Choose a target and start searching.",
-        "running": "Explored {attempted} · valid {accepted} · best DPS {best}",
+        "running": "Explored {attempted} · valid {accepted} · best score {best}",
         "done": "Found {count} builds from {attempted} attempts in {elapsed:.1f}s. Budget-best; global optimum is not yet proven.",
         "done_exact": "Exhausted {frontier} legal builds in {elapsed:.1f}s and proved the Top {count}.",
         "cancelled": "Search cancelled; showing the best results found so far.",
@@ -188,8 +250,8 @@ class QtGodRollTab(QWidget):
         "add_start": "Adding {count} item(s)...",
         "add_progress": "Adding {current}/{total} · success {success} · failed {fail}",
         "add_done": "Added {success}; failed {fail}",
-        "results_scope": "{mode} · fixed barrel {barrel} · budget-best Top {count}",
-        "results_scope_exact": "{mode} · fixed barrel {barrel} · proven Top {count}",
+        "results_scope": "{mode} · {profile} · fixed barrel {barrel} · budget-best Top {count}",
+        "results_scope_exact": "{mode} · {profile} · fixed barrel {barrel} · proven Top {count}",
         "parts_title": "Part Details",
         "no_part_details": "No part details",
         "no_part_effect": "No stat changes",
@@ -505,7 +567,9 @@ class QtGodRollTab(QWidget):
         run_layout.setContentsMargins(14, 12, 14, 12)
         self.effort_label = QLabel()
         self.top_n_label = QLabel()
+        self.score_profile_label = QLabel()
         self.effort_combo = PopupOnlyWheelComboBox()
+        self.score_profile_combo = PopupOnlyWheelComboBox()
         self.top_n_spin = QSpinBox()
         self.top_n_spin.setRange(1, 10)
         self.top_n_spin.setValue(10)
@@ -517,11 +581,13 @@ class QtGodRollTab(QWidget):
         self.status_label.setWordWrap(True)
         run_layout.addWidget(self.effort_label, 0, 0)
         run_layout.addWidget(self.top_n_label, 0, 1)
+        run_layout.addWidget(self.score_profile_label, 0, 2)
         run_layout.addWidget(self.effort_combo, 1, 0)
         run_layout.addWidget(self.top_n_spin, 1, 1)
-        run_layout.addWidget(self.search_button, 1, 2)
-        run_layout.addWidget(self.cancel_button, 1, 3)
-        run_layout.addWidget(self.status_label, 2, 0, 1, 4)
+        run_layout.addWidget(self.score_profile_combo, 1, 2)
+        run_layout.addWidget(self.search_button, 1, 3)
+        run_layout.addWidget(self.cancel_button, 2, 3)
+        run_layout.addWidget(self.status_label, 2, 0, 1, 3)
         run_layout.setColumnStretch(0, 2)
         run_layout.setColumnStretch(1, 1)
         run_layout.setColumnStretch(2, 1)
@@ -536,6 +602,7 @@ class QtGodRollTab(QWidget):
 
         self.results_page = GodRollResultsPage(texts={})
         self.results_page.add_requested.connect(self._request_add)
+        self.results_page.open_editor_requested.connect(self.open_editor_requested)
         self.results_page.close_requested.connect(lambda: self.page_stack.setCurrentIndex(0))
         self.page_stack.addWidget(self.results_page)
 
@@ -546,6 +613,7 @@ class QtGodRollTab(QWidget):
         self.mode_combo.currentIndexChanged.connect(self._refresh_options)
         self.barrel_combo.currentIndexChanged.connect(self._refresh_dependent_elements)
         self.base_element_combo.currentIndexChanged.connect(self._refresh_dependent_elements)
+        self.score_profile_combo.currentIndexChanged.connect(self._score_profile_changed)
         self.search_button.clicked.connect(self._start_search)
         self.cancel_button.clicked.connect(self._cancel_search)
 
@@ -565,6 +633,7 @@ class QtGodRollTab(QWidget):
         self.limits_title.setText(self._text("limits"))
         self.effort_label.setText(self._text("effort"))
         self.top_n_label.setText(self._text("top_n"))
+        self.score_profile_label.setText(self._text("score_profile"))
         self.search_button.setText(self._text("search"))
         self.cancel_button.setText(self._text("cancel"))
         if not self._worker:
@@ -586,6 +655,15 @@ class QtGodRollTab(QWidget):
             self.effort_combo.addItem(self._text(key), key)
         self.effort_combo.setCurrentIndex(max(0, self.effort_combo.findData(current_effort or "balanced")))
 
+        current_profile = self.score_profile_combo.currentData()
+        self.score_profile_combo.blockSignals(True)
+        self.score_profile_combo.clear()
+        for key in ("sustained_dps", "burst", "crit_element", "balanced"):
+            self.score_profile_combo.addItem(self._text(f"score_profile_{key}"), key)
+        profile_index = self.score_profile_combo.findData(current_profile or "sustained_dps")
+        self.score_profile_combo.setCurrentIndex(max(0, profile_index))
+        self.score_profile_combo.blockSignals(False)
+
         flags = resource_loader.get_flag_labels(self.current_lang)
         current_flag = self.flag_combo.currentText().split(" ")[0] if self.flag_combo.count() else "3"
         self.flag_combo.clear()
@@ -603,11 +681,24 @@ class QtGodRollTab(QWidget):
             "add_one": self.generator_buttons.get("add_one", "Add This"),
             "add_all": self.generator_buttons.get("add_all", "Add All"),
             "copy_base85": self.generator_buttons.get("copy_base85", "Copy Base85"),
+            "open_editor": self._text("open_editor"),
             "copied": (self.full_loc.get("weapon_gen_tab") or {}).get("dialogs", {}).get("base85_copied", "Base85 copied"),
             "legal": self.rule_loc.get("status_legal", self._text("legal")),
             "parts_title": self._text("parts_title"),
             "no_part_details": self._text("no_part_details"),
             "no_part_effect": self._text("no_part_effect"),
+            "score_explanation": self._text("score_explanation"),
+            "score_total": self._text("score_total"),
+            "score_profile": self._text("score_profile"),
+            "score_warning": self._text("score_warning"),
+            "score_missing": self._text("score_missing"),
+            "score_short": self._text("score_short"),
+            **{f"score_profile_{key}": self._text(f"score_profile_{key}") for key in (
+                "sustained_dps", "burst", "crit_element", "balanced"
+            )},
+            **{f"score_metric_{key}": self._text(f"score_metric_{key}") for key in (
+                "dps", "damage", "fire_rate", "magazine", "critical_damage", "elemental_dps", "reload_time"
+            )},
             **{key: self.stats_loc.get(key, key) for key in (
                 "damage", "dps", "accuracy", "fire_rate", "reload_time", "magazine"
             )},
@@ -656,6 +747,7 @@ class QtGodRollTab(QWidget):
             mode=mode,
             barrel=str(meta.get("barrel") or "—"),
             count=int(meta.get("top_n") or len(results)),
+            profile=self._text(f"score_profile_{meta.get('score_profile') or 'sustained_dps'}"),
         )
         self.results_page.set_results(results, text, scope)
         if results and current_row >= 0:
@@ -960,7 +1052,21 @@ class QtGodRollTab(QWidget):
             top_n=self.top_n_spin.value(),
             max_samples=samples,
             time_limit=seconds,
+            score_profile=str(self.score_profile_combo.currentData() or "sustained_dps"),
         )
+
+    def _score_profile_changed(self, _index):
+        """Never leave an old result page mislabeled with a new profile."""
+        if not self._last_result_meta:
+            return
+        current = str(self.score_profile_combo.currentData() or "sustained_dps")
+        if current == str(self._last_result_meta.get("score_profile") or "sustained_dps"):
+            return
+        self._raw_results = []
+        self._last_result_meta = None
+        self.results_page.set_results([])
+        self.page_stack.setCurrentIndex(0)
+        self.status_label.setText(self._text("idle"))
 
     def _set_busy(self, busy):
         self.search_button.setEnabled(not busy and not self._live_mode and bool(self.weapon_combo.currentData()))
@@ -969,6 +1075,7 @@ class QtGodRollTab(QWidget):
             self.rarity_combo, self.manufacturer_combo, self.weapon_type_combo, self.weapon_combo, self.mode_combo,
             self.level_spin, self.barrel_combo, self.torgue_combo, self.base_element_combo,
             self.force_element_check, self.effort_combo, self.top_n_spin,
+            self.score_profile_combo,
         ):
             widget.setEnabled(not busy and not self._live_mode)
         controls_enabled = not busy and not self._live_mode
@@ -1001,9 +1108,9 @@ class QtGodRollTab(QWidget):
             self.cancel_button.setEnabled(False)
 
     def _on_progress(self, row):
-        best = int(float(row.get("best_dps") or 0))
+        best = float(row.get("best_score") or row.get("best_dps") or 0)
         self.status_label.setText(self._text("running").format(
-            attempted=row.get("attempted", 0), accepted=row.get("accepted", 0), best=f"{best:,}"
+            attempted=row.get("attempted", 0), accepted=row.get("accepted", 0), best=f"{best:.2f}"
         ))
 
     def _on_completed(self, result):
@@ -1015,6 +1122,7 @@ class QtGodRollTab(QWidget):
             "exact_examined": result.get("exact_examined", result.get("attempted", 0)),
             "elapsed": float(result.get("elapsed") or 0),
             "mode": str(self.mode_combo.currentData() or "legal"),
+            "score_profile": str(result.get("score_profile") or self.score_profile_combo.currentData() or "sustained_dps"),
             "barrel": self.barrel_combo.currentText() or "—",
             "top_n": self.top_n_spin.value(),
         }

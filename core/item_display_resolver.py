@@ -3494,6 +3494,7 @@ def resolve_item_display(
 
     name = ""
     rarity = _rarity_from_csv(item_id, rarity_ids, item_type, lang)
+    rarity_en = _rarity_from_csv(item_id, rarity_ids, item_type, "en-US")
     pearl_ids = {str(value) for value in range(51, 61)}
     if item_type in WEAPON_TYPES and any(
         str(part.get("id", "")) == "1"
@@ -3505,6 +3506,7 @@ def resolve_item_display(
         if part.get("type") in {"elemental", "group"}
     ):
         rarity = _rarity_text("Pearl", lang)
+        rarity_en = "Pearl"
     source = ""
 
     if item_type in WEAPON_TYPES:
@@ -3513,6 +3515,7 @@ def resolve_item_display(
         name, source = _heavy_name(item_id, ids, lang)
     elif item_type == "Class Mod":
         name, rarity, source = _classmod_name(item_id, simple_ids, lang)
+        _unused_name_en, rarity_en, _unused_source_en = _classmod_name(item_id, simple_ids, "en-US")
     elif item_type == "Enhancement":
         name, source = _enhancement_name(item_id, simple_ids, enhancement_stat_ids, lang)
     elif item_type in {"Grenade", "Shield", "Repkit"}:
@@ -3554,6 +3557,7 @@ def resolve_item_display(
     return {
         "display_name": display_name,
         "rarity": rarity,
+        "rarity_en": rarity_en,
         "display_source": source or "fallback",
         "parts_summary": " ".join(f"{{{item}}}" for item in ids[:12]),
     }

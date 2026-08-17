@@ -8,6 +8,7 @@ from PyQt6.QtWidgets import (
     QApplication,
     QAbstractItemView,
     QComboBox,
+    QGridLayout,
     QHBoxLayout,
     QHeaderView,
     QLabel,
@@ -15,6 +16,7 @@ from PyQt6.QtWidgets import (
     QMenu,
     QMessageBox,
     QPushButton,
+    QSpinBox,
     QStyle,
     QToolTip,
     QTreeView,
@@ -1147,6 +1149,8 @@ class QtItemsTab(QWidget):
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(self._headers())
         self.item_lookup: Dict[int, Dict[str, Any]] = {}
+        self._all_items: List[Dict[str, Any]] = []
+        self._columns_initialized = False
         self.current_selected_item: Optional[Dict[str, Any]] = None
         self._card_cache: Dict[tuple[str, ...], str] = {}
         self._hover_card_key: Optional[tuple[str, ...]] = None
@@ -1171,9 +1175,71 @@ class QtItemsTab(QWidget):
         self.search_entry.textChanged.connect(self.filter_tree)
         main_layout.addWidget(self.search_entry)
 
+        # The old tree only supported text hiding.  Keep the source list and
+        # rebuild the grouped model from a real AND-filtered subset instead.
+        filter_frame = QWidget()
+        filter_grid = QGridLayout(filter_frame)
+        filter_grid.setContentsMargins(0, 0, 0, 0)
+        filter_grid.setHorizontalSpacing(6)
+        filter_grid.setVerticalSpacing(3)
+        self.filter_combos: Dict[str, QComboBox] = {}
+        for column, key in enumerate(("container", "type", "manufacturer")):
+            label = QLabel()
+            self.ui_labels[f"filter_{key}"] = label
+            filter_grid.addWidget(label, 0, column * 2)
+            combo = QComboBox()
+            combo.setMinimumWidth(110)
+            combo.currentIndexChanged.connect(self._apply_filters)
+            self.filter_combos[key] = combo
+            filter_grid.addWidget(combo, 0, column * 2 + 1)
+
+        label = QLabel()
+        self.ui_labels["filter_rarity"] = label
+        filter_grid.addWidget(label, 1, 0)
+        rarity_combo = QComboBox()
+        rarity_combo.setMinimumWidth(110)
+        rarity_combo.currentIndexChanged.connect(self._apply_filters)
+        self.filter_combos["rarity"] = rarity_combo
+        filter_grid.addWidget(rarity_combo, 1, 1)
+
+        label = QLabel()
+        self.ui_labels["filter_flags"] = label
+        filter_grid.addWidget(label, 1, 2)
+        flag_combo = QComboBox()
+        flag_combo.setMinimumWidth(110)
+        flag_combo.currentIndexChanged.connect(self._apply_filters)
+        self.filter_combos["flags"] = flag_combo
+        filter_grid.addWidget(flag_combo, 1, 3)
+
+        level_label = QLabel()
+        self.ui_labels["filter_level"] = level_label
+        filter_grid.addWidget(level_label, 1, 4)
+        self.filter_min_level = QSpinBox()
+        self.filter_min_level.setRange(0, 999)
+        self.filter_min_level.setPrefix("≥ ")
+        self.filter_min_level.setSpecialValueText("—")
+        self.filter_min_level.valueChanged.connect(self._apply_filters)
+        self.filter_max_level = QSpinBox()
+        self.filter_max_level.setRange(0, 999)
+        self.filter_max_level.setPrefix("≤ ")
+        self.filter_max_level.setSpecialValueText("—")
+        self.filter_max_level.valueChanged.connect(self._apply_filters)
+        filter_grid.addWidget(self.filter_min_level, 1, 5)
+        filter_grid.addWidget(self.filter_max_level, 1, 6)
+
+        self.clear_filters_button = QPushButton()
+        self.clear_filters_button.clicked.connect(self._clear_filters)
+        filter_grid.addWidget(self.clear_filters_button, 1, 7)
+        self.filter_count_label = QLabel()
+        self.filter_count_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        filter_grid.addWidget(self.filter_count_label, 0, 6, 1, 2)
+        filter_grid.setColumnStretch(7, 1)
+        main_layout.addWidget(filter_frame)
+
         self.tree_view = QTreeView()
         self.tree_view.setModel(self.model)
         self.tree_view.setAlternatingRowColors(True)
+        self.tree_view.setTextElideMode(Qt.TextElideMode.ElideRight)
         self.tree_view.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.tree_view.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.tree_view.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
@@ -1185,7 +1251,9 @@ class QtItemsTab(QWidget):
         header.setStretchLastSection(False)
         header.setMinimumSectionSize(60)
         self.tree_view.horizontalScrollBar().setTracking(False)
+        self.tree_view.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         main_layout.addWidget(self.tree_view, 1)
+        self._retranslate_filters()
         self._resize_columns()
 
     def _headers(self) -> List[str]:
@@ -1226,16 +1294,70 @@ class QtItemsTab(QWidget):
         )
 
     def update_tree(self, items: List[Dict[str, Any]]):
+        self._all_items = list(items or [])
+        self._populate_filters()
+        self._apply_filters()
+
+    @staticmethod
+    def _canonical_item_value(item: Dict[str, Any], key: str) -> str:
+        if key == "container":
+            return str(item.get("container") or "")
+        if key == "type":
+            return str(item.get("type_en") or item.get("type") or "")
+        if key == "manufacturer":
+            return str(item.get("manufacturer_en") or item.get("manufacturer") or "")
+        if key == "rarity":
+            return str(item.get("rarity_en") or item.get("rarity") or "")
+        return str(item.get(key) or "")
+
+    def _filter_display_value(self, item: Dict[str, Any], key: str, value: str) -> str:
+        if key == "container":
+            return self._container_display(value)
+        display_key = {"type": "type", "manufacturer": "manufacturer", "rarity": "rarity"}.get(key)
+        return str(item.get(display_key) or value) if display_key else value
+
+    def _populate_filters(self):
+        if not hasattr(self, "filter_combos"):
+            return
+        selected = {key: combo.currentData() for key, combo in self.filter_combos.items()}
+        for key, combo in self.filter_combos.items():
+            combo.blockSignals(True)
+            combo.clear()
+            combo.addItem(self.loc.get("filters", {}).get("all", "All"), None)
+            values: Dict[str, str] = {}
+            for item in self._all_items:
+                value = self._canonical_item_value(item, key)
+                if value and value not in values:
+                    values[value] = self._filter_display_value(item, key, value)
+            for value in sorted(values, key=lambda text: text.casefold()):
+                combo.addItem(values[value], value)
+            target = selected.get(key)
+            index = combo.findData(target)
+            combo.setCurrentIndex(index if index >= 0 else 0)
+            combo.blockSignals(False)
+
+        flags_combo = self.filter_combos.get("flags")
+        if flags_combo is not None:
+            flags_combo.blockSignals(True)
+            flags_combo.clear()
+            flags_combo.addItem(self.loc.get("filters", {}).get("all", "All"), None)
+            flags = self.loc.get("add_item", {}).get("flags", {})
+            for value in ("1", "3", "5", "17", "33", "65", "129"):
+                flags_combo.addItem(flags.get(value, value), value)
+            target = selected.get("flags")
+            index = flags_combo.findData(target)
+            flags_combo.setCurrentIndex(index if index >= 0 else 0)
+            flags_combo.blockSignals(False)
+
+    def _rebuild_tree(self, items: List[Dict[str, Any]]):
         self._hide_hover_card()
-        self.model.clear()
+        # Keep the model/header object alive so user-resized widths survive
+        # every search/filter rebuild.
+        self.model.removeRows(0, self.model.rowCount())
         self.model.setHorizontalHeaderLabels(self._headers())
         self.item_lookup.clear()
         self.current_selected_item = None
         self._card_cache.clear()
-        self._resize_columns()
-
-        if not items:
-            return
 
         items_by_container: Dict[str, Dict[str, List[Dict[str, Any]]]] = {}
         for i, item in enumerate(items):
@@ -1248,18 +1370,73 @@ class QtItemsTab(QWidget):
         for container_name, types_dict in sorted(items_by_container.items()):
             container_node = self._group_row(container_name)
             root_node.appendRow(container_node)
-
             for item_type, item_list in sorted(types_dict.items()):
                 type_node = self._group_row(f"{item_type} ({len(item_list)})")
                 container_node[0].appendRow(type_node)
-
                 for item in sorted(item_list, key=self._slot_sort_key):
                     type_node[0].appendRow(self._item_row(item, container_name))
 
         self.tree_view.expandAll()
         self._collapse_default_groups()
-        if self.search_entry.text():
-            self.filter_tree(self.search_entry.text())
+        self._resize_columns()
+
+    def _matches_filters(self, item: Dict[str, Any]) -> bool:
+        query = self.search_entry.text().strip().casefold()
+        if query:
+            container_display = self._container_display(item.get("container"))
+            flag_display = self._flag_display(item.get("state_flags"))
+            haystack = " ".join(
+                str(item.get(key) or "")
+                for key in ("name", "base_name", "type", "type_en", "manufacturer", "manufacturer_en", "rarity", "rarity_en", "serial", "decoded_full")
+            ).casefold()
+            haystack = f"{haystack} {container_display} {flag_display}".casefold()
+            if query not in haystack:
+                return False
+        for key, combo in self.filter_combos.items():
+            selected = combo.currentData()
+            if key == "flags":
+                if selected is not None and str(item.get("state_flags") or "") != str(selected):
+                    return False
+            elif selected is not None and self._canonical_item_value(item, key) != str(selected):
+                return False
+        try:
+            level = int(item.get("level") or 0)
+        except (TypeError, ValueError):
+            level = 0
+        minimum = int(self.filter_min_level.value())
+        maximum = int(self.filter_max_level.value())
+        if minimum and level < minimum:
+            return False
+        if maximum and level > maximum:
+            return False
+        return True
+
+    def _apply_filters(self, *_args):
+        if not hasattr(self, "filter_count_label"):
+            return
+        filtered = [item for item in self._all_items if self._matches_filters(item)]
+        self.filter_count_label.setText(
+            self.loc.get("filters", {}).get("count", "{shown}/{total}").format(
+                shown=len(filtered), total=len(self._all_items)
+            )
+        )
+        self._rebuild_tree(filtered)
+
+    def _clear_filters(self):
+        self.search_entry.blockSignals(True)
+        self.search_entry.clear()
+        self.search_entry.blockSignals(False)
+        for combo in self.filter_combos.values():
+            combo.blockSignals(True)
+            combo.setCurrentIndex(0)
+            combo.blockSignals(False)
+        self.filter_min_level.blockSignals(True)
+        self.filter_max_level.blockSignals(True)
+        self.filter_min_level.setValue(0)
+        self.filter_max_level.setValue(0)
+        self.filter_min_level.blockSignals(False)
+        self.filter_max_level.blockSignals(False)
+        self._apply_filters()
 
     def set_character_level(self, level: Any):
         try:
@@ -1283,6 +1460,8 @@ class QtItemsTab(QWidget):
             value = self._column_value(item, key, data_key, container_name)
             cell = QStandardItem(value)
             cell.setEditable(False)
+            if value:
+                cell.setToolTip(value)
             row.append(cell)
         row[0].setData(item, Qt.ItemDataRole.UserRole)
         return row
@@ -1422,15 +1601,22 @@ class QtItemsTab(QWidget):
 
     def _resize_columns(self):
         header = self.tree_view.header()
+        if self._columns_initialized:
+            return
+        widths = {
+            "name": 240,
+            "type": 105,
+            "manufacturer": 110,
+            "rarity": 78,
+            "level": 58,
+            "flags": 92,
+            "serial": 180,
+        }
         for i in range(self.model.columnCount()):
             key = self.COLUMN_KEYS[i][0]
-            if key == "serial":
-                header.setSectionResizeMode(i, QHeaderView.ResizeMode.Interactive)
-                self.tree_view.setColumnWidth(i, self.tree_view.fontMetrics().horizontalAdvance("0" * 20) + 20)
-            elif key == "name":
-                header.setSectionResizeMode(i, QHeaderView.ResizeMode.Stretch)
-            else:
-                header.setSectionResizeMode(i, QHeaderView.ResizeMode.ResizeToContents)
+            header.setSectionResizeMode(i, QHeaderView.ResizeMode.Interactive)
+            header.resizeSection(i, widths.get(key, 100))
+        self._columns_initialized = True
 
     def on_item_selected(self, selected, _deselected):
         indexes = selected.indexes()
@@ -1458,6 +1644,14 @@ class QtItemsTab(QWidget):
             return None
 
         index = walk(self.model.invisibleRootItem())
+        if (index is None or not index.isValid()) and any(
+            tuple(str(p) for p in (item.get("original_path") or [])) == target
+            for item in self._all_items
+        ):
+            # The item exists but is hidden by active filters. Reveal it for
+            # YAML/editor deep-links instead of reporting a false miss.
+            self._clear_filters()
+            index = walk(self.model.invisibleRootItem())
         if index is None or not index.isValid():
             return False
         parent = index.parent()
@@ -1544,6 +1738,11 @@ class QtItemsTab(QWidget):
             },
             "containers": {"Backpack": "Backpack", "Bank": "Bank", "Lost Loot": "Lost Loot", "Equipped": "Equipped"},
             "search_placeholder": "Search items...",
+            "filters": {
+                "container": "Container", "type": "Type", "manufacturer": "Manufacturer",
+                "rarity": "Rarity", "flags": "Flags", "level": "Level",
+                "all": "All", "clear": "Clear", "count": "{shown}/{total}",
+            },
             "add_item": {
                 "label_serial": "Serial:",
                 "placeholder_serial": "Enter code...",
@@ -1573,7 +1772,26 @@ class QtItemsTab(QWidget):
         self.ui_buttons["button_add"].setText(self.loc["add_item"]["button_add"])
         self.search_entry.setPlaceholderText(self.loc["search_placeholder"])
         self._populate_flags()
+        self._retranslate_filters()
+        self._populate_filters()
+        self._apply_filters()
         self._resize_columns()
+
+    def _retranslate_filters(self):
+        texts = self.loc.get("filters", {})
+        for key in ("container", "type", "manufacturer", "rarity", "flags", "level"):
+            label = self.ui_labels.get(f"filter_{key}")
+            if label is not None:
+                label.setText(texts.get(key, key.title()))
+        if hasattr(self, "clear_filters_button"):
+            self.clear_filters_button.setText(texts.get("clear", "Clear"))
+        if hasattr(self, "filter_count_label"):
+            self.filter_count_label.setText(
+                texts.get("count", "{shown}/{total}").format(
+                    shown=sum(1 for item in self._all_items if self._matches_filters(item)) if hasattr(self, "filter_combos") else 0,
+                    total=len(self._all_items),
+                )
+            )
 
     def _on_add_item_clicked(self):
         serial = self.add_serial_entry.text().strip()
@@ -1584,29 +1802,7 @@ class QtItemsTab(QWidget):
         self.add_item_requested.emit(serial, flag)
 
     def filter_tree(self, text: str):
-        query = text.lower().strip()
-        root = self.model.invisibleRootItem()
-
-        for i in range(root.rowCount()):
-            container_item = root.child(i)
-            container_is_visible = False
-
-            for j in range(container_item.rowCount()):
-                type_item = container_item.child(j)
-                type_is_visible = False
-
-                for k in range(type_item.rowCount()):
-                    haystack = self._row_search_text(type_item, k)
-                    is_match = not query or query in haystack
-                    self.tree_view.setRowHidden(k, type_item.index(), not is_match)
-                    if is_match:
-                        type_is_visible = True
-
-                self.tree_view.setRowHidden(j, container_item.index(), not type_is_visible)
-                if type_is_visible:
-                    container_is_visible = True
-
-            self.tree_view.setRowHidden(i, root.index(), not container_is_visible)
+        self._apply_filters()
 
     def _row_search_text(self, parent: QStandardItem, row: int) -> str:
         values = []

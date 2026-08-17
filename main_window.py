@@ -1549,6 +1549,8 @@ class MainWindow(QMainWindow):
             tab.live_recovery_requested.connect(self.handle_live_loadout_recovery)
         if key == 'god_roll':
             tab.worker_started.connect(self._track_god_roll_worker)
+            if hasattr(tab, 'open_editor_requested'):
+                tab.open_editor_requested.connect(self.handle_open_generated_weapon)
 
     def _hydrate_tab(self, key, tab):
         if self._character_level and hasattr(tab, 'set_character_level'):
@@ -3144,6 +3146,34 @@ class MainWindow(QMainWindow):
                 self,
                 self.loc.get('dialogs', {}).get('warning', "Warning"),
                 self.loc['status'].get('item_not_found', "未找到对应物品"),
+            )
+
+    @pyqtSlot(dict)
+    def handle_open_generated_weapon(self, result: dict):
+        """Open a detached God Roll result in Weapon Editor without overwriting an item."""
+        if not isinstance(result, dict) or not result.get("serial"):
+            return
+        try:
+            weapon_tab = self._ensure_tab('weapon_editor')
+            self._switch_to_widget(weapon_tab)
+            weapon_tab.load_weapon_data({
+                "serial": result.get("serial", ""),
+                "decoded_full": result.get("decoded", ""),
+                "name": result.get("name", ""),
+                "type_en": result.get("weapon_type_key") or result.get("weapon_type", ""),
+                "manufacturer_en": result.get("manufacturer_key") or result.get("manufacturer", ""),
+                "rarity": result.get("rarity_key") or result.get("rarity", ""),
+                "level": result.get("level", ""),
+                "original_path": None,
+            })
+            if hasattr(weapon_tab, "update_weapon_btn"):
+                weapon_tab.update_weapon_btn.setEnabled(False)
+        except Exception as exc:
+            self.log(f"Open God Roll result in weapon editor failed: {exc}")
+            QMessageBox.warning(
+                self,
+                self.loc.get('dialogs', {}).get('warning', "Warning"),
+                str(exc),
             )
 
     def _switch_to_widget(self, widget):
