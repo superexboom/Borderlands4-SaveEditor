@@ -379,6 +379,7 @@ class QtClassModEditorTab(QWidget):
         
         self.skill_picker = InlineCatalogPicker(
             stackable=True,
+            editable_count=False,
             search_placeholder=self.ui_loc['skills']['search_placeholder'],
             clear_text=self.ui_loc['perks'].get('clear', self._pick_text("清空", "Clear")),
         )
