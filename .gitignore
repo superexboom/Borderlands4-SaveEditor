@@ -51,6 +51,7 @@ tests/*
 !tests/test_equipment_display_stats.py
 !tests/test_weapon_generation_validation.py
 !tests/test_level_one_header.py
+!tests/test_item_card_hover_events.py
 .local/
 
 # Internal working notes

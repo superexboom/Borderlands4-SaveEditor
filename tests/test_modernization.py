@@ -104,6 +104,56 @@ class ModernizationTests(unittest.TestCase):
         finally:
             qInstallMessageHandler(previous)
 
+    def test_inventory_filter_reuses_rows_cards_and_reveals_deep_links(self):
+        from tabs.qt_items_tab import QtItemsTab
+        tab = QtItemsTab()
+        items = [{'name': name, 'type': 'Weapon', 'type_en': 'Weapon', 'manufacturer': 'Torgue',
+                  'manufacturer_en': 'Torgue', 'rarity': 'Epic', 'rarity_en': 'Epic',
+                  'level': 60, 'serial': self.serial, 'state_flags': flag, 'container': 'Backpack',
+                  'original_path': ['backpack', f'slot_{i}']} for i, (name, flag) in enumerate([('Alpha', 1), ('Beta', 3)])]
+        tab.update_tree(items)
+        group = tab.model.item(0).child(0)
+        first, second = group.child(0), group.child(1)
+        tab.select_item_by_path(items[0]['original_path'])
+        tab._card_cache[('cached',)] = 'card'
+        tab.search_entry.setText('ALPHA')
+        self.assertTrue(tab._search_timer.isActive())
+        tab._apply_filters()
+        self.assertIs(first, group.child(0))
+        self.assertIs(second, group.child(1))
+        self.assertTrue(tab.tree_view.isRowHidden(1, group.index()))
+        self.assertEqual(group.text(), 'Weapon (1)')
+        self.assertEqual(tab.current_selected_item['name'], 'Alpha')
+        self.assertIn(('cached',), tab._card_cache)
+        self.assertTrue(tab.select_item_by_path(items[1]['original_path']))
+        self.assertFalse(tab.tree_view.isRowHidden(1, group.index()))
+        flags = tab.filter_combos['flags']
+        flags.setCurrentIndex(flags.findData('3'))
+        self.assertTrue(tab.tree_view.isRowHidden(0, group.index()))
+        tab.update_tree(items)
+        self.assertFalse(tab._card_cache)
+        tab.close()
+
+    def test_inline_catalog_retains_widgets_counts_and_filter_state(self):
+        from tabs.qt_catalog_picker import InlineCatalogPicker
+        picker = InlineCatalogPicker(multi_select=True)
+        items = [{'key': i, 'label': label, 'max_count': 9} for i, label in enumerate(['Alpha', 'Beta'])]
+        picker.set_source(items)
+        row = picker.list.itemWidget(picker.list.item(0))
+        picker.add_item(items[0], 3)
+        picker.search.setText('beta')
+        picker._refilter()
+        self.assertTrue(picker.list.item(0).isHidden())
+        self.assertIs(row, picker.list.itemWidget(picker.list.item(0)))
+        self.assertEqual(picker.entries()[0]['count'], 3)
+        picker.search.clear()
+        picker._refilter()
+        self.assertEqual(row._count, 3)
+        self.assertFalse(picker.list.item(0).isHidden())
+        picker.clear()
+        self.assertEqual(row._count, 0)
+        picker.close()
+
 
 if __name__ == '__main__':
     unittest.main()

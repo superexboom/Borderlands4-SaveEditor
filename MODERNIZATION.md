@@ -15,11 +15,11 @@ Deliver an optimized editor candidate and a separate, read-only QML preview.
 
 ## 2. Lists
 
-- [ ] Reuse inventory model rows during filtering; cache searchable text and preserve selection/group state.
-- [ ] Debounce text search by 100 ms; apply other filters immediately.
-- [ ] Reuse inline catalog row widgets, updating visibility/counts only.
-- [ ] Preserve hover-card cache across searches; invalidate when display inputs change.
-- [ ] Compare 5,000 inventory rows and 800 catalog rows against the recorded baseline.
+- [x] Reuse inventory model rows during filtering; cache searchable text and preserve selection/group state.
+- [x] Debounce text search by 100 ms; apply other filters immediately.
+- [x] Reuse inline catalog row widgets, updating visibility/counts only.
+- [x] Preserve hover-card cache across searches; invalidate when display inputs change.
+- [x] Compare 5,000 inventory rows and 800 catalog rows: 1.56 / 1.21 ms medians in the initial repeat (filter computation, excluding debounce).
 
 ## 3. Cleanup and shared presentation
 

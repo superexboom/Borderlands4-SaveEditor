@@ -1150,6 +1150,7 @@ class QtItemsTab(QWidget):
         self.model.setHorizontalHeaderLabels(self._headers())
         self.item_lookup: Dict[int, Dict[str, Any]] = {}
         self._all_items: List[Dict[str, Any]] = []
+        self._filter_containers = []
         self._columns_initialized = False
         self.current_selected_item: Optional[Dict[str, Any]] = None
         self._card_cache: Dict[tuple[str, ...], str] = {}
@@ -1173,10 +1174,13 @@ class QtItemsTab(QWidget):
         self.search_entry = QLineEdit()
         self.search_entry.setPlaceholderText(self.loc["search_placeholder"])
         self.search_entry.textChanged.connect(self.filter_tree)
+        self._search_timer = QTimer(self)
+        self._search_timer.setSingleShot(True)
+        self._search_timer.setInterval(100)
+        self._search_timer.timeout.connect(self._apply_filters)
         main_layout.addWidget(self.search_entry)
 
-        # The old tree only supported text hiding.  Keep the source list and
-        # rebuild the grouped model from a real AND-filtered subset instead.
+        # Keep model rows alive while applying all filter dimensions together.
         filter_frame = QWidget()
         filter_grid = QGridLayout(filter_frame)
         filter_grid.setContentsMargins(0, 0, 0, 0)
@@ -1296,6 +1300,7 @@ class QtItemsTab(QWidget):
     def update_tree(self, items: List[Dict[str, Any]]):
         self._all_items = list(items or [])
         self._populate_filters()
+        self._rebuild_tree(self._all_items)
         self._apply_filters()
 
     @staticmethod
@@ -1350,14 +1355,18 @@ class QtItemsTab(QWidget):
             flags_combo.blockSignals(False)
 
     def _rebuild_tree(self, items: List[Dict[str, Any]]):
+        from core.item_filter import prepare_item_search
+
+        selected_path = (self.current_selected_item or {}).get('original_path')
+        selected_node = None
         self._hide_hover_card()
-        # Keep the model/header object alive so user-resized widths survive
-        # every search/filter rebuild.
+        # Only data/language changes recreate rows; the header object survives.
         self.model.removeRows(0, self.model.rowCount())
         self.model.setHorizontalHeaderLabels(self._headers())
         self.item_lookup.clear()
         self.current_selected_item = None
         self._card_cache.clear()
+        self._filter_containers = []
 
         items_by_container: Dict[str, Dict[str, List[Dict[str, Any]]]] = {}
         for i, item in enumerate(items):
@@ -1370,57 +1379,75 @@ class QtItemsTab(QWidget):
         for container_name, types_dict in sorted(items_by_container.items()):
             container_node = self._group_row(container_name)
             root_node.appendRow(container_node)
+            groups = []
+            self._filter_containers.append((container_node[0], groups))
             for item_type, item_list in sorted(types_dict.items()):
                 type_node = self._group_row(f"{item_type} ({len(item_list)})")
                 container_node[0].appendRow(type_node)
+                rows = []
+                groups.append((type_node[0], item_type, rows))
                 for item in sorted(item_list, key=self._slot_sort_key):
-                    type_node[0].appendRow(self._item_row(item, container_name))
+                    row = self._item_row(item, container_name)
+                    type_node[0].appendRow(row)
+                    prepared = prepare_item_search(item, container_name, self._flag_display(item.get('state_flags')))
+                    rows.append([row[0], prepared, True])
+                    if selected_path and item.get('original_path') == selected_path:
+                        selected_node = row[0]
 
         self.tree_view.expandAll()
         self._collapse_default_groups()
         self._resize_columns()
+        if selected_node is not None:
+            self.tree_view.setCurrentIndex(selected_node.index())
 
     def _matches_filters(self, item: Dict[str, Any]) -> bool:
-        query = self.search_entry.text().strip().casefold()
-        if query:
-            container_display = self._container_display(item.get("container"))
-            flag_display = self._flag_display(item.get("state_flags"))
-            haystack = " ".join(
-                str(item.get(key) or "")
-                for key in ("name", "base_name", "type", "type_en", "manufacturer", "manufacturer_en", "rarity", "rarity_en", "serial", "decoded_full")
-            ).casefold()
-            haystack = f"{haystack} {container_display} {flag_display}".casefold()
-            if query not in haystack:
-                return False
-        for key, combo in self.filter_combos.items():
-            selected = combo.currentData()
-            if key == "flags":
-                if selected is not None and str(item.get("state_flags") or "") != str(selected):
-                    return False
-            elif selected is not None and self._canonical_item_value(item, key) != str(selected):
-                return False
-        try:
-            level = int(item.get("level") or 0)
-        except (TypeError, ValueError):
-            level = 0
-        minimum = int(self.filter_min_level.value())
-        maximum = int(self.filter_max_level.value())
-        if minimum and level < minimum:
-            return False
-        if maximum and level > maximum:
-            return False
-        return True
+        from core.item_filter import prepare_item_search, matches_item_search
+        values = prepare_item_search(item, self._container_display(item.get('container')), self._flag_display(item.get('state_flags')))
+        return matches_item_search(values, *self._filter_state())
+
+    def _filter_state(self):
+        return (
+            self.search_entry.text().strip().casefold(),
+            [(key, str(combo.currentData())) for key, combo in self.filter_combos.items() if combo.currentData() is not None],
+            self.filter_min_level.value(), self.filter_max_level.value(),
+        )
 
     def _apply_filters(self, *_args):
         if not hasattr(self, "filter_count_label"):
             return
-        filtered = [item for item in self._all_items if self._matches_filters(item)]
+        from core.item_filter import matches_item_search
+        self._search_timer.stop()
+        self._hide_hover_card()
+        state = self._filter_state()
+        total_shown = 0
+        self.tree_view.setUpdatesEnabled(False)
+        try:
+            for container_node, groups in self._filter_containers:
+                container_shown = 0
+                for type_node, type_name, rows in groups:
+                    shown = 0
+                    parent = type_node.index()
+                    for entry in rows:
+                        node, values, was_visible = entry
+                        visible = matches_item_search(values, *state)
+                        if visible != was_visible:
+                            self.tree_view.setRowHidden(node.row(), parent, not visible)
+                            entry[2] = visible
+                        shown += visible
+                    title = f'{type_name} ({shown})'
+                    if type_node.text() != title:
+                        type_node.setText(title)
+                    self.tree_view.setRowHidden(type_node.row(), container_node.index(), not shown)
+                    container_shown += shown
+                self.tree_view.setRowHidden(container_node.row(), QModelIndex(), not container_shown)
+                total_shown += container_shown
+        finally:
+            self.tree_view.setUpdatesEnabled(True)
         self.filter_count_label.setText(
             self.loc.get("filters", {}).get("count", "{shown}/{total}").format(
-                shown=len(filtered), total=len(self._all_items)
+                shown=total_shown, total=len(self._all_items)
             )
         )
-        self._rebuild_tree(filtered)
 
     def _clear_filters(self):
         self.search_entry.blockSignals(True)
@@ -1644,6 +1671,8 @@ class QtItemsTab(QWidget):
             return None
 
         index = walk(self.model.invisibleRootItem())
+        if index is not None and index.isValid() and self.tree_view.isRowHidden(index.row(), index.parent()):
+            self._clear_filters()
         if (index is None or not index.isValid()) and any(
             tuple(str(p) for p in (item.get("original_path") or [])) == target
             for item in self._all_items
@@ -1774,6 +1803,7 @@ class QtItemsTab(QWidget):
         self._populate_flags()
         self._retranslate_filters()
         self._populate_filters()
+        self._rebuild_tree(self._all_items)
         self._apply_filters()
         self._resize_columns()
 
@@ -1802,7 +1832,7 @@ class QtItemsTab(QWidget):
         self.add_item_requested.emit(serial, flag)
 
     def filter_tree(self, text: str):
-        self._apply_filters()
+        self._search_timer.start()
 
     def _row_search_text(self, parent: QStandardItem, row: int) -> str:
         values = []

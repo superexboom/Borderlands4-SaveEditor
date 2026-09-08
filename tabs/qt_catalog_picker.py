@@ -733,6 +733,7 @@ class InlineCatalogPicker(QWidget):
         self._editable_count = bool(editable_count and stackable)
         self._source = []
         self._counts = {}
+        self._rows = {}
 
         root = QVBoxLayout(self)
         root.setContentsMargins(0, 0, 0, 0)
@@ -742,7 +743,11 @@ class InlineCatalogPicker(QWidget):
         self.search = QLineEdit()
         self.search.setPlaceholderText(search_placeholder)
         self.search.setClearButtonEnabled(True)
-        self.search.textChanged.connect(self._refilter)
+        self._search_timer = QTimer(self)
+        self._search_timer.setSingleShot(True)
+        self._search_timer.setInterval(100)
+        self._search_timer.timeout.connect(self._refilter)
+        self.search.textChanged.connect(lambda _text: self._search_timer.start())
         header.addWidget(self.search, 1)
         self.count_lbl = QLabel("0")
         self.count_lbl.setObjectName("catalogCount")
@@ -780,19 +785,10 @@ class InlineCatalogPicker(QWidget):
         self._source = list(items)
         valid = {item["key"] for item in self._source}
         self._counts = {key: count for key, count in self._counts.items() if key in valid and count > 0}
-        self._refilter()
-        self._update_count()
-
-    def _refilter(self, *args):
+        self._rows.clear()
         self.list.clear()
-        category = self.cat_bar.current_key() if not self.cat_bar.isHidden() else None
-        query = self.search.text().casefold().strip()
         for item in self._source:
-            if category not in (None, "all") and item.get("category") != category:
-                continue
             search_text = " ".join((str(item.get("label", "")), str(item.get("detail", "")), str(item.get("search_text", "")))).casefold()
-            if query and query not in search_text:
-                continue
             list_item = QListWidgetItem()
             list_item.setData(Qt.ItemDataRole.UserRole, item)
             row = InlineCatalogRow(
@@ -804,6 +800,26 @@ class InlineCatalogPicker(QWidget):
             list_item.setSizeHint(row.sizeHint())
             self.list.addItem(list_item)
             self.list.setItemWidget(list_item, row)
+            self._rows[item['key']] = (list_item, row, search_text)
+        self._refilter()
+        self._update_count()
+
+    def _refilter(self, *args):
+        self._search_timer.stop()
+        category = self.cat_bar.current_key() if not self.cat_bar.isHidden() else None
+        query = self.search.text().casefold().strip()
+        self.list.setUpdatesEnabled(False)
+        for item in self._source:
+            list_item, row, search_text = self._rows[item['key']]
+            hidden = (category not in (None, 'all') and item.get('category') != category) or bool(query and query not in search_text)
+            if list_item.isHidden() != hidden:
+                list_item.setHidden(hidden)
+            count = self._counts.get(item['key'], 0)
+            if row._count != count:
+                row.blockSignals(True)
+                row.set_count(count)
+                row.blockSignals(False)
+        self.list.setUpdatesEnabled(True)
         self._sync_selection_style()
 
     def _increase_key(self, key):
@@ -812,6 +828,7 @@ class InlineCatalogPicker(QWidget):
             selected = [
                 item.data(Qt.ItemDataRole.UserRole)["key"]
                 for item in self.list.selectedItems()
+                if not item.isHidden()
             ]
             if key in selected:
                 targets = selected
@@ -860,6 +877,7 @@ class InlineCatalogPicker(QWidget):
             selected = {
                 item.data(Qt.ItemDataRole.UserRole)["key"]
                 for item in self.list.selectedItems()
+                if not item.isHidden()
             }
             if key in selected:
                 targets = list(selected)
