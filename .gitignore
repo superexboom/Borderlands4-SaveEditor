@@ -44,7 +44,14 @@ xp_calc.py
 CsvMergeAutomationPlan.md
 ItemIdPartOverview.md
 EQUIPMENT_DATA_REPAIR_PLAN.md
-tests/
+tests/*
+!tests/test_modernization.py
+!tests/test_yaml_editor.py
+!tests/test_live_incremental_refresh.py
+!tests/test_equipment_display_stats.py
+!tests/test_weapon_generation_validation.py
+!tests/test_level_one_header.py
+.local/
 
 # Internal working notes
 *_PLAN.md

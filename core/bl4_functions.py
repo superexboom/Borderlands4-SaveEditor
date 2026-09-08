@@ -448,59 +448,41 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
     return all_items
 
 def add_item_to_backpack(yaml_data: Dict[str, Any], serial: str, state_flags: str) -> Optional[List[Union[str, int]]]:
-    """
-    Adds a new item to the first available slot in the backpack.
-    Returns the full path to the new item on success, otherwise None.
-    """
+    return add_items_to_backpack(yaml_data, [serial], state_flags)[0]
+
+
+def add_items_to_backpack(yaml_data, serials, state_flags):
+    """Append after the highest slot, scanning the existing backpack only once."""
+    results = [None] * len(serials)
+    if not serials:
+        return results
     try:
-        # Find the path to the backpack dynamically
+        flag = int(state_flags)
         backpack_path = _walk_find(yaml_data, ["backpack"])
         if not backpack_path:
-            return None
-
-        # Get a reference to the backpack node
+            return results
         backpack_node = yaml_data
-        temp_path = []
         for key in backpack_path:
             backpack_node = backpack_node[key]
-            temp_path.append(key)
-
-        # Find the highest existing slot number
+        if not isinstance(backpack_node, dict):
+            return results
         max_slot = -1
-        if isinstance(backpack_node, dict):
-            for key in backpack_node.keys():
-                if isinstance(key, str) and key.startswith("slot_"):
-                    try:
-                        num = int(key.split('_')[1])
-                        if num > max_slot:
-                            max_slot = num
-                    except (ValueError, IndexError):
-                        continue
-        
-        # Determine the new slot key
-        new_slot_key = f"slot_{max_slot + 1}"
-
-        # Create the new item structure
-        new_item = {
-            'serial': serial,
-            'state_flags': int(state_flags)
-        }
-        
-        # Add the new item to the backpack
-        backpack_node[new_slot_key] = new_item
-        
-        # Return the full path to the newly added item
-        return temp_path + [new_slot_key]
-
-    except Exception:
-        return None
-
-        
-        # Return the full path to the newly added item
-        return temp_path + [new_slot_key]
-
-    except Exception:
-        return None
+        for key in backpack_node:
+            if isinstance(key, str) and key.startswith("slot_"):
+                try:
+                    max_slot = max(max_slot, int(key.split('_')[1]))
+                except (ValueError, IndexError):
+                    continue
+    except (TypeError, ValueError, KeyError, IndexError):
+        return results
+    for index, serial in enumerate(serials):
+        if not isinstance(serial, str) or not serial.strip():
+            continue
+        max_slot += 1
+        slot = f"slot_{max_slot}"
+        backpack_node[slot] = {'serial': serial, 'state_flags': flag}
+        results[index] = backpack_path + [slot]
+    return results
 
 def update_level_in_decoded_str(decoded_full: str, new_level: int) -> Optional[str]:
     """
@@ -535,22 +517,8 @@ def update_level_in_decoded_str(decoded_full: str, new_level: int) -> Optional[s
         return None
 
 def get_yaml_loader():
-    """返回一个能忽略未知标签的PyYAML加载器"""
-    try:
-        import yaml
-    except ImportError:
-        raise RuntimeError("PyYAML is not installed. Install with: pip install pyyaml")
-
-    class AnyTagLoader(yaml.SafeLoader): pass
-
-    def _ignore_any(loader: AnyTagLoader, tag_suffix: str, node: 'yaml.Node'):
-        if isinstance(node, yaml.ScalarNode): return loader.construct_scalar(node)
-        if isinstance(node, yaml.SequenceNode): return loader.construct_sequence(node)
-        if isinstance(node, yaml.MappingNode): return loader.construct_mapping(node)
-        return None
-
-    AnyTagLoader.add_multi_constructor("", _ignore_any)
-    return AnyTagLoader
+    from .yaml_io import get_yaml_loader as shared_loader
+    return shared_loader()
 
 
 def sync_inventory_item_levels(yaml_data: Dict[str, Any]) -> Tuple[int, int, List[str]]:

@@ -24,6 +24,7 @@ from PyQt6.QtWidgets import (QAbstractItemView, QApplication, QComboBox, QDialog
                              QToolButton, QTreeView, QVBoxLayout, QWidget)
 
 from core import resource_loader
+from core.yaml_io import get_yaml_loader, dump_yaml
 from core.yaml_model import (COLOR_BOOL, COLOR_KEY, COLOR_NULL, COLOR_NUM,
                              COLOR_STR, YamlTreeModel, format_scalar)
 
@@ -41,17 +42,6 @@ _CHROME_DARK = {
     "ln_bg": "#2a2a32", "ln_fg": "#a0a0a8", "cur_line": "#3a3a45",
     "pinned": "#a0a0a8",
 }
-
-
-def get_yaml_loader():
-    class AnyTagLoader(yaml.SafeLoader): pass
-    def _ignore_any(loader: AnyTagLoader, tag_suffix: str, node: 'yaml.Node'):
-        if isinstance(node, yaml.ScalarNode): return loader.construct_scalar(node)
-        if isinstance(node, yaml.SequenceNode): return loader.construct_sequence(node)
-        if isinstance(node, yaml.MappingNode): return loader.construct_mapping(node)
-        return None
-    AnyTagLoader.add_multi_constructor("", _ignore_any)
-    return AnyTagLoader
 
 
 # ----------------------------------------------------------------------
@@ -1002,7 +992,7 @@ class QtYamlEditorTab(QWidget):
             return
         value = self.controller.get_node(idx.internalPointer().path)
         if isinstance(value, (dict, list)):
-            text = yaml.safe_dump(value, sort_keys=False, allow_unicode=True)
+            text = dump_yaml(value, sort_keys=False, allow_unicode=True)
         else:
             text = format_scalar(value)
         QApplication.clipboard().setText(text)

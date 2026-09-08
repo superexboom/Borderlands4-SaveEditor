@@ -20,7 +20,7 @@ except ImportError:
 
 from . import bl4_functions as bl4f
 from . import b_encoder
-import os
+from .yaml_io import get_yaml_loader, dump_yaml
 from datetime import datetime
 from . import unlock_logic
 from .unlock_data import VAULT_CARD_TOKENS
@@ -77,20 +77,7 @@ class SaveGameController:
         return zlib.adler32(b) & 0xFFFFFFFF
 
     def _get_yaml_loader(self):
-        if yaml is None:
-            raise RuntimeError("PyYAML is not installed. Install with: pip install pyyaml")
-
-        class AnyTagLoader(yaml.SafeLoader):
-            pass
-
-        def _ignore_any(loader: AnyTagLoader, tag_suffix: str, node: 'yaml.Node'):
-            if isinstance(node, yaml.ScalarNode): return loader.construct_scalar(node)
-            if isinstance(node, yaml.SequenceNode): return loader.construct_sequence(node)
-            if isinstance(node, yaml.MappingNode): return loader.construct_mapping(node)
-            return None
-
-        AnyTagLoader.add_multi_constructor("", _ignore_any)
-        return AnyTagLoader
+        return get_yaml_loader()
 
     def _key_epic(self, uid: str) -> bytes:
         wid = uid.strip().encode("utf-16le")
@@ -508,7 +495,7 @@ class SaveGameController:
         with self._lock:
             if not self.yaml_obj:
                 return ""
-            return yaml.safe_dump(self.yaml_obj, sort_keys=False, allow_unicode=True, indent=2)
+            return dump_yaml(self.yaml_obj, sort_keys=False, allow_unicode=True, indent=2)
 
     def update_yaml_object(self, yaml_string: str) -> bool:
         """Updates the internal yaml_obj from a string. Returns True on success."""
@@ -535,13 +522,18 @@ class SaveGameController:
             return []
 
     def add_item_to_backpack(self, serial: str, flag: str) -> Optional[List[Union[str, int]]]:
+        return self.add_items_to_backpack([serial], flag)[0]
+
+    def add_items_to_backpack(self, serials, flag: str) -> List[Optional[List[Union[str, int]]]]:
+        """Append a batch in order; return a path or None per input, notifying once."""
+        serials = list(serials)
         with self._lock:
             if not self.yaml_obj:
-                return None
-            result = bl4f.add_item_to_backpack(self.yaml_obj, serial, flag)
-        if result:
-            self.mark_dirty()
-        return result
+                return [None] * len(serials)
+            results = bl4f.add_items_to_backpack(self.yaml_obj, serials, flag)
+            if any(results):
+                self.mark_dirty()
+        return results
 
     def encode_serial(self, decoded_str: str) -> Tuple[Optional[str], Optional[str]]:
         return b_encoder.encode_to_base85(decoded_str)

@@ -38,6 +38,7 @@ from core import b_encoder
 from core import resource_loader
 from core import bl4_functions as bl4f
 from core import SaveGameController, SaveSelectorWidget, ThemeManager, infer_user_id_from_save_path
+from core.batch import add_serial_lines
 
 class BackgroundWidget(QLabel):
     """Widget that displays a blurred background image for frosted glass effect."""
@@ -160,9 +161,9 @@ class IteratorWorker(QObject):
         if self.params['is_combo']:
             start, end, size = int(self.params['combo_start']), int(self.params['combo_end']), int(self.params['combo_size'])
             if start > end: raise ValueError(self.loc['combo_error_range'])
-            source_set = list(range(start, end + 1))
+            source_set = range(start, end + 1)
             if len(source_set) < size: raise ValueError(self.loc['combo_error_size'])
-            combos = list(itertools.combinations(source_set, size))
+            combos = itertools.combinations(source_set, size)
             for combo in combos:
                 strings.append(f"{base_data} {' '.join(f'{{{c}}}' for c in combo)}|")
         else:
@@ -192,24 +193,9 @@ class IteratorWorker(QObject):
 
     def _add_items_to_backpack(self, strings):
         self.status_update.emit(self.loc['generated_writing'].format(count=len(strings)))
-        success, fail = 0, 0
-        total = len(strings)
-        flag = self.params['yaml_flag']
-
-        for i, line in enumerate(strings):
-            self.status_update.emit(self.loc['writing_progress'].format(current=i + 1, total=total))
-            try:
-                serial, err = b_encoder.encode_to_base85(line)
-                if err:
-                    fail += 1
-                    continue
-                if self.controller.add_item_to_backpack(serial, flag):
-                    success += 1
-                else:
-                    fail += 1
-            except Exception:
-                fail += 1
-            time.sleep(0.01)
+        success = fail = 0
+        for done, total, success, fail in add_serial_lines(self.controller, strings, self.params['yaml_flag']):
+            self.status_update.emit(self.loc['writing_progress'].format(current=done, total=total))
         self.finished_add_to_backpack.emit(success, fail)
 
     def _generate_output_text(self, strings):
@@ -218,11 +204,10 @@ class IteratorWorker(QObject):
         total = len(strings)
         is_yaml = self.params['is_yaml']
         yaml_flag = self.params['yaml_flag']
+        last_report = time.monotonic()
+        self.status_update.emit(self.loc['encoding_progress'].format(current=0, total=total))
 
         for i, line in enumerate(strings):
-            if (i+1) % 20 == 0:
-                self.status_update.emit(self.loc['encoding_progress'].format(current=i + 1, total=total))
-
             result, error = b_encoder.encode_to_base85(line)
             if error:
                 output_line = f"{self.loc['error_prefix']}{error}"
@@ -231,7 +216,10 @@ class IteratorWorker(QObject):
             else:
                 output_line = f"{line}  -->  {result}"
             final_output.append(output_line)
-            time.sleep(0.005)
+            now = time.monotonic()
+            if i + 1 == total or now - last_report >= 0.05:
+                self.status_update.emit(self.loc['encoding_progress'].format(current=i + 1, total=total))
+                last_report = now
         self.finished_generation.emit('\n'.join(final_output))
 
 class _LiveFetchWorker(QThread):
@@ -901,32 +889,15 @@ class BatchAddWorker(QObject):
         self.flag = flag
 
     def run(self):
-        success_count = 0
-        fail_count = 0
-        total = len(self.lines)
-        for i, line in enumerate(self.lines):
-            try:
-                if line.strip().startswith('@U'):
-                    serial = line
-                else:
-                    serial, err = b_encoder.encode_to_base85(line)
-                    if err:
-                        fail_count += 1
-                        continue
-                
-                if self.controller.add_item_to_backpack(serial, self.flag):
-                    success_count += 1
-                else:
-                    fail_count += 1
-            except Exception:
-                fail_count += 1
-            finally:
-                self.progress.emit(i + 1, total, success_count, fail_count)
-        
+        success_count = fail_count = 0
+        for progress in add_serial_lines(self.controller, self.lines, self.flag):
+            self.progress.emit(*progress)
+            success_count, fail_count = progress[2:]
         self.finished.emit(success_count, fail_count)
 
 
 class MainWindow(QMainWindow):
+    controller_dirty = pyqtSignal()
     _NAV_STATE_KEY = 'nav_bar_expanded'
     _NAV_SMALL_SCREEN_WIDTH = 1050
     _NAV_COLLAPSED_WIDTH = 56
@@ -2519,7 +2490,8 @@ class MainWindow(QMainWindow):
         footer_layout.addWidget(self.autosave_checkbox)
         self._set_autosave_indicator()
 
-        self.controller.add_dirty_listener(self._on_controller_dirty)
+        self.controller_dirty.connect(self._on_controller_dirty)
+        self.controller.add_dirty_listener(self.controller_dirty.emit)
 
     def _set_autosave_indicator(self, message=None, failed=None):
         if message is not None:
