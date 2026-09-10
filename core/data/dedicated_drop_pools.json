@@ -1,26 +1,29 @@
 {
   "version": 1,
-  "source_folder": "2026-08-01",
+  "source_folder": "2026-09-11",
   "scope": "dedicated_itempoollist_only",
   "spawn_pattern": "SpawnPattern_Enemies_Named",
   "source_files": [
-    "pakchunk0-Windows_18_P-Nexus-Data-gbx_ue_data_table0.json",
-    "pakchunk4-Windows_18_P-Nexus-Data-gbx_ue_data_table4.json",
-    "pakchunk6-Windows_18_P-Nexus-Data-gbx_ue_data_table6.json"
+    "pakchunk0-Windows_20_P-Nexus-Data-gbx_ue_data_table0.json",
+    "pakchunk4-Windows_20_P-Nexus-Data-gbx_ue_data_table4.json",
+    "pakchunk6-Windows_20_P-Nexus-Data-gbx_ue_data_table6.json"
   ],
   "tables": [
+    "Table_BP5_DedicatedDrops",
     "Table_Banjo_DedicatedDrops",
     "Table_Cello_DedicatedDrops",
     "Table_Cowbell_DedicatedDrops",
     "Table_DedicatedDrops",
+    "Table_Harmonica_DedicatedDrops",
     "Table_Harp_DedicatedDrops",
     "Table_Mandolin_DedicatedDrops",
     "Table_Raid1_DedicatedDrops",
     "Table_Raid2_DedicatedDrops",
-    "Table_Tuba_DedicatedDrops"
+    "Table_Tuba_DedicatedDrops",
+    "Table_Viola_DedicatedDrops"
   ],
-  "character_count": 177,
-  "mapping_count": 177,
+  "character_count": 246,
+  "mapping_count": 246,
   "characters": {
     "Char_Bat_Kraggula_BossRift": [
       {
@@ -134,6 +137,48 @@
         "table": "Table_DedicatedDrops"
       }
     ],
+    "Char_CatGauntlet_BossMini": [
+      {
+        "pool": "ItemPoolList_Gauntlet_Cat",
+        "row": "Gauntlet_Cat",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_CatGauntlet_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_Gauntlet_Cat",
+        "row": "Gauntlet_Cat_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_CatGauntlet_BossMini_Replay_TRUE": [
+      {
+        "pool": "ItemPoolList_Gauntlet_Cat_TRUE",
+        "row": "Gauntlet_Cat_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Cat_Grotto_BossMini": [
+      {
+        "pool": "ItemPoolList_Grotto_cat",
+        "row": "Grotto_Cat",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Cat_Grotto_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_Grotto_cat",
+        "row": "Grotto_Cat_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Cat_Grotto_BossMini_Replay_True": [
+      {
+        "pool": "ItemPoolList_Grotto_cat_TRUE",
+        "row": "Grotto_Cat_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
     "Char_Cat_Mine_Boss_CityCat": [
       {
         "pool": "ItemPoolList_CityCat",
@@ -216,6 +261,48 @@
         "pool": "ItemPoolList_Nightmare_AllBosses",
         "row": "Nightmare_Bitterblight",
         "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_Creep_Cosmicreep_BossMini": [
+      {
+        "pool": "ItemPoolList_DigiArena_Creep",
+        "row": "DigiArena_Cosmicreep",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Creep_Cosmicreep_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_DigiArena_Creep",
+        "row": "DigiArena_Cosmicreep_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Creep_Cosmicreep_BossMini_Replay_TRUE": [
+      {
+        "pool": "ItemPoolList_DigiArena_Creep_TRUE",
+        "row": "DigiArena_Cosmicreep_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Creep_DigiArena_BossMini": [
+      {
+        "pool": "ItemPoolList_DigiArena_Creep",
+        "row": "DigiArena_Creep",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Creep_DigiArena_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_DigiArena_Creep",
+        "row": "DigiArena_Creep_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Creep_DigiArena_BossMini_Replay_True": [
+      {
+        "pool": "ItemPoolList_DigiArena_Creep_TRUE",
+        "row": "DigiArena_Creep_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
       }
     ],
     "Char_Creep_Mine_Boss_SkullOrchid": [
@@ -351,6 +438,48 @@
         "table": "Table_DedicatedDrops"
       }
     ],
+    "Char_FrameManager_Mission3Lava_BossMini": [
+      {
+        "pool": "ItemPoolList_Main_LavaManager",
+        "row": "Main_LavaManager",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_FrameManager_Mission3Lava_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_Main_LavaManager",
+        "row": "Main_LavaManager_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_FrameManager_Mission3Lava_BossMini_Replay_TRUE": [
+      {
+        "pool": "ItemPoolList_Main_LavaManager_TRUE",
+        "row": "Main_LavaManager_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Glider_Lockdown_BossMini": [
+      {
+        "pool": "ItemPoolList_Lockdown_Glider",
+        "row": "Lockdown_Glider",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Glider_Lockdown_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_Lockdown_Glider",
+        "row": "Lockdown_Glider_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Glider_Lockdown_BossMini_Replay_TRUE": [
+      {
+        "pool": "ItemPoolList_Lockdown_Glider_TRUE",
+        "row": "Lockdown_Glider_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
     "Char_GrassBoss": [
       {
         "pool": "ItemPoolList_Grasslands_Commander",
@@ -442,6 +571,90 @@
         "table": "Table_DedicatedDrops"
       }
     ],
+    "Char_InfantryHotelManager_Mission3_BossMini": [
+      {
+        "pool": "ItemPoolList_Main_HotelManager",
+        "row": "Main_HotelManager",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_InfantryHotelManager_Mission3_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_Main_HotelManager",
+        "row": "Main_HotelManager_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_InfantryHotelManager_Mission3_BossMini_Replay_TRUE": [
+      {
+        "pool": "ItemPoolList_Main_HotelManager_TRUE",
+        "row": "Main_HotelManager_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_InfantryJrManager_Mission2_BossMini": [
+      {
+        "pool": "ItemPoolList_Main_JrManager",
+        "row": "Main_JrManager",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_InfantryJrManager_Mission2_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_Main_JrManager",
+        "row": "Main_JrManager_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_InfantryJrManager_Mission2_BossMini_Replay_TRUE": [
+      {
+        "pool": "ItemPoolList_Main_JrManager_TRUE",
+        "row": "Main_JrManager_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_InfantryMicroplastics_Side_BossMini": [
+      {
+        "pool": "ItemPoolList_Side_LtBume",
+        "row": "Side_LtBume",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_InfantryMicroplastics_Side_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_Side_LtBume",
+        "row": "Side_LtBume_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_InfantryMicroplastics_Side_BossMini_Replay_TRUE": [
+      {
+        "pool": "ItemPoolList_Side_LtBume_TRUE",
+        "row": "Side_LtBume_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_InfantryTheaterManager_Mission3_BossMini": [
+      {
+        "pool": "ItemPoolList_Main_TheaterManager",
+        "row": "Main_TheaterManager",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_InfantryTheaterManager_Mission3_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_Main_TheaterManager",
+        "row": "Main_TheaterManager_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_InfantryTheaterManager_Mission3_BossMini_Replay_TRUE": [
+      {
+        "pool": "ItemPoolList_Main_TheaterManager_TRUE",
+        "row": "Main_TheaterManager_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
     "Char_Kraggon_Eldritch_BossRift": [
       {
         "pool": "ItemPoolList_Nightmare_AllBosses",
@@ -519,6 +732,20 @@
         "table": "Table_DedicatedDrops"
       }
     ],
+    "Char_Leader_VileDave": [
+      {
+        "pool": "ItemPoolList_VileDave",
+        "row": "Vile_Dave",
+        "table": "Table_BP5_DedicatedDrops"
+      }
+    ],
+    "Char_Leader_VileDaveTRUE": [
+      {
+        "pool": "ItemPoolList_VileDave_TRUE",
+        "row": "Vile_Dave_TRUE",
+        "table": "Table_BP5_DedicatedDrops"
+      }
+    ],
     "Char_MeatHeadFrackingBoss": [
       {
         "pool": "ItemPoolList_FoundryFreak_MeatheadFrackingBoss",
@@ -566,6 +793,48 @@
         "pool": "ItemPoolList_SkankEyes_TRUE",
         "row": "TRUE_Skank_Eyes",
         "table": "Table_Harp_DedicatedDrops"
+      }
+    ],
+    "Char_MeatheadSplice_BossMini": [
+      {
+        "pool": "ItemPoolList_Grotto_Meathead",
+        "row": "Grotto_Meathead",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_MeatheadSplice_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_Grotto_Meathead",
+        "row": "Grotto_Meathead_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_MeatheadSplice_BossMini_Replay_TRUE": [
+      {
+        "pool": "ItemPoolList_Grotto_Meathead_TRUE",
+        "row": "Grotto_Meathead_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Meathead_DumpsterDiver_DigiArena_BossMini": [
+      {
+        "pool": "ItemPoolList_DigiArena_Creep",
+        "row": "DigiArena_Gilbert",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Meathead_DumpsterDiver_DigiArena_BossMiniTRUE": [
+      {
+        "pool": "ItemPoolList_DigiArena_Creep_TRUE",
+        "row": "DigiArena_Gilbert_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Meathead_DumpsterDiver_DigiArena_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_DigiArena_Creep",
+        "row": "DigiArena_Gilbert_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
       }
     ],
     "Char_Meathead_OrdiniteInfused_MiniBoss": [
@@ -715,6 +984,27 @@
         "table": "Table_DedicatedDrops"
       }
     ],
+    "Char_Pangolin_Gauntlet1_BossMini": [
+      {
+        "pool": "ItemPoolList_Gauntlet_Pangolin",
+        "row": "Gauntlet_Pangolin",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Pangolin_Gauntlet1_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_Gauntlet_Pangolin",
+        "row": "Gauntlet_Pangolin_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Pangolin_Gauntlet1_BossMini_Replay_TRUE": [
+      {
+        "pool": "ItemPoolList_Gauntlet_Pangolin_TRUE",
+        "row": "Gauntlet_Pangolin_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
     "Char_Pangolin_Mine_Boss_RockAndROllTRUE": [
       {
         "pool": "ItemPoolList_RockAndRoll_TrueBoss",
@@ -727,6 +1017,48 @@
         "pool": "ItemPoolList_RockAndRoll",
         "row": "Rock_and_Roll",
         "table": "Table_DedicatedDrops"
+      }
+    ],
+    "Char_Pangolin_Volcano_BossMini": [
+      {
+        "pool": "ItemPoolList_Side_VolcanoEvent",
+        "row": "Side_VolcanoEvent",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Pangolin_Volcano_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_Side_VolcanoEvent",
+        "row": "Side_VolcanoEvent_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Pangolin_Volcano_BossMini_Replay_TRUE": [
+      {
+        "pool": "ItemPoolList_Side_VolcanoEvent_TRUE",
+        "row": "Side_VolcanoEvent_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_PhalanxDigiArena_BossMini": [
+      {
+        "pool": "ItemPoolList_DigiArena_Phalanx",
+        "row": "DigiArena_Phalanx",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_PhalanxDigiArena_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_DigiArena_Phalanx",
+        "row": "DigiArena_Phalanx_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_PhalanxDigiArena_BossMini_Replay_TRUE": [
+      {
+        "pool": "ItemPoolList_DigiArena_Phalanx_TRUE",
+        "row": "DigiArena_Phalanx_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
       }
     ],
     "Char_Phalanx_OrdiniteInfused_MiniBoss": [
@@ -981,6 +1313,20 @@
         "table": "Table_DedicatedDrops"
       }
     ],
+    "Char_SoldierTestZeroMain": [
+      {
+        "pool": "ItemPoolList_TestZero",
+        "row": "Test_Zero",
+        "table": "Table_BP5_DedicatedDrops"
+      }
+    ],
+    "Char_SoldierTestZeroMainTRUE": [
+      {
+        "pool": "ItemPoolList_TestZero_TRUE",
+        "row": "Test_Zero_TRUE",
+        "table": "Table_BP5_DedicatedDrops"
+      }
+    ],
     "Char_Soldier_Bunker_Boss_Ancient": [
       {
         "pool": "ItemPoolList_SoldierAncient",
@@ -1093,6 +1439,27 @@
         "table": "Table_Cello_DedicatedDrops"
       }
     ],
+    "Char_StrikerTreasureHunt_BossMini": [
+      {
+        "pool": "ItemPoolList_Side_TreasureHunt",
+        "row": "Side_TreasureHunt",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_StrikerTreasureHunt_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_Side_TreasureHunt",
+        "row": "Side_TreasureHunt_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_StrikerTreasureHunt_BossMini_Replay_TRUE": [
+      {
+        "pool": "ItemPoolList_Side_TreasureHunt_TRUE",
+        "row": "Side_TreasureHunt_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
     "Char_Striker_Bunker_Boss_Splitter": [
       {
         "pool": "ItemPoolList_StrikerSplitter",
@@ -1142,11 +1509,109 @@
         "table": "Table_DedicatedDrops"
       }
     ],
+    "Char_TedMech_Mission3Logi_BossMini": [
+      {
+        "pool": "ItemPoolList_Main_LogiManager",
+        "row": "Main_LogiManager",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_TedMech_Mission3Logi_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_Main_LogiManager",
+        "row": "Main_LogiManager_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_TedMech_Mission3Logi_BossMini_Replay_TRUE": [
+      {
+        "pool": "ItemPoolList_Main_LogiManager_TRUE",
+        "row": "Main_LogiManager_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_TedMech_Mission3Spa_BossMini": [
+      {
+        "pool": "ItemPoolList_Main_SpaManager",
+        "row": "Main_SpaManager",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_TedMech_Mission3Spa_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_Main_SpaManager",
+        "row": "Main_SpaManager_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_TedMech_Mission3Spa_BossMini_Replay_TRUE": [
+      {
+        "pool": "ItemPoolList_Main_SpaManager_TRUE",
+        "row": "Main_SpaManager_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_TedioreFrame_Lockdown_BossMini": [
+      {
+        "pool": "ItemPoolList_Lockdown_TedFrame",
+        "row": "Lockdown_TedioreFrame",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_TedioreFrame_Lockdown_BossMini_DigiArena": [
+      {
+        "pool": "ItemPoolList_DigiArena_Phalanx",
+        "row": "DigiArena_Frame",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_TedioreFrame_Lockdown_BossMini_DigiArenaTRUE": [
+      {
+        "pool": "ItemPoolList_DigiArena_Phalanx_TRUE",
+        "row": "DigiArena_Frame_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_TedioreFrame_Lockdown_BossMini_DigiArena_Replay": [
+      {
+        "pool": "ItemPoolList_DigiArena_Phalanx",
+        "row": "DigiArena_Frame_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_TedioreFrame_Lockdown_BossMini_Replay": [
+      {
+        "pool": "ItemPoolList_Lockdown_TedFrame",
+        "row": "Lockdown_TedioreFrame_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_TedioreFrame_Lockdown_BossMini_Replay_True": [
+      {
+        "pool": "ItemPoolList_Lockdown_TedFrame_TRUE",
+        "row": "Lockdown_TedioreFrame_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
     "Char_ThreshOWar_BossRift": [
       {
         "pool": "ItemPoolList_Nightmare_AllBosses",
         "row": "Nightmare_ThreshOWar",
         "table": "Table_Cowbell_DedicatedDrops"
+      }
+    ],
+    "Char_ThresherHybridThresher_Worm": [
+      {
+        "pool": "ItemPoolList_HybridThresher",
+        "row": "Hybrid_Thresher",
+        "table": "Table_BP5_DedicatedDrops"
+      }
+    ],
+    "Char_ThresherHybridThresher_WormTRUE": [
+      {
+        "pool": "ItemPoolList_HybridThresher_TRUE",
+        "row": "Hybrid_Thresher_TRUE",
+        "table": "Table_BP5_DedicatedDrops"
       }
     ],
     "Char_Thresher_BioArmoredBig_Runnable": [
@@ -1259,6 +1724,27 @@
         "pool": "ItemPoolList_Raid2_Subjugator_True",
         "row": "Raid2_UberSubjugator_TRUE",
         "table": "Table_Raid2_DedicatedDrops"
+      }
+    ],
+    "Char_Villainess": [
+      {
+        "pool": "ItemPoolList_Main_Villianess",
+        "row": "Main_Villianess",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Villainess_Replay": [
+      {
+        "pool": "ItemPoolList_Main_Villianess",
+        "row": "Main_Villianess_Replay",
+        "table": "Table_Harmonica_DedicatedDrops"
+      }
+    ],
+    "Char_Villainess_TrueBoss": [
+      {
+        "pool": "ItemPoolList_Main_Villianess_TRUE",
+        "row": "Main_Villianess_Replay_TRUE",
+        "table": "Table_Harmonica_DedicatedDrops"
       }
     ]
   }

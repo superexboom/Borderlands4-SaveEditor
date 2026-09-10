@@ -21,6 +21,7 @@ Amon = "Amon"
 Rafa = "Rafa"
 Harlowe = "Harlowe"
 C4sh = "C4sh"
+Loveless = "Loveless"
 
 Pistol = "Pistol"
 Shotgun = "Shotgun"
@@ -67,6 +68,7 @@ ID_MAP = {
     (Rafa, ClassMod): 256,
     (Harlowe, ClassMod): 259,
     (C4sh, ClassMod): 404,
+    (Loveless, ClassMod): 402,
     (Torgue, Repkit): 261,
     (Maliwan, Grenade): 263,
     (Hyperion, Enhancement): 264,

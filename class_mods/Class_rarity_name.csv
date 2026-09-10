@@ -19,6 +19,7 @@
 255,Amon,normal,9,Outlaw,法外狂徒
 255,Amon,normal,65,Guardian,护卫者
 255,Amon,legendary,546,Damned,诅咒
+255,Amon,legendary,542,Wastelander,废土客
 259,Harlowe,legendary,10,Bio Robot,生化机器
 259,Harlowe,legendary,11,Reactor,反应堆
 259,Harlowe,legendary,12,Generator,发电机
@@ -39,6 +40,7 @@
 259,Harlowe,normal,9,Savant,博学者
 259,Harlowe,normal,220,Breaker,击破者
 259,Harlowe,legendary,548,Chirurgeon,外科医生
+259,Harlowe,legendary,544,Ultracapacitor,超级电容
 256,Rafa,legendary,10,Dancer,舞者
 256,Rafa,legendary,11,Filantropo,慈善家
 256,Rafa,legendary,12,Instigator,煽动者
@@ -58,6 +60,7 @@
 256,Rafa,normal,8,Tanker,坦克手
 256,Rafa,normal,9,Practitioner,实践者
 256,Rafa,legendary,546,Power-Puncher,强力拳击手
+256,Rafa,legendary,542,Masochist,受虐狂
 254,Vex,legendary,10,Technomancer,科技术士
 254,Vex,legendary,11,Avatar,神通
 254,Vex,legendary,12,Undead Eye,亡灵之眼
@@ -78,6 +81,7 @@
 254,Vex,normal,9,Hunter,猎人
 254,Vex,normal,221,Psion,灵能者
 254,Vex,legendary,545,Living Weapon,活体武器
+254,Vex,legendary,541,GOAT,史上最强
 404,C4sh,legendary,11,Rounder,巡回者
 404,C4sh,legendary,12,Ludopath,嗜赌如命
 404,C4sh,legendary,13,Hotshot,能人
@@ -98,3 +102,25 @@
 404,C4sh,normal,9,Crack Shot,百发百中
 404,C4sh,normal,10,Pack Leader,头狼
 404,C4sh,legendary,545,Trainer,训练师
+404,C4sh,legendary,541,Table Hopper,换桌客
+402,Loveless,legendary,1,Functional Human,功能性人类
+402,Loveless,legendary,2,Trackstar,田径明星
+402,Loveless,legendary,3,Memory Hoarder,记忆囤积者
+402,Loveless,legendary,4,Montage Maker,蒙太奇大师
+402,Loveless,legendary,5,Virophile,嗜毒者
+402,Loveless,legendary,6,Devourer,吞噬者
+402,Loveless,normal,7,System,系统
+402,Loveless,normal,8,Eminence,显赫人物
+402,Loveless,normal,9,Corrupter,腐化者
+402,Loveless,normal,10,Defragger,碎片整理器
+402,Loveless,normal,11,Wyrmkind,蛇龙族
+402,Loveless,normal,12,Royal We,寡人
+402,Loveless,normal,13,Assimilator,同化者
+402,Loveless,normal,14,Researcher,研究员
+402,Loveless,normal,15,Hacktivist,黑客侠
+402,Loveless,normal,51,Keylogger,键盘记录器
+402,Loveless,legendary,222,Puppetmaster,傀儡师
+402,Loveless,legendary,538,Plague Engineer,瘟疫工程师
+402,Loveless,legendary,539,Boomer,爆破手
+402,Loveless,legendary,540,Martyr,殉道者
+402,Loveless,legendary,545,Programmer,程序员

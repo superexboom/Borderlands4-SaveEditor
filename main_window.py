@@ -23,7 +23,7 @@ for _stream_name in ("stdout", "stderr"):
         except (AttributeError, ValueError):
             pass
 
-VERSION = "4.1.1"
+VERSION = "4.2.0"
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QMessageBox, QFileDialog,

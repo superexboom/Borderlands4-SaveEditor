@@ -159,9 +159,13 @@ CHARACTER_CLASSES = {
     "name": "C4SH",
     "class": "Rogue (Paid DLC)",
   },
+  "CorpoHacker": {
+    "name": "Loveless",
+    "class": "Hacker (Paid DLC)",
+  },
 }
 
-MAX_LEVEL = 60
+MAX_LEVEL = 70
 
 # --- Constants from exploration.js ---
 
