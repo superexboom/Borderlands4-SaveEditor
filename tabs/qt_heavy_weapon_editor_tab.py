@@ -163,8 +163,10 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
             {"key": "barrel", "mode": "chip", "title_key": "barrel", "columns": 2, "grid": (0, 0, 1, 1)},
             {"key": "element", "mode": "chip", "title_key": "element", "columns": 2, "grid": (0, 1, 1, 1)},
             {"key": "firmware", "mode": "chip", "title_key": "firmware", "columns": 2, "grid": (0, 2, 1, 1)},
-            {"key": "barrel_acc", "mode": "picker", "title_key": "barrel_acc", "stackable": True, "grid": (1, 0, 1, 3)},
-            {"key": "body_acc", "mode": "picker", "title_key": "body_acc", "stackable": True, "grid": (2, 0, 1, 3)},
+            {"key": "pearl_element", "mode": "chip", "title_key": "pearl_elements", "columns": 2, "grid": (1, 0, 1, 2)},
+            {"key": "pearl_stat", "mode": "chip", "title_key": "pearl_stat", "columns": 2, "grid": (1, 2, 1, 1)},
+            {"key": "barrel_acc", "mode": "picker", "title_key": "barrel_acc", "stackable": True, "grid": (2, 0, 1, 3)},
+            {"key": "body_acc", "mode": "picker", "title_key": "body_acc", "stackable": True, "grid": (3, 0, 1, 3)},
         ]
 
     def _initial_preserved_children(self):
@@ -178,10 +180,46 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
             self._group_cfgs["firmware"],
             self._firmware_group_df('Heavy_perk_main_ID', self.FIRMWARE_PARENT),
             self._fmt_prefixed_row)
+        # Pearl modifiers are shared universal elemental rows (owner 1), not
+        # heavy-specific rows. They are required by the native Pearl
+        # composition, notably Quadratus (282:33).
+        self._pearl_df = resource_loader.load_localized_csv_resource(
+            'weapon_edit/elemental.csv', self.current_lang
+        )
+        for key in ('pearl_element', 'pearl_stat'):
+            rows = self._group_rows(key, self._current_mfg_id())
+            if rows is not None:
+                self._populate_chip_group(self._group_cfgs[key], *rows)
         self._group_pickles["barrel_acc"].set_categories(
             [("all", self.ui_loc.get("misc", {}).get("all", "All")), ("T1", "T1"), ("T2", "T2")],
             columns=3,
         )
+
+    def _sync_pearl_groups(self):
+        rarity_id = self.rarity_combo.currentData()
+        is_pearl = False
+        if rarity_id is not None and self.df_mfg is not None:
+            rows = self.df_mfg[
+                (self.df_mfg['Manufacturer ID'] == self._current_mfg_id())
+                & (self.df_mfg['Part_type'] == 'Rarity')
+                & (self.df_mfg['Part_ID'] == int(rarity_id))
+            ]
+            is_pearl = not rows.empty and str(rows.iloc[0].get('Stat', '')).strip().casefold() == 'pearl'
+        for key in ('pearl_element', 'pearl_stat'):
+            cfg = self._group_cfgs.get(key)
+            if cfg:
+                # Keep these controls available for deliberate modified
+                # equipment. The native Pearl composition requires them, but
+                # hiding them for non-Pearl builds made intentional magic
+                # builds impossible in this editor.
+                cfg['_group_box'].setVisible(True)
+
+    def _on_mfg_changed_extra(self, mfg_id):
+        self._sync_pearl_groups()
+
+    def _connect_signals(self):
+        super()._connect_signals()
+        self.rarity_combo.currentTextChanged.connect(self._sync_pearl_groups)
 
     def _fmt_prefixed_row(self, r):
         """Format a heavy row; part_id becomes 'main_id:part_id' when applicable."""
@@ -197,6 +235,14 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
         return text, part_id
 
     def _group_rows(self, key, mfg_id):
+        if key in {'pearl_element', 'pearl_stat'}:
+            if not hasattr(self, '_pearl_df'):
+                return None
+            wanted = set(range(55, 61)) if key == 'pearl_element' else set(range(51, 55))
+            rows = self._pearl_df[self._pearl_df['Part_ID'].astype(int).isin(wanted)].copy()
+            rows['Heavy_perk_main_ID'] = 1
+            rows['Part_type'] = key
+            return rows, self._fmt_prefixed_row
         if key == "barrel":
             df = self.df_mfg[(self.df_mfg['Part_type'] == 'Barrel') & (self.df_mfg['Manufacturer ID'] == mfg_id)]
             return df, self._fmt_barrel_row
@@ -302,6 +348,12 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
         # (element/firmware part_id already carries "parent:child" prefix)
         for pid in self._checked_part_ids("barrel", "element", "firmware"):
             skill_parts.append(f"{{{pid}}}")
+        # Pearl compositions require one universal Pearl element and one
+        # universal Pearl stat. Non-Pearl builds must not acquire either.
+        # Keep explicit Pearl fields in modified non-Pearl builds too; the
+        # editor is also used to author deliberate magic equipment.
+        for pid in self._checked_part_ids("pearl_element", "pearl_stat"):
+            skill_parts.append(f"{{{pid}}}")
         # accessories stacked
         for key in ("barrel_acc", "body_acc"):
             for e in self._picker_entries(key):
@@ -327,6 +379,8 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
                 part_id = token['id']
                 if part_id in rarity_ids:
                     self.rarity_combo.setCurrentIndex(rarity_ids[part_id])
+                elif self._select_group_pid("pearl_element", part_id) or self._select_group_pid("pearl_stat", part_id):
+                    pass
                 elif body_id is not None and part_id == body_id:
                     continue
                 elif part_id in barrel_pids:
@@ -346,7 +400,19 @@ class QtHeavyWeaponEditorTab(BaseEquipmentEditorTab):
                 unknown = []
                 key = "element" if parent == self.ELEMENT_PARENT else "firmware" if parent == self.FIRMWARE_PARENT else None
                 for child in children:
-                    if key and self._select_group_pid(key, f"{parent}:{child}"):
+                    pearl_key = None
+                    if parent == self.ELEMENT_PARENT:
+                        try:
+                            child_id = int(child)
+                        except (TypeError, ValueError):
+                            child_id = -1
+                        if 55 <= child_id <= 60:
+                            pearl_key = "pearl_element"
+                        elif 51 <= child_id <= 54:
+                            pearl_key = "pearl_stat"
+                    if pearl_key and self._select_group_pid(pearl_key, f"{parent}:{child}"):
+                        pass
+                    elif key and self._select_group_pid(key, f"{parent}:{child}"):
                         pass
                     else:
                         unknown.append(child)

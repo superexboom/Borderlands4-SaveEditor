@@ -23,7 +23,7 @@ for _stream_name in ("stdout", "stderr"):
         except (AttributeError, ValueError):
             pass
 
-VERSION = "4.2.0"
+VERSION = "4.2.1"
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QMessageBox, QFileDialog,
@@ -1975,6 +1975,37 @@ class MainWindow(QMainWindow):
                     'connection_failed',
                     'Could not connect to the game (127.0.0.1:28777).\n'
                     'Make sure the game is running, a character is loaded, and the bl4_live mod is active.',
+                ),
+            )
+            return
+        # A stale bl4_live build can still answer ping while its native
+        # offsets point at the previous game build.  Refuse the online mode
+        # early instead of allowing a later spawn to fail ambiguously in
+        # ``wait_backpack`` after a reward package was opened.
+        try:
+            live_info = self._live_bridge.info()
+            from live.bridge import EXPECTED_LIVE_VERSION
+            live_version = str(live_info.get('version') or '').strip()
+            if live_version != EXPECTED_LIVE_VERSION:
+                expected = EXPECTED_LIVE_VERSION
+                self._live_bridge = None
+                QMessageBox.warning(
+                    self, self._live_text('title', 'Live Mode'),
+                    self._live_text(
+                        'version_mismatch',
+                        'bl4_live version mismatch: editor expects {expected}, game reports {actual}.\n'
+                        'Install the matching bl4_live package for this game build.',
+                        expected=expected, actual=live_version or 'unknown',
+                    ),
+                )
+                return
+        except Exception as exc:
+            self._live_bridge = None
+            QMessageBox.warning(
+                self, self._live_text('title', 'Live Mode'),
+                self._live_text(
+                    'version_check_failed',
+                    'Could not verify bl4_live compatibility: {error}', error=exc,
                 ),
             )
             return
