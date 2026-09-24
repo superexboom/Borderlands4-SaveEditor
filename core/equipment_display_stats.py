@@ -306,6 +306,28 @@ def _round_int(value: float) -> int:
     return floor(weapon.f32(value) + 0.50001) if value >= 0 else ceil(weapon.f32(value) - 0.50001)
 
 
+def _repkit_cooldown_int(
+    value: float,
+    effects: Iterable[dict[str, Any]],
+    defaults: dict[str, Any],
+) -> int:
+    """Match the repair-kit cooldown UI at modifier-chain half points."""
+    simple = [
+        resolved
+        for effect in effects
+        if effect.get("attribute") == "repair_kit_cooldown"
+        and str(effect.get("modifier_type") or "ScaleSimple") == "ScaleSimple"
+        and (resolved := _effect_value(effect, defaults)) is not None
+    ]
+    fraction = value - floor(value)
+    if abs(fraction - 0.5) < 0.00001 and (
+        any(resolved < 0 for resolved in simple)
+        or abs(sum(resolved for resolved in simple if resolved > 0) - 0.5) < 0.00001
+    ):
+        return floor(value)
+    return _round_int(value)
+
+
 def _display_decimal(value: float, precision: int = 1) -> float:
     scale = 10**precision
     return weapon.f32(floor(weapon.f32(value) * scale + 0.50001) / scale)
@@ -674,7 +696,7 @@ def _repkit_stats(
         "healing": _round_int(instant + overtime),
         "instant_healing": _round_int(instant),
         "health_over_time": _round_int(overtime),
-        "cooldown": _round_int(cooldown),
+        "cooldown": _repkit_cooldown_int(cooldown, effects, defaults),
         "duration": _round_int(duration),
         "charges": max(1, ceil(charges)),
     }
@@ -691,7 +713,30 @@ def _barrel_values(model: dict[str, Any], parts: list[dict[str, Any]]) -> dict[s
         row = barrels.get(ref_key) or {}
         values = dict(row.get("base_values") or row.get("values") or {})
         initializer = initializers.get(ref_key) or {}
+        initializer_table = _norm(initializer.get("table"))
+        initializer_row = _norm(initializer.get("row"))
+        selected_comp = next(
+            (_norm(candidate.get("part")) for candidate in parts if candidate.get("category") == "inv_comp"),
+            "",
+        )
         for reference in initializer.get("references", []):
+            # A unique barrel initializer also references its inherited firing/AI
+            # rows.  Those rows are not barrel base values: merging them is what
+            # gave Flak Splatoon's 100-radius value.  Only hydrate the initializer's
+            # own DataTable row here.
+            different_row = (
+                _norm(reference.get("table")) != initializer_table
+                or _norm(reference.get("row")) != initializer_row
+            )
+            inherited_row = _norm(reference.get("row"))
+            inherited_name = re.sub(r"^(?:bor|dad|jak|mal|ord|ted|tor|vla)", "", inherited_row)
+            matching_comp = (
+                not reference.get("column")
+                and len(inherited_name) >= 4
+                and inherited_name in selected_comp
+            )
+            if different_row and not matching_comp:
+                continue
             for key, value in (reference.get("values") or {}).items():
                 values.setdefault(key, value)
         values.update(
@@ -700,6 +745,40 @@ def _barrel_values(model: dict[str, Any], parts: list[dict[str, Any]]) -> dict[s
                 initializer.get("row"),
             )
         )
+        damage_attribute = next(
+            (
+                str(effect.get("value_attribute") or "")
+                for effect in part.get("weapon_attribute_effects", [])
+                if effect.get("attribute") == "weapon_damage"
+                and effect.get("modifier_type") == "OverrideBaseValue"
+                and effect.get("value_attribute")
+            ),
+            "",
+        )
+        if damage_attribute:
+            attribute_key = _norm(damage_attribute)
+            matches = [
+                (_norm(candidate.get("part")).removeprefix("part"), candidate)
+                for candidate in barrels.values()
+                if str(candidate.get("root_id")) == str(row.get("root_id"))
+                and any(
+                    effect.get("attribute") == "weapon_damage"
+                    and _norm(effect.get("value_attribute")) == attribute_key
+                    for effect in candidate.get("attribute_effects", [])
+                )
+            ]
+            named_matches = [item for item in matches if item[0] and item[0] in attribute_key]
+            matches = sorted(named_matches or matches, key=lambda item: len(item[0]), reverse=True)
+            inherited = next(
+                (
+                    value
+                    for _part_name, candidate in matches
+                    if (value := _column(candidate.get("base_values") or candidate.get("values") or {}, "damage_scale")) is not None
+                ),
+                None,
+            )
+            if inherited is not None:
+                values["damage_scale"] = inherited
         cooldown_resolved = False
         cooldown_effect_present = False
         for effect in part.get("weapon_attribute_effects", []):
@@ -762,6 +841,25 @@ def _barrel_values(model: dict[str, Any], parts: list[dict[str, Any]]) -> dict[s
     raise ValueError("heavy weapon has no resolved barrel")
 
 
+def _barrel_seed_override(
+    parts: Iterable[dict[str, Any]],
+    attribute: str,
+    defaults: dict[str, Any],
+) -> float | None:
+    """Resolve a barrel's source-less base initializer before stat scaling."""
+    return _override_value(
+        (
+            effect
+            for part in parts
+            if part.get("category") == "barrel"
+            for effect in part.get("weapon_attribute_effects", [])
+            if not effect.get("source_aspect")
+        ),
+        attribute,
+        defaults,
+    )
+
+
 def _heavy_stats(
     level: int,
     rarity: str,
@@ -804,7 +902,10 @@ def _heavy_stats(
         if not (
             effect.get("modifier_type") == "OverrideBaseValue"
             and effect.get("attribute") in seed_attributes
-            and effect.get("source_aspect") in seed_sources
+            and (
+                effect.get("source_aspect") in seed_sources
+                or effect.get("_part_category") == "barrel"
+            )
         )
     ]
 
@@ -815,20 +916,24 @@ def _heavy_stats(
     damage = _modify(damage, post_seed_effects, "weapon_damage", defaults)
     damage = weapon.f32(damage * _element_damage_scale(parts))
 
-    fire_rate = _column(barrel, "firerate_value", "fire_rate")
+    fire_rate = _barrel_seed_override(parts, "weapon_fire_rate", defaults)
+    fire_rate = fire_rate if fire_rate is not None else _column(barrel, "firerate_value", "fire_rate")
     fire_rate = fire_rate if fire_rate is not None else (_override_value(effects, "weapon_fire_rate", defaults) or 1.0)
     fire_rate = _apply_stat(fire_rate, parts, model, rarity_stat, ("Fire_Rate",), ("FireRate", "fire_rate"))
     fire_rate = _modify(fire_rate, post_seed_effects, "weapon_fire_rate", defaults)
-    magazine = _column(barrel, "magazinesize_value", "magazine_size")
+    magazine = _barrel_seed_override(parts, "weapon_max_loaded_ammo", defaults)
+    magazine = magazine if magazine is not None else _column(barrel, "magazinesize_value", "magazine_size")
     magazine = magazine if magazine is not None else (_override_value(effects, "weapon_max_loaded_ammo", defaults) or 1.0)
     magazine = _apply_stat(magazine, parts, model, rarity_stat, ("Max_Loaded_Ammo",), ("MagSize", "magazine_size"))
     magazine = _modify(magazine, post_seed_effects, "weapon_max_loaded_ammo", defaults)
-    radius = _column(barrel, "damageradius_value", "damage_radius")
+    radius = _barrel_seed_override(parts, "weapon_damage_radius", defaults)
+    radius = radius if radius is not None else _column(barrel, "damageradius_value", "damage_radius")
     radius = radius if radius is not None else (_override_value(effects, "weapon_damage_radius", defaults) or 0.0)
     radius = weapon.f32(radius * (_column(rarity_row, "radius_scale", default=1.0) or 1.0))
     radius = _apply_stat(radius, parts, model, rarity_stat, ("Damage_Radius",), ("DamageRadius", "damage_radius"))
     radius = _modify(radius, post_seed_effects, "weapon_damage_radius", defaults)
-    cooldown = _column(barrel, "cooldown")
+    cooldown = _barrel_seed_override(parts, "gadget_cooldown", defaults)
+    cooldown = cooldown if cooldown is not None else _column(barrel, "cooldown")
     cooldown = cooldown if cooldown is not None else (_override_value(effects, "gadget_cooldown", defaults) or 0.0)
     cooldown = weapon.f32(cooldown * (_column(rarity_row, "cooldown_scale", default=1.0) or 1.0))
     cooldown = _apply_stat(cooldown, parts, model, rarity_stat, ("Cooldown_Reduction",), ("cooldown", "cooldown_reduction"), invert=True)
@@ -857,7 +962,17 @@ def _heavy_stats(
         _apply_stat(1.0, parts, model, rarity_stat, ("Critical_Damage",), ("CritDamage", "critical_damage")) - 1.0
     )
     crit = _modify(crit, post_seed_effects, "weapon_damage_modifier_add_critical_hit", defaults)
-    projectiles = max(1, _round_int(_modify(1.0, post_seed_effects, "weapon_projectile_per_shot", defaults)))
+    projectile_effects = post_seed_effects
+    if any(part.get("category") == "barrel_licensed" for part in parts):
+        projectile_effects = [
+            effect
+            for effect in projectile_effects
+            if not (
+                effect.get("attribute") == "weapon_projectile_per_shot"
+                and effect.get("_part_category") == "barrel_acc"
+            )
+        ]
+    projectiles = max(1, _round_int(_modify(1.0, projectile_effects, "weapon_projectile_per_shot", defaults)))
     total_damage = weapon.f32(damage * projectiles)
     stats: dict[str, Any] = {
         "damage": weapon.format_damage(total_damage, projectiles),
@@ -1073,29 +1188,20 @@ def _safe_arithmetic(expression: str, values: dict[str, float]) -> float | None:
         return None
 
 
-def _datatable_part_scale(value: float, datatable: dict[str, Any], parts: list[dict[str, Any]]) -> float:
-    wanted = (
-        _norm(_ref_name(datatable.get("datatable"))),
-        _norm(datatable.get("rowname")),
-        _norm(datatable.get("columnname")),
-    )
-    for part in parts:
-        for modifier in [*part.get("weapon_attribute_effects", []), *part.get("weapon_stat_modifiers", [])]:
-            constant = _number(modifier.get("constant"))
-            if constant is None:
-                continue
-            for ref in modifier.get("datatable_refs", []):
-                current = (_norm(_ref_name(ref.get("table"))), _norm(ref.get("row")), _norm(ref.get("column")))
-                if current == wanted:
-                    return value * constant * (_number(modifier.get("basescale"), 1.0) or 1.0) * (
-                        _number(modifier.get("postscale"), 1.0) or 1.0
-                    )
-    return value
-
-
 def _display_uistat_number(value: float, attribute: str, template: str, arg: dict[str, Any], lang: str) -> str:
     attr = _norm(attribute)
     lower = template.casefold()
+    if arg.get("bcalculatewithreductionmath") and value < 0:
+        value = 1.0 - (1.0 / (1.0 - value))
+    if str(arg.get("signstyle") or "").casefold() in {"negative", "positive"}:
+        value = abs(value)
+    if arg.get("bdisplayaspercentage"):
+        rendered = f"{_round_int(value * 100.0)}%"
+        if arg.get("bdisplayplussign") and value > 0:
+            rendered = "+" + rendered
+        formattext = arg.get("formattext") or {}
+        fmt = formattext.get("zh" if lang == "zh-CN" else "en") or formattext.get("en") or "$VALUE$"
+        return rendered if fmt in {"$VALUE$", "$VALUE$s", "$VALUE$秒"} else str(fmt).replace("$VALUE$", rendered)
     augment_percent = bool(arg.get("_inventory_augment")) and abs(value) <= 1.0 and not any(
         marker in attr for marker in ("count", "segment", "radius", "duration", "time", "target", "missile", "charge")
     )
@@ -1156,19 +1262,33 @@ def equipment_part_uistat_descriptions(
     resolving: set[str] = set()
     cache: dict[str, float | None] = {}
 
-    def display_modifier(attribute: str) -> float | None:
+    def display_modifier(attribute: str, arg: dict[str, Any]) -> float | None:
         stat = {
-            "grenade_gadget_crit_chance": (("CritChance",), ("CritChance", "CriticalChance", "critical_chance")),
-            "grenade_damage_modifier_base_status_effect_chance": (("StatusChance",), ("ElementalPower", "StatusChance", "status_chance")),
-            "grenade_damage_modifier_base_status_effect_damage": (("StatusDamage",), ("ElementalPower", "StatusDamage", "status_damage")),
-            "grenade_gadget_force": (("Force",), ("Force",)),
-            "grenade_gadget_transfusion_percent": (("Transfusion",), ("Transfusion",)),
-            "grenade_gadget_radius": (("Radius",), ("DamageRadius", "splash_radius", "radius")),
+            "gadget_cooldown": (("Cooldown",), ("cooldown",), True),
+            "grenade_gadget_damage": (("Damage",), ("Damage",), False),
+            "grenade_gadget_crit_chance": (("CritChance",), ("CritChance", "CriticalChance", "critical_chance"), False),
+            "grenade_gadget_crit_damage": (("CritDamage",), ("CritDamage", "critical_damage"), False),
+            "grenade_damage_modifier_base_status_effect_chance": (("StatusChance",), ("ElementalPower", "StatusChance", "status_chance"), False),
+            "grenade_damage_modifier_base_status_effect_damage": (("StatusDamage",), ("ElementalPower", "StatusDamage", "status_damage"), False),
+            "grenade_gadget_force": (("Force",), ("Force",), False),
+            "grenade_gadget_transfusion_percent": (("Transfusion",), ("Transfusion",), False),
+            "grenade_gadget_radius": (("Radius",), ("DamageRadius", "splash_radius", "radius"), False),
+            "weapon_fire_rate": (("Fire_Rate", "FireRate"), ("FireRate", "fire_rate"), False),
         }.get(attribute)
         if stat:
-            value = _apply_stat(1.0, [target], model, rarity_stat, *stat) - 1.0
+            rows, aliases, invert = stat
+            modified = _apply_stat(1.0, [target], model, rarity_stat, rows, aliases, invert=invert)
+            value = (1.0 - modified) if invert else (modified - 1.0)
             if value:
                 return value
+        if arg.get("bshowstatmodifier"):
+            for effect in target.get("weapon_attribute_effects", []):
+                if effect.get("attribute") != attribute:
+                    continue
+                value = _effect_value(effect, defaults)
+                if value is None:
+                    continue
+                return value - 1.0 if effect.get("modifier_type") == "ScaleMultiply" else value
         if attribute == "grenade_gadget_homing_turn_speed_scale":
             value = _modify(1.0, _effects([target], include_base_body=True), attribute, defaults) - 1.0
             return value if value else None
@@ -1258,8 +1378,6 @@ def equipment_part_uistat_descriptions(
             result = property_value(str((value.get("property") or {}).get("propertypath") or ""), name)
         elif "datatablevalueresolver" in kind:
             result = atom(value)
-            if result is not None:
-                result = _datatable_part_scale(result, value.get("datatablevalue") or {}, parts)
         elif "constantattributevalueresolver" in kind:
             initial = value.get("attributeinit") or {}
             result = atom(initial)
@@ -1315,7 +1433,7 @@ def equipment_part_uistat_descriptions(
                 arg = folded.get(placeholder.casefold())
             arg = arg if isinstance(arg, dict) else {}
             attribute = _ref_name(arg.get("attribute"))
-            value = display_modifier(attribute) if attribute else None
+            value = display_modifier(attribute, arg) if attribute else None
             if value is None:
                 value = resolve_attribute(attribute) if attribute else None
             if value is None:
@@ -1331,6 +1449,7 @@ def equipment_part_uistat_descriptions(
                 f"{{{placeholder}}}",
                 _display_uistat_number(value, attribute, _placeholder_context(text, placeholder), display_arg, lang),
             )
+        text = re.sub(r"\[glyph\].*?\[/glyph\]", "", text, flags=re.IGNORECASE)
         text = " ".join(re.sub(r"\[[^\]]+\]", "", text).split())
         if text and not any((entry.get("text") if isinstance(entry, dict) else entry) == text for entry in output):
             output.append({"uistat": ui_key, "text": text} if with_ids else text)

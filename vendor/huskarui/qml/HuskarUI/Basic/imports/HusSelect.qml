@@ -1,0 +1,376 @@
+/*
+ * HuskarUI
+ *
+ * Copyright (C) mengps (MenPenS) (MIT License)
+ * https://github.com/mengps/HuskarUI
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * - The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ * - The Software is provided "as is", without warranty of any kind, express or
+ *   implied, including but not limited to the warranties of merchantability,
+ *   fitness for a particular purpose and noninfringement. In no event shall the
+ *   authors or copyright holders be liable for any claim, damages or other
+ *   liability, whether in an action of contract, tort or otherwise, arising from,
+ *   out of or in connection with the Software or the use or other dealings in the
+ *   Software.
+ */
+
+import QtQuick
+import QtQuick.Templates as T
+import HuskarUI.Basic
+
+T.ComboBox {
+    id: control
+
+    signal clickClear()
+
+    property bool animationEnabled: HusTheme.animationEnabled
+    property bool active: hovered || visualFocus || contentItem.hovered || contentItem.activeFocus
+    property int hoverCursorShape: Qt.PointingHandCursor
+    property bool clearEnabled: true
+    property var clearIconSource: HusIcon.CloseCircleFilled ?? ''
+    property bool showToolTip: false
+    property bool loading: false
+    property string placeholderText: ''
+    property int defaultPopupMaxHeight: 240 * sizeRatio
+    property color colorText: enabled ?
+                                  (popup.visible && !editable) ? themeSource.colorTextActive :
+                                                                 themeSource.colorText : themeSource.colorTextDisabled
+    property color colorBg: enabled ? themeSource.colorBg : themeSource.colorBgDisabled
+
+    property HusRadius radiusBg: HusRadius { all: themeSource.radiusBg }
+    property HusRadius radiusItemBg: HusRadius { all: themeSource.radiusItemBg }
+    property HusRadius radiusPopupBg: HusRadius { all: themeSource.radiusPopupBg }
+    property HusBorder borderBg: HusBorder {
+        color: enabled ? active ? themeSource.colorBorderHover :
+                                  themeSource.colorBorder : themeSource.colorBorderDisabled
+    }
+    property string sizeHint: 'normal'
+    property real sizeRatio: HusTheme.sizeHint[sizeHint]
+    property string contentDescription: ''
+    property var themeSource: HusTheme.HusSelect
+
+    property Component indicatorDelegate: HusIconText {
+        id: __indicatorIcon
+        colorIcon: {
+            if (control.enabled) {
+                if (__clearMouseArea.active) {
+                    return __clearMouseArea.pressed ? control.themeSource.colorIndicatorActive :
+                                                      __clearMouseArea.hovered ? control.themeSource.colorIndicatorHover :
+                                                                                 control.themeSource.colorIndicator;
+                } else {
+                    return control.themeSource.colorIndicator;
+                }
+            } else {
+                return control.themeSource.colorIndicatorDisabled;
+            }
+        }
+        iconSize: parseInt(control.themeSource.fontSize) * control.sizeRatio
+        iconSource: {
+            if (control.enabled && control.clearEnabled && __clearMouseArea.active)
+                return control.clearIconSource;
+            else
+                control.loading ? HusIcon.LoadingOutlined : HusIcon.DownOutlined
+        }
+
+        Behavior on colorIcon { enabled: control.animationEnabled; ColorAnimation { duration: HusTheme.Primary.durationMid } }
+
+        NumberAnimation on rotation {
+            running: control.loading
+            from: 0
+            to: 360
+            loops: Animation.Infinite
+            duration: 1000
+            onRunningChanged: {
+                if (!running) {
+                    __indicatorIcon.rotation = 0;
+                }
+            }
+        }
+
+        MouseArea {
+            id: __clearMouseArea
+            anchors.fill: parent
+            enabled: control.enabled
+            hoverEnabled: true
+            cursorShape: hovered ? Qt.PointingHandCursor : Qt.ArrowCursor
+            onEntered: hovered = true;
+            onExited: hovered = false;
+            onClicked: function(mouse) {
+                if (active && control.clearEnabled) {
+                    if (control.editable)
+                        control.editText = '';
+                    control.currentIndex = -1;
+                    control.clickClear();
+                } else {
+                    if (control.popup.opened) {
+                        control.popup.close();
+                    } else {
+                        control.popup.open();
+                    }
+                }
+                mouse.accepted = true;
+            }
+            property bool active: !control.loading && (control.displayText.length > 0 || control.editText.length > 0) && control.hovered
+            property bool hovered: false
+        }
+    }
+    property Component toolTipDelegate: HusToolTip {
+        showArrow: false
+        visible: hovered
+        animationEnabled: control.animationEnabled
+        text: model[control.textRole]
+        position: HusToolTip.Position_Bottom
+    }
+
+    Behavior on colorText { enabled: control.animationEnabled; ColorAnimation { duration: HusTheme.Primary.durationFast } }
+    Behavior on colorBg { enabled: control.animationEnabled; ColorAnimation { duration: HusTheme.Primary.durationFast } }
+    Behavior on borderBg.color { enabled: control.animationEnabled; ColorAnimation { duration: HusTheme.Primary.durationFast } }
+
+    objectName: '__HusSelect__'
+    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
+                            implicitContentWidth + leftPadding + rightPadding)
+    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
+                             implicitContentHeight + topPadding + bottomPadding,
+                             implicitIndicatorHeight + topPadding + bottomPadding)
+    leftPadding: padding + (!control.mirrored || !indicator || !indicator.visible ? 0 : indicator.width + spacing)
+    rightPadding: padding + (control.mirrored || !indicator || !indicator.visible ? 0 : indicator.width + spacing)
+    topPadding: 6 * sizeRatio
+    bottomPadding: 6 * sizeRatio
+    spacing: 8 * sizeRatio
+    textRole: 'label'
+    valueRole: 'value'
+    font {
+        family: themeSource.fontFamily
+        pixelSize: parseInt(themeSource.fontSize) * sizeRatio
+    }
+    selectTextByMouse: editable
+    delegate: T.ItemDelegate { }
+    indicator: Loader {
+        x: control.mirrored ? (control.padding + control.spacing) : (control.width - width - control.padding - control.spacing)
+        y: control.topPadding + (control.availableHeight - height) / 2
+        sourceComponent: control.indicatorDelegate
+    }
+    contentItem: HusInput {
+        id: __input
+        topPadding: 0
+        bottomPadding: 0
+        sizeRatio: control.sizeRatio
+        text: control.editable ? control.editText : control.displayText
+        readOnly: !control.editable
+        autoScroll: control.editable
+        placeholderText: control.placeholderText
+        font: control.font
+        inputMethodHints: control.inputMethodHints
+        validator: control.validator
+        selectByMouse: control.selectTextByMouse
+        verticalAlignment: Text.AlignVCenter
+        colorText: control.colorText
+        colorBg: 'transparent'
+        borderBg.color: 'transparent'
+
+        Keys.onEnterPressed: if (active && !control.popup.opened) control.popup.open();
+
+        HoverHandler {
+            cursorShape: control.editable ? Qt.IBeamCursor : control.hoverCursorShape
+        }
+
+        TapHandler {
+            onTapped: {
+                if (!control.editable) {
+                    if (control.popup.opened) {
+                        control.popup.close();
+                    } else {
+                        control.popup.open();
+                    }
+                } else {
+                    __openPopupTimer.restart();
+                }
+            }
+        }
+
+        Timer {
+            id: __openPopupTimer
+            interval: 100
+            onTriggered: {
+                if (!control.popup.opened) {
+                    control.popup.open();
+                }
+            }
+        }
+    }
+    background: HusRectangleInternal {
+        color: control.colorBg
+        border.color: control.borderBg.color
+        border.width: control.borderBg.width
+        border.pixelAligned: control.borderBg.pixelAligned
+        radius: control.radiusBg.all
+        topLeftRadius: control.radiusBg.topLeft
+        topRightRadius: control.radiusBg.topRight
+        bottomLeftRadius: control.radiusBg.bottomLeft
+        bottomRightRadius: control.radiusBg.bottomRight
+    }
+    popup: HusPopup {
+        id: __popup
+        y: control.height + 2
+        implicitWidth: control.width
+        implicitHeight: implicitContentHeight + topPadding + bottomPadding
+        leftPadding: 4 * control.sizeRatio
+        rightPadding: 4 * control.sizeRatio
+        topPadding: 6 * control.sizeRatio
+        bottomPadding: 6 * control.sizeRatio
+        animationEnabled: control.animationEnabled
+        radiusBg: control.radiusPopupBg
+        colorBg: HusTheme.isDark ? control.themeSource.colorPopupBgDark : control.themeSource.colorPopupBg
+        transformOrigin: isTop ? Item.Bottom : Item.Top
+        enter: Transition {
+            NumberAnimation {
+                property: 'scale'
+                from: 0.9
+                to: 1.0
+                easing.type: Easing.OutQuad
+                duration: control.animationEnabled ? HusTheme.Primary.durationMid : 0
+            }
+            NumberAnimation {
+                property: 'opacity'
+                from: 0.0
+                to: 1.0
+                easing.type: Easing.OutQuad
+                duration: control.animationEnabled ? HusTheme.Primary.durationMid : 0
+            }
+        }
+        exit: Transition {
+            NumberAnimation {
+                property: 'scale'
+                from: 1.0
+                to: 0.9
+                easing.type: Easing.InQuad
+                duration: control.animationEnabled ? HusTheme.Primary.durationMid : 0
+            }
+            NumberAnimation {
+                property: 'opacity'
+                from: 1.0
+                to: 0.0
+                easing.type: Easing.InQuad
+                duration: control.animationEnabled ? HusTheme.Primary.durationMid : 0
+            }
+        }
+        contentItem: ListView {
+            id: __popupListView
+            implicitHeight: Math.min(control.defaultPopupMaxHeight, contentHeight)
+            clip: true
+            model: control.popup.visible ? control.model : null
+            currentIndex: control.highlightedIndex
+            boundsBehavior: Flickable.StopAtBounds
+            // [BL4 patch] 弹层列表滚轮滚动（Flickable 本身不处理滚轮，须显式 WheelHandler；
+            // 注意 handler 内 parent 解析不到本视图，必须用 id 引用）
+            WheelHandler {
+                acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                onWheel: function(event) {
+                    var maxY = Math.max(0, __popupListView.contentHeight - __popupListView.height);
+                    var dy = event.angleDelta.y;
+                    if (maxY > 0 && dy !== 0) {
+                        var newY = __popupListView.contentY - dy * 2;
+                        var clamped = Math.max(0, Math.min(maxY, newY));
+                        if (clamped !== __popupListView.contentY)
+                            __popupListView.contentY = clamped;
+                    }
+                    event.accepted = true;
+                }
+            }
+            delegate: T.ItemDelegate {
+                id: __popupDelegate
+
+                required property var model
+                required property int index
+
+                width: __popupListView.width
+                height: implicitContentHeight + topPadding + bottomPadding
+                leftPadding: 8 * control.sizeRatio
+                rightPadding: 8 * control.sizeRatio
+                topPadding: 5 * control.sizeRatio
+                bottomPadding: 5 * control.sizeRatio
+                enabled: model.enabled ?? true
+                contentItem: HusText {
+                    text: __popupDelegate.model[control.textRole]
+                    // [BL4 patch] 模型项可携带 itemColor 覆盖文字色（legit 候选上色）
+                    color: {
+                        var customText = __popupDelegate.model.itemColor;
+                        if (customText !== undefined && customText !== null && String(customText) !== "")
+                            return customText;
+                        return __popupDelegate.enabled ? control.themeSource.colorItemText : control.themeSource.colorItemTextDisabled;
+                    }
+                    font {
+                        family: control.font.family
+                        pixelSize: control.font.pixelSize
+                        // [BL4 patch] 模型项可携带 itemBold 强制加粗
+                        weight: (__popupDelegate.model.itemBold ?? false) ? Font.Bold
+                              : (highlighted ? Font.DemiBold : Font.Normal)
+                    }
+                    elide: Text.ElideRight
+                    verticalAlignment: Text.AlignVCenter
+                }
+                background: Rectangle {
+                    radius: control.radiusItemBg.all
+                    topLeftRadius: control.radiusItemBg.topLeft
+                    topRightRadius: control.radiusItemBg.topRight
+                    bottomLeftRadius: control.radiusItemBg.bottomLeft
+                    bottomRightRadius: control.radiusItemBg.bottomRight
+                    color: {
+                        // [BL4 patch] 模型项可携带 itemBg 覆盖背景色（legit 候选上色）
+                        var customBg = __popupDelegate.model.itemBg;
+                        if (customBg !== undefined && customBg !== null && String(customBg) !== "")
+                            return customBg;
+                        if (__popupDelegate.enabled)
+                            return highlighted ? control.themeSource.colorItemBgActive :
+                                                 hovered ? control.themeSource.colorItemBgHover :
+                                                           control.themeSource.colorItemBg;
+                        else
+                            return control.themeSource.colorItemBgDisabled;
+                    }
+
+                    Behavior on color { enabled: control.animationEnabled; ColorAnimation { duration: HusTheme.Primary.durationFast } }
+                }
+                highlighted: control.highlightedIndex === index
+                onClicked: {
+                    control.currentIndex = index;
+                    control.activated(index);
+                    control.popup.close();
+                }
+
+                HoverHandler {
+                    cursorShape: control.hoverCursorShape
+                }
+
+                Loader {
+                    y: __popupDelegate.height
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    active: control.showToolTip
+                    sourceComponent: control.toolTipDelegate
+                    property alias index: __popupDelegate.index
+                    property alias model: __popupDelegate.model
+                    property alias hovered: __popupDelegate.hovered
+                    property alias pressed: __popupDelegate.pressed
+                }
+            }
+            T.ScrollBar.vertical: HusScrollBar {
+                animationEnabled: control.animationEnabled
+            }
+        }
+        property bool isTop: (y + height * 0.5) < control.height * 0.5
+    }
+
+    HoverHandler {
+        cursorShape: control.hoverCursorShape
+    }
+
+    Accessible.role: Accessible.ComboBox
+    Accessible.name: control.displayText
+    Accessible.description: control.contentDescription
+}

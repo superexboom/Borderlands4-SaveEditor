@@ -1,7 +1,7 @@
 # bl4_functions.py
 
 from typing import Any, Dict, List, Optional, Tuple, Union
-from . import b_encoder
+from . import b_encoder, lookup
 from .unlock_data import VAULT_CARD_TOKENS
 
 
@@ -152,7 +152,6 @@ def apply_character_and_currency_changes(data: Dict[str, Any], yaml_data: Dict[s
 # ── Item Processing Logic ─────────────────────────────────────────────────────
 from . import decoder_logic
 from . import item_display_resolver
-from . import lookup
 from typing import TypedDict, List
 from .resource_loader import load_json_resource, get_ui_localization_file
 
@@ -212,8 +211,11 @@ class ProcessedItem(TypedDict):
     manufacturer_en: str
     id: int
     level: int
+    rarity: str
+    rarity_en: str
     serial: str
     decoded_full: str
+    canonical_decoded: str
     decoded_parts: str
     weapon_stats: Dict[str, Any]
     equipment_stats: Dict[str, Any]
@@ -240,12 +242,73 @@ def _walk_for_serials(
     return found_items
 
 
+_STRING_ROOT_MANUFACTURERS = {
+    "atl": lookup.Atlas,
+    "bor": lookup.Ripper,
+    "borg": lookup.Ripper,
+    "cov": lookup.CoV,
+    "dad": lookup.Daedalus,
+    "hyp": lookup.Hyperion,
+    "jak": lookup.Jakobs,
+    "mal": lookup.Maliwan,
+    "ord": lookup.Order,
+    "ted": lookup.Tediore,
+    "tor": lookup.Torgue,
+    "vla": lookup.Vladof,
+}
+
+_STRING_ROOT_TYPES = {
+    "enhancement": lookup.Enhancement,
+    "grenade_gadget": lookup.Grenade,
+    "repair_kit": lookup.Repkit,
+    "shield": lookup.Shield,
+}
+
+
+def _decoded_root_id(value: str) -> Optional[int]:
+    """Resolve either a numeric root or the string roots used by official templates.
+
+    UVHM starter data is serialized with roots such as ``"dad_repair_kit"``
+    instead of the normal numeric inventory root. Derive the current numeric id
+    through the shared lookup table so the parser does not maintain a second id
+    map and future string-root manufacturers/types follow the same path.
+    """
+    token = str(value or "").strip().strip('"').casefold()
+    try:
+        return int(token)
+    except ValueError:
+        pass
+    prefix, separator, suffix = token.partition("_")
+    if not separator:
+        return None
+    manufacturer = _STRING_ROOT_MANUFACTURERS.get(prefix)
+    item_type = _STRING_ROOT_TYPES.get(suffix)
+    if not manufacturer or not item_type:
+        return None
+    return lookup.ID_MAP.get((manufacturer, item_type))
+
+
 def parse_decoded_item_header(decoded_full: str) -> Optional[Dict[str, Any]]:
-    """Parse the item header, including game-canonical Lv1 headers without marker 1."""
+    """Parse numeric and official string-root item headers.
+
+    The returned ``mfg_id`` is always the canonical numeric root. ``root_token``
+    preserves what the original serial contained so read-only tools can explain
+    the unusual representation without rewriting it.
+    """
     try:
         header_part, component_part = decoded_full.split("||", 1)
         segments = [segment.strip() for segment in header_part.strip().split("|") if segment.strip()]
-        fields = [[int(value.strip()) for value in segment.split(",")] for segment in segments]
+        if not segments:
+            return None
+        root_token, *first_tail = [value.strip() for value in segments[0].split(",")]
+        root_id = _decoded_root_id(root_token)
+        if root_id is None:
+            return None
+        fields = [[root_id, *(int(value) for value in first_tail)]]
+        fields.extend(
+            [int(value.strip()) for value in segment.split(",")]
+            for segment in segments[1:]
+        )
         if not fields or len(fields[0]) < 4:
             return None
 
@@ -258,6 +321,8 @@ def parse_decoded_item_header(decoded_full: str) -> Optional[Dict[str, Any]]:
             "seed": first[3] if implicit_level_one else (seed_fields[1] if len(seed_fields) > 1 else None),
             "implicit_level_one": implicit_level_one,
             "component": component_part,
+            "root_token": root_token.strip().strip('"'),
+            "string_root": not root_token.strip().lstrip("+-").isdigit(),
         }
     except (AttributeError, TypeError, ValueError):
         return None
@@ -301,11 +366,12 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
         header = parse_decoded_item_header(formatted_str)
         if not header:
             continue
-        parts_part = header["component"]
-
         try:
             item_id = header["mfg_id"]
             item_level = header["level"]
+            canonical_str, _unresolved = item_display_resolver.canonicalize_decoded_serial(
+                formatted_str, item_id
+            )
 
             manufacturer, item_type, found = lookup.get_kind_enums(item_id)
             if not found:
@@ -320,13 +386,13 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
                 item_id,
                 localized_manufacturer,
                 item_type,
-                formatted_str,
+                canonical_str,
                 current_localization_lang,
             )
             item_name = display_info.get("display_name") or base_item_name
             if display_info.get("display_source") == "fallback":
                 item_name = base_item_name
-            display_parts = parts_part.strip()
+            display_parts = canonical_str.split("||", 1)[1].strip()
 
             # Determine container and slot from the path
             container_name = "Unknown"
@@ -359,18 +425,20 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
                 "id": item_id,
                 "level": item_level,
                 "rarity": display_info.get("rarity", ""),
+                "rarity_en": display_info.get("rarity_en") or display_info.get("rarity", ""),
                 "display_source": display_info.get("display_source", ""),
                 "parts_summary": display_info.get("parts_summary", ""),
                 "state_flags": str(item_data.get("state_flags", "")),
                 "serial": serial,
                 "decoded_full": formatted_str,
+                "canonical_decoded": canonical_str,
                 "decoded_parts": display_parts,
                 "weapon_stats": (
-                    item_display_resolver.resolve_weapon_stats(formatted_str)
+                    item_display_resolver.resolve_weapon_stats(canonical_str)
                     if item_type in item_display_resolver.WEAPON_TYPES
                     else {}
                 ),
-                "equipment_stats": item_display_resolver.resolve_equipment_stats(formatted_str, item_type),
+                "equipment_stats": item_display_resolver.resolve_equipment_stats(canonical_str, item_type),
             }
             all_items.append(processed_item)
 
@@ -380,59 +448,41 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
     return all_items
 
 def add_item_to_backpack(yaml_data: Dict[str, Any], serial: str, state_flags: str) -> Optional[List[Union[str, int]]]:
-    """
-    Adds a new item to the first available slot in the backpack.
-    Returns the full path to the new item on success, otherwise None.
-    """
+    return add_items_to_backpack(yaml_data, [serial], state_flags)[0]
+
+
+def add_items_to_backpack(yaml_data, serials, state_flags):
+    """Append after the highest slot, scanning the existing backpack only once."""
+    results = [None] * len(serials)
+    if not serials:
+        return results
     try:
-        # Find the path to the backpack dynamically
+        flag = int(state_flags)
         backpack_path = _walk_find(yaml_data, ["backpack"])
         if not backpack_path:
-            return None
-
-        # Get a reference to the backpack node
+            return results
         backpack_node = yaml_data
-        temp_path = []
         for key in backpack_path:
             backpack_node = backpack_node[key]
-            temp_path.append(key)
-
-        # Find the highest existing slot number
+        if not isinstance(backpack_node, dict):
+            return results
         max_slot = -1
-        if isinstance(backpack_node, dict):
-            for key in backpack_node.keys():
-                if isinstance(key, str) and key.startswith("slot_"):
-                    try:
-                        num = int(key.split('_')[1])
-                        if num > max_slot:
-                            max_slot = num
-                    except (ValueError, IndexError):
-                        continue
-        
-        # Determine the new slot key
-        new_slot_key = f"slot_{max_slot + 1}"
-
-        # Create the new item structure
-        new_item = {
-            'serial': serial,
-            'state_flags': int(state_flags)
-        }
-        
-        # Add the new item to the backpack
-        backpack_node[new_slot_key] = new_item
-        
-        # Return the full path to the newly added item
-        return temp_path + [new_slot_key]
-
-    except Exception:
-        return None
-
-        
-        # Return the full path to the newly added item
-        return temp_path + [new_slot_key]
-
-    except Exception:
-        return None
+        for key in backpack_node:
+            if isinstance(key, str) and key.startswith("slot_"):
+                try:
+                    max_slot = max(max_slot, int(key.split('_')[1]))
+                except (ValueError, IndexError):
+                    continue
+    except (TypeError, ValueError, KeyError, IndexError):
+        return results
+    for index, serial in enumerate(serials):
+        if not isinstance(serial, str) or not serial.strip():
+            continue
+        max_slot += 1
+        slot = f"slot_{max_slot}"
+        backpack_node[slot] = {'serial': serial, 'state_flags': flag}
+        results[index] = backpack_path + [slot]
+    return results
 
 def update_level_in_decoded_str(decoded_full: str, new_level: int) -> Optional[str]:
     """
@@ -467,22 +517,8 @@ def update_level_in_decoded_str(decoded_full: str, new_level: int) -> Optional[s
         return None
 
 def get_yaml_loader():
-    """返回一个能忽略未知标签的PyYAML加载器"""
-    try:
-        import yaml
-    except ImportError:
-        raise RuntimeError("PyYAML is not installed. Install with: pip install pyyaml")
-
-    class AnyTagLoader(yaml.SafeLoader): pass
-
-    def _ignore_any(loader: AnyTagLoader, tag_suffix: str, node: 'yaml.Node'):
-        if isinstance(node, yaml.ScalarNode): return loader.construct_scalar(node)
-        if isinstance(node, yaml.SequenceNode): return loader.construct_sequence(node)
-        if isinstance(node, yaml.MappingNode): return loader.construct_mapping(node)
-        return None
-
-    AnyTagLoader.add_multi_constructor("", _ignore_any)
-    return AnyTagLoader
+    from .yaml_io import get_yaml_loader as shared_loader
+    return shared_loader()
 
 
 def sync_inventory_item_levels(yaml_data: Dict[str, Any]) -> Tuple[int, int, List[str]]:

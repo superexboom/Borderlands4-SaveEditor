@@ -6,6 +6,7 @@ import re
 import json
 import csv
 import sys
+import hashlib
 from datetime import datetime
 from pathlib import Path
 
@@ -15,7 +16,7 @@ from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QGroupBox, QScrollArea, QMessageBox, QFrame, QInputDialog
 )
-from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtCore import Qt, QSize, pyqtSignal
 from PyQt6.QtGui import QIcon
 
 from core import resource_loader
@@ -74,6 +75,10 @@ def _replace_skill_graphs(graphs: list, new_skill_graphs: list) -> list:
 class QtLoadoutManagerTab(QWidget):
     """配置管理器标签页 (with full i18n support)"""
 
+    live_snapshot_requested = pyqtSignal(int, str)
+    live_apply_requested = pyqtSignal(int, object)
+    live_recovery_requested = pyqtSignal(str)
+
     # CLASS_IDS mirrors QtClassModEditorTab for icon lookup
     CLASS_IDS = {'Amon': 255, 'Harlowe': 259, 'Rafa': 256, 'Vex': 254, 'C4sh': 404, 'C4SH': 404}
     CLASS_NAME_ALIASES = {'C4SH': 'C4sh'}
@@ -88,6 +93,9 @@ class QtLoadoutManagerTab(QWidget):
         self.current_lang = 'zh-CN'
         self.image_cache = {}            # 技能图标缓存
         self._manual_read_active = False # 是否处于手动读取状态
+        self._live_mode = False
+        self._live_busy = False
+        self._inventory_mutation_blocked = False
 
         # 每个槽位已保存配置内容缓存 {slot_index: loadout_dict or None}
         self._saved_loadouts = {i: None for i in range(1, 7)}
@@ -126,7 +134,10 @@ class QtLoadoutManagerTab(QWidget):
                 "groups": {"equipped": "已装备物品", "loadout": "配置方案", "skills": "技能配置"},
                 "slots": _SLOT_FALLBACK,
                 "buttons": {"read_save": "读取当前存档配置", "save_loadout": "保存配置",
-                            "load_loadout": "加载配置到存档"},
+                            "load_loadout": "加载配置到存档",
+                            "save_live_loadout": "保存当前在线配装",
+                            "apply_live_loadout": "应用到在线角色",
+                            "review_live_recovery": "检查恢复锁"},
                 "labels": {"activated_skills": "已激活技能", "points_suffix": " 点",
                            "activated": "已激活", "config_name": "配置名称:",
                            "default_config_name": "槽位 {slot}"},
@@ -138,6 +149,7 @@ class QtLoadoutManagerTab(QWidget):
                     "no_data": "暂无技能数据", "no_activated": "暂无已激活技能",
                     "no_items": "当前没有装备任何物品", "open_first": "请先打开存档",
                     "no_equipped_data": "未找到已装备物品数据",
+                    "empty_slot_live": "该槽位无已保存的在线配装",
                 },
                 "decode": {
                     "unknown": "未知",
@@ -179,8 +191,11 @@ class QtLoadoutManagerTab(QWidget):
 
         # Buttons
         self.read_save_button.setText(self._t('buttons', 'read_save'))
-        self.save_loadout_btn.setText(self._t('buttons', 'save_loadout'))
-        self.load_loadout_btn.setText(self._t('buttons', 'load_loadout'))
+        self.save_loadout_btn.setText(self._t(
+            'buttons', 'save_live_loadout' if self._live_mode else 'save_loadout'))
+        self.load_loadout_btn.setText(self._t(
+            'buttons', 'apply_live_loadout' if self._live_mode else 'load_loadout'))
+        self.live_recovery_btn.setText(self._t('buttons', 'review_live_recovery'))
 
         # Notification bar
         notice = self.loc.get('notice', '')
@@ -644,6 +659,13 @@ class QtLoadoutManagerTab(QWidget):
         self.load_loadout_btn.setStyleSheet(self._action_btn_style("#FF9800"))
         self.load_loadout_btn.clicked.connect(self._on_load_loadout)
         action_row.addWidget(self.load_loadout_btn)
+
+        self.live_recovery_btn = QPushButton(self._t('buttons', 'review_live_recovery'))
+        self.live_recovery_btn.setStyleSheet(self._action_btn_style("#EF5350"))
+        self.live_recovery_btn.clicked.connect(
+            lambda: self.live_recovery_requested.emit('query'))
+        self.live_recovery_btn.setVisible(False)
+        action_row.addWidget(self.live_recovery_btn)
         action_row.addStretch()
         loadout_layout.addLayout(action_row)
         layout.addWidget(self.loadout_group)
@@ -791,6 +813,51 @@ class QtLoadoutManagerTab(QWidget):
         self._refresh_equipped_display_from_yaml()
         self._refresh_skills_display_from_yaml()
 
+    def _live_profile_name(self) -> str:
+        root = self.yaml_data.get('state', self.yaml_data) if isinstance(self.yaml_data, dict) else {}
+        raw_name = str(root.get('char_name') or 'current').strip()
+        safe_name = re.sub(r'[<>:"/\\|?*\x00-\x1f]+', '_', raw_name).strip(' ._')
+        return f"live_{safe_name[:48] or 'current'}"
+
+    def _select_save_name(self):
+        if self._live_mode:
+            self.save_name = self._live_profile_name()
+        elif self.save_file_path:
+            self.save_name = Path(self.save_file_path).stem
+        else:
+            self.save_name = None
+
+    def set_live_mode(self, enabled: bool):
+        """Switch only the preset I/O path; offline YAML behavior remains intact."""
+        enabled = bool(enabled)
+        mode_changed = enabled != self._live_mode
+        self._live_mode = enabled
+        self._manual_read_active = False
+        self._select_save_name()
+        self.read_save_button.setVisible(not enabled)
+        self.skill_group.setVisible(not enabled)
+        self.live_recovery_btn.setVisible(enabled)
+        if mode_changed:
+            self._scan_saved_loadouts()
+            self._update_loadout_button_styles()
+        self._refresh_ui_text()
+        self.set_live_busy(self._live_busy)
+
+    def set_live_busy(self, busy: bool):
+        self._live_busy = bool(busy)
+        self.save_loadout_btn.setEnabled(not self._live_busy)
+        self.load_loadout_btn.setEnabled(
+            not self._live_busy and not self._inventory_mutation_blocked and (
+                not self._live_mode
+                or self._saved_loadouts.get(self.current_loadout_index) is not None
+            )
+        )
+        self.live_recovery_btn.setEnabled(self._live_mode and not self._live_busy)
+
+    def set_inventory_mutation_blocked(self, blocked: bool):
+        self._inventory_mutation_blocked = bool(blocked)
+        self.set_live_busy(self._live_busy)
+
     # ══════════════════════════════════════════════════════════════════
     # set_data — 由 MainWindow 调用
     # ══════════════════════════════════════════════════════════════════
@@ -802,11 +869,8 @@ class QtLoadoutManagerTab(QWidget):
         self._dirty_callback = dirty_callback
         self._manual_read_active = False
 
-        if save_file_path:
-            self.save_file_path = save_file_path
-            self.save_name = Path(save_file_path).stem  # e.g. "1"
-        else:
-            self.save_name = None
+        self.save_file_path = save_file_path
+        self._select_save_name()
 
         # 扫描已保存配置
         self._scan_saved_loadouts()
@@ -815,6 +879,7 @@ class QtLoadoutManagerTab(QWidget):
 
         # 显示当前槽位的内容（已保存 or 空）
         self._display_slot_content(self.current_loadout_index)
+        self.set_live_busy(self._live_busy)
 
     # ══════════════════════════════════════════════════════════════════
     # 显示控制
@@ -829,10 +894,12 @@ class QtLoadoutManagerTab(QWidget):
         else:
             # 空槽位
             self._clear_layout(self.equipped_layout)
-            self._add_placeholder(self.equipped_layout, self._t('placeholders', 'empty_slot'))
+            placeholder_key = 'empty_slot_live' if self._live_mode else 'empty_slot'
+            self._add_placeholder(self.equipped_layout, self._t('placeholders', placeholder_key))
             self._clear_layout(self.skills_layout)
             self._add_placeholder(self.skills_layout, self._t('placeholders', 'empty_slot_skills'))
         self._update_config_name_display()
+        self.set_live_busy(self._live_busy)
 
     def _display_loadout_data(self, loadout: dict):
         """展示一个已保存的 loadout（来自 JSON）"""
@@ -841,18 +908,36 @@ class QtLoadoutManagerTab(QWidget):
         equipped_items = loadout.get('equipped_items', [])
         if equipped_items:
             for item_data in equipped_items:
+                slot_index = item_data.get('slot_index')
                 slot_key = item_data.get('slot', '')
-                serial = item_data.get('serial', '')
-                if not serial:
-                    continue
+                if not slot_key and isinstance(slot_index, int) and not isinstance(slot_index, bool):
+                    slot_key = f'slot_{slot_index}'
                 slot_name = self._t_slot(slot_key)
-                if slot_key in WEAPON_SLOT_KEYS:
-                    item_name = self._get_weapon_real_name(serial)
-                    if not item_name:
-                        item_name = self._decode_item_name(serial)
+                serial = str(item_data.get('serial') or '')
+                fingerprint = str(item_data.get('serial_sha256') or '').strip().lower()
+                if loadout.get('source') == 'live':
+                    if not fingerprint and serial.startswith('@U'):
+                        fingerprint = self._live_item_fingerprint(serial)
+                    if not fingerprint:
+                        continue
+                    if serial.startswith('@U'):
+                        item_name = (
+                            self._get_weapon_real_name(serial)
+                            if slot_key in WEAPON_SLOT_KEYS else ''
+                        ) or self._decode_item_name(serial)
+                    else:
+                        item_name = f"SHA-256 {fingerprint[:16]}…"
+                    row = self._create_equipped_row(slot_name, item_name, fingerprint)
                 else:
-                    item_name = self._decode_item_name(serial)
-                row = self._create_equipped_row(slot_name, item_name, serial)
+                    if not serial:
+                        continue
+                    if slot_key in WEAPON_SLOT_KEYS:
+                        item_name = self._get_weapon_real_name(serial)
+                        if not item_name:
+                            item_name = self._decode_item_name(serial)
+                    else:
+                        item_name = self._decode_item_name(serial)
+                    row = self._create_equipped_row(slot_name, item_name, serial)
                 self.equipped_layout.addWidget(row)
             self.equipped_layout.addStretch()
         else:
@@ -1070,7 +1155,201 @@ class QtLoadoutManagerTab(QWidget):
     # ══════════════════════════════════════════════════════════════════
     # 保存配置
     # ══════════════════════════════════════════════════════════════════
+    def _prompt_config_name(self) -> str | None:
+        config_name, ok = QInputDialog.getText(
+            self,
+            self._t('dialogs', 'name_prompt_title'),
+            self._t('dialogs', 'name_prompt_msg'),
+        )
+        if not ok:
+            return ""
+        return config_name.strip()
+
+    @staticmethod
+    def _live_item_fingerprint(serial: str, fingerprint: str = "") -> str:
+        value = str(fingerprint or "").strip().lower()
+        serial = str(serial or '')
+        return value or (
+            hashlib.sha256(serial.encode('utf-8')).hexdigest()
+            if serial.startswith('@U') else ''
+        )
+
+    def _live_loadout_from_snapshot(
+        self, slot: int, config_name: str, snapshot: dict,
+    ) -> dict:
+        if not isinstance(snapshot, dict) or not snapshot.get('ok'):
+            raise ValueError(str((snapshot or {}).get('error') or 'invalid live loadout snapshot'))
+        rows = snapshot.get('slots')
+        if not isinstance(rows, list):
+            raise ValueError('live loadout snapshot has no slots')
+
+        equipped_items = []
+        for row in rows:
+            if not isinstance(row, dict) or row.get('locked'):
+                continue
+            slot_index = row.get('slot_index')
+            serial = str(row.get('serial') or '')
+            fingerprint = self._live_item_fingerprint(
+                serial, str(row.get('serial_sha256') or ''))
+            occurrence = row.get('occurrence')
+            if (
+                isinstance(slot_index, bool) or not isinstance(slot_index, int)
+                or not re.fullmatch(r'[0-9a-f]{64}', fingerprint)
+                or isinstance(occurrence, bool) or not isinstance(occurrence, int)
+            ):
+                continue
+            item = {
+                'slot_index': slot_index,
+                'serial_sha256': fingerprint,
+                'occurrence': occurrence,
+            }
+            equipped_items.append(item)
+        if not equipped_items:
+            raise ValueError(self._t('dialogs', 'live_no_entries'))
+
+        return {
+            'save_name': self.save_name,
+            'slot': slot,
+            'config_name': config_name,
+            'timestamp': datetime.now().isoformat(timespec='seconds'),
+            'source': 'live',
+            'equipped_items': equipped_items,
+            'skill_graphs': [],
+        }
+
+    def _live_apply_payload(self, saved: dict) -> dict:
+        entries = []
+        seen_slots = set()
+        for item in saved.get('equipped_items', []):
+            if not isinstance(item, dict):
+                continue
+            slot_index = item.get('slot_index')
+            if slot_index is None:
+                match = re.fullmatch(r'slot_(\d+)', str(item.get('slot') or ''))
+                slot_index = int(match.group(1)) if match else None
+            serial = str(item.get('serial') or '')
+            fingerprint = self._live_item_fingerprint(
+                serial, str(item.get('serial_sha256') or ''))
+            if (
+                isinstance(slot_index, bool) or not isinstance(slot_index, int)
+                or slot_index < 0 or slot_index in seen_slots
+                or not re.fullmatch(r'[0-9a-f]{64}', fingerprint)
+            ):
+                continue
+            seen_slots.add(slot_index)
+            entry = {
+                'slot_index': slot_index,
+                'serial_sha256': fingerprint,
+            }
+            occurrence = item.get('occurrence')
+            if isinstance(occurrence, int) and not isinstance(occurrence, bool):
+                entry['occurrence'] = occurrence
+            entries.append(entry)
+        # V1 verifies the current active weapon slot but does not switch it.
+        # Omitting it prevents a preset captured on another weapon from being
+        # rejected while still applying the equipment entries atomically.
+        return {'entries': entries}
+
+    def finish_live_snapshot(
+        self, slot: int, config_name: str, snapshot: dict | None, error: str | None = None,
+    ):
+        if error:
+            QMessageBox.critical(
+                self, self._t('dialogs', 'save_fail_title'),
+                self._t('dialogs', 'live_save_fail', error=error))
+            return
+        try:
+            loadout = self._live_loadout_from_snapshot(slot, config_name, snapshot or {})
+            loadout_dir = self._get_loadout_dir()
+            loadout_dir.mkdir(parents=True, exist_ok=True)
+            filepath = self._get_loadout_filepath(slot)
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(loadout, f, ensure_ascii=False, indent=2)
+        except Exception as exc:
+            QMessageBox.critical(
+                self, self._t('dialogs', 'save_fail_title'),
+                self._t('dialogs', 'live_save_fail', error=str(exc)))
+            return
+
+        self._saved_loadouts[slot] = loadout
+        self._manual_read_active = False
+        self._update_loadout_button_styles()
+        self._update_slot_button_labels()
+        if self.current_loadout_index == slot:
+            self._display_slot_content(slot)
+        QMessageBox.information(
+            self, self._t('dialogs', 'success'),
+            self._t('dialogs', 'live_save_success', slot=slot, path=str(filepath)))
+
+    def finish_live_apply(self, slot: int, result: dict | None, error: str | None = None):
+        result = result if isinstance(result, dict) else {}
+        if not error and result.get('ok') and result.get('verified'):
+            message = self._t(
+                'dialogs', 'live_apply_success', slot=slot,
+                applied=len(result.get('applied') or []),
+                skipped=len(result.get('skipped') or []),
+            )
+            if result.get('cache_pending'):
+                message += "\n" + self._t('dialogs', 'live_apply_cache_pending')
+            QMessageBox.information(self, self._t('dialogs', 'success'), message)
+            return
+
+        detail = error or str(result.get('error') or 'invalid response')
+        if result.get('rollback_complete') is False:
+            detail += "\n" + self._t('dialogs', 'live_apply_rollback_incomplete')
+        if result.get('uncertain') or result.get('recovery'):
+            detail += "\n" + self._t('dialogs', 'live_recovery_available')
+        QMessageBox.critical(
+            self, self._t('dialogs', 'live_apply_fail_title'),
+            self._t('dialogs', 'live_apply_fail', error=detail))
+
+    def finish_live_recovery(
+        self, operation: str, result: dict | None, error: str | None = None,
+    ):
+        result = result if isinstance(result, dict) else {}
+        if error or not result.get('ok'):
+            QMessageBox.critical(
+                self, self._t('dialogs', 'live_recovery_title'),
+                self._t(
+                    'dialogs', 'live_recovery_fail',
+                    error=error or str(result.get('error') or 'invalid response'),
+                ),
+            )
+            return
+        if operation == 'recovery':
+            recovery = result.get('recovery') if isinstance(result.get('recovery'), dict) else {}
+            if not result.get('pending'):
+                QMessageBox.information(
+                    self, self._t('dialogs', 'live_recovery_title'),
+                    self._t('dialogs', 'live_recovery_none'))
+                return
+            reason = str(recovery.get('reason') or recovery.get('error') or 'unknown')
+            reply = QMessageBox.question(
+                self,
+                self._t('dialogs', 'live_recovery_title'),
+                self._t('dialogs', 'live_recovery_confirm', reason=reason),
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,
+            )
+            if reply == QMessageBox.StandardButton.Yes:
+                self.live_recovery_requested.emit('clear')
+            return
+        QMessageBox.information(
+            self, self._t('dialogs', 'live_recovery_title'),
+            self._t('dialogs', 'live_recovery_cleared'))
+
     def _on_save_loadout(self):
+        if self._live_mode:
+            if self._live_busy:
+                return
+            if not self.save_name:
+                QMessageBox.warning(
+                    self, self._t('dialogs', 'hint'),
+                    self._t('dialogs', 'live_unavailable'))
+                return
+            config_name = self._prompt_config_name()
+            self.live_snapshot_requested.emit(self.current_loadout_index, config_name or '')
+            return
         if not self.yaml_data:
             QMessageBox.warning(self,
                                 self._t('dialogs', 'hint'),
@@ -1085,13 +1364,7 @@ class QtLoadoutManagerTab(QWidget):
         idx = self.current_loadout_index
 
         # Prompt for config name
-        config_name, ok = QInputDialog.getText(
-            self,
-            self._t('dialogs', 'name_prompt_title'),
-            self._t('dialogs', 'name_prompt_msg'),
-        )
-        if not ok or not config_name.strip():
-            config_name = ""  # Will use default name on display
+        config_name = self._prompt_config_name() or ''
 
         loadout_dir = self._get_loadout_dir()
         loadout_dir.mkdir(parents=True, exist_ok=True)
@@ -1126,7 +1399,7 @@ class QtLoadoutManagerTab(QWidget):
         loadout = {
             'save_name': self.save_name,
             'slot': idx,
-            'config_name': config_name.strip(),
+            'config_name': config_name,
             'timestamp': datetime.now().isoformat(timespec='seconds'),
             'equipped_items': equipped_items,
             'skill_graphs': skill_graphs,
@@ -1156,6 +1429,32 @@ class QtLoadoutManagerTab(QWidget):
     # ══════════════════════════════════════════════════════════════════
     def _on_load_loadout(self):
         """将已保存的配置覆写到当前 YAML 存档"""
+        if self._live_mode:
+            if self._live_busy:
+                return
+            idx = self.current_loadout_index
+            saved = self._saved_loadouts.get(idx)
+            if not saved:
+                QMessageBox.warning(
+                    self, self._t('dialogs', 'hint'),
+                    self._t('dialogs', 'no_saved_config', slot=idx))
+                return
+            payload = self._live_apply_payload(saved)
+            if not payload.get('entries'):
+                QMessageBox.warning(
+                    self, self._t('dialogs', 'hint'),
+                    self._t('dialogs', 'live_no_entries'))
+                return
+            reply = QMessageBox.question(
+                self,
+                self._t('dialogs', 'confirm_live_apply_title'),
+                self._t('dialogs', 'confirm_live_apply_msg', slot=idx),
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,
+            )
+            if reply == QMessageBox.StandardButton.Yes:
+                self.live_apply_requested.emit(idx, payload)
+            return
         if not self.yaml_data:
             QMessageBox.warning(self,
                                 self._t('dialogs', 'hint'),

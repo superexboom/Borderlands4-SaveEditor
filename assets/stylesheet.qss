@@ -90,9 +90,9 @@ QMainWindow {
 #headerBar QPushButton[headerControl="true"] {
     background-color: {button_bg};
     border: 1px solid {border_color};
-    padding: 4px 10px;
+    padding: 4px 8px;
     border-radius: 5px;
-    min-width: 64px;
+    min-width: 58px;
     min-height: 30px;
     max-height: 30px;
     color: {text_primary};
@@ -112,10 +112,30 @@ QMainWindow {
     color: {text_disabled};
 }
 
+#headerBar QPushButton[headerControl="true"][liveActive="true"] {
+    background-color: {accent};
+    border-color: {accent};
+    color: {bg_primary};
+    font-weight: 600;
+}
+
 /* Labels ---------------------------------------------------------------- */
 QLabel {
     background-color: transparent;
     color: {text_primary};
+}
+
+#liveRuntimeSection {
+    color: {accent};
+    font-size: 10.5pt;
+    padding-top: 5px;
+    border-bottom: 1px solid {border_color};
+}
+
+QGroupBox QPushButton:checked {
+    background-color: {accent};
+    color: {bg_primary};
+    border-color: {accent};
 }
 
 /* Buttons --------------------------------------------------------------- */
@@ -1207,6 +1227,23 @@ QDialogButtonBox QPushButton {
 #genBuildStatus[ruleStatus="modified"] { background-color: #B91C1C; }
 #genBuildStatus[ruleStatus="conditional"] { background-color: #6D28D9; }
 #genBuildStatus[ruleStatus="unknown"] { background-color: #475569; }
+#genBuildStatus[ruleStatus="suppressed"] { background-color: #475569; }
+
+#equipmentLegitCard {
+    background-color: {bg_panel};
+    border: 1px solid {border_color};
+    border-radius: 10px;
+}
+
+#equipmentLegitReason {
+    color: {text_primary};
+    font-weight: bold;
+}
+
+#equipmentLegitGroups {
+    color: {text_secondary};
+    font-size: 9pt;
+}
 
 #inspectorInput {
     font-family: Consolas, monospace;

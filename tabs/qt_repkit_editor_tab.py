@@ -5,7 +5,7 @@ from functools import lru_cache
 
 from PyQt6.QtCore import Qt
 
-from core import resource_loader
+from core import item_display_resolver, resource_loader
 from tabs.qt_equipment_base_tab import BaseEquipmentEditorTab
 
 
@@ -39,6 +39,11 @@ class QtRepkitEditorTab(BaseEquipmentEditorTab):
     # for the current composition, read from the generation rules so a retuned or new
     # composition needs no code change.
     RULE_GROUPS_BY_PICKER = {
+        "prefix": ("payload",),
+        "resistance": ("augment_element_resist", "element"),
+        "immunity": ("augment_element_immunity", "element"),
+        "firmware": ("firmware",),
+        "legendary": ("primary_augment", "secondary_augment", "vile"),
         "universal": ("primary_augment", "secondary_augment",
                       "augment_element_splat", "augment_element_nova"),
     }
@@ -85,6 +90,76 @@ class QtRepkitEditorTab(BaseEquipmentEditorTab):
     CARRIER_IDS = {53, 76, 55, 78, 72, 95, 66, 89}
     _PRIMARY_CARRIERS = {53, 55, 72, 66}
 
+    def _generation_ref_for_option(self, key, data):
+        if data is None:
+            return ""
+        if key == "legendary":
+            part_id, owner = data
+            return f"{int(owner)}:{int(part_id)}"
+        return f"{self.SECONDARY_PARENT}:{int(data)}"
+
+    def _element_macro_bundle(self, part_id):
+        part_id = int(part_id)
+        carrier = self._CARRIER_FIXED.get(part_id)
+        derived = self._DERIVED_MAP.get(part_id)
+        if carrier is None or derived is None:
+            return []
+        refs = item_display_resolver._item_index().get("part_refs") or {}
+        bundle = []
+        for ref in (f"{self.SECONDARY_PARENT}:{part_id}",
+                    f"{self.SECONDARY_PARENT}:{carrier}",
+                    f"{self.SECONDARY_PARENT}:{derived}"):
+            category = str((refs.get(ref) or {}).get("category") or "")
+            if category:
+                bundle.append((category, ref))
+        return bundle
+
+    def _candidate_state_for_option(self, key, data, ref, rule_keys, groups):
+        if key not in {"resistance", "immunity"} or data is None:
+            return super()._candidate_state_for_option(key, data, ref, rule_keys, groups)
+        bundle = self._element_macro_bundle(data)
+        if not bundle:
+            return super()._candidate_state_for_option(key, data, ref, rule_keys, groups)
+
+        replaced = set()
+        current = self._selected_button_pid(key)
+        if current is not None:
+            replaced = {bundle_ref for _group, bundle_ref in self._element_macro_bundle(current)}
+
+        group_names = []
+        for group, bundle_ref in bundle:
+            spec = groups.get(group) or {}
+            allowed = set(spec.get("allowed") or [])
+            maximum = int(spec.get("max", 0))
+            if bundle_ref not in allowed or maximum <= 0:
+                return {
+                    "kind": "warning",
+                    "marker": "!",
+                    "hint": self._legit_text(
+                        "candidate_dependency",
+                        "This macro is not active for the current rarity or slot layout.",
+                    ).format(group=self._generation_group_text(group)),
+                }
+            selected = set(spec.get("selected") or []) - replaced
+            if bundle_ref not in selected and len(selected) >= maximum:
+                return {
+                    "kind": "warning",
+                    "marker": "!",
+                    "hint": self._legit_text(
+                        "candidate_slot_full",
+                        "Natural candidate for {group}; replace an existing part to stay legal.",
+                    ).format(group=self._generation_group_text(group)),
+                }
+            group_names.append(self._generation_group_text(group))
+
+        return {
+            "kind": "legal",
+            "marker": "✓",
+            "hint": self._legit_text("candidate_legal", "Natural candidate: {group}").format(
+                group=" / ".join(dict.fromkeys(group_names))
+            ),
+        }
+
     def load_data(self, lang):
         return load_repkit_data(lang)
 
@@ -96,10 +171,16 @@ class QtRepkitEditorTab(BaseEquipmentEditorTab):
         return [
             {"key": "prefix", "mode": "chip", "title_key": "prefix", "columns": 2, "grid": (0, 0, 1, 1)},
             {"key": "resistance", "mode": "chip", "title_key": "resistance", "columns": 2, "grid": (0, 1, 1, 1)},
-            {"key": "firmware", "mode": "chip", "title_key": "firmware", "columns": 2, "grid": (0, 2, 1, 1)},
-            {"key": "legendary", "mode": "picker", "title_key": "legendary", "stackable": False, "grid": (1, 0, 1, 3)},
-            {"key": "universal", "mode": "picker", "title_key": "universal", "stackable": True, "grid": (2, 0, 1, 3)},
+            {"key": "immunity", "mode": "chip", "title_key": "immunity", "columns": 2, "grid": (1, 0, 1, 1)},
+            {"key": "firmware", "mode": "chip", "title_key": "firmware", "columns": 2, "grid": (1, 1, 1, 1)},
+            {"key": "legendary", "mode": "picker", "title_key": "legendary", "stackable": False, "grid": (2, 0, 1, 2)},
+            {"key": "universal", "mode": "picker", "title_key": "universal", "stackable": True, "grid": (3, 0, 1, 2)},
         ]
+
+    def _build_perk_groups(self, perks_layout):
+        super()._build_perk_groups(perks_layout)
+        perks_layout.setColumnStretch(0, 1)
+        perks_layout.setColumnStretch(1, 1)
 
     def _initial_preserved_children(self):
         # Cleared alongside _preserved_tokens on both import and reset, so a
@@ -117,7 +198,8 @@ class QtRepkitEditorTab(BaseEquipmentEditorTab):
         df = self._df243()
         self._populate_chip_group(self._group_cfgs["prefix"], df[df['Part_type'] == 'Perfix'], self._fmt_row)
         self._populate_chip_group(self._group_cfgs["firmware"], self._firmware_group_df('Repkit_perk_main_ID', self.SECONDARY_PARENT), self._fmt_row)
-        self._populate_chip_group(self._group_cfgs["resistance"], df[df['Part_type'].isin(['Resistance', 'Immunity'])], self._fmt_row)
+        self._populate_chip_group(self._group_cfgs["resistance"], df[df['Part_type'] == 'Resistance'], self._fmt_row)
+        self._populate_chip_group(self._group_cfgs["immunity"], df[df['Part_type'] == 'Immunity'], self._fmt_row)
         self._group_pickles["universal"].set_categories(self._universal_categories(), columns=3)
         self._group_pickles["universal"].set_source(self._universal_items())
 
@@ -126,6 +208,8 @@ class QtRepkitEditorTab(BaseEquipmentEditorTab):
         for _, r in self._df243()[self._df243()['Part_type'] == 'Perk'].iterrows():
             text, _ = self._fmt_row(r)
             pid = int(r['Part_ID'])
+            if pid in self.CARRIER_IDS or pid in self.DERIVED_IDS:
+                continue
             label = f"{text} [{pid}]"
             items.append({"key": f"u{pid}", "label": label,
                           "category": self._augment_facet(pid), "data": pid})
@@ -203,11 +287,13 @@ class QtRepkitEditorTab(BaseEquipmentEditorTab):
             skill_parts.append(f"{{{item_mfg}:{ids[0]}}}" if len(ids) == 1
                                else f"{{{item_mfg}:[{' '.join(map(str, sorted(ids)))}]}}")
         # prefix + firmware + resistance -> 243, with derived Model Plus
-        for pid in self._checked_part_ids("prefix", "firmware", "resistance"):
+        derived_ids = set()
+        for pid in self._checked_part_ids("prefix", "firmware", "resistance", "immunity"):
             secondary.setdefault(self.SECONDARY_PARENT, []).append(pid)
             derived = self._DERIVED_MAP.get(pid)
             if derived is not None:
-                secondary.setdefault(self.SECONDARY_PARENT, []).append(derived)
+                derived_ids.add(derived)
+        secondary.setdefault(self.SECONDARY_PARENT, []).extend(sorted(derived_ids))
         # universal -> 243 (stacked)
         for e in self._picker_entries("universal"):
             for _ in range(self._count_of(e)):
@@ -270,7 +356,7 @@ class QtRepkitEditorTab(BaseEquipmentEditorTab):
         primary_carriers = set()
 
         def radio_category(pid):
-            for key in ("prefix", "firmware", "resistance"):
+            for key in ("prefix", "firmware", "resistance", "immunity"):
                 if pid in self._button_pid_map(key):
                     return key
             return None
@@ -330,7 +416,7 @@ class QtRepkitEditorTab(BaseEquipmentEditorTab):
 
         # reconcile derived Model Plus ids against selected resistances
         generated = []
-        for key in ("resistance",):
+        for key in ("resistance", "immunity"):
             pid = self._selected_button_pid(key)
             if pid and pid in self._DERIVED_MAP:
                 generated.append(self._DERIVED_MAP[pid])

@@ -7,6 +7,7 @@ from .unlock_data import (
     CHARACTER_UNLOCKABLES, STAT_TARGETS, EXPLORATION, POSTGAME,
     PROFILE_UNLOCKABLES, VAULT_CARD_PURCHASES, VAULT_CARD_REWARD_UNLOCKABLES
 )
+from .unlock_data import ensure_legacy_unlock_data
 
 # --- Helper Functions ---
 
@@ -29,6 +30,7 @@ def get_profile_local(data):
     return get_or_create_dict(domains, 'local')
 
 def merge_profile_unlockable_entries(data, key, prefix=''):
+    ensure_legacy_unlock_data()
     local = get_profile_local(data)
     unlockables = get_or_create_dict(local, 'unlockables')
     section = get_or_create_dict(unlockables, key)
@@ -84,12 +86,15 @@ def apply_stat_targets(data, targets):
 # --- Exploration Logic ---
 
 def clear_map_fog(data):
-    levelnames = [
+    # 关卡清单来自当前 pipeline 快照；保留旧世界作为无数据时的兜底，
+    # 这样新 DLC（例如 Harmonica/Viola、Raid2）不会因为界面迁移时的旧硬编码漏掉。
+    legacy_levelnames = [
         'Intro_P', 'World_P', 'Vault_Grasslands_P', 'Fortress_Grasslands_P',
         'Vault_ShatteredLands_P', 'Fortress_Shatteredlands_P', 'Vault_Mountains_P',
         'Fortress_Mountains_P', 'ElpisElevator_P', 'Elpis_P', 'UpperCity_P',
         'Raid1_P', 'Banjo_P', 'Cello_P', 'Cowbell_P', 'VaultoftheDamned_P'
     ]
+    levelnames = list(dict.fromkeys(EXPLORATION.get('worlds') or legacy_levelnames))
     common_fields = {
         'foddimensionx': 128,
         'foddimensiony': 128,
@@ -210,13 +215,20 @@ def update_stats_counters(data, counters, category='challenge'):
 
 def complete_all_collectibles(data):
     if is_profile_save(data):
-        for key in ['echo_log_challenges', 'sharedprogress_cello', 'sharedprogress_tuba']:
-            merge_profile_unlockable_entries(data, key)
-        merge_profile_unlockable_entries(data, 'echo_upgrade_challenges', 'echo_upgrade_challenges.collect')
-        merge_profile_unlockable_entries(data, 'sharedprogress_cowbell', 'SharedProgress_Cowbell.collectible')
+        # Profile unlockables are split by DLC namespace.  The former fixed list
+        # stopped at Cello/Tuba and silently omitted new sharedprogress_* tables.
+        # Merge every known shared-progress/echo-log namespace from the current
+        # snapshot, preserving unknown entries already present in the save.
+        for key in sorted(UNLOCKABLES):
+            key_lower = str(key).casefold()
+            if key_lower == 'echo_log_challenges' or key_lower.startswith('sharedprogress_'):
+                merge_profile_unlockable_entries(data, key)
+        merge_profile_unlockable_entries(
+            data, 'echo_upgrade_challenges', 'echo_upgrade_challenges.collect')
         update_sdu_points(data)
         return
 
+    ensure_legacy_unlock_data()
     stats = get_or_create_dict(data, 'stats')
     openworld = get_or_create_dict(stats, 'openworld')
     collectibles = get_or_create_dict(openworld, 'collectibles')
@@ -234,14 +246,12 @@ def complete_all_collectibles(data):
         else:
             collectibles[category] = values
 
-    apply_stat_targets(
-        data,
-        {
-            key: value
-            for key, value in STAT_TARGETS.get('openworld', {}).items()
-            if 'collectible' in key.lower()
-        },
-    )
+    # The current openworld snapshot contains DLC collectibles whose stat names
+    # are not consistently suffixed with ``collectible`` (for example Cowbell
+    # clots, doors and tanks).  Applying the complete openworld target set keeps
+    # this preset aligned with the pipeline instead of silently skipping those
+    # newer collectible families.
+    apply_stat_targets(data, STAT_TARGETS.get('openworld', {}))
             
     # Eridian/Nyriad ECHO logs
     state = get_or_create_dict(data, 'state')
@@ -292,6 +302,7 @@ def set_story_values(data):
 # --- Missions Logic ---
 
 def get_missionsets_with_prefix(prefix):
+    ensure_legacy_unlock_data()
     result = {}
     for key, value in MISSIONSETS.items():
         if key.startswith(prefix):
@@ -378,6 +389,7 @@ def stage_epilogue_mission(data):
     }
 
 def open_all_vault_doors(data):
+    ensure_legacy_unlock_data()
     stats = get_or_create_dict(data, 'stats')
     openworld = get_or_create_dict(stats, 'openworld')
     collectibles = get_or_create_dict(openworld, 'collectibles')

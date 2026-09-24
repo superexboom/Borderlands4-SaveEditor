@@ -24,6 +24,20 @@ from core.item_display_resolver import HEAVY_TYPE, WEAPON_TYPES
 
 __all__ = ["inspect_serial", "part_rows", "bit_layout", "NO_STAT_TEXTS"]
 
+EMBEDDED_SERIAL_CATALOG = "core/data/embedded_serial_catalog.json"
+
+_CATALOG_ENTRY_FIELDS = {
+    "serial", "base85", "decoded", "canonical_decoded", "root_ref",
+    "composition_ref", "name", "type", "level", "source_kind", "source_file",
+    "object_name", "field", "context", "provenance", "latest_present",
+    "add_allowed", "warnings", "canonical_refs", "component_refs", "part_refs",
+    "display_name", "internal_refs", "refs", "parts", "preferred_parts",
+}
+
+_PROVENANCE_TAG_ORDER = (
+    "official_loadout", "mission", "npc", "skill", "ui", "historical", "orphan"
+)
+
 # format_weapon_part_description returns this literal both for parts that truly
 # have no stats and for parts whose payload cannot be rendered. Inspector output
 # distinguishes the two by checking the ref payload directly.
@@ -78,6 +92,26 @@ _ELEMENTAL_CARRIER_FALLBACK = {
     "elemental_nova_base": {"zh": "元素新星基座", "en": "Elemental Nova Base"},
 }
 
+_ELEMENTAL_CARRIER_CATEGORIES = {
+    "elemental_resist_base": "augment_element_resist",
+    "elemental_immunity_base": "augment_element_immunity",
+    "elemental_splat_base": "augment_element_splat",
+    "elemental_nova_base": "augment_element_nova",
+}
+
+_ELEMENT_LABELS = {
+    "normal": {"zh": "无元素", "en": "No Element"},
+    "corrosive": {"zh": "腐蚀", "en": "Corrosive"},
+    "cryo": {"zh": "冰冻", "en": "Cryo"},
+    "fire": {"zh": "燃烧", "en": "Incendiary"},
+    "radiation": {"zh": "辐射", "en": "Radiation"},
+    "shock": {"zh": "电击", "en": "Shock"},
+    "kinetic": {"zh": "动能", "en": "Kinetic"},
+    "sonic": {"zh": "声波", "en": "Sonic"},
+}
+
+_SHIELD_PART_SUBTYPES = {"237": "armor", "248": "energy"}
+
 
 @lru_cache(maxsize=8)
 def _carrier_labels(lang: str) -> dict[str, str]:
@@ -101,6 +135,68 @@ def _blank(text: str) -> bool:
     return not text or not text.strip()
 
 
+def _element_part_label(ref: dict[str, Any], item_type: str, lang: str) -> str:
+    part = str(ref.get("part") or "").casefold()
+    element = next(
+        (name for name in _ELEMENT_LABELS if f"_{name}" in part or part.endswith(name)),
+        "",
+    )
+    if not element:
+        return ""
+    label = _ELEMENT_LABELS[element]["zh" if resolver._lang_is_zh(lang) else "en"]
+    if item_type == "Shield" and element == "normal":
+        return "无元素抗性" if resolver._lang_is_zh(lang) else "No Elemental Resistance"
+    return label
+
+
+def _gold_skin_selected(item_id: int, item_type: str, rows: list[dict[str, Any]]) -> bool:
+    selected = {str(row.get("key") or "") for row in rows}
+    try:
+        catalog = resolver._csv_rows_for_type(item_type)
+    except (KeyError, OSError, TypeError, ValueError):
+        return False
+    for row in catalog:
+        if str(row.get("Part_type") or "").casefold() != "rarity":
+            continue
+        if str(row.get("Description_EN") or "").strip().casefold() != "gold skin":
+            continue
+        ref_key = f"{row.get('Manufacturer ID')}:{row.get('Part_ID')}"
+        if str(row.get("Manufacturer ID") or "") == str(item_id) and ref_key in selected:
+            return True
+    return False
+
+
+def _shield_subtype(generation: dict[str, Any]) -> str:
+    weapon_type = str(generation.get("weapon_type") or "").casefold()
+    if "energy" in weapon_type:
+        return "energy"
+    if "armor" in weapon_type:
+        return "armor"
+    return ""
+
+
+def _annotate_shield_violations(
+    violations: list[dict[str, Any]], subtype: str
+) -> list[dict[str, Any]]:
+    if not subtype:
+        return violations
+    annotated: list[dict[str, Any]] = []
+    for violation in violations:
+        item = dict(violation)
+        refs = [str(item.get("part") or ""), *(str(ref) for ref in item.get("parts") or [])]
+        incompatible = {
+            part_type
+            for ref in refs
+            if (part_type := _SHIELD_PART_SUBTYPES.get(ref.partition(":")[0]))
+            and part_type != subtype
+        }
+        if len(incompatible) == 1:
+            item["shield_type"] = subtype
+            item["incompatible_shield_type"] = incompatible.pop()
+        annotated.append(item)
+    return annotated
+
+
 def _decode_any(text: str) -> tuple[str, str, str]:
     """Return ``(decoded_full, base85, error)`` from either input form."""
     raw = (text or "").strip()
@@ -121,6 +217,193 @@ def _decode_any(text: str) -> tuple[str, str, str]:
     if err or _blank(decoded):
         return "", candidate, err or "decode produced no output"
     return decoded.strip(), candidate, ""
+
+
+def _collect_catalog_entries(
+    node: Any,
+    group: str,
+    path: tuple[str, ...],
+    out: list[dict[str, Any]],
+) -> None:
+    if isinstance(node, dict):
+        if _CATALOG_ENTRY_FIELDS.intersection(node):
+            entry = dict(node)
+            if group == "preferred_parts":
+                entry.setdefault("composition_ref", path[-1] if path else "")
+                entry.setdefault("source_kind", "rules_only")
+                entry["add_allowed"] = False
+                entry.setdefault("preferred_parts", entry.get("refs") or entry.get("parts") or [])
+                entry.setdefault("_catalog_group", "rules_only")
+            else:
+                entry.setdefault("_catalog_group", group)
+            entry.setdefault("_catalog_path", "/".join(path))
+            out.append(entry)
+            return
+        for key, value in node.items():
+            _collect_catalog_entries(value, group, (*path, str(key)), out)
+        return
+    if isinstance(node, list):
+        if group == "preferred_parts" and node and all(not isinstance(value, (dict, list)) for value in node):
+            label = path[-1] if path else "preferred_parts"
+            out.append({
+                "name": label,
+                "composition_ref": label if "." in label else "",
+                "preferred_parts": [str(value) for value in node],
+                "source_kind": "rules_only",
+                "add_allowed": False,
+                "_catalog_group": "rules_only",
+                "_catalog_path": "/".join(path),
+            })
+            return
+        for index, value in enumerate(node):
+            _collect_catalog_entries(value, group, (*path, str(index)), out)
+
+
+def _normalize_catalog_groups(
+    data: dict[str, Any] | None, groups: tuple[str, ...]
+) -> list[dict[str, Any]]:
+    if not isinstance(data, dict):
+        return []
+    entries: list[dict[str, Any]] = []
+    for group in groups:
+        _collect_catalog_entries(data.get(group), group, (group,), entries)
+    unique: list[dict[str, Any]] = []
+    seen: set[tuple[str, ...]] = set()
+    for entry in entries:
+        key = tuple(str(entry.get(name) or "") for name in (
+            "serial", "base85", "decoded", "composition_ref", "source_kind",
+            "source_file", "object_name", "field", "_catalog_group", "_catalog_path",
+        ))
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(entry)
+    return unique
+
+
+def normalize_embedded_catalog(data: dict[str, Any] | None) -> list[dict[str, Any]]:
+    """Flatten all provenance entries while tolerating additive schema changes."""
+    return _normalize_catalog_groups(data, ("presets", "current", "history", "preferred_parts"))
+
+
+def normalize_embedded_presets(data: dict[str, Any] | None) -> list[dict[str, Any]]:
+    """Only user-facing presets and rule-only compositions, without 53/88 duplicates."""
+    rows = _normalize_catalog_groups(data, ("presets", "preferred_parts"))
+    merged: dict[str, dict[str, Any]] = {}
+    order: list[str] = []
+    for index, row in enumerate(rows):
+        identity = str(row.get("serial") or row.get("base85") or row.get("composition_ref") or f"row:{index}")
+        if identity not in merged:
+            merged[identity] = dict(row)
+            order.append(identity)
+            continue
+        current = merged[identity]
+        for key in ("preferred_parts", "refs", "parts", "canonical_refs", "internal_refs", "variants"):
+            if not current.get(key) and row.get(key):
+                current[key] = row[key]
+    return [merged[key] for key in order]
+
+
+@lru_cache(maxsize=1)
+def embedded_serial_catalog() -> dict[str, Any]:
+    data = resource_loader.load_json_resource(EMBEDDED_SERIAL_CATALOG)
+    return dict(data) if isinstance(data, dict) else {}
+
+
+@lru_cache(maxsize=1)
+def embedded_serial_entries() -> tuple[dict[str, Any], ...]:
+    return tuple(normalize_embedded_catalog(embedded_serial_catalog()))
+
+
+@lru_cache(maxsize=1)
+def embedded_serial_preset_entries() -> tuple[dict[str, Any], ...]:
+    return tuple(normalize_embedded_presets(embedded_serial_catalog()))
+
+
+def catalog_matches_for_serial(base85: str, decoded: str) -> list[dict[str, Any]]:
+    base85 = str(base85 or "").strip()
+    decoded = str(decoded or "").strip()
+    matches = []
+    for entry in embedded_serial_entries():
+        entry_serial = str(entry.get("serial") or entry.get("base85") or "").strip()
+        entry_decoded = str(entry.get("decoded") or "").strip()
+        if (base85 and entry_serial == base85) or (decoded and entry_decoded == decoded):
+            matches.append(dict(entry))
+    priority = {"presets": 0, "current": 1, "history": 2, "rules_only": 3}
+    return sorted(matches, key=lambda entry: priority.get(str(entry.get("_catalog_group")), 9))
+
+
+def catalog_provenance_tags(entries: list[dict[str, Any]]) -> list[str]:
+    tags: set[str] = set()
+    has_latest = any(
+        str(entry.get("_catalog_group") or "") in {"current", "presets"}
+        or entry.get("latest_present") is True
+        for entry in entries
+    )
+    for entry in entries:
+        group = str(entry.get("_catalog_group") or "").casefold()
+        kind = str(entry.get("source_kind") or "").casefold()
+        context = str(entry.get("context") or "").casefold()
+        semantic_provenance: list[str] = []
+        provenance = entry.get("provenance") or []
+        if isinstance(provenance, str):
+            semantic_provenance.append(provenance)
+        elif isinstance(provenance, dict):
+            provenance = [provenance]
+        if isinstance(provenance, list):
+            for row in provenance:
+                if not isinstance(row, dict):
+                    continue
+                semantic_provenance.extend(
+                    str(row.get(key) or "")
+                    for key in ("source_kind", "logical_kind", "source_file", "object_name", "context")
+                )
+        raw_warnings = entry.get("warnings") or []
+        if isinstance(raw_warnings, str):
+            raw_warnings = [raw_warnings]
+        warnings = " ".join(str(value) for value in raw_warnings).casefold()
+        blob = " ".join((
+            group,
+            kind,
+            str(entry.get("source_file") or ""),
+            str(entry.get("object_name") or ""),
+            context,
+            *semantic_provenance,
+            warnings,
+        )).casefold()
+        if not has_latest and (group == "history" or entry.get("latest_present") is False or "histor" in blob):
+            tags.add("historical")
+        if "orphan" in blob or "unused" in blob or "legacy" in blob:
+            tags.add("orphan")
+        if any(token in blob for token in ("profile_default", "starter", "loadout", "prologue", "uvhm")):
+            tags.add("official_loadout")
+        if re.search(r"(?:^|[^a-z0-9])(mission|quest|story)(?:$|[^a-z0-9])", blob):
+            tags.add("mission")
+        if any(token in blob for token in ("skill_actor", "skill weapon", "turret", "phase")):
+            tags.add("skill")
+        if any(token in blob for token in ("ui_preview", "uiwidget", "menu preview")):
+            tags.add("ui")
+        if any(token in blob for token in ("npc", "actor", "cinematic", "cine", "enemy", "marketing")):
+            tags.add("npc")
+    return [tag for tag in _PROVENANCE_TAG_ORDER if tag in tags]
+
+
+def catalog_rules_for_composition(aliases: list[str]) -> list[dict[str, Any]]:
+    wanted = {str(alias or "").strip().casefold() for alias in aliases if str(alias or "").strip()}
+    if not wanted:
+        return []
+    matches: list[dict[str, Any]] = []
+    for entry in embedded_serial_preset_entries():
+        if not entry.get("preferred_parts") and str(entry.get("_catalog_group") or "") != "rules_only":
+            continue
+        candidates = {
+            str(entry.get("composition_ref") or "").strip().casefold(),
+            str(entry.get("name") or "").strip().casefold(),
+            str(entry.get("_catalog_path") or "").rsplit("/", 1)[-1].strip().casefold(),
+        }
+        if wanted.intersection(candidates):
+            matches.append(dict(entry))
+    return matches
 
 
 def _kind(item_id: int) -> tuple[str, str, bool]:
@@ -217,11 +500,14 @@ def _csv_part_details(
             out[f"{entry.get('manufacturer_id')}:{entry.get('id')}"] = {
                 "text": f"{text} x{count}" if count > 1 else text
             }
-        # stats and firmware are always resolved against shared owner 247.
-        for entry in [*(details.get("stats") or []), *(details.get("firmware") or [])]:
+        # Secondary stats and firmware are always resolved against shared owner 247.
+        for entry in details.get("stats") or []:
             out[f"247:{entry.get('id')}"] = {
-                "text": _plain_markup(entry.get("text") or entry.get("name") or "")
+                "text": _plain_markup(entry.get("text") or "")
             }
+        for entry in details.get("firmware") or []:
+            ref_key = f"247:{entry.get('id')}"
+            out[ref_key] = _firmware_csv_detail(ref_key, item_type, lang, entry)
         return out
 
     if item_type == "Class Mod":
@@ -248,7 +534,7 @@ def _csv_part_details(
                     "text": ", ".join(part for part in [head, *lines] if part and part.strip()),
                     "name": _plain_markup(skill.get("name")),
                 }
-        for entry in [*(details.get("perks") or []), *(details.get("firmware") or [])]:
+        for entry in details.get("perks") or []:
             name = _plain_markup(entry.get("name") or entry.get("text") or "")
             # No "xN" suffix: the card collapses duplicate perks into one line and
             # reports the count, but here each copy already has its own row.
@@ -258,6 +544,9 @@ def _csv_part_details(
                 "category": str(entry.get("category") or ""),
                 "part": str(entry.get("internal") or ""),
             }
+        for entry in details.get("firmware") or []:
+            ref_key = f"{_CLASSMOD_SHARED_OWNER}:{entry.get('id')}"
+            out[ref_key] = _firmware_csv_detail(ref_key, item_type, lang, entry)
         # Legendary class mod bodies carry the item-wide effect text and red text.
         body_text = ", ".join(
             part
@@ -274,6 +563,32 @@ def _csv_part_details(
         return out
 
     return out
+
+
+def _firmware_csv_detail(
+    ref_key: str,
+    item_type: str,
+    lang: str,
+    fallback: dict[str, Any] | None = None,
+) -> dict[str, str]:
+    """Use the shared firmware catalog for Inspector names and all three tiers."""
+    try:
+        entry = resolver.equipment_firmware_entry(ref_key, item_type, lang)
+    except (KeyError, OSError, TypeError, ValueError):
+        entry = None
+    entry = entry or fallback or {}
+    name = _plain_markup(entry.get("name") or entry.get("text") or "")
+    descriptions = [
+        f"L{level}: {_plain_markup(text)}"
+        for level, text in enumerate(entry.get("descs") or [], 1)
+        if _plain_markup(text)
+    ]
+    return {
+        "text": ", ".join(descriptions) or name,
+        "name": name,
+        "category": "firmware",
+        "part": str(entry.get("internal") or ""),
+    }
 
 
 def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-CN") -> list[dict[str, Any]]:
@@ -306,6 +621,12 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
         # The shared Class Mod perk owner has no part_refs row, so its category
         # and internal part name can only come from the CSV resolver.
         category = str(ref.get("category") or detail.get("category") or "")
+        carrier = _ELEMENTAL_CARRIERS.get(key)
+        display_category = (
+            "manufacturer_perk"
+            if item_type == "Grenade" and category == "body"
+            else _ELEMENTAL_CARRIER_CATEGORIES.get(carrier, category)
+        )
         payload = _ref_payload(ref)
 
         description = ""
@@ -358,9 +679,15 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
         if _blank(description) or description in NO_STAT_TEXTS:
             # Elemental carriers legitimately have no stats of their own; name the
             # mechanism rather than leaving a blank row or claiming "no changes".
-            carrier = _ELEMENTAL_CARRIERS.get(key)
             if carrier:
                 description = _carrier_labels(lang).get(carrier, "")
+
+        if key == "243:104" and (_blank(description) or description in NO_STAT_TEXTS):
+            description = (
+                "基准治疗载荷（治疗量、持续时间与冷却均为 1x）"
+                if resolver._lang_is_zh(lang)
+                else "Baseline healing payload (1x healing, duration and cooldown)"
+            )
 
         if description in NO_STAT_TEXTS or _blank(description):
             # Separate "genuinely cosmetic" from "payload present but unmapped".
@@ -388,6 +715,10 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
             ).strip()
         if _blank(display_name):
             display_name = str(detail.get("name") or "").strip()
+        if _blank(display_name) and category in {"element", "body_ele"}:
+            display_name = _element_part_label(ref, item_type, lang)
+        if _blank(display_name) and carrier:
+            display_name = _carrier_labels(lang).get(carrier, "")
         if _blank(display_name) and category == "firmware":
             # Firmware names live in the shared catalog (equipment_part_name resolves
             # them via the internal part string); the index itself carries no name.
@@ -405,6 +736,7 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
                 # shipped index has no part_refs row for them, so they are known.
                 "known": bool(ref) or bool(detail),
                 "category": category,
+                "display_category": display_category,
                 "part": str(ref.get("part") or detail.get("part") or ""),
                 "rarity": str(ref.get("rarity") or ""),
                 "name": display_name,
@@ -529,7 +861,10 @@ def inspect_serial(text: str, lang: str = "zh-CN") -> dict[str, Any]:
         "input": (text or "").strip(),
         "base85": "",
         "decoded_full": "",
+        "canonical_decoded": "",
         "decoded_parts": "",
+        "canonical_parts": "",
+        "serial_root": "",
         "item_id": None,
         "manufacturer": "",
         "manufacturer_en": "",
@@ -550,6 +885,10 @@ def inspect_serial(text: str, lang: str = "zh-CN") -> dict[str, Any]:
         "roundtrip": {},
         "generation": {},
         "status": "",
+        "equipment_subtype": "",
+        "guidance_suppressed": "",
+        "source_provenance": {"tags": [], "entries": []},
+        "catalog_rules": [],
         "violations": [],
         "warnings": [],
     }
@@ -557,6 +896,11 @@ def inspect_serial(text: str, lang: str = "zh-CN") -> dict[str, Any]:
     decoded, base85, error = _decode_any(text)
     report["base85"] = base85
     report["decoded_full"] = decoded
+    catalog_matches = catalog_matches_for_serial(base85, decoded)
+    report["source_provenance"] = {
+        "tags": catalog_provenance_tags(catalog_matches),
+        "entries": catalog_matches,
+    }
     if error or _blank(decoded):
         report["error"] = error or "could not decode input"
         return report
@@ -568,10 +912,43 @@ def inspect_serial(text: str, lang: str = "zh-CN") -> dict[str, Any]:
 
     item_id = header["mfg_id"]
     report["item_id"] = item_id
+    report["serial_root"] = str(header.get("root_token") or item_id)
     report["level"] = header.get("level")
     report["seed"] = header.get("seed")
     report["implicit_level_one"] = bool(header.get("implicit_level_one"))
     report["decoded_parts"] = str(header.get("component") or "").strip()
+
+    catalog_entry = catalog_matches[0] if catalog_matches else None
+    canonical_decoded, unresolved_tokens = resolver.canonicalize_decoded_serial(
+        decoded, item_id, catalog_entry
+    )
+    report["canonical_decoded"] = canonical_decoded
+    report["canonical_parts"] = canonical_decoded.split("||", 1)[1].strip() if "||" in canonical_decoded else ""
+    if unresolved_tokens:
+        report["warnings"].append(
+            "unresolved string components: " + ", ".join(dict.fromkeys(unresolved_tokens))
+        )
+
+    composition_aliases = [
+        str(entry.get("composition_ref") or "") for entry in catalog_matches
+    ]
+    try:
+        context = resolver.weapon_generation_context(canonical_decoded)
+        composition_refs = [
+            *(context.get("composition_tokens") or []),
+            *(context.get("unknown_compositions") or []),
+        ]
+        part_refs = resolver._item_index().get("part_refs") or {}
+        composition_aliases.extend(str(ref) for ref in composition_refs)
+        for ref in composition_refs:
+            item = part_refs.get(str(ref)) or {}
+            parent = str(item.get("parent") or "").strip()
+            part = str(item.get("part") or "").strip()
+            if parent and part:
+                composition_aliases.append(f"{parent}.{part}")
+    except Exception:
+        pass
+    report["catalog_rules"] = catalog_rules_for_composition(composition_aliases)
 
     manufacturer, item_type, found = _kind(item_id)
     report["manufacturer_en"] = manufacturer
@@ -582,7 +959,7 @@ def inspect_serial(text: str, lang: str = "zh-CN") -> dict[str, Any]:
         return report
 
     try:
-        display = resolver.resolve_item_display(item_id, manufacturer, item_type, decoded, lang) or {}
+        display = resolver.resolve_item_display(item_id, manufacturer, item_type, canonical_decoded, lang) or {}
     except Exception as exc:
         display = {}
         report["warnings"].append(f"resolve_item_display failed: {type(exc).__name__}: {exc}")
@@ -595,18 +972,18 @@ def inspect_serial(text: str, lang: str = "zh-CN") -> dict[str, Any]:
 
     if item_type in WEAPON_TYPES or item_type == HEAVY_TYPE:
         try:
-            report["weapon_stats"] = resolver.resolve_weapon_stats(decoded) or {}
+            report["weapon_stats"] = resolver.resolve_weapon_stats(canonical_decoded) or {}
         except Exception as exc:
             report["warnings"].append(f"resolve_weapon_stats failed: {type(exc).__name__}: {exc}")
     # The save pipeline calls resolve_equipment_stats for every item type without
     # gating (core/bl4_functions.py:373), including Heavy Weapon, whose card is
     # built by equipment_card_html. Mirror that or heavy weapons lose their card.
     try:
-        report["equipment_stats"] = resolver.resolve_equipment_stats(decoded, item_type) or {}
+        report["equipment_stats"] = resolver.resolve_equipment_stats(canonical_decoded, item_type) or {}
     except Exception as exc:
         report["warnings"].append(f"resolve_equipment_stats failed: {type(exc).__name__}: {exc}")
 
-    rows = part_rows(decoded, item_id, item_type, lang)
+    rows = part_rows(canonical_decoded, item_id, item_type, lang)
     report["parts"] = rows
     counts = {"total": len(rows), "unknown": 0, "described": 0, "cosmetic": 0, "unmapped": 0}
     for row in rows:
@@ -624,11 +1001,21 @@ def inspect_serial(text: str, lang: str = "zh-CN") -> dict[str, Any]:
     # instead of gating on WEAPON_TYPES. `allow_incomplete` keeps an under-rolled
     # but otherwise lawful item out of the "modified" bucket.
     try:
-        generation = resolver.validate_weapon_generation(decoded, allow_incomplete=True) or {}
+        generation = resolver.validate_weapon_generation(canonical_decoded, allow_incomplete=True) or {}
         if generation.get("rules_available") and generation.get("weapon_known"):
             report["generation"] = generation
-            report["status"] = str(generation.get("status") or "")
-            report["violations"] = list(generation.get("violations") or [])
+            subtype = _shield_subtype(generation) if item_type == "Shield" else ""
+            report["equipment_subtype"] = subtype
+            violations = list(generation.get("violations") or [])
+            if subtype:
+                violations = _annotate_shield_violations(violations, subtype)
+            if _gold_skin_selected(item_id, item_type, rows):
+                report["status"] = "gold"
+                report["guidance_suppressed"] = "gold_skin"
+                report["violations"] = []
+            else:
+                report["status"] = str(generation.get("status") or "")
+                report["violations"] = violations
     except Exception as exc:
         report["warnings"].append(f"validate_weapon_generation failed: {type(exc).__name__}: {exc}")
 

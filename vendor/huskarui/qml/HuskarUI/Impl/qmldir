@@ -1,0 +1,8 @@
+module HuskarUI.Impl
+linktarget huskaruiimplplugin
+optional plugin huskaruiimplplugin
+classname HuskarUI_ImplPlugin
+designersupported
+typeinfo plugins.qmltypes
+prefer :/HuskarUI/Impl/
+

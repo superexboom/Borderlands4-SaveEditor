@@ -46,9 +46,17 @@
       "open": "打开",
       "save": "保存",
       "save_as": "另存为...",
+      "language": "语言",
       "theme_dark": "切换到深色模式",
       "theme_light": "切换到浅色模式",
       "change_bg": "更换背景"
+    },
+    "settings": {
+      "title": "界面选项",
+      "blur": "背景模糊度",
+      "pick_bg": "选择图片",
+      "clear_bg": "清除",
+      "animations": "界面动效"
     },
     "menu": {
       "open_selector": "打开存档选择器",
@@ -56,6 +64,7 @@
       "save_as": "另存为..."
     },
     "status": {
+      "loading": "加载中…",
       "welcome": "欢迎使用无主之地4存档编辑器",
       "autosave": "自动保存",
       "autosave_tip": "停止修改约30秒后自动写盘（原子写入，旧文件轮转为 .prev.bak）",
@@ -75,6 +84,7 @@
       "enhancement": "强化模组",
       "weapon_editor": "武器编辑器",
       "weapon_generator": "武器生成器",
+      "god_roll": "God Roll",
       "grenade": "手雷",
       "shield": "护盾",
       "repkit": "修复套件",
@@ -121,6 +131,7 @@
       "batch_success": "成功添加 {count} 个物品。",
       "batch_fail": "批量添加失败",
       "batch_fail_msg": "未能成功添加任何物品。失败 {count} 个。",
+      "batch_busy": "已有批量添加任务正在运行，请等待其完成。",
       "iter_complete": "遍历添加完成",
       "iter_success": "成功添加 {count} 个物品。",
       "iter_fail": "遍历添加失败",
@@ -144,6 +155,57 @@
       "generated_encoding": "已生成 {count} 条数据，开始编码...",
       "encoding_progress": "正在编码 {current}/{total}...",
       "error_prefix": "错误: "
+    },
+    "live": {
+      "title": "在线模式",
+      "offline": "离线",
+      "online": "在线",
+      "connecting": "连接中…",
+      "refresh": "刷新",
+      "toggle_tooltip": "连接运行中的游戏（127.0.0.1:28777），读取并实时修改背包物品。",
+      "refresh_tooltip": "手动刷新游戏内物品（仅在线模式）。",
+      "mode_accessible": "在线模式",
+      "refresh_accessible": "刷新在线物品",
+      "unavailable": "在线模式不可用（live/ 模块）：{error}",
+      "connection_failed": "无法连接到游戏（127.0.0.1:28777）。\n请确认游戏正在运行、已进入角色，且已加载 bl4_live mod。",
+      "version_mismatch": "bl4_live 版本不匹配：编辑器需要 {expected}，游戏报告 {actual}。\n请安装与当前游戏版本匹配的 bl4_live。",
+      "version_check_failed": "无法验证 bl4_live 兼容性：{error}",
+      "fetch_failed": "在线物品读取失败：{error}",
+      "runtime_state_failed": "在线运行时状态读取失败：{error}",
+      "synced": "在线模式：已同步游戏内背包和银行物品。",
+      "timeout": "在线物品读取超时（15 秒）。游戏可能未运行，或 bl4_live 未加载。",
+      "refresh_failed": "在线刷新失败：{error}",
+      "refreshed": "在线模式：已刷新。",
+      "exited": "已退出在线模式。",
+      "save_disabled": "在线模式下不可用（没有存档文件）。",
+      "flag_disabled": "在线模式不使用存档 Flag。",
+      "runtime_action_done": "在线运行时操作完成：{action}",
+      "runtime_busy": "另一个在线操作仍在执行，请等待完成。",
+      "unsaved_changes_blocked": "进入在线模式前，请先保存或放弃当前离线存档的未保存修改。",
+      "add_encode_failed": "在线添加编码失败：{error}",
+      "spawn_failed": "在线生成失败：{error}",
+      "spawn_success": "已生成新物品到游戏背包。",
+      "spawn_rejected": "在线生成被游戏拒绝：{error}",
+      "invalid_serial": "序列号无效：{serial}",
+      "slot_missing": "无法定位背包槽位（item_path 缺少 slot_N）。",
+      "overwrite_started": "在线覆写：{container}[{slot}] -> {serial}...",
+      "overwrite_failed": "在线覆写失败：{error}",
+      "missing_parts": "注意：{count} 个配件未能映射。",
+      "overwrite_success": "已覆写游戏内物品（槽位 {slot}），序列与配件数组已核验。\n非武器通常可直接读取新状态；武器的物品卡、手持模型和实际行为由游戏另行缓存，请小退到主菜单后重新进入使其完整生效。",
+      "overwrite_rejected": "在线覆写被游戏拒绝：{error}",
+      "overwrite_conflict_refreshed": "游戏中的目标物品已移动或发生变化，已自动刷新在线背包。请重新打开该物品后再覆写。",
+      "overwrite_source_missing": "当前在线快照中已找不到该槽位的有效原始序列，请刷新后重试。",
+      "overwrite_persistent_success": "槽位 {slot}：序列与配件数组已核验。",
+      "cache_rebuild_success": "已重建装备物品的完整运行时 identity 与 Actor 缓存。",
+      "backpack_publication_success": "未装备背包物品的完整运行时 identity 已发布并刷新。",
+      "cache_rebuild_not_needed": "物品未装备，无需重建运行时模型。",
+      "cache_rebuild_already_current": "装备运行时模型已一致，无需重建。",
+      "cache_rebuild_failed": "运行时缓存未完整重建：{error}。已重新读取游戏状态；必要时请小退。",
+      "cache_rebuild_unavailable": "即时缓存重建当前不可用：{reason}。物品覆写已持久化；必要时请小退。",
+      "cache_rebuild_unsupported": "当前在线模组不支持即时缓存重建；必要时请小退。",
+      "cache_rebuild_recovery": "后端报告事务状态不确定。请先检查当前装备，并在再次覆写前处理恢复锁。",
+      "inventory_recovery_reason": "存在尚未处理的配装恢复记录",
+      "inventory_mutation_recovery_pending": "检测到待处理的配装恢复记录，在线物品写入已锁定。请先在配装页检查或清除恢复记录：{reason}"
     }
   },
   "character_tab": {
@@ -151,7 +213,8 @@
       "character_info": "角色",
       "currency": "货币",
       "world_presets": "Profile/共享预设",
-      "char_presets": "角色存档预设"
+      "char_presets": "角色存档预设",
+      "live_runtime": "在线运行时"
     },
     "labels": {
       "name": "名称:",
@@ -168,12 +231,101 @@
       "character_only_hint": "仅普通角色存档可用；Profile 存档会自动灰置。",
       "preset_mode_profile": "当前存档类型：Profile。Profile 预设可用，角色预设已灰置。",
       "preset_mode_character": "当前存档类型：普通角色存档。角色预设可用，Profile 预设已灰置。",
+      "live_runtime_hint": "以下控制只影响当前游戏会话；武器参数会在换枪后自动应用，关闭后恢复原值。",
+      "live_runtime_idle": "等待操作。",
+      "live_dedicated_drop_hint": "仅从被击败敌人的 NCS 专属池额外抽取；倍率决定额外抽取次数，不会追加世界掉落池。",
+      "live_max_sdu_tokens_hint": "将 ECHO/SDU 代币补至全部付费容量升级所需的最低累计值；不会降低现有更高数值，也不会强制解锁任务或装备栏节点。",
+      "live_survival": "生存与移动",
+      "live_weapon": "武器操控",
+      "live_cooldown": "冷却",
+      "live_progress": "进度与货币",
+      "live_tuning": "倍率与容量",
+      "live_loot": "掉落稀有度",
+      "live_vault_card": "Vault Card",
+      "live_vault_card_item": "{name} · {level}级",
+      "live_currency": "通用货币",
+      "live_currency_item": "{name} · {amount}",
+      "bank_size": "银行容量",
+      "base_fov": "基础视野（FOV）",
+      "viewmodel_fov": "武器模型视野",
+      "magazine_capacity_scale": "弹匣容量倍率",
+      "projectile_speed_scale": "弹丸速度倍率",
+      "live_position": "位置书签",
+      "position_unavailable": "当前无法读取角色位置。",
+      "position_value": "{map} · X {x:.1f} · Y {y:.1f} · Z {z:.1f}",
+      "bookmark_name": "书签名称",
+      "bookmark_default": "书签 {number}",
+      "bookmark_item": "{name} · {map}",
+      "position_map_mismatch": "书签位于其他地图，无法传送。",
+      "live_lost_loot": "失物机器",
+      "lost_loot_unavailable": "当前无法使用失物机器。",
+      "lost_loot_value": "待领取 {count} 件 · 背包空位 {free_slots}",
+      "vault_card_name": "宝库卡 {number}",
+      "live_currency_cash": "金钱",
+      "live_currency_eridium": "镒矿",
+      "fire_rate_scale": "射速倍率",
+      "movement_speed_scale": "移动倍率",
+      "jump_height_scale": "跳跃倍率",
+      "critical_damage_scale": "暴击伤害倍率",
+      "experience_reward_scale": "战斗经验倍率",
+      "cash_reward_scale": "金钱获取倍率",
+      "eridium_reward_scale": "镒矿获取倍率",
+      "dedicated_drop_multiplier": "专属池额外掉落",
+      "backpack_size": "背包容量",
       "preset_credit": ""
     },
     "buttons": {
       "apply_changes": "应用角色与货币更改",
       "apply_profile_changes": "应用 Profile 货币更改",
-      "sync_levels": "同步背包所有物品等级至当前角色等级"
+      "sync_levels": "同步背包所有物品等级至当前角色等级",
+      "toggle_infinite_ammo": "切换无限弹药",
+      "refill_ammo": "补满弹药",
+      "toggle_demigod": "切换锁血",
+      "toggle_health_lock": "锁定生命",
+      "toggle_shield_lock": "锁定护盾",
+      "toggle_stamina_lock": "无限体力",
+      "toggle_instant_reload": "瞬间装填",
+      "toggle_no_overheat": "武器不过热",
+      "toggle_no_spread": "无扩散",
+      "toggle_no_recoil": "无后座",
+      "toggle_guaranteed_crit": "必定暴击",
+      "toggle_repairkit_no_cd": "修复套件无冷却",
+      "toggle_skill_no_cd": "技能无冷却",
+      "toggle_gadget_no_cd": "装备栏无冷却",
+      "toggle_dedicated_drop_100": "专属池必掉",
+      "max_money": "最大金钱",
+      "max_eridium": "最大镒矿",
+      "max_level": "最高角色等级",
+      "max_specialization": "最高专精等级",
+      "max_sdu_tokens": "补满SDU代币",
+      "toggle_infinite_jump": "无限跳跃",
+      "set_vault_card_level": "设置等级",
+      "give_currency": "增加",
+      "apply_bank_size": "应用",
+      "apply_base_fov": "应用",
+      "apply_viewmodel_fov": "应用",
+      "apply_magazine_capacity": "应用",
+      "apply_projectile_speed": "应用",
+      "reset_fov": "重置视野",
+      "refresh_position": "刷新",
+      "save_position": "保存",
+      "teleport_position": "传送",
+      "delete_position": "删除",
+      "refresh_lost_loot": "刷新",
+      "claim_lost_loot": "领取",
+      "apply_fire_rate": "应用",
+      "apply_movement_speed": "应用",
+      "apply_jump_height": "应用",
+      "apply_critical_damage": "应用",
+      "apply_experience_multiplier": "应用",
+      "apply_cash_multiplier": "应用",
+      "apply_eridium_multiplier": "应用",
+      "apply_backpack_size": "应用",
+      "apply_dedicated_drop_multiplier": "应用",
+      "rarity_legendary": "仅传奇掉落",
+      "rarity_pearlescent": "仅珠光掉落",
+      "rarity_reset": "重置爆率",
+      "reset_runtime_modifiers": "重置会话修改"
     },
     "warnings": {
       "sync_warning": "警告：此操作可能导致已装备的物品被卸下，要从背包里重新装备。"
@@ -219,6 +371,7 @@
       "reload_time": "装填时间",
       "magazine": "弹容量",
       "critical_damage": "暴击伤害",
+      "critical_chance": "暴击几率",
       "ammo_cost": "弹药消耗",
       "splash_radius": "爆炸范围",
       "ads_time": "开镜时间",
@@ -249,6 +402,17 @@
       "Unknown": "未知"
     },
     "search_placeholder": "搜索物品...",
+    "filters": {
+      "container": "容器",
+      "type": "类型",
+      "manufacturer": "厂商",
+      "rarity": "稀有度",
+      "flags": "Flag",
+      "level": "等级",
+      "all": "全部",
+      "clear": "清除筛选",
+      "count": "显示 {shown}/{total}"
+    },
     "add_item": {
       "label_serial": "物品序列号:",
       "placeholder_serial": "输入 @U... 或已解码的代码",
@@ -344,6 +508,7 @@
       "export_txt": "导出为 .txt",
       "start_batch": "开始批量处理",
       "batch_add": "批量加入背包",
+      "import_yaml": "导入 YAML",
       "adding": "正在加入...",
       "processing": "处理中...",
       "start_iter": "开始遍历并生成",
@@ -416,7 +581,9 @@
       "components": "组件段",
       "roundtrip": "往返校验",
       "part_total": "配件数",
-      "implicit_level_one": "隐式 1 级"
+      "implicit_level_one": "隐式 1 级",
+      "provenance": "来源",
+      "catalog_empty": "内置序列目录尚未生成或为空。"
     },
     "buttons": {
       "inspect": "检视",
@@ -426,7 +593,46 @@
       "clear": "清空",
       "copy_json": "复制 JSON",
       "export_json": "导出 JSON",
-      "save_card": "保存卡片图"
+      "save_card": "保存卡片图",
+      "catalog": "内部 / NPC / 任务预设"
+    },
+    "provenance_tags": {
+      "official_loadout": "官方配置",
+      "mission": "任务",
+      "npc": "NPC / 过场",
+      "skill": "技能实体",
+      "ui": "界面预览",
+      "historical": "历史数据",
+      "orphan": "孤立 / 遗留"
+    },
+    "catalog": {
+      "title": "内部 / NPC / 任务预设",
+      "warning": "内部与场景专用数据可能被游戏拒绝、纠正或移除，请先检视再使用。",
+      "search": "按名称、类型、来源或场景筛选……",
+      "name": "名称",
+      "type": "类型",
+      "context": "场景 / 上下文",
+      "level": "等级",
+      "details": "详情",
+      "load": "检视",
+      "copy": "复制 Base85",
+      "add": "加入背包",
+      "close": "关闭",
+      "no_selection": "选择条目以查看来源和规则数据。",
+      "no_serial": "该条目仅包含规则，没有内置序列。",
+      "copy_title": "复制内部序列？",
+      "copy_warning": "这是内部或场景来源内容，作为玩家物品可能并不安全。仍要复制 Base85 吗？",
+      "add_title": "加入内部序列？",
+      "add_warning": "这是内部或场景来源内容，游戏可能移除、纠正或拒绝它。仍要加入背包吗？",
+      "add_blocked": "该条目仅供检视，不能加入玩家背包。",
+      "groups": {
+        "official_loadout": "官方初始 / 跳过流程配置",
+        "npc_mission": "NPC / 任务 / 过场",
+        "skill_ui": "技能实体 / 界面预览",
+        "history": "历史 / 孤立数据",
+        "rules_only": "仅规则模板",
+        "other": "其他内置数据"
+      }
     },
     "parts_columns": [
       "#",
@@ -467,6 +673,8 @@
       "tag_limits": "标签上限",
       "groups": "配件分组",
       "violations": "问题",
+      "catalog_rule": "内置只读规则",
+      "preferred_parts": "推荐配件",
       "yes": "是",
       "no": "否"
     },
@@ -520,7 +728,9 @@
     },
     "search": {
       "placeholder": "搜索键或值…",
-      "count": "{current}/{total}"
+      "count": "{current}/{total}",
+      "previous_tooltip": "上一个搜索结果",
+      "next_tooltip": "下一个搜索结果"
     },
     "inspector": {
       "path": "当前节点",
@@ -534,6 +744,7 @@
       "manufacturer": "制造商",
       "container": "位置",
       "slot": "槽位",
+      "state_flags": "状态标志",
       "unresolved": "未识别"
     },
     "ops": {
@@ -560,7 +771,9 @@
       "range_confirm": "删除",
       "delete_confirm": "确认删除 {count} 个节点？",
       "error": "错误",
-      "delete": "删除"
+      "delete": "删除",
+      "confirm": "确定",
+      "cancel": "取消"
     },
     "types": {
       "str": "字符串",
@@ -580,6 +793,13 @@
       "list_items": "列表 · {count} 项",
       "flags_bits": "位 {bits}",
       "serial_ok": "已解码 · Lv{level} {name}"
+    },
+    "tooltips": {
+      "undo": "撤销 (Ctrl+Z)",
+      "redo": "重做 (Ctrl+Y)"
+    },
+    "shortcuts": {
+      "hint": "Ctrl+Z 撤销 · Ctrl+F 搜索 · F2 重命名 · Del 删除"
     }
   },
   "class_mod_tab": {
@@ -591,7 +811,7 @@
       "seed": "随机种子 (1–9999)"
     },
     "legendary": {
-      "title": "传奇附加",
+      "title": "传奇名称",
       "clear": "清空",
       "search_placeholder": "搜索…"
     },
@@ -799,7 +1019,9 @@
     "violation_forced_part_missing": "缺少模板固有配件",
     "violation_conditional_availability": "仅在特定条件下生成",
     "violation_unresolved_rule_parts": "规则仍有未解析配件",
-    "violation_inheritance_cycle": "模板规则继承异常"
+    "violation_inheritance_cycle": "模板规则继承异常",
+    "preferred_part": "官方推荐搭配",
+    "preferred_selected_count": "已选 {selected}/{total} 个官方推荐件"
   },
   "weapon_editor_tab": {
     "labels": {
@@ -932,6 +1154,7 @@
       "move_up": "上移",
       "move_down": "下移",
       "drag_part": "拖动以调整顺序",
+      "toggle_internal_names": "显示或隐藏配件内部字段",
       "remove_part": "移除"
     },
     "parts": {
@@ -961,9 +1184,104 @@
       "facet_part_type": "配件类型",
       "facet_manufacturer": "制造商",
       "facet_weapon_type": "武器类型",
+      "same_model": "同当前枪管模型（{model}）",
+      "cross_model": "跨模型配件：当前 {current}，候选 {candidate}",
+      "same_model_badge": "同模型 {model}",
+      "cross_model_badge": "跨模型 {model}",
       "result_count": "匹配 {n} / {total}",
-      "available_parts_hint": "可用部件（单击预览，双击添加）"
+      "available_parts_hint": "可用部件（单击预览，双击添加）",
+      "no_matches": "无匹配项",
+      "search_skin": "搜索皮肤名称…"
     }
+  },
+  "equipment_roll": {
+    "main_page": "主编辑器",
+    "results_page": "随机结果",
+    "named_item": "指定装备",
+    "generated": "已生成 {count} 件合法装备",
+    "no_results": "还没有随机生成结果",
+    "select_result": "从左侧选择一件装备",
+    "add_one": "加入这件",
+    "shield_type": "护盾类型",
+    "live_stats": "实时数值"
+  },
+  "god_roll_tab": {
+    "title": "God Roll 极限构筑",
+    "manufacturer": "厂商",
+    "weapon_type": "枪械类型",
+    "rarity": "稀有度",
+    "weapon": "目标武器",
+    "mode": "模式",
+    "legal": "合法构筑",
+    "unrestricted": "同枪型跨厂",
+    "level": "等级",
+    "barrel": "固定枪管",
+    "torgue": "托格授权要求",
+    "torgue_any": "不限定托格模式",
+    "torgue_sticky": "必须包含粘弹",
+    "torgue_impact": "必须包含冲击/普通弹",
+    "base_element": "基础元素",
+    "secondary_element": "双/第二元素",
+    "pearl_element": "珠光覆写元素",
+    "auto": "自动寻优",
+    "auto_available": "自动寻优（有合法候选，非必出）",
+    "unavailable": "当前武器不支持此选项",
+    "none": "禁止元素",
+    "force_element": "允许强制非法元素",
+    "force_hint": "仅元素违反原生构筑规则时，结果会明确标记为元素魔改。",
+    "score_note": "排名使用纸面数值模型；红字、跳弹和粘弹延迟引爆机制尚未完整计入。",
+    "score_profile": "评分模式",
+    "score_profile_sustained_dps": "持续 DPS",
+    "score_profile_burst": "爆发伤害",
+    "score_profile_crit_element": "暴击 / 元素",
+    "score_profile_balanced": "综合",
+    "score_explanation": "评分解释",
+    "score_total": "总分",
+    "score_short": "评分",
+    "score_metric_dps": "持续 DPS",
+    "score_metric_damage": "伤害",
+    "score_metric_fire_rate": "射速",
+    "score_metric_magazine": "弹匣",
+    "score_metric_critical_damage": "暴击伤害",
+    "score_metric_elemental_dps": "元素 DPS",
+    "score_metric_reload_time": "装填",
+    "score_warning": "纸面评分；红字、跳弹和延迟粘弹机制未计入。",
+    "score_missing": "缺少可用指标：{metrics}",
+    "open_editor": "在武器编辑器中打开",
+    "limits": "无限制模式部件数量范围",
+    "group": "部件组",
+    "pool": "候选数",
+    "minimum": "最少",
+    "maximum": "最多",
+    "effort": "搜索预算",
+    "fast": "快速（3 秒）",
+    "balanced": "均衡（8 秒）",
+    "deep": "深度（30 秒）",
+    "top_n": "结果数量",
+    "search": "一键寻找 God Roll",
+    "cancel": "取消",
+    "idle": "选择目标和约束后开始搜索。",
+    "running": "已搜索 {attempted} · 有效 {accepted} · 当前最高评分 {best}",
+    "done": "{elapsed:.1f} 秒内搜索 {attempted} 个构筑，得到 {count} 个结果。当前为预算内最佳，尚未证明全局最优。",
+    "done_exact": "已穷尽 {frontier} 个合法构筑，用时 {elapsed:.1f} 秒，并证明当前 Top {count} 为全局最优。",
+    "cancelled": "搜索已取消，保留当前已找到的最佳结果。",
+    "no_results": "没有构筑满足当前约束。",
+    "error": "God Roll 搜索失败：{error}",
+    "offline_only": "God Roll 生成仅用于离线存档模式。",
+    "select_flag": "Flag",
+    "add_start": "正在添加 {count} 个物品…",
+    "add_progress": "正在添加 {current}/{total} · 成功 {success} · 失败 {fail}",
+    "add_done": "已添加 {success}；失败 {fail}",
+    "results_scope": "{mode} · {profile} · 固定枪管 {barrel} · 预算内 Top {count}",
+    "results_scope_exact": "{mode} · {profile} · 固定枪管 {barrel} · 已证明 Top {count}",
+    "parts_title": "配件详情",
+    "effects_title": "技能",
+    "no_element": "无元素",
+    "no_part_details": "当前结果没有可解析的配件详情。",
+    "no_part_effect": "无属性变化",
+    "source_current": "当前武器",
+    "source_universal": "通用元素池",
+    "status_element_modified": "仅元素魔改"
   },
   "weapon_gen_tab": {
     "labels": {
@@ -1022,7 +1340,10 @@
       "roll_options": "随机生成设置",
       "roll_results": "随机生成结果",
       "available_only": "只显示当前可用项",
-      "attribute_hint": "只有当前配件支持时，才展开“第二元素”；只有珠光稀有度时，才展开“珠光属性 / 珠光元素”。"
+      "attribute_hint": "只有当前配件支持时，才展开“第二元素”；只有珠光稀有度时，才展开“珠光属性 / 珠光元素”。",
+      "stats": "属性统计",
+      "missing_parts": "缺少：{parts}",
+      "missing_parts_format": "{label} {actual}/{limit}"
     },
     "dialogs": {
       "error_title": "错误",
@@ -1039,6 +1360,55 @@
       "roll_add_progress": "正在加入 {current}/{total} · 成功 {success} · 失败 {fail}",
       "roll_add_done": "已加入 {success} 件，失败 {fail} 件",
       "base85_copied": "已复制 Base85"
+    }
+  },
+  "equipment_legit": {
+    "status_legal": "自然生成",
+    "status_incomplete": "待补全",
+    "status_modified": "魔改",
+    "status_conditional": "条件合法",
+    "status_unknown": "无法验证",
+    "status_gold": "金皮肤底层",
+    "reason_legal": "符合当前自然生成规则。",
+    "reason_count_below": "缺少{group}（{actual}/{limit}）",
+    "reason_count_above": "{group}过量（{actual}/{limit}）",
+    "reason_part_not_allowed": "存在不属于当前模板的配件",
+    "reason_duplicate_part": "存在重复配件",
+    "reason_missing_dependency": "配件依赖未满足",
+    "reason_conflict": "配件搭配互斥",
+    "reason_foreign_part": "存在跨类型或跨厂商配件",
+    "reason_unknown_part": "存在未知配件",
+    "reason_unknown_composition": "尚未选择可识别的物品模板",
+    "reason_multiple_compositions": "同时选择了多个物品模板",
+    "reason_rule_gap": "生成规则数据尚未覆盖完整",
+    "reason_conditional": "该构建依赖限定内容",
+    "reason_modified": "不符合自然生成规则",
+    "candidate_legal": "自然候选：{group}",
+    "candidate_slot_full": "属于{group}；替换已有配件可保持合法。",
+    "candidate_dependency": "属于{group}，但当前搭配或依赖未满足。",
+    "candidate_not_allowed": "不属于当前自然模板；仍可作为魔改配件选择。",
+    "slot_budget_hint": "显示当前数量与自然生成规则允许的数量；超出仍可编辑。",
+    "gold_reason": "金皮肤只是传奇皮肤底层，不属于自然构建模板；已关闭合法搭配指示。",
+    "groups": {
+      "barrel": "枪管",
+      "barrel_acc": "枪管附件",
+      "body": "枪身",
+      "body_acc": "基座附件",
+      "body_ele": "元素",
+      "element": "元素",
+      "firmware": "固件",
+      "payload": "载荷",
+      "payload_augment": "载荷强化",
+      "stat_augment": "数值强化",
+      "primary_augment": "主强化",
+      "secondary_augment": "副强化",
+      "augment_element_resist": "元素抗性",
+      "augment_element_immunity": "元素免疫",
+      "augment_element_splat": "元素喷溅",
+      "augment_element_nova": "元素新星",
+      "unique": "传奇专长",
+      "vile": "恶毒强化",
+      "other": "其他"
     }
   },
   "grenade_tab": {
@@ -1066,7 +1436,9 @@
       "clear": "清空"
     },
     "misc": {
-      "none": "无"
+      "none": "无",
+      "all": "全部",
+      "available": "可选"
     },
     "dialogs": {
       "load_error": "错误: 手雷数据(grenade data)无法加载。",
@@ -1078,6 +1450,12 @@
     }
   },
   "shield_tab": {
+    "augment_sources": {
+      "all": "全部来源",
+      "universal": "通用",
+      "energy": "能量护盾",
+      "armor": "护甲护盾"
+    },
     "augment_facets": {
       "all": "全部",
       "primary_augment": "主强化槽",
@@ -1089,6 +1467,8 @@
       "element": "元素抗性 (单选)",
       "firmware": "固件 (单选)",
       "legendary": "传奇技能",
+      "primary": "主强化槽",
+      "secondary": "副强化槽",
       "energy": "能量护盾技能",
       "armor": "护甲护盾技能",
       "universal": "通用技能",
@@ -1110,6 +1490,9 @@
     },
     "misc": {
       "none": "无",
+      "all": "全部",
+      "available": "可选",
+      "base": "基座",
       "perk_type_mismatch": "当前护盾类型为{shield_type}，\n不允许添加{incompatible_type}类型perk",
       "shield_type_energy": "能量",
       "shield_type_armor": "护甲"
@@ -1135,7 +1518,8 @@
     "groups": {
       "perks": "技能",
       "prefix": "前缀 (单选)",
-      "resistance": "元素抗性/免疫 (单选)",
+      "resistance": "元素抗性 (单选)",
+      "immunity": "元素免疫 (单选)",
       "firmware": "固件 (单选)",
       "legendary": "传奇技能",
       "universal": "通用技能 (可多选/堆叠)",
@@ -1158,7 +1542,9 @@
       "random": "随机"
     },
     "misc": {
-      "none": "无"
+      "none": "无",
+      "all": "全部",
+      "available": "可选"
     },
     "dialogs": {
       "load_error": "错误: 修复套件数据(repkit data)无法加载。",
@@ -1190,6 +1576,8 @@
       "firmware": "固件 (单选)",
       "barrel_acc": "枪管附件 (可多选/堆叠)",
       "body_acc": "基座附件 (可多选/堆叠)",
+      "pearl_elements": "珠光元素覆盖 (单选)",
+      "pearl_stat": "珠光属性 (单选)",
       "output": "Deserialize",
       "base_attrs": "基础属性"
     },
@@ -1207,7 +1595,10 @@
       "clear": "清空"
     },
     "misc": {
-      "none": "无"
+      "none": "无",
+      "all": "全部",
+      "available": "可选",
+      "element_base_required": "需要先选择元素基座附件 ID:{id}。"
     },
     "dialogs": {
       "load_error": "错误: 重武器数据(heavy weapon data)无法加载。",
@@ -1238,7 +1629,10 @@
     "buttons": {
       "read_save": "读取当前存档配置",
       "save_loadout": "保存配置",
-      "load_loadout": "加载配置到存档"
+      "load_loadout": "加载配置到存档",
+      "save_live_loadout": "保存当前在线配装",
+      "apply_live_loadout": "应用到在线角色",
+      "review_live_recovery": "检查恢复锁"
     },
     "labels": {
       "activated_skills": "已激活技能",
@@ -1257,7 +1651,8 @@
       "no_activated": "暂无已激活技能",
       "no_items": "当前没有装备任何物品",
       "open_first": "请先打开存档",
-      "no_equipped_data": "未找到已装备物品数据"
+      "no_equipped_data": "未找到已装备物品数据",
+      "empty_slot_live": "该槽位无已保存的在线配装"
     },
     "notice": "当前因游戏原因，可能会随机导致装备无法完整覆盖，这不是存档编辑器的问题，切勿作为bug进行报告，也请不要装备不在背包内的物品。此处显示的技能包含特殊和宝库。",
     "dialogs": {
@@ -1276,7 +1671,24 @@
       "skill_fail": "技能覆写失败: {error}",
       "load_success": "配置 {slot} 已加载到内存。\n请点击主界面「保存」按钮写入存档。",
       "name_prompt_title": "为配置命名",
-      "name_prompt_msg": "请输入当前配置的名称（取消则使用默认名称）:"
+      "name_prompt_msg": "请输入当前配置的名称（取消则使用默认名称）:",
+      "live_unavailable": "在线模式当前不可用。",
+      "live_no_entries": "当前配装中没有可应用的装备。",
+      "live_save_success": "在线配装 {slot} 已保存至:\n{path}",
+      "live_save_fail": "保存在线配装失败: {error}",
+      "confirm_live_apply_title": "确认在线换装",
+      "confirm_live_apply_msg": "即将把槽位 {slot} 的装备应用到当前在线角色。\n\n仅替换预设中列出的非空装备槽，不修改技能；保存时为空的槽位不会被清空或恢复，跨槽环形互换暂不支持。所有目标物品必须仍在背包内。\n应用前会重新读取当前配装并校验，是否继续？",
+      "live_apply_success": "在线配装 {slot} 已应用。\n已切换 {applied} 项，跳过 {skipped} 项。",
+      "live_apply_cache_pending": "部分运行时模型或物品卡缓存仍在刷新。",
+      "live_apply_fail_title": "在线换装失败",
+      "live_apply_fail": "无法应用在线配装: {error}",
+      "live_apply_rollback_incomplete": "回滚未完整验证，请立即检查游戏内当前装备。",
+      "live_recovery_available": "后端已锁定后续换装；请刷新并使用“检查恢复锁”核对后再解除。",
+      "live_recovery_title": "在线配装恢复",
+      "live_recovery_none": "当前没有待确认的在线配装恢复记录。",
+      "live_recovery_confirm": "检测到一次未完整确认的在线换装：\n{reason}\n\n请先在游戏内核对当前装备。解除恢复锁只允许后续换装，不会自动回滚或修复物品。是否基于最新配装快照解除？",
+      "live_recovery_cleared": "恢复锁已基于最新配装快照解除。",
+      "live_recovery_fail": "在线配装恢复操作失败: {error}"
     },
     "decode": {
       "unknown": "未知",

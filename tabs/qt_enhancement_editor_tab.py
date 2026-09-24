@@ -4,7 +4,7 @@ import random
 from collections import Counter
 
 from core import b_encoder
-from core import resource_loader
+from core import item_display_resolver, resource_loader
 
 from .qt_catalog_picker import CatalogPicker
 from .qt_serial_import import (
@@ -66,7 +66,6 @@ class QtEnhancementEditorTab(QWidget):
         return self.localization_data.get(text, text)
 
     def update_language(self, lang):
-        print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
         imported = self.raw_output_var.text() if self._imported and hasattr(self, 'raw_output_var') else ''
         import_name = self._import_source_name
         import_flag = self.flag_var.currentText().split(' ')[0] if self._imported and hasattr(self, 'flag_var') else None
@@ -79,8 +78,6 @@ class QtEnhancementEditorTab(QWidget):
 
         if imported:
             self._load_decoded_copy(imported, source_name=import_name, state_flags=import_flag, show_error=False)
-        
-        print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
 
     def _load_ui_localization(self, lang=None):
         if lang is None: lang = self.current_lang
@@ -559,12 +556,29 @@ class QtEnhancementEditorTab(QWidget):
         for stat in enhancement_data.get('secondary_247', []):
             code = stat['code']
             name_en = stat['name']
-            cat, sub = self._classify_247(name_en)
+            firmware = item_display_resolver.equipment_firmware_entry(
+                f"247:{code}", "Enhancement", self.current_lang
+            )
+            if firmware:
+                name = firmware["name"]
+                descs = firmware.get("descs") or []
+                cat, sub = "firmware", None
+                tooltip = "\n".join(
+                    f"L{level}: {text}" for level, text in enumerate(descs, 1) if text
+                )
+                search_text = " ".join((str(code), firmware.get("internal", ""), name, *descs))
+            else:
+                name = self._(name_en)
+                cat, sub = self._classify_247(name_en)
+                tooltip = name
+                search_text = f"{code} {name_en} {name}"
             items.append({
                 "key": code,
-                "label": f"[{code}] {self._(name_en)}",
+                "label": f"[{code}] {name}",
                 "category": cat,
                 "subcategory": sub,
+                "tooltip": tooltip,
+                "search_text": search_text,
                 "data": {"code": code},
             })
         self.stat_picker.set_source(items)

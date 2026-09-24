@@ -1,0 +1,84 @@
+module HuskarUI.Basic
+linktarget huskaruibasicplugin
+optional plugin huskaruibasicplugin
+classname HuskarUI_BasicPlugin
+designersupported
+typeinfo plugins.qmltypes
+depends HuskarUI.Impl
+HusAcrylic 1.0 imports/HusAcrylic.qml
+HusAnimatedImage 1.0 imports/HusAnimatedImage.qml
+HusAutoComplete 1.0 imports/HusAutoComplete.qml
+HusAvatar 1.0 imports/HusAvatar.qml
+HusBadge 1.0 imports/HusBadge.qml
+HusBreadcrumb 1.0 imports/HusBreadcrumb.qml
+HusButton 1.0 imports/HusButton.qml
+HusButtonBlock 1.0 imports/HusButtonBlock.qml
+HusCaptionBar 1.0 imports/HusCaptionBar.qml
+HusCaptionButton 1.0 imports/HusCaptionButton.qml
+HusCard 1.0 imports/HusCard.qml
+HusCarousel 1.0 imports/HusCarousel.qml
+HusCheckBox 1.0 imports/HusCheckBox.qml
+HusCheckerBoard 1.0 imports/HusCheckerBoard.qml
+HusCollapse 1.0 imports/HusCollapse.qml
+HusColorPicker 1.0 imports/HusColorPicker.qml
+HusColorPickerPanel 1.0 imports/HusColorPickerPanel.qml
+HusContextMenu 1.0 imports/HusContextMenu.qml
+HusCopyableText 1.0 imports/HusCopyableText.qml
+HusDateTimePicker 1.0 imports/HusDateTimePicker.qml
+HusDateTimePickerPanel 1.0 imports/HusDateTimePickerPanel.qml
+HusDivider 1.0 imports/HusDivider.qml
+HusDrawer 1.0 imports/HusDrawer.qml
+HusEmpty 1.0 imports/HusEmpty.qml
+HusFrame 1.0 imports/HusFrame.qml
+HusGroupBox 1.0 imports/HusGroupBox.qml
+HusIconButton 1.0 imports/HusIconButton.qml
+HusIconText 1.0 imports/HusIconText.qml
+HusImage 1.0 imports/HusImage.qml
+HusImagePreview 1.0 imports/HusImagePreview.qml
+HusImagePreviewPanel 1.0 imports/HusImagePreviewPanel.qml
+HusInput 1.0 imports/HusInput.qml
+HusInputInteger 1.0 imports/HusInputInteger.qml
+HusInputNumber 1.0 imports/HusInputNumber.qml
+HusLabel 1.0 imports/HusLabel.qml
+HusLiquidGlass 1.0 imports/HusLiquidGlass.qml
+HusMenu 1.0 imports/HusMenu.qml
+HusMessage 1.0 imports/HusMessage.qml
+HusModal 1.0 imports/HusModal.qml
+HusMoveMouseArea 1.0 imports/HusMoveMouseArea.qml
+HusMultiCheckBox 1.0 imports/HusMultiCheckBox.qml
+HusMultiSelect 1.0 imports/HusMultiSelect.qml
+HusNotification 1.0 imports/HusNotification.qml
+HusOTPInput 1.0 imports/HusOTPInput.qml
+HusPage 1.0 imports/HusPage.qml
+HusPagination 1.0 imports/HusPagination.qml
+HusPopconfirm 1.0 imports/HusPopconfirm.qml
+HusPopover 1.0 imports/HusPopover.qml
+HusPopup 1.0 imports/HusPopup.qml
+HusProgress 1.0 imports/HusProgress.qml
+HusRadio 1.0 imports/HusRadio.qml
+HusRadioBlock 1.0 imports/HusRadioBlock.qml
+HusRate 1.0 imports/HusRate.qml
+HusResizeMouseArea 1.0 imports/HusResizeMouseArea.qml
+HusScrollBar 1.0 imports/HusScrollBar.qml
+HusSegmented 1.0 imports/HusSegmented.qml
+HusSelect 1.0 imports/HusSelect.qml
+HusShadow 1.0 imports/HusShadow.qml
+HusSlider 1.0 imports/HusSlider.qml
+HusSpace 1.0 imports/HusSpace.qml
+HusSpin 1.0 imports/HusSpin.qml
+HusSplitView 1.0 imports/HusSplitView.qml
+HusSwitch 1.0 imports/HusSwitch.qml
+HusSwitchEffect 1.0 imports/HusSwitchEffect.qml
+HusTabView 1.0 imports/HusTabView.qml
+HusTableView 1.0 imports/HusTableView.qml
+HusTag 1.0 imports/HusTag.qml
+HusText 1.0 imports/HusText.qml
+HusTextArea 1.0 imports/HusTextArea.qml
+HusTimeline 1.0 imports/HusTimeline.qml
+HusToolTip 1.0 imports/HusToolTip.qml
+HusTourFocus 1.0 imports/HusTourFocus.qml
+HusTourStep 1.0 imports/HusTourStep.qml
+HusTransfer 1.0 imports/HusTransfer.qml
+HusTreeView 1.0 imports/HusTreeView.qml
+HusWindow 1.0 imports/HusWindow.qml
+

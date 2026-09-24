@@ -10,6 +10,7 @@
 13,Daedalus,Assault Rifle,83,Rarity,Legendary,Mercredi,星期三
 13,Daedalus,Assault Rifle,87,Rarity,Legendary,Hard Dark,黑暗能量
 13,Daedalus,Assault Rifle,91,Rarity,Pearl,Kaos,混沌
+13,Daedalus,Assault Rifle,93,Rarity,Legendary,Shardenfreude,碎片狂欢
 2,Daedalus,Pistol,95,Rarity,Common,,
 2,Daedalus,Pistol,96,Rarity,Uncommon,,
 2,Daedalus,Pistol,97,Rarity,Rare,,
@@ -18,6 +19,7 @@
 2,Daedalus,Pistol,59,Rarity,Legendary,Rangefinder,测距仪
 2,Daedalus,Pistol,80,Rarity,Pearl,Soul Survivor,灵魂幸存者
 2,Daedalus,Pistol,84,Rarity,Legendary,Silver Sliver,银色碎片
+2,Daedalus,Pistol,87,Rarity,Legendary,Shield Overflow,护盾泛滥
 8,Daedalus,Shotgun,95,Rarity,Common,,
 8,Daedalus,Shotgun,96,Rarity,Uncommon,,
 8,Daedalus,Shotgun,97,Rarity,Rare,,
@@ -26,6 +28,7 @@
 8,Daedalus,Shotgun,55,Rarity,Legendary,Acey May,艾西 梅
 8,Daedalus,Shotgun,58,Rarity,Legendary,Missilaser,导弹激光
 8,Daedalus,Shotgun,82,Rarity,Legendary,Swan Song,天鹅之歌
+8,Daedalus,Shotgun,84,Rarity,Legendary,Pragmate,务实
 20,Daedalus,SMG,95,Rarity,Common,,
 20,Daedalus,SMG,96,Rarity,Uncommon,,
 20,Daedalus,SMG,97,Rarity,Rare,,
@@ -34,6 +37,7 @@
 20,Daedalus,SMG,2,Rarity,Legendary,Prowler,徘徊者
 20,Daedalus,SMG,72,Rarity,Pearl,Screwstonian,糟糕烂人
 20,Daedalus,SMG,70,Rarity,Pearl,Raiden,雷电
+20,Daedalus,SMG,74,Rarity,Legendary,Hand Frag,破片手雷
 27,Jakobs,Assault Rifle,95,Rarity,Common,,
 27,Jakobs,Assault Rifle,96,Rarity,Uncommon,,
 27,Jakobs,Assault Rifle,97,Rarity,Rare,,
@@ -43,6 +47,7 @@
 27,Jakobs,Assault Rifle,79,Rarity,Legendary,Rowdy Rider,暴走骑士
 27,Jakobs,Assault Rifle,81,Rarity,Pearl,Gomie,老铁
 27,Jakobs,Assault Rifle,83,Rarity,Legendary,Fishward,鱼群
+27,Jakobs,Assault Rifle,89,Rarity,Legendary,Flash Fuel,闪光燃料
 3,Jakobs,Pistol,95,Rarity,Common,,
 3,Jakobs,Pistol,96,Rarity,Uncommon,,
 3,Jakobs,Pistol,97,Rarity,Rare,,
@@ -53,6 +58,7 @@
 3,Jakobs,Pistol,81,Rarity,Legendary,Seventh Sense,第七感
 3,Jakobs,Pistol,83,Rarity,Legendary,Shalashaska,沙拉沙斯卡
 3,Jakobs,Pistol,85,Rarity,Legendary,Shoals,浅滩
+3,Jakobs,Pistol,91,Rarity,Legendary,Infection,感染
 9,Jakobs,Shotgun,95,Rarity,Common,,
 9,Jakobs,Shotgun,96,Rarity,Uncommon,,
 9,Jakobs,Shotgun,97,Rarity,Rare,,
@@ -64,6 +70,7 @@
 9,Jakobs,Shotgun,100,Rarity,Legendary,Doeshot,一命呼呼
 9,Jakobs,Shotgun,101,Rarity,Pearl,Constable,康斯特布尔
 9,Jakobs,Shotgun,104,Rarity,Legendary,Verce,诗篇
+9,Jakobs,Shotgun,106,Rarity,Legendary,Hippo Gun,河马枪
 24,Jakobs,Sniper,95,Rarity,Common,,
 24,Jakobs,Sniper,96,Rarity,Uncommon,,
 24,Jakobs,Sniper,97,Rarity,Rare,,
@@ -73,6 +80,8 @@
 24,Jakobs,Sniper,76,Rarity,Legendary,Truck,卡车
 24,Jakobs,Sniper,78,Rarity,Legendary,Fearstalker,恐惧追猎者
 24,Jakobs,Sniper,83,Rarity,Pearl,PRISM,棱镜
+24,Jakobs,Sniper,79,Rarity,Epic,,
+24,Jakobs,Sniper,87,Rarity,Legendary,Wind Skimmer,风中飘舞
 10,Maliwan,Shotgun,95,Rarity,Common,,
 10,Maliwan,Shotgun,96,Rarity,Uncommon,,
 10,Maliwan,Shotgun,97,Rarity,Rare,,
@@ -83,6 +92,7 @@
 10,Maliwan,Shotgun,100,Rarity,Legendary,Kickballer,踢球者
 10,Maliwan,Shotgun,61,Rarity,Legendary,Reminisce,追忆
 10,Maliwan,Shotgun,81,Rarity,Legendary,Discy Business,盘子生意
+10,Maliwan,Shotgun,86,Rarity,Legendary,Decompiler,反编译器
 21,Maliwan,SMG,58,Rarity,Common,,
 21,Maliwan,SMG,96,Rarity,Uncommon,,
 21,Maliwan,SMG,97,Rarity,Rare,,
@@ -93,6 +103,7 @@
 21,Maliwan,SMG,81,Rarity,Legendary,Broken Wings,折翼
 21,Maliwan,SMG,85,Rarity,Legendary,Flash Cyclone,闪电冲锋
 21,Maliwan,SMG,90,Rarity,Pearl,Juliet's Sparkle,朱丽叶之光
+21,Maliwan,SMG,93,Rarity,Legendary,Honeymooner,蜜月期
 25,Maliwan,Sniper,95,Rarity,Common,,
 25,Maliwan,Sniper,96,Rarity,Uncommon,,
 25,Maliwan,Sniper,97,Rarity,Rare,,
@@ -103,6 +114,7 @@
 25,Maliwan,Sniper,82,Rarity,Pearl,Conflux,汇流
 25,Maliwan,Sniper,87,Rarity,Legendary,Marshall's Claw,马歇尔之爪
 25,Maliwan,Sniper,83,Rarity,Legendary,Stealth & Seek,潜行与追踪
+25,Maliwan,Sniper,92,Rarity,Legendary,Clarity,克拉里蒂
 15,Order,Assault Rifle,95,Rarity,Common,,
 15,Order,Assault Rifle,96,Rarity,Uncommon,,
 15,Order,Assault Rifle,97,Rarity,Rare,,
@@ -112,6 +124,7 @@
 15,Order,Assault Rifle,77,Rarity,Pearl,Crow-Sourced,大众协作
 15,Order,Assault Rifle,79,Rarity,Pearl,Pachonk,帕琼克
 15,Order,Assault Rifle,81,Rarity,Legendary,Divided Glow,分裂光芒
+15,Order,Assault Rifle,84,Rarity,Legendary,Avarice,贪婪
 4,Order,Pistol,95,Rarity,Common,,
 4,Order,Pistol,96,Rarity,Uncommon,,
 4,Order,Pistol,97,Rarity,Rare,,
@@ -122,6 +135,7 @@
 4,Order,Pistol,85,Rarity,Legendary,Roulette,轮盘赌
 4,Order,Pistol,83,Rarity,Legendary,Sunspot,太阳黑子
 4,Order,Pistol,87,Rarity,Legendary,Rhythm,韵律
+4,Order,Pistol,89,Rarity,Legendary,Virtue,美德
 26,Order,Sniper,95,Rarity,Common,,
 26,Order,Sniper,96,Rarity,Uncommon,,
 26,Order,Sniper,97,Rarity,Rare,,
@@ -131,6 +145,7 @@
 26,Order,Sniper,79,Rarity,Legendary,Rooker,浪子
 26,Order,Sniper,84,Rarity,Pearl,Solar Temper,太阳怒焰
 26,Order,Sniper,82,Rarity,Legendary,Ishmael,以实玛利
+26,Order,Sniper,86,Rarity,Legendary,Petanque,地滚球
 7,Ripper,Shotgun,95,Rarity,Common,,
 7,Ripper,Shotgun,96,Rarity,Uncommon,,
 7,Ripper,Shotgun,97,Rarity,Rare,,
@@ -141,6 +156,7 @@
 7,Ripper,Shotgun,56,Rarity,Legendary,Hair Trigger,一触即发
 7,Ripper,Shotgun,54,Rarity,Pearl,Crazed Earl,疯狂厄尔
 7,Ripper,Shotgun,65,Rarity,Legendary,Plumb Bob,铅垂线
+7,Ripper,Shotgun,85,Rarity,Pearl,Astonisher,惊奇者
 19,Ripper,SMG,95,Rarity,Common,,
 19,Ripper,SMG,96,Rarity,Uncommon,,
 19,Ripper,SMG,97,Rarity,Rare,,
@@ -150,6 +166,7 @@
 19,Ripper,SMG,56,Rarity,Legendary,Roil,激怒
 19,Ripper,SMG,59,Rarity,Legendary,Falke,猎鹰
 19,Ripper,SMG,61,Rarity,Pearl,Jail-Broken Gatling,越狱加特林
+19,Ripper,SMG,83,Rarity,Legendary,Enumeration,枚举
 23,Ripper,Sniper,95,Rarity,Common,,
 23,Ripper,Sniper,96,Rarity,Uncommon,,
 23,Ripper,Sniper,97,Rarity,Rare,,
@@ -159,6 +176,7 @@
 23,Ripper,Sniper,57,Rarity,Legendary,Rainmaker,造雨师
 23,Ripper,Sniper,56,Rarity,Legendary,Tankbuster,反坦克炮
 23,Ripper,Sniper,61,Rarity,Pearl,Abyss,深渊
+23,Ripper,Sniper,83,Rarity,Legendary,Devourer,吞噬者
 14,Tediore,Assault Rifle,89,Rarity,Common,,
 14,Tediore,Assault Rifle,90,Rarity,Uncommon,,
 14,Tediore,Assault Rifle,91,Rarity,Rare,,
@@ -167,6 +185,7 @@
 14,Tediore,Assault Rifle,36,Rarity,Legendary,Divided Focus,焦点分散
 14,Tediore,Assault Rifle,77,Rarity,Legendary,Murmur,轻柔低语
 14,Tediore,Assault Rifle,79,Rarity,Legendary,Laser Disker,激光飞盘
+14,Tediore,Assault Rifle,93,Rarity,Legendary,Lovelorn,失恋者
 5,Tediore,Pistol,95,Rarity,Common,,
 5,Tediore,Pistol,96,Rarity,Uncommon,,
 5,Tediore,Pistol,97,Rarity,Rare,,
@@ -177,6 +196,9 @@
 5,Tediore,Pistol,86,Rarity,Legendary,Inscriber,记录器
 5,Tediore,Pistol,89,Rarity,Legendary,Shammy Kablammy,诈爆轰轰
 5,Tediore,Pistol,99,Rarity,Legendary,Overconsumption,过度消耗
+5,Tediore,Pistol,87,Rarity,Legendary,,
+5,Tediore,Pistol,91,Rarity,Epic,Paperclip,回形针
+5,Tediore,Pistol,101,Rarity,Epic,Secured Relief,保障通畅
 11,Tediore,Shotgun,95,Rarity,Common,,
 11,Tediore,Shotgun,96,Rarity,Uncommon,,
 11,Tediore,Shotgun,97,Rarity,Rare,,
@@ -186,6 +208,7 @@
 11,Tediore,Shotgun,80,Rarity,Legendary,Husky Friend,哈士奇好友
 11,Tediore,Shotgun,82,Rarity,Pearl,Eigenburst,特征爆发
 11,Tediore,Shotgun,90,Rarity,Pearl,Sharkbait,鲨鱼饵
+11,Tediore,Shotgun,92,Rarity,Legendary,Fourier's Malady,傅里叶综合症
 17,Torgue,Assault Rifle,95,Rarity,Common,,
 17,Torgue,Assault Rifle,96,Rarity,Uncommon,,
 17,Torgue,Assault Rifle,97,Rarity,Rare,,
@@ -195,6 +218,7 @@
 17,Torgue,Assault Rifle,78,Rarity,Legendary,Potato Thrower IV,土豆投掷者Ⅳ
 17,Torgue,Assault Rifle,83,Rarity,Legendary,Fleabag,跳蚤袋
 17,Torgue,Assault Rifle,85,Rarity,Legendary,Lockjaw,锁喉
+17,Torgue,Assault Rifle,90,Rarity,Legendary,Ripple,涟漪
 6,Torgue,Pistol,95,Rarity,Common,,
 6,Torgue,Pistol,96,Rarity,Uncommon,,
 6,Torgue,Pistol,97,Rarity,Rare,,
@@ -205,6 +229,7 @@
 6,Torgue,Pistol,78,Rarity,Pearl,Handcannon,手铳
 6,Torgue,Pistol,57,Rarity,Legendary,Scoot'n'Shoot,疾行射击
 6,Torgue,Pistol,85,Rarity,Pearl,Herald,赫拉德
+6,Torgue,Pistol,88,Rarity,Legendary,Critical Decay,暴击衰减
 12,Torgue,Shotgun,95,Rarity,Common,,
 12,Torgue,Shotgun,96,Rarity,Uncommon,,
 12,Torgue,Shotgun,97,Rarity,Rare,,
@@ -214,6 +239,7 @@
 12,Torgue,Shotgun,79,Rarity,Legendary,ARC-TAN,正反切
 12,Torgue,Shotgun,77,Rarity,Legendary,Unstable Kor,不稳核心
 12,Torgue,Shotgun,83,Rarity,Legendary,Cormano,科尔马诺
+12,Torgue,Shotgun,86,Rarity,Pearl,AeroDramatic,空中戏剧
 18,Vladof,Assault Rifle,95,Rarity,Common,,
 18,Vladof,Assault Rifle,96,Rarity,Uncommon,,
 18,Vladof,Assault Rifle,97,Rarity,Rare,,
@@ -225,6 +251,7 @@
 18,Vladof,Assault Rifle,100,Rarity,Legendary,Bubbles,泡泡
 18,Vladof,Assault Rifle,103,Rarity,Legendary,Laser-Cutter,激光切割器
 18,Vladof,Assault Rifle,105,Rarity,Legendary,Eradication,根除
+18,Vladof,Assault Rifle,107,Rarity,Legendary,Triplicate,三重复制
 22,Vladof,SMG,95,Rarity,Common,,
 22,Vladof,SMG,96,Rarity,Uncommon,,
 22,Vladof,SMG,97,Rarity,Rare,,
@@ -235,6 +262,7 @@
 22,Vladof,SMG,92,Rarity,Legendary,Mercurious,水银好奇者
 22,Vladof,SMG,101,Rarity,Pearl,Parasite,寄生体
 22,Vladof,SMG,94,Rarity,Legendary,Brickhouse,砖屋
+22,Vladof,SMG,105,Rarity,Legendary,Tempered Essence,淬炼精髓
 16,Vladof,Sniper,95,Rarity,Common,,
 16,Vladof,Sniper,96,Rarity,Uncommon,,
 16,Vladof,Sniper,97,Rarity,Rare,,
@@ -244,3 +272,5 @@
 16,Vladof,Sniper,69,Rarity,Legendary,Midnight Defiance,暗夜抗争
 16,Vladof,Sniper,88,Rarity,Legendary,Hemorrhage,出血
 16,Vladof,Sniper,91,Rarity,Legendary,Light Gun,轻型枪械
+16,Vladof,Sniper,89,Rarity,Epic,,
+16,Vladof,Sniper,93,Rarity,Legendary,Exhibition,展览

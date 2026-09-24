@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="/HuskarUI/Basic">C:/Users/SuperExboom/Desktop/BL4/.local/huskarui-qt6-build-691c/HuskarUI/qml/HuskarUI/Basic</file>
+
+  </qresource>
+</RCC>

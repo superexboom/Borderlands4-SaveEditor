@@ -4,7 +4,7 @@ import re
 
 from PyQt6.QtCore import Qt
 
-from core import resource_loader
+from core import item_display_resolver, resource_loader
 from tabs.qt_equipment_base_tab import BaseEquipmentEditorTab
 
 
@@ -41,8 +41,47 @@ class QtGrenadeEditorTab(BaseEquipmentEditorTab):
     # max 1 in most compositions and 2 in three of them, which is why the number has to
     # come from the rules per composition rather than from a constant.
     RULE_GROUPS_BY_PICKER = {
+        "element": ("element",),
+        "firmware": ("firmware",),
+        "mfg_perk": ("body", "payload", "payload_augment", "stat_augment"),
+        "legendary": ("body", "payload", "payload_augment", "stat_augment"),
         "universal": ("payload_augment", "stat_augment", "payload"),
     }
+
+    _AUGMENT_FACETS = ("payload", "payload_augment", "stat_augment")
+
+    def _generation_ref_for_option(self, key, data):
+        if data is None:
+            return ""
+        if isinstance(data, tuple):
+            part_id, owner = data
+            return f"{int(owner)}:{int(part_id)}"
+        if key in {"element", "firmware", "universal"}:
+            return f"{self.SECONDARY_PARENT}:{int(data)}"
+        mfg_id = self._current_mfg_id()
+        return f"{mfg_id}:{int(data)}" if mfg_id is not None else ""
+
+    def _generation_group_text(self, group):
+        if str(group) == "body":
+            return str((self.ui_loc.get("groups") or {}).get("mfg_perks") or "Manufacturer Perks")
+        return super()._generation_group_text(group)
+
+    def _augment_facet(self, part_id):
+        from core import item_display_resolver as resolver
+
+        ref = (resolver._item_index().get("part_refs") or {}).get(
+            f"{self.SECONDARY_PARENT}:{int(part_id)}"
+        ) or {}
+        category = str(ref.get("selection_group") or ref.get("category") or "")
+        return category if category in self._AUGMENT_FACETS else "other"
+
+    def _augment_categories(self):
+        labels = (self.legit_loc or {}).get("groups") or {}
+        return [
+            ("all", self.ui_loc.get("misc", {}).get("all", "All")),
+            *[(key, labels.get(key, key)) for key in self._AUGMENT_FACETS],
+            ("other", labels.get("other", "Other")),
+        ]
 
     def load_data(self, lang):
         return load_grenade_data(lang)
@@ -70,14 +109,47 @@ class QtGrenadeEditorTab(BaseEquipmentEditorTab):
     def _populate_initial_extra(self):
         # element / firmware / universal are mfg-independent; element rows come from
         # df_main, firmware rows from the shared catalog via the index.
+        element_rows = self.df_main[self.df_main['Part_type'] == 'Element'].copy()
+        normal_ref = next(
+            (
+                ref_key
+                for ref_key, ref in (item_display_resolver._item_index().get("part_refs") or {}).items()
+                if ref_key.startswith(f"{self.SECONDARY_PARENT}:")
+                and ref.get("category") == "element"
+                and str(ref.get("part") or "").casefold() == "part_normal"
+            ),
+            "",
+        )
+        if normal_ref:
+            normal_id = int(normal_ref.partition(":")[2])
+            existing = {int(value) for value in element_rows['Part_ID'] if pd.notna(value)}
+            if normal_id not in existing:
+                no_element = str(
+                    (((self._full_loc.get("weapon_gen_tab") or {}).get("labels") or {}).get("no_element"))
+                    or "No Element"
+                )
+                element_rows = pd.concat(
+                    [
+                        pd.DataFrame([{
+                            "Grenade_perk_main_ID": self.SECONDARY_PARENT,
+                            "Part_ID": normal_id,
+                            "Part_type": "Element",
+                            "Stat": no_element,
+                            "Description": "",
+                        }]),
+                        element_rows,
+                    ],
+                    ignore_index=True,
+                )
         self._populate_chip_group(
             self._group_cfgs["element"],
-            self.df_main[self.df_main['Part_type'] == 'Element'],
+            element_rows,
             self._fmt_row)
         self._populate_chip_group(
             self._group_cfgs["firmware"],
             self._firmware_group_df('Grenade_perk_main_ID', self.SECONDARY_PARENT),
             self._fmt_row)
+        self._group_pickles["universal"].set_categories(self._augment_categories(), columns=4)
         self._group_pickles["universal"].set_source(self._universal_items())
 
     def _universal_items(self):
@@ -85,7 +157,7 @@ class QtGrenadeEditorTab(BaseEquipmentEditorTab):
         for _, r in self.df_main[self.df_main['Part_type'] == 'Perk'].iterrows():
             text, part_id = self._fmt_row(r)
             items.append({
-                "key": f"u{part_id}", "label": text, "category": None,
+                "key": f"u{part_id}", "label": text, "category": self._augment_facet(part_id),
                 "data": int(part_id),
             })
         return items

@@ -81,6 +81,7 @@
 13,Daedalus,Assault Rifle,90,Underbarrel,DAD_AR.part_underbarrel_04_atlas_Mercredi,
 13,Daedalus,Assault Rifle,86,Barrel,DAD_AR.part_barrel_02_harddark,黑暗能量
 13,Daedalus,Assault Rifle,88,Barrel,DAD_AR.part_barrel_02_kaos,混沌
+13,Daedalus,Assault Rifle,92,Barrel,DAD_AR.part_barrel_02_shardenfreude,碎片狂欢
 2,Daedalus,Pistol,1,Barrel,DAD_PS.part_barrel_01_zipgun,拉链
 2,Daedalus,Pistol,2,Body,DAD_PS.part_body,
 2,Daedalus,Pistol,3,Body Accessory,DAD_PS.part_body_a,
@@ -159,6 +160,8 @@
 2,Daedalus,Pistol,82,Manufacturer Part,DAD_PS.part_mag_torgue_normal_soulsurvivor,灵魂幸存者
 2,Daedalus,Pistol,81,Manufacturer Part,DAD_PS.part_mag_torgue_sticky_soulsurvivor,灵魂幸存者
 2,Daedalus,Pistol,83,Barrel,DAD_PS.part_barrel_01_silversliver,银色碎片
+2,Daedalus,Pistol,85,Foregrip,DAD_PS.part_underbarrel_02_knifelauncher_blackout,
+2,Daedalus,Pistol,86,Barrel,DAD_PS.part_barrel_01_blackout,护盾泛滥
 8,Daedalus,Shotgun,2,Body,DAD_SG.part_body,
 8,Daedalus,Shotgun,3,Body Accessory,DAD_SG.part_body_a,
 8,Daedalus,Shotgun,4,Body Accessory,DAD_SG.part_body_b,
@@ -235,6 +238,7 @@
 8,Daedalus,Shotgun,80,Manufacturer Part,DAD_SG.part_body_mag_sr,
 8,Daedalus,Shotgun,60,Barrel,DAD_SG.part_barrel_cannonbrawl,天鹅之歌
 8,Daedalus,Shotgun,81,Foregrip,DAD_SG.part_underbarrel_01_cannonbrawl,天鹅之歌
+8,Daedalus,Shotgun,83,Barrel,DAD_SG.part_barrel_pragmate,务实
 20,Daedalus,SMG,3,Body Accessory,DAD_SM.part_body_a,
 20,Daedalus,SMG,4,Body Accessory,DAD_SM.part_body_b,
 20,Daedalus,SMG,5,Body Accessory,DAD_SM.part_body_c,
@@ -315,6 +319,7 @@
 20,Daedalus,SMG,1,Barrel,DAD_SM.part_barrel_02_follower,徘徊者
 20,Daedalus,SMG,71,Barrel,DAD_SM.part_barrel_02_screwed,糟糕烂人
 20,Daedalus,SMG,59,Barrel,DAD_SM.part_barrel_01_raiden,雷电
+20,Daedalus,SMG,73,Barrel,DAD_SM.part_barrel_02_handfrag,破片手雷
 27,Jakobs,Assault Rifle,2,Body,JAK_AR.part_body,
 27,Jakobs,Assault Rifle,3,Body Accessory,JAK_AR.part_body_a,
 27,Jakobs,Assault Rifle,4,Body Accessory,JAK_AR.part_body_b,
@@ -392,6 +397,9 @@
 27,Jakobs,Assault Rifle,80,Barrel,JAK_AR.part_barrel_01_gomie,老铁
 27,Jakobs,Assault Rifle,82,Barrel,JAK_AR.part_barrel_02_fishward,鱼群
 27,Jakobs,Assault Rifle,84,Foregrip,JAK_AR.part_underbarrel_02_crank_fishward,
+27,Jakobs,Assault Rifle,86,Foregrip,JAK_AR.part_underbarrel_02_crank_flashfuel,
+27,Jakobs,Assault Rifle,87,Magazine,JAK_AR.part_mag_04_cov_flashfuel,
+27,Jakobs,Assault Rifle,88,Barrel,JAK_AR.part_barrel_01_flashfuel,闪光燃料
 3,Jakobs,Pistol,2,Body,JAK_PS.part_body,
 3,Jakobs,Pistol,3,Body Accessory,JAK_PS.part_body_a,
 3,Jakobs,Pistol,4,Body Accessory,JAK_PS.part_body_b,
@@ -467,6 +475,11 @@
 3,Jakobs,Pistol,80,Barrel,JAK_PS.part_barrel_01_seventh_sense,第七感
 3,Jakobs,Pistol,82,Barrel,JAK_PS.part_barrel_shalashaska,沙拉沙斯卡
 3,Jakobs,Pistol,84,Barrel,JAK_PS.part_barrel_shoals,浅滩
+3,Jakobs,Pistol,86,Barrel,JAK_PS.part_barrel_infection_shock,感染
+3,Jakobs,Pistol,87,Barrel,JAK_PS.part_barrel_infection_radiation,感染
+3,Jakobs,Pistol,88,Barrel,JAK_PS.part_barrel_infection_fire,感染
+3,Jakobs,Pistol,89,Barrel,JAK_PS.part_barrel_infection_cryo,感染
+3,Jakobs,Pistol,90,Barrel,JAK_PS.part_barrel_infection_corrosive,感染
 9,Jakobs,Shotgun,1,Special Element Set,JAK_SG.part_body_ele_rainbowvomit_cryo_fire_shock,
 9,Jakobs,Shotgun,2,Body,JAK_SG.part_body,
 9,Jakobs,Shotgun,3,Body Accessory,JAK_SG.part_body_a,
@@ -559,6 +572,7 @@
 9,Jakobs,Shotgun,99,Barrel,JAK_SG.part_barrel_Doeshot,一命呼呼
 9,Jakobs,Shotgun,102,Barrel,JAK_SG.part_barrel_01_constable,康斯特布尔
 9,Jakobs,Shotgun,103,Barrel,JAK_SG.part_barrel_verce,诗篇
+9,Jakobs,Shotgun,105,Barrel,JAK_SG.part_barrel_hippogun,河马枪
 24,Jakobs,Sniper,2,Body,JAK_SR.part_body,
 24,Jakobs,Sniper,3,Body Accessory,JAK_SR.part_body_a,
 24,Jakobs,Sniper,4,Body Accessory,JAK_SR.part_body_b,
@@ -635,6 +649,9 @@
 24,Jakobs,Sniper,81,Manufacturer Part,JAK_SR.part_mag_torgue_normal_fearstalker,恐惧追猎者
 24,Jakobs,Sniper,80,Manufacturer Part,JAK_SR.part_mag_torgue_sticky_fearstalker,恐惧追猎者
 24,Jakobs,Sniper,82,Barrel,JAK_SR.part_barrel_02_burrow,棱镜
+24,Jakobs,Sniper,84,Manufacturer Part,JAK_SR.part_mag_torgue_sticky_outback,
+24,Jakobs,Sniper,85,Manufacturer Part,JAK_SR.part_mag_torgue_normal_outback,
+24,Jakobs,Sniper,86,Barrel,JAK_SR.part_barrel_02_outback,风中飘舞
 10,Maliwan,Shotgun,2,Body,MAL_SG.part_body,
 10,Maliwan,Shotgun,3,Body Accessory,MAL_SG.part_body_a,
 10,Maliwan,Shotgun,4,Body Accessory,MAL_SG.part_body_b,
@@ -712,6 +729,9 @@
 10,Maliwan,Shotgun,79,Magazine,MAL_SG.part_mag_03_tor,
 10,Maliwan,Shotgun,60,Barrel,MAL_SG.part_barrel_01_reminisce,追忆
 10,Maliwan,Shotgun,82,Barrel,MAL_SG.part_barrel_01_discybusiness,盘子生意
+10,Maliwan,Shotgun,83,Manufacturer Part,MAL_SG.part_mag_torgue_sticky_assembler,
+10,Maliwan,Shotgun,84,Manufacturer Part,MAL_SG.part_mag_torgue_normal_assembler,
+10,Maliwan,Shotgun,85,Barrel,MAL_SG.part_barrel_01_assembler,反编译器
 21,Maliwan,SMG,2,Body,MAL_SM.part_body,
 21,Maliwan,SMG,3,Body Accessory,MAL_SM.part_body_a,
 21,Maliwan,SMG,4,Body Accessory,MAL_SM.part_body_b,
@@ -792,6 +812,8 @@
 21,Maliwan,SMG,87,Foregrip,MAL_SM.part_foregrip_02_flashcyclone,闪电旋风
 21,Maliwan,SMG,86,Foregrip,MAL_SM.part_foregrip_03_flashcyclone,闪电旋风
 21,Maliwan,SMG,89,Barrel,MAL_SM.part_barrel_02_juliet,朱丽叶之光
+21,Maliwan,SMG,91,Manufacturer Part,MAL_SM.part_mag_torgue_normal_accretion,
+21,Maliwan,SMG,92,Barrel,MAL_SM.part_barrel_02_accretion,蜜月期
 25,Maliwan,Sniper,2,Body,MAL_SR.part_body,
 25,Maliwan,Sniper,3,Body Accessory,MAL_SR.part_body_a,
 25,Maliwan,Sniper,4,Body Accessory,MAL_SR.part_body_b,
@@ -872,6 +894,8 @@
 25,Maliwan,Sniper,85,Barrel,MAL_SR.part_barrel_01_manifest,马歇尔之爪
 25,Maliwan,Sniper,86,Magazine Accessory,MAL_SR.part_mag_05_borg_acc_manifest,马歇尔之爪
 25,Maliwan,Sniper,84,Barrel,MAL_SR.part_barrel_02_stealth,潜行与追踪
+25,Maliwan,Sniper,90,Magazine Accessory,MAL_SR.part_mag_05_borg_clarity,
+25,Maliwan,Sniper,91,Barrel,MAL_SR.part_barrel_02_clarity,克拉里蒂
 15,Order,Assault Rifle,1,Scope,ORD_AR.part_scope_02_lens_02_gmr,
 15,Order,Assault Rifle,2,Barrel,ORD_AR.part_barrel_02_gmr,G.M.R.
 15,Order,Assault Rifle,3,Body Accessory,ORD_AR.part_body_a,
@@ -948,6 +972,7 @@
 15,Order,Assault Rifle,78,Barrel,ORD_AR.part_barrel_02_crowsourced,大众协作
 15,Order,Assault Rifle,80,Barrel,ORD_AR.part_barrel_02_pchonk,帕琼克
 15,Order,Assault Rifle,82,Barrel,ORD_AR.part_barrel_02_testament,分裂光芒
+15,Order,Assault Rifle,83,Barrel,ORD_AR.part_barrel_02_avarice,贪婪
 4,Order,Pistol,1,Magazine,ORD_PS.part_mag_03_rocketreload,幸运四叶草
 4,Order,Pistol,2,Body,ORD_PS.part_body,
 4,Order,Pistol,3,Body Accessory,ORD_PS.part_body_a,
@@ -1026,6 +1051,7 @@
 4,Order,Pistol,84,Barrel,ORD_PS.part_barrel_02_Roulette,轮盘赌
 4,Order,Pistol,82,Barrel,ORD_PS.part_barrel_sunspot,太阳黑子
 4,Order,Pistol,86,Barrel,ORD_PS.part_barrel_rhythm,韵律
+4,Order,Pistol,88,Barrel,ORD_PS.part_barrel_patience,美德
 26,Order,Sniper,2,Body,ORD_SR.part_body,
 26,Order,Sniper,3,Body Accessory,ORD_SR.part_body_a,
 26,Order,Sniper,4,Body Accessory,ORD_SR.part_body_b,
@@ -1104,6 +1130,8 @@
 26,Order,Sniper,83,Barrel,ORD_SR.part_barrel_02_temper,太阳怒焰
 26,Order,Sniper,80,Foregrip,ORD_SR.part_underbarrel_02_tether_snare_ishmael,
 26,Order,Sniper,81,Barrel,ORD_SR.part_barrel_02_ishmael,以实玛利
+26,Order,Sniper,85,Barrel,ORD_SR.part_barrel_02_petanque,地滚球
+26,Order,Sniper,87,Foregrip,ORD_SR.part_underbarrel_02_tether_snare_ishmael_0,
 7,Ripper,Shotgun,1,Barrel,BOR_SG.part_barrel_02_goremaster,血腥大师
 7,Ripper,Shotgun,2,Body,BOR_SG.part_body,
 7,Ripper,Shotgun,3,Body Accessory,BOR_SG.part_body_a,
@@ -1182,6 +1210,7 @@
 7,Ripper,Shotgun,58,Magazine,BOR_SG.part_mag_01_crazedearl,疯狂厄尔
 7,Ripper,Shotgun,57,Magazine,BOR_SG.part_mag_02_crazedearl,疯狂厄尔
 7,Ripper,Shotgun,59,Barrel,BOR_SG.part_unique_barrel_02_plumbbob,铅垂线
+7,Ripper,Shotgun,84,Barrel,BOR_SG.part_unique_barrel_02_relay,惊奇者
 19,Ripper,SMG,2,Body,BOR_SM.part_body,
 19,Ripper,SMG,3,Body Accessory,BOR_SM.part_body_a,
 19,Ripper,SMG,4,Body Accessory,BOR_SM.part_body_b,
@@ -1257,6 +1286,7 @@
 19,Ripper,SMG,81,Manufacturer Part,BOR_SM.part_mag_torgue_sticky,
 19,Ripper,SMG,58,Barrel,BOR_SM.part_barrel_01_falke,猎鹰
 19,Ripper,SMG,60,Barrel,BOR_SM.part_barrel_01_jailbroken,越狱加特林
+19,Ripper,SMG,82,Barrel,BOR_SM.part_barrel_01_enumeration,枚举
 23,Ripper,Sniper,2,Body,BOR_SR.part_body,
 23,Ripper,Sniper,3,Body Accessory,BOR_SR.part_body_a,
 23,Ripper,Sniper,4,Body Accessory,BOR_SR.part_body_b,
@@ -1332,6 +1362,7 @@
 23,Ripper,Sniper,22,Barrel,BOR_SR.part_barrel_01_tankbuster,反坦克炮
 23,Ripper,Sniper,59,Scope Accessory,BOR_SR.part_scope_acc_s01_l01_b_abyss,
 23,Ripper,Sniper,60,Barrel,BOR_SR.part_barrel_02_abyss,深渊
+23,Ripper,Sniper,82,Barrel,BOR_SR.part_barrel_02_devourer,吞噬者
 14,Tediore,Assault Rifle,1,Magazine,TED_AR.part_mag_01_Chuck,查克
 14,Tediore,Assault Rifle,2,Body,TED_AR.part_body,
 14,Tediore,Assault Rifle,3,Body Accessory,TED_AR.part_body_a,
@@ -1412,6 +1443,8 @@
 14,Tediore,Assault Rifle,87,Manufacturer Part,TED_AR.part_mag_torgue_normal,
 14,Tediore,Assault Rifle,88,Manufacturer Part,TED_AR.part_mag_torgue_sticky,
 14,Tediore,Assault Rifle,78,Barrel,TED_AR.part_barrel_01_LaserDisc,激光飞盘
+14,Tediore,Assault Rifle,80,Foregrip,TED_AR.part_underbarrel_01_hotmod,
+14,Tediore,Assault Rifle,81,Barrel,TED_AR.part_barrel_02_hotmod,失恋者
 5,Tediore,Pistol,2,Body,TED_PS.part_body,
 5,Tediore,Pistol,3,Body Accessory,TED_PS.part_body_a,
 5,Tediore,Pistol,4,Body Accessory,TED_PS.part_body_b,
@@ -1497,6 +1530,9 @@
 5,Tediore,Pistol,92,Grip,TED_PS.part_grip_05a_ted_legs_earlyexcess,
 5,Tediore,Pistol,93,Foregrip,TED_PS.part_underbarrel_02_rockets_earlyexcess,
 5,Tediore,Pistol,94,Barrel,TED_PS.part_barrel_02_earlyexcess,过度消耗
+5,Tediore,Pistol,90,Barrel,TED_PS.part_barrel_02_tradingup,回形针
+5,Tediore,Pistol,100,Barrel,TED_PS.part_barrel_relievingguard,保障通畅
+5,Tediore,Pistol,102,Scope,TED_PS.part_scope_02_lens_01_tradingup,
 11,Tediore,Shotgun,2,Body,TED_SG.part_body,
 11,Tediore,Shotgun,3,Body Accessory,TED_SG.part_body_a,
 11,Tediore,Shotgun,4,Body Accessory,TED_SG.part_body_b,
@@ -1581,6 +1617,8 @@
 11,Tediore,Shotgun,87,Grip,TED_SG.part_grip_05a_ted_legs_mirv_sharkbait,
 11,Tediore,Shotgun,88,Grip,TED_SG.part_grip_05a_ted_legs_sharkbait,
 11,Tediore,Shotgun,89,Barrel,TED_SG.part_barrel_01_sharkbait,鲨鱼饵
+11,Tediore,Shotgun,91,Barrel,TED_SG.part_barrel_01_fourier,傅里叶综合症
+11,Tediore,Shotgun,93,Magazine,TED_SG.part_mag_05_borg_fourier,
 17,Torgue,Assault Rifle,3,Body Accessory,TOR_AR.part_body_a,
 17,Torgue,Assault Rifle,4,Body Accessory,TOR_AR.part_body_b,
 17,Torgue,Assault Rifle,5,Body Accessory,TOR_AR.part_body_c,
@@ -1659,6 +1697,10 @@
 17,Torgue,Assault Rifle,81,Foregrip,TOR_AR.part_foregrip_01_fleabag,跳蚤袋
 17,Torgue,Assault Rifle,82,Barrel,TOR_AR.part_barrel_fleabag,跳蚤袋
 17,Torgue,Assault Rifle,84,Barrel,TOR_AR.part_barrel_lockjaw,锁喉
+17,Torgue,Assault Rifle,86,Foregrip,TOR_AR.part_foregrip_03_ripple,
+17,Torgue,Assault Rifle,87,Foregrip,TOR_AR.part_foregrip_02_ripple,
+17,Torgue,Assault Rifle,88,Foregrip,TOR_AR.part_foregrip_01_ripple,
+17,Torgue,Assault Rifle,89,Barrel,TOR_AR.part_barrel_ripple,涟漪
 6,Torgue,Pistol,2,Body,TOR_PS.part_body,
 6,Torgue,Pistol,3,Body Accessory,TOR_PS.part_body_a,
 6,Torgue,Pistol,4,Body Accessory,TOR_PS.part_body_b,
@@ -1738,6 +1780,7 @@
 6,Torgue,Pistol,83,Foregrip,TOR_PS.part_foregrip_02_herald,赫拉德
 6,Torgue,Pistol,82,Foregrip,TOR_PS.part_foregrip_03_herald,赫拉德
 6,Torgue,Pistol,86,Barrel,TOR_PS.part_barrel_01_herald,赫拉德
+6,Torgue,Pistol,87,Barrel,TOR_PS.part_barrel_02_sledge,暴击衰减
 12,Torgue,Shotgun,2,Body,TOR_SG.part_body,
 12,Torgue,Shotgun,3,Body Accessory,TOR_SG.part_body_a,
 12,Torgue,Shotgun,4,Body Accessory,TOR_SG.part_body_b,
@@ -1816,6 +1859,7 @@
 12,Torgue,Shotgun,81,Foregrip,TOR_SG.part_foregrip_02_cormano,科尔马诺
 12,Torgue,Shotgun,82,Foregrip,TOR_SG.part_foregrip_01_cormano,科尔马诺
 12,Torgue,Shotgun,84,Barrel,TOR_SG.part_barrel_02_cormano,科尔马诺
+12,Torgue,Shotgun,85,Barrel,TOR_SG.part_barrel_01_aerodramatic,空中戏剧
 18,Vladof,Assault Rifle,1,Barrel,VLA_AR.part_barrel_01_lucian,卢西恩的侧攻
 18,Vladof,Assault Rifle,2,Body,VLA_AR.part_body,
 18,Vladof,Assault Rifle,3,Body Accessory,VLA_AR.part_body_a,
@@ -1909,6 +1953,7 @@
 18,Vladof,Assault Rifle,102,Barrel,VLA_AR.part_barrel_01_lasercutter,激光切割器
 18,Vladof,Assault Rifle,101,Underbarrel,VLA_AR.part_underbarrel_07_secondbarrel_lasercutter,
 18,Vladof,Assault Rifle,104,Barrel,VLA_AR.part_barrel_01_extinction,根除
+18,Vladof,Assault Rifle,106,Barrel,VLA_AR.part_barrel_01_triplicate,三重复制
 22,Vladof,SMG,2,Body,VLA_SM.part_body,
 22,Vladof,SMG,3,Body Accessory,VLA_SM.part_body_a,
 22,Vladof,SMG,4,Body Accessory,VLA_SM.part_body_b,
@@ -2001,6 +2046,7 @@
 22,Vladof,SMG,102,Underbarrel,VLA_SM.part_underbarrel_uni_locust_rocket,
 22,Vladof,SMG,103,Barrel,VLA_SM.part_barrel_locust,寄生体
 22,Vladof,SMG,93,Barrel,VLA_SM.part_barrel_brickhouse,砖屋
+22,Vladof,SMG,104,Barrel,VLA_SM.part_barrel_aura,淬炼精髓
 16,Vladof,Sniper,1,Barrel,VLA_SR.part_barrel_02_finnty,芬妮迪XXX-L
 16,Vladof,Sniper,2,Body,VLA_SR.part_body,
 16,Vladof,Sniper,3,Body Accessory,VLA_SR.part_body_d,
@@ -2085,3 +2131,7 @@
 16,Vladof,Sniper,86,Grip,VLA_SR.part_grip_05c_ted_jav,
 16,Vladof,Sniper,87,Barrel,VLA_SR.part_barrel_01_hemorrhage,出血
 16,Vladof,Sniper,90,Barrel,VLA_SR.part_barrel_01_lightgun,轻型枪械
+16,Vladof,Sniper,92,Barrel,VLA_SR.part_barrel_02_exhibition,展览
+16,Vladof,Sniper,94,Barrel,VLA_SR.part_barrel_01_fl4k,獠牙猛兽
+13,Daedalus,Assault Rifle,84,Barrel,DAD_AR.part_barrel_01_firstimpression,第一印象
+21,Maliwan,SMG,82,Barrel,MAL_SM.part_barrel_02_firework,斗牛大赛

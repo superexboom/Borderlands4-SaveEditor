@@ -31,6 +31,12 @@ This tool allows you to modify character data, manage inventory items, unlock ga
 - Edit all currently available Vault Card token balances from a Profile save.
 - One-click synchronization of all backpack item levels to the current character level.
 
+#### Optional Live Mode
+- Connects to the separately distributed `BL4 Live` SDK mod over localhost.
+- Pulls the current character, backpack, and bank into the editor without opening a save file.
+- Supports stable-identity item overwrite, native spawning, immediate Backpack identity publication, and verified equipped-actor rebuilding.
+- Provides online loadout save/apply with recovery locking, plus Vault Card, currency, ammo, capacity, weapon-scaling, position, Lost Loot, and dedicated-drop controls.
+
 #### Unlocks & Presets
 Provides various one-click unlock functions:
 - Uses built-in offline preset data that can be updated alongside game content.
@@ -46,15 +52,16 @@ Provides various one-click unlock functions:
 - View and manage items in your backpack.
 - Resolve item prefixes and names fully offline across all item types.
 - Resolve weapon stats fully offline, including damage, accuracy, fire rate, reload time, magazine size, DPS, critical damage, ammo cost, splash radius, ADS time, and equip time.
-- Display BL4-style weapon hover cards with weapon icons, live stats, and rarity-colored frames, including Pearlescent.
+- Display BL4-style hover cards and offline-resolved data for weapons, grenades, shields, Repkits, heavy weapons, Class Mods, and Enhancements.
 - Set Item Flags (Common, Favorite, Junk, Groups 1-4).
 - Directly add items to backpack using Base85 codes or decoded format.
 - Read items from backpack for modification or copy their serial numbers.
 
 #### Gear Generation & Editing
 Features dedicated tabs for deep customization of various gear types:
-- **Weapon Editor**: Search existing weapons, inspect live stats, and modify parts, skins, elements, Pearlescent overrides, and other properties through filterable part catalogs.
+- **Weapon Editor**: Search existing weapons, inspect live stats, and modify parts, skins, elements, Pearlescent overrides, and other properties through filterable part catalogs. Optional internal-name display and barrel-model markers help distinguish same-model and cross-model attachments.
 - **Weapon Generator**: Generate custom weapons from scratch with live stat previews, responsive part selectors, and detailed part effect scales.
+- **God Roll Optimizer**: Search legal or cross-manufacturer weapon combinations under configurable element, barrel, Torgue, group-limit, and time-budget constraints, then add selected results to the backpack.
 - **Class Mod**: Customize class, rarity, skill bonuses, and passive perks through searchable catalogs with class and skill-tree color filters, descriptions, and selected-state highlighting.
 - **Enhancement**: Customize manufacturer, rarity, and perk stacking.
 - **Grenade**: Customize manufacturer, level, rarity, perks, elements, fuses, etc.
@@ -62,12 +69,13 @@ Features dedicated tabs for deep customization of various gear types:
 - **Repkit**: Customize prefix, resistances, firmware, and perks.
 - **Heavy Weapon**: Customize barrel, element, firmware, attachments, etc.
 - Non-weapon editors can load an existing backpack item or Base85 serial as an editable copy while keeping manufacturer/class identity locked for safe regeneration.
+- Weapon and equipment editors provide natural-generation guidance, part-count hints, live stat previews, and legal “I'm Feeling Lucky” rolls.
 - All generators support direct "Add to Backpack" or "Copy Serial".
 
 #### Converter & Advanced Tools
 - **Code Converter**: Supports conversion between Base85 encoding and Deserialized data.
 - **Batch Processing**: Batch convert codes and batch import lists of codes into the backpack.
-- **Iterator Generator**: Supports batch generating item sequences by setting value ranges (e.g., generating all skins, iterating through all part combinations).
+- **Serial Inspector**: Inspect one Base85 or decoded serial with item summary, part IDs, names, effects, legality rules, rendered item card, and JSON/card export. It also includes game-data-derived official loadouts, mission/NPC weapons, and internal inspection presets with provenance, scenario labels, and safe add restrictions.
 - **YAML Editor**: Provides editable lazy tree, source, and split views with search, inline validation, undo/redo, change highlighting, serial previews, item-editor routing, and backpack slot-range deletion.
 
 ---
@@ -76,13 +84,13 @@ Features dedicated tabs for deep customization of various gear types:
 
 If you want to build the executable (`.exe`) from source, please ensure you have Python installed and run the `pyinstaller_config.py` script located in the project root directory.
 
-This script will automatically handle dependencies, collect required resource files (such as images, JSONs, CSVs, etc.), and invoke PyInstaller to generate `dist/BL4SaveEditor.exe`.
+This script uses the canonical HuskarUI Qt6 spec, collects the required resource files (such as images, JSONs, CSVs, and the vendored HuskarUI runtime), and invokes PyInstaller to generate `dist/BL4SaveEditor.exe`. The old QWidget entry point is retained only as an internal compatibility module and is not packaged as a separate application.
 
 **Steps:**
 
 1.  Install dependencies:
     ```bash
-    pip install pyinstaller pyyaml pycryptodome PyQt6 pandas
+    pip install -r requirements-huskarui.txt
     ```
 2.  Run the build script:
     ```bash

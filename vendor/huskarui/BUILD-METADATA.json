@@ -1,0 +1,12 @@
+{
+  "repository": "https://github.com/mengps/HuskarUI.git",
+  "commit": "4eef8c2209d9482f3fadcf767ec5ca54000d03e2",
+  "qt": "6.9.1",
+  "compiler": "MSVC 19.44.35226.0",
+  "build": "CMake Visual Studio 17 2022 x64 Release",
+  "installSource": "C:\\Users\\SuperExboom\\Desktop\\BL4\\.local\\huskarui-install-691c",
+  "binaries": {
+    "impl": "653654B1D3A3C4AD502A83C24FD5F6205BC5776AA416FFE9878BFD38104401A5",
+    "basic": "D85ABFE2B5F95BB1877BA495936AD9E1DA4550098777E482B70D5122FD2D701F"
+  }
+}

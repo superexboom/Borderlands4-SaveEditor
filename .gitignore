@@ -43,4 +43,20 @@ config.json
 xp_calc.py
 CsvMergeAutomationPlan.md
 ItemIdPartOverview.md
+EQUIPMENT_DATA_REPAIR_PLAN.md
+.local/
+
+# Internal working notes
+*_PLAN.md
+*_AUDIT.md
+*_PROGRESS.md
+progress.md
+test/
 tests/
+HUSKARUI_QT6_MIGRATION.md
+HUSKARUI_REPAIR_CHECKLIST.md
+LEGIT_BUILD_PLAN_*.md
+REPAIR_*.md
+ui_huskar/MIGRATION_GUIDE.md
+MODERNIZATION.md
+EQUIPMENT_DATA_REPAIR_PLAN.md

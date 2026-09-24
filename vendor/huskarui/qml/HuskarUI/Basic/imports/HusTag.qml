@@ -1,0 +1,193 @@
+/*
+ * HuskarUI
+ *
+ * Copyright (C) mengps (MenPenS) (MIT License)
+ * https://github.com/mengps/HuskarUI
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * - The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ * - The Software is provided "as is", without warranty of any kind, express or
+ *   implied, including but not limited to the warranties of merchantability,
+ *   fitness for a particular purpose and noninfringement. In no event shall the
+ *   authors or copyright holders be liable for any claim, damages or other
+ *   liability, whether in an action of contract, tort or otherwise, arising from,
+ *   out of or in connection with the Software or the use or other dealings in the
+ *   Software.
+ */
+
+import QtQuick
+import QtQuick.Templates as T
+import HuskarUI.Basic
+
+T.Control {
+    id: control
+
+    enum State {
+        State_Default = 0,
+        State_Success = 1,
+        State_Processing = 2,
+        State_Error = 3,
+        State_Warning  = 4
+    }
+
+    signal close()
+
+    property bool animationEnabled: HusTheme.animationEnabled
+    property int tagState: HusTag.State_Default
+    property string text: ''
+    property bool rotating: false
+    property var iconSource: 0 ?? ''
+    property int iconSize: parseInt(HusTheme.HusButton.fontSize)
+    property var closeIconSource: 0 ?? ''
+    property int closeIconSize: parseInt(HusTheme.HusButton.fontSize)
+    property string presetColor: ''
+    property color colorText: presetColor == '' ? themeSource.colorDefaultText : __private.isCustom ? '#fff' : __private.colorArray[5]
+    property color colorBg: presetColor == '' ? themeSource.colorDefaultBg : __private.isCustom ? presetColor : __private.colorArray[0]
+    property color colorIcon: colorText
+    property HusRadius radiusBg: HusRadius { all: themeSource.radiusBg }
+    property HusBorder borderBg: HusBorder {
+        color: presetColor === '' ? themeSource.colorDefaultBorder : __private.isCustom ? 'transparent' : __private.colorArray[2]
+    }
+    property var themeSource: HusTheme.HusTag
+
+    onTagStateChanged: {
+        switch (tagState) {
+        case HusTag.State_Success: presetColor = '#52c41a'; break;
+        case HusTag.State_Processing: presetColor = '#1677ff'; break;
+        case HusTag.State_Error: presetColor = '#ff4d4f'; break;
+        case HusTag.State_Warning: presetColor = '#faad14'; break;
+        case HusTag.State_Default:
+        default: presetColor = '';
+        }
+    }
+    onPresetColorChanged: {
+        let preset = -1;
+        switch (presetColor) {
+        case 'red': preset = HusColorGenerator.Preset_Red; break;
+        case 'volcano': preset = HusColorGenerator.Preset_Volcano; break;
+        case 'orange': preset = HusColorGenerator.Preset_Orange; break;
+        case 'gold': preset = HusColorGenerator.Preset_Gold; break;
+        case 'yellow': preset = HusColorGenerator.Preset_Yellow; break;
+        case 'lime': preset = HusColorGenerator.Preset_Lime; break;
+        case 'green': preset = HusColorGenerator.Preset_Green; break;
+        case 'cyan': preset = HusColorGenerator.Preset_Cyan; break;
+        case 'blue': preset = HusColorGenerator.Preset_Blue; break;
+        case 'geekblue': preset = HusColorGenerator.Preset_Geekblue; break;
+        case 'purple': preset = HusColorGenerator.Preset_Purple; break;
+        case 'magenta': preset = HusColorGenerator.Preset_Magenta; break;
+        }
+
+        if (tagState == HusTag.State_Default) {
+            __private.isCustom = preset == -1 ? true : false;
+            __private.presetColor = preset == -1 ? '#000' : husColorGenerator.presetToColor(preset);
+        } else {
+            __private.isCustom = false;
+            __private.presetColor = presetColor;
+        }
+    }
+
+    objectName: '__HusTag__'
+    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
+                            implicitContentWidth + leftPadding + rightPadding)
+    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
+                             implicitContentHeight + topPadding + bottomPadding)
+    topPadding: 4
+    bottomPadding: 4
+    leftPadding: 8
+    rightPadding: 8
+    spacing: 5
+    font {
+        family: control.themeSource.fontFamily
+        pixelSize: parseInt(control.themeSource.fontSize) - 2
+    }
+    contentItem: Row {
+        height: Math.max(__icon.implicitHeight, __text.implicitHeight, __closeIcon.implicitHeight)
+        spacing: control.spacing
+
+        HusIconText {
+            id: __icon
+            anchors.verticalCenter: parent.verticalCenter
+            color: control.colorIcon
+            iconSize: control.iconSize
+            iconSource: control.iconSource
+            verticalAlignment: Text.AlignVCenter
+            visible: !empty
+
+            Behavior on color { enabled: control.animationEnabled; ColorAnimation { duration: HusTheme.Primary.durationFast } }
+
+            NumberAnimation on rotation {
+                id: __animation
+                running: control.rotating
+                from: 0
+                to: 360
+                loops: Animation.Infinite
+                duration: 1000
+            }
+        }
+
+        HusCopyableText {
+            id: __text
+            anchors.verticalCenter: parent.verticalCenter
+            text: control.text
+            font: control.font
+            color: control.colorText
+
+            Behavior on color { enabled: control.animationEnabled; ColorAnimation { duration: HusTheme.Primary.durationFast } }
+        }
+
+        HusIconText {
+            id: __closeIcon
+            anchors.verticalCenter: parent.verticalCenter
+            color: hovered ? control.themeSource.colorCloseIconHover : control.themeSource.colorCloseIcon
+            iconSize: control.closeIconSize
+            iconSource: control.closeIconSource
+            verticalAlignment: Text.AlignVCenter
+            visible: !empty
+
+            property alias hovered: __hoverHander.hovered
+            property alias down: __tapHander.pressed
+
+            Behavior on color { enabled: control.animationEnabled; ColorAnimation { duration: HusTheme.Primary.durationFast } }
+
+            HoverHandler {
+                id: __hoverHander
+                cursorShape: Qt.PointingHandCursor
+            }
+
+            TapHandler {
+                id: __tapHander
+                onTapped: control.close();
+            }
+        }
+    }
+    background: HusRectangleInternal {
+        color: control.colorBg
+        border.width: control.borderBg.width
+        border.color: control.borderBg.color
+        border.pixelAligned: control.borderBg.pixelAligned
+        radius: control.radiusBg.all
+        topLeftRadius: control.radiusBg.topLeft
+        topRightRadius: control.radiusBg.topRight
+        bottomLeftRadius: control.radiusBg.bottomLeft
+        bottomRightRadius: control.radiusBg.bottomRight
+
+        Behavior on color { enabled: control.animationEnabled; ColorAnimation { duration: HusTheme.Primary.durationFast } }
+    }
+
+    HusColorGenerator {
+        id: husColorGenerator
+    }
+
+    QtObject {
+        id: __private
+        property bool isCustom: false
+        property color presetColor: '#000'
+        property var colorArray: HusThemeFunctions.genColor(presetColor, !HusTheme.isDark, HusTheme.Primary.colorBgBase)
+    }
+}

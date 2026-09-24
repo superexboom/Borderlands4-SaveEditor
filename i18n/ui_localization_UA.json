@@ -42,6 +42,7 @@
     "window_title": "Borderlands 4 Save Editor",
     "subtitle": "Автор: SuperExboom - Безкоштовне ПЗ, якщо ви заплатили за це, вас обдурили",
     "header": {
+      "language": "\u041c\u043e\u0432\u0430",
       "title": "Редактор збережень Borderlands 4",
       "open": "Відкрити",
       "save": "Зберегти",
@@ -50,12 +51,20 @@
       "theme_light": "Переключити на світлу тему",
       "change_bg": "Змінити ФОН"
     },
+    "settings": {
+      "title": "\u041d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u043d\u044f \u0456\u043d\u0442\u0435\u0440\u0444\u0435\u0439\u0441\u0443",
+      "blur": "\u0420\u043e\u0437\u043c\u0438\u0442\u0442\u044f \u0444\u043e\u043d\u0443",
+      "pick_bg": "\u041e\u0431\u0440\u0430\u0442\u0438 \u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u043d\u044f",
+      "clear_bg": "\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u0438",
+      "animations": "\u0410\u043d\u0456\u043c\u0430\u0446\u0456\u0457 \u0456\u043d\u0442\u0435\u0440\u0444\u0435\u0439\u0441\u0443"
+    },
     "menu": {
       "open_selector": "Вибір збереження",
       "save": "Зберегти",
       "save_as": "Зберегти як..."
     },
     "status": {
+      "loading": "Завантаження...",
       "welcome": "Ласкаво просимо до редактора збережень Borderlands 4",
       "autosave": "Автозбереження",
       "autosave_tip": "Запис на диск через ~30 с після правок (атомарно; попередній файл → .prev.bak)",
@@ -75,6 +84,7 @@
       "enhancement": "Посилення",
       "weapon_editor": "Ред. зброї",
       "weapon_generator": "Ген. зброї",
+      "god_roll": "God Roll",
       "grenade": "Граната",
       "shield": "Щит",
       "repkit": "Ремкомплект",
@@ -121,6 +131,7 @@
       "batch_success": "Успішно додано предметів: {count}.",
       "batch_fail": "Пакетне додавання не вдалося",
       "batch_fail_msg": "Не вдалося додати жодного предмета. Помилок: {count}.",
+      "batch_busy": "Інше пакетне додавання вже виконується. Дочекайтеся його завершення.",
       "iter_complete": "Ітеративне додавання завершено",
       "iter_success": "Успішно додано предметів: {count}.",
       "iter_fail": "Ітеративне додавання не вдалося",
@@ -144,6 +155,57 @@
       "generated_encoding": "Згенеровано {count} записів, початок кодування...",
       "encoding_progress": "Кодування {current}/{total}...",
       "error_prefix": "Помилка: "
+    },
+    "live": {
+      "title": "Онлайн-режим",
+      "offline": "Онл.",
+      "online": "Онл.",
+      "connecting": "Онл.…",
+      "refresh": "Онов.",
+      "toggle_tooltip": "Підключитися до запущеної гри (127.0.0.1:28777), щоб читати й змінювати предмети в реальному часі.",
+      "refresh_tooltip": "Оновити предмети із запущеної гри (лише в онлайн-режимі).",
+      "mode_accessible": "Онлайн-режим",
+      "refresh_accessible": "Оновити онлайн-предмети",
+      "unavailable": "Онлайн-режим недоступний (модуль live/): {error}",
+      "connection_failed": "Не вдалося підключитися до гри (127.0.0.1:28777).\nПереконайтеся, що гру запущено, персонажа завантажено й мод bl4_live активний.",
+      "version_mismatch": "Несумісна версія bl4_live: редактор очікує {expected}, гра повідомляє {actual}.\nУстановіть bl4_live для цієї версії гри.",
+      "version_check_failed": "Не вдалося перевірити сумісність bl4_live: {error}",
+      "fetch_failed": "Не вдалося отримати онлайн-предмети: {error}",
+      "runtime_state_failed": "Не вдалося прочитати стан гри: {error}",
+      "synced": "Предмети рюкзака та банку синхронізовано з грою.",
+      "timeout": "Отримання онлайн-предметів перевищило 15 секунд. Гру або bl4_live може бути не запущено.",
+      "refresh_failed": "Не вдалося оновити онлайн-предмети: {error}",
+      "refreshed": "Онлайн-предмети оновлено.",
+      "exited": "Онлайн-режим вимкнено.",
+      "save_disabled": "Недоступно в онлайн-режимі (немає файла збереження).",
+      "flag_disabled": "Прапорці збереження не використовуються в онлайн-режимі.",
+      "runtime_action_done": "Онлайн-дію виконано: {action}",
+      "runtime_busy": "Інша онлайн-дія ще виконується. Дочекайтеся її завершення.",
+      "unsaved_changes_blocked": "Перед переходом в онлайн-режим збережіть або скасуйте незбережені зміни офлайн-збереження.",
+      "add_encode_failed": "Не вдалося закодувати онлайн-предмет: {error}",
+      "spawn_failed": "Не вдалося створити онлайн-предмет: {error}",
+      "spawn_success": "Новий предмет створено в ігровому рюкзаку.",
+      "spawn_rejected": "Гра відхилила створення предмета: {error}",
+      "invalid_serial": "Некоректний серійний код: {serial}",
+      "slot_missing": "Не вдалося визначити слот інвентарю (в item_path немає slot_N).",
+      "overwrite_started": "Онлайн-заміна: {container}[{slot}] -> {serial}...",
+      "overwrite_failed": "Онлайн-заміна не вдалася: {error}",
+      "missing_parts": "Увага: не вдалося зіставити компонентів: {count}.",
+      "overwrite_success": "Предмет у слоті {slot} замінено; серійний код і масив компонентів перевірено.\nПредмети, крім зброї, зазвичай оновлюються відразу. Картка, модель і поведінка зброї кешуються грою; поверніться до головного меню та знову завантажте персонажа.",
+      "overwrite_rejected": "Гра відхилила онлайн-заміну: {error}",
+      "overwrite_conflict_refreshed": "Цільовий предмет перемістився або змінився у грі. Онлайн-рюкзак оновлено; знову відкрийте предмет і повторіть заміну.",
+      "overwrite_source_missing": "У поточному онлайн-знімку немає вихідного серійного коду цього слота. Оновіть дані та повторіть.",
+      "overwrite_persistent_success": "Слот {slot}: серійний код і масив компонентів перевірено.",
+      "cache_rebuild_success": "Повну runtime-identity та кеш Actor спорядженого предмета перебудовано.",
+      "backpack_publication_success": "Повну runtime-identity неспорядженого предмета в рюкзаку опубліковано й оновлено.",
+      "cache_rebuild_not_needed": "Предмет не споряджено; перебудова моделі не потрібна.",
+      "cache_rebuild_already_current": "Модель спорядженого предмета вже актуальна; перебудова не потрібна.",
+      "cache_rebuild_failed": "Кеш не було повністю перебудовано: {error}. Дані гри оновлено; за потреби перезавантажтеся.",
+      "cache_rebuild_unavailable": "Миттєва перебудова кешу тимчасово недоступна: {reason}. Зміну предмета збережено; за потреби перезавантажтеся.",
+      "cache_rebuild_unsupported": "Поточний онлайн-мод не підтримує миттєву перебудову кешу; за потреби перезавантажтеся.",
+      "cache_rebuild_recovery": "Стан транзакції невизначений. Перевірте спорядження та блокування відновлення перед наступною заміною.",
+      "inventory_recovery_reason": "потрібно перевірити незавершене відновлення комплекту",
+      "inventory_mutation_recovery_pending": "Виявлено незавершене відновлення комплекту, тому запис онлайн-предметів заблоковано. Спочатку перевірте або очистьте запис на вкладці комплектів: {reason}"
     }
   },
   "character_tab": {
@@ -151,7 +213,8 @@
       "character_info": "Персонаж (Info)",
       "currency": "Валюта (Currency)",
       "world_presets": "Пресети Profile / Shared",
-      "char_presets": "Пресети персонажа"
+      "char_presets": "Пресети персонажа",
+      "live_runtime": "Онлайн-функції"
     },
     "labels": {
       "name": "Ім'я:",
@@ -168,12 +231,101 @@
       "character_only_hint": "Лише для збереження персонажа. У Profile кнопки будуть неактивні.",
       "preset_mode_profile": "Тип збереження: Profile. Пресети Profile активні, пресети персонажа вимкнені.",
       "preset_mode_character": "Тип збереження: персонаж. Пресети персонажа активні, пресети Profile вимкнені.",
+      "live_runtime_hint": "Ці функції діють лише в поточній сесії. Модифікатори зброї застосовуються після зміни зброї та відновлюються після вимкнення.",
+      "live_runtime_idle": "Готово.",
+      "live_dedicated_drop_hint": "Гарантовані спроби лише з особистого пулу ворога NCS. Множник задає кількість додаткових спроб; світовий пул не додається.",
+      "live_max_sdu_tokens_hint": "Поповнює жетони ECHO/SDU до мінімальної загальної суми для всіх платних покращень місткості. Вищі значення не знижуються; завдання та слоти спорядження не відкриваються примусово.",
+      "live_survival": "Виживання / рух",
+      "live_weapon": "Зброя",
+      "live_cooldown": "Відновлення",
+      "live_progress": "Прогрес / валюта",
+      "live_tuning": "Множники / місткість",
+      "live_loot": "Рідкість здобичі",
+      "live_vault_card": "Vault Card",
+      "live_vault_card_item": "{name} · рів. {level}",
+      "live_currency": "Валюта",
+      "live_currency_item": "{name} · {amount}",
+      "bank_size": "Місткість банку",
+      "base_fov": "Основний FOV",
+      "viewmodel_fov": "FOV моделі зброї",
+      "magazine_capacity_scale": "Множник магазина",
+      "projectile_speed_scale": "Швидкість снаряда",
+      "live_position": "Закладки позиції",
+      "position_unavailable": "Позиція персонажа недоступна.",
+      "position_value": "{map} · X {x:.1f} · Y {y:.1f} · Z {z:.1f}",
+      "bookmark_name": "Назва закладки",
+      "bookmark_default": "Закладка {number}",
+      "bookmark_item": "{name} · {map}",
+      "position_map_mismatch": "Закладка розташована на іншій мапі.",
+      "live_lost_loot": "Втрачена здобич",
+      "lost_loot_unavailable": "Втрачена здобич недоступна.",
+      "lost_loot_value": "Очікує: {count} · місць у рюкзаку: {free_slots}",
+      "vault_card_name": "Картка Сховища {number}",
+      "live_currency_cash": "Гроші",
+      "live_currency_eridium": "Ерідій",
+      "fire_rate_scale": "Темп стрільби",
+      "movement_speed_scale": "Швидкість руху",
+      "jump_height_scale": "Висота стрибка",
+      "critical_damage_scale": "Шкода крита",
+      "experience_reward_scale": "Множник бойового досвіду",
+      "cash_reward_scale": "Множник грошей",
+      "eridium_reward_scale": "Множник еридію",
+      "dedicated_drop_multiplier": "Дод. особиста здобич",
+      "backpack_size": "Розмір рюкзака",
       "preset_credit": ""
     },
     "buttons": {
       "apply_changes": "Застосувати зміни персонажа та валюти",
       "apply_profile_changes": "Застосувати валюти Profile",
-      "sync_levels": "Синхронізувати рівні предметів у рюкзаку з персонажем"
+      "sync_levels": "Синхронізувати рівні предметів у рюкзаку з персонажем",
+      "toggle_infinite_ammo": "Нескінченні набої",
+      "refill_ammo": "Поповнити боєзапас",
+      "toggle_demigod": "Безсмертя",
+      "toggle_health_lock": "Фікс. здоров'я",
+      "toggle_shield_lock": "Фікс. щит",
+      "toggle_stamina_lock": "Нескінченна витривалість",
+      "toggle_instant_reload": "Миттєва перезарядка",
+      "toggle_no_overheat": "Без перегріву",
+      "toggle_no_spread": "Без розкиду",
+      "toggle_no_recoil": "Без віддачі",
+      "toggle_guaranteed_crit": "Завжди крит",
+      "toggle_repairkit_no_cd": "Ремкомплект без КД",
+      "toggle_skill_no_cd": "Навички без КД",
+      "toggle_gadget_no_cd": "Спорядження без КД",
+      "toggle_dedicated_drop_100": "Особиста здобич 100%",
+      "max_money": "Максимум грошей",
+      "max_eridium": "Максимум еридію",
+      "max_level": "Максимальний рівень",
+      "max_specialization": "Максимальна спеціалізація",
+      "max_sdu_tokens": "Макс. жетони SDU",
+      "toggle_infinite_jump": "Нескінченний стрибок",
+      "set_vault_card_level": "Задати рівень",
+      "give_currency": "Додати",
+      "apply_bank_size": "Застосувати",
+      "apply_base_fov": "Застосувати",
+      "apply_viewmodel_fov": "Застосувати",
+      "apply_magazine_capacity": "Застосувати",
+      "apply_projectile_speed": "Застосувати",
+      "reset_fov": "Скинути FOV",
+      "refresh_position": "Оновити",
+      "save_position": "Зберегти",
+      "teleport_position": "Телепорт",
+      "delete_position": "Видалити",
+      "refresh_lost_loot": "Оновити",
+      "claim_lost_loot": "Забрати",
+      "apply_fire_rate": "Застосувати",
+      "apply_movement_speed": "Застосувати",
+      "apply_jump_height": "Застосувати",
+      "apply_critical_damage": "Застосувати",
+      "apply_experience_multiplier": "Застосувати",
+      "apply_cash_multiplier": "Застосувати",
+      "apply_eridium_multiplier": "Застосувати",
+      "apply_backpack_size": "Застосувати",
+      "apply_dedicated_drop_multiplier": "Застосувати",
+      "rarity_legendary": "Лише легендарні",
+      "rarity_pearlescent": "Лише перлинні",
+      "rarity_reset": "Скинути шанс",
+      "reset_runtime_modifiers": "Скинути модифікатори"
     },
     "warnings": {
       "sync_warning": "Увага: Це може призвести до зняття екіпірованих предметів. Вам доведеться одягнути їх знову з рюкзака."
@@ -219,6 +371,7 @@
       "reload_time": "Перезаряджання",
       "magazine": "Магазин",
       "critical_damage": "Крит. шкода",
+      "critical_chance": "Шанс крита",
       "ammo_cost": "Витрата боєприпасів",
       "splash_radius": "Радіус вибуху",
       "ads_time": "Час прицілювання",
@@ -249,6 +402,17 @@
       "Unknown": "Невідомо"
     },
     "search_placeholder": "Пошук предметів...",
+    "filters": {
+      "container": "Контейнер",
+      "type": "Тип",
+      "manufacturer": "Виробник",
+      "rarity": "Рідкість",
+      "flags": "Прапорець",
+      "level": "Рівень",
+      "all": "Усі",
+      "clear": "Очистити фільтри",
+      "count": "Показано {shown}/{total}"
+    },
     "add_item": {
       "label_serial": "Серійний номер:",
       "placeholder_serial": "Введіть @U... або декодований код",
@@ -344,6 +508,7 @@
       "export_txt": "Експорт у .txt",
       "start_batch": "Почати пакетну обробку",
       "batch_add": "Пакетне додавання",
+      "import_yaml": "Імпорт YAML",
       "adding": "Додавання...",
       "processing": "Обробка...",
       "start_iter": "Почати ітерацію та генерацію",
@@ -416,7 +581,9 @@
       "components": "Компоненти",
       "roundtrip": "Зворотна перевірка",
       "part_total": "Деталей",
-      "implicit_level_one": "Неявний 1 рівень"
+      "implicit_level_one": "Неявний 1 рівень",
+      "provenance": "Джерело",
+      "catalog_empty": "Вбудований каталог серійних номерів відсутній або порожній."
     },
     "buttons": {
       "inspect": "Аналіз",
@@ -426,7 +593,46 @@
       "clear": "Очистити",
       "copy_json": "Копіювати JSON",
       "export_json": "Експорт JSON",
-      "save_card": "Зберегти картку"
+      "save_card": "Зберегти картку",
+      "catalog": "Внутрішні / NPC / завдання"
+    },
+    "provenance_tags": {
+      "official_loadout": "Офіційний комплект",
+      "mission": "Завдання",
+      "npc": "NPC / сцена",
+      "skill": "Об'єкт навички",
+      "ui": "Попередній перегляд UI",
+      "historical": "Історичне",
+      "orphan": "Сирота / застаріле"
+    },
+    "catalog": {
+      "title": "Внутрішні / NPC / завдання",
+      "warning": "Внутрішні та сценічні дані можуть бути виправлені, видалені або відхилені грою. Спочатку перевірте їх.",
+      "search": "Фільтр за назвою, типом, джерелом або сценою...",
+      "name": "Назва",
+      "type": "Тип",
+      "context": "Сцена / контекст",
+      "level": "Рівень",
+      "details": "Відомості",
+      "load": "Перевірити",
+      "copy": "Копіювати Base85",
+      "add": "До рюкзака",
+      "close": "Закрити",
+      "no_selection": "Виберіть запис, щоб переглянути джерело та правила.",
+      "no_serial": "Запис містить лише правила, без серійного номера.",
+      "copy_title": "Копіювати внутрішній номер?",
+      "copy_warning": "Це внутрішній або сценічний предмет. Він може бути небезпечним для гравця. Копіювати Base85?",
+      "add_title": "Додати внутрішній предмет?",
+      "add_warning": "Гра може виправити, видалити або відхилити цей внутрішній предмет. Додати його до рюкзака?",
+      "add_blocked": "Цей запис доступний лише для перегляду і не може бути доданий до рюкзака.",
+      "groups": {
+        "official_loadout": "Офіційний старт / комплект",
+        "npc_mission": "NPC / завдання / сцена",
+        "skill_ui": "Навичка / перегляд UI",
+        "history": "Історія / сироти",
+        "rules_only": "Лише правила",
+        "other": "Інші внутрішні дані"
+      }
     },
     "parts_columns": [
       "#",
@@ -467,6 +673,8 @@
       "tag_limits": "Ліміти тегів",
       "groups": "Групи деталей",
       "violations": "Проблеми",
+      "catalog_rule": "Вбудоване правило лише для читання",
+      "preferred_parts": "Рекомендовані деталі",
       "yes": "так",
       "no": "ні"
     },
@@ -520,7 +728,9 @@
     },
     "search": {
       "placeholder": "Пошук ключів чи значень…",
-      "count": "{current}/{total}"
+      "count": "{current}/{total}",
+      "previous_tooltip": "Попередній результат пошуку",
+      "next_tooltip": "Наступний результат пошуку"
     },
     "inspector": {
       "path": "Поточний вузол",
@@ -534,6 +744,7 @@
       "manufacturer": "Виробник",
       "container": "Місце",
       "slot": "Слот",
+      "state_flags": "Прапорці стану",
       "unresolved": "Не розпізнано"
     },
     "ops": {
@@ -560,7 +771,9 @@
       "range_confirm": "Видалити",
       "delete_confirm": "Видалити вузлів: {count}?",
       "error": "Помилка",
-      "delete": "Видалити"
+      "delete": "Видалити",
+      "confirm": "Гаразд",
+      "cancel": "Скасувати"
     },
     "types": {
       "str": "Рядок",
@@ -580,6 +793,13 @@
       "list_items": "список · {count}",
       "flags_bits": "біти {bits}",
       "serial_ok": "Розшифровано · Lv{level} {name}"
+    },
+    "tooltips": {
+      "undo": "Скасувати (Ctrl+Z)",
+      "redo": "Повторити (Ctrl+Y)"
+    },
+    "shortcuts": {
+      "hint": "Ctrl+Z Скасувати · Ctrl+F Пошук · F2 Перейменувати · Del Видалити"
     }
   },
   "class_mod_tab": {
@@ -591,7 +811,7 @@
       "seed": "Випадковий Сід (1–9999)"
     },
     "legendary": {
-      "title": "Легендарний додаток",
+      "title": "Легендарні назви",
       "clear": "Очистити",
       "search_placeholder": "Пошук…"
     },
@@ -857,6 +1077,7 @@
       "move_up": "Вгору",
       "move_down": "Вниз",
       "drag_part": "Перетягніть, щоб змінити порядок",
+      "toggle_internal_names": "Показати або приховати внутрішні назви деталей",
       "remove_part": "Видалити"
     },
     "parts": {
@@ -886,9 +1107,102 @@
       "facet_part_type": "Тип деталі",
       "facet_manufacturer": "Виробник",
       "facet_weapon_type": "Тип зброї",
+      "same_model": "Та сама модель ствола ({model})",
+      "cross_model": "Інша модель: поточна {current}, кандидат {candidate}",
+      "same_model_badge": "Та сама {model}",
+      "cross_model_badge": "Інша {model}",
       "result_count": "Знайдено: {n} / {total}",
-      "available_parts_hint": "Доступні деталі (клік — перегляд, подвійний клік — додати)"
+      "available_parts_hint": "Доступні деталі (клік — перегляд, подвійний клік — додати)",
+      "no_matches": "Немає збігів",
+      "search_skin": "Пошук за назвою скіна…"
     }
+  },
+  "equipment_roll": {
+    "main_page": "Редактор",
+    "results_page": "Результати",
+    "named_item": "Модель",
+    "generated": "Створено: {count}",
+    "no_results": "Результатів ще немає",
+    "select_result": "Виберіть предмет ліворуч",
+    "add_one": "Додати",
+    "shield_type": "Тип щита",
+    "live_stats": "Параметри"
+  },
+  "god_roll_tab": {
+    "title": "Оптимізатор God Roll",
+    "manufacturer": "Виробник",
+    "weapon_type": "Тип зброї",
+    "rarity": "Рідкість",
+    "weapon": "Цільова зброя",
+    "mode": "Режим",
+    "legal": "Легальна збірка",
+    "unrestricted": "Деталі різних фірм",
+    "level": "Рівень",
+    "barrel": "Фіксований ствол",
+    "torgue": "Вимога Torgue",
+    "torgue_any": "Без вимоги до режиму Torgue",
+    "torgue_sticky": "Обов'язково липкі",
+    "torgue_impact": "Обов'язково ударні/звичайні",
+    "base_element": "Базовий елемент",
+    "secondary_element": "Другий елемент",
+    "pearl_element": "Перлинна заміна",
+    "auto": "Автопідбір",
+    "auto_available": "Автопідбір (допустимо, не гарантовано)",
+    "unavailable": "Недоступно для цієї зброї",
+    "none": "Без елемента",
+    "force_element": "Дозволити нелегальний елемент",
+    "force_hint": "Результат буде позначено модифікованим, якщо порушено лише правило елемента.",
+    "score_note": "Рейтинг використовує розрахункову модель характеристик; червоні ефекти, рикошети й відкладену шкоду липких зарядів враховано не повністю.",
+    "score_profile": "Профіль оцінки",
+    "score_profile_sustained_dps": "Тривалий DPS",
+    "score_profile_burst": "Вибухова шкода",
+    "score_profile_crit_element": "Критична / елементальна",
+    "score_profile_balanced": "Збалансований",
+    "score_explanation": "Пояснення оцінки",
+    "score_total": "Оцінка",
+    "score_short": "Оцінка",
+    "score_metric_dps": "Тривалий DPS",
+    "score_metric_damage": "Шкода",
+    "score_metric_fire_rate": "Темп стрільби",
+    "score_metric_magazine": "Магазин",
+    "score_metric_critical_damage": "Критична шкода",
+    "score_metric_elemental_dps": "Елементальний DPS",
+    "score_metric_reload_time": "Перезаряджання",
+    "score_warning": "Розрахункова оцінка: червоні ефекти, рикошети та відкладена липка шкода не враховуються.",
+    "score_missing": "Недоступні показники: {metrics}",
+    "open_editor": "Відкрити в редакторі зброї",
+    "limits": "Межі груп без обмежень",
+    "group": "Група",
+    "pool": "Пул",
+    "minimum": "Мін.",
+    "maximum": "Макс.",
+    "effort": "Бюджет пошуку",
+    "fast": "Швидко (3 секунди)",
+    "balanced": "Баланс (8 секунд)",
+    "deep": "Глибоко (30 секунд)",
+    "top_n": "Результати",
+    "search": "Знайти God Roll",
+    "cancel": "Скасувати",
+    "idle": "Оберіть зброю та обмеження, потім запустіть пошук.",
+    "running": "Перевірено {attempted} · допустимо {accepted} · найкраща оцінка {best}",
+    "done": "За {elapsed:.1f} с перевірено {attempted} збірок, знайдено {count}. Це найкраще в межах бюджету; глобальний оптимум не доведено.",
+    "done_exact": "За {elapsed:.1f} с повністю перевірено {frontier} легальних збірок; глобальний Top {count} доведено.",
+    "cancelled": "Пошук скасовано; показано найкращі знайдені результати.",
+    "no_results": "Немає збірок, що відповідають обмеженням.",
+    "error": "Помилка пошуку God Roll: {error}",
+    "offline_only": "God Roll доступний лише для офлайн-збереження.",
+    "select_flag": "Flag",
+    "add_start": "Додавання: {count}...",
+    "add_progress": "Додавання {current}/{total} · успішно {success} · помилок {fail}",
+    "add_done": "Додано {success}; помилок {fail}",
+    "results_scope": "{mode} · {profile} · ствол {barrel} · найкращі Top {count} у бюджеті",
+    "results_scope_exact": "{mode} · {profile} · ствол {barrel} · доведений Top {count}",
+    "parts_title": "Деталі компонентів",
+    "no_part_details": "Для цього результату немає даних про компоненти.",
+    "no_part_effect": "Немає змін характеристик",
+    "source_current": "Поточна зброя",
+    "source_universal": "Спільний пул елементів",
+    "status_element_modified": "Змінено лише елемент"
   },
   "weapon_gen_tab": {
     "labels": {
@@ -947,7 +1261,10 @@
       "roll_options": "Параметри",
       "roll_results": "Результати",
       "available_only": "Лише доступні",
-      "attribute_hint": "Друга стихія з’являється за підтримки; перлинні поля — лише для перлинної рідкості."
+      "attribute_hint": "Друга стихія з’являється за підтримки; перлинні поля — лише для перлинної рідкості.",
+      "stats": "Характеристики",
+      "missing_parts": "Відсутнє: {parts}",
+      "missing_parts_format": "{label} {actual}/{limit}"
     },
     "dialogs": {
       "error_title": "Помилка",
@@ -964,6 +1281,55 @@
       "roll_add_progress": "{current}/{total} · +{success} · −{fail}",
       "roll_add_done": "Додано {success}, помилок {fail}",
       "base85_copied": "Base85 скопійовано"
+    }
+  },
+  "equipment_legit": {
+    "status_legal": "Природне",
+    "status_incomplete": "Не зібрано",
+    "status_modified": "Модиф.",
+    "status_conditional": "Умовно",
+    "status_unknown": "Без перевірки",
+    "status_gold": "Основа Gold",
+    "reason_legal": "Відповідає правилам природної генерації.",
+    "reason_count_below": "Бракує: {group} ({actual}/{limit})",
+    "reason_count_above": "Зайве: {group} ({actual}/{limit})",
+    "reason_part_not_allowed": "Є деталь поза поточним шаблоном",
+    "reason_duplicate_part": "Одну деталь вибрано повторно",
+    "reason_missing_dependency": "Не виконано залежність деталі",
+    "reason_conflict": "Вибрані деталі конфліктують",
+    "reason_foreign_part": "Є деталь іншого типу або виробника",
+    "reason_unknown_part": "Є невідома деталь",
+    "reason_unknown_composition": "Виберіть відомий шаблон предмета",
+    "reason_multiple_compositions": "Вибрано кілька шаблонів",
+    "reason_rule_gap": "Правила генерації неповні",
+    "reason_conditional": "Потрібен обмежений вміст",
+    "reason_modified": "Не відповідає природній генерації",
+    "candidate_legal": "Допустимо: {group}",
+    "candidate_slot_full": "Допустимо для {group}; замініть поточну деталь.",
+    "candidate_dependency": "Група {group}: не виконано поєднання або залежність.",
+    "candidate_not_allowed": "Поза природним шаблоном; можна вибрати як модифікацію.",
+    "slot_budget_hint": "Поточна кількість / природний ліміт; модифікації не блокуються.",
+    "gold_reason": "Gold Skin — лише основа легендарного скіна без природної збірки; підказки вимкнено.",
+    "groups": {
+      "barrel": "Ствол",
+      "barrel_acc": "Мод. ствола",
+      "body": "Корпус",
+      "body_acc": "Мод. корпусу",
+      "body_ele": "Стихія",
+      "element": "Стихія",
+      "firmware": "Прошивка",
+      "payload": "Заряд",
+      "payload_augment": "Мод. заряду",
+      "stat_augment": "Мод. статів",
+      "primary_augment": "Основний",
+      "secondary_augment": "Вторинний",
+      "augment_element_resist": "Опір",
+      "augment_element_immunity": "Імунітет",
+      "augment_element_splat": "Викид",
+      "augment_element_nova": "Нова",
+      "unique": "Легенд.",
+      "vile": "Vile",
+      "other": "Інше"
     }
   },
   "grenade_tab": {
@@ -991,7 +1357,9 @@
       "clear": "Очистити"
     },
     "misc": {
-      "none": "Немає"
+      "none": "Немає",
+      "all": "Усі",
+      "available": "Доступно"
     },
     "dialogs": {
       "load_error": "Помилка: Дані гранат не завантажено.",
@@ -1003,6 +1371,12 @@
     }
   },
   "shield_tab": {
+    "augment_sources": {
+      "all": "Усі джерела",
+      "universal": "Загальні",
+      "energy": "Енергощит",
+      "armor": "Бронещит"
+    },
     "augment_facets": {
       "all": "Все",
       "primary_augment": "Основний слот",
@@ -1014,6 +1388,8 @@
       "element": "Опір стихіям (Одиничн.)",
       "firmware": "Прошивка (Одиничн.)",
       "legendary": "Легендарні перки",
+      "primary": "Основний мод.",
+      "secondary": "Вторинний мод.",
       "energy": "Перки енергощита",
       "armor": "Перки бронещита",
       "universal": "Універсальні перки",
@@ -1035,6 +1411,9 @@
     },
     "misc": {
       "none": "Немає",
+      "all": "Усі",
+      "available": "Доступно",
+      "base": "Основа",
       "perk_type_mismatch": "Поточний тип щита: {shield_type}.\nНе можна додати перки типу {incompatible_type}.",
       "shield_type_energy": "Енергощит",
       "shield_type_armor": "Бронещит"
@@ -1060,7 +1439,8 @@
     "groups": {
       "perks": "Навички/Перки",
       "prefix": "Префікс (Одиничн.)",
-      "resistance": "Опір/Імунітет (Одиничн.)",
+      "resistance": "Опір (Одиничн.)",
+      "immunity": "Імунітет (Одиничн.)",
       "firmware": "Прошивка (Одиничн.)",
       "legendary": "Легендарні перки",
       "universal": "Універсальні перки (Мульти)",
@@ -1083,7 +1463,9 @@
       "random": "Випадково"
     },
     "misc": {
-      "none": "Немає"
+      "none": "Немає",
+      "all": "Усі",
+      "available": "Доступно"
     },
     "dialogs": {
       "load_error": "Помилка: Дані ремкомплекту не завантажено.",
@@ -1115,6 +1497,8 @@
       "firmware": "Прошивка (Одиничн.)",
       "barrel_acc": "Аксесуар ствола (Мульти)",
       "body_acc": "Аксесуар корпусу (Мульти)",
+      "pearl_elements": "Перлинна стихія (Одиничн.)",
+      "pearl_stat": "Перлинний параметр (Одиничн.)",
       "output": "Десеріалізація",
       "base_attrs": "Базові атрибути"
     },
@@ -1132,7 +1516,10 @@
       "clear": "Очистити"
     },
     "misc": {
-      "none": "Немає"
+      "none": "Немає",
+      "all": "Усі",
+      "available": "Доступно",
+      "element_base_required": "Потрібен базовий елементальний модуль ID:{id}."
     },
     "dialogs": {
       "load_error": "Помилка: Дані важкої зброї не завантажено.",
@@ -1163,7 +1550,10 @@
     "buttons": {
       "read_save": "Прочитати з поточного збереження",
       "save_loadout": "Зберегти набір",
-      "load_loadout": "Завантажити в збереження"
+      "load_loadout": "Завантажити в збереження",
+      "save_live_loadout": "Зберегти поточний онлайн-набір",
+      "apply_live_loadout": "Застосувати до онлайн-персонажа",
+      "review_live_recovery": "Перевірити блокування"
     },
     "labels": {
       "activated_skills": "Активовані навички",
@@ -1182,7 +1572,8 @@
       "no_activated": "Немає активованих навичок",
       "no_items": "Немає екіпірованих предметів",
       "open_first": "Спочатку відкрийте збереження",
-      "no_equipped_data": "Дані екіпіровки не знайдено"
+      "no_equipped_data": "Дані екіпіровки не знайдено",
+      "empty_slot_live": "У цьому слоті немає збереженого онлайн-набору"
     },
     "notice": "Через обмеження гри екіпіровка може бути перезаписана не повністю. Це не помилка редактора — не повідомляйте про це як про баґ. Також не екіпіруйте предмети, яких немає в рюкзаку. Навички, що відображаються, включають Спеціальні та Сховище.",
     "dialogs": {
@@ -1201,7 +1592,24 @@
       "skill_fail": "Збій перезапису навичок: {error}",
       "load_success": "Набір {slot} завантажено в пам'ять.\nНатисніть 'Зберегти' в головному вікні для запису.",
       "name_prompt_title": "Назвати набір",
-      "name_prompt_msg": "Введіть назву набору (Скасувати — ім'я за замовчуванням):"
+      "name_prompt_msg": "Введіть назву набору (Скасувати — ім'я за замовчуванням):",
+      "live_unavailable": "Онлайн-режим зараз недоступний.",
+      "live_no_entries": "У цьому наборі немає екіпіровки, яку можна застосувати.",
+      "live_save_success": "Онлайн-набір {slot} збережено в:\n{path}",
+      "live_save_fail": "Не вдалося зберегти онлайн-набір: {error}",
+      "confirm_live_apply_title": "Підтвердження онлайн-набору",
+      "confirm_live_apply_msg": "Застосувати екіпіровку зі слоту {slot} до поточного онлайн-персонажа?\n\nЗамінюються лише перелічені непорожні слоти екіпіровки; навички не змінюються. Порожні під час збереження слоти не очищаються й не відновлюються, циклічна перестановка між слотами не підтримується. Усі цільові предмети мають залишатися в рюкзаку.\nПеред застосуванням поточний набір буде прочитано й перевірено повторно.",
+      "live_apply_success": "Онлайн-набір {slot} застосовано.\nЗмінено: {applied}; пропущено: {skipped}.",
+      "live_apply_cache_pending": "Деякі моделі або кеш карток предметів ще оновлюються.",
+      "live_apply_fail_title": "Збій онлайн-набору",
+      "live_apply_fail": "Не вдалося застосувати онлайн-набір: {error}",
+      "live_apply_rollback_incomplete": "Відкат підтверджено не повністю. Негайно перевірте поточну екіпіровку в грі.",
+      "live_recovery_available": "Подальшу зміну набору заблоковано. Оновіть дані й перевірте блокування перед зняттям.",
+      "live_recovery_title": "Відновлення онлайн-набору",
+      "live_recovery_none": "Немає запису відновлення онлайн-набору, що очікує перевірки.",
+      "live_recovery_confirm": "Онлайн-зміну набору не було повністю підтверджено:\n{reason}\n\nСпочатку перевірте екіпіровку в грі. Зняття блокування лише дозволяє подальші зміни й не відкочує або виправляє предмети. Зняти його за свіжим знімком набору?",
+      "live_recovery_cleared": "Блокування відновлення знято за свіжим знімком набору.",
+      "live_recovery_fail": "Помилка відновлення онлайн-набору: {error}"
     },
     "decode": {
       "unknown": "Невідомо",
@@ -1283,6 +1691,8 @@
     "violation_forced_part_missing": "Відсутня вбудована деталь шаблону",
     "violation_conditional_availability": "Генерується лише за особливих умов",
     "violation_unresolved_rule_parts": "У правилі лишилися нерозібрані деталі",
-    "violation_inheritance_cycle": "Цикл успадкування правил шаблону"
+    "violation_inheritance_cycle": "Цикл успадкування правил шаблону",
+    "preferred_part": "Офіційно рекомендована деталь",
+    "preferred_selected_count": "Вибрано рекомендованих деталей: {selected}/{total}"
   }
 }

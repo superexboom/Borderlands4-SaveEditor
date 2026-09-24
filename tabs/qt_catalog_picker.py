@@ -5,7 +5,7 @@ used by the class-mod and enhancement tabs with:
 
 - a category chip bar + search box that filter a scrollable catalog,
 - double-click to add an item to a compact "selected" cart,
-- per-row inline +/- steppers and a remove button in the cart.
+- per-row inline +/- steppers, editable counts, and a remove button in the cart.
 
 The widgets are intentionally data-agnostic: callers push a list of item dicts
 via ``set_source`` and read the current selection back via ``entries``.
@@ -14,10 +14,26 @@ via ``set_source`` and read the current selection back via ``entries``.
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit,
     QPushButton, QListWidget, QListWidgetItem, QButtonGroup, QSizePolicy,
-    QFrame, QScrollArea, QSplitter
+    QFrame, QScrollArea, QSplitter, QComboBox, QSpinBox, QAbstractSpinBox
 )
 from PyQt6.QtCore import pyqtSignal, Qt, QSize, QTimer
 from PyQt6.QtGui import QColor
+
+
+class PopupOnlyWheelComboBox(QComboBox):
+    """Ignore wheel selection changes unless the popup list is open."""
+
+    popupAboutToShow = pyqtSignal()
+
+    def showPopup(self):
+        self.popupAboutToShow.emit()
+        super().showPopup()
+
+    def wheelEvent(self, event):
+        if self.view().isVisible():
+            super().wheelEvent(event)
+        else:
+            event.ignore()
 
 
 class ContainedWheelListWidget(QListWidget):
@@ -112,9 +128,10 @@ class CategoryChipBar(QWidget):
 
 
 class SelectedRow(QWidget):
-    """One row in the selected cart: label + optional [-] N [+] + remove."""
+    """One row in the selected cart: label + optional editable [-] N [+]."""
 
     countChanged = pyqtSignal()
+    countEdited = pyqtSignal(int)
     increaseRequested = pyqtSignal()
     removed = pyqtSignal()
     ROW_HEIGHT = 40
@@ -130,10 +147,14 @@ class SelectedRow(QWidget):
         lay.setSpacing(8)
         lay.setAlignment(Qt.AlignmentFlag.AlignVCenter)
 
-        self._label = QLabel(label)
-        self._label.setToolTip(label)
+        self._full_label = str(label)
+        self._label = QLabel()
+        self._label.setMinimumWidth(0)
+        self._label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
+        self._label.setToolTip(self._full_label)
         self._label.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)
         lay.addWidget(self._label, 1, Qt.AlignmentFlag.AlignVCenter)
+        self._refresh_label()
 
         if stackable:
             self.btn_minus = QPushButton("\u2212")  # minus sign
@@ -143,10 +164,15 @@ class SelectedRow(QWidget):
             self.btn_minus.setFocusPolicy(Qt.FocusPolicy.NoFocus)
             self.btn_minus.clicked.connect(self._dec)
 
-            self.count_lbl = QLabel(str(self._count))
+            self.count_lbl = QSpinBox()
             self.count_lbl.setObjectName("rowCount")
+            self.count_lbl.setRange(1, 999999)
             self.count_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.count_lbl.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
+            self.count_lbl.setKeyboardTracking(False)
             self.count_lbl.setFixedSize(QSize(32, 26))
+            self.count_lbl.valueChanged.connect(self._on_count_edited)
+            self._set_count_widget(self._count)
 
             self.btn_plus = QPushButton("+")
             self.btn_plus.setObjectName("rowStepBtn")
@@ -168,7 +194,7 @@ class SelectedRow(QWidget):
         lay.addWidget(self.btn_del, 0, Qt.AlignmentFlag.AlignVCenter)
 
     def sizeHint(self):
-        return QSize(super().sizeHint().width(), self.ROW_HEIGHT)
+        return QSize(min(max(super().sizeHint().width(), 200), 360), self.ROW_HEIGHT)
 
     def minimumSizeHint(self):
         return self.sizeHint()
@@ -177,20 +203,39 @@ class SelectedRow(QWidget):
         return self._count
 
     def set_count(self, c):
-        self._count = max(1, int(c))
+        self._count = min(999999, max(1, int(c)))
         if self._stackable:
-            self.count_lbl.setText(str(self._count))
+            self._set_count_widget(self._count)
         self.countChanged.emit()
 
     def set_label(self, label):
-        self._label.setText(label)
-        self._label.setToolTip(label)
+        self._full_label = str(label)
+        self._label.setToolTip(self._full_label)
+        self._refresh_label()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self._refresh_label()
+
+    def _refresh_label(self):
+        width = max(0, self._label.width())
+        self._label.setText(self._label.fontMetrics().elidedText(
+            self._full_label, Qt.TextElideMode.ElideRight, width
+        ))
+
+    def _set_count_widget(self, value):
+        self.count_lbl.blockSignals(True)
+        self.count_lbl.setValue(int(value))
+        self.count_lbl.blockSignals(False)
+
+    def _on_count_edited(self, value):
+        self._count = min(999999, max(1, int(value)))
+        self.countEdited.emit(self._count)
+        self.countChanged.emit()
 
     def _dec(self):
         if self._count > 1:
-            self._count -= 1
-            self.count_lbl.setText(str(self._count))
-            self.countChanged.emit()
+            self.set_count(self._count - 1)
         else:
             self.removed.emit()
 
@@ -253,10 +298,12 @@ class CatalogPicker(QWidget):
         avail_v = QVBoxLayout(avail_card)
         avail_v.setContentsMargins(8, 8, 8, 8)
         avail_v.setSpacing(6)
-        if avail_title:
-            lbl = QLabel(avail_title)
-            lbl.setObjectName("catalogColTitle")
-            avail_v.addWidget(lbl)
+        # Parent immediately.  Calling setVisible() on an unparented widget
+        # briefly creates a real top-level window before the layout reparents it.
+        self.avail_title_lbl = QLabel(avail_title, avail_card)
+        self.avail_title_lbl.setObjectName("catalogColTitle")
+        self.avail_title_lbl.setVisible(bool(avail_title))
+        avail_v.addWidget(self.avail_title_lbl)
         self.avail = ContainedWheelListWidget()
         self.avail.setMinimumHeight(200)
         self.avail.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -356,9 +403,24 @@ class CatalogPicker(QWidget):
                 continue
             if query and query not in str(it.get("label", "")).lower():
                 continue
-            lwi = QListWidgetItem(it.get("label", ""))
+            candidate = it.get("candidate") or {}
+            marker = str(candidate.get("marker") or "").strip()
+            label = str(it.get("label", ""))
+            lwi = QListWidgetItem(f"{marker}  {label}" if marker else label)
             lwi.setData(Qt.ItemDataRole.UserRole, it)
-            lwi.setToolTip(it.get("label", ""))
+            tooltip = [str(candidate.get("hint") or ""), str(it.get("tooltip") or label)]
+            if it.get("disabled_reason"):
+                tooltip.insert(0, str(it["disabled_reason"]))
+            lwi.setToolTip("\n\n".join(filter(None, tooltip)))
+            if candidate.get("kind") == "legal":
+                font = lwi.font()
+                font.setBold(True)
+                lwi.setFont(font)
+                lwi.setBackground(QColor(74, 144, 226, 38))
+            elif candidate.get("kind") == "warning":
+                lwi.setBackground(QColor(230, 164, 57, 30))
+            if it.get("disabled"):
+                lwi.setFlags(lwi.flags() & ~Qt.ItemFlag.ItemIsEnabled & ~Qt.ItemFlag.ItemIsSelectable)
             if self._disable_selected_source and it.get("key") in self._selected_keys:
                 lwi.setFlags(lwi.flags() & ~Qt.ItemFlag.ItemIsEnabled & ~Qt.ItemFlag.ItemIsSelectable)
             self.avail.addItem(lwi)
@@ -403,6 +465,8 @@ class CatalogPicker(QWidget):
         self._selected_keys[key] = lwi
         row.countChanged.connect(self.changed.emit)
         if self._stackable:
+            row.countEdited.connect(lambda count, k=key: self._edit_count(k, count))
+        if self._stackable:
             row.increaseRequested.connect(lambda k=key: self._increase_key(k))
         # 延迟到下一轮事件循环再删除，避免在按钮自身点击槽内销毁其宿主控件导致崩溃
         row.removed.connect(lambda k=key: QTimer.singleShot(0, lambda: self._remove_key(k)))
@@ -419,6 +483,20 @@ class CatalogPicker(QWidget):
             row = self.selected.itemWidget(lwi)
             if row is not None:
                 row.set_count(row.count() + 1)
+
+    def _edit_count(self, key, count):
+        clicked = self._selected_keys.get(key)
+        selected = self.selected.selectedItems()
+        targets = selected if clicked in selected and len(selected) > 1 else [clicked]
+        for lwi in filter(None, targets):
+            if lwi is clicked:
+                continue
+            row = self.selected.itemWidget(lwi)
+            if row is not None:
+                row.blockSignals(True)
+                row.set_count(count)
+                row.blockSignals(False)
+        self._update_count()
 
     def _remove_key(self, key):
         lwi = self._selected_keys.pop(key, None)
@@ -463,6 +541,10 @@ class CatalogPicker(QWidget):
     def set_search_placeholder(self, text):
         self.search.setPlaceholderText(text)
 
+    def set_available_title(self, text):
+        self.avail_title_lbl.setText(text)
+        self.avail_title_lbl.setVisible(bool(text))
+
     def set_count_limit(self, limit, tooltip=""):
         """Show how many of this slot the game actually rolls, alongside the count.
 
@@ -483,7 +565,10 @@ class CatalogPicker(QWidget):
         return f"{self._sel_title}  ({shown})" if self._sel_title else f"({shown})"
 
     def _update_count(self):
-        count = self.selected.count()
+        count = 0
+        for index in range(self.selected.count()):
+            row = self.selected.itemWidget(self.selected.item(index))
+            count += row.count() if row is not None else 1
         self.count_lbl.setText(self._fmt_count(count))
         limit = getattr(self, "_count_limit", None)
         over = limit is not None and count > limit
@@ -505,11 +590,12 @@ class InlineCatalogRow(QFrame):
         "blue": "#4c8ed9",
     }
 
-    def __init__(self, item, count=0, stackable=True, parent=None):
+    def __init__(self, item, count=0, stackable=True, parent=None, editable_count=True):
         super().__init__(parent)
         self._count = max(0, int(count))
         self._max_count = max(1, int(item.get("max_count", 99)))
         self._stackable = stackable
+        self._editable_count = bool(editable_count and stackable)
         self.setObjectName("inlineCatalogRow")
         self.setMinimumHeight(self.ROW_HEIGHT)
         accent = self.ACCENTS.get(item.get("accent"), "#607d8b")
@@ -555,10 +641,19 @@ class InlineCatalogRow(QFrame):
             self.minus_btn.setObjectName("rowStepBtn")
             self.minus_btn.setFixedSize(QSize(28, 28))
             self.minus_btn.clicked.connect(self._decrease)
-            self.count_label = QLabel(str(self._count))
+            self.count_label = QSpinBox() if self._editable_count else QLabel(str(self._count))
             self.count_label.setObjectName("rowCount")
-            self.count_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            if self._editable_count:
+                self.count_label.setRange(0, self._max_count)
+                self.count_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                self.count_label.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
+                self.count_label.setKeyboardTracking(False)
+                self.count_label.valueChanged.connect(self._on_count_edited)
+            else:
+                self.count_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.count_label.setFixedSize(QSize(32, 28))
+            if self._editable_count:
+                self._set_count_widget(self._count)
             self.plus_btn = QPushButton("+")
             self.plus_btn.setObjectName("rowStepBtn")
             self.plus_btn.setFixedSize(QSize(28, 28))
@@ -595,6 +690,14 @@ class InlineCatalogRow(QFrame):
         self._update_controls()
         self.countChanged.emit(count)
 
+    def _set_count_widget(self, value):
+        self.count_label.blockSignals(True)
+        self.count_label.setValue(int(value))
+        self.count_label.blockSignals(False)
+
+    def _on_count_edited(self, value):
+        self.set_count(value)
+
     def _update_controls(self):
         selected = self._count > 0
         if self.property("selected") != selected:
@@ -603,7 +706,10 @@ class InlineCatalogRow(QFrame):
             self.style().polish(self)
             self.update()
         if self._stackable:
-            self.count_label.setText(str(self._count))
+            if self._editable_count:
+                self._set_count_widget(self._count)
+            else:
+                self.count_label.setText(str(self._count))
             self.minus_btn.setEnabled(self._count > 0)
             self.plus_btn.setEnabled(self._count < self._max_count)
         else:
@@ -620,12 +726,14 @@ class InlineCatalogPicker(QWidget):
     changed = pyqtSignal()
 
     def __init__(self, stackable=True, search_placeholder="", clear_text="Clear",
-                 multi_select=False, parent=None):
+                 multi_select=False, parent=None, editable_count=True):
         super().__init__(parent)
         self._stackable = stackable
         self._multi_select = bool(multi_select and stackable)
+        self._editable_count = bool(editable_count and stackable)
         self._source = []
         self._counts = {}
+        self._rows = {}
 
         root = QVBoxLayout(self)
         root.setContentsMargins(0, 0, 0, 0)
@@ -635,7 +743,11 @@ class InlineCatalogPicker(QWidget):
         self.search = QLineEdit()
         self.search.setPlaceholderText(search_placeholder)
         self.search.setClearButtonEnabled(True)
-        self.search.textChanged.connect(self._refilter)
+        self._search_timer = QTimer(self)
+        self._search_timer.setSingleShot(True)
+        self._search_timer.setInterval(100)
+        self._search_timer.timeout.connect(self._refilter)
+        self.search.textChanged.connect(lambda _text: self._search_timer.start())
         header.addWidget(self.search, 1)
         self.count_lbl = QLabel("0")
         self.count_lbl.setObjectName("catalogCount")
@@ -673,27 +785,41 @@ class InlineCatalogPicker(QWidget):
         self._source = list(items)
         valid = {item["key"] for item in self._source}
         self._counts = {key: count for key, count in self._counts.items() if key in valid and count > 0}
-        self._refilter()
-        self._update_count()
-
-    def _refilter(self, *args):
+        self._rows.clear()
         self.list.clear()
-        category = self.cat_bar.current_key() if not self.cat_bar.isHidden() else None
-        query = self.search.text().casefold().strip()
         for item in self._source:
-            if category not in (None, "all") and item.get("category") != category:
-                continue
             search_text = " ".join((str(item.get("label", "")), str(item.get("detail", "")), str(item.get("search_text", "")))).casefold()
-            if query and query not in search_text:
-                continue
             list_item = QListWidgetItem()
             list_item.setData(Qt.ItemDataRole.UserRole, item)
-            row = InlineCatalogRow(item, self._counts.get(item["key"], 0), self._stackable)
+            row = InlineCatalogRow(
+                item, self._counts.get(item["key"], 0), self._stackable,
+                editable_count=self._editable_count,
+            )
             row.countChanged.connect(lambda count, key=item["key"]: self._set_count(key, count))
             row.increaseRequested.connect(lambda key=item["key"]: self._increase_key(key))
             list_item.setSizeHint(row.sizeHint())
             self.list.addItem(list_item)
             self.list.setItemWidget(list_item, row)
+            self._rows[item['key']] = (list_item, row, search_text)
+        self._refilter()
+        self._update_count()
+
+    def _refilter(self, *args):
+        self._search_timer.stop()
+        category = self.cat_bar.current_key() if not self.cat_bar.isHidden() else None
+        query = self.search.text().casefold().strip()
+        self.list.setUpdatesEnabled(False)
+        for item in self._source:
+            list_item, row, search_text = self._rows[item['key']]
+            hidden = (category not in (None, 'all') and item.get('category') != category) or bool(query and query not in search_text)
+            if list_item.isHidden() != hidden:
+                list_item.setHidden(hidden)
+            count = self._counts.get(item['key'], 0)
+            if row._count != count:
+                row.blockSignals(True)
+                row.set_count(count)
+                row.blockSignals(False)
+        self.list.setUpdatesEnabled(True)
         self._sync_selection_style()
 
     def _increase_key(self, key):
@@ -702,6 +828,7 @@ class InlineCatalogPicker(QWidget):
             selected = [
                 item.data(Qt.ItemDataRole.UserRole)["key"]
                 for item in self.list.selectedItems()
+                if not item.isHidden()
             ]
             if key in selected:
                 targets = selected
@@ -745,10 +872,32 @@ class InlineCatalogPicker(QWidget):
             row.update()
 
     def _set_count(self, key, count):
-        if count > 0:
-            self._counts[key] = count
-        else:
-            self._counts.pop(key, None)
+        targets = [key]
+        if self._multi_select:
+            selected = {
+                item.data(Qt.ItemDataRole.UserRole)["key"]
+                for item in self.list.selectedItems()
+                if not item.isHidden()
+            }
+            if key in selected:
+                targets = list(selected)
+        for target in targets:
+            if count > 0:
+                self._counts[target] = count
+            else:
+                self._counts.pop(target, None)
+            if target == key:
+                continue
+            for row_index in range(self.list.count()):
+                list_item = self.list.item(row_index)
+                if list_item.data(Qt.ItemDataRole.UserRole)["key"] != target:
+                    continue
+                row = self.list.itemWidget(list_item)
+                if row is not None:
+                    row.blockSignals(True)
+                    row.set_count(count)
+                    row.blockSignals(False)
+                break
         self._update_count()
         self.changed.emit()
 
@@ -1061,6 +1210,10 @@ class FacetedCatalogPicker(QWidget):
                 lwi.setBackground(QColor(74, 144, 226, 38))
             elif candidate.get("kind") == "warning":
                 lwi.setBackground(QColor(230, 164, 57, 30))
+            if it.get("model_kind") == "same":
+                lwi.setForeground(QColor("#39aee8"))
+            elif it.get("model_kind") == "cross":
+                lwi.setForeground(QColor("#d99a3e"))
             self.avail.addItem(lwi)
         self.result_lbl.setText(self._result_fmt.format(n=matched, total=len(self._source)))
         if self.avail.count():

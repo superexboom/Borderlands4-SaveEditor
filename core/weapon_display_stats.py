@@ -248,10 +248,13 @@ def weapon_damage_from_serial(
     mode_bit: int = 1,
 ) -> float:
     """Resolve the confirmed damage inputs from a decoded serial and name index."""
-    header = re.match(r"\s*(\d+)\s*,\s*\d+\s*,\s*\d+\s*,\s*(\d+)", decoded)
+    # Local import avoids the existing bl4_functions -> resolver -> stats cycle.
+    from .bl4_functions import parse_decoded_item_header
+
+    header = parse_decoded_item_header(decoded)
     if not header:
         raise ValueError("invalid decoded weapon serial")
-    root_id, level_text = header.groups()
+    root_id = str(header["mfg_id"])
     parts = _serial_parts(decoded, index, root_id)
     if elemental is None:
         elemental = _is_elemental_serial(decoded)
@@ -305,7 +308,7 @@ def weapon_damage_from_serial(
                 scale_multipliers.append(float(value))
 
     return weapon_damage(
-        int(level_text),
+        int(header["level"]),
         rarity,
         barrel_scale=barrel_scale,
         damage_stat_groups=damage_stat_groups,

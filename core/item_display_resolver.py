@@ -114,7 +114,11 @@ def _title_from_text(text: str) -> str:
 
 
 def _valid_name(text: str) -> bool:
-    return bool(text and text not in {"/", "Unknown", "未知", "N/A"})
+    return bool(
+        text
+        and text not in {"/", "Unknown", "未知", "N/A"}
+        and str(text).strip().casefold() not in {"nan", "<na>", "none"}
+    )
 
 
 def _parse_components(component_str: str) -> list[dict[str, Any]]:
@@ -141,6 +145,123 @@ def _parse_components(component_str: str) -> list[dict[str, Any]]:
             else:
                 components.append({"type": "elemental", "id": outer_id, "sub_id": inner, "raw": match.group(0)})
     return components
+
+
+@lru_cache(maxsize=1)
+def _string_part_aliases() -> dict[str, tuple[str, ...]]:
+    """Reverse index internal NCS part names to canonical ``root:part`` refs."""
+    aliases: dict[str, set[str]] = {}
+    for ref_key, ref in (_item_index().get("part_refs") or {}).items():
+        parent = str(ref.get("parent") or "").strip().casefold()
+        part = str(ref.get("part") or "").strip().casefold()
+        if not part:
+            continue
+        for alias in (part, f"{parent}.{part}" if parent else ""):
+            if alias:
+                aliases.setdefault(alias, set()).add(str(ref_key))
+    return {key: tuple(sorted(values)) for key, values in aliases.items()}
+
+
+def _catalog_canonical_aliases(entry: dict[str, Any] | None) -> dict[str, str]:
+    """Accept optional pipeline-provided aliases without requiring one schema revision."""
+    out: dict[str, str] = {}
+    if not isinstance(entry, dict):
+        return out
+    for key in ("canonical_refs", "component_refs", "part_refs"):
+        value = entry.get(key)
+        if isinstance(value, dict):
+            for token, ref in value.items():
+                if isinstance(ref, str) and re.fullmatch(r"\d+:\d+", ref.strip()):
+                    out[str(token).strip().strip('"').casefold()] = ref.strip()
+        elif isinstance(value, list):
+            for row in value:
+                if not isinstance(row, dict):
+                    continue
+                token = row.get("token") or row.get("internal") or row.get("part")
+                ref = row.get("ref") or row.get("canonical_ref")
+                if token and isinstance(ref, str) and re.fullmatch(r"\d+:\d+", ref.strip()):
+                    out[str(token).strip().strip('"').casefold()] = ref.strip()
+    return out
+
+
+def _resolve_string_part_ref(
+    token: str,
+    root_ref: str,
+    catalog_aliases: dict[str, str],
+) -> str:
+    normalized = str(token or "").strip().strip('"').casefold()
+    if not normalized:
+        return ""
+    if normalized in catalog_aliases:
+        return catalog_aliases[normalized]
+
+    aliases = _string_part_aliases()
+    candidates: list[str] = []
+    relative = normalized.startswith(".") or "." not in normalized
+    bare = normalized.lstrip(".")
+    if relative:
+        candidates.extend(
+            ref for ref in aliases.get(bare, ()) if ref.partition(":")[0] == str(root_ref)
+        )
+    else:
+        candidates.extend(aliases.get(normalized, ()))
+    if len(candidates) == 1:
+        return candidates[0]
+    return ""
+
+
+def canonicalize_decoded_serial(
+    decoded_full: str,
+    item_id: int,
+    catalog_entry: dict[str, Any] | None = None,
+) -> tuple[str, list[str]]:
+    """Return a numeric, analysis-only view of an official string-token serial.
+
+    The original decoded text and Base85 are never changed. This view exists so
+    the existing name/stat/rule resolvers can consume official profile and actor
+    templates whose header or components were serialized as NCS internal names.
+    """
+    if not decoded_full or "||" not in decoded_full:
+        return decoded_full, []
+    explicit = str((catalog_entry or {}).get("canonical_decoded") or "").strip()
+    if explicit and "||" in explicit:
+        return explicit, []
+
+    header, component = decoded_full.split("||", 1)
+    header = re.sub(r'^\s*"[^"]+"', str(item_id), header, count=1)
+    aliases = _catalog_canonical_aliases(catalog_entry)
+    matches = list(re.finditer(r'"([^"]+)"', component))
+    replacements: list[tuple[int, int, str]] = []
+    unresolved: list[str] = []
+    index = 0
+    while index < len(matches):
+        match = matches[index]
+        token = match.group(1)
+        end = match.end()
+        consumed = 1
+        # Cosmetic skin syntax is already canonical and deliberately string-based:
+        # ``"c", "Cosmetics_..."``. Leave both tokens untouched and do not report
+        # them as unresolved inventory parts.
+        if token.casefold() == "c" and index + 1 < len(matches):
+            index += 2
+            continue
+        if token.endswith(".") and index + 1 < len(matches):
+            next_match = matches[index + 1]
+            token += next_match.group(1)
+            end = next_match.end()
+            consumed = 2
+        ref = _resolve_string_part_ref(token, str(item_id), aliases)
+        if ref:
+            owner, _, part_id = ref.partition(":")
+            replacement = f"{{{part_id}}}" if owner == str(item_id) else f"{{{owner}:{part_id}}}"
+            replacements.append((match.start(), end, replacement))
+        else:
+            unresolved.append(token)
+        index += consumed
+
+    for start, end, replacement in reversed(replacements):
+        component = component[:start] + replacement + component[end:]
+    return f"{header}||{component}", unresolved
 
 
 def _ordered_ids(components: list[dict[str, Any]]) -> list[str]:
@@ -395,6 +516,7 @@ def _component_part_refs(item_id: int, components: list[dict[str, Any]]) -> list
 
 
 def _name_part_text(name_part: str, lang: str) -> tuple[str, float]:
+    name_part = str(name_part or "").strip().rstrip("'").rsplit("'", 1)[-1]
     entry = (_item_index().get("inv_name_parts") or {}).get(str(name_part).lower(), {})
     key = "zh" if _lang_is_zh(lang) else "en"
     text = entry.get(key) or entry.get("en") or ""
@@ -409,12 +531,37 @@ def _nonweapon_name(item_id: int, components: list[dict[str, Any]], lang: str) -
     sections: dict[str, list[tuple[float, int, str]]] = {"prefix": [], "title": [], "suffix": []}
     seen: set[tuple[str, str]] = set()
     part_refs = _component_part_refs(item_id, components)
+    family = ""
+    root: dict[str, Any] = {}
+    for family_name, model in ((_item_index().get("equipment_native_models") or {}).get("models") or {}).items():
+        if not isinstance(model, dict):
+            continue
+        candidate = (model.get("roots") or {}).get(str(item_id))
+        if candidate is not None:
+            family, root = str(family_name), candidate
+            break
+    class_data = root.get("class_data") or {}
     disable_prefixes = any(str(ref.get("disable_prefixes", "")).casefold() == "true" for ref in part_refs)
     has_named_composition = any(
         ref.get("category") == "inv_comp"
         and _valid_name(((ref.get("name") or {}).get("zh" if _lang_is_zh(lang) else "en") or (ref.get("name") or {}).get("en", "")))
         for ref in part_refs
     )
+    root_name_parts: dict[str, list[str]] = {"prefix": [], "title": [], "suffix": []}
+    for aspect in class_data.get("aspects") or []:
+        if not isinstance(aspect, dict):
+            continue
+        for section in root_name_parts:
+            root_name_parts[section].extend(aspect.get(f"{section}partlist") or [])
+    for section in root_name_parts:
+        root_name_parts[section].extend(class_data.get(f"{section}partlist") or [])
+        for name_part in root_name_parts[section]:
+            if family == "grenade" and has_named_composition and section == "suffix":
+                continue
+            text, priority = _name_part_text(name_part, lang)
+            if _valid_name(text):
+                sections[section].append((priority, -1, text))
+                seen.add((section, str(name_part).lower()))
     for order, ref in enumerate(part_refs):
         for section in sections:
             if section == "prefix" and has_named_composition and ref.get("category") == "payload":
@@ -428,12 +575,51 @@ def _nonweapon_name(item_id: int, components: list[dict[str, Any]], lang: str) -
                 if _valid_name(text):
                     sections[section].append((priority, order, text))
 
-    for values in sections.values():
-        values.sort(key=lambda item: (-item[0], item[1]))
-    prefixes = [] if disable_prefixes else [item[2] for item in sections["prefix"][:2]]
+    # Some Repkit Legendary rarity components are intentionally nameless in
+    # the rarity CSV (notably Torgue's ``comp_05_legendary_font``).  NCS still
+    # gives the paired unique primary augment an authoritative title.  Recover
+    # that title from the selected augment, or from the rarity component's
+    # ``...legendary_<slug>`` identity, instead of exposing a blank item name.
+    if family == "repair_kit" and not sections["title"]:
+        for ref in part_refs:
+            if ref.get("category") == "primary_augment":
+                name = ((ref.get("name") or {}).get("zh" if _lang_is_zh(lang) else "en")
+                        or (ref.get("name") or {}).get("en", ""))
+                if _valid_name(name):
+                    sections["title"].append((1000, 0, name))
+                    break
+        if not sections["title"]:
+            for ref in part_refs:
+                internal = str(ref.get("part") or "")
+                match = re.search(r"comp_05_legendary_([a-z0-9_]+)$", internal, re.I)
+                if not match:
+                    continue
+                slug = match.group(1).casefold()
+                wanted = f"part_augment_unique_{slug}"
+                for candidate in (_item_index().get("part_refs") or {}).values():
+                    if str(candidate.get("part") or "").casefold() != wanted:
+                        continue
+                    name = ((candidate.get("name") or {}).get("zh" if _lang_is_zh(lang) else "en")
+                            or (candidate.get("name") or {}).get("en", ""))
+                    if _valid_name(name):
+                        sections["title"].append((1000, 0, name))
+                        break
+                if sections["title"]:
+                    break
+
+    for section, values in sections.items():
+        # Equal-priority naming aspects are applied last-in-first-out by the
+        # inventory namer on Repkits/Shields; Grenade stat prefixes preserve
+        # their serialized order instead (e.g. Ancient Booming UAV).
+        values.sort(key=lambda item: (-item[0], item[1] if family == "grenade" and section == "prefix" else -item[1]))
+    max_prefixes = int(
+        class_data.get("maxnumprefixes", class_data.get("maxnumsuffixes", 2)) or 0
+    )
+    max_suffixes = int(class_data.get("maxnumsuffixes", 1) or 0)
+    prefixes = [] if disable_prefixes else [item[2] for item in sections["prefix"][:max_prefixes]]
     title = sections["title"][0][2] if sections["title"] else ""
-    suffix = sections["suffix"][0][2] if sections["suffix"] else ""
-    name = " ".join([*prefixes, title, suffix]).strip()
+    suffixes = [item[2] for item in sections["suffix"][:max_suffixes]]
+    name = " ".join([*prefixes, title, *suffixes]).strip()
     return name, "native_name_parts" if name else ""
 
 
@@ -1257,7 +1443,17 @@ def weapon_part_selection_tags(item_id: int, part_id: str) -> dict[str, list[str
     }
 
 
-def _weapon_generation_refs(decoded: str, root_ref: str) -> list[str]:
+def weapon_part_internal(item_id: int, part_id: str) -> str:
+    """Return the pipeline-exported internal name used by diagnostic UIs."""
+    return str(_part_ref(item_id, part_id).get("part") or "")
+
+
+def weapon_part_category(item_id: int, part_id: str) -> str:
+    """Return the stable pipeline category for one weapon part."""
+    return str(_part_ref(item_id, part_id).get("category") or "")
+
+
+def _weapon_generation_refs(decoded: str, root_ref: str, named_refs: dict[str, str] | None = None) -> list[str]:
     component_text = decoded.split("||", 1)[1] if "||" in decoded else ""
     refs: list[str] = []
     for component in _parse_components(component_text):
@@ -1267,6 +1463,9 @@ def _weapon_generation_refs(decoded: str, root_ref: str) -> list[str]:
             refs.extend(f"{component.get('id')}:{part_id}" for part_id in component.get("sub_ids", []))
         elif component.get("type") == "elemental":
             refs.append(f"{component.get('id')}:{component.get('sub_id')}")
+    for name in re.findall(r'"([^"\\]+)"', component_text):
+        if name != 'c':
+            refs.append((named_refs or {}).get(name.casefold(), f'{root_ref}:{name}'))
     return sorted(ref for ref in refs if not ref.endswith(":None"))
 
 
@@ -1284,13 +1483,13 @@ def _weapon_generation_root(ref: str) -> str:
     return ref.partition(":")[0]
 
 
-def weapon_generation_context(decoded: str) -> dict[str, Any]:
-    index = _item_index()
+def weapon_generation_context(decoded: str, *, index: dict[str, Any] | None = None) -> dict[str, Any]:
+    index = _item_index() if index is None else index
     rules = index.get("weapon_generation_rules") or {}
     match = re.match(r"\s*(\d+)", decoded or "")
     root_ref = match.group(1) if match else ""
     weapon = (rules.get("weapons") or {}).get(root_ref, {})
-    refs = _weapon_generation_refs(decoded, root_ref) if root_ref else []
+    refs = _weapon_generation_refs(decoded, root_ref, rules.get('named_part_refs')) if root_ref else []
     part_refs = index.get("part_refs") or {}
     compositions = weapon.get("compositions") or {}
     composition_tokens = [ref for ref in refs if ref in compositions]
@@ -1418,9 +1617,9 @@ def weapon_generation_context(decoded: str) -> dict[str, Any]:
     }
 
 
-def validate_weapon_generation(decoded: str, allow_incomplete: bool = False) -> dict[str, Any]:
-    context = weapon_generation_context(decoded)
-    index = _item_index()
+def validate_weapon_generation(decoded: str, allow_incomplete: bool = False, *, index: dict[str, Any] | None = None) -> dict[str, Any]:
+    index = _item_index() if index is None else index
+    context = weapon_generation_context(decoded, index=index)
     rules = index.get("weapon_generation_rules") or {}
     part_refs = index.get("part_refs") or {}
     selected = context["selected_part_refs"]
@@ -2075,7 +2274,7 @@ _HEAVY_CANON_MAP = {
     "barrel_01": {"a": "13", "b": "14", "c": "15", "d": "16"},
     "barrel_02": {"a": "17", "b": "18", "c": "19", "d": "20"},
 }
-_HEAVY_CANON_RE = re.compile(r"part_(body|barrel_01|barrel_02)_([a-d])(?:x[a-d])?$")
+_HEAVY_CANON_RE = re.compile(r"part_(body|barrel_01|barrel_02)_([a-d])(?:x([a-d]))?$")
 
 
 def _heavy_canonical_parts(item_id: int, ids: list[str]) -> dict[str, list[str]]:
@@ -2086,15 +2285,34 @@ def _heavy_canonical_parts(item_id: int, ids: list[str]) -> dict[str, list[str]]
     barrels carry no canonical id and so do not participate here.
     """
     sections: dict[str, list[str]] = {"body": [], "barrel_01": [], "barrel_02": []}
+    variants: dict[str, list[tuple[str, str]]] = {"body": [], "barrel_01": [], "barrel_02": []}
     for part_id in ids:
         internal = str(_part_ref(item_id, part_id).get("part") or "").lower()
         match = _HEAVY_CANON_RE.fullmatch(internal)
         if not match:
             continue
-        group, letter = match.group(1), match.group(2)
-        canon = _HEAVY_CANON_MAP[group].get(letter)
+        group = match.group(1)
+        if match.group(3):
+            variants[group].append((match.group(2), match.group(3)))
+            continue
+        canon = _HEAVY_CANON_MAP[group].get(match.group(2))
         if canon and canon not in sections[group]:
             sections[group].append(canon)
+    for group, pairs in variants.items():
+        present = {
+            letter
+            for letter, canon in _HEAVY_CANON_MAP[group].items()
+            if canon in sections[group]
+        }
+        for base, suffix in pairs:
+            # The x-part supplies the counterpart of the ordinary accessory
+            # serialized beside it.  Without that companion, the x suffix is
+            # the active single component.
+            letter = base if suffix in present and base not in present else suffix
+            canon = _HEAVY_CANON_MAP[group].get(letter)
+            if canon and canon not in sections[group]:
+                sections[group].append(canon)
+                present.add(letter)
     return sections
 
 
@@ -2134,8 +2352,11 @@ def _heavy_strategy_word(item_id: int, ids: list[str], section: str, lang: str) 
     if not strategy:
         return ""
     key = "zh" if _lang_is_zh(lang) else "en"
-    item = _first_combo(ids, strategy.get(section, {}).get("rules", []))
-    rule = item[1] if item else _first_single(ids, strategy.get(section, {}).get("singles", []))
+    section_data = strategy.get(section, {})
+    item = _first_combo(ids, section_data.get("rules", []))
+    rule = item[1] if item else _first_single(ids, section_data.get("singles", []))
+    if not rule:
+        rule = section_data.get("default")
     return (rule.get(key) or rule.get("en", "")).strip() if rule else ""
 
 
@@ -2503,12 +2724,15 @@ def equipment_part_name(ref_key: str, lang: str = "zh-CN", fallback: str = "") -
     if ref.get("category") == "firmware":
         # Firmware names live in the shared table, keyed by the internal part string.
         try:
-            entry = _equipment_firmware_entry(ref_key, "", lang)
+            entry = equipment_firmware_entry(ref_key, "", lang)
         except (KeyError, OSError, TypeError, ValueError):
             entry = None
         name = str((entry or {}).get("name") or "").strip()
         if name:
             return name
+    name = (ref.get("name") or {}).get(key) or (ref.get("name") or {}).get("en") or ""
+    if ref.get("category") == "barrel" and _valid_name(name):
+        return name
     for ui_id in ref.get("uistats_include") or ref.get("uistats", []):
         ui_key = str(ui_id).casefold()
         if any(marker in ui_key for marker in ("redtext", "red_text", "typeline", "_manu_")):
@@ -2517,10 +2741,12 @@ def equipment_part_name(ref_key: str, lang: str = "zh-CN", fallback: str = "") -
         title = _title_from_text(ui.get(key) or ui.get("en") or "")
         if _valid_name(title):
             return title
-    name = (ref.get("name") or {}).get(key) or (ref.get("name") or {}).get("en") or ""
     if _valid_name(name):
         return name
-    return re.split(r"\s+[-–—]\s+|(?<=\S)-(?=\S)", str(fallback or ""), maxsplit=1)[0].strip()
+    fallback = str(fallback or "").strip()
+    if not _valid_name(fallback):
+        return ""
+    return re.split(r"\s+[-–—]\s+", fallback, maxsplit=1)[0].strip()
 
 
 def _serial_without_equipment_part(decoded: str, root_id: str, ref_key: str) -> str:
@@ -2605,22 +2831,16 @@ def format_equipment_part_description(
 
     if ref.get("category") == "firmware":
         # Firmware text comes from the shared pipeline-exported table (see
-        # _equipment_firmware_entry). Descriptions are per stack level: a candidate
-        # shows its L1 effect, a selected firmware shows every level it has stacked to.
+        # equipment_firmware_entry). The serial contains one firmware identity,
+        # not three repeated tokens, so show the complete L1/L2/L3 progression.
         try:
-            entry = _equipment_firmware_entry(ref_key, item_type, lang)
+            entry = equipment_firmware_entry(ref_key, item_type, lang)
         except (KeyError, OSError, TypeError, ValueError):
             entry = None
         descs = list((entry or {}).get("descs") or [])
         if descs:
-            count = 1
-            try:
-                root_id, _level = equipment_display_stats._header(decoded_full)
-                present = weapon_display_stats._serial_part_keys(decoded_full, root_id)
-                count = max(1, sum(1 for key in present if key == ref_key))
-            except (KeyError, TypeError, ValueError):
-                count = 1
-            for text in descs[:count]:
+            for level, text in enumerate(descs, 1):
+                text = f"L{level}: {text}" if text else ""
                 if text and text not in lines:
                     lines.append(text)
 
@@ -2695,7 +2915,8 @@ def item_card_entry_kind(ref: dict[str, Any]) -> str:
     return "normal"
 
 
-def _equipment_firmware_entry(ref_key: str, item_type: str, lang: str) -> dict[str, Any] | None:
+def equipment_firmware_entry(ref_key: str, item_type: str, lang: str) -> dict[str, Any] | None:
+    """Resolve one family-specific firmware ID through the shared catalog."""
     internal = str((_item_index().get("part_refs") or {}).get(ref_key, {}).get("part") or "")
     if not internal:
         return None
@@ -2715,14 +2936,18 @@ def _equipment_firmware_entry(ref_key: str, item_type: str, lang: str) -> dict[s
         "id": ref_key.partition(":")[2],
         "name": name,
         "text": name,
+        "category": "firmware",
         "internal": internal,
         "descs": descs,
+        "level_descs": [
+            {"level": level, "text": text}
+            for level, text in enumerate(descs, 1)
+            if text
+        ],
         "count": 1,
         "level": 0,
         "max_level": 3,
     }
-
-
 @lru_cache(maxsize=2048)
 def resolve_equipment_card_details(
     decoded_full: str,
@@ -2753,7 +2978,7 @@ def resolve_equipment_card_details(
             existing = next((entry for entry in firmware if entry["id"] == ref_key.partition(":")[2]), None)
             if existing:
                 existing["count"] += 1
-            elif entry := _equipment_firmware_entry(ref_key, item_type, lang):
+            elif entry := equipment_firmware_entry(ref_key, item_type, lang):
                 firmware.append(entry)
             continue
         if category in {"element", "body_ele"}:
@@ -3111,7 +3336,26 @@ def resolve_classmod_card_details(
     perks = []
     firmware = []
     for perk_id in dict.fromkeys(perk_ids):
+        ref_key = f"234:{perk_id}"
+        ref = _part_ref(234, perk_id)
         row = perk_rows.get(perk_id)
+        if ref.get("category") == "firmware":
+            entry = equipment_firmware_entry(ref_key, "Class Mod", lang)
+            if entry:
+                firmware.append({**entry, "count": perk_counts[perk_id]})
+            elif row:
+                name = row.get("perk_name_ZH" if _lang_is_zh(lang) else "perk_name_EN", "") or row.get("perk_name_EN", "")
+                firmware.append({
+                    "id": perk_id,
+                    "name": name,
+                    "text": name,
+                    "count": perk_counts[perk_id],
+                    "category": "firmware",
+                    "internal": row.get("perk_internal", ""),
+                    "level": 0,
+                    "max_level": 3,
+                })
+            continue
         if not row:
             continue
         entry = {
@@ -3122,7 +3366,8 @@ def resolve_classmod_card_details(
             "internal": row.get("perk_internal", ""),
         }
         if entry["category"] == "firmware":
-            firmware.append({**entry, "level": 0, "max_level": 3})
+            shared = equipment_firmware_entry(ref_key, "Class Mod", lang)
+            firmware.append({**(shared or entry), "count": perk_counts[perk_id], "level": 0, "max_level": 3})
         else:
             perks.append(entry)
 
@@ -3222,20 +3467,30 @@ def resolve_enhancement_card_details(decoded_full: str, lang: str = "zh-CN") -> 
     for part_id in shared_ids:
         ref = _part_ref(247, part_id)
         category = ref.get("category")
+        if category == "firmware":
+            entry = equipment_firmware_entry(f"247:{part_id}", "Enhancement", lang)
+            if entry:
+                firmware.append(entry)
+            else:
+                row = shared_rows.get(part_id)
+                if row:
+                    text = row.get(localized, "") or row.get("perk_name_EN", "")
+                    firmware.append({
+                        "id": part_id,
+                        "text": text,
+                        "name": text,
+                        "category": "firmware",
+                        "internal": str(ref.get("part") or ""),
+                        "level": 0,
+                        "max_level": 3,
+                    })
+            continue
         row = shared_rows.get(part_id)
         if not row:
             continue
         text = row.get(localized, "") or row.get("perk_name_EN", "")
         entry = {"id": part_id, "text": text}
-        if category == "firmware":
-            firmware.append({
-                **entry,
-                "name": text,
-                "internal": str(ref.get("part") or ""),
-                "level": 0,
-                "max_level": 3,
-            })
-        elif category in {"stat_group1", "stat_group2", "stat_group3"}:
+        if category in {"stat_group1", "stat_group2", "stat_group3"}:
             entry["group"] = category
             stats.append(entry)
 
@@ -3274,6 +3529,7 @@ def resolve_item_display(
 
     name = ""
     rarity = _rarity_from_csv(item_id, rarity_ids, item_type, lang)
+    rarity_en = _rarity_from_csv(item_id, rarity_ids, item_type, "en-US")
     pearl_ids = {str(value) for value in range(51, 61)}
     if item_type in WEAPON_TYPES and any(
         str(part.get("id", "")) == "1"
@@ -3285,6 +3541,7 @@ def resolve_item_display(
         if part.get("type") in {"elemental", "group"}
     ):
         rarity = _rarity_text("Pearl", lang)
+        rarity_en = "Pearl"
     source = ""
 
     if item_type in WEAPON_TYPES:
@@ -3293,6 +3550,7 @@ def resolve_item_display(
         name, source = _heavy_name(item_id, ids, lang)
     elif item_type == "Class Mod":
         name, rarity, source = _classmod_name(item_id, simple_ids, lang)
+        _unused_name_en, rarity_en, _unused_source_en = _classmod_name(item_id, simple_ids, "en-US")
     elif item_type == "Enhancement":
         name, source = _enhancement_name(item_id, simple_ids, enhancement_stat_ids, lang)
     elif item_type in {"Grenade", "Shield", "Repkit"}:
@@ -3334,6 +3592,7 @@ def resolve_item_display(
     return {
         "display_name": display_name,
         "rarity": rarity,
+        "rarity_en": rarity_en,
         "display_source": source or "fallback",
         "parts_summary": " ".join(f"{{{item}}}" for item in ids[:12]),
     }

@@ -253,7 +253,6 @@ class QtClassModEditorTab(QWidget):
             }
 
     def update_language(self, lang):
-        print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
         imported = self.full_string_output.text() if self._imported and hasattr(self, 'full_string_output') else ""
         import_name = self._import_source_name
         import_flag = self.flag_combo.currentText().split(" ")[0] if self._imported and hasattr(self, 'flag_combo') else None
@@ -271,8 +270,6 @@ class QtClassModEditorTab(QWidget):
         elif curr_seed and hasattr(self, 'seed_edit'):
             self.seed_edit.setText(curr_seed)
         
-        print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")
-
     def _create_top_controls(self):
         top_controls_layout = QHBoxLayout()
         
@@ -382,6 +379,7 @@ class QtClassModEditorTab(QWidget):
         
         self.skill_picker = InlineCatalogPicker(
             stackable=True,
+            editable_count=False,
             search_placeholder=self.ui_loc['skills']['search_placeholder'],
             clear_text=self.ui_loc['perks'].get('clear', self._pick_text("清空", "Clear")),
         )
@@ -873,8 +871,28 @@ class QtClassModEditorTab(QWidget):
             perk_zh = perk_row.get('perk_name_ZH', '')
             internal = perk_row.get('perk_internal', '')
             category = perk_row.get('perk_category', 'other') or 'other'
-            display_name = perk_zh if self.current_lang == 'zh-CN' and perk_zh else perk_en
-            detail = f"{internal}  ·  ID {perk_id}" if internal else f"ID {perk_id}"
+            firmware = (
+                item_display_resolver.equipment_firmware_entry(
+                    f"234:{perk_id}", "Class Mod", self.current_lang
+                )
+                if category == "firmware"
+                else None
+            )
+            if firmware:
+                display_name = firmware["name"]
+                descs = firmware.get("descs") or []
+                detail = next((text for text in descs if text), "")
+                tooltip_lines = [f"{internal}  ·  ID {perk_id}"]
+                tooltip_lines.extend(
+                    f"L{level}: {text}" for level, text in enumerate(descs, 1) if text
+                )
+                search_text = " ".join((perk_id, internal, display_name, *descs))
+                tooltip = "\n".join(tooltip_lines)
+            else:
+                display_name = perk_zh if self.current_lang == 'zh-CN' and perk_zh else perk_en
+                detail = f"{internal}  ·  ID {perk_id}" if internal else f"ID {perk_id}"
+                search_text = f"{perk_id} {internal} {perk_en} {perk_zh}"
+                tooltip = detail
 
             items.append({
                 "key": perk_id,
@@ -882,8 +900,8 @@ class QtClassModEditorTab(QWidget):
                 "detail": detail,
                 "category": category,
                 "accent": "blue" if category == "firmware" else None,
-                "search_text": f"{perk_id} {internal} {perk_en} {perk_zh}",
-                "tooltip": escape(detail),
+                "search_text": search_text,
+                "tooltip": tooltip,
                 "data": {"perk_id": perk_id},
             })
         self.perk_picker.set_source(items)

@@ -16,18 +16,15 @@ class BatchConverterWorker(QObject):
     def __init__(self, lines, loc_data=None):
         super().__init__()
         self.lines = lines
-        self.loc = loc_data
+        self.loc = loc_data or {}
 
     def run(self):
         results = []
         total = len(self.lines)
-        err_prefix = "Error: "
-        crit_prefix = "Critical Error: "
-        
-        if self.loc:
-            # Extract simple prefixes if possible, or just use default English
-            # Since loc has templates like "状态: 错误: {error}", we just want "错误: "
-            pass 
+        error_template = self.loc.get('status_error', 'Error: {error}')
+        critical_template = self.loc.get('status_critical', 'Critical Error: {error}')
+        last_report = time.monotonic()
+        self.progress.emit(0, total)
 
         for i, line in enumerate(self.lines):
             mode = 'deserialize' if line.strip().startswith('@U') else 'serialize'
@@ -37,12 +34,14 @@ class BatchConverterWorker(QObject):
                 else: # serialize
                     result, error = b_encoder.encode_to_base85(line)
                 
-                output = result if not error else f"{err_prefix}{error}"
+                output = result if not error else error_template.format(error=error)
             except Exception as e:
-                output = f"{crit_prefix}{e}"
+                output = critical_template.format(error=e)
             results.append(output)
-            self.progress.emit(i + 1, total)
-            time.sleep(0.01) # 避免UI完全冻结
+            now = time.monotonic()
+            if i + 1 == total or now - last_report >= 0.05:
+                self.progress.emit(i + 1, total)
+                last_report = now
         self.finished.emit(results)
 
 
@@ -622,7 +621,6 @@ class QtConverterTab(QWidget):
             }
 
     def update_language(self, lang):
-        print(f"DEBUG: Updating language for {self.__class__.__name__} to {lang}...")
         self.current_lang = lang
         self._load_localization()
         
@@ -678,4 +676,3 @@ class QtConverterTab(QWidget):
         # Combo boxes (refresh items)
         self._populate_batch_flags()
         self._populate_yaml_flags()
-        print(f"DEBUG: Finished updating language for {self.__class__.__name__}.")

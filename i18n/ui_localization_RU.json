@@ -42,6 +42,7 @@
     "window_title": "Borderlands 4 Save Editor",
     "subtitle": "Автор: SuperExboom - Бесплатно. Если вы заплатили за это, вас обманули",
     "header": {
+      "language": "\u042f\u0437\u044b\u043a",
       "title": "Редактор сохранений Borderlands 4",
       "open": "Открыть",
       "save": "Сохранить",
@@ -50,12 +51,20 @@
       "theme_light": "Переключить на светлую тему",
       "change_bg": "Сменить Фон"
     },
+    "settings": {
+      "title": "\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u0438\u043d\u0442\u0435\u0440\u0444\u0435\u0439\u0441\u0430",
+      "blur": "\u0420\u0430\u0437\u043c\u044b\u0442\u0438\u0435 \u0444\u043e\u043d\u0430",
+      "pick_bg": "\u0412\u044b\u0431\u0440\u0430\u0442\u044c \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0435",
+      "clear_bg": "\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c",
+      "animations": "\u0410\u043d\u0438\u043c\u0430\u0446\u0438\u044f \u0438\u043d\u0442\u0435\u0440\u0444\u0435\u0439\u0441\u0430"
+    },
     "menu": {
       "open_selector": "Выбор сохранения",
       "save": "Сохранить",
       "save_as": "Сохранить как..."
     },
     "status": {
+      "loading": "Загрузка...",
       "welcome": "Добро пожаловать в редактор сохранений Borderlands 4",
       "autosave": "Автосохранение",
       "autosave_tip": "Запись на диск через ~30 с после правок (атомарно; прежний файл → .prev.bak)",
@@ -75,6 +84,7 @@
       "enhancement": "Усиление",
       "weapon_editor": "Ред. оружия",
       "weapon_generator": "Ген. оружия",
+      "god_roll": "God Roll",
       "grenade": "Граната",
       "shield": "Щит",
       "repkit": "Ремкомплект",
@@ -121,6 +131,7 @@
       "batch_success": "Успешно добавлено предметов: {count}.",
       "batch_fail": "Пакетное добавление не удалось",
       "batch_fail_msg": "Не удалось добавить ни одного предмета. Ошибок: {count}.",
+      "batch_busy": "Другая пакетная операция уже выполняется. Дождитесь её завершения.",
       "iter_complete": "Итеративное добавление завершено",
       "iter_success": "Успешно добавлено предметов: {count}.",
       "iter_fail": "Итеративное добавление не удалась",
@@ -144,6 +155,57 @@
       "generated_encoding": "Сгенерировано {count} записей, начало кодирования...",
       "encoding_progress": "Кодирование {current}/{total}...",
       "error_prefix": "Ошибка: "
+    },
+    "live": {
+      "title": "Онлайн-режим",
+      "offline": "Сеть",
+      "online": "Сеть",
+      "connecting": "Сеть…",
+      "refresh": "Обн.",
+      "toggle_tooltip": "Подключиться к запущенной игре (127.0.0.1:28777), чтобы читать и изменять предметы в реальном времени.",
+      "refresh_tooltip": "Обновить предметы из запущенной игры (только в онлайн-режиме).",
+      "mode_accessible": "Онлайн-режим",
+      "refresh_accessible": "Обновить онлайн-предметы",
+      "unavailable": "Онлайн-режим недоступен (модуль live/): {error}",
+      "connection_failed": "Не удалось подключиться к игре (127.0.0.1:28777).\nУбедитесь, что игра запущена, персонаж загружен и мод bl4_live активен.",
+      "version_mismatch": "Несовместимая версия bl4_live: редактор ожидает {expected}, игра сообщает {actual}.\nУстановите bl4_live для этой версии игры.",
+      "version_check_failed": "Не удалось проверить совместимость bl4_live: {error}",
+      "fetch_failed": "Не удалось получить онлайн-предметы: {error}",
+      "runtime_state_failed": "Не удалось прочитать состояние игры: {error}",
+      "synced": "Предметы рюкзака и банка синхронизированы с игрой.",
+      "timeout": "Получение онлайн-предметов превысило 15 секунд. Игра или bl4_live могут быть не запущены.",
+      "refresh_failed": "Не удалось обновить онлайн-предметы: {error}",
+      "refreshed": "Онлайн-предметы обновлены.",
+      "exited": "Онлайн-режим отключён.",
+      "save_disabled": "Недоступно в онлайн-режиме (нет файла сохранения).",
+      "flag_disabled": "Флаги сохранения не используются в онлайн-режиме.",
+      "runtime_action_done": "Онлайн-действие выполнено: {action}",
+      "runtime_busy": "Другое онлайн-действие ещё выполняется. Дождитесь его завершения.",
+      "unsaved_changes_blocked": "Перед переходом в онлайн-режим сохраните или отмените несохранённые изменения офлайн-сохранения.",
+      "add_encode_failed": "Не удалось закодировать онлайн-предмет: {error}",
+      "spawn_failed": "Не удалось создать онлайн-предмет: {error}",
+      "spawn_success": "Новый предмет создан в игровом рюкзаке.",
+      "spawn_rejected": "Игра отклонила создание предмета: {error}",
+      "invalid_serial": "Некорректный серийный код: {serial}",
+      "slot_missing": "Не удалось определить слот инвентаря (в item_path отсутствует slot_N).",
+      "overwrite_started": "Онлайн-замена: {container}[{slot}] -> {serial}...",
+      "overwrite_failed": "Онлайн-замена не удалась: {error}",
+      "missing_parts": "Внимание: не удалось сопоставить компонентов: {count}.",
+      "overwrite_success": "Предмет в слоте {slot} заменён; серийный код и массив компонентов проверены.\nПредметы, кроме оружия, обычно обновляются сразу. Карточка, модель и поведение оружия кэшируются игрой; вернитесь в главное меню и снова загрузите персонажа.",
+      "overwrite_rejected": "Игра отклонила онлайн-замену: {error}",
+      "overwrite_conflict_refreshed": "Целевой предмет переместился или изменился в игре. Онлайн-рюкзак обновлён; снова откройте предмет и повторите замену.",
+      "overwrite_source_missing": "В текущем онлайн-снимке нет исходного серийного кода этого слота. Обновите данные и повторите.",
+      "overwrite_persistent_success": "Слот {slot}: серийный код и массив компонентов проверены.",
+      "cache_rebuild_success": "Полная runtime-identity и кэш Actor экипированного предмета пересозданы.",
+      "backpack_publication_success": "Полная runtime-identity неэкипированного предмета в рюкзаке опубликована и обновлена.",
+      "cache_rebuild_not_needed": "Предмет не экипирован; пересоздание модели не требуется.",
+      "cache_rebuild_already_current": "Модель экипированного предмета уже актуальна; пересоздание не требуется.",
+      "cache_rebuild_failed": "Кэш не был полностью пересоздан: {error}. Данные игры обновлены; при необходимости перезагрузитесь.",
+      "cache_rebuild_unavailable": "Мгновенное пересоздание кэша временно недоступно: {reason}. Изменение предмета сохранено; при необходимости перезагрузитесь.",
+      "cache_rebuild_unsupported": "Текущий онлайн-мод не поддерживает мгновенное пересоздание кэша; при необходимости перезагрузитесь.",
+      "cache_rebuild_recovery": "Состояние транзакции не определено. Проверьте экипировку и блокировку восстановления перед следующей заменой.",
+      "inventory_recovery_reason": "требуется проверка незавершённого восстановления комплекта",
+      "inventory_mutation_recovery_pending": "Обнаружено незавершённое восстановление комплекта, поэтому запись онлайн-предметов заблокирована. Сначала проверьте или очистите запись на вкладке комплектов: {reason}"
     }
   },
   "character_tab": {
@@ -151,7 +213,8 @@
       "character_info": "Персонаж (Info)",
       "currency": "Валюта (Currency)",
       "world_presets": "Пресеты Profile / Shared",
-      "char_presets": "Пресеты персонажа"
+      "char_presets": "Пресеты персонажа",
+      "live_runtime": "Онлайн-функции"
     },
     "labels": {
       "name": "Имя:",
@@ -168,12 +231,101 @@
       "character_only_hint": "Только для сохранения персонажа. В Profile кнопки будут неактивны.",
       "preset_mode_profile": "Тип сохранения: Profile. Пресеты Profile активны, пресеты персонажа отключены.",
       "preset_mode_character": "Тип сохранения: персонаж. Пресеты персонажа активны, пресеты Profile отключены.",
+      "live_runtime_hint": "Эти функции действуют только в текущей сессии. Модификаторы оружия применяются после смены оружия и восстанавливаются при отключении.",
+      "live_runtime_idle": "Готово.",
+      "live_dedicated_drop_hint": "Гарантированные попытки только из личного пула врага NCS. Множитель задаёт число дополнительных попыток; мировой пул не добавляется.",
+      "live_max_sdu_tokens_hint": "Пополняет жетоны ECHO/SDU до минимальной общей суммы для всех платных улучшений вместимости. Более высокое значение не уменьшается; задания и слоты снаряжения не открываются принудительно.",
+      "live_survival": "Выживание / движение",
+      "live_weapon": "Оружие",
+      "live_cooldown": "Перезарядка умений",
+      "live_progress": "Прогресс / валюта",
+      "live_tuning": "Множители / вместимость",
+      "live_loot": "Редкость добычи",
+      "live_vault_card": "Vault Card",
+      "live_vault_card_item": "{name} · ур. {level}",
+      "live_currency": "Валюта",
+      "live_currency_item": "{name} · {amount}",
+      "bank_size": "Вместимость банка",
+      "base_fov": "Основной FOV",
+      "viewmodel_fov": "FOV модели оружия",
+      "magazine_capacity_scale": "Множитель магазина",
+      "projectile_speed_scale": "Скорость снаряда",
+      "live_position": "Закладки позиции",
+      "position_unavailable": "Позиция персонажа недоступна.",
+      "position_value": "{map} · X {x:.1f} · Y {y:.1f} · Z {z:.1f}",
+      "bookmark_name": "Название закладки",
+      "bookmark_default": "Закладка {number}",
+      "bookmark_item": "{name} · {map}",
+      "position_map_mismatch": "Закладка находится на другой карте.",
+      "live_lost_loot": "Потерянная добыча",
+      "lost_loot_unavailable": "Потерянная добыча недоступна.",
+      "lost_loot_value": "Ожидает: {count} · мест в рюкзаке: {free_slots}",
+      "vault_card_name": "Карта Хранилища {number}",
+      "live_currency_cash": "Деньги",
+      "live_currency_eridium": "Эридий",
+      "fire_rate_scale": "Темп стрельбы",
+      "movement_speed_scale": "Скорость движения",
+      "jump_height_scale": "Высота прыжка",
+      "critical_damage_scale": "Урон крита",
+      "experience_reward_scale": "Множитель боевого опыта",
+      "cash_reward_scale": "Множитель денег",
+      "eridium_reward_scale": "Множитель эридия",
+      "dedicated_drop_multiplier": "Доп. личный дроп",
+      "backpack_size": "Размер рюкзака",
       "preset_credit": ""
     },
     "buttons": {
       "apply_changes": "Применить изменения персонажа и валюты",
       "apply_profile_changes": "Применить валюты Profile",
-      "sync_levels": "Синхронизировать ур. предметов в рюкзаке с персонажем"
+      "sync_levels": "Синхронизировать ур. предметов в рюкзаке с персонажем",
+      "toggle_infinite_ammo": "Бесконечные патроны",
+      "refill_ammo": "Пополнить боезапас",
+      "toggle_demigod": "Бессмертие",
+      "toggle_health_lock": "Фикс. здоровье",
+      "toggle_shield_lock": "Фикс. щит",
+      "toggle_stamina_lock": "Беск. выносливость",
+      "toggle_instant_reload": "Мгн. перезарядка",
+      "toggle_no_overheat": "Без перегрева",
+      "toggle_no_spread": "Без разброса",
+      "toggle_no_recoil": "Без отдачи",
+      "toggle_guaranteed_crit": "Всегда крит",
+      "toggle_repairkit_no_cd": "Ремкомплект без КД",
+      "toggle_skill_no_cd": "Навыки без КД",
+      "toggle_gadget_no_cd": "Снаряжение без КД",
+      "toggle_dedicated_drop_100": "Личный дроп 100%",
+      "max_money": "Максимум денег",
+      "max_eridium": "Максимум эридия",
+      "max_level": "Максимальный уровень",
+      "max_specialization": "Максимальная специализация",
+      "max_sdu_tokens": "Макс. жетоны SDU",
+      "toggle_infinite_jump": "Бесконечный прыжок",
+      "set_vault_card_level": "Задать уровень",
+      "give_currency": "Добавить",
+      "apply_bank_size": "Применить",
+      "apply_base_fov": "Применить",
+      "apply_viewmodel_fov": "Применить",
+      "apply_magazine_capacity": "Применить",
+      "apply_projectile_speed": "Применить",
+      "reset_fov": "Сбросить FOV",
+      "refresh_position": "Обновить",
+      "save_position": "Сохранить",
+      "teleport_position": "Телепорт",
+      "delete_position": "Удалить",
+      "refresh_lost_loot": "Обновить",
+      "claim_lost_loot": "Забрать",
+      "apply_fire_rate": "Применить",
+      "apply_movement_speed": "Применить",
+      "apply_jump_height": "Применить",
+      "apply_critical_damage": "Применить",
+      "apply_experience_multiplier": "Применить",
+      "apply_cash_multiplier": "Применить",
+      "apply_eridium_multiplier": "Применить",
+      "apply_backpack_size": "Применить",
+      "apply_dedicated_drop_multiplier": "Применить",
+      "rarity_legendary": "Только легендарные",
+      "rarity_pearlescent": "Только жемчужные",
+      "rarity_reset": "Сбросить шанс",
+      "reset_runtime_modifiers": "Сбросить модификаторы"
     },
     "warnings": {
       "sync_warning": "Внимание: Это может привести к снятию экипированных предметов. Вам придется надеть их заново из рюкзака."
@@ -219,6 +371,7 @@
       "reload_time": "Перезарядка",
       "magazine": "Магазин",
       "critical_damage": "Крит. урон",
+      "critical_chance": "Шанс крита",
       "ammo_cost": "Расход боеприпасов",
       "splash_radius": "Радиус взрыва",
       "ads_time": "Время прицеливания",
@@ -249,6 +402,17 @@
       "Unknown": "Неизвестно"
     },
     "search_placeholder": "Поиск предметов...",
+    "filters": {
+      "container": "Контейнер",
+      "type": "Тип",
+      "manufacturer": "Производитель",
+      "rarity": "Редкость",
+      "flags": "Флаг",
+      "level": "Уровень",
+      "all": "Все",
+      "clear": "Сбросить фильтры",
+      "count": "Показано {shown}/{total}"
+    },
     "add_item": {
       "label_serial": "Серийный номер:",
       "placeholder_serial": "Введите @U... или декодированный код",
@@ -344,6 +508,7 @@
       "export_txt": "Экспорт в .txt",
       "start_batch": "Начать пакетную обработку",
       "batch_add": "Пакетное добавление",
+      "import_yaml": "Импорт YAML",
       "adding": "Добавление...",
       "processing": "Обработка...",
       "start_iter": "Начать итерацию и генерацию",
@@ -416,7 +581,9 @@
       "components": "Компоненты",
       "roundtrip": "Обратная проверка",
       "part_total": "Деталей",
-      "implicit_level_one": "Неявный 1 уровень"
+      "implicit_level_one": "Неявный 1 уровень",
+      "provenance": "Источник",
+      "catalog_empty": "Встроенный каталог серийных номеров отсутствует или пуст."
     },
     "buttons": {
       "inspect": "Анализ",
@@ -426,7 +593,46 @@
       "clear": "Очистить",
       "copy_json": "Копировать JSON",
       "export_json": "Экспорт JSON",
-      "save_card": "Сохранить карточку"
+      "save_card": "Сохранить карточку",
+      "catalog": "Внутренние / NPC / задания"
+    },
+    "provenance_tags": {
+      "official_loadout": "Официальный комплект",
+      "mission": "Задание",
+      "npc": "NPC / сцена",
+      "skill": "Объект навыка",
+      "ui": "Предпросмотр UI",
+      "historical": "Историческое",
+      "orphan": "Сирота / устаревшее"
+    },
+    "catalog": {
+      "title": "Внутренние / NPC / задания",
+      "warning": "Внутренние и сценические данные могут быть исправлены, удалены или отклонены игрой. Сначала проверьте их.",
+      "search": "Фильтр по названию, типу, источнику или сцене...",
+      "name": "Название",
+      "type": "Тип",
+      "context": "Сцена / контекст",
+      "level": "Уровень",
+      "details": "Сведения",
+      "load": "Проверить",
+      "copy": "Копировать Base85",
+      "add": "В рюкзак",
+      "close": "Закрыть",
+      "no_selection": "Выберите запись, чтобы увидеть источник и правила.",
+      "no_serial": "Запись содержит только правила, без серийного номера.",
+      "copy_title": "Копировать внутренний номер?",
+      "copy_warning": "Это внутренний или сценический предмет. Он может быть небезопасен для игрока. Копировать Base85?",
+      "add_title": "Добавить внутренний предмет?",
+      "add_warning": "Игра может исправить, удалить или отклонить этот внутренний предмет. Добавить его в рюкзак?",
+      "add_blocked": "Эта запись доступна только для просмотра и не может быть добавлена в рюкзак.",
+      "groups": {
+        "official_loadout": "Официальный старт / комплект",
+        "npc_mission": "NPC / задание / сцена",
+        "skill_ui": "Навык / предпросмотр UI",
+        "history": "История / сироты",
+        "rules_only": "Только правила",
+        "other": "Прочие внутренние данные"
+      }
     },
     "parts_columns": [
       "#",
@@ -467,6 +673,8 @@
       "tag_limits": "Лимиты тегов",
       "groups": "Группы деталей",
       "violations": "Проблемы",
+      "catalog_rule": "Встроенное правило только для чтения",
+      "preferred_parts": "Рекомендуемые детали",
       "yes": "да",
       "no": "нет"
     },
@@ -520,7 +728,9 @@
     },
     "search": {
       "placeholder": "Поиск по ключам и значениям…",
-      "count": "{current}/{total}"
+      "count": "{current}/{total}",
+      "previous_tooltip": "Предыдущий результат поиска",
+      "next_tooltip": "Следующий результат поиска"
     },
     "inspector": {
       "path": "Текущий узел",
@@ -534,6 +744,7 @@
       "manufacturer": "Производитель",
       "container": "Место",
       "slot": "Слот",
+      "state_flags": "Флаги состояния",
       "unresolved": "Не распознано"
     },
     "ops": {
@@ -560,7 +771,9 @@
       "range_confirm": "Удалить",
       "delete_confirm": "Удалить узлов: {count}?",
       "error": "Ошибка",
-      "delete": "Удалить"
+      "delete": "Удалить",
+      "confirm": "ОК",
+      "cancel": "Отмена"
     },
     "types": {
       "str": "Строка",
@@ -580,6 +793,13 @@
       "list_items": "список · {count}",
       "flags_bits": "биты {bits}",
       "serial_ok": "Расшифрован · Lv{level} {name}"
+    },
+    "tooltips": {
+      "undo": "Отменить (Ctrl+Z)",
+      "redo": "Повторить (Ctrl+Y)"
+    },
+    "shortcuts": {
+      "hint": "Ctrl+Z Отменить · Ctrl+F Поиск · F2 Переименовать · Del Удалить"
     }
   },
   "class_mod_tab": {
@@ -591,7 +811,7 @@
       "seed": "Случайный Сид (1–9999)"
     },
     "legendary": {
-      "title": "Легендарное дополнение",
+      "title": "Легендарные названия",
       "clear": "Очистить",
       "search_placeholder": "Поиск…"
     },
@@ -799,7 +1019,9 @@
     "violation_forced_part_missing": "Отсутствует встроенная деталь шаблона",
     "violation_conditional_availability": "Генерируется только при особых условиях",
     "violation_unresolved_rule_parts": "В правиле остались неразобранные детали",
-    "violation_inheritance_cycle": "Цикл наследования правил шаблона"
+    "violation_inheritance_cycle": "Цикл наследования правил шаблона",
+    "preferred_part": "Официально рекомендуемая деталь",
+    "preferred_selected_count": "Выбрано рекомендованных деталей: {selected}/{total}"
   },
   "weapon_editor_tab": {
     "labels": {
@@ -932,6 +1154,7 @@
       "move_up": "Вверх",
       "move_down": "Вниз",
       "drag_part": "Перетащите для изменения порядка",
+      "toggle_internal_names": "Показать или скрыть внутренние имена деталей",
       "remove_part": "Удалить"
     },
     "parts": {
@@ -961,9 +1184,102 @@
       "facet_part_type": "Тип детали",
       "facet_manufacturer": "Производитель",
       "facet_weapon_type": "Тип оружия",
+      "same_model": "Та же модель ствола ({model})",
+      "cross_model": "Другая модель: текущая {current}, кандидат {candidate}",
+      "same_model_badge": "Та же {model}",
+      "cross_model_badge": "Другая {model}",
       "result_count": "Найдено: {n} / {total}",
-      "available_parts_hint": "Доступные детали (клик — предпросмотр, двойной клик — добавить)"
+      "available_parts_hint": "Доступные детали (клик — предпросмотр, двойной клик — добавить)",
+      "no_matches": "Нет совпадений",
+      "search_skin": "Поиск по названию скина…"
     }
+  },
+  "equipment_roll": {
+    "main_page": "Редактор",
+    "results_page": "Результаты",
+    "named_item": "Модель",
+    "generated": "Создано: {count}",
+    "no_results": "Результатов пока нет",
+    "select_result": "Выберите предмет слева",
+    "add_one": "Добавить",
+    "shield_type": "Тип щита",
+    "live_stats": "Параметры"
+  },
+  "god_roll_tab": {
+    "title": "Оптимизатор God Roll",
+    "manufacturer": "Производитель",
+    "weapon_type": "Тип оружия",
+    "rarity": "Редкость",
+    "weapon": "Целевое оружие",
+    "mode": "Режим",
+    "legal": "Легальная сборка",
+    "unrestricted": "Детали разных фирм",
+    "level": "Уровень",
+    "barrel": "Фиксированный ствол",
+    "torgue": "Требование Torgue",
+    "torgue_any": "Без требования к режиму Torgue",
+    "torgue_sticky": "Обязательно липкие",
+    "torgue_impact": "Обязательно ударные/обычные",
+    "base_element": "Базовый элемент",
+    "secondary_element": "Второй элемент",
+    "pearl_element": "Жемчужная замена",
+    "auto": "Автоподбор",
+    "auto_available": "Автоподбор (допустимо, не гарантировано)",
+    "unavailable": "Недоступно для этого оружия",
+    "none": "Без элемента",
+    "force_element": "Разрешить нелегальный элемент",
+    "force_hint": "Результат будет отмечен как модифицированный, если нарушено только правило элемента.",
+    "score_note": "Рейтинг использует расчётную модель характеристик; красные эффекты, рикошеты и задержанный урон липких зарядов учтены не полностью.",
+    "score_profile": "Профиль оценки",
+    "score_profile_sustained_dps": "Длительный DPS",
+    "score_profile_burst": "Взрывной урон",
+    "score_profile_crit_element": "Критический / элементальный",
+    "score_profile_balanced": "Сбалансированный",
+    "score_explanation": "Объяснение оценки",
+    "score_total": "Оценка",
+    "score_short": "Оценка",
+    "score_metric_dps": "Длительный DPS",
+    "score_metric_damage": "Урон",
+    "score_metric_fire_rate": "Скорострельность",
+    "score_metric_magazine": "Магазин",
+    "score_metric_critical_damage": "Критический урон",
+    "score_metric_elemental_dps": "Элементальный DPS",
+    "score_metric_reload_time": "Перезарядка",
+    "score_warning": "Расчётный рейтинг: красные эффекты, рикошеты и задержанный липкий урон не учитываются.",
+    "score_missing": "Недоступные показатели: {metrics}",
+    "open_editor": "Открыть в редакторе оружия",
+    "limits": "Лимиты групп без ограничений",
+    "group": "Группа",
+    "pool": "Пул",
+    "minimum": "Мин.",
+    "maximum": "Макс.",
+    "effort": "Бюджет поиска",
+    "fast": "Быстро (3 секунды)",
+    "balanced": "Баланс (8 секунд)",
+    "deep": "Глубоко (30 секунд)",
+    "top_n": "Результаты",
+    "search": "Найти God Roll",
+    "cancel": "Отмена",
+    "idle": "Выберите оружие и ограничения, затем запустите поиск.",
+    "running": "Проверено {attempted} · допустимо {accepted} · лучшая оценка {best}",
+    "done": "За {elapsed:.1f} с проверено {attempted} сборок, найдено {count}. Это лучший результат в бюджете, глобальный оптимум не доказан.",
+    "done_exact": "За {elapsed:.1f} с полностью проверено {frontier} легальных сборок; глобальный Top {count} доказан.",
+    "cancelled": "Поиск отменён; показаны лучшие найденные результаты.",
+    "no_results": "Нет сборок, соответствующих ограничениям.",
+    "error": "Ошибка поиска God Roll: {error}",
+    "offline_only": "God Roll доступен только для офлайн-сохранения.",
+    "select_flag": "Flag",
+    "add_start": "Добавление: {count}...",
+    "add_progress": "Добавление {current}/{total} · успешно {success} · ошибок {fail}",
+    "add_done": "Добавлено {success}; ошибок {fail}",
+    "results_scope": "{mode} · {profile} · ствол {barrel} · лучший Top {count} в бюджете",
+    "results_scope_exact": "{mode} · {profile} · ствол {barrel} · доказанный Top {count}",
+    "parts_title": "Детали компонентов",
+    "no_part_details": "Для этого результата нет данных о компонентах.",
+    "no_part_effect": "Нет изменений характеристик",
+    "source_current": "Текущее оружие",
+    "source_universal": "Общий пул элементов",
+    "status_element_modified": "Изменён только элемент"
   },
   "weapon_gen_tab": {
     "labels": {
@@ -1022,7 +1338,10 @@
       "roll_options": "Параметры",
       "roll_results": "Результаты",
       "available_only": "Только доступные",
-      "attribute_hint": "Вторая стихия показывается при поддержке; жемчужные поля — только для жемчужной редкости."
+      "attribute_hint": "Вторая стихия показывается при поддержке; жемчужные поля — только для жемчужной редкости.",
+      "stats": "Характеристики",
+      "missing_parts": "Отсутствует: {parts}",
+      "missing_parts_format": "{label} {actual}/{limit}"
     },
     "dialogs": {
       "error_title": "Ошибка",
@@ -1039,6 +1358,55 @@
       "roll_add_progress": "{current}/{total} · +{success} · −{fail}",
       "roll_add_done": "Добавлено {success}, ошибок {fail}",
       "base85_copied": "Base85 скопирован"
+    }
+  },
+  "equipment_legit": {
+    "status_legal": "Естеств.",
+    "status_incomplete": "Не собрано",
+    "status_modified": "Модиф.",
+    "status_conditional": "Условно",
+    "status_unknown": "Нет проверки",
+    "status_gold": "Основа Gold",
+    "reason_legal": "Соответствует правилам естественной генерации.",
+    "reason_count_below": "Не хватает: {group} ({actual}/{limit})",
+    "reason_count_above": "Лишнее: {group} ({actual}/{limit})",
+    "reason_part_not_allowed": "Есть деталь вне текущего шаблона",
+    "reason_duplicate_part": "Одна деталь выбрана повторно",
+    "reason_missing_dependency": "Не выполнена зависимость детали",
+    "reason_conflict": "Выбранные детали конфликтуют",
+    "reason_foreign_part": "Есть деталь другого типа или производителя",
+    "reason_unknown_part": "Есть неизвестная деталь",
+    "reason_unknown_composition": "Выберите известный шаблон предмета",
+    "reason_multiple_compositions": "Выбрано несколько шаблонов",
+    "reason_rule_gap": "Правила генерации неполны",
+    "reason_conditional": "Нужен ограниченный контент",
+    "reason_modified": "Не соответствует естественной генерации",
+    "candidate_legal": "Допустимо: {group}",
+    "candidate_slot_full": "Допустимо для {group}; замените текущую деталь.",
+    "candidate_dependency": "Группа {group}: не выполнено сочетание или зависимость.",
+    "candidate_not_allowed": "Вне естественного шаблона; можно выбрать как модификацию.",
+    "slot_budget_hint": "Текущее число / естественный лимит; модификации не блокируются.",
+    "gold_reason": "Gold Skin — только основа легендарного скина без естественной сборки; подсказки отключены.",
+    "groups": {
+      "barrel": "Ствол",
+      "barrel_acc": "Мод. ствола",
+      "body": "Корпус",
+      "body_acc": "Мод. корпуса",
+      "body_ele": "Стихия",
+      "element": "Стихия",
+      "firmware": "Прошивка",
+      "payload": "Заряд",
+      "payload_augment": "Мод. заряда",
+      "stat_augment": "Мод. статов",
+      "primary_augment": "Основной",
+      "secondary_augment": "Вторичный",
+      "augment_element_resist": "Сопротивл.",
+      "augment_element_immunity": "Иммунитет",
+      "augment_element_splat": "Выброс",
+      "augment_element_nova": "Нова",
+      "unique": "Легенд.",
+      "vile": "Vile",
+      "other": "Другое"
     }
   },
   "grenade_tab": {
@@ -1066,7 +1434,9 @@
       "clear": "Очистить"
     },
     "misc": {
-      "none": "Нет"
+      "none": "Нет",
+      "all": "Все",
+      "available": "Доступно"
     },
     "dialogs": {
       "load_error": "Ошибка: Данные гранат не загружены.",
@@ -1078,6 +1448,12 @@
     }
   },
   "shield_tab": {
+    "augment_sources": {
+      "all": "Все источники",
+      "universal": "Общие",
+      "energy": "Энергощит",
+      "armor": "Бронещит"
+    },
     "augment_facets": {
       "all": "Все",
       "primary_augment": "Основной слот",
@@ -1089,6 +1465,8 @@
       "element": "Сопротивление стихиям (Одиночн.)",
       "firmware": "Прошивка (Одиночн.)",
       "legendary": "Легендарные перки",
+      "primary": "Основной мод.",
+      "secondary": "Вторичный мод.",
       "energy": "Перки энергощита",
       "armor": "Перки бронещита",
       "universal": "Универсальные перки",
@@ -1110,6 +1488,9 @@
     },
     "misc": {
       "none": "Нет",
+      "all": "Все",
+      "available": "Доступно",
+      "base": "Основа",
       "perk_type_mismatch": "Текущий тип щита: {shield_type}.\nНельзя добавить перки типа {incompatible_type}.",
       "shield_type_energy": "Энергощит",
       "shield_type_armor": "Бронещит"
@@ -1135,7 +1516,8 @@
     "groups": {
       "perks": "Навыки/Перки",
       "prefix": "Префикс (Одиночн.)",
-      "resistance": "Сопротивление/Иммунитет (Одиночн.)",
+      "resistance": "Сопротивление (Одиночн.)",
+      "immunity": "Иммунитет (Одиночн.)",
       "firmware": "Прошивка (Одиночн.)",
       "legendary": "Легендарные перки",
       "universal": "Универсальные перки (Мульти)",
@@ -1158,7 +1540,9 @@
       "random": "Случайно"
     },
     "misc": {
-      "none": "Нет"
+      "none": "Нет",
+      "all": "Все",
+      "available": "Доступно"
     },
     "dialogs": {
       "load_error": "Ошибка: Данные ремкомплекта не загружены.",
@@ -1190,6 +1574,8 @@
       "firmware": "Прошивка (Одиночн.)",
       "barrel_acc": "Аксессуар ствола (Мульти)",
       "body_acc": "Аксессуар корпуса (Мульти)",
+      "pearl_elements": "Жемчужная стихия (Одиночн.)",
+      "pearl_stat": "Жемчужный параметр (Одиночн.)",
       "output": "Десериализация",
       "base_attrs": "Базовые атрибуты"
     },
@@ -1207,7 +1593,10 @@
       "clear": "Очистить"
     },
     "misc": {
-      "none": "Нет"
+      "none": "Нет",
+      "all": "Все",
+      "available": "Доступно",
+      "element_base_required": "Требуется базовый элементальный модуль ID:{id}."
     },
     "dialogs": {
       "load_error": "Ошибка: Данные тяжелого оружия не загружены.",
@@ -1238,7 +1627,10 @@
     "buttons": {
       "read_save": "Прочитать из текущего сохранения",
       "save_loadout": "Сохранить набор",
-      "load_loadout": "Загрузить в сохранение"
+      "load_loadout": "Загрузить в сохранение",
+      "save_live_loadout": "Сохранить текущий онлайн-набор",
+      "apply_live_loadout": "Применить к онлайн-персонажу",
+      "review_live_recovery": "Проверить блокировку"
     },
     "labels": {
       "activated_skills": "Активированные навыки",
@@ -1257,7 +1649,8 @@
       "no_activated": "Нет активированных навыков",
       "no_items": "Нет экипированных предметов",
       "open_first": "Сначала откройте сохранение",
-      "no_equipped_data": "Данные экипировки не найдены"
+      "no_equipped_data": "Данные экипировки не найдены",
+      "empty_slot_live": "В этом слоте нет сохранённого онлайн-набора"
     },
     "notice": "Из-за ограничений игры экипировка может быть перезаписана не полностью. Это не ошибка редактора — не сообщайте об этом как о баге. Также не экипируйте предметы, которых нет в рюкзаке. Отображаемые навыки включают Специальные и Хранилище.",
     "dialogs": {
@@ -1276,7 +1669,24 @@
       "skill_fail": "Сбой перезаписи навыков: {error}",
       "load_success": "Набор {slot} загружен в память.\nНажмите 'Сохранить' в главном окне для записи.",
       "name_prompt_title": "Назвать набор",
-      "name_prompt_msg": "Введите название набора (Отмена — имя по умолчанию):"
+      "name_prompt_msg": "Введите название набора (Отмена — имя по умолчанию):",
+      "live_unavailable": "Онлайн-режим сейчас недоступен.",
+      "live_no_entries": "В этом наборе нет экипировки, которую можно применить.",
+      "live_save_success": "Онлайн-набор {slot} сохранён в:\n{path}",
+      "live_save_fail": "Не удалось сохранить онлайн-набор: {error}",
+      "confirm_live_apply_title": "Подтверждение онлайн-набора",
+      "confirm_live_apply_msg": "Применить экипировку из слота {slot} к текущему онлайн-персонажу?\n\nЗаменяются только перечисленные непустые слоты экипировки; навыки не изменяются. Пустые при сохранении слоты не очищаются и не восстанавливаются, циклическая перестановка между слотами не поддерживается. Все целевые предметы должны оставаться в рюкзаке.\nПеред применением текущий набор будет прочитан и проверен повторно.",
+      "live_apply_success": "Онлайн-набор {slot} применён.\nИзменено: {applied}; пропущено: {skipped}.",
+      "live_apply_cache_pending": "Некоторые модели или кэш карточек предметов ещё обновляются.",
+      "live_apply_fail_title": "Сбой онлайн-набора",
+      "live_apply_fail": "Не удалось применить онлайн-набор: {error}",
+      "live_apply_rollback_incomplete": "Откат подтверждён не полностью. Немедленно проверьте текущую экипировку в игре.",
+      "live_recovery_available": "Дальнейшая смена набора заблокирована. Обновите данные и проверьте блокировку перед снятием.",
+      "live_recovery_title": "Восстановление онлайн-набора",
+      "live_recovery_none": "Нет ожидающей проверки записи восстановления онлайн-набора.",
+      "live_recovery_confirm": "Онлайн-смена набора не была полностью подтверждена:\n{reason}\n\nСначала проверьте экипировку в игре. Снятие блокировки лишь разрешает последующие смены и не откатывает или исправляет предметы. Снять её по свежему снимку набора?",
+      "live_recovery_cleared": "Блокировка восстановления снята по свежему снимку набора.",
+      "live_recovery_fail": "Ошибка восстановления онлайн-набора: {error}"
     },
     "decode": {
       "unknown": "Неизвестно",

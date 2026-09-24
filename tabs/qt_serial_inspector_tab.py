@@ -19,9 +19,10 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QGuiApplication
 from PyQt6.QtWidgets import (
+    QAbstractItemView,
     QDialog,
     QFileDialog,
     QFrame,
@@ -29,6 +30,7 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
+    QMessageBox,
     QPlainTextEdit,
     QPushButton,
     QScrollArea,
@@ -36,6 +38,8 @@ from PyQt6.QtWidgets import (
     QSplitter,
     QTabWidget,
     QTextEdit,
+    QTreeWidget,
+    QTreeWidgetItem,
     QVBoxLayout,
     QWidget,
 )
@@ -77,6 +81,8 @@ _FALLBACK_LOC: dict[str, Any] = {
         "bit_padding": "Padding bits",
         "part_total": "Parts",
         "implicit_level_one": "Implicit level 1",
+        "provenance": "Source",
+        "catalog_empty": "The embedded serial catalog is unavailable or empty.",
     },
     "buttons": {
         "inspect": "Inspect",
@@ -87,6 +93,45 @@ _FALLBACK_LOC: dict[str, Any] = {
         "save_card": "Save card image",
         "copy": "Copy",
         "use": "Edit this form",
+        "catalog": "Internal / NPC / Mission presets",
+    },
+    "provenance_tags": {
+        "official_loadout": "Official loadout",
+        "mission": "Mission",
+        "npc": "NPC / Cinematic",
+        "skill": "Skill actor",
+        "ui": "UI preview",
+        "historical": "Historical",
+        "orphan": "Orphan / Legacy",
+    },
+    "catalog": {
+        "title": "Internal / NPC / Mission presets",
+        "warning": "Internal and scene-only data may be rejected, corrected or removed by the game. Inspect before using it.",
+        "search": "Filter by name, type, source or context...",
+        "name": "Name",
+        "type": "Type",
+        "context": "Scene / Context",
+        "level": "Level",
+        "details": "Details",
+        "load": "Inspect",
+        "copy": "Copy Base85",
+        "add": "Add to backpack",
+        "close": "Close",
+        "no_selection": "Select an entry to see its source and rule data.",
+        "no_serial": "Rule-only entry; no serial is embedded.",
+        "copy_title": "Copy internal serial?",
+        "copy_warning": "This is internal or scene-derived content. It may not be safe as a player item. Copy Base85 anyway?",
+        "add_title": "Add internal serial?",
+        "add_warning": "This is internal or scene-derived content. The game may remove, correct or reject it. Add it to the backpack anyway?",
+        "add_blocked": "This entry is inspect-only and cannot be added to a player backpack.",
+        "groups": {
+            "official_loadout": "Official starter / loadout",
+            "npc_mission": "NPC / mission / cinematic",
+            "skill_ui": "Skill actor / UI preview",
+            "history": "Historical / orphan",
+            "rules_only": "Rule-only compositions",
+            "other": "Other embedded data",
+        },
     },
     "effect_state": {
         "described": "described",
@@ -100,6 +145,7 @@ _FALLBACK_LOC: dict[str, Any] = {
         "modified": "Modified",
         "conditional": "Conditional",
         "unknown": "Unknown",
+        "gold": "Gold foundation",
     },
     "roundtrip": {
         "match": "re-encodes identically",
@@ -118,6 +164,8 @@ _FALLBACK_LOC: dict[str, Any] = {
         "tag_limits": "Tag limits",
         "groups": "Part groups",
         "violations": "Issues",
+        "catalog_rule": "Embedded read-only rule",
+        "preferred_parts": "Preferred parts",
         "yes": "yes",
         "no": "no",
     },
@@ -145,6 +193,8 @@ _FALLBACK_LOC: dict[str, Any] = {
         "core_augment": "Core Augment",
         "payload": "Payload",
         "payload_augment": "Payload Augment",
+        "manufacturer_perk": "Manufacturer Perk",
+        "firmware": "Firmware",
         "element": "Element",
         "augment_element_resist": "Elemental Resistance",
         "augment_element_immunity": "Elemental Immunity",
@@ -182,6 +232,8 @@ _EXTRA_CATEGORY_COLORS = {
     "core_augment": "#29B6F6",
     "payload": "#FFA726",
     "payload_augment": "#FFB74D",
+    "manufacturer_perk": "#FF8A65",
+    "firmware": "#29B6F6",
     "element": "#EF9A9A",
     "body_ele": "#EF9A9A",
     "augment_element_resist": "#E57373",
@@ -211,6 +263,16 @@ _RARITY_COLORS = {
     "epic": "#a855f7",
     "legendary": "#fb923c",
     "unique": "#fbbf24",
+}
+
+_PROVENANCE_COLORS = {
+    "official_loadout": "#4FC3F7",
+    "mission": "#66BB6A",
+    "npc": "#FFB74D",
+    "skill": "#AB47BC",
+    "ui": "#26C6DA",
+    "historical": "#90A4AE",
+    "orphan": "#EF5350",
 }
 
 
@@ -276,8 +338,259 @@ class _ClickableLabel(QLabel):
         super().mousePressEvent(event)
 
 
+class _EmbeddedCatalogDialog(QDialog):
+    """Small browser over the pipeline-exported embedded serial catalog."""
+
+    GROUP_ORDER = (
+        "official_loadout", "npc_mission", "skill_ui", "history", "rules_only", "other"
+    )
+
+    def __init__(self, owner: "QtSerialInspectorTab", entries: list[dict[str, Any]]):
+        super().__init__(owner)
+        self.owner = owner
+        self.loc = owner.loc
+        self.entries = entries
+        self.setWindowTitle(self._text("title"))
+        self.resize(980, 650)
+
+        layout = QVBoxLayout(self)
+        warning = QLabel(self._text("warning"))
+        warning.setObjectName("PartDescription")
+        warning.setWordWrap(True)
+        warning.setStyleSheet("color:#FFB74D;")
+        layout.addWidget(warning)
+
+        self.search_edit = QLineEdit()
+        self.search_edit.setPlaceholderText(self._text("search"))
+        self.search_edit.textChanged.connect(self._filter)
+        layout.addWidget(self.search_edit)
+
+        splitter = QSplitter(Qt.Orientation.Horizontal)
+        self.tree = QTreeWidget()
+        self.tree.setHeaderLabels([
+            self._text("name"), self._text("type"), self._text("context"), self._text("level")
+        ])
+        self.tree.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.tree.currentItemChanged.connect(self._selection_changed)
+        self.tree.itemDoubleClicked.connect(lambda _item, _column: self._load())
+        splitter.addWidget(self.tree)
+
+        self.details = QTextEdit()
+        self.details.setReadOnly(True)
+        self.details.setPlaceholderText(self._text("no_selection"))
+        splitter.addWidget(self.details)
+        splitter.setSizes([560, 400])
+        layout.addWidget(splitter, 1)
+
+        buttons = QHBoxLayout()
+        self.load_btn = QPushButton(self._text("load"))
+        self.copy_btn = QPushButton(self._text("copy"))
+        self.add_btn = QPushButton(self._text("add"))
+        close_btn = QPushButton(self._text("close"))
+        self.load_btn.clicked.connect(self._load)
+        self.copy_btn.clicked.connect(self._copy)
+        self.add_btn.clicked.connect(self._add)
+        close_btn.clicked.connect(self.accept)
+        buttons.addWidget(self.load_btn)
+        buttons.addWidget(self.copy_btn)
+        buttons.addWidget(self.add_btn)
+        buttons.addStretch(1)
+        buttons.addWidget(close_btn)
+        layout.addLayout(buttons)
+
+        self._populate()
+        self._selection_changed(None, None)
+
+    def _text(self, key: str) -> str:
+        value = (self.loc.get("catalog") or {}).get(key)
+        if isinstance(value, str) and value:
+            return value
+        return str((_FALLBACK_LOC["catalog"] or {}).get(key) or key)
+
+    def _group_text(self, key: str) -> str:
+        groups = (self.loc.get("catalog") or {}).get("groups") or {}
+        fallback = (_FALLBACK_LOC["catalog"].get("groups") or {})
+        return str(groups.get(key) or fallback.get(key) or key)
+
+    @staticmethod
+    def _serial(entry: dict[str, Any]) -> str:
+        return str(entry.get("serial") or entry.get("base85") or "").strip()
+
+    def _localized(self, value: Any) -> str:
+        if not isinstance(value, dict):
+            return str(value or "")
+        zh = self.owner.current_lang == "zh-CN"
+        keys = ("zh", "zh-CN", "en", "en-US") if zh else ("en", "en-US", "zh", "zh-CN")
+        return next((str(value.get(key) or "") for key in keys if value.get(key)), "")
+
+    @staticmethod
+    def _hard_blocked(entry: dict[str, Any]) -> bool:
+        blob = " ".join(
+            str(entry.get(key) or "")
+            for key in ("root_ref", "composition_ref", "name", "type", "source_kind", "context")
+        ).casefold()
+        return "exosoldier_turret" in blob or "turret_weapon_" in blob
+
+    def _entry_group(self, entry: dict[str, Any]) -> str:
+        tags = set(serial_inspect.catalog_provenance_tags([entry]))
+        group = str(entry.get("_catalog_group") or "")
+        warnings = entry.get("warnings") or []
+        if isinstance(warnings, str):
+            warnings = [warnings]
+        if (
+            group == "rules_only"
+            or any("rules_only" in str(value).casefold() for value in warnings)
+            or not self._serial(entry) and entry.get("preferred_parts")
+        ):
+            return "rules_only"
+        if "official_loadout" in tags:
+            return "official_loadout"
+        if tags.intersection({"historical", "orphan"}):
+            return "history"
+        if tags.intersection({"skill", "ui"}):
+            return "skill_ui"
+        if tags.intersection({"npc", "mission"}):
+            return "npc_mission"
+        return "other"
+
+    def _populate(self):
+        groups = {key: QTreeWidgetItem([self._group_text(key)]) for key in self.GROUP_ORDER}
+        for item in groups.values():
+            item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsSelectable)
+            self.tree.addTopLevelItem(item)
+        for entry in self.entries:
+            tags = serial_inspect.catalog_provenance_tags([entry])
+            context = entry.get("context") or entry.get("object_name") or entry.get("source_kind") or ""
+            name = entry.get("display_name") or entry.get("name") or entry.get("composition_ref") or entry.get("object_name") or "-"
+            child = QTreeWidgetItem([
+                self._localized(name), self._localized(entry.get("type")),
+                self._localized(context), str(entry.get("level") or "")
+            ])
+            child.setData(0, Qt.ItemDataRole.UserRole, dict(entry))
+            child.setToolTip(0, " · ".join(self.owner._provenance_tag_text(tag) for tag in tags))
+            groups[self._entry_group(entry)].addChild(child)
+        for key in self.GROUP_ORDER:
+            item = groups[key]
+            item.setHidden(item.childCount() == 0)
+            item.setExpanded(True)
+        for column in range(4):
+            self.tree.resizeColumnToContents(column)
+
+    def _selected_entry(self) -> dict[str, Any] | None:
+        item = self.tree.currentItem()
+        value = item.data(0, Qt.ItemDataRole.UserRole) if item else None
+        return dict(value) if isinstance(value, dict) else None
+
+    def _filter(self, text: str):
+        needle = str(text or "").strip().casefold()
+        for index in range(self.tree.topLevelItemCount()):
+            group = self.tree.topLevelItem(index)
+            visible = 0
+            for child_index in range(group.childCount()):
+                child = group.child(child_index)
+                entry = child.data(0, Qt.ItemDataRole.UserRole) or {}
+                haystack = " ".join(str(value) for value in entry.values()).casefold()
+                match = not needle or needle in haystack
+                child.setHidden(not match)
+                visible += bool(match)
+            group.setHidden(visible == 0)
+
+    def _selection_changed(self, current, _previous):
+        from html import escape
+
+        entry = self._selected_entry()
+        has_serial = bool(entry and (self._serial(entry) or entry.get("decoded")))
+        allowed = bool(entry and entry.get("add_allowed") is True and not self._hard_blocked(entry))
+        self.load_btn.setEnabled(has_serial)
+        self.copy_btn.setEnabled(bool(entry and self._serial(entry)))
+        self.add_btn.setEnabled(bool(has_serial and allowed))
+        if not entry:
+            self.details.setPlainText(self._text("no_selection"))
+            return
+        tags = serial_inspect.catalog_provenance_tags([entry])
+        rows = []
+        for key in (
+            "display_name", "name", "type", "level", "root_ref", "composition_ref", "source_kind",
+            "source_file", "object_name", "field", "context", "provenance",
+            "latest_present", "add_allowed", "canonical_refs", "internal_refs", "refs", "parts",
+        ):
+            value = entry.get(key)
+            if value not in (None, "", [], {}):
+                rows.append((key, value))
+        if entry.get("preferred_parts"):
+            rows.append(("preferred_parts", entry.get("preferred_parts")))
+        if entry.get("warnings"):
+            rows.append(("warnings", entry.get("warnings")))
+        tag_html = " ".join(
+            "<span style='color:%s;font-weight:600;'>%s</span>"
+            % (_PROVENANCE_COLORS.get(tag, "#B0BEC5"), escape(self.owner._provenance_tag_text(tag)))
+            for tag in tags
+        )
+        body = ["<p>%s</p>" % tag_html] if tag_html else []
+        body.append("<table cellspacing='0' cellpadding='3'>")
+        for key, value in rows:
+            shown = (
+                self._localized(value)
+                if isinstance(value, dict) and key in {"display_name", "name", "type", "context", "provenance"}
+                else json.dumps(value, ensure_ascii=False) if isinstance(value, (dict, list)) else str(value)
+            )
+            body.append(
+                "<tr><td style='opacity:.65;padding-right:12px;'>%s</td><td>%s</td></tr>"
+                % (escape(key), escape(shown))
+            )
+        body.append("</table>")
+        if not has_serial:
+            body.append("<p style='color:#90A4AE;'>%s</p>" % escape(self._text("no_serial")))
+        elif not allowed:
+            body.append("<p style='color:#EF5350;'>%s</p>" % escape(self._text("add_blocked")))
+        self.details.setHtml("".join(body))
+
+    def _load(self):
+        entry = self._selected_entry()
+        if not entry:
+            return
+        value = self._serial(entry) or str(entry.get("decoded") or "").strip()
+        if value:
+            self.owner.input_edit.setPlainText(value)
+            self.owner.inspect()
+            self.accept()
+
+    def _copy(self):
+        entry = self._selected_entry()
+        serial = self._serial(entry or {})
+        if not serial:
+            return
+        answer = QMessageBox.question(
+            self, self._text("copy_title"), self._text("copy_warning"),
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        )
+        if answer == QMessageBox.StandardButton.Yes:
+            clipboard = QGuiApplication.clipboard()
+            if clipboard:
+                clipboard.setText(serial)
+
+    def _add(self):
+        entry = self._selected_entry()
+        if not entry or entry.get("add_allowed") is not True or self._hard_blocked(entry):
+            QMessageBox.warning(self, self._text("add_title"), self._text("add_blocked"))
+            return
+        serial = self._serial(entry) or str(entry.get("decoded") or "").strip()
+        if not serial:
+            return
+        answer = QMessageBox.question(
+            self, self._text("add_title"), self._text("add_warning"),
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        )
+        if answer == QMessageBox.StandardButton.Yes:
+            self.owner.add_to_backpack_requested.emit(serial, "1")
+
+
 class QtSerialInspectorTab(QWidget):
     """Read-only inspector for a single item serial."""
+
+    add_to_backpack_requested = pyqtSignal(str, str)
 
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
@@ -357,6 +670,7 @@ class QtSerialInspectorTab(QWidget):
 
         row = QHBoxLayout()
         for key, slot in (
+            ("catalog", self._open_embedded_catalog),
             ("inspect", self.inspect),
             ("paste", self._paste),
             ("clear", self.clear),
@@ -396,6 +710,13 @@ class QtSerialInspectorTab(QWidget):
         self.summary_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.summary_scroll.setWidget(self.summary_label)
         layout.addWidget(self.summary_scroll)
+
+        self.provenance_label = QLabel()
+        self.provenance_label.setObjectName("PartDescription")
+        self.provenance_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.provenance_label.setWordWrap(True)
+        self.provenance_label.setVisible(False)
+        layout.addWidget(self.provenance_label)
         group.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
         return group
 
@@ -480,6 +801,8 @@ class QtSerialInspectorTab(QWidget):
             field.clear()
         self._clear_card()
         self.status_badge.setVisible(False)
+        self.provenance_label.clear()
+        self.provenance_label.setVisible(False)
         self._set_placeholder()
 
     def _set_placeholder(self):
@@ -491,6 +814,17 @@ class QtSerialInspectorTab(QWidget):
         if clipboard:
             self.input_edit.setPlainText(clipboard.text().strip())
             self.inspect()
+
+    def _open_embedded_catalog(self):
+        entries = [dict(entry) for entry in serial_inspect.embedded_serial_preset_entries()]
+        if not entries:
+            QMessageBox.information(
+                self,
+                _tr(self.loc, "buttons", "catalog"),
+                _tr(self.loc, "labels", "catalog_empty"),
+            )
+            return
+        _EmbeddedCatalogDialog(self, entries).exec()
 
     def _copy_form(self, key: str):
         text = self.form_rows[key].text()
@@ -509,6 +843,7 @@ class QtSerialInspectorTab(QWidget):
     def _render(self, report: dict[str, Any]):
         self._render_forms(report)
         self._render_summary(report)
+        self._render_provenance(report)
         self._render_status(report)
         self._render_parts(report)
         self._render_rules(report)
@@ -543,10 +878,15 @@ class QtSerialInspectorTab(QWidget):
         counts = report.get("part_counts") or {}
         # Two rows: identity on top, encoding facts below. Laid out horizontally
         # so the summary costs ~2 lines of height instead of 13.
+        type_text = "%s / %s" % (report.get("type") or "", report.get("type_en") or "")
+        if subtype := str(report.get("equipment_subtype") or ""):
+            localized = self._shield_type_label(subtype)
+            english = subtype.title()
+            type_text += " · %s" % (localized if localized == english else f"{localized} / {english}")
         first = [
             ("name", report.get("display_name")),
             ("rarity", report.get("rarity")),
-            ("type", "%s / %s" % (report.get("type") or "", report.get("type_en") or "")),
+            ("type", type_text),
             ("manufacturer", "%s / %s" % (report.get("manufacturer") or "", report.get("manufacturer_en") or "")),
             ("level", report.get("level")),
         ]
@@ -581,6 +921,50 @@ class QtSerialInspectorTab(QWidget):
         self.summary_label.setText(cells(first) + cells(second))
         self._sync_summary_height()
 
+    def _provenance_tag_text(self, tag: str) -> str:
+        value = (self.loc.get("provenance_tags") or {}).get(tag)
+        if isinstance(value, str) and value:
+            return value
+        return str((_FALLBACK_LOC.get("provenance_tags") or {}).get(tag) or tag)
+
+    def _catalog_localized(self, value: Any) -> str:
+        if not isinstance(value, dict):
+            return str(value or "")
+        zh = self.current_lang == "zh-CN"
+        keys = ("zh", "zh-CN", "en", "en-US") if zh else ("en", "en-US", "zh", "zh-CN")
+        return next((str(value.get(key) or "") for key in keys if value.get(key)), "")
+
+    def _render_provenance(self, report: dict[str, Any]):
+        from html import escape
+
+        provenance = report.get("source_provenance") or {}
+        entries = provenance.get("entries") or []
+        tags = provenance.get("tags") or []
+        if not entries:
+            self.provenance_label.clear()
+            self.provenance_label.setVisible(False)
+            return
+        badges = " ".join(
+            "<span style='color:%s;font-weight:600;'>%s</span>"
+            % (_PROVENANCE_COLORS.get(str(tag), "#B0BEC5"), escape(self._provenance_tag_text(str(tag))))
+            for tag in tags
+        )
+        contexts: list[str] = []
+        for entry in entries:
+            text = " · ".join(
+                self._catalog_localized(entry.get(key)).strip()
+                for key in ("source_kind", "object_name", "context")
+                if self._catalog_localized(entry.get(key)).strip()
+            )
+            if text and text not in contexts:
+                contexts.append(text)
+        prefix = escape(_tr(self.loc, "labels", "provenance"))
+        details = "<br>".join(escape(value) for value in contexts[:4])
+        self.provenance_label.setText(
+            "<b>%s</b> %s%s" % (prefix, badges, ("<br>" + details) if details else "")
+        )
+        self.provenance_label.setVisible(True)
+
     def _sync_summary_height(self):
         """Reserve room for the horizontal scrollbar so row 2 is never clipped."""
         # setFixedHeight re-triggers layout, which can re-enter resizeEvent; guard
@@ -611,8 +995,13 @@ class QtSerialInspectorTab(QWidget):
         if not report.get("ok") or not status:
             self.status_badge.setVisible(False)
             return
-        self.status_badge.setText(_tr(self.loc, "status", status) or status)
-        self.status_badge.setProperty("ruleStatus", status)
+        text = (
+            str(self.equipment_legit_loc.get("status_gold") or _tr(self.loc, "status", status))
+            if status == "gold"
+            else _tr(self.loc, "status", status)
+        )
+        self.status_badge.setText(text or status)
+        self.status_badge.setProperty("ruleStatus", "suppressed" if status == "gold" else status)
         # Qt does not restyle on a dynamic property change by itself.
         self.status_badge.style().unpolish(self.status_badge)
         self.status_badge.style().polish(self.status_badge)
@@ -651,10 +1040,11 @@ class QtSerialInspectorTab(QWidget):
         layout.setContentsMargins(6, 4, 6, 4)
 
         category = str(part.get("category") or "")
+        display_category = str(part.get("display_category") or category)
         state = str(part.get("effect_state") or "")
         if not part.get("known"):
             state = "unknown"
-        colour = self._category_color(category)
+        colour = self._category_color(display_category)
 
         header = QHBoxLayout()
         header.setSpacing(6)
@@ -663,7 +1053,7 @@ class QtSerialInspectorTab(QWidget):
         ordinal.setObjectName("PartIdBadge")
         header.addWidget(ordinal)
 
-        type_label = QLabel(self._category_label(category))
+        type_label = QLabel(self._category_label(display_category))
         type_label.setObjectName("PartTypeBadge")
         type_label.setProperty("partColor", colour)
         type_label.setStyleSheet("color: %s; border-color: %s;" % (colour, colour))
@@ -738,6 +1128,14 @@ class QtSerialInspectorTab(QWidget):
         if not category:
             return "-"
         key = category.casefold()
+        if key == "body" and str(self._report.get("type_en") or "").casefold() == "shield":
+            return self._group_label(category)
+        if key == "manufacturer_perk":
+            return str(self.grenade_group_loc.get("mfg_perks") or "Manufacturer Perk")
+        if key == "firmware":
+            return str(self.equipment_group_loc.get("firmware") or "Firmware")
+        if key in self.equipment_group_loc:
+            return str(self.equipment_group_loc[key])
         # Categories outside the firearm taxonomy (class-mod skills, augments,
         # stat groups) have no weapon-editor entry, so they carry their own
         # localized names here rather than showing a raw key like "inv_comp".
@@ -758,11 +1156,21 @@ class QtSerialInspectorTab(QWidget):
             self.rules_view.setPlainText("")
             return
 
+        catalog_html = self._catalog_rules_html(report)
+
+        if report.get("guidance_suppressed") == "gold_skin":
+            reason = str(
+                self.equipment_legit_loc.get("gold_reason")
+                or "Gold Skin is only a legendary-skin foundation; generation guidance is disabled."
+            )
+            self.rules_view.setHtml(catalog_html + "<p style='opacity:0.8;'>%s</p>" % escape(reason))
+            return
+
         generation = report.get("generation") or {}
         if not generation:
             # Rules cover every inventory root that ships generation data; this
             # branch is now only reached by roots the index has no rules for.
-            self.rules_view.setHtml("<p style='opacity:0.75;'>%s</p>" % escape(label("no_rules")))
+            self.rules_view.setHtml(catalog_html or "<p style='opacity:0.75;'>%s</p>" % escape(label("no_rules")))
             return
 
         yes, no = label("yes"), label("no")
@@ -784,6 +1192,7 @@ class QtSerialInspectorTab(QWidget):
             ))
 
         html = [
+            catalog_html,
             "<table cellspacing='0' cellpadding='2'>",
             "".join(
                 "<tr><td style='padding-right:12px;opacity:0.75;'>%s</td><td>%s</td></tr>"
@@ -840,8 +1249,9 @@ class QtSerialInspectorTab(QWidget):
         violations = report.get("violations") or []
         html.append("<p style='margin:8px 0 2px 0;font-weight:bold;'>%s</p>" % escape(label("violations")))
         if violations:
+            violation_texts = list(dict.fromkeys(self._violation_text(item) for item in violations))
             html.append("<ul style='margin:0;'>")
-            html.extend("<li>%s</li>" % escape(self._violation_text(item)) for item in violations)
+            html.extend("<li>%s</li>" % escape(text) for text in violation_texts)
             html.append("</ul>")
         else:
             html.append(
@@ -852,6 +1262,32 @@ class QtSerialInspectorTab(QWidget):
         for warning in report.get("warnings") or []:
             html.append("<p style='margin:2px 0;color:#E57373;'>%s</p>" % escape(str(warning)))
         self.rules_view.setHtml("".join(html))
+
+    def _catalog_rules_html(self, report: dict[str, Any]) -> str:
+        from html import escape
+
+        rules = report.get("catalog_rules") or []
+        if not rules:
+            return ""
+        blocks = [
+            "<p style='margin:2px 0 4px 0;color:#FFB74D;font-weight:600;'>%s</p>"
+            % escape(_tr(self.loc, "rules_labels", "catalog_rule"))
+        ]
+        for entry in rules:
+            composition = entry.get("composition_ref") or entry.get("name") or "-"
+            if isinstance(composition, dict):
+                composition = self._catalog_localized(composition)
+            preferred = entry.get("preferred_parts") or entry.get("parts") or []
+            shown = json.dumps(preferred, ensure_ascii=False) if isinstance(preferred, (dict, list)) else str(preferred)
+            blocks.append(
+                "<p style='margin:2px 0;'><b>%s</b><br><span style='opacity:.75;'>%s:</span> %s</p>"
+                % (
+                    escape(str(composition)),
+                    escape(_tr(self.loc, "rules_labels", "preferred_parts")),
+                    escape(shown or "-"),
+                )
+            )
+        return "".join(blocks)
 
     @staticmethod
     def _ordered_groups(generation: dict[str, Any]) -> list[str]:
@@ -868,6 +1304,11 @@ class QtSerialInspectorTab(QWidget):
     def _group_label(self, group: str) -> str:
         """Localize a selection group through the weapon editor's taxonomy keys,
         so the inspector names groups exactly like the weapon editor does."""
+        if (
+            str(group).casefold() == "body"
+            and str(self._report.get("type_en") or "").casefold() == "shield"
+        ):
+            return str(self.shield_misc_loc.get("base") or "Base")
         part_type = self._group_types().get(str(group).casefold())
         taxonomy_key = self._taxonomy_keys().get(part_type or "")
         text = self.taxonomy_loc.get(taxonomy_key or "")
@@ -896,6 +1337,20 @@ class QtSerialInspectorTab(QWidget):
 
     def _violation_text(self, violation: dict[str, Any]) -> str:
         code = str(violation.get("code") or "")
+        shield_type = str(violation.get("shield_type") or "")
+        incompatible = str(violation.get("incompatible_shield_type") or "")
+        if shield_type and incompatible:
+            template = str(
+                self.shield_misc_loc.get("perk_type_mismatch")
+                or "Current shield type is {shield_type}; cannot add {incompatible_type} shield augments."
+            ).replace("\n", " ")
+            text = template.format(
+                shield_type=self._shield_type_label(shield_type),
+                incompatible_type=self._shield_type_label(incompatible),
+            )
+            refs = violation.get("parts") or [violation.get("part")]
+            refs = [str(ref) for ref in refs if ref]
+            return text + (" · " + ", ".join(refs) if refs else "")
         # "foreign" splits into cross-manufacturer and cross-type; the generic
         # code is only used when a root's identity is unknown.
         foreign_kind = str(violation.get("foreign_kind") or "")
@@ -931,6 +1386,12 @@ class QtSerialInspectorTab(QWidget):
                 if other:
                     text += " (%s \u2192 %s)" % (own, other) if own else " (%s)" % other
         return text
+
+    def _shield_type_label(self, subtype: str) -> str:
+        return str(
+            self.shield_misc_loc.get("shield_type_" + str(subtype).casefold())
+            or str(subtype).title()
+        )
 
     # ------------------------------------------------------------------- card
 
@@ -1044,6 +1505,10 @@ class QtSerialInspectorTab(QWidget):
         # weapon tabs; reuse them so the rules pane needs no duplicate strings.
         self.rule_loc: dict[str, Any] = {}
         self.taxonomy_loc: dict[str, Any] = {}
+        self.equipment_legit_loc: dict[str, Any] = {}
+        self.equipment_group_loc: dict[str, Any] = {}
+        self.grenade_group_loc: dict[str, Any] = {}
+        self.shield_misc_loc: dict[str, Any] = {}
         try:
             data = resource_loader.load_json_resource(
                 resource_loader.get_ui_localization_file(self.current_lang)
@@ -1056,6 +1521,18 @@ class QtSerialInspectorTab(QWidget):
         taxonomy = ((data or {}).get("weapon_editor_tab") or {}).get("taxonomy")
         if isinstance(taxonomy, dict):
             self.taxonomy_loc = taxonomy
+        equipment_legit = (data or {}).get("equipment_legit")
+        if isinstance(equipment_legit, dict):
+            self.equipment_legit_loc = equipment_legit
+            groups = equipment_legit.get("groups")
+            if isinstance(groups, dict):
+                self.equipment_group_loc = groups
+        grenade_groups = ((data or {}).get("grenade_tab") or {}).get("groups")
+        if isinstance(grenade_groups, dict):
+            self.grenade_group_loc = grenade_groups
+        shield_misc = ((data or {}).get("shield_tab") or {}).get("misc")
+        if isinstance(shield_misc, dict):
+            self.shield_misc_loc = shield_misc
         section = (data or {}).get(UI_LOC_KEY)
         if isinstance(section, dict):
             merged = dict(_FALLBACK_LOC)
@@ -1080,7 +1557,7 @@ class QtSerialInspectorTab(QWidget):
             self.ui_buttons["copy_" + key].setText(_tr(self.loc, "buttons", "copy"))
             self.ui_buttons["use_" + key].setText(_tr(self.loc, "buttons", "use"))
         self.zoom_hint.setText(_tr(self.loc, "labels", "zoom_hint"))
-        for key in ("inspect", "paste", "clear", "copy_json", "export_json", "save_card"):
+        for key in ("catalog", "inspect", "paste", "clear", "copy_json", "export_json", "save_card"):
             self.ui_buttons[key].setText(_tr(self.loc, "buttons", key))
         for index, key in enumerate(("parts", "rules")):
             self.detail_tabs.setTabText(index, _tr(self.loc, "labels", key))
