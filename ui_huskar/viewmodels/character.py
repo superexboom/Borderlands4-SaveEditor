@@ -13,7 +13,7 @@ from typing import Any
 from PyQt6.QtCore import pyqtProperty, pyqtSignal, pyqtSlot
 
 from core.unlock_data import CHARACTER_CLASSES, VAULT_CARD_TOKENS
-from tabs.qt_character_tab import calc_xp_for_level, calc_xp_for_specialization_level
+from core.character_xp import calc_xp_for_level, calc_xp_for_specialization_level
 
 from .base import PageViewModel, register
 

@@ -23,12 +23,12 @@ def get_ui_localization_file(lang: str) -> str:
         Filename of the localization JSON.
     """
     mapping = {
-        'zh-CN': 'i18n/ui_localization.json',
-        'en-US': 'i18n/ui_localization_EN.json',
-        'ru': 'i18n/ui_localization_RU.json',
-        'ua': 'i18n/ui_localization_UA.json'
+        'zh-CN': 'data/i18n/ui_localization.json',
+        'en-US': 'data/i18n/ui_localization_EN.json',
+        'ru': 'data/i18n/ui_localization_RU.json',
+        'ua': 'data/i18n/ui_localization_UA.json'
     }
-    return mapping.get(lang, 'i18n/ui_localization_EN.json')
+    return mapping.get(lang, 'data/i18n/ui_localization_EN.json')
 
 
 # Item flag labels are identical across every editor tab; keep one localized
@@ -193,7 +193,7 @@ def get_class_mods_data_path(filename: str) -> Optional[Path]:
     Returns:
         文件路径，失败时返回None
     """
-    return get_resource_path(f"class_mods/{filename}")
+    return get_resource_path(f"data/class_mods/{filename}")
 
 def load_class_mods_json(filename: str, use_literal_eval: bool = False) -> Optional[Dict[str, Any]]:
     """
@@ -206,7 +206,7 @@ def load_class_mods_json(filename: str, use_literal_eval: bool = False) -> Optio
     Returns:
         解析后的数据，失败时返回None
     """
-    return load_json_resource(f"class_mods/{filename}", use_literal_eval)
+    return load_json_resource(f"data/class_mods/{filename}", use_literal_eval)
 
 def load_class_mods_csv(filename: str) -> List[Dict[str, str]]:
     """
@@ -219,7 +219,7 @@ def load_class_mods_csv(filename: str) -> List[Dict[str, str]]:
         解析后的数据列表，每行作为一个字典，失败时返回空列表
     """
     try:
-        resource_path = get_resource_path(f"class_mods/{filename}")
+        resource_path = get_resource_path(f"data/class_mods/{filename}")
         if not resource_path.exists():
             print(f"CSV文件不存在: {resource_path}")
             return []
@@ -241,13 +241,13 @@ def get_class_mods_image_path(class_name: str, image_name: str) -> Optional[Path
     Returns:
         图片路径，失败时返回None
     """
-    return get_image_resource_path(f"class_mods/{class_name}/{image_name}")
+    return get_image_resource_path(f"data/class_mods/{class_name}/{image_name}")
 
 def get_enhancement_data_path(filename: str) -> Optional[Path]:
     """
     获取enhancement目录下数据文件的路径
     """
-    return get_resource_path(f"enhancement/{filename}")
+    return get_resource_path(f"data/enhancement/{filename}")
 
 
 def load_enhancement_csv(filename: str) -> List[Dict[str, str]]:
@@ -261,7 +261,7 @@ def load_enhancement_csv(filename: str) -> List[Dict[str, str]]:
         解析后的数据列表，每行作为一个字典，失败时返回空列表
     """
     try:
-        resource_path = get_resource_path(f"enhancement/{filename}")
+        resource_path = get_resource_path(f"data/enhancement/{filename}")
         if not resource_path.exists():
             print(f"Enhancement CSV文件不存在: {resource_path}")
             return []
@@ -399,7 +399,7 @@ def get_weapon_data_path(filename: str) -> Optional[Path]:
     Returns:
         文件路径，失败时返回None
     """
-    return get_resource_path(f"weapon_edit/{filename}")
+    return get_resource_path(f"data/weapon/{filename}")
 
 def load_weapon_json(filename: str) -> Optional[Dict[str, Any]]:
     """
@@ -411,7 +411,7 @@ def load_weapon_json(filename: str) -> Optional[Dict[str, Any]]:
     Returns:
         解析后的数据，失败时返回None
     """
-    return load_json_resource(f"weapon_edit/{filename}")
+    return load_json_resource(f"data/weapon/{filename}")
 
 def get_grenade_data_path(filename: str) -> Optional[Path]:
     """
@@ -423,7 +423,7 @@ def get_grenade_data_path(filename: str) -> Optional[Path]:
     Returns:
         文件路径，失败时返回None
     """
-    return get_resource_path(f"grenade/{filename}")
+    return get_resource_path(f"data/grenade/{filename}")
 
 
 def get_shield_data_path(filename: str) -> Optional[Path]:
@@ -436,7 +436,7 @@ def get_shield_data_path(filename: str) -> Optional[Path]:
     Returns:
         文件路径，失败时返回None
     """
-    return get_resource_path(f"shield/{filename}")
+    return get_resource_path(f"data/shield/{filename}")
 
 
 def get_repkit_data_path(filename: str) -> Optional[Path]:
@@ -449,7 +449,7 @@ def get_repkit_data_path(filename: str) -> Optional[Path]:
     Returns:
         文件路径，失败时返回None
     """
-    return get_resource_path(f"repkit/{filename}")
+    return get_resource_path(f"data/repkit/{filename}")
 
 
 def get_heavy_data_path(filename: str) -> Optional[Path]:
@@ -462,7 +462,7 @@ def get_heavy_data_path(filename: str) -> Optional[Path]:
     Returns:
         文件路径，失败时返回None
     """
-    return get_resource_path(f"heavy/{filename}")
+    return get_resource_path(f"data/heavy/{filename}")
 
 
 def get_firmware_data_path(filename: str) -> Optional[Path]:
@@ -475,7 +475,7 @@ def get_firmware_data_path(filename: str) -> Optional[Path]:
     Returns:
         文件路径，失败时返回None
     """
-    return get_resource_path(f"Firmware/{filename}")
+    return get_resource_path(f"data/firmware/{filename}")
 
 
 @lru_cache(maxsize=4)
@@ -483,7 +483,7 @@ def load_item_json(filename: str) -> Optional[Dict[str, Any]]:
     """
     加载物品浏览器JSON索引文件。
     """
-    return load_json_resource(f"item/{filename}")
+    return load_json_resource(f"data/item/{filename}")
 
 
 def get_loadout_data_path(filename: str) -> Optional[Path]:
@@ -494,4 +494,4 @@ def get_loadout_data_path(filename: str) -> Optional[Path]:
     loadout/skill_name_mapping.csv。用户保存的配置方案仍应写入
     exe 同目录下的 loadouts/，不要走 PyInstaller 临时目录。
     """
-    return get_resource_path(f"loadout/{filename}")
+    return get_resource_path(f"data/loadout/{filename}")

@@ -1,7 +1,6 @@
 """装备编辑器共享视图模型：移植 BaseEquipmentEditorTab 的全部非渲染逻辑。
 
-四族装备（手雷/护盾/修复套件/重武器）主线共用 ``tabs/qt_equipment_base_tab.py``
-基类，本 VM 与之一一对应：子类声明数据源、MFG_IDS、perk 组布局与规则分组映射，
+四族装备（手雷/护盾/修复套件/重武器）共用本基类：子类声明数据源、MFG_IDS、perk 组布局与规则分组映射，
 差异钩子（序列号组装、导入回填、厂商切换附加行为）在子类覆写。
 
 与主线保持一致的行为：厂商切换联动稀有度与 perk 组、chip 单选组、picker 多选组
@@ -26,14 +25,14 @@ from core import (
     lookup,
     resource_loader,
 )
-from tabs.qt_serial_import import (
+from core.serial_import import (
     build_header,
     decode_base85,
     parse_components,
     source_texts,
     split_decoded,
 )
-from tabs import qt_items_tab
+from core import item_card_data
 
 from .base import PageViewModel
 
@@ -1526,8 +1525,8 @@ class EquipmentBaseViewModel(PageViewModel):
         name = str(display.get("display_name") or candidate.get("name") or "—")
         rarity = str(display.get("rarity") or candidate["rarity_label"])
         element = self._roll_element_text(decoded, root_id)
-        rarity_color = qt_items_tab.WEAPON_CARD_RARITY_COLORS.get(
-            str(candidate.get("rarity") or "").casefold()) or qt_items_tab.WEAPON_CARD_RARITY_COLORS.get(
+        rarity_color = item_card_data.WEAPON_CARD_RARITY_COLORS.get(
+            str(candidate.get("rarity") or "").casefold()) or item_card_data.WEAPON_CARD_RARITY_COLORS.get(
             rarity.casefold()) or "#78909C"
         return {
             "serial": serial,
@@ -1574,7 +1573,7 @@ class EquipmentBaseViewModel(PageViewModel):
             out.append({
                 "title": title.strip(),
                 "description": description.strip(),
-                "icon": qt_items_tab._effect_icon_uri(str(entry.get("icon_asset") or "")),
+                "icon": item_card_data._effect_icon_uri(str(entry.get("icon_asset") or "")),
                 "legendary": str(entry.get("display_kind") or "") == "legendary",
             })
         return out

@@ -1,13 +1,7 @@
-"""转换器页视图模型：移植 QtConverterTab 的三个转换/批量分组。
+"""转换器页视图模型：单条互转（300ms 防抖）、批量互转、批量写入背包。
 
-主线对应：
-- tabs/qt_converter_tab.py：单条互转（300ms 防抖）、批量互转、批量写入背包。
-- main_window.handle_batch_add / on_batch_add_finished：QThread 编排、自动保存挂起、完成提示。
-- core.batch.add_serial_lines 直接复用。
-
-worker 由主线 BatchConverterWorker（tabs）/ BatchAddWorker
-移植到本模块并增加协作式取消（主线 worker 不支持取消，QML 页要求长任务可取消）；
-未复用 main_window 类是为了避免引入其模块级副作用（stdout 重配置等）。
+批量任务跑在 QThread worker 上，支持协作式取消，期间挂起自动保存，
+完成后给出提示；写背包复用 core.batch.add_serial_lines。
 
 旧 IteratorViewModel API 暂留在文件底部用于存档兼容，转换器页面不再暴露该模块。
 """
@@ -84,7 +78,7 @@ def _batch_input_lines(text: str) -> list[str]:
 
 
 class _BatchConverterWorker(QObject):
-    """批量互转 worker（移植自 tabs.qt_converter_tab.BatchConverterWorker，增加取消）。"""
+    """批量互转 worker（可取消）。"""
 
     progress = pyqtSignal(int, int)  # current, total
     finished = pyqtSignal(list)
@@ -126,7 +120,7 @@ class _BatchConverterWorker(QObject):
 
 
 class _BatchAddWorker(QObject):
-    """批量写入背包 worker（移植自 main_window.BatchAddWorker，增加取消）。"""
+    """批量写入背包 worker（可取消）。"""
 
     progress = pyqtSignal(int, int, int, int)  # current, total, success, fail
     finished = pyqtSignal(int, int)            # success, fail
@@ -153,7 +147,7 @@ class _BatchAddWorker(QObject):
 
 
 class _IteratorWorker(QObject):
-    """迭代器 worker（移植自 main_window.IteratorWorker，增加进度信号与取消）。"""
+    """迭代器 worker（带进度信号，可取消）。"""
 
     status_update = pyqtSignal(str)
     progress = pyqtSignal(int, int)  # current, total（写背包 / 编码输出阶段）

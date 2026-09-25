@@ -5,6 +5,19 @@ import os
 import sys
 from pathlib import Path
 
+# Force UTF-8 stdio so bilingual log prints don't crash a frozen Windows build
+# (cp1252 can't encode Chinese). A windowed exe has no stdout/stderr at all, so
+# route those to the null device.
+for _stream_name in ("stdout", "stderr"):
+    _stream = getattr(sys, _stream_name, None)
+    if _stream is None:
+        setattr(sys, _stream_name, open(os.devnull, "w", encoding="utf-8"))
+    else:
+        try:
+            _stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError):
+            pass
+
 from ui_huskar.runtime import configure_runtime
 
 RUNTIME = configure_runtime()

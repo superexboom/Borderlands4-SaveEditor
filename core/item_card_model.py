@@ -41,7 +41,7 @@ from core.item_card_data import (
     _weapon_card_details,
 )
 
-UI_ASSETS = "assets/item_card_ui"
+UI_ASSETS = "assets/item_card/game"
 CLASSMOD_SKILL_LIMIT = 4
 CLASSMOD_PERK_LIMIT = 3
 ELEMENT_ALIASES = {"electric": "shock", "incendiary": "fire"}
@@ -141,7 +141,7 @@ def _base(item: dict[str, Any], lang: str, level_label: str, kind: str) -> dict[
 
 
 def _stat(icon: str, value: Any) -> dict[str, str]:
-    return {"icon": _existing(f"assets/item_stats_icon/{icon}"), "value": str(value or "-")}
+    return {"icon": _existing(f"assets/item_card/stats/{icon}"), "value": str(value or "-")}
 
 
 def _element_row(text: str, keys: list[Any], primary: str) -> dict[str, Any] | None:
@@ -169,7 +169,7 @@ def _augment(entry: dict[str, Any], icon_px: int) -> dict[str, Any]:
 def _effect_icon(asset: Any) -> str:
     package = str(asset or "").split(".", 1)[0]
     name = f"{package.rsplit('/', 1)[-1]}.png" if package else ""
-    return _existing(f"assets/item_card_icons/{name}") if name else ""
+    return _existing(f"assets/item_card/effects/{name}") if name else ""
 
 
 def _firmware(entries: list[dict[str, Any]], lang: str) -> dict[str, Any] | None:
@@ -180,7 +180,7 @@ def _firmware(entries: list[dict[str, Any]], lang: str) -> dict[str, Any] | None
     name = re.sub(r"\s*[-–]\s*(?:Firmware|固件)\s*$", "", raw, flags=re.IGNORECASE).strip()
     stem = str(entry.get("internal") or "").casefold().removeprefix("part_firmware_")
     stem = FIRMWARE_ICON_ALIASES.get(stem, stem)
-    icon = _ui_asset(f"ico_firmware_{stem}_big.png") or _existing(f"assets/item_card/ico_firmware_{stem}_big.png")
+    icon = _ui_asset(f"ico_firmware_{stem}_big.png") or _existing(f"assets/item_card/extra/ico_firmware_{stem}_big.png")
     level = max(0, min(3, int(entry.get("level") or 0)))
     return {"name": name or ("技能工艺" if _zh(lang) else "Skillcraft"), "icon": icon,
             "level": level, "count_text": f"{level}/3"}
@@ -199,7 +199,7 @@ def _weapon(item: dict[str, Any], lang: str, level_label: str, icon_px: int) -> 
     if not stats or not icon:
         return None
     card = _base(item, lang, level_label, "weapon")
-    card["thumbnail"] = _existing(f"assets/item_card_type/{icon}")
+    card["thumbnail"] = _existing(f"assets/item_card/types/{icon}")
     card["thumbnail_kind"] = "pistol" if item.get("type_en") == "Pistol" else "weapon"
 
     def value(key: str) -> str:
@@ -238,7 +238,7 @@ def _equipment(item: dict[str, Any], lang: str, level_label: str, icon_px: int) 
         icon = "ico_art_item_card_rep_kit.png"
     else:
         icon = "ico_art_item_card_heavy_weapon_generic.png"
-    card["thumbnail"] = _existing(f"assets/item_card_type/{icon}")
+    card["thumbnail"] = _existing(f"assets/item_card/types/{icon}")
 
     def value(key: str, raw: Any) -> str:
         try:
@@ -309,7 +309,7 @@ def _classmod(item: dict[str, Any], lang: str, level_label: str, icon_px: int,
     card = _base(item, lang, level_label, "classmod")
     class_name = str(details.get("class_name") or item.get("manufacturer_en") or "")
     portrait = CLASSMOD_PORTRAITS.get(class_name, "")
-    card["thumbnail"] = _existing(f"assets/item_card/{portrait}") if portrait else ""
+    card["thumbnail"] = _existing(f"assets/item_card/extra/{portrait}") if portrait else ""
     skills = []
     for skill in details.get("skills", [])[:CLASSMOD_SKILL_LIMIT]:
         tree = str(skill.get("tree_color") or "").casefold()
@@ -320,7 +320,7 @@ def _classmod(item: dict[str, Any], lang: str, level_label: str, icon_px: int,
             "name": str(skill.get("name") or ""),
             "tree": tree if tree in ("red", "blue", "green") else "blue",
             "tree_name": str(skill.get("tree_name") or ""),
-            "icon": f"class_mods/{class_name}/{skill.get('icon_file')}" if icon and icon.exists() else "",
+            "icon": f"data/class_mods/{class_name}/{skill.get('icon_file')}" if icon and icon.exists() else "",
             "points": f"+{int(skill.get('points') or 0)}/{int(skill.get('max_points') or 0)}",
             "text": _skill_description(skill.get("description"), icon_px),
             "stats": " · ".join(markup_to_styled(line, icon_px) for line in stats if line),
@@ -345,7 +345,7 @@ def _enhancement(item: dict[str, Any], lang: str, level_label: str, icon_px: int
     if not details:
         return None
     card = _base(item, lang, level_label, "enhancement")
-    card["thumbnail"] = _existing("assets/item_card_type/ico_art_item_card_enhancement.png")
+    card["thumbnail"] = _existing("assets/item_card/types/ico_art_item_card_enhancement.png")
     colors = theme().get("markup_colors") or {}
     core = []
     for entry in details.get("display_effects", [*details.get("effects", []), *details.get("stacked_effects", [])]):
@@ -364,6 +364,31 @@ def _enhancement(item: dict[str, Any], lang: str, level_label: str, icon_px: int
     card["firmware"] = _firmware(details.get("firmware", []), lang)
     card["red_text"] = next(iter(details.get("red_texts") or []), "")
     return card
+
+
+def item_from_report(report: dict[str, Any]) -> dict[str, Any]:
+    """Adapt a ``serial_inspect.inspect_serial`` report to the item dict ``build_card`` reads.
+
+    The builders read the same keys as ``ProcessedItem``; the inspector has no
+    save context, so container/slot are left blank.
+    """
+    return {
+        "name": report.get("display_name") or "",
+        "type": report.get("type") or "",
+        "type_en": report.get("type_en") or "",
+        "container": "",
+        "slot": "",
+        "manufacturer": report.get("manufacturer") or "",
+        "manufacturer_en": report.get("manufacturer_en") or "",
+        "id": report.get("item_id"),
+        "level": report.get("level"),
+        "serial": report.get("base85") or "",
+        "decoded_full": report.get("decoded_full") or "",
+        "decoded_parts": report.get("decoded_parts") or "",
+        "rarity": report.get("rarity") or "",
+        "weapon_stats": report.get("weapon_stats") or {},
+        "equipment_stats": report.get("equipment_stats") or {},
+    }
 
 
 def build_card(item: dict[str, Any], lang: str = "zh-CN", level_label: str = "Lv",

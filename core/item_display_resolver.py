@@ -336,17 +336,10 @@ def _weapon_rarity() -> list[dict[str, str]]:
 
 @lru_cache(maxsize=8)
 def _rows_by_file(filename: str) -> list[dict[str, str]]:
-    folder, name = filename.split("/", maxsplit=1)
-    getter = {
-        "heavy": resource_loader.get_heavy_data_path,
-        "grenade": resource_loader.get_grenade_data_path,
-        "shield": resource_loader.get_shield_data_path,
-        "repkit": resource_loader.get_repkit_data_path,
-        "enhancement": resource_loader.get_enhancement_data_path,
-        "class_mods": resource_loader.get_class_mods_data_path,
-        "Firmware": resource_loader.get_firmware_data_path,
-    }.get(folder)
-    return _read_csv(getter(name)) if getter else []
+    """Rows of a data table given its resource path (``data/<folder>/<file>.csv``)."""
+    if not filename.startswith("data/"):
+        return []
+    return _read_csv(resource_loader.get_resource_path(filename))
 
 
 @lru_cache(maxsize=256)
@@ -451,7 +444,7 @@ def dynamic_item_kind(item_id: int) -> tuple[str, str] | None:
     refs = (_item_index().get("part_refs") or {})
     if not any(key.startswith(prefix) and str(ref.get("parent", "")).startswith("classmod_") for key, ref in refs.items()):
         return None
-    for row in _rows_by_file("class_mods/Class_rarity_name.csv"):
+    for row in _rows_by_file("data/class_mods/Class_rarity_name.csv"):
         if row.get("class_ID", "").strip() == str(item_id) and row.get("class_name", "").strip():
             return row["class_name"].strip(), "Class Mod"
     return "Unknown", "Class Mod"
@@ -462,14 +455,14 @@ def _csv_rows_for_type(item_type: str) -> list[dict[str, str]]:
         # Heavy rarity/skin rows live in their own file (heavy_rarity.csv) since the part
         # file was split to carry ids+names only. The naming resolver needs both: the
         # rarity row tells it whether a special barrel gets its legendary skin name.
-        return [*_rows_by_file("heavy/heavy_manufacturer_perk.csv"),
-                *_rows_by_file("heavy/heavy_rarity.csv")]
+        return [*_rows_by_file("data/heavy/heavy_manufacturer_perk.csv"),
+                *_rows_by_file("data/heavy/heavy_rarity.csv")]
     if item_type == "Grenade":
-        return _rows_by_file("grenade/manufacturer_rarity_perk.csv")
+        return _rows_by_file("data/grenade/manufacturer_rarity_perk.csv")
     if item_type == "Shield":
-        return _rows_by_file("shield/manufacturer_perk.csv")
+        return _rows_by_file("data/shield/manufacturer_perk.csv")
     if item_type == "Repkit":
-        return _rows_by_file("repkit/repkit_manufacturer_perk.csv")
+        return _rows_by_file("data/repkit/repkit_manufacturer_perk.csv")
     return []
 
 
@@ -2253,7 +2246,7 @@ def _rarity_from_csv(item_id: int, ids: list[str], item_type: str, lang: str) ->
                     return _rarity_text(row.get("Stat", ""), lang)
     if item_type == "Enhancement":
         for part_id in ids:
-            for row in _rows_by_file("enhancement/Enhancement_rarity.csv"):
+            for row in _rows_by_file("data/enhancement/Enhancement_rarity.csv"):
                 if row.get("manufacturers_ID") == str(item_id) and row.get("rarity_ID") == str(part_id):
                     return _rarity_text(row.get("rarity", ""), lang)
     for part_id in ids:
@@ -2460,14 +2453,14 @@ def _heavy_name(item_id: int, ids: list[str], lang: str) -> tuple[str, str]:
 def _classmod_name(item_id: int, ids: list[str], lang: str) -> tuple[str, str, str]:
     normal_rarity = _rarity_from_csv(item_id, ids, "Class Mod", lang)
     prefix = _classmod_prefix(item_id, ids, lang)
-    names = _rows_by_file("class_mods/Class_rarity_name.csv")
+    names = _rows_by_file("data/class_mods/Class_rarity_name.csv")
     by_code = {
         (row.get("class_ID", "").strip(), row.get("name_code", "").strip()): row
         for row in names
     }
     pairs = [
         (row.get("L_name_ID", "").strip(), row.get("item_card_ID", "").strip())
-        for row in _rows_by_file("class_mods/Class_legendary_map.csv")
+        for row in _rows_by_file("data/class_mods/Class_legendary_map.csv")
         if row.get("class_ID", "").strip() == str(item_id)
     ]
     seen: set[str] = set()
@@ -2895,7 +2888,7 @@ _EQUIPMENT_ELEMENT_KEYS = {
 # families (same internal parts, only the serial child ids differ per family), so they
 # live in one pipeline-exported table keyed by the internal part string instead of a
 # firmware section in every *_main_perk.csv.
-_EQUIPMENT_FIRMWARE_TABLE = "Firmware/firmware.csv"
+_EQUIPMENT_FIRMWARE_TABLE = "data/firmware/firmware.csv"
 
 
 def limit_item_card_entries(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -3268,7 +3261,7 @@ def resolve_classmod_card_details(
     components = _parse_components(decoded_full.split("||", 1)[-1])
     simple_ids = _simple_ids(components)
     skill_rows = [
-        row for row in _rows_by_file("class_mods/Skills.csv")
+        row for row in _rows_by_file("data/class_mods/Skills.csv")
         if row.get("class_ID", "").strip() == str(item_id)
     ]
     skills_by_code: dict[str, dict[str, str]] = {}
@@ -3332,7 +3325,7 @@ def resolve_classmod_card_details(
 
     perk_ids = _group_sub_ids(components, "234")
     perk_ids.extend(value for value in re.findall(r'"([^"]+)"', decoded_full.split("||", 1)[-1]) if value != "c")
-    perk_rows = {row.get("perk_ID", "").strip(): row for row in _rows_by_file("class_mods/Class_perk.csv")}
+    perk_rows = {row.get("perk_ID", "").strip(): row for row in _rows_by_file("data/class_mods/Class_perk.csv")}
     perk_counts = Counter(perk_ids)
     perks = []
     firmware = []
@@ -3419,11 +3412,11 @@ def resolve_enhancement_card_details(decoded_full: str, lang: str = "zh-CN") -> 
     shared_ids = _group_sub_ids(components, "247")
     core_rows = {
         (row.get("manufacturers_ID", "").strip(), row.get("perk_ID", "").strip()): row
-        for row in _rows_by_file("enhancement/Enhancement_manufacturers.csv")
+        for row in _rows_by_file("data/enhancement/Enhancement_manufacturers.csv")
     }
     shared_rows = {
         row.get("perk_ID", "").strip(): row
-        for row in _rows_by_file("enhancement/Enhancement_perk.csv")
+        for row in _rows_by_file("data/enhancement/Enhancement_perk.csv")
         if row.get("manufacturers_ID", "").strip() == "247"
     }
     localized = "perk_name_ZH" if _lang_is_zh(lang) else "perk_name_EN"

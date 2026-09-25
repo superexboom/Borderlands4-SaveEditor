@@ -84,13 +84,25 @@ Features dedicated tabs for deep customization of various gear types:
 
 If you want to build the executable (`.exe`) from source, please ensure you have Python installed and run the `pyinstaller_config.py` script located in the project root directory.
 
-This script uses the canonical HuskarUI Qt6 spec, collects the required resource files (such as images, JSONs, CSVs, and the vendored HuskarUI runtime), and invokes PyInstaller to generate `dist/BL4SaveEditor.exe`. The old QWidget entry point is retained only as an internal compatibility module and is not packaged as a separate application.
+This script uses `BL4SaveEditor.spec`, collects the required resource files (images, game data tables, and the vendored HuskarUI runtime), and invokes PyInstaller to generate `dist/BL4SaveEditor.exe`. To run from source instead, use `python -m ui_huskar`.
+
+Project layout:
+
+| Folder | Contents |
+| --- | --- |
+| `ui_huskar/` | The application: QML pages and components, view models, live-mode support |
+| `core/` | Save, serial and item logic; generated catalogs in `core/data/` |
+| `data/` | Game data tables (weapon / equipment / class mod parts, localization) |
+| `assets/` | Images: item card art, progress maps, icons |
+| `live/` | Bridge to the in-game BL4Live mod |
+| `bl4_decoder_py/` | Serial codec |
+| `vendor/` | Vendored HuskarUI runtime |
 
 **Steps:**
 
 1.  Install dependencies:
     ```bash
-    pip install -r requirements-huskarui.txt
+    pip install -r requirements.txt
     ```
 2.  Run the build script:
     ```bash

@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
-"""Build the single, canonical HuskarUI Qt6 executable.
-
-This compatibility command is kept because older instructions and scripts
-call ``python pyinstaller_config.py``. It deliberately does not generate a
-second spec from ``main_window.py``: that module is an internal backend
-compatibility layer, not a user-facing application.
-"""
+"""Build the HuskarUI Qt6 executable (``dist/BL4SaveEditor.exe``) from the maintained spec."""
 
 from __future__ import annotations
 
@@ -15,11 +9,11 @@ from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parent
-SPEC_PATH = BASE_DIR / "BL4SaveEditorHuskarUI.spec"
+SPEC_PATH = BASE_DIR / "BL4SaveEditor.spec"
 
 
 def create_spec_file() -> Path:
-    """Return the maintained HuskarUI spec without rewriting it."""
+    """Return the maintained spec without rewriting it."""
     if not SPEC_PATH.is_file():
         raise FileNotFoundError(f"Canonical PyInstaller spec is missing: {SPEC_PATH}")
     print(f"Using canonical spec: {SPEC_PATH}")
@@ -31,7 +25,7 @@ def build_executable() -> bool:
     try:
         import PyInstaller  # noqa: F401
     except ImportError:
-        print("PyInstaller is not installed; install requirements-huskarui.txt first.")
+        print("PyInstaller is not installed; install requirements.txt first.")
         return False
 
     spec_path = create_spec_file()
@@ -48,6 +42,6 @@ def build_executable() -> bool:
 
 
 if __name__ == "__main__":
-    print("=== PyInstaller Configuration (HuskarUI Qt6) ===")
-    print("Install dependencies with: pip install -r requirements-huskarui.txt")
+    print("=== PyInstaller build (BL4SaveEditor) ===")
+    print("Install dependencies with: pip install -r requirements.txt")
     raise SystemExit(0 if build_executable() else 1)

@@ -1,11 +1,8 @@
-"""Small shared UI/helpers for importing an item as an editable copy."""
+"""Importing an item as an editable copy: header split/rebuild, component parsing, source texts."""
 
 import re
 
-from PyQt6 import QtCore, QtWidgets
-
 from core import decoder_logic
-from tabs.qt_catalog_picker import ContainedWheelListWidget
 
 
 _SOURCE_TEXTS = {
@@ -70,116 +67,6 @@ _SOURCE_TEXTS = {
 
 def source_texts(lang):
     return _SOURCE_TEXTS.get(lang, _SOURCE_TEXTS["en-US"])
-
-
-def select_flag_value(combo, value=None, *, default="3"):
-    target = str(default if value in (None, "") else value).strip().split(" ", 1)[0]
-    for index in range(combo.count()):
-        if combo.itemText(index).split(" ", 1)[0] == target:
-            combo.setCurrentIndex(index)
-            return
-    combo.addItem(target)
-    combo.setCurrentIndex(combo.count() - 1)
-
-
-class SerialSourceBar(QtWidgets.QFrame):
-    backpack_requested = QtCore.pyqtSignal()
-    base85_requested = QtCore.pyqtSignal()
-    reset_requested = QtCore.pyqtSignal()
-
-    def __init__(self, *, new_text, backpack_text, base85_text, reset_text, parent=None):
-        super().__init__(parent)
-        self.setObjectName("SerialSourceBar")
-        layout = QtWidgets.QHBoxLayout(self)
-        layout.setContentsMargins(8, 4, 8, 4)
-
-        self.source_label = QtWidgets.QLabel(new_text)
-        self.source_label.setObjectName("SerialSourceLabel")
-        self.source_label.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
-        layout.addWidget(self.source_label, 1)
-
-        self.backpack_btn = QtWidgets.QPushButton(backpack_text)
-        self.base85_btn = QtWidgets.QPushButton(base85_text)
-        self.reset_btn = QtWidgets.QPushButton(reset_text)
-        self.reset_btn.setEnabled(False)
-        layout.addWidget(self.backpack_btn)
-        layout.addWidget(self.base85_btn)
-        layout.addWidget(self.reset_btn)
-
-        self.backpack_btn.clicked.connect(self.backpack_requested)
-        self.base85_btn.clicked.connect(self.base85_requested)
-        self.reset_btn.clicked.connect(self.reset_requested)
-
-    def set_source(self, text, *, imported):
-        self.source_label.setText(text)
-        self.source_label.setToolTip(text)
-        self.reset_btn.setEnabled(imported)
-
-
-def choose_backpack_item(parent, items, predicate, *, title, search_placeholder):
-    matches = [item for item in items if predicate(item)]
-    dialog = QtWidgets.QDialog(parent)
-    dialog.setWindowTitle(title)
-    dialog.resize(620, 520)
-    layout = QtWidgets.QVBoxLayout(dialog)
-
-    search = QtWidgets.QLineEdit()
-    search.setClearButtonEnabled(True)
-    search.setPlaceholderText(search_placeholder)
-    layout.addWidget(search)
-
-    item_list = ContainedWheelListWidget()
-    item_list.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollMode.ScrollPerPixel)
-    item_list.verticalScrollBar().setSingleStep(20)
-    layout.addWidget(item_list, 1)
-
-    buttons = QtWidgets.QDialogButtonBox(
-        QtWidgets.QDialogButtonBox.StandardButton.Ok
-        | QtWidgets.QDialogButtonBox.StandardButton.Cancel
-    )
-    buttons.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setEnabled(False)
-    buttons.accepted.connect(dialog.accept)
-    buttons.rejected.connect(dialog.reject)
-    layout.addWidget(buttons)
-
-    for item in matches:
-        name = item.get("name") or item.get("manufacturer") or item.get("type") or "Item"
-        detail = " · ".join(
-            str(value) for value in (item.get("manufacturer"), item.get("type"), f"Lv.{item.get('level', '?')}")
-            if value
-        )
-        row = QtWidgets.QListWidgetItem(f"{name}\n{detail}" if detail else str(name))
-        row.setData(QtCore.Qt.ItemDataRole.UserRole, item)
-        row.setData(QtCore.Qt.ItemDataRole.UserRole + 1, f"{name} {detail}".casefold())
-        item_list.addItem(row)
-
-    def apply_filter(text):
-        query = (text or "").strip().casefold()
-        for index in range(item_list.count()):
-            row = item_list.item(index)
-            row.setHidden(bool(query and query not in row.data(QtCore.Qt.ItemDataRole.UserRole + 1)))
-
-    def update_ok(current, _previous=None):
-        buttons.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setEnabled(current is not None)
-
-    search.textChanged.connect(apply_filter)
-    item_list.currentItemChanged.connect(update_ok)
-    item_list.itemDoubleClicked.connect(lambda _item: dialog.accept())
-
-    if not matches:
-        empty = QtWidgets.QListWidgetItem("—")
-        empty.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
-        item_list.addItem(empty)
-
-    if dialog.exec() != QtWidgets.QDialog.DialogCode.Accepted:
-        return None
-    current = item_list.currentItem()
-    return current.data(QtCore.Qt.ItemDataRole.UserRole) if current else None
-
-
-def prompt_base85(parent, *, title, label):
-    text, ok = QtWidgets.QInputDialog.getMultiLineText(parent, title, label)
-    return text.strip() if ok else ""
 
 
 def decode_base85(serial):
@@ -282,7 +169,6 @@ def build_header(parts, *, mfg_id=None, level=None, seed=None):
         ", ".join(map(str, last_fields)),
     ]
     return "| ".join(segments)
-
 
 
 def parse_components(text):

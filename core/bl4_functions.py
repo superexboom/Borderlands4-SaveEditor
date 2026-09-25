@@ -189,9 +189,9 @@ def get_localized_string(key: str) -> str:
     if localization_cache is None:
         if current_localization_lang == 'zh-CN':
             # 尝试加载武器本地化文件
-            weapon_loc = load_json_resource('weapon_edit/weapon_localization_zh-CN.json') or {}
+            weapon_loc = load_json_resource('data/weapon/weapon_localization_zh-CN.json') or {}
             # 尝试加载物品本地化文件
-            item_loc = load_json_resource('i18n/item_localization_zh-CN.json') or {}
+            item_loc = load_json_resource('data/i18n/item_localization_zh-CN.json') or {}
             # 合并字典
             localization_cache = {**weapon_loc, **item_loc}
         else:

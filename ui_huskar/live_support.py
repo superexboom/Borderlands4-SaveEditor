@@ -1,6 +1,6 @@
-"""live 联机管理器：移植 main_window 的全部 live 编排逻辑。
+"""live 联机管理器。
 
-worker 类直接复用 main_window（_LiveFetchWorker / _LiveRuntimeWorker /
+worker 类在 ui_huskar.live_workers（_LiveFetchWorker / _LiveRuntimeWorker /
 _LiveItemApplyWorker / _LiveLoadoutWorker / _LiveBatchSpawnWorker），
 本类负责进入/退出/刷新、恢复锁状态机、写操作路由（spawn/update/批量）、
 运行时动作与配装快照/应用/恢复，反馈经 AppBridge.toast 与 VM 回调给出。
@@ -13,7 +13,7 @@ from typing import Any, Optional
 from PyQt6.QtCore import QObject, QThread, QTimer, pyqtSignal
 
 from core import b_encoder, bl4_functions as bl4f, resource_loader
-from main_window import (
+from ui_huskar.live_workers import (
     _LIVE_INVENTORY_MUTATION_ACTIONS,
     _LiveBatchSpawnWorker,
     _LiveFetchWorker,
@@ -64,7 +64,7 @@ class _LiveChallengeWorker(QThread):
 
 
 class LiveManager(QObject):
-    """AppBridge 的 live 子系统（controller-first 复刻 main_window 行为）。"""
+    """AppBridge 的 live 子系统（controller-first）。"""
 
     def __init__(self, app, parent: Optional[QObject] = None):
         super().__init__(parent)

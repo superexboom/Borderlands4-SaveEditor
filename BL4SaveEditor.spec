@@ -19,11 +19,7 @@ def data_tree(relative: str):
 
 
 data = []
-for directory in (
-    "assets", "class_mods", "enhancement", "Firmware", "grenade", "heavy",
-    "i18n", "item", "loadout", "loadouts", "repkit", "shield", "weapon_edit",
-    "core/data", "ui_huskar/qml", "vendor/huskarui/qml",
-):
+for directory in ("assets", "data", "core/data", "ui_huskar/qml", "vendor/huskarui/qml"):
     data.extend(data_tree(directory))
 
 binaries = [
@@ -34,11 +30,11 @@ binaries = [
 hidden = [
     "ui_huskar", "ui_huskar.__main__", "ui_huskar.runtime",
     "ui_huskar.viewmodels",
-    "main_window", "core", "tabs", "live", "bl4_decoder_py",
+    "core", "live", "bl4_decoder_py",
 ]
-for package in ("core", "tabs", "live", "bl4_decoder_py"):
+for package in ("core", "live", "bl4_decoder_py"):
     hidden.extend(collect_submodules(package))
-hidden.extend(collect_submodules("ui_huskar.viewmodels"))
+hidden.extend(collect_submodules("ui_huskar"))
 
 analysis = Analysis(
     [str(ROOT / "ui_huskar" / "__main__.py")],
@@ -79,8 +75,6 @@ exe = EXE(
     analysis.zipfiles,
     analysis.datas,
     [],
-    # Keep the historical executable name, but make it resolve to the
-    # canonical HuskarUI entry point instead of an old QWidget build.
     name="BL4SaveEditor",
     debug=False,
     bootloader_ignore_signals=False,

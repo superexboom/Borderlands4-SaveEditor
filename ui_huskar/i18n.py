@@ -18,7 +18,7 @@ LANGUAGES = (
 )
 DEFAULT_LANGUAGE = "zh-CN"
 #: 独立维护的多语言文案文件：{"zh-CN": {...}, "en-US": {...}, "ru": {...}, "ua": {...}}
-EXTRA_CATALOGS = ("i18n/game_progress.json",)
+EXTRA_CATALOGS = ("data/i18n/game_progress.json",)
 _LANGUAGE_ALIASES = {
     "zh": "zh-CN",
     "zh_cn": "zh-CN",

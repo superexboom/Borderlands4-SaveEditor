@@ -1,7 +1,6 @@
-"""Item card data helpers shared by the card model and the legacy HTML cards.
+"""Item card data helpers: stat icons, rarity colours, weapon/equipment effect text.
 
-Moved verbatim from ``tabs/qt_items_tab.py`` (which re-exports them) so the
-card model in ``core`` does not depend on the widget module.
+Used by the card model (``core.item_card_model``) and the roll result views.
 """
 
 import re
@@ -97,40 +96,6 @@ WEAPON_CARD_RARITY_COLORS = {
 }
 
 
-WEAPON_CARD_RARITY_DIM_COLORS = {
-    "common": "#9290A8",
-    "普通": "#9290A8",
-    "uncommon": "#1A892C",
-    "罕见": "#1A892C",
-    "rare": "#2361B0",
-    "稀有": "#2361B0",
-    "epic": "#8A1AB3",
-    "史诗": "#8A1AB3",
-    "legendary": "#A96B1B",
-    "传奇": "#A96B1B",
-    "pearl": "#0EAFAD",
-    "pearlescent": "#0EAFAD",
-    "珠光": "#0EAFAD",
-}
-
-
-RARITY_PIP_FILES = {
-    "common": "rarity_pip_01_common_tinted.png",
-    "普通": "rarity_pip_01_common_tinted.png",
-    "uncommon": "rarity_pip_02_uncommon_tinted.png",
-    "罕见": "rarity_pip_02_uncommon_tinted.png",
-    "rare": "rarity_pip_03_rare_tinted.png",
-    "稀有": "rarity_pip_03_rare_tinted.png",
-    "epic": "rarity_pip_04_epic_tinted.png",
-    "史诗": "rarity_pip_04_epic_tinted.png",
-    "legendary": "rarity_pip_05_legendary_tinted.png",
-    "传奇": "rarity_pip_05_legendary_tinted.png",
-    "pearl": "rarity_pip_06_pearl_tinted.png",
-    "pearlescent": "rarity_pip_06_pearl_tinted.png",
-    "珠光": "rarity_pip_06_pearl_tinted.png",
-}
-
-
 RARITY_HEADER_KEYS = {
     "common": "common",
     "普通": "common",
@@ -166,22 +131,6 @@ MANUFACTURER_CARD_KEYS = {
 }
 
 
-ELEMENT_CARD_TEXT_COLORS = {
-    "corrosive": "#2BEF00",
-    "cryo": "#16F6F6",
-    "fire": "#FF1604",
-    "radiation": "#E0FF00",
-    "shock": "#2F63F9",
-}
-
-
-CLASSMOD_TREE_COLORS = {
-    "red": "#DB834E",
-    "blue": "#3CAFAE",
-    "green": "#7DCD75",
-}
-
-
 CLASSMOD_PORTRAITS = {
     "Amon": "item_card_class_header_amon.png",
     "Harlowe": "item_card_class_header_harlowe.png",
@@ -199,18 +148,10 @@ FIRMWARE_ICON_ALIASES = {
 }
 
 
-def _weapon_card_rarity_color(rarity: Any) -> str:
-    return WEAPON_CARD_RARITY_COLORS.get(str(rarity or "").strip().casefold(), "#78909C")
-
-
-def _weapon_card_rarity_dim_color(rarity: Any) -> str:
-    return WEAPON_CARD_RARITY_DIM_COLORS.get(str(rarity or "").strip().casefold(), "#36515A")
-
-
 def _effect_icon_uri(asset: str) -> str:
     package = str(asset or "").split(".", 1)[0]
     filename = f"{package.rsplit('/', 1)[-1]}.png" if package else ""
-    path = resource_loader.get_resource_path(f"assets/item_card_icons/{filename}")
+    path = resource_loader.get_resource_path(f"assets/item_card/effects/{filename}")
     return path.as_uri() if filename and path.exists() else ""
 
 

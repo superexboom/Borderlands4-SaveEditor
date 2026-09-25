@@ -6,13 +6,12 @@ from importlib import import_module
 _CLASSES = {
     "SaveGameController": ("save_game_controller", "SaveGameController"),
     "infer_user_id_from_save_path": ("save_game_controller", "infer_user_id_from_save_path"),
-    "SaveSelectorWidget": ("save_selector_widget", "SaveSelectorWidget"),
     "ThemeManager": ("theme_manager", "ThemeManager"),
 }
 _MODULES = {
     "b_encoder", "bl4_functions", "decoder_logic", "lookup", "resource_loader",
     "unlock_data", "unlock_logic", "item_display_resolver", "serial_inspect",
-    "weapon_display_stats", "equipment_display_stats", "card_image",
+    "weapon_display_stats", "equipment_display_stats",
 }
 
 __all__ = list(_CLASSES) + sorted(_MODULES)

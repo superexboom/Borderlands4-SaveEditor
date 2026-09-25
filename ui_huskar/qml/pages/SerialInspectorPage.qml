@@ -26,8 +26,6 @@ ColumnLayout {
         function onInputRequested(text) { inputArea.text = text; }
     }
 
-    HusImagePreview { id: cardPreview }
-
     readonly property bool cardFromModel: !!vmSerialInspector.cardModel && !!vmSerialInspector.cardModel.kind
 
     // 导出：保存时临时创建一张高分辨率卡片（挂在 Overlay 上、视口外），截图后销毁
@@ -41,10 +39,8 @@ ColumnLayout {
         }
     }
     function saveCard() {
-        if (!page.cardFromModel) {
-            vmSerialInspector.saveCard();
+        if (!page.cardFromModel)
             return;
-        }
         var path = vmSerialInspector.askCardPath();
         if (!path)
             return;
@@ -343,23 +339,6 @@ ColumnLayout {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: cardZoom.open()
-                    }
-                }
-                Image {
-                    visible: vmSerialInspector.hasCard && !page.cardFromModel
-                    width: Math.min(300, parent.width)
-                    fillMode: Image.PreserveAspectFit
-                    source: vmSerialInspector.cardUrl
-                    cache: false
-                    smooth: true
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            cardPreview.clear();
-                            cardPreview.append({ url: vmSerialInspector.cardUrl });
-                            cardPreview.open();
-                        }
                     }
                 }
                 HusText {

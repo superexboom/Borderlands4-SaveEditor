@@ -5,8 +5,8 @@ from __future__ import annotations
 import re
 
 from core import item_display_resolver
-from tabs.qt_repkit_editor_tab import load_repkit_data
-from tabs.qt_serial_import import parse_components
+from core.equipment_data import load_repkit_data
+from core.serial_import import parse_components
 
 from .base import register
 from .equipment_base import EquipmentBaseViewModel

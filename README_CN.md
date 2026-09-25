@@ -84,13 +84,25 @@
 
 如果你想从源码构建可执行文件 (.exe)，请确保已安装 Python，并运行项目根目录下的 `pyinstaller_config.py` 脚本。
 
-该脚本使用统一的 HuskarUI Qt6 spec，自动收集所需资源（图片、JSON、CSV 以及内置 HuskarUI 运行时），并调用 PyInstaller 生成 `dist/BL4SaveEditor.exe`。旧 QWidget 入口仅作为内部兼容模块保留，不再作为独立应用打包。
+该脚本使用 `BL4SaveEditor.spec`，自动收集所需资源（图片、游戏数据表以及内置 HuskarUI 运行时），并调用 PyInstaller 生成 `dist/BL4SaveEditor.exe`。如需直接从源码运行，使用 `python -m ui_huskar`。
+
+目录结构：
+
+| 目录 | 内容 |
+| --- | --- |
+| `ui_huskar/` | 程序本体：QML 页面与组件、视图模型、联机模式 |
+| `core/` | 存档、序列号与物品逻辑；生成的目录数据在 `core/data/` |
+| `data/` | 游戏数据表（武器 / 装备 / 职业模组部件、本地化） |
+| `assets/` | 图片：物品卡素材、进度地图、图标 |
+| `live/` | 与游戏内 BL4Live 模组的通信 |
+| `bl4_decoder_py/` | 序列号编解码 |
+| `vendor/` | 内置的 HuskarUI 运行时 |
 
 **步骤:**
 
 1.  安装依赖:
     ```bash
-    pip install -r requirements-huskarui.txt
+    pip install -r requirements.txt
     ```
 2.  运行构建脚本:
     ```bash

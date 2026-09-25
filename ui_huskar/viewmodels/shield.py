@@ -5,8 +5,8 @@ from __future__ import annotations
 import pandas as pd
 
 from core import item_display_resolver
-from tabs.qt_shield_editor_tab import load_shield_data
-from tabs.qt_serial_import import parse_components
+from core.equipment_data import load_shield_data
+from core.serial_import import parse_components
 
 from .base import register
 from .equipment_base import EquipmentBaseViewModel

@@ -465,7 +465,7 @@ def _classmod_skill_tiers(item_id: int) -> dict[str, int]:
     mapping is unambiguous within one item.
     """
     tiers: dict[str, int] = {}
-    for row in resolver._rows_by_file("class_mods/Skills.csv"):
+    for row in resolver._rows_by_file("data/class_mods/Skills.csv"):
         if (row.get("class_ID") or "").strip() != str(item_id):
             continue
         for rank in range(1, 6):

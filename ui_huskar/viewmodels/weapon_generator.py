@@ -16,7 +16,7 @@ from PyQt6.QtWidgets import QApplication
 
 from core import b_encoder, item_display_resolver, resource_loader
 from core.weapon_generation_logic import sample_composition_parts
-from tabs import qt_items_tab
+from core import item_card_data
 
 from .base import PageViewModel, register
 
@@ -1434,8 +1434,8 @@ class WeaponGeneratorViewModel(PageViewModel):
         name = display.get("display_name") or candidate.get("name") or "—"
         rarity = display.get("rarity") or candidate["rarity_label"]
         element = self._roll_element_text(selected)
-        rarity_color = qt_items_tab.WEAPON_CARD_RARITY_COLORS.get(
-            str(candidate.get("rarity") or "").casefold()) or qt_items_tab.WEAPON_CARD_RARITY_COLORS.get(
+        rarity_color = item_card_data.WEAPON_CARD_RARITY_COLORS.get(
+            str(candidate.get("rarity") or "").casefold()) or item_card_data.WEAPON_CARD_RARITY_COLORS.get(
             str(rarity).casefold()) or "#78909C"
         return {
             "serial": serial,
@@ -1464,7 +1464,7 @@ class WeaponGeneratorViewModel(PageViewModel):
         if not decoded:
             return []
         try:
-            details = qt_items_tab._weapon_card_details(decoded, stats or {}, self.current_lang)
+            details = item_card_data._weapon_card_details(decoded, stats or {}, self.current_lang)
         except Exception:
             return []
         entries = (details or {}).get("display_entries") or (details or {}).get("entries") or []
@@ -1481,7 +1481,7 @@ class WeaponGeneratorViewModel(PageViewModel):
             out.append({
                 "title": title.strip(),
                 "description": description.strip(),
-                "icon": qt_items_tab._effect_icon_uri(str(entry.get("icon_asset") or "")),
+                "icon": item_card_data._effect_icon_uri(str(entry.get("icon_asset") or "")),
                 "legendary": str(entry.get("display_kind") or "") == "legendary",
             })
         return out

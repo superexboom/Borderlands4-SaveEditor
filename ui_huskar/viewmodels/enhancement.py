@@ -15,7 +15,7 @@ from PyQt6.QtWidgets import QApplication
 from core import b_encoder, item_display_resolver, resource_loader
 from core.legit_status import candidate_state, evaluate as evaluate_legit
 from core.weapon_generation_logic import sample_composition_parts
-from tabs.qt_serial_import import (
+from core.serial_import import (
     build_header,
     decode_base85,
     parse_components,

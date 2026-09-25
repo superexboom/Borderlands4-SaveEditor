@@ -1,30 +1,21 @@
 """物品总览 VM：移植 QtItemsTab 的全部非渲染逻辑。
 
 分组树（容器→类型→物品）在 VM 侧扁平化为行模型供 QML ListView 使用；
-筛选复用 core.item_filter；悬停卡片复用 tabs/qt_items_tab 的模块级
-HTML 渲染函数（武器/装备/职业模组/强化模组四种卡片），并经
-core.card_image 离屏渲染成 PNG 供 QML Image 显示（QML Text 的富文本
-无法绘制表格单元格 background-image，会渲染成黑底）。
+筛选复用 core.item_filter；悬停卡片由 core.item_card_model 生成卡片数据，
+QML ItemCard 按游戏样式绘制（武器/装备/职业模组/强化模组）。
 悬停防抖状态机也在 VM 侧（对齐主线 QtItemsTab 的 viewport MouseMove
 语义），QML 只负责转发 enter/exit/scroll 事件。
 """
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
 from PyQt6.QtCore import QTimer, pyqtProperty, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import QApplication
 
-from core import card_image, item_card_model, resource_loader
+from core import item_card_model, resource_loader
 from core.item_filter import matches_item_search, prepare_item_search
-from tabs.qt_items_tab import (
-    classmod_card_html,
-    enhancement_card_html,
-    equipment_card_html,
-    weapon_card_html,
-)
 
 from .base import PageViewModel, register
 
@@ -34,8 +25,6 @@ _FILTER_KEYS = ("container", "type", "manufacturer", "rarity", "flags")
 _HOVER_DELAY_MS = 700
 #: 可复制单元格列 → 行模型字段（与 ItemsPage 列顺序一致）
 _COPY_COLUMNS = ("name", "type", "manufacturer", "rarity", "level", "flags", "serial")
-#: 悬停卡片 PNG 落盘目录（相对项目根 / 打包后的 CWD），与序列检视器共用
-CARDS_DIR = ".local/huskar_cards"
 
 
 @register("items", "ItemsPage.qml")
@@ -43,12 +32,12 @@ class ItemsViewModel(PageViewModel):
     STRINGS_SECTION = "items_tab"
 
     dataChanged = pyqtSignal()
-    #: 悬停定时器到期且光标仍在同一行：QML 打开卡片弹层（row + 图片信息）
+    #: 悬停定时器到期且光标仍在同一行：QML 打开卡片弹层（row + {"card": 卡片数据}）
     hoverCardRequested = pyqtSignal(int, "QVariantMap")
     #: 悬停目标失效（移出/滚动/换行）：QML 关闭卡片弹层
     hoverCardDismissed = pyqtSignal()
 
-    def __init__(self, app, parent=None, cards_dir: str = CARDS_DIR):
+    def __init__(self, app, parent=None):
         super().__init__(app, parent)
         self.current_lang = str(app.language)
         self._all_items: list[dict[str, Any]] = []
@@ -60,11 +49,7 @@ class ItemsViewModel(PageViewModel):
         self._level_max = 0
         self._add_serial = ""
         self._flag_index = 0
-        self._card_cache: dict[tuple, str] = {}
         self._card_model_cache: dict[tuple, dict[str, Any] | None] = {}
-        self._card_image_cache: dict[tuple, dict[str, Any]] = {}
-        self._cards_dir = Path(cards_dir)
-        self._card_seq = 0
         self._hover_pending_row = -1
         self._hover_shown_row = -1
         self._hover_timer = QTimer(self)
@@ -97,19 +82,14 @@ class ItemsViewModel(PageViewModel):
             self._all_items = self.controller.get_all_items() or []
         except Exception:
             self._all_items = []
-        self._card_cache.clear()
         self._card_model_cache.clear()
-        self._card_image_cache.clear()
-        self._prune_card_files()
         self.hoverCanceled()
         self._defaults_collapsed = False
         self._rebuild_rows()
 
     def on_language_changed(self) -> None:
         super().on_language_changed()
-        self._card_cache.clear()
         self._card_model_cache.clear()
-        self._card_image_cache.clear()
         self.refresh()
 
     # ------------------------------------------------------------------ #
@@ -269,26 +249,6 @@ class ItemsViewModel(PageViewModel):
             self._add_serial = ""
             self.dataChanged.emit()
 
-    @pyqtSlot(int, result=str)
-    def hoverCardHtml(self, row: int) -> str:
-        """悬停卡片 HTML（防抖/弹层由 hoverEntered/hoverExited 状态机负责）。"""
-        item = self._item_at(row)
-        if item is None:
-            return ""
-        cache_key = self._card_cache_key(item)
-        if cache_key not in self._card_cache:
-            columns = self.strings.get("columns", {})
-            level_label = columns.get("level", "Level")
-            card = (
-                weapon_card_html(item, self.current_lang, level_label, columns)
-                or equipment_card_html(item, self.current_lang, level_label, columns)
-                or classmod_card_html(item, self.current_lang, level_label, columns,
-                                      self.character_level, 4)
-                or enhancement_card_html(item, self.current_lang, level_label, columns)
-            )
-            self._card_cache[cache_key] = card or ""
-        return self._card_cache[cache_key]
-
     @pyqtSlot(int, result="QVariantMap")
     def hoverCardModel(self, row: int) -> dict[str, Any]:
         """Card data for the QML ItemCard (the game's card fields); {} when the item has none."""
@@ -301,44 +261,6 @@ class ItemsViewModel(PageViewModel):
             self._card_model_cache[cache_key] = item_card_model.build_card(
                 item, self.current_lang, level_label, self.character_level)
         return self._card_model_cache[cache_key] or {}
-
-    @pyqtSlot(int, result="QVariantMap")
-    def hoverCardImage(self, row: int) -> dict[str, Any]:
-        """悬停卡片渲染图：与主线 QToolTip 同一 QTextDocument 绘制路径。
-
-        QML Text 的富文本走 scene graph 绘制，表格单元格的 background-image
-        会变成黑底且 <img> 定位偏移，因此这里离屏渲染成 PNG 交给 QML Image。
-        """
-        item = self._item_at(row)
-        if item is None:
-            return {}
-        cache_key = self._card_cache_key(item)
-        cached = self._card_image_cache.get(cache_key)
-        if cached is not None and Path(cached.get("path", "")).is_file():
-            return {"url": cached["url"], "width": cached["width"], "height": cached["height"]}
-        html = self.hoverCardHtml(row)
-        if not html:
-            return {}
-        pixmap = card_image.html_to_pixmap(html, scale=2.0)
-        if pixmap.isNull():
-            return {}
-        try:
-            self._cards_dir.mkdir(parents=True, exist_ok=True)
-            # 递增文件名：QML Image 仅在 source 变化时重载，覆盖同名文件不刷新
-            self._card_seq += 1
-            path = self._cards_dir / f"item_hover_card_{self._card_seq}.png"
-            if not pixmap.save(str(path), "PNG"):
-                return {}
-        except OSError:
-            return {}
-        info = {
-            "path": str(path),
-            "url": path.resolve().as_uri(),
-            "width": pixmap.width() / pixmap.devicePixelRatio(),
-            "height": pixmap.height() / pixmap.devicePixelRatio(),
-        }
-        self._card_image_cache[cache_key] = info
-        return {"url": info["url"], "width": info["width"], "height": info["height"]}
 
     # ------------------------------------------------------------------ #
     # 悬停防抖状态机（对齐主线 QtItemsTab._update_hover_card 语义）
@@ -386,20 +308,11 @@ class ItemsViewModel(PageViewModel):
     def _fire_hover_card(self) -> None:
         row = self._hover_pending_row
         self._hover_pending_row = -1
-        # QML ItemCard from the card model; the old HTML->PNG card only as a fallback.
         model = self.hoverCardModel(row)
-        info = {"card": model} if model else self.hoverCardImage(row)
-        if not info:
+        if not model:
             return
         self._hover_shown_row = row
-        self.hoverCardRequested.emit(row, info)
-
-    def _prune_card_files(self) -> None:
-        try:
-            for stale in self._cards_dir.glob("item_hover_card_*.png"):
-                stale.unlink(missing_ok=True)
-        except OSError:
-            pass
+        self.hoverCardRequested.emit(row, {"card": model})
 
     def _card_cache_key(self, item: dict[str, Any]) -> tuple:
         return (self.current_lang, str(self.character_level or ""),

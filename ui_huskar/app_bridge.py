@@ -1,8 +1,7 @@
 """应用壳桥接层：导航、主题、语言、背景、打开/保存、自动保存与崩溃恢复。
 
-controller-first 架构：不再隐藏 MainWindow 做控件投影，而是直接持有
-SaveGameController，把主线 main_window.py 中与 QWidget 无关的编排逻辑
-（解密重试、.recover 恢复、自动保存防抖、原子写盘）移植到这里，
+controller-first 架构：直接持有 SaveGameController，负责解密重试、
+.recover 恢复、自动保存防抖、原子写盘等编排逻辑，
 用户反馈全部以信号形式交给 QML（HusNotification / 模态框）。
 """
 
@@ -68,7 +67,7 @@ class AppBridge(QObject):
         # 测试可注入临时 QSettings，避免污染真实用户配置
         self._settings = settings or QSettings("SuperExboom", "BL4SaveEditor")
         self.controller = SaveGameController()
-        self.theme_manager = ThemeManager()
+        self.theme_manager = ThemeManager(self._settings)
         lang = normalize_language(self._settings.value("language", DEFAULT_LANGUAGE))
         # Persist the canonical code so a legacy alias cannot reappear on the
         # next startup and silently select the Chinese fallback catalog.
@@ -448,7 +447,7 @@ class AppBridge(QObject):
         self.saveStateChanged.emit()
 
     # ------------------------------------------------------------------
-    # 自动保存 + 崩溃恢复（移植自 main_window.py，行为一致）
+    # 自动保存 + 崩溃恢复
     # ------------------------------------------------------------------
     @pyqtProperty(bool, notify=autosaveChanged)
     def autosaveEnabled(self) -> bool:
@@ -601,8 +600,7 @@ class AppBridge(QObject):
             callback(accepted)
 
     # ------------------------------------------------------------------
-    # 物品写入编排（移植自 main_window.handle_add_to_backpack / handle_update_item，
-    # QMessageBox 换成 toast；live 分支在 live 阶段接入）
+    # 物品写入编排（反馈走 toast；live 模式下路由到 LiveManager）
     # ------------------------------------------------------------------
     @pyqtSlot(str, str, result=bool)
     def addSerialToBackpack(self, serial_input: str, flag: str) -> bool:

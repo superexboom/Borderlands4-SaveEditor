@@ -1,9 +1,9 @@
 """序列号检视页视图模型：移植 QtSerialInspectorTab 的全部非渲染逻辑。
 
 只读页：解析 Base85 / 解码字符串，展示摘要、双形态序列号、分部件卡片、
-生成规则与违规列表、物品卡片图（点击放大 / 导出 PNG）。解析与卡片渲染
-全部复用 core.serial_inspect / core.card_image，结果与主线 tab 一致；
-本页绝不写存档。卡片图渲染在 GUI 线程内联完成（与主线一致，~40ms）。
+生成规则与违规列表、物品卡片（点击放大 / 导出 PNG）。解析复用
+core.serial_inspect，卡片数据来自 core.item_card_model，由 QML ItemCard 绘制；
+本页绝不写存档。
 
 内置英文回退表对齐主线 _FALLBACK_LOC：i18n 缺键时不会出现空白。
 """
@@ -12,20 +12,15 @@ from __future__ import annotations
 
 import json
 from html import escape
-from pathlib import Path
 from typing import Any
 
 from PyQt6.QtCore import QObject, pyqtProperty, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QGuiApplication
 
-from core import card_image, item_card_model, item_display_resolver, resource_loader, serial_inspect
+from core import item_card_model, item_display_resolver, resource_loader, serial_inspect
 
 from .base import PageViewModel, register
 
-# 卡片缩略图显示宽度（对齐主线 CARD_DISPLAY_WIDTH）
-CARD_DISPLAY_WIDTH = 300
-# 卡片 PNG 落盘目录（相对项目根 / 打包后的 CWD）
-CARDS_DIR = ".local/huskar_cards"
 
 _FALLBACK_LOC: dict[str, Any] = {
     "labels": {
@@ -263,15 +258,11 @@ class SerialInspectorViewModel(PageViewModel):
     #: QML 输入框回填请求（粘贴 / 目录载入 / useForm），QML 监听后设置文本
     inputRequested = pyqtSignal(str)
 
-    def __init__(self, app, parent: QObject | None = None, cards_dir: str = CARDS_DIR):
+    def __init__(self, app, parent: QObject | None = None):
         super().__init__(app, parent)
-        self._cards_dir = Path(cards_dir)
         self._report: dict[str, Any] = {}
         self._input = ""
-        self._card_pixmap = None
-        self._card_url = ""
         self._card_model: dict[str, Any] = {}
-        self._card_seq = 0
         # 摘要 / 部件 / 规则 / 来源 / 状态 的 QML 视图数据
         self._summary_error = ""
         self._summary_first: list[dict[str, str]] = []
@@ -368,8 +359,6 @@ class SerialInspectorViewModel(PageViewModel):
     def clear(self) -> None:
         self._report = {}
         self._input = ""
-        self._card_pixmap = None
-        self._card_url = ""
         self._card_model: dict[str, Any] = {}
         self._rebuild()
         self.inputRequested.emit("")
@@ -457,20 +446,16 @@ class SerialInspectorViewModel(PageViewModel):
 
     @pyqtProperty(bool, notify=dataChanged)
     def hasCard(self) -> bool:
-        return bool(self._card_model or self._card_url)
+        return bool(self._card_model)
 
     @pyqtProperty("QVariantMap", notify=dataChanged)
     def cardModel(self) -> dict[str, Any]:
         return self._card_model
 
     @pyqtProperty(str, notify=dataChanged)
-    def cardUrl(self) -> str:
-        return self._card_url
-
-    @pyqtProperty(str, notify=dataChanged)
     def cardMessage(self) -> str:
         """没有卡片时展示 no_card 文案；尚未解析时保持空白（对齐主线）。"""
-        if self._report.get("ok") and not self._card_url and not self._card_model:
+        if self._report.get("ok") and not self._card_model:
             return self._tr(self._merged_loc(), "labels", "no_card")
         return ""
 
@@ -605,22 +590,22 @@ class SerialInspectorViewModel(PageViewModel):
     # -- 部件卡片 -----------------------------------------------------------
     @staticmethod
     def _group_types() -> dict[str, str]:
-        # Imported lazily: the weapon editor pulls in pandas and the catalog picker.
-        from tabs.qt_weapon_editor_tab import WeaponEditorTab
+        # Imported lazily: the weapon editor pulls in pandas and the part catalogs.
+        from ui_huskar.viewmodels.weapon_editor import GENERATION_GROUP_TYPES
 
-        return WeaponEditorTab.GENERATION_GROUP_TYPES
+        return GENERATION_GROUP_TYPES
 
     @staticmethod
     def _taxonomy_keys() -> dict[str, str]:
-        from tabs.qt_weapon_editor_tab import WeaponEditorTab
+        from ui_huskar.viewmodels.weapon_editor import TAXONOMY_KEYS
 
-        return WeaponEditorTab.TAXONOMY_KEYS
+        return TAXONOMY_KEYS
 
     @staticmethod
     def _part_type_colors() -> dict[str, str]:
-        from tabs.qt_weapon_editor_tab import WeaponEditorTab
+        from ui_huskar.viewmodels.weapon_editor import PART_TYPE_COLORS
 
-        return WeaponEditorTab.PART_TYPE_COLORS
+        return PART_TYPE_COLORS
 
     def _taxonomy_text(self, term: str) -> str:
         key = self._taxonomy_keys().get(str(term))
@@ -908,50 +893,12 @@ class SerialInspectorViewModel(PageViewModel):
 
     def _render_card(self) -> None:
         report = self._report
-        self._card_pixmap = None
-        self._card_url = ""
-        self._card_model: dict[str, Any] = {}
+        self._card_model = {}
         if not report.get("ok"):
             return
-        item = card_image.card_item_from_report(report)
-        columns = self._card_labels()
-        # 按游戏卡片还原的 QML ItemCard；生成不出卡片数据时才退回旧的 HTML→PNG
-        self._card_model = item_card_model.build_card(item, self._lang, columns.get("level", "Lv")) or {}
-        if self._card_model:
-            return
-        # GUI 线程内联渲染（~40ms，与主线一致）
-        pixmap = card_image.card_pixmap(
-            item,
-            self._lang,
-            2.0,
-            columns.get("level", "Lv"),
-            columns,
-        )
-        if pixmap.isNull():
-            return
-        self._card_pixmap = pixmap
-        try:
-            self._cards_dir.mkdir(parents=True, exist_ok=True)
-            # 递增文件名：QML Image 仅在 source 变化时重载，覆盖同名文件不会
-            # 刷新；保存后清掉旧文件，只留最新两张避免与异步加载竞态。
-            self._card_seq += 1
-            path = self._cards_dir / f"serial_inspector_card_{self._card_seq}.png"
-            if pixmap.save(str(path), "PNG"):
-                self._card_url = path.resolve().as_uri()
-                self._prune_card_files(keep=2)
-        except OSError:
-            self._card_url = ""
-
-    def _prune_card_files(self, keep: int = 2) -> None:
-        try:
-            files = sorted(
-                self._cards_dir.glob("serial_inspector_card_*.png"),
-                key=lambda p: p.stat().st_mtime,
-            )
-            for stale in files[:-keep] if keep > 0 else files:
-                stale.unlink(missing_ok=True)
-        except OSError:
-            pass
+        item = item_card_model.item_from_report(report)
+        level_label = self._card_labels().get("level", "Lv")
+        self._card_model = item_card_model.build_card(item, self._lang, level_label) or {}
 
     # -- 剪贴板 / 导出 ------------------------------------------------------
     @pyqtSlot(str)
@@ -1016,19 +963,6 @@ class SerialInspectorViewModel(PageViewModel):
         path, _filter = QFileDialog.getSaveFileName(
             None, self._tr(self._merged_loc(), "buttons", "save_card"), "card.png", "PNG (*.png)")
         return path or ""
-
-    @pyqtSlot()
-    def saveCard(self) -> None:
-        """Legacy PNG card (items without a card model)."""
-        if self._card_pixmap is None or self._card_pixmap.isNull():
-            return
-        from PyQt6.QtWidgets import QFileDialog
-
-        loc = self._merged_loc()
-        path, _filter = QFileDialog.getSaveFileName(
-            None, self._tr(loc, "buttons", "save_card"), "card.png", "PNG (*.png)")
-        if path:
-            self._card_pixmap.save(path)
 
     # -- 内置目录浏览器 -------------------------------------------------------
     @pyqtSlot(result=bool)

@@ -8,8 +8,8 @@ import re
 import pandas as pd
 
 from core import item_display_resolver, resource_loader
-from tabs.qt_heavy_weapon_editor_tab import load_heavy_weapon_data
-from tabs.qt_serial_import import parse_components
+from core.equipment_data import load_heavy_weapon_data
+from core.serial_import import parse_components
 
 from .base import register
 from .equipment_base import EquipmentBaseViewModel
@@ -83,7 +83,7 @@ class HeavyWeaponViewModel(EquipmentBaseViewModel):
 
     def _extra_family_load(self):
         self._pearl_df = resource_loader.load_localized_csv_resource(
-            "weapon_edit/elemental.csv", self.current_lang)
+            "data/weapon/elemental.csv", self.current_lang)
 
     # ------------------------------------------------------------------ #
     # 规则指引

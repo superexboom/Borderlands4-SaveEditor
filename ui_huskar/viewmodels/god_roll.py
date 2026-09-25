@@ -9,7 +9,7 @@ from PyQt6.QtCore import QObject, QThread, pyqtProperty, pyqtSignal, pyqtSlot
 
 from core import item_display_resolver, lookup, resource_loader, serial_inspect
 from core.weapon_optimizer import AUTO, ELEMENT_GROUPS, NONE, GodRollRequest, WeaponGodRollOptimizer
-from tabs import qt_items_tab
+from core import item_card_data
 
 from .base import PageViewModel, register
 
@@ -184,7 +184,7 @@ class GodRollViewModel(PageViewModel):
         self.stats_loc = (self.app.localizer.section("weapon_editor_tab") or {}).get("stats") or {}
         self.rule_loc = self.app.localizer.section("weapon_rules") or {}
         self.item_names = (
-            resource_loader.load_json_resource("i18n/item_localization_zh-CN.json") or {}
+            resource_loader.load_json_resource("data/i18n/item_localization_zh-CN.json") or {}
             if self.current_lang == "zh-CN" else {})
         self._flags = resource_loader.get_flag_labels(self.current_lang)
         self._flag_labels = [self._flags[k] for k in _FLAG_CODE_ORDER if k in self._flags]
@@ -1047,8 +1047,8 @@ class GodRollViewModel(PageViewModel):
         row["weapon_type"] = self._weapon_type_label(weapon_type_key)
         row["rarity"] = str(display.get("rarity") or "") or self._rarity_label(rarity_key)
         row["rarity_color"] = (
-            qt_items_tab.WEAPON_CARD_RARITY_COLORS.get(rarity_key.casefold())
-            or qt_items_tab.WEAPON_CARD_RARITY_COLORS.get(str(row["rarity"]).casefold())
+            item_card_data.WEAPON_CARD_RARITY_COLORS.get(rarity_key.casefold())
+            or item_card_data.WEAPON_CARD_RARITY_COLORS.get(str(row["rarity"]).casefold())
             or "#78909C"
         )
         # 未选中行的淡稀有度底色（对齐旧版列表 item.setBackground alpha 28）
@@ -1125,7 +1125,7 @@ class GodRollViewModel(PageViewModel):
         if not decoded:
             return []
         try:
-            details = qt_items_tab._weapon_card_details(decoded, stats or {}, self.current_lang)
+            details = item_card_data._weapon_card_details(decoded, stats or {}, self.current_lang)
         except Exception:
             return []
         entries = details.get("display_entries") or details.get("entries") or []
@@ -1154,7 +1154,7 @@ class GodRollViewModel(PageViewModel):
         if not filename:
             return ""
         try:
-            path = resource_loader.get_resource_path(f"assets/item_card_icons/{filename}")
+            path = resource_loader.get_resource_path(f"assets/item_card/effects/{filename}")
             return path.as_uri() if path.exists() else ""
         except OSError:
             return ""

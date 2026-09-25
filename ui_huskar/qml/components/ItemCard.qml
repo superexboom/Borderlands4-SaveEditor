@@ -39,7 +39,7 @@ Item {
 
     function asset(rel) { return rel ? root + rel : "" }
     function tinted(rel, tint) { return rel ? "image://cardtint/" + tint[0] + "," + tint[1] + "," + tint[2] + "/" + rel : "" }
-    function ui(name) { return "assets/item_card_ui/" + name }
+    function ui(name) { return "assets/item_card/game/" + name }
     function hasItems(list) { return !!list && list.length > 0 }
 
     Rectangle {

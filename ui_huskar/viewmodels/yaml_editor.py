@@ -539,7 +539,7 @@ class YamlEditorViewModel(PageViewModel):
         """给 QML TextArea 的 textDocument 挂 YAML 语法高亮。"""
         try:
             from core.yaml_model import YamlTreeModel
-            from tabs.qt_yaml_editor_tab import YamlHighlighter
+            from ui_huskar.yaml_highlighter import YamlHighlighter
         except ImportError:
             return
         doc = text_document

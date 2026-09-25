@@ -5,10 +5,11 @@ __pycache__/
 *$py.class
 *.so
 
-# PyInstaller
+# PyInstaller：BL4SaveEditor.spec 是唯一的打包配置
 build/
 dist/
 *.spec
+!BL4SaveEditor.spec
 
 # IDE
 .idea/
@@ -28,40 +29,30 @@ env/
 Thumbs.db
 desktop.ini
 
-# Logs
+# Logs / backups
 *.log
-
-# Backup files
 *.bak
 
-#测试杂物
-sth/
-loadouts/
-count_lines.py
-weapon_edit/weapon_part_importer.py
+# 本地运行数据（源码运行时写在项目根：设置、保存的配装方案）
 config.json
-xp_calc.py
-CsvMergeAutomationPlan.md
-ItemIdPartOverview.md
-EQUIPMENT_DATA_REPAIR_PLAN.md
-.local/
+loadouts/
 
-# 本地开发/QA 脚本不入库；BL4SaveEditorHuskarUI.spec 的 hookspath 依赖
-# tools/pyinstaller_hooks，必须保留
+# 本地开发：测试（含样本存档）、QA/调试脚本、截图等杂物
+tests/
+.local/
+# tools/ 只入库 pyinstaller_hooks（BL4SaveEditor.spec 的 hookspath 依赖）
 tools/*
 !tools/pyinstaller_hooks/
 
-# Internal working notes
+# 内部工作笔记
 *_PLAN.md
 *_AUDIT.md
 *_PROGRESS.md
 progress.md
-test/
-tests/
-HUSKARUI_QT6_MIGRATION.md
-HUSKARUI_REPAIR_CHECKLIST.md
+HUSKARUI_*.md
 LEGIT_BUILD_PLAN_*.md
 REPAIR_*.md
-ui_huskar/MIGRATION_GUIDE.md
 MODERNIZATION.md
-EQUIPMENT_DATA_REPAIR_PLAN.md
+CsvMergeAutomationPlan.md
+ItemIdPartOverview.md
+ui_huskar/MIGRATION_GUIDE.md
