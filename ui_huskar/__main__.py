@@ -76,6 +76,10 @@ def main() -> int:
     _install_teardown_filter()
     engine = QQmlApplicationEngine()
     engine.addImportPath(str(RUNTIME / "qml"))
+    from ui_huskar.card_images import PROVIDER_ID, CardTintProvider
+    # keep a Python reference: the engine does not own the provider wrapper
+    engine.card_tint_provider = CardTintProvider()
+    engine.addImageProvider(PROVIDER_ID, engine.card_tint_provider)
     warnings: list[str] = []
     engine.warnings.connect(lambda values: warnings.extend(
         f"{item.url().toString()}:{item.line()}: {item.description()}" for item in values))

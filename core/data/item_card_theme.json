@@ -1,0 +1,418 @@
+{
+ "rarity": {
+  "common": {
+   "color": "#9290a8",
+   "bright_color": "#bdbbd1",
+   "tint": [
+    0.5725,
+    0.5647,
+    0.6588,
+    1.0
+   ],
+   "bright_tint": [
+    0.7412,
+    0.7333,
+    0.8196,
+    1.0
+   ]
+  },
+  "uncommon": {
+   "color": "#1a892c",
+   "bright_color": "#5ac54f",
+   "tint": [
+    0.102,
+    0.5373,
+    0.1725,
+    1.0
+   ],
+   "bright_tint": [
+    0.3529,
+    0.7725,
+    0.3098,
+    1.0
+   ]
+  },
+  "rare": {
+   "color": "#2361b0",
+   "bright_color": "#00a0ce",
+   "tint": [
+    0.1373,
+    0.3804,
+    0.6902,
+    1.0
+   ],
+   "bright_tint": [
+    0.0,
+    0.6275,
+    0.8078,
+    1.0
+   ]
+  },
+  "epic": {
+   "color": "#8a1ab3",
+   "bright_color": "#b648db",
+   "tint": [
+    0.5412,
+    0.102,
+    0.702,
+    1.0
+   ],
+   "bright_tint": [
+    0.7137,
+    0.2824,
+    0.8588,
+    1.0
+   ]
+  },
+  "legendary": {
+   "color": "#a96b1b",
+   "bright_color": "#ffd900",
+   "tint": [
+    0.749,
+    0.4549,
+    0.0471,
+    1.0
+   ],
+   "bright_tint": [
+    1.0,
+    0.851,
+    0.0,
+    1.0
+   ]
+  },
+  "pearl": {
+   "color": "#0eafad",
+   "bright_color": "#97ffd2",
+   "tint": [
+    0.0549,
+    0.6863,
+    0.6784,
+    1.0
+   ],
+   "bright_tint": [
+    0.5922,
+    1.0,
+    0.8235,
+    1.0
+   ]
+  }
+ },
+ "header_default_tint": [
+  0.0824,
+  0.4314,
+  0.5255,
+  1.0
+ ],
+ "markup_colors": {
+  "rarity_common": "#bdbbd1",
+  "rarity_uncommon": "#5ac54f",
+  "rarity_rare": "#00a0ce",
+  "rarity_epic": "#b648db",
+  "rarity_legendary": "#ffd900",
+  "rarity_pearl": "#97ffd2",
+  "flavor": "#2896a6",
+  "skill_red": "#db834e",
+  "skill_green": "#7dcd75",
+  "skill_blue": "#3cafae",
+  "skill": "#f9f3de",
+  "spec": "#d200ff",
+  "corrosive": "#72f800",
+  "cryo": "#53fbfb",
+  "fire": "#ff5224",
+  "kinetic": "#e4d9ce",
+  "radiation": "#f1ff00",
+  "shock": "#2f63f9",
+  "firmware": "#2ef0ce",
+  "gear": "#1abaff",
+  "output": "#e8b56a",
+  "cash_text": "#a0aeb1",
+  "cant_afford_text": "#fc0629",
+  "eridium_text": "#a0aeb1",
+  "primary": "#eb7300",
+  "secondary": "#2d95ca",
+  "siren": "#d324b3",
+  "exo": "#31ecec",
+  "paladin": "#fe981e",
+  "gravitar": "#aaeca8",
+  "goodping": "#09ff00",
+  "okping": "#fbff00",
+  "badping": "#ff0000",
+  "dlc_text": "#eb7300",
+  "warning_text": "#fd3752",
+  "cs_incompatible": "#ff0000"
+ },
+ "markup_icons": {
+  "corrosive_icon": {
+   "file": "ico_ui_art_elemental_corrosive.png"
+  },
+  "cryo_icon": {
+   "file": "ico_ui_art_elemental_cryo.png"
+  },
+  "fire_icon": {
+   "file": "ico_ui_art_elemental_fire.png"
+  },
+  "incendiary_icon": {
+   "file": "ico_ui_art_elemental_fire.png"
+  },
+  "kinetic_icon": {
+   "file": "ico_ui_art_elemental_kinetic.png"
+  },
+  "radiation_icon": {
+   "file": "ico_ui_art_elemental_radiation.png"
+  },
+  "shock_icon": {
+   "file": "ico_ui_art_elemental_shock.png"
+  },
+  "electric_icon": {
+   "file": "ico_ui_art_elemental_shock.png"
+  },
+  "elemental_icon": {
+   "file": "ico_ui_art_elemental_all.png"
+  },
+  "cash": {
+   "file": "ico_ui_art_currency_money.png"
+  },
+  "gold_key": {
+   "file": "ico_ui_art_currency_gold_keys.png"
+  },
+  "eridium": {
+   "file": "ico_ui_art_currency_eridium.png"
+  },
+  "cash_cant_afford": {
+   "file": "ico_ui_art_currency_money_cant_afford.png"
+  },
+  "eridium_cant_afford": {
+   "file": "ico_ui_art_currency_eridium_cant_afford.png"
+  },
+  "steam": {
+   "file": "icon_steam.png"
+  },
+  "switch": {
+   "file": "icon_switch.png"
+  },
+  "epic": {
+   "file": "icon_epic.png"
+  },
+  "psn": {
+   "file": "icon_psn.png"
+  },
+  "xboxlive": {
+   "file": "icon_xbox.png"
+  },
+  "shift": {
+   "file": "icon_shift.png"
+  },
+  "siren_icon": {
+   "file": "player_class_dark_siren.png"
+  },
+  "exo_icon": {
+   "file": "player_class_exo_soldier.png"
+  },
+  "paladin_icon": {
+   "file": "player_class_paladin.png"
+  },
+  "gravitar_icon": {
+   "file": "player_class_gravitar.png"
+  },
+  "recent_party_leader_icon": {
+   "file": "ui_icon_blue_crown.png"
+  },
+  "robodealer_icon": {
+   "file": "player_class_robodealer_tooltip.png"
+  },
+  "corpohacker_icon": {
+   "file": "player_class_loveless.png"
+  },
+  "maliwan_icon": {
+   "file": "ui_art_manu_logomark_maliwan_small.png"
+  },
+  "jakobs_icon": {
+   "file": "ui_art_manu_logomark_jakobs_small.png"
+  },
+  "atlas_icon": {
+   "file": "ui_art_manu_logomark_atlas_small.png"
+  },
+  "cov_icon": {
+   "file": "ui_art_manu_logomark_cov_small.png"
+  },
+  "daedalus_icon": {
+   "file": "ui_art_manu_logomark_daedalus_small.png"
+  },
+  "hyperion_icon": {
+   "file": "ui_art_manu_logomark_hyperion_small.png"
+  },
+  "order_icon": {
+   "file": "ui_art_manu_logomark_order_small.png"
+  },
+  "borg_icon": {
+   "file": "ui_art_manu_logomark_ripper_small.png"
+  },
+  "tediore_icon": {
+   "file": "ui_art_manu_logomark_tediore_small.png"
+  },
+  "torgue_icon": {
+   "file": "ui_art_manu_logomark_torgue_small.png"
+  },
+  "vladof_icon": {
+   "file": "ui_art_manu_logomark_vladof_small.png"
+  },
+  "cs_avail_icon": {
+   "file": "ico_cross_save_available.png"
+  },
+  "cs_unav_icon": {
+   "file": "ico_cross_save_unavailable.png"
+  },
+  "sdu_icon": {
+   "file": "echo_upgrade_token_ico.png"
+  },
+  "fasttravel_icon": {
+   "file": "ico_FT_Fast_Travel_Station.png"
+  }
+ },
+ "elements": {
+  "corrosive": {
+   "color": "#72f800",
+   "icon": "ico_ui_art_elemental_corrosive.png",
+   "backing": "item_card_element_backing_corrosive.png"
+  },
+  "cryo": {
+   "color": "#53fbfb",
+   "icon": "ico_ui_art_elemental_cryo.png",
+   "backing": "item_card_element_backing_cryo.png"
+  },
+  "fire": {
+   "color": "#ff5224",
+   "icon": "ico_ui_art_elemental_fire.png",
+   "backing": "item_card_element_backing_fire.png"
+  },
+  "shock": {
+   "color": "#2f63f9",
+   "icon": "ico_ui_art_elemental_shock.png",
+   "backing": "item_card_element_backing_shock.png"
+  },
+  "radiation": {
+   "color": "#f1ff00",
+   "icon": "ico_ui_art_elemental_radiation.png",
+   "backing": "item_card_element_backing_radiation.png"
+  },
+  "impact": {
+   "color": "#e4d9ce",
+   "icon": "ico_ui_art_elemental_impact.png",
+   "backing": "item_card_element_backing_impact.png"
+  },
+  "all": {
+   "color": "#e4d9ce",
+   "icon": "ico_ui_art_elemental_all.png",
+   "backing": "item_card_element_backing_all.png"
+  },
+  "kinetic": {
+   "color": "#e4d9ce",
+   "icon": "ico_ui_art_elemental_kinetic.png",
+   "backing": "item_card_element_backing_kinetic.png"
+  }
+ },
+ "element_frame": {
+  "tint": [
+   0.6235,
+   0.6784,
+   0.6902,
+   1.0
+  ],
+  "opacity": 0.5
+ },
+ "firmware_piece_tint": [
+  0.102,
+  0.7294,
+  1.0,
+  1.0
+ ],
+ "classmod_trees": {
+  "red": {
+   "backing": [
+    0.6667,
+    0.2235,
+    0.1529
+   ],
+   "icon": [
+    0.8588,
+    0.5137,
+    0.3059
+   ],
+   "markup": "skill_red",
+   "color": "#db834e"
+  },
+  "blue": {
+   "backing": [
+    0.1804,
+    0.4314,
+    0.6431
+   ],
+   "icon": [
+    0.2353,
+    0.6863,
+    0.6824
+   ],
+   "markup": "skill_blue",
+   "color": "#3cafae"
+  },
+  "green": {
+   "backing": [
+    0.1804,
+    0.4627,
+    0.3725
+   ],
+   "icon": [
+    0.4902,
+    0.8039,
+    0.4588
+   ],
+   "markup": "skill_green",
+   "color": "#7dcd75"
+  }
+ },
+ "text": {
+  "cream": "#e4d9ce",
+  "blue_gray": "#a0aeb1",
+  "red_text": "#f33a47"
+ },
+ "missing_files": [
+  "echo_upgrade_token_ico.png",
+  "ico_FT_Fast_Travel_Station.png",
+  "ico_cross_save_available.png",
+  "ico_cross_save_unavailable.png",
+  "ico_ui_art_currency_eridium.png",
+  "ico_ui_art_currency_eridium_cant_afford.png",
+  "ico_ui_art_currency_gold_keys.png",
+  "ico_ui_art_currency_money.png",
+  "ico_ui_art_currency_money_cant_afford.png",
+  "ico_ui_art_elemental_impact.png",
+  "icon_epic.png",
+  "icon_psn.png",
+  "icon_shift.png",
+  "icon_steam.png",
+  "icon_switch.png",
+  "icon_xbox.png",
+  "player_class_dark_siren.png",
+  "player_class_exo_soldier.png",
+  "player_class_gravitar.png",
+  "player_class_loveless.png",
+  "player_class_paladin.png",
+  "player_class_robodealer_tooltip.png"
+ ],
+ "sources": {
+  "_shared/css/color_tint_filters.css": "pakchunk0-Windows_20_P.pak",
+  "_shared/css/gbx.css": "pakchunk0-Windows_0_P.pak",
+  "_shared/css/oak_icons.css": "pakchunk0-Windows_20_P.pak",
+  "_shared/css/oak_markup.css": "pakchunk0-Windows_20_P.pak",
+  "_shared/css/oak_tooltip.css": "pakchunk0-Windows_16_P.pak",
+  "_shared/css/oakgame.css": "pakchunk0-Windows_20_P.pak",
+  "_shared/css/oakscroll.css": "pakchunk0-Windows_15_P.pak",
+  "_shared/css/shared_animations.css": "pakchunk0-Windows_0_P.pak",
+  "_shared/css/skill_tooltip.css": "pakchunk0-Windows_0_P.pak",
+  "_shared/css/testing_widget.css": "pakchunk0-Windows_0_P.pak",
+  "_shared/css/wireframe.css": "pakchunk0-Windows_0_P.pak",
+  "components/firmware/css/firmware.css": "pakchunk0-Windows_16_P.pak",
+  "components/rarity_pips/css/rarity_pips.css": "pakchunk0-Windows_0_P.pak",
+  "item_card/css/item_card.css": "pakchunk0-Windows_16_P.pak"
+ }
+}

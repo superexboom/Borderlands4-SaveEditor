@@ -104,6 +104,7 @@ class AppBridge(QObject):
         self.controllerDirty.connect(self._on_controller_dirty)
 
         self._status = self.tr("main_window.status.welcome")
+        self._card_fonts: dict[str, str] | None = None
 
     # ------------------------------------------------------------------
     # 视图模型注册
@@ -150,6 +151,25 @@ class AppBridge(QObject):
     @pyqtProperty(str, notify=languageChanged)
     def language(self) -> str:
         return self.localizer.lang
+
+    # ------------------------------------------------------------------
+    # 物品卡片（ItemCard.qml）：游戏主题色、字体与资源根
+    # ------------------------------------------------------------------
+    @pyqtProperty("QVariantMap", constant=True)
+    def cardTheme(self) -> dict[str, Any]:
+        from core import item_card_model
+        return item_card_model.theme()
+
+    @pyqtProperty("QVariantMap", constant=True)
+    def cardFonts(self) -> dict[str, str]:
+        if self._card_fonts is None:
+            from ui_huskar.card_images import load_card_fonts
+            self._card_fonts = load_card_fonts()
+        return self._card_fonts
+
+    @pyqtProperty(str, constant=True)
+    def cardAssetRoot(self) -> str:
+        return resource_loader.get_resource_path("").resolve().as_uri() + "/"
 
     @pyqtProperty(list, notify=languageChanged)
     def languages(self) -> list[dict[str, str]]:

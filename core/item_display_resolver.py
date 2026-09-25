@@ -3002,6 +3002,7 @@ def resolve_equipment_card_details(
                 ui = (index.get("uistats") or {}).get(ui_key) or {}
                 entries.append({
                     "text": text,
+                    "markup": str(entry.get("markup") or text),
                     "icon_asset": str(ui.get("icon_asset") or ref.get("icon_asset") or ""),
                     "ref_key": ref_key,
                     "uistat": ui_key,

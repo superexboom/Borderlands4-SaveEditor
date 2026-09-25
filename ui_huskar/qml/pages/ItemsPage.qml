@@ -295,14 +295,22 @@ ColumnLayout {
         HusText { id: serialCol; width: 200 }
     }
 
-    // ---- 悬停卡片（VM 侧 700ms 防抖状态机；卡片经 QTextDocument 离屏渲染为 PNG，
-    //      QML Text 富文本画不了单元格 background-image，会黑底/错位） ----
+    // ---- 悬停卡片（VM 侧 700ms 防抖状态机）：按游戏卡片还原的 QML ItemCard；
+    //      没有卡片数据的物品才退回旧的 HTML→PNG 图片 ----
     Connections {
         target: vmItems
         function onHoverCardRequested(row, info) {
-            hoverCardImage.source = info.url;
-            hoverCard.cardWidth = info.width;
-            hoverCard.cardHeight = info.height;
+            if (info.card) {
+                hoverItemCard.model = info.card;
+                hoverCardImage.source = "";
+                hoverCard.cardWidth = hoverItemCard.width;
+                hoverCard.cardHeight = hoverItemCard.implicitHeight;
+            } else {
+                hoverItemCard.model = ({});
+                hoverCardImage.source = info.url;
+                hoverCard.cardWidth = info.width;
+                hoverCard.cardHeight = info.height;
+            }
             hoverCard.open();
         }
         function onHoverCardDismissed() {
@@ -313,20 +321,25 @@ ColumnLayout {
 
     Popup {
         id: hoverCard
+        objectName: "hoverCard"
         padding: 0
         closePolicy: Popup.NoAutoClose
         property int lastX: 0
         property int lastY: 0
         property real cardWidth: 0
         property real cardHeight: 0
-        background: Rectangle {
-            color: "transparent"
-            border.color: HusTheme.isDark ? "#66505060" : "#59B4B4C8"
-            radius: 4
-        }
+        background: Item { }
         contentItem: Item {
             implicitWidth: hoverCard.cardWidth
             implicitHeight: hoverCard.cardHeight
+            ItemCard {
+                id: hoverItemCard
+                objectName: "hoverItemCard"
+                visible: hoverCardImage.source == ""
+                rem: 10
+                // 文本换行等在绑定后才定高：跟随实际高度调整弹层
+                onImplicitHeightChanged: if (visible) hoverCard.cardHeight = implicitHeight
+            }
             Image {
                 id: hoverCardImage
                 width: hoverCard.cardWidth

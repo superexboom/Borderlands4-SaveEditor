@@ -1450,7 +1450,8 @@ def equipment_part_uistat_descriptions(
                 _display_uistat_number(value, attribute, _placeholder_context(text, placeholder), display_arg, lang),
             )
         text = re.sub(r"\[glyph\].*?\[/glyph\]", "", text, flags=re.IGNORECASE)
+        markup = " ".join(text.split())  # values filled in, highlight/icon tags kept (item card)
         text = " ".join(re.sub(r"\[[^\]]+\]", "", text).split())
         if text and not any((entry.get("text") if isinstance(entry, dict) else entry) == text for entry in output):
-            output.append({"uistat": ui_key, "text": text} if with_ids else text)
+            output.append({"uistat": ui_key, "text": text, "markup": markup} if with_ids else text)
     return output

@@ -18,7 +18,7 @@ from typing import Any
 from PyQt6.QtCore import QObject, pyqtProperty, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QGuiApplication
 
-from core import card_image, item_display_resolver, resource_loader, serial_inspect
+from core import card_image, item_card_model, item_display_resolver, resource_loader, serial_inspect
 
 from .base import PageViewModel, register
 
@@ -270,6 +270,7 @@ class SerialInspectorViewModel(PageViewModel):
         self._input = ""
         self._card_pixmap = None
         self._card_url = ""
+        self._card_model: dict[str, Any] = {}
         self._card_seq = 0
         # 摘要 / 部件 / 规则 / 来源 / 状态 的 QML 视图数据
         self._summary_error = ""
@@ -369,6 +370,7 @@ class SerialInspectorViewModel(PageViewModel):
         self._input = ""
         self._card_pixmap = None
         self._card_url = ""
+        self._card_model: dict[str, Any] = {}
         self._rebuild()
         self.inputRequested.emit("")
 
@@ -455,7 +457,11 @@ class SerialInspectorViewModel(PageViewModel):
 
     @pyqtProperty(bool, notify=dataChanged)
     def hasCard(self) -> bool:
-        return bool(self._card_url)
+        return bool(self._card_model or self._card_url)
+
+    @pyqtProperty("QVariantMap", notify=dataChanged)
+    def cardModel(self) -> dict[str, Any]:
+        return self._card_model
 
     @pyqtProperty(str, notify=dataChanged)
     def cardUrl(self) -> str:
@@ -464,7 +470,7 @@ class SerialInspectorViewModel(PageViewModel):
     @pyqtProperty(str, notify=dataChanged)
     def cardMessage(self) -> str:
         """没有卡片时展示 no_card 文案；尚未解析时保持空白（对齐主线）。"""
-        if self._report.get("ok") and not self._card_url:
+        if self._report.get("ok") and not self._card_url and not self._card_model:
             return self._tr(self._merged_loc(), "labels", "no_card")
         return ""
 
@@ -904,10 +910,15 @@ class SerialInspectorViewModel(PageViewModel):
         report = self._report
         self._card_pixmap = None
         self._card_url = ""
+        self._card_model: dict[str, Any] = {}
         if not report.get("ok"):
             return
         item = card_image.card_item_from_report(report)
         columns = self._card_labels()
+        # 按游戏卡片还原的 QML ItemCard；生成不出卡片数据时才退回旧的 HTML→PNG
+        self._card_model = item_card_model.build_card(item, self._lang, columns.get("level", "Lv")) or {}
+        if self._card_model:
+            return
         # GUI 线程内联渲染（~40ms，与主线一致）
         pixmap = card_image.card_pixmap(
             item,
@@ -997,8 +1008,18 @@ class SerialInspectorViewModel(PageViewModel):
         except OSError:
             pass
 
+    @pyqtSlot(result=str)
+    def askCardPath(self) -> str:
+        """Target file for the QML card export (the page grabs the ItemCard itself)."""
+        from PyQt6.QtWidgets import QFileDialog
+
+        path, _filter = QFileDialog.getSaveFileName(
+            None, self._tr(self._merged_loc(), "buttons", "save_card"), "card.png", "PNG (*.png)")
+        return path or ""
+
     @pyqtSlot()
     def saveCard(self) -> None:
+        """Legacy PNG card (items without a card model)."""
         if self._card_pixmap is None or self._card_pixmap.isNull():
             return
         from PyQt6.QtWidgets import QFileDialog

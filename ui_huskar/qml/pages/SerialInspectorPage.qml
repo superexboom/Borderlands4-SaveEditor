@@ -28,6 +28,59 @@ ColumnLayout {
 
     HusImagePreview { id: cardPreview }
 
+    readonly property bool cardFromModel: !!vmSerialInspector.cardModel && !!vmSerialInspector.cardModel.kind
+
+    // 导出：保存时临时创建一张高分辨率卡片（挂在 Overlay 上、视口外），截图后销毁
+    Component {
+        id: exportCardComponent
+        Item {
+            property alias card: exportCard
+            width: exportCard.width + 2 * exportCard.rem
+            height: exportCard.implicitHeight + 2 * exportCard.rem
+            ItemCard { id: exportCard; x: rem; y: rem; rem: 14 }
+        }
+    }
+    function saveCard() {
+        if (!page.cardFromModel) {
+            vmSerialInspector.saveCard();
+            return;
+        }
+        var path = vmSerialInspector.askCardPath();
+        if (!path)
+            return;
+        var frame = exportCardComponent.createObject(Overlay.overlay, { x: -30000 });
+        frame.card.model = vmSerialInspector.cardModel;
+        Qt.callLater(function() {
+            frame.grabToImage(function(result) {
+                result.saveToFile(path);
+                frame.destroy();
+            });
+        });
+    }
+
+    // 点击卡片放大查看
+    Popup {
+        id: cardZoom
+        objectName: "cardZoom"
+        modal: true
+        dim: true
+        padding: 16
+        anchors.centerIn: Overlay.overlay
+        background: Item { }
+        // 放大到窗口放得下的最大尺寸（卡片高度与 rem 成正比，打开时算一次）
+        onAboutToShow: zoomCard.rem = Math.min(12, (page.height - 60) / Math.max(1, zoomCard.implicitHeight / zoomCard.rem))
+        contentItem: Item {
+            implicitWidth: zoomCard.width
+            implicitHeight: zoomCard.implicitHeight
+            ItemCard {
+                id: zoomCard
+                rem: 12
+                model: page.cardFromModel ? vmSerialInspector.cardModel : ({})
+            }
+            MouseArea { anchors.fill: parent; onClicked: cardZoom.close() }
+        }
+    }
+
     SerialCatalogDialog {
         id: catalogDialog
         loc: page.loc.catalog || {}
@@ -145,7 +198,7 @@ ColumnLayout {
             text: page.loc.buttons ? page.loc.buttons.save_card : "Save card image"
             iconSource: HusIcon.FileImageOutlined
             enabled: vmSerialInspector.hasCard
-            onClicked: vmSerialInspector.saveCard()
+            onClicked: page.saveCard()
         }
         Item { Layout.fillWidth: true }
         HusTag {
@@ -275,8 +328,25 @@ ColumnLayout {
                     wrapMode: Text.WordWrap
                     width: parent.width
                 }
+                Item {   // 游戏样式卡片（缩放到面板宽度，点击放大）
+                    visible: page.cardFromModel
+                    width: parent.width
+                    height: visible ? panelCard.implicitHeight + 8 : 0
+                    ItemCard {
+                        id: panelCard
+                        objectName: "panelCard"
+                        x: 4; y: 4
+                        rem: (parent.width - 8) / 54.6
+                        model: page.cardFromModel ? vmSerialInspector.cardModel : ({})
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: cardZoom.open()
+                    }
+                }
                 Image {
-                    visible: vmSerialInspector.hasCard
+                    visible: vmSerialInspector.hasCard && !page.cardFromModel
                     width: Math.min(300, parent.width)
                     fillMode: Image.PreserveAspectFit
                     source: vmSerialInspector.cardUrl

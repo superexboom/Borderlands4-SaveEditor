@@ -17,7 +17,7 @@ from typing import Any
 from PyQt6.QtCore import QTimer, pyqtProperty, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import QApplication
 
-from core import card_image, resource_loader
+from core import card_image, item_card_model, resource_loader
 from core.item_filter import matches_item_search, prepare_item_search
 from tabs.qt_items_tab import (
     classmod_card_html,
@@ -61,6 +61,7 @@ class ItemsViewModel(PageViewModel):
         self._add_serial = ""
         self._flag_index = 0
         self._card_cache: dict[tuple, str] = {}
+        self._card_model_cache: dict[tuple, dict[str, Any] | None] = {}
         self._card_image_cache: dict[tuple, dict[str, Any]] = {}
         self._cards_dir = Path(cards_dir)
         self._card_seq = 0
@@ -97,6 +98,7 @@ class ItemsViewModel(PageViewModel):
         except Exception:
             self._all_items = []
         self._card_cache.clear()
+        self._card_model_cache.clear()
         self._card_image_cache.clear()
         self._prune_card_files()
         self.hoverCanceled()
@@ -106,6 +108,7 @@ class ItemsViewModel(PageViewModel):
     def on_language_changed(self) -> None:
         super().on_language_changed()
         self._card_cache.clear()
+        self._card_model_cache.clear()
         self._card_image_cache.clear()
         self.refresh()
 
@@ -287,6 +290,19 @@ class ItemsViewModel(PageViewModel):
         return self._card_cache[cache_key]
 
     @pyqtSlot(int, result="QVariantMap")
+    def hoverCardModel(self, row: int) -> dict[str, Any]:
+        """Card data for the QML ItemCard (the game's card fields); {} when the item has none."""
+        item = self._item_at(row)
+        if item is None:
+            return {}
+        cache_key = self._card_cache_key(item)
+        if cache_key not in self._card_model_cache:
+            level_label = self.strings.get("columns", {}).get("level", "Level")
+            self._card_model_cache[cache_key] = item_card_model.build_card(
+                item, self.current_lang, level_label, self.character_level)
+        return self._card_model_cache[cache_key] or {}
+
+    @pyqtSlot(int, result="QVariantMap")
     def hoverCardImage(self, row: int) -> dict[str, Any]:
         """悬停卡片渲染图：与主线 QToolTip 同一 QTextDocument 绘制路径。
 
@@ -370,7 +386,9 @@ class ItemsViewModel(PageViewModel):
     def _fire_hover_card(self) -> None:
         row = self._hover_pending_row
         self._hover_pending_row = -1
-        info = self.hoverCardImage(row)
+        # QML ItemCard from the card model; the old HTML->PNG card only as a fallback.
+        model = self.hoverCardModel(row)
+        info = {"card": model} if model else self.hoverCardImage(row)
         if not info:
             return
         self._hover_shown_row = row
