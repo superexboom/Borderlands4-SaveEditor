@@ -673,6 +673,7 @@ class SaveGameController:
                 else:
                     item_node = node[last_key]
 
+                old_serial = item_node.get('serial')
                 new_level_val = new_item_data.get("level")
                 decoded_id_str = new_item_data.get("decoded_parts", "").strip()
 
@@ -719,6 +720,12 @@ class SaveGameController:
                     if new_serial and new_serial != item_node.get('serial'):
                         item_node['serial'] = new_serial
                         result_msg = "成功更新物品序列号。"
+
+                # 已装备物品是背包物品的镜像（按 serial 配对），改一侧必须同步另一侧，
+                # 否则进游戏会被卸下；改的是装备栏那份时背包本体也要跟上，否则编辑丢失。
+                if result_msg is not None:
+                    bl4f.propagate_equipped_serial_change(
+                        self.yaml_obj, item_path, old_serial, item_node.get('serial'))
 
         except (KeyError, IndexError) as e:
             raise ValueError(f"在存档中找不到物品路径: {item_path} ({e})")

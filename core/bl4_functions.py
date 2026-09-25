@@ -521,9 +521,86 @@ def get_yaml_loader():
     return shared_loader()
 
 
+def _inventory_containers(yaml_data: Any) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    """Return (backpack slots, equipped slots) of a character save, or empty dicts."""
+    state = yaml_data.get("state", yaml_data) if isinstance(yaml_data, dict) else None
+    inventory = state.get("inventory") if isinstance(state, dict) else None
+    if not isinstance(inventory, dict):
+        return {}, {}
+    backpack = (inventory.get("items") or {}).get("backpack")
+    equipped = (inventory.get("equipped_inventory") or {}).get("equipped")
+    return (backpack if isinstance(backpack, dict) else {},
+            equipped if isinstance(equipped, dict) else {})
+
+
+def _equipped_entries(equipped: Dict[str, Any]):
+    """Yield (slot, entry) for every item record under equipped_inventory.equipped."""
+    for slot, entries in equipped.items():
+        if isinstance(entries, dict):
+            entries = [entries]
+        if not isinstance(entries, list):
+            continue
+        for entry in entries:
+            if isinstance(entry, dict):
+                yield slot, entry
+
+
+def propagate_equipped_serial_change(yaml_data: Any, path: List[Union[str, int]],
+                                     old_serial: Any, new_serial: Any) -> int:
+    """Keep an equipped item and its backpack copy on the same serial.
+
+    In character saves every equipped slot is a mirror of a backpack item: the
+    serial, flags and state_flags are identical (verified on 278 backups; the
+    backpack copy is the authoritative item). The game pairs them by serial, so
+    rewriting only one side makes the pairing fail on load and the item is
+    unequipped. Returns how many records on the other side were rewritten.
+    """
+    if not old_serial or not new_serial or old_serial == new_serial:
+        return 0
+    backpack, equipped = _inventory_containers(yaml_data)
+    parts = [str(part) for part in path]
+    if "equipped_inventory" in parts:
+        # The mirror was edited: move its backpack copy (the real item) along.
+        for item in backpack.values():
+            if isinstance(item, dict) and item.get("serial") == old_serial:
+                item["serial"] = new_serial
+                return 1
+        return 0
+    if "backpack" not in parts:
+        return 0
+    if any(isinstance(item, dict) and item.get("serial") == old_serial for item in backpack.values()):
+        # An identical duplicate still carries the old serial; the mirror stays paired with it.
+        return 0
+    count = 0
+    for _slot, entry in _equipped_entries(equipped):
+        if entry.get("serial") == old_serial:
+            entry["serial"] = new_serial
+            count += 1
+    return count
+
+
+def _relevel_serial(serial: str, level: Any) -> Tuple[Optional[str], str, str]:
+    """Return (new_serial, error_key, error_detail) for one item moved to ``level``."""
+    decoded_full, _, err = decoder_logic.decode_serial_to_string(serial)
+    if err:
+        return None, "decode_fail", str(err)
+    updated = update_level_in_decoded_str(decoded_full, level)
+    if not updated:
+        return None, "update_level_fail", ""
+    new_serial, err = b_encoder.encode_to_base85(updated)
+    if err:
+        return None, "reencode_fail", str(err)
+    return new_serial, "", ""
+
+
 def sync_inventory_item_levels(yaml_data: Dict[str, Any]) -> Tuple[int, int, List[str]]:
     """
     Synchronizes the level of all items in the 'inventory' container to the character's level.
+
+    Equipped slots are mirrors of backpack items (see
+    ``propagate_equipped_serial_change``); they are rewritten to the new serial
+    of their backpack copy so the game keeps them equipped. Items that only
+    exist in an equipped slot are re-levelled in place.
     """
     loc = get_sync_localization()
     
@@ -564,6 +641,21 @@ def sync_inventory_item_levels(yaml_data: Dict[str, Any]) -> Tuple[int, int, Lis
     if not inventory_items:
         return 0, 0, [loc.get("no_inventory_items", "No items found in backpack")]
 
+    error_texts = {
+        "decode_fail": loc.get("decode_fail", "Decode failed"),
+        "update_level_fail": loc.get("update_level_fail", "Level update failed"),
+        "reencode_fail": loc.get("reencode_fail", "Re-encode failed"),
+    }
+
+    def record_failure(slot_identifier: str, error_key: str, detail: str) -> None:
+        text = f"{slot_identifier}: {error_texts[error_key]}"
+        failed_items_info.append(f"{text} ({detail})" if detail else text)
+
+    backpack, equipped = _inventory_containers(yaml_data)
+    backpack_serials_before = {
+        item.get("serial") for item in backpack.values() if isinstance(item, dict)}
+    serial_map: Dict[str, str] = {}
+
     # 3. Iterate, decode, update, re-encode
     for path, item_data in inventory_items:
         original_serial = item_data.get("serial")
@@ -577,33 +669,43 @@ def sync_inventory_item_levels(yaml_data: Dict[str, Any]) -> Tuple[int, int, Lis
             failed_items_info.append(f"{slot_identifier}: {loc.get('missing_serial', 'Missing serial')}")
             continue
 
-        # Decode
-        decoded_full, _, err = decoder_logic.decode_serial_to_string(original_serial)
-        if err:
+        new_serial, error_key, detail = _relevel_serial(original_serial, character_level)
+        if new_serial is None:
             fail_count += 1
-            failed_items_info.append(f"{slot_identifier}: {loc.get('decode_fail', 'Decode failed')} ({err})")
-            continue
-            
-        # Update level
-        updated_decoded_str = update_level_in_decoded_str(decoded_full, character_level)
-        if not updated_decoded_str:
-            fail_count += 1
-            failed_items_info.append(f"{slot_identifier}: {loc.get('update_level_fail', 'Level update failed')}")
+            record_failure(slot_identifier, error_key, detail)
             continue
 
-        # Re-encode
-        new_serial, err = b_encoder.encode_to_base85(updated_decoded_str)
-        if err:
-            fail_count += 1
-            failed_items_info.append(f"{slot_identifier}: {loc.get('reencode_fail', 'Re-encode failed')} ({err})")
-            continue
-            
         # Write back to YAML object
         try:
             _set_by_path(yaml_data, path + ['serial'], new_serial)
             success_count += 1
+            serial_map[original_serial] = new_serial
         except (KeyError, IndexError, TypeError) as e:
             fail_count += 1
             failed_items_info.append(f"{slot_identifier}: {loc.get('write_fail', 'Write fail')} ({e})")
+
+    # 4. Keep equipped mirrors paired with their backpack copies.
+    backpack_serials_after = {
+        item.get("serial") for item in backpack.values() if isinstance(item, dict)}
+    for slot, entry in _equipped_entries(equipped):
+        serial = entry.get("serial")
+        if not isinstance(serial, str) or not serial:
+            continue
+        if serial in serial_map:
+            # A copy that failed to update may still hold the old serial; then
+            # the mirror stays paired with that copy.
+            if serial not in backpack_serials_after:
+                entry["serial"] = serial_map[serial]
+            continue
+        if serial in backpack_serials_before:
+            continue  # its backpack copy failed to update; keep the pair intact
+        # Only present in the equipped slot (no backpack copy): re-level in place.
+        new_serial, error_key, detail = _relevel_serial(serial, character_level)
+        if new_serial is None:
+            fail_count += 1
+            record_failure(f"{loc.get('equipped', 'Equipped')} {slot}", error_key, detail)
+            continue
+        entry["serial"] = new_serial
+        success_count += 1
 
     return success_count, fail_count, failed_items_info
