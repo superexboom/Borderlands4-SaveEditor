@@ -52,6 +52,7 @@ class GameProgressViewModel(PageViewModel):
         self._teleport_what = ""
         app.liveChanged.connect(self._on_live_changed)
         app.runtimeActionFinished.connect(self._on_runtime_finished)
+        app.liveProgressChanged.connect(self._on_live_progress)
 
     # ------------------------------------------------------------------ #
     # helpers
@@ -78,6 +79,29 @@ class GameProgressViewModel(PageViewModel):
     def _editable(self) -> bool:
         return isinstance(self.controller.yaml_obj, dict) and not self.app.liveActive
 
+    def _data(self) -> dict[str, Any] | None:
+        """Progress source: the save, or in live mode the snapshot read from the game."""
+        if self.app.liveActive:
+            snapshot = self.app.live_progress()[0]
+            return snapshot if isinstance(snapshot, dict) else None
+        data = self.controller.yaml_obj
+        return data if isinstance(data, dict) else None
+
+    def _progress_ready(self) -> bool:
+        return self._kind == "character" or (self._kind == "live" and self._data() is not None)
+
+    def _on_live_progress(self) -> None:
+        if self.app.liveActive or self._kind == "live":
+            self.refresh()
+
+    def on_activated(self) -> None:
+        super().on_activated()
+        # Live: read the game's progress when the page opens (never on a timer).
+        if self.app.liveActive:
+            snapshot, meta, loading, _error = self.app.live_progress()
+            if not loading and (snapshot is None or time.time() - float(meta.get("read_at") or 0) > 120):
+                self.app.fetch_live_progress()
+
     def _write(self, change: Callable[[dict[str, Any]], Any], what: str) -> bool:
         if not self._editable():
             return False
@@ -98,17 +122,18 @@ class GameProgressViewModel(PageViewModel):
         data = self.controller.yaml_obj
         self._kind = logic.save_kind(data) if isinstance(data, dict) else ""
         if self.app.liveActive and isinstance(data, dict):
-            # live 快照只有背包/仓库，读不到进度：只提供地图（定位与传送）
+            # live：背包快照里没有进度；进度来自游戏读回的快照（只读），读到之前只提供地图
             self._kind = "live"
-        if self._kind == "character":
-            self._overview = logic.read_overview(data)
-            self._summary = logic.completion_summary(data) if cat.available() else {}
-            self._regions = logic.region_kills(data, self._lang())
-            self._challenge_categories = self._build_challenge_categories(data)
+        source = self._data()
+        if self._progress_ready() and source is not None:
+            self._overview = logic.read_overview(source) if self._kind == "character" else {}
+            self._summary = logic.completion_summary(source) if cat.available() else {}
+            self._regions = logic.region_kills(source, self._lang())
+            self._challenge_categories = self._build_challenge_categories(source)
             self._collectible_categories = logic.collectible_categories(
-                data, self._lang(), self.strings.get("collectible_names") or {})
-            self._maps = logic.map_list(data, self._lang(), self.strings.get("map_names") or {})
-            self._mission_categories = self._build_mission_categories(data)
+                source, self._lang(), self.strings.get("collectible_names") or {})
+            self._maps = logic.map_list(source, self._lang(), self.strings.get("map_names") or {})
+            self._mission_categories = self._build_mission_categories(source)
         else:
             self._overview, self._summary, self._regions = {}, {}, []
             self._challenge_categories, self._collectible_categories = [], []
@@ -133,6 +158,34 @@ class GameProgressViewModel(PageViewModel):
     @pyqtProperty(str, notify=dataChanged)
     def saveKind(self) -> str:
         return self._kind
+
+    @pyqtProperty(bool, notify=dataChanged)
+    def progressAvailable(self) -> bool:
+        """Progress views have data: a character save, or a live read of the game."""
+        return self._progress_ready()
+
+    @pyqtProperty(bool, notify=dataChanged)
+    def liveProgressLoading(self) -> bool:
+        return self.app.live_progress()[2]
+
+    @pyqtProperty(str, notify=dataChanged)
+    def liveProgressInfo(self) -> str:
+        snapshot, meta, loading, error = self.app.live_progress()
+        labels = self._labels()
+        if loading:
+            return str(labels.get("live_progress_loading", "Reading progress from the game..."))
+        if error:
+            return str(labels.get("live_progress_error", "Reading failed: {error}")).format(error=error)
+        if snapshot is None:
+            return ""
+        return str(labels.get("live_progress_info", "Read at {time} · {count} values · {ms} ms game thread")).format(
+            time=time.strftime("%H:%M:%S", time.localtime(float(meta.get("read_at") or 0))),
+            count=int(meta.get("set") or 0), ms=meta.get("game_ms", 0))
+
+    @pyqtSlot()
+    def refreshLiveProgress(self) -> None:
+        if self.app.fetch_live_progress():
+            self.dataChanged.emit()
 
     @pyqtProperty(bool, notify=dataChanged)
     def catalogAvailable(self) -> bool:
@@ -202,7 +255,7 @@ class GameProgressViewModel(PageViewModel):
             {"key": "challenges", "label": labels.get("challenges", "Challenges"),
              "value": s["challenges_completed"], "total": s["challenges_total"]},
             {"key": "missions", "label": labels.get("missions_completed", "Missions completed"),
-             "value": s["missions_completed"], "total": 0},
+             "value": s["missions_completed"], "total": s.get("missions_total", 0)},
         ]
 
     @pyqtProperty(list, notify=dataChanged)
@@ -313,8 +366,8 @@ class GameProgressViewModel(PageViewModel):
 
     @pyqtProperty(list, notify=dataChanged)
     def challengeRows(self) -> list[dict[str, Any]]:
-        data = self.controller.yaml_obj
-        if self._kind != "character" or not isinstance(data, dict):
+        data = self._data()
+        if not self._progress_ready() or not isinstance(data, dict):
             return []
         rows = []
         challenges = cat.section("challenges")
@@ -343,7 +396,7 @@ class GameProgressViewModel(PageViewModel):
         if value is None or value < 0:
             self._invalid()
             return
-        data = self.controller.yaml_obj
+        data = self._data()
         if not isinstance(data, dict) or logic.challenge_state(data, key)["value"] == value:
             return
         self._write(lambda d: logic.set_challenge_value(d, key, value), self._challenge_title(key))
@@ -384,8 +437,8 @@ class GameProgressViewModel(PageViewModel):
 
     @pyqtProperty(list, notify=dataChanged)
     def collectibleRows(self) -> list[dict[str, Any]]:
-        data = self.controller.yaml_obj
-        if self._kind != "character" or not isinstance(data, dict) or not self._collectible_category:
+        data = self._data()
+        if not self._progress_ready() or not isinstance(data, dict) or not self._collectible_category:
             return []
         lang = self._lang()
         template = str(self._labels().get("location", "{map} ({x}, {y})"))
@@ -406,7 +459,7 @@ class GameProgressViewModel(PageViewModel):
 
     @pyqtSlot(bool)
     def setCategoryCollected(self, collected: bool) -> None:
-        data = self.controller.yaml_obj
+        data = self._data()
         if not isinstance(data, dict) or not self._collectible_category:
             return
         stats = [row["stat"] for row in logic.collectible_items(data, self._collectible_category, self._lang())]
@@ -437,13 +490,13 @@ class GameProgressViewModel(PageViewModel):
         return self._layer_overrides.get(type_key, logic.default_layer_visible(type_key))
 
     def _all_markers(self) -> list[dict[str, Any]]:
-        data = self.controller.yaml_obj
-        if self._kind not in ("character", "live") or not isinstance(data, dict):
+        if self._kind not in ("character", "live"):
             return []
+        data = self._data() or {}
         if self._markers_cache is None or self._markers_cache[0] != self._current_map:
             markers = logic.map_markers(data, self._current_map, self._lang(),
                                         self.strings.get("collectible_names") or {},
-                                        track=self._kind == "character")
+                                        track=self._progress_ready())
             for marker in markers:
                 for field in ("icon", "icon_done"):
                     path = cat.icon_path(marker[field]) if marker[field] else None
@@ -680,8 +733,8 @@ class GameProgressViewModel(PageViewModel):
 
     @pyqtProperty(list, notify=dataChanged)
     def missionRows(self) -> list[dict[str, Any]]:
-        data = self.controller.yaml_obj
-        if self._kind != "character" or not isinstance(data, dict) or not self._mission_category:
+        data = self._data()
+        if not self._progress_ready() or not isinstance(data, dict) or not self._mission_category:
             return []
         lang = self._lang()
         other = str(self._labels().get("region_other", "Other"))
@@ -725,7 +778,7 @@ class GameProgressViewModel(PageViewModel):
 
     @pyqtSlot(str)
     def completeMission(self, key: str) -> None:
-        data = self.controller.yaml_obj
+        data = self._data()
         if not self._editable() or key not in logic._mission_index():
             return
         title = self._mission_title(key)
@@ -751,7 +804,7 @@ class GameProgressViewModel(PageViewModel):
 
     @pyqtSlot()
     def completeMissionCategory(self) -> None:
-        data = self.controller.yaml_obj
+        data = self._data()
         if not self._editable() or not self._mission_category:
             return
         keys = [key for key in logic.missions_in_category(self._mission_category)
@@ -764,7 +817,7 @@ class GameProgressViewModel(PageViewModel):
 
     @pyqtSlot()
     def resetMissionCategory(self) -> None:
-        data = self.controller.yaml_obj
+        data = self._data()
         if not self._editable() or not self._mission_category:
             return
         keys = [key for key in logic.missions_in_category(self._mission_category)

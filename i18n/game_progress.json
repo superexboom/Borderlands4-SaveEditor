@@ -18,7 +18,7 @@
       "labels": {
         "load_save_first": "请先加载一个存档文件。",
         "no_catalog": "缺少游戏进度数据（core/data/progress_catalog.json），请用 pipeline 的 export-progress-catalog 生成。",
-        "live_mode": "联机模式：游戏进度只保存在存档里，联机时读不到；地图页签可查看玩家位置并传送。",
+        "live_mode": "联机模式：进度直接读取自游戏（只读）。要修改请退出联机后编辑存档。",
         "profile_save": "当前是 Profile 存档：这里显示账号级进度（秘藏卡、SDU、解锁与共享收集）。",
         "character_only": "该页签仅适用于角色存档。",
         "playtime": "游玩时间",
@@ -65,7 +65,7 @@
         "status_other": "不可收集",
         "zoom_hint": "滚轮缩放 · 拖动平移",
         "no_map": "该地图没有可显示的地点",
-        "live_progress_unavailable": "联机模式下读不到游戏进度。请退出联机后打开存档查看或修改。",
+        "live_progress_unavailable": "还没有读到游戏进度，请点上方「刷新进度」。",
         "status_unknown": "联机模式下收集状态未知",
         "legend_player": "玩家",
         "teleport_need_live": "需要联机模式",
@@ -81,7 +81,10 @@
         "no_template_tip": "没有采集到这个任务的完成存档模板：只写入「已完成」状态，并保留游戏已记录的剧情选择。",
         "rewards_note": "完成任务只修改任务进度，不会发放经验、现金或物品奖励；一键通关（含剧情标记）请用角色页。",
         "prerequisites": "还有 {count} 个前置主线未完成",
-        "region_other": "其它"
+        "region_other": "其它",
+        "live_progress_loading": "正在从游戏读取进度…",
+        "live_progress_info": "读取于 {time} · {count} 项 · 游戏线程 {ms} ms",
+        "live_progress_error": "读取游戏进度失败：{error}"
       },
       "ammo": {
         "pistol": "手枪",
@@ -113,7 +116,8 @@
         "locate_player": "定位玩家",
         "complete_mission": "完成",
         "complete_through": "完成至此",
-        "reset_mission": "重置"
+        "reset_mission": "重置",
+        "refresh_live": "刷新进度"
       },
       "toasts": {
         "saved": "已修改：{what}",
@@ -182,7 +186,7 @@
       "labels": {
         "load_save_first": "Please load a save file first.",
         "no_catalog": "Game progress data is missing (core/data/progress_catalog.json); generate it with the pipeline export-progress-catalog command.",
-        "live_mode": "Live mode: progress lives in the save file and cannot be read live; the Map tab shows your position and can teleport you.",
+        "live_mode": "Live mode: progress is read from the game (read-only). Leave live mode and edit the save to change it.",
         "profile_save": "This is a Profile save: account-wide progress (Vault Cards, SDU, unlocks and shared collectibles) is shown here.",
         "character_only": "This tab applies to character saves only.",
         "playtime": "Playtime",
@@ -229,7 +233,7 @@
         "status_other": "Not a collectible",
         "zoom_hint": "Wheel to zoom · drag to pan",
         "no_map": "No places to show on this map",
-        "live_progress_unavailable": "Progress cannot be read in live mode. Leave live mode and open the save to view or edit it.",
+        "live_progress_unavailable": "Progress has not been read from the game yet. Use \"Refresh progress\" above.",
         "status_unknown": "Collected state is unknown in live mode",
         "legend_player": "Player",
         "teleport_need_live": "Requires live mode",
@@ -245,7 +249,10 @@
         "no_template_tip": "No captured completion template for this mission: only the completed status is written, keeping the story choices the game already recorded.",
         "rewards_note": "Completing a mission only changes its progress; no XP, cash or item rewards are granted. For a full story skip (with story flags) use the Character page.",
         "prerequisites": "{count} earlier main mission(s) not completed",
-        "region_other": "Other"
+        "region_other": "Other",
+        "live_progress_loading": "Reading progress from the game...",
+        "live_progress_info": "Read at {time} · {count} values · {ms} ms game thread",
+        "live_progress_error": "Reading progress failed: {error}"
       },
       "ammo": {
         "pistol": "Pistol",
@@ -277,7 +284,8 @@
         "locate_player": "Locate player",
         "complete_mission": "Complete",
         "complete_through": "Complete up to here",
-        "reset_mission": "Reset"
+        "reset_mission": "Reset",
+        "refresh_live": "Refresh progress"
       },
       "toasts": {
         "saved": "Updated: {what}",
@@ -346,7 +354,7 @@
       "labels": {
         "load_save_first": "Сначала загрузите файл сохранения.",
         "no_catalog": "Нет данных прогресса (core/data/progress_catalog.json); создайте их командой pipeline export-progress-catalog.",
-        "live_mode": "Онлайн-режим: прогресс хранится в сохранении и не читается из игры; на вкладке «Карта» видно позицию игрока и доступна телепортация.",
+        "live_mode": "Онлайн-режим: прогресс читается из игры (только чтение). Для изменений выйдите из режима и правьте сохранение.",
         "profile_save": "Это Profile-сохранение: здесь показан общий прогресс аккаунта (карты Хранилища, SDU, разблокировки и общие коллекции).",
         "character_only": "Эта вкладка доступна только для сохранений персонажа.",
         "playtime": "Время игры",
@@ -393,7 +401,7 @@
         "status_other": "Не коллекционный предмет",
         "zoom_hint": "Колесо — масштаб · перетаскивание — сдвиг",
         "no_map": "На этой карте нечего показать",
-        "live_progress_unavailable": "В онлайн-режиме прогресс недоступен. Выйдите из него и откройте сохранение.",
+        "live_progress_unavailable": "Прогресс ещё не прочитан из игры. Нажмите «Обновить прогресс».",
         "status_unknown": "В онлайн-режиме состояние неизвестно",
         "legend_player": "Игрок",
         "teleport_need_live": "Нужен онлайн-режим",
@@ -409,7 +417,10 @@
         "no_template_tip": "Нет шаблона завершения для этого задания: записывается только статус «выполнено», сохранённые игрой выборы остаются.",
         "rewards_note": "Завершение меняет только прогресс задания; опыт, деньги и предметы не выдаются. Полный пропуск сюжета — на странице персонажа.",
         "prerequisites": "Не выполнено предыдущих основных заданий: {count}",
-        "region_other": "Прочее"
+        "region_other": "Прочее",
+        "live_progress_loading": "Чтение прогресса из игры...",
+        "live_progress_info": "Прочитано в {time} · {count} значений · {ms} мс игрового потока",
+        "live_progress_error": "Не удалось прочитать прогресс: {error}"
       },
       "ammo": {
         "pistol": "Пистолет",
@@ -441,7 +452,8 @@
         "locate_player": "Найти игрока",
         "complete_mission": "Выполнить",
         "complete_through": "Выполнить до этого",
-        "reset_mission": "Сбросить"
+        "reset_mission": "Сбросить",
+        "refresh_live": "Обновить прогресс"
       },
       "toasts": {
         "saved": "Изменено: {what}",
@@ -510,7 +522,7 @@
       "labels": {
         "load_save_first": "Спочатку завантажте файл збереження.",
         "no_catalog": "Немає даних прогресу (core/data/progress_catalog.json); створіть їх командою pipeline export-progress-catalog.",
-        "live_mode": "Онлайн-режим: прогрес зберігається в сейві й не читається з гри; на вкладці «Мапа» видно позицію гравця та доступна телепортація.",
+        "live_mode": "Онлайн-режим: прогрес читається з гри (лише читання). Для змін вийдіть із режиму й редагуйте сейв.",
         "profile_save": "Це Profile-збереження: тут показано спільний прогрес акаунта (картки Сховища, SDU, розблокування та спільні колекції).",
         "character_only": "Ця вкладка доступна лише для збережень персонажа.",
         "playtime": "Час гри",
@@ -557,7 +569,7 @@
         "status_other": "Не колекційний предмет",
         "zoom_hint": "Коліщатко — масштаб · перетягування — зсув",
         "no_map": "На цій мапі нічого показати",
-        "live_progress_unavailable": "В онлайн-режимі прогрес недоступний. Вийдіть з нього й відкрийте сейв.",
+        "live_progress_unavailable": "Прогрес ще не прочитано з гри. Натисніть «Оновити прогрес».",
         "status_unknown": "В онлайн-режимі стан невідомий",
         "legend_player": "Гравець",
         "teleport_need_live": "Потрібен онлайн-режим",
@@ -573,7 +585,10 @@
         "no_template_tip": "Немає шаблону завершення для цього завдання: записується лише статус «виконано», збережені грою вибори лишаються.",
         "rewards_note": "Завершення змінює лише прогрес завдання; досвід, гроші й предмети не видаються. Повний пропуск сюжету — на сторінці персонажа.",
         "prerequisites": "Не виконано попередніх основних завдань: {count}",
-        "region_other": "Інше"
+        "region_other": "Інше",
+        "live_progress_loading": "Читання прогресу з гри...",
+        "live_progress_info": "Прочитано о {time} · {count} значень · {ms} мс ігрового потоку",
+        "live_progress_error": "Не вдалося прочитати прогрес: {error}"
       },
       "ammo": {
         "pistol": "Пістолет",
@@ -605,7 +620,8 @@
         "locate_player": "Знайти гравця",
         "complete_mission": "Виконати",
         "complete_through": "Виконати до цього",
-        "reset_mission": "Скинути"
+        "reset_mission": "Скинути",
+        "refresh_live": "Оновити прогрес"
       },
       "toasts": {
         "saved": "Змінено: {what}",

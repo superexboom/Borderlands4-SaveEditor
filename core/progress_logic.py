@@ -158,12 +158,8 @@ def is_item_collectible(stat: str) -> bool:
 def completion_summary(data: dict[str, Any]) -> dict[str, Any]:
     """Counts for the overview tiles; totals come from the NCS catalog."""
     missions = cat.section("missions")
-    local_sets = ((data.get("missions") or {}).get("local_sets") or {}) if isinstance(data.get("missions"), dict) else {}
-    completed = set()
-    for mission_set in local_sets.values():
-        for key, mission in ((mission_set or {}).get("missions") or {}).items():
-            if str((mission or {}).get("status") or "").lower() == "completed":
-                completed.add(str(key).lower())
+    # Same mission list as the missions tab (persisted, titled missions only).
+    completed = {key for key in _mission_index() if mission_state(data, key) == "done"}
     main = [key for key, row in missions.items() if row.get("type") == "MainMission"]
 
     challenges = cat.section("challenges")
@@ -175,6 +171,7 @@ def completion_summary(data: dict[str, Any]) -> dict[str, Any]:
     menu_done = sum(1 for row in menu if row.get("goals") and challenge_value(data, row) >= max(row["goals"]))
     return {
         "missions_completed": len(completed),
+        "missions_total": len(_mission_index()),
         "main_completed": sum(1 for key in main if key in completed),
         "main_total": len(main),
         "collectibles_collected": collected,
@@ -749,8 +746,11 @@ def _mission_index() -> dict[str, dict[str, Any]]:
     rows: dict[str, dict[str, Any]] = {}
     for key, row in cat.section("missions").items():
         set_key = row.get("set") or ""
+        title = cat.text(row.get("title"), "en-US")
+        # Invisible helper missions (intros, "_INVIS" kickoffs) carry their internal name as title.
+        internal = bool(re.fullmatch(r"[A-Za-z0-9_]+", title)) and "_" in title
         if (not set_key or row.get("type") in _TRANSIENT_MISSION_TYPES or "template" in key
-                or "repeatable" in key or not cat.text(row.get("title"), "en-US")):
+                or "repeatable" in key or not title or internal):
             continue
         members = (sets.get(set_key) or {}).get("missions") or []
         rows[key] = {
@@ -956,3 +956,72 @@ def complete_main_through(data: dict[str, Any], mission_key: str) -> int:
     """Complete a main mission together with every earlier main mission it depends on."""
     changed = sum(complete_mission(data, key) for key in main_prerequisites(mission_key))
     return changed + int(complete_mission(data, mission_key))
+
+
+# --------------------------------------------------------------------------- #
+# Live progress (bl4_live ``progress_facts``)
+# --------------------------------------------------------------------------- #
+# The game keeps progress in its fact store under the same names the save uses:
+#   save missions.local_sets.<set>.status                          <-> missions.<set>.status
+#   save missions.local_sets.<set>.missions.<m>.status             <-> missions.<set>.<m>.status
+#   save ....missions.<m>.objectives.<o>.status                    <-> missions.<set>.<m>.<o>.status
+#   save stats.<path>                                               <-> stats.<path>
+#   save globals.<key>                                              <-> global.<key>
+# A live read builds a save-shaped snapshot so the offline views work unchanged.
+LIVE_GLOBALS = ("vault_hunter_level", "highest_unlocked_vault_hunter_level")
+
+
+@lru_cache(maxsize=1)
+def live_fact_plan() -> tuple[tuple[str, tuple[str, ...], str], ...]:
+    """(fact address, save path, value kind) for every listed mission and tracked stat."""
+    plan: list[tuple[str, tuple[str, ...], str]] = []
+    sets: set[str] = set()
+    for key, info in _mission_index().items():
+        sets.add(info["set"])
+        plan.append((f"missions.{info['set']}.{key}.status",
+                     ("missions", "local_sets", info["set"], "missions", key, "status"), "name"))
+    for set_key in sorted(sets):
+        plan.append((f"missions.{set_key}.status", ("missions", "local_sets", set_key, "status"), "name"))
+    stats = {str(row.get("stat") or "") for row in cat.section("challenges").values()}
+    stats |= set(_item_collectible_stats())
+    stats = {stat for stat in stats if stat.startswith("stats.") and stat.count(".") >= 1}
+    # Parent nodes report aggregates; the views count leaves themselves, like with a save.
+    leaves = {stat for stat in stats if not any(other.startswith(stat + ".") for other in stats)}
+    for stat in sorted(leaves):
+        plan.append((stat, tuple(stat.split(".")), "int"))
+    for key in LIVE_GLOBALS:
+        plan.append((f"global.{key}", ("globals", key), "int"))
+    return tuple(plan)
+
+
+def live_objective_plan(snapshot: dict[str, Any]) -> list[tuple[str, tuple[str, ...], str]]:
+    """Second pass: objective states of the missions the live read found in progress."""
+    plan = []
+    for key, info in _mission_index().items():
+        if mission_state(snapshot, key) != "active":
+            continue
+        for objective in (cat.section("missions").get(key) or {}).get("objectives") or []:
+            obj = str(objective.get("id") or "")
+            if obj:
+                plan.append((f"missions.{info['set']}.{key}.{obj}.status",
+                             ("missions", "local_sets", info["set"], "missions", key, "objectives", obj, "status"),
+                             "name"))
+    return plan
+
+
+def apply_live_facts(snapshot: dict[str, Any], plan: Any, values: list[Any]) -> int:
+    """Write ``progress_facts`` values into a save-shaped dict; unset facts stay absent."""
+    written = 0
+    for (_address, path, kind), value in zip(plan, values):
+        if not value:
+            continue
+        name, number = str(value[0]), int(value[1])
+        node = snapshot
+        for key in path[:-1]:
+            child = node.get(key)
+            if not isinstance(child, dict):
+                child = node[key] = {}
+            node = child
+        node[path[-1]] = name if kind == "name" else number
+        written += 1
+    return written

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from PyQt6.QtCore import QObject, QTimer
+from PyQt6.QtCore import QObject, QThread, QTimer, pyqtSignal
 
 from core import b_encoder, bl4_functions as bl4f, resource_loader
 from main_window import (
@@ -23,6 +23,25 @@ from main_window import (
     _live_inventory_mutation_preflight,
     _live_inventory_recovery_state,
 )
+
+
+class _LiveProgressWorker(QThread):
+    """Read the game's progress facts off the UI thread (read-only, never marks live busy)."""
+
+    completed = pyqtSignal(object, object, object)  # snapshot, meta, error
+
+    def __init__(self, bridge, parent=None):
+        super().__init__(parent)
+        self._bridge = bridge
+
+    def run(self):
+        try:
+            from live.progress_reader import read_live_progress
+            snapshot, meta = read_live_progress(self._bridge)
+        except Exception as exc:  # reported to the page, never raised into Qt
+            self.completed.emit(None, None, exc)
+            return
+        self.completed.emit(snapshot, meta, None)
 
 
 class LiveManager(QObject):
@@ -38,6 +57,11 @@ class LiveManager(QObject):
         self.recovery_reason = ""
         # 最近一次 runtime 响应里的 state（position / currencies / ...），供各页面只读取用
         self.runtime_state: dict = {}
+        # 游戏进度快照（progress_facts 读回的存档结构），只读展示用；按需读取，不轮询
+        self.progress_snapshot: dict | None = None
+        self.progress_meta: dict = {}
+        self.progress_error = ""
+        self._progress_worker = None
         self._fetch_thread = None
         self._runtime_worker = None
         self._batch_spawn_worker = None
@@ -229,6 +253,7 @@ class LiveManager(QObject):
 
         self.active = True
         self.runtime_state = {}
+        self._reset_progress()
         controller = self.app.controller
         controller.yaml_obj = yaml_like
         controller.save_path = None
@@ -278,6 +303,7 @@ class LiveManager(QObject):
         self.connecting = False
         self.bridge = None
         self.runtime_state = {}
+        self._reset_progress()
         self.recovery_pending = None
         self.recovery_reason = ""
         controller = self.app.controller
@@ -577,6 +603,43 @@ class LiveManager(QObject):
             self._toast(message + warn, "warning")
         else:
             self._toast(message + warn, "success")
+
+    # ------------------------------------------------------------------ #
+    # 游戏进度（游戏进度页只读展示）
+    # ------------------------------------------------------------------ #
+    def _reset_progress(self) -> None:
+        self.progress_snapshot = None
+        self.progress_meta = {}
+        self.progress_error = ""
+        self.app.liveProgressChanged.emit()
+
+    @property
+    def progress_loading(self) -> bool:
+        return self._progress_worker is not None
+
+    def fetch_progress(self) -> bool:
+        """Start one background read of the game's progress facts (ignored while one runs)."""
+        if not self.active or self.bridge is None or self._progress_worker is not None:
+            return False
+        worker = _LiveProgressWorker(self.bridge, self)
+        worker.completed.connect(self._on_progress_read)
+        self._progress_worker = worker
+        self._track(worker)
+        self.app.liveProgressChanged.emit()
+        worker.start()
+        return True
+
+    def _on_progress_read(self, snapshot, meta, err) -> None:
+        if self.sender() is not self._progress_worker:
+            return
+        self._progress_worker = None
+        if not self.active:
+            return
+        if err is not None:
+            self.progress_error = str(err)
+        else:
+            self.progress_snapshot, self.progress_meta, self.progress_error = snapshot, dict(meta or {}), ""
+        self.app.liveProgressChanged.emit()
 
     # ------------------------------------------------------------------ #
     # 运行时动作（character 页）

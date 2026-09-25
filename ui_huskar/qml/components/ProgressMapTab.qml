@@ -62,7 +62,7 @@ RowLayout {
     function statusText(marker) {
         if (!marker) return "";
         // 联机快照读不到进度：可追踪的点位显示「未知」而不是误报未收集
-        if (vmGameProgress.liveMode && marker.challenge) return labels.status_unknown || "";
+        if (!vmGameProgress.progressAvailable && marker.challenge) return labels.status_unknown || "";
         if (marker.done === true) return labels.status_done || "Collected";
         if (marker.done === false) return labels.status_missing || "Missing";
         return labels.status_other || "";
@@ -156,7 +156,7 @@ RowLayout {
                 Item { Layout.fillWidth: true }
                 HusCheckBox {
                     objectName: "onlyMissing"
-                    visible: !vmGameProgress.liveMode
+                    visible: vmGameProgress.progressAvailable
                     text: tab.labels.only_missing || ""
                     checked: vmGameProgress.mapOnlyMissing
                     onToggled: vmGameProgress.setMapOnlyMissing(checked)
@@ -271,15 +271,15 @@ RowLayout {
                     font.pixelSize: 16
                 }
                 LegendChip {
-                    visible: !vmGameProgress.liveMode
+                    visible: vmGameProgress.progressAvailable
                     ring: tab.doneColor; label: tab.labels.legend_done || ""; count: tab.stateCounts.done
                 }
                 LegendChip {
-                    visible: !vmGameProgress.liveMode
+                    visible: vmGameProgress.progressAvailable
                     ring: tab.missingColor; label: tab.labels.legend_missing || ""; count: tab.stateCounts.missing
                 }
                 LegendChip {
-                    visible: !vmGameProgress.liveMode
+                    visible: vmGameProgress.progressAvailable
                     ring: "transparent"; label: tab.labels.legend_other || ""; count: tab.stateCounts.other
                 }
                 Row {

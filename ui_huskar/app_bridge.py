@@ -55,6 +55,7 @@ class AppBridge(QObject):
     backgroundChanged = pyqtSignal()
     liveChanged = pyqtSignal()
     runtimeActionFinished = pyqtSignal(str, bool, str)    # action, ok, error（live 运行时动作完成）
+    liveProgressChanged = pyqtSignal()                   # live 游戏进度快照 读取中/完成/清空
 
     toastRequested = pyqtSignal(str, str)                 # text, kind: success|error|warning|info
     confirmRequested = pyqtSignal(int, str, str, bool)    # id, title, text, isWarning
@@ -654,6 +655,15 @@ class AppBridge(QObject):
     def live_runtime_state(self) -> dict:
         """最近一次 live runtime 响应中的 state 快照（离线时为空）。"""
         return dict(self.live.runtime_state) if self.live.active else {}
+
+    def live_progress(self) -> tuple[dict | None, dict, bool, str]:
+        """(存档结构的进度快照, 读取信息, 是否读取中, 错误) —— 仅 live 时有值。"""
+        if not self.live.active:
+            return None, {}, False, ""
+        return self.live.progress_snapshot, dict(self.live.progress_meta), self.live.progress_loading, self.live.progress_error
+
+    def fetch_live_progress(self) -> bool:
+        return self.live.fetch_progress()
 
     @pyqtSlot("QVariantMap")
     def openGeneratedWeapon(self, result: dict) -> None:

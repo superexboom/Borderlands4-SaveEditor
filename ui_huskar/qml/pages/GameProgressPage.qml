@@ -15,9 +15,9 @@ Item {
     readonly property bool ready: vmGameProgress.saveLoaded && vmGameProgress.catalogAvailable
     readonly property int mapTabIndex: 4
     // 联机快照读不到进度（只有地图可用），其它非角色存档（账号存档）另有提示
-    readonly property string nonCharacterHint: vmGameProgress.saveKind === "live"
-                                               ? (labels.live_progress_unavailable || "")
-                                               : (labels.character_only || "")
+    readonly property string nonCharacterHint: vmGameProgress.saveKind !== "live" ? (labels.character_only || "")
+                                               : vmGameProgress.liveProgressLoading ? (labels.live_progress_loading || "")
+                                               : (labels.live_progress_unavailable || "")
 
     EmptyHint {
         anchors.fill: parent
@@ -35,12 +35,29 @@ Item {
         visible: page.ready
         spacing: 8
 
-        HusText {
+        // live：进度读自游戏（只读），按需刷新；读取信息/错误显示在右侧
+        RowLayout {
             Layout.fillWidth: true
             visible: vmGameProgress.liveMode
-            text: page.labels.live_mode || ""
-            color: "#e6a439"
-            wrapMode: Text.Wrap
+            spacing: 10
+            HusText {
+                Layout.fillWidth: true
+                text: page.labels.live_mode || ""
+                color: "#e6a439"
+                wrapMode: Text.Wrap
+            }
+            HusText {
+                objectName: "liveProgressInfo"
+                text: vmGameProgress.liveProgressInfo
+                font.pixelSize: 12
+                color: HusTheme.Primary.colorTextTertiary
+            }
+            HusButton {
+                objectName: "refreshLiveProgress"
+                text: page.buttons.refresh_live || "Refresh"
+                enabled: !vmGameProgress.liveProgressLoading
+                onClicked: vmGameProgress.refreshLiveProgress()
+            }
         }
         HusText {
             Layout.fillWidth: true
@@ -72,13 +89,13 @@ Item {
                 objectName: "missionsTab"
                 anchors.fill: parent
                 anchors.topMargin: 8
-                visible: vmGameProgress.saveKind === "character"
+                visible: vmGameProgress.progressAvailable
                 labels: page.labels
                 buttons: page.buttons
             }
             EmptyHint {
                 anchors.fill: parent
-                visible: vmGameProgress.saveKind !== "character"
+                visible: !vmGameProgress.progressAvailable
                 description: page.nonCharacterHint
             }
         }
@@ -90,13 +107,13 @@ Item {
             ProgressChallengesTab {
                 anchors.fill: parent
                 anchors.topMargin: 8
-                visible: vmGameProgress.saveKind === "character"
+                visible: vmGameProgress.progressAvailable
                 labels: page.labels
                 buttons: page.buttons
             }
             EmptyHint {
                 anchors.fill: parent
-                visible: vmGameProgress.saveKind !== "character"
+                visible: !vmGameProgress.progressAvailable
                 description: page.nonCharacterHint
             }
         }
@@ -127,7 +144,7 @@ Item {
                 objectName: "collectiblesTab"
                 anchors.fill: parent
                 anchors.topMargin: 8
-                visible: vmGameProgress.saveKind === "character"
+                visible: vmGameProgress.progressAvailable
                 labels: page.labels
                 buttons: page.buttons
                 mapAvailable: true
@@ -138,7 +155,7 @@ Item {
             }
             EmptyHint {
                 anchors.fill: parent
-                visible: vmGameProgress.saveKind !== "character"
+                visible: !vmGameProgress.progressAvailable
                 description: page.nonCharacterHint
             }
         }
@@ -166,14 +183,14 @@ Item {
                 EmptyHint {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 80
-                    visible: vmGameProgress.saveKind !== "character"
+                    visible: !vmGameProgress.progressAvailable
                     description: page.nonCharacterHint
                 }
 
                 // ---- 完成度 ----
                 GridLayout {
                     Layout.fillWidth: true
-                    visible: vmGameProgress.saveKind === "character"
+                    visible: vmGameProgress.progressAvailable
                     columns: 4
                     columnSpacing: 10
                     rowSpacing: 10

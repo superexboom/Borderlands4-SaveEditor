@@ -96,6 +96,29 @@ class Bridge:
             raise BridgeError("malformed runtime response")
         return resp
 
+    def progress_facts(self, addresses: list[str], budget_ms: float = 6.0) -> tuple[list[Any], dict[str, Any]]:
+        """Read game facts by address; the mod spends at most ``budget_ms`` per request."""
+        values: list[Any] = []
+        start: int | None = 0
+        meta = {"requests": 0, "game_ms": 0.0}
+        while start is not None:
+            resp = self.runtime_action("progress_facts", addresses=list(addresses), start=start, budget_ms=budget_ms)
+            if not resp.get("ok"):
+                raise BridgeError(str(resp.get("error", "progress_facts failed")))
+            chunk = resp.get("values")
+            following = resp.get("next")
+            if not isinstance(chunk, list) or resp.get("start") != start:
+                raise BridgeError("malformed progress_facts response")
+            if following is not None and (not chunk or following != start + len(chunk)):
+                raise BridgeError("progress_facts made no progress")
+            values.extend(chunk)
+            meta["requests"] += 1
+            meta["game_ms"] += float(resp.get("elapsed_ms") or 0.0)
+            start = following
+        if len(values) != len(addresses):
+            raise BridgeError("progress_facts returned a partial result")
+        return values, meta
+
     def loadout_capabilities(self) -> dict[str, Any]:
         """Report whether the current live player exposes the safe loadout read chain."""
         return self.runtime_action("loadout_capabilities")
