@@ -18,6 +18,8 @@ HOST = "127.0.0.1"
 PORT = 28777
 DEFAULT_TIMEOUT = 10.0
 EXPECTED_LIVE_VERSION = "0.10.26"
+# progress_increment_challenges accepts at most this many rows per request (progress probe).
+MAX_CHALLENGES_PER_REQUEST = 64
 
 
 class BridgeError(RuntimeError):
@@ -118,6 +120,27 @@ class Bridge:
         if len(values) != len(addresses):
             raise BridgeError("progress_facts returned a partial result")
         return values, meta
+
+    def increment_challenges(self, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """Credit challenges through the game's own challenge increment (progress probe).
+
+        ``rows``: ``{"name": <challenge def>, "amount": n}``. Each result row says
+        ``sent`` or ``already`` (complete before the call); the backing stat facts
+        change immediately, the challenge itself on a later game tick.
+        """
+        results: list[dict[str, Any]] = []
+        step = MAX_CHALLENGES_PER_REQUEST
+        for start in range(0, len(rows), step):
+            chunk = [{"name": str(row["name"]), "amount": int(row.get("amount") or 1)}
+                     for row in rows[start:start + step]]
+            resp = self.runtime_action("progress_increment_challenges", challenges=chunk)
+            if not resp.get("ok"):
+                raise BridgeError(str(resp.get("error", "progress_increment_challenges failed")))
+            got = resp.get("results")
+            if not isinstance(got, list) or len(got) != len(chunk):
+                raise BridgeError("malformed progress_increment_challenges response")
+            results.extend(got)
+        return results
 
     def loadout_capabilities(self) -> dict[str, Any]:
         """Report whether the current live player exposes the safe loadout read chain."""

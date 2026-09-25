@@ -19,7 +19,10 @@ RowLayout {
     readonly property color focusColor: "#4a90e2"
     readonly property color playerColor: "#2f7cf6"
 
+    // 先绑定到 var 属性再遍历：直接在 JS 里遍历 VM 的列表属性，每访问一个元素都会重新读取整个列表
     readonly property var markers: vmGameProgress.mapMarkers
+    readonly property var maps: vmGameProgress.mapList
+    readonly property var layers: vmGameProgress.mapLayers
     readonly property var selected: {
         var id = vmGameProgress.focusMarkerId;
         if (!id) return null;
@@ -28,7 +31,7 @@ RowLayout {
         return null;
     }
     readonly property var currentMapRow: {
-        var rows = vmGameProgress.mapList;
+        var rows = maps;
         for (var i = 0; i < rows.length; i++)
             if (rows[i].key === vmGameProgress.currentMap) return rows[i];
         return null;
@@ -44,7 +47,7 @@ RowLayout {
         return counts;
     }
     readonly property var layerRows: {
-        var source = vmGameProgress.mapLayers, rows = [], last = null;
+        var source = layers, rows = [], last = null;
         for (var i = 0; i < source.length; i++) {
             var row = source[i];
             if (row.group !== last) {
@@ -133,7 +136,7 @@ RowLayout {
                 objectName: "mapList"
                 Layout.fillWidth: true
                 Layout.preferredHeight: Math.round(sideColumn.height * 0.42)
-                categories: vmGameProgress.mapList
+                categories: tab.maps
                 current: vmGameProgress.currentMap
                 onPicked: function(key) { vmGameProgress.setCurrentMap(key); }
             }
@@ -687,8 +690,10 @@ RowLayout {
                             }
                             HusButton {
                                 objectName: "markerToggle"
-                                visible: !!(tab.selected && tab.selected.stat) && !vmGameProgress.liveMode
-                                enabled: vmGameProgress.editable
+                                // 联机：只能把未收集的点记入游戏
+                                visible: !!(tab.selected && tab.selected.stat)
+                                         && (!vmGameProgress.liveMode || (vmGameProgress.liveCollect && tab.selected.done !== true))
+                                enabled: (vmGameProgress.editable || vmGameProgress.liveCollect) && !appBridge.liveBusy
                                 type: tab.selected && tab.selected.done === true ? HusButton.Type_Default : HusButton.Type_Primary
                                 text: tab.selected && tab.selected.done === true ? (tab.buttons.mark_missing || "")
                                                                                  : (tab.buttons.mark_collected || "")

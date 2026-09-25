@@ -20,8 +20,10 @@ RowLayout {
     readonly property var stateFilter: ["", "done", "active", "none"]
 
     readonly property bool mainCategory: vmGameProgress.missionCategory.split(":")[1] === "main"
+    // 先绑定到 var 属性再遍历：直接在 JS 里遍历 VM 的列表属性，每访问一个元素都会重新读取整个列表
+    readonly property var sourceRows: vmGameProgress.missionRows
     readonly property var rows: {
-        var source = vmGameProgress.missionRows, out = [], last = null;
+        var source = sourceRows, out = [], last = null;
         var needle = search.trim().toLowerCase(), wanted = stateFilter[filterMode];
         for (var i = 0; i < source.length; i++) {
             var row = source[i];

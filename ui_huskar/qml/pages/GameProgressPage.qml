@@ -18,7 +18,13 @@ Item {
     // 打开账号存档时直接切到「账号进度」（其余页签只适用于角色存档）
     readonly property bool profileSave: vmGameProgress.saveKind === "profile"
     onProfileSaveChanged: if (profileSave) tabs.currentIndex = accountTabIndex
-    Component.onCompleted: if (profileSave) tabs.currentIndex = accountTabIndex
+    // 回到本页时恢复上次的页签（页面每次导航都会重建）。HusTabView 填充模型时会把索引归零，
+    // 所以延后一轮再恢复，恢复前的索引变化也不记录。
+    property bool tabRestored: false
+    Component.onCompleted: Qt.callLater(function() {
+        tabs.currentIndex = page.profileSave ? page.accountTabIndex : Math.max(0, vmGameProgress.tabIndex);
+        page.tabRestored = true;
+    })
     // 联机快照读不到进度（只有地图可用），其它非角色存档（账号存档）另有提示
     readonly property string nonCharacterHint: vmGameProgress.saveKind !== "live" ? (labels.character_only || "")
                                                : vmGameProgress.liveProgressLoading ? (labels.live_progress_loading || "")
@@ -47,7 +53,7 @@ Item {
             spacing: 10
             HusText {
                 Layout.fillWidth: true
-                text: page.labels.live_mode || ""
+                text: (vmGameProgress.liveCollect ? page.labels.live_mode_collect : page.labels.live_mode) || ""
                 color: "#e6a439"
                 wrapMode: Text.Wrap
             }
@@ -78,15 +84,29 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             initModel: [
-                { key: "overview", title: page.tabsLoc.overview || "Overview", contentDelegate: overviewContent },
-                { key: "missions", title: page.tabsLoc.missions || "Missions", contentDelegate: missionsContent },
-                { key: "challenges", title: page.tabsLoc.challenges || "Challenges", contentDelegate: challengesContent },
-                { key: "collectibles", title: page.tabsLoc.collectibles || "Collectibles", contentDelegate: collectiblesContent },
-                { key: "map", title: page.tabsLoc.map || "Map", contentDelegate: mapContent },
-                { key: "account", title: page.tabsLoc.profile || "Account", contentDelegate: accountContent }
+                { key: "overview", title: page.tabsLoc.overview || "Overview", contentDelegate: lazyOverview },
+                { key: "missions", title: page.tabsLoc.missions || "Missions", contentDelegate: lazyMissions },
+                { key: "challenges", title: page.tabsLoc.challenges || "Challenges", contentDelegate: lazyChallenges },
+                { key: "collectibles", title: page.tabsLoc.collectibles || "Collectibles", contentDelegate: lazyCollectibles },
+                { key: "map", title: page.tabsLoc.map || "Map", contentDelegate: lazyMap },
+                { key: "account", title: page.tabsLoc.profile || "Account", contentDelegate: lazyAccount }
             ]
+            onCurrentIndexChanged: if (page.tabRestored) vmGameProgress.setTabIndex(currentIndex)
         }
     }
+
+    // HusTabView 会一次性创建全部页签内容；这里改为首次切到该页签时才创建，之后保留
+    component LazyTab: Loader {
+        property bool seen: false
+        active: seen || visible
+        onVisibleChanged: if (visible) seen = true
+    }
+    Component { id: lazyOverview; LazyTab { sourceComponent: overviewContent } }
+    Component { id: lazyMissions; LazyTab { sourceComponent: missionsContent } }
+    Component { id: lazyChallenges; LazyTab { sourceComponent: challengesContent } }
+    Component { id: lazyCollectibles; LazyTab { sourceComponent: collectiblesContent } }
+    Component { id: lazyMap; LazyTab { sourceComponent: mapContent } }
+    Component { id: lazyAccount; LazyTab { sourceComponent: accountContent } }
 
     Component {
         id: accountContent

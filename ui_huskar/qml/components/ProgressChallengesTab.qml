@@ -12,8 +12,10 @@ RowLayout {
     property string search: ""
     spacing: 10
 
+    // 先绑定到 var 属性再遍历：直接在 JS 里遍历 VM 的列表属性，每访问一个元素都会重新读取整个列表
+    readonly property var sourceRows: vmGameProgress.challengeRows
     readonly property var rows: {
-        var source = vmGameProgress.challengeRows, out = [], needle = search.trim().toLowerCase();
+        var source = sourceRows, out = [], needle = search.trim().toLowerCase();
         for (var i = 0; i < source.length; i++) {
             var row = source[i];
             if (filterMode === 1 && !row.done) continue;

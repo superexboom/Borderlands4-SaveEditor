@@ -34,6 +34,16 @@ class GameProgressViewModel(PageViewModel):
     STRINGS_SECTION = "game_progress_tab"
 
     dataChanged = pyqtSignal()
+    # Per-section signals: picking a category or toggling a map layer only
+    # re-evaluates that tab's bindings. refresh() emits all of them.
+    liveInfoChanged = pyqtSignal()
+    challengesChanged = pyqtSignal()
+    collectiblesChanged = pyqtSignal()
+    missionsChanged = pyqtSignal()
+    mapChanged = pyqtSignal()
+    mapFocusChanged = pyqtSignal()
+    playerChanged = pyqtSignal()
+    accountChanged = pyqtSignal()
 
     def __init__(self, app, parent=None):
         super().__init__(app, parent)
@@ -59,7 +69,14 @@ class GameProgressViewModel(PageViewModel):
         self._player_serial = 0
         self._last_player_map = ""
         self._teleport_what = ""
+        # Built rows by property name; cleared by refresh() and by the section that owns them.
+        self._memo: dict[str, Any] = {}
+        self._live_seen = False
+        self._snapshot_token: Any = None
+        self._tab_index = -1
+        self._collect_what = ""
         app.liveChanged.connect(self._on_live_changed)
+        app.liveChallengesSent.connect(self._on_challenges_sent)
         app.runtimeActionFinished.connect(self._on_runtime_finished)
         app.liveProgressChanged.connect(self._on_live_progress)
         qapp = QGuiApplication.instance()
@@ -75,18 +92,52 @@ class GameProgressViewModel(PageViewModel):
     def _labels(self) -> dict[str, Any]:
         return self.strings.get("labels") or {}
 
+    def _cached(self, key: str, build: Callable[[], Any]) -> Any:
+        """QML re-reads a list property on every element access; build each one once."""
+        if key not in self._memo:
+            self._memo[key] = build()
+        return self._memo[key]
+
+    def _drop(self, *keys: str) -> None:
+        for key in keys:
+            self._memo.pop(key, None)
+
+    def _emit_all(self) -> None:
+        for signal in (self.dataChanged, self.liveInfoChanged, self.challengesChanged, self.collectiblesChanged,
+                       self.missionsChanged, self.mapChanged, self.mapFocusChanged, self.playerChanged,
+                       self.accountChanged):
+            signal.emit()
+
+    def _page_shown(self) -> bool:
+        return self.app.pageKey == self.PAGE_KEY
+
+    def on_language_changed(self) -> None:
+        super().on_language_changed()
+        if self._page_shown():  # rows carry localized titles
+            self._stale = False
+            self.refresh()
+
     def _on_live_changed(self) -> None:
+        # Fires on every live state/busy change: only the player marker and map follow it.
         # 玩家换了地图（含首次读到位置）时，地图页签跟到玩家所在地图；之后仍可自由浏览别的图
         player = logic.live_player_marker(self._live_position(), self._current_map)
+        map_changed = False
         if self.app.liveActive and player["available"] and player["map"] != self._last_player_map:
             self._last_player_map = player["map"]
             world = self._artwork_map(player["map"])
             if world and world != self._current_map:
                 self._current_map = world
                 self._markers_cache = None
+                self._drop("mapLayers", "mapMarkers")
+                map_changed = True
         elif not self.app.liveActive:
             self._last_player_map = ""
-        self.dataChanged.emit()
+        if self.app.liveActive != self._live_seen:
+            self._live_seen = self.app.liveActive
+            self.dataChanged.emit()
+        if map_changed:
+            self.mapChanged.emit()
+        self.playerChanged.emit()
 
     def _editable(self) -> bool:
         return isinstance(self.controller.yaml_obj, dict) and not self.app.liveActive
@@ -103,8 +154,14 @@ class GameProgressViewModel(PageViewModel):
         return self._kind == "character" or (self._kind == "live" and self._data() is not None)
 
     def _on_live_progress(self) -> None:
-        if self.app.liveActive or self._kind == "live":
-            self.refresh()
+        snapshot, meta, _loading, _error = self.app.live_progress()
+        token = (id(snapshot), meta.get("read_at")) if snapshot is not None else None
+        changed = token != self._snapshot_token
+        self._snapshot_token = token
+        if changed and (self.app.liveActive or self._kind == "live"):
+            self.refresh()  # a hidden page has no QML bound, so this is only the Python rebuild
+            return
+        self.liveInfoChanged.emit()
 
     def on_activated(self) -> None:
         super().on_activated()
@@ -164,7 +221,17 @@ class GameProgressViewModel(PageViewModel):
         self._account_categories = (self._build_account_categories(data)
                                     if self._kind == "profile" and isinstance(data, dict) else [])
         self._markers_cache = None
-        self.dataChanged.emit()
+        self._memo.clear()
+        self._emit_all()
+
+    @pyqtProperty(int, constant=True)
+    def tabIndex(self) -> int:
+        """Last tab shown, restored when the page is opened again (-1: none yet)."""
+        return self._tab_index
+
+    @pyqtSlot(int)
+    def setTabIndex(self, index: int) -> None:
+        self._tab_index = int(index)
 
     @pyqtProperty(bool, notify=dataChanged)
     def saveLoaded(self) -> bool:
@@ -178,6 +245,13 @@ class GameProgressViewModel(PageViewModel):
     def editable(self) -> bool:
         return self._editable()
 
+    @pyqtProperty(bool, notify=dataChanged)
+    def liveCollect(self) -> bool:
+        """Live: collectibles can be credited in the game (the mod exposes the challenge increment)."""
+        if not self.app.liveActive or self._data() is None:
+            return False
+        return "progress_increment_challenges" in (self.app.live_progress()[1].get("actions") or [])
+
     @pyqtProperty(str, notify=dataChanged)
     def saveKind(self) -> str:
         return self._kind
@@ -187,11 +261,11 @@ class GameProgressViewModel(PageViewModel):
         """Progress views have data: a character save, or a live read of the game."""
         return self._progress_ready()
 
-    @pyqtProperty(bool, notify=dataChanged)
+    @pyqtProperty(bool, notify=liveInfoChanged)
     def liveProgressLoading(self) -> bool:
         return self.app.live_progress()[2]
 
-    @pyqtProperty(str, notify=dataChanged)
+    @pyqtProperty(str, notify=liveInfoChanged)
     def liveProgressInfo(self) -> str:
         snapshot, meta, loading, error = self.app.live_progress()
         labels = self._labels()
@@ -208,7 +282,7 @@ class GameProgressViewModel(PageViewModel):
     @pyqtSlot()
     def refreshLiveProgress(self) -> None:
         if self.app.fetch_live_progress():
-            self.dataChanged.emit()
+            self.liveInfoChanged.emit()
 
     @pyqtProperty(bool, notify=dataChanged)
     def catalogAvailable(self) -> bool:
@@ -370,25 +444,29 @@ class GameProgressViewModel(PageViewModel):
             rows.append({"key": key, "title": label, "done": done, "total": len(members)})
         return rows
 
-    @pyqtProperty(list, notify=dataChanged)
+    @pyqtProperty(list, notify=challengesChanged)
     def challengeCategories(self) -> list[dict[str, Any]]:
         return self._challenge_categories
 
-    @pyqtProperty(str, notify=dataChanged)
+    @pyqtProperty(str, notify=challengesChanged)
     def challengeCategory(self) -> str:
         return self._challenge_category
 
     @pyqtSlot(str)
     def setChallengeCategory(self, key: str) -> None:
         self._challenge_category = str(key)
-        self.dataChanged.emit()
+        self._drop("challengeRows")
+        self.challengesChanged.emit()
 
     def _category_members(self) -> list[str]:
         return next((members for key, _title, members in logic.challenge_category_keys()
                      if key == self._challenge_category), [])
 
-    @pyqtProperty(list, notify=dataChanged)
+    @pyqtProperty(list, notify=challengesChanged)
     def challengeRows(self) -> list[dict[str, Any]]:
+        return self._cached("challengeRows", self._build_challenge_rows)
+
+    def _build_challenge_rows(self) -> list[dict[str, Any]]:
         data = self._data()
         if not self._progress_ready() or not isinstance(data, dict):
             return []
@@ -445,21 +523,25 @@ class GameProgressViewModel(PageViewModel):
     # ------------------------------------------------------------------ #
     # collectibles
     # ------------------------------------------------------------------ #
-    @pyqtProperty(list, notify=dataChanged)
+    @pyqtProperty(list, notify=collectiblesChanged)
     def collectibleCategories(self) -> list[dict[str, Any]]:
         return self._collectible_categories
 
-    @pyqtProperty(str, notify=dataChanged)
+    @pyqtProperty(str, notify=collectiblesChanged)
     def collectibleCategory(self) -> str:
         return self._collectible_category
 
     @pyqtSlot(str)
     def setCollectibleCategory(self, key: str) -> None:
         self._collectible_category = str(key)
-        self.dataChanged.emit()
+        self._drop("collectibleRows")
+        self.collectiblesChanged.emit()
 
-    @pyqtProperty(list, notify=dataChanged)
+    @pyqtProperty(list, notify=collectiblesChanged)
     def collectibleRows(self) -> list[dict[str, Any]]:
+        return self._cached("collectibleRows", self._build_collectible_rows)
+
+    def _build_collectible_rows(self) -> list[dict[str, Any]]:
         data = self._data()
         if not self._progress_ready() or not isinstance(data, dict) or not self._collectible_category:
             return []
@@ -476,6 +558,11 @@ class GameProgressViewModel(PageViewModel):
 
     @pyqtSlot(str, bool)
     def setCollected(self, stat: str, collected: bool) -> None:
+        if self.app.liveActive:
+            item = next((row for row in self.collectibleRows if row["stat"] == stat), None)
+            if collected:
+                self._live_collect([stat], item["title"] if item else stat)
+            return
         title = next((row["title"] for row in self._collectible_categories
                       if row["key"] == self._collectible_category), stat)
         self._write(lambda data: logic.set_collected(data, stat, collected), title)
@@ -488,6 +575,12 @@ class GameProgressViewModel(PageViewModel):
         stats = [row["stat"] for row in logic.collectible_items(data, self._collectible_category, self._lang())]
         title = next((row["title"] for row in self._collectible_categories
                       if row["key"] == self._collectible_category), "")
+        if self.app.liveActive:
+            pending = logic.live_collect_rows(data, stats)
+            if collected and pending and self.liveCollect:
+                self._confirm("live_collect_all", lambda: self._live_collect(stats, title),
+                              what=title, count=len(pending))
+            return
 
         def change(d):
             for stat in stats:
@@ -527,28 +620,38 @@ class GameProgressViewModel(PageViewModel):
             self._markers_cache = (self._current_map, markers)
         return self._markers_cache[1]
 
-    @pyqtProperty(list, notify=dataChanged)
+    @pyqtProperty(list, notify=mapChanged)
     def mapList(self) -> list[dict[str, Any]]:
         return self._maps
 
-    @pyqtProperty(str, notify=dataChanged)
+    @pyqtProperty(str, notify=mapChanged)
     def currentMap(self) -> str:
         return self._current_map
 
-    @pyqtProperty(str, notify=dataChanged)
+    @pyqtProperty(str, notify=mapChanged)
     def mapImage(self) -> str:
         path = cat.map_image_path(self._current_map)
         return QUrl.fromLocalFile(str(path)).toString() if path else ""
+
+    def _map_moved(self) -> None:
+        """Current map, layers or filter changed: rebuild markers and layer rows."""
+        self._drop("mapLayers", "mapMarkers")
+        self.mapChanged.emit()
+        self.mapFocusChanged.emit()
+        self.playerChanged.emit()  # teleport availability depends on the map shown
 
     @pyqtSlot(str)
     def setCurrentMap(self, world: str) -> None:
         if world and world != self._current_map:
             self._current_map = str(world)
             self._focus_id = ""
-            self.dataChanged.emit()
+            self._map_moved()
 
-    @pyqtProperty(list, notify=dataChanged)
+    @pyqtProperty(list, notify=mapChanged)
     def mapLayers(self) -> list[dict[str, Any]]:
+        return self._cached("mapLayers", self._build_map_layers)
+
+    def _build_map_layers(self) -> list[dict[str, Any]]:
         group_names = self.strings.get("map_groups") or {}
         layers: dict[str, dict[str, Any]] = {}
         for marker in self._all_markers():
@@ -565,8 +668,11 @@ class GameProgressViewModel(PageViewModel):
         order = {group: index for index, group in enumerate(logic.LAYER_GROUPS)}
         return sorted(layers.values(), key=lambda row: (order.get(row["group"], 99), -row["count"], row["title"]))
 
-    @pyqtProperty(list, notify=dataChanged)
+    @pyqtProperty(list, notify=mapChanged)
     def mapMarkers(self) -> list[dict[str, Any]]:
+        return self._cached("mapMarkers", self._build_map_markers)
+
+    def _build_map_markers(self) -> list[dict[str, Any]]:
         out = []
         for marker in self._all_markers():
             if not self._layer_visible(marker["type"]) and marker["id"] != self._focus_id:
@@ -580,7 +686,7 @@ class GameProgressViewModel(PageViewModel):
     def setLayerVisible(self, type_key: str, visible: bool) -> None:
         self._layer_overrides[str(type_key)] = bool(visible)
         self._store_layer_overrides()
-        self.dataChanged.emit()
+        self._map_moved()
 
     @pyqtSlot(str, bool)
     def setLayerGroupVisible(self, group: str, visible: bool) -> None:
@@ -588,24 +694,33 @@ class GameProgressViewModel(PageViewModel):
             if layer["group"] == group:
                 self._layer_overrides[layer["key"]] = bool(visible)
         self._store_layer_overrides()
-        self.dataChanged.emit()
+        self._map_moved()
 
-    @pyqtProperty(bool, notify=dataChanged)
+    @pyqtProperty(bool, notify=mapChanged)
     def mapOnlyMissing(self) -> bool:
         return self._only_missing
 
     @pyqtSlot(bool)
     def setMapOnlyMissing(self, value: bool) -> None:
         self._only_missing = bool(value)
-        self.dataChanged.emit()
+        self._map_moved()
 
-    @pyqtProperty(str, notify=dataChanged)
+    @pyqtProperty(str, notify=mapFocusChanged)
     def focusMarkerId(self) -> str:
         return self._focus_id
 
-    @pyqtProperty(int, notify=dataChanged)
+    @pyqtProperty(int, notify=mapFocusChanged)
     def focusSerial(self) -> int:
         return self._focus_serial
+
+    def _set_focus(self, marker_id: str) -> None:
+        """Select a marker; the marker list only changes when the focus un-hides one."""
+        before = [marker["id"] for marker in self.mapMarkers]
+        self._focus_id = str(marker_id)
+        self._drop("mapMarkers")
+        if [marker["id"] for marker in self.mapMarkers] != before:
+            self.mapChanged.emit()
+        self.mapFocusChanged.emit()
 
     @pyqtSlot(str, result=bool)
     def focusCollectible(self, stat: str) -> bool:
@@ -616,23 +731,63 @@ class GameProgressViewModel(PageViewModel):
                          and cat.project(row.get("map", ""), row["x"], row["y"])), None)
         if not location:
             return False
-        self._current_map = location[1]["map"]
-        self._focus_id = location[0]
+        if location[1]["map"] != self._current_map:
+            self._current_map = location[1]["map"]
+            self._markers_cache = None
+            self._map_moved()
         self._focus_serial += 1
-        self._markers_cache = None
-        self.dataChanged.emit()
+        self._set_focus(location[0])
         return True
 
     @pyqtSlot(str)
     def selectMarker(self, marker_id: str) -> None:
-        self._focus_id = str(marker_id)
-        self.dataChanged.emit()
+        self._set_focus(marker_id)
 
     @pyqtSlot(str, bool)
     def setMarkerCollected(self, stat: str, collected: bool) -> None:
-        if stat:
-            title = next((row["title"] for row in self._maps if row["key"] == self._current_map), self._current_map)
-            self._write(lambda data: logic.set_collected(data, stat, collected), title)
+        if not stat:
+            return
+        if self.app.liveActive:
+            marker = next((row for row in self._all_markers() if row.get("stat") == stat), None)
+            if collected:
+                self._live_collect([stat], marker["title"] if marker else stat)
+            return
+        title = next((row["title"] for row in self._maps if row["key"] == self._current_map), self._current_map)
+        self._write(lambda data: logic.set_collected(data, stat, collected), title)
+
+    # ------------------------------------------------------------------ #
+    # live: collect through the game's own challenge increment
+    # ------------------------------------------------------------------ #
+    def _live_collect(self, stats: list[str], what: str) -> bool:
+        data = self._data()
+        rows = logic.live_collect_rows(data, stats) if self.liveCollect and isinstance(data, dict) else []
+        if not rows:
+            self._drop("collectibleRows")  # the checkbox the user ticked snaps back
+            self.collectiblesChanged.emit()
+            return False
+        if not self.app.live_increment_challenges(rows):
+            self.app.toast(str((self.strings.get("toasts") or {}).get(
+                "live_busy", "Another live action is still running.")), "warning")
+            self._drop("collectibleRows")
+            self.collectiblesChanged.emit()
+            return False
+        self._collect_what = what
+        return True
+
+    def _on_challenges_sent(self, results: Any, error: str) -> None:
+        if not self._collect_what:
+            return
+        what, self._collect_what = self._collect_what, ""
+        toasts = self.strings.get("toasts") or {}
+        if error or not isinstance(results, list):
+            self.app.toast(str(toasts.get("live_collect_failed", "Collecting in the game failed: {error}"))
+                           .format(error=error or "invalid response"), "error")
+            self._drop("collectibleRows")
+            self.collectiblesChanged.emit()
+            return
+        sent = sum(1 for row in results if isinstance(row, dict) and row.get("status") == "sent")
+        self.app.toast(str(toasts.get("live_collected", "Collected in the game ({count}): {what}"))
+                       .format(count=sent, what=what), "success")
 
     # ------------------------------------------------------------------ #
     # live: 玩家位置与传送（bl4_live 的 teleport_position 运行时动作）
@@ -646,23 +801,23 @@ class GameProgressViewModel(PageViewModel):
         """Catalog map key with artwork matching a runtime world name ("" if none)."""
         return next((key for key in (cat.maps().get("maps") or {}) if logic.same_map(key, world)), "")
 
-    @pyqtProperty("QVariantMap", notify=dataChanged)
+    @pyqtProperty("QVariantMap", notify=playerChanged)
     def livePlayer(self) -> dict[str, Any]:
         """Player position projected onto the current map (``on_map`` when drawable)."""
         if not self.app.liveActive:
             return {"available": False, "on_map": False}
         return logic.live_player_marker(self._live_position(), self._current_map)
 
-    @pyqtProperty(int, notify=dataChanged)
+    @pyqtProperty(int, notify=playerChanged)
     def playerFocusSerial(self) -> int:
         return self._player_serial
 
-    @pyqtProperty(bool, notify=dataChanged)
+    @pyqtProperty(bool, notify=playerChanged)
     def teleportReady(self) -> bool:
         """Live, player position known and standing on the map being viewed."""
         return not self._teleport_block_reason()
 
-    @pyqtProperty(str, notify=dataChanged)
+    @pyqtProperty(str, notify=playerChanged)
     def teleportHint(self) -> str:
         return self._teleport_block_reason()
 
@@ -706,8 +861,9 @@ class GameProgressViewModel(PageViewModel):
         if world != self._current_map:
             self._current_map = world
             self._markers_cache = None
+            self._map_moved()
         self._player_serial += 1
-        self.dataChanged.emit()
+        self.playerChanged.emit()
         return True
 
     def _on_runtime_finished(self, action: str, ok: bool, error: str) -> None:
@@ -734,18 +890,19 @@ class GameProgressViewModel(PageViewModel):
         return [dict(row, title=str(kinds.get(row["kind"], row["kind"])), area=self._mission_area_title(row["area_key"]))
                 for row in logic.mission_categories(data, self._lang())]
 
-    @pyqtProperty(list, notify=dataChanged)
+    @pyqtProperty(list, notify=missionsChanged)
     def missionCategories(self) -> list[dict[str, Any]]:
         return self._mission_categories
 
-    @pyqtProperty(str, notify=dataChanged)
+    @pyqtProperty(str, notify=missionsChanged)
     def missionCategory(self) -> str:
         return self._mission_category
 
     @pyqtSlot(str)
     def setMissionCategory(self, key: str) -> None:
         self._mission_category = str(key)
-        self.dataChanged.emit()
+        self._drop("missionRows")
+        self.missionsChanged.emit()
 
     def _mission_title(self, key: str) -> str:
         row = cat.section("missions").get(key) or {}
@@ -754,8 +911,11 @@ class GameProgressViewModel(PageViewModel):
     def _pending_prerequisites(self, data: dict[str, Any], key: str) -> list[str]:
         return [item for item in logic.main_prerequisites(key) if logic.mission_state(data, item) != "done"]
 
-    @pyqtProperty(list, notify=dataChanged)
+    @pyqtProperty(list, notify=missionsChanged)
     def missionRows(self) -> list[dict[str, Any]]:
+        return self._cached("missionRows", self._build_mission_rows)
+
+    def _build_mission_rows(self) -> list[dict[str, Any]]:
         data = self._data()
         if not self._progress_ready() or not isinstance(data, dict) or not self._mission_category:
             return []
@@ -886,30 +1046,34 @@ class GameProgressViewModel(PageViewModel):
                          "area": str(groups.get(group, group)), "done": done, "total": total})
         return rows
 
-    @pyqtProperty(list, notify=dataChanged)
+    @pyqtProperty(list, notify=accountChanged)
     def accountCategories(self) -> list[dict[str, Any]]:
         return self._account_categories
 
-    @pyqtProperty(str, notify=dataChanged)
+    @pyqtProperty(str, notify=accountChanged)
     def accountCategory(self) -> str:
         return self._account_category
 
     @pyqtSlot(str)
     def setAccountCategory(self, key: str) -> None:
         self._account_category = str(key)
-        self.dataChanged.emit()
+        self._drop("accountRows")
+        self.accountChanged.emit()
 
-    @pyqtProperty(str, notify=dataChanged)
+    @pyqtProperty(str, notify=accountChanged)
     def accountView(self) -> str:
         return "ledger" if self._account_category.startswith("ledger:") else self._account_category
 
-    @pyqtProperty("QVariantMap", notify=dataChanged)
+    @pyqtProperty("QVariantMap", notify=accountChanged)
     def sduPoints(self) -> dict[str, Any]:
         data = self.controller.yaml_obj
         return account.sdu_points(data) if self._kind == "profile" and isinstance(data, dict) else {}
 
-    @pyqtProperty(list, notify=dataChanged)
+    @pyqtProperty(list, notify=accountChanged)
     def accountRows(self) -> list[dict[str, Any]]:
+        return self._cached("accountRows", self._build_account_rows)
+
+    def _build_account_rows(self) -> list[dict[str, Any]]:
         data = self.controller.yaml_obj
         if self._kind != "profile" or not isinstance(data, dict):
             return []

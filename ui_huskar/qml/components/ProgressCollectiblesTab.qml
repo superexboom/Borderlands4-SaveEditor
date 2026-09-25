@@ -15,8 +15,10 @@ RowLayout {
     signal showOnMap(string stat)
     spacing: 10
 
+    // 先绑定到 var 属性再遍历：直接在 JS 里遍历 VM 的列表属性，每访问一个元素都会重新读取整个列表
+    readonly property var sourceRows: vmGameProgress.collectibleRows
     readonly property var rows: {
-        var source = vmGameProgress.collectibleRows, out = [], last = null;
+        var source = sourceRows, out = [], last = null;
         var needle = search.trim().toLowerCase();
         for (var i = 0; i < source.length; i++) {
             var row = source[i];
@@ -78,14 +80,24 @@ RowLayout {
                 Item { Layout.fillWidth: true }
                 HusButton {
                     text: tab.buttons.collect_all || ""
-                    enabled: vmGameProgress.editable && vmGameProgress.collectibleCategory !== ""
+                    enabled: (vmGameProgress.editable || vmGameProgress.liveCollect) && vmGameProgress.collectibleCategory !== ""
                     onClicked: vmGameProgress.setCategoryCollected(true)
                 }
                 HusButton {
+                    // 联机时只能收集（游戏没有「取消收集」）
+                    visible: !vmGameProgress.liveMode
                     text: tab.buttons.uncollect_all || ""
                     enabled: vmGameProgress.editable && vmGameProgress.collectibleCategory !== ""
                     onClicked: vmGameProgress.setCategoryCollected(false)
                 }
+            }
+            HusText {
+                Layout.fillWidth: true
+                visible: vmGameProgress.liveCollect
+                text: tab.labels.live_collect_note || ""
+                font.pixelSize: 12
+                color: "#e6a439"
+                wrapMode: Text.Wrap
             }
 
             LockedListView {
@@ -121,7 +133,8 @@ RowLayout {
                             spacing: 10
                             HusCheckBox {
                                 checked: !!modelData.collected
-                                enabled: vmGameProgress.editable
+                                // 联机：未收集的可以勾选（经游戏自己的挑战计数记入），已收集的不能取消
+                                enabled: vmGameProgress.editable || (vmGameProgress.liveCollect && !modelData.collected)
                                 onToggled: vmGameProgress.setCollected(modelData.stat, checked)
                             }
                             HusText {

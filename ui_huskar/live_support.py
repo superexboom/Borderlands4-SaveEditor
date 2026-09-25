@@ -44,6 +44,25 @@ class _LiveProgressWorker(QThread):
         self.completed.emit(snapshot, meta, None)
 
 
+class _LiveChallengeWorker(QThread):
+    """Credit challenges in the game (collectibles ticked in the editor) off the UI thread."""
+
+    completed = pyqtSignal(object, object)  # results, error
+
+    def __init__(self, bridge, rows, parent=None):
+        super().__init__(parent)
+        self._bridge = bridge
+        self._rows = [dict(row) for row in rows]
+
+    def run(self):
+        try:
+            results = self._bridge.increment_challenges(self._rows)
+        except Exception as exc:  # reported to the page, never raised into Qt
+            self.completed.emit(None, exc)
+            return
+        self.completed.emit(results, None)
+
+
 class LiveManager(QObject):
     """AppBridge 的 live 子系统（controller-first 复刻 main_window 行为）。"""
 
@@ -640,6 +659,29 @@ class LiveManager(QObject):
         else:
             self.progress_snapshot, self.progress_meta, self.progress_error = snapshot, dict(meta or {}), ""
         self.app.liveProgressChanged.emit()
+
+    def increment_challenges(self, rows: list[dict]) -> bool:
+        """Credit challenges through the game's own increment (游戏进度页联机收集)."""
+        if not self.active or self.bridge is None or self.any_busy() or not rows:
+            return False
+        worker = _LiveChallengeWorker(self.bridge, rows, self)
+        worker.completed.connect(self._on_challenges_sent)
+        self._runtime_worker = worker
+        self._track(worker)
+        self._sync_vms()
+        worker.start()
+        return True
+
+    def _on_challenges_sent(self, results, err) -> None:
+        if self.sender() is not self._runtime_worker:
+            return
+        self._runtime_worker = None
+        self._sync_vms()
+        if not self.active:
+            return
+        self.app.liveChallengesSent.emit(results, "" if err is None else str(err))
+        # Collectibles are stat facts, which the game updates at once: re-read now.
+        self.fetch_progress()
 
     # ------------------------------------------------------------------ #
     # 运行时动作（character 页）

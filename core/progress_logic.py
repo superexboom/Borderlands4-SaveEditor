@@ -433,16 +433,21 @@ def collectible_items(data: dict[str, Any], category: str, lang: str,
             if not title:
                 number = _trailing_number(leaf)
                 title = " · ".join(part for part in (kind, region_title) if part) + (f" #{number}" if number else "")
+            # DLC groups have no region token: head them with their map instead of the stat key.
+            place = region_title or (map_title(location["map"], lang) if location.get("map") else "")
             rows.append({
                 "stat": item["stat"],
                 "title": title,
-                "group": region_title or group.rsplit(".", 1)[-1],
+                "group": place or kind,
                 "collected": _item_collected(data, item),
                 "map": location.get("map") or "",
                 "x": location.get("x", 0.0),
                 "y": location.get("y", 0.0),
                 "has_location": bool(location),
             })
+    # Keep each group contiguous (a map-headed group can straddle stat groups), in first-seen order.
+    order: dict[str, int] = {}
+    rows.sort(key=lambda row: order.setdefault(row["group"], len(order)))
     return rows
 
 
@@ -450,6 +455,31 @@ def set_collected(data: dict[str, Any], stat: str, collected: bool) -> bool:
     if not is_item_collectible(stat):
         return False
     return set_stat_value(data, stat, 1 if collected else 0)
+
+
+@lru_cache(maxsize=1)
+def _collectibles_by_stat() -> dict[str, dict[str, Any]]:
+    return {item["stat"]: item for entry in _collectible_index().values()
+            for group in entry["groups"].values() for item in group}
+
+
+def live_collect_rows(data: dict[str, Any], stats: list[str]) -> list[dict[str, Any]]:
+    """Challenge increments that collect ``stats`` in the running game.
+
+    One row per uncollected item: the challenge def name and the amount still
+    missing to reach its goal (the game's own pickup credits the same challenge).
+    """
+    challenges = cat.section("challenges")
+    rows = []
+    for stat in dict.fromkeys(stats):
+        item = _collectibles_by_stat().get(stat)
+        row = challenges.get(item["challenge"]) if item else None
+        if not row or not row.get("name"):
+            continue
+        missing = item["goal"] - challenge_value(data, row)
+        if missing > 0:
+            rows.append({"name": str(row["name"]), "amount": int(missing), "stat": stat})
+    return rows
 
 
 _MAP_REGIONS = {"World_P": "kairosgeneric", "Elpis_P": "elpis", "UpperCity_P": "city_upper"}

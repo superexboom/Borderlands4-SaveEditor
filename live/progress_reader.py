@@ -18,6 +18,9 @@ from .bridge import Bridge
 def read_live_progress(bridge: Bridge) -> tuple[dict[str, Any], dict[str, Any]]:
     started = time.perf_counter()
     snapshot: dict[str, Any] = {}
+    # Which progress_* actions this mod build offers (writes are newer than reads).
+    caps = bridge.runtime_action("progress_capabilities")
+    actions = [str(action) for action in caps.get("actions") or []] if caps.get("ok") else []
     plan = logic.live_fact_plan()
     values, meta = bridge.progress_facts([address for address, _path, _kind in plan])
     written = logic.apply_live_facts(snapshot, plan, values)
@@ -33,5 +36,6 @@ def read_live_progress(bridge: Bridge) -> tuple[dict[str, Any], dict[str, Any]]:
         "wall_ms": round((time.perf_counter() - started) * 1000, 1),
         "game_ms": round(meta["game_ms"], 1),
         "read_at": time.time(),
+        "actions": actions,
     })
     return snapshot, meta

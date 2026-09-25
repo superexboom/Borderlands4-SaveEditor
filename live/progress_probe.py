@@ -1,4 +1,4 @@
-"""Read-only progress readers for BL4Live (missions, challenges, facts).
+"""Progress readers for BL4Live (missions, challenges, facts) plus one writer.
 
 Installed into the running ``bl4_live`` module by its bootstrap (cold start) or
 ``pyexec bl4_progress_install.py`` (running game). It only wraps
@@ -6,7 +6,9 @@ Installed into the running ``bl4_live`` module by its bootstrap (cold start) or
 else unchanged.
 
 Rules, matching the rest of BL4Live:
-- Pure readers: no hooks, no writes, no gameplay side effects.
+- Readers only, no hooks. The single write (``progress_increment_challenges``)
+  goes through the game's own challenge increment, the same call gameplay makes
+  when an item is picked up; nothing pokes facts or save data directly.
 - No UObject wrapper survives a request (map/menu transitions invalidate them);
   only plain strings/numbers are cached.
 - Every action is on demand; nothing polls. Results report ``elapsed_ms`` so
@@ -25,7 +27,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-REVISION = "progress-probe-20260925.4"
+REVISION = "progress-probe-20260925.6"
 
 DEV_FLAG = Path(__file__).with_name("progress_dev.flag")
 
@@ -43,9 +45,9 @@ _MUTATOR_PREFIXES = ("Write", "Set", "Add", "Remove", "Clear", "Reset", "Complet
 # Plain-string caches (never UObjects).
 _CACHE: dict[str, Any] = {}
 
-RELEASE_ACTIONS = ("progress_capabilities", "progress_facts")
+RELEASE_ACTIONS = ("progress_capabilities", "progress_facts", "progress_increment_challenges")
 DEV_ACTIONS = ("progress_reload", "progress_classes", "progress_functions", "progress_find_functions",
-               "progress_objects", "progress_inspect", "progress_call")
+               "progress_objects", "progress_inspect", "progress_call", "progress_handle")
 
 
 def dev_enabled() -> bool:
@@ -227,6 +229,56 @@ def _facts(m: Any, params: dict[str, Any]) -> dict[str, Any]:
             "next": index if index < len(addresses) else None, "total": len(addresses)}
 
 
+MAX_CHALLENGES_PER_REQUEST = 64
+MAX_CHALLENGE_INCREMENT = 10000
+
+
+def _challenge_api() -> tuple[Any, Any]:
+    """(library CDO, GameDataHandleProperty for challenge params)."""
+    cls = _sdk().find_class("OakChallengeBlueprintLibrary")
+    func = cls._find("GetChallengeProgressForPlayer")
+    return cls.ClassDefaultObject, next(p for p in func._properties() if p.Name == "challenge")
+
+
+def _increment_challenges(m: Any, params: dict[str, Any]) -> dict[str, Any]:
+    """Credit challenges through the game's own ``IncrementChallengeForPlayer``.
+
+    This is the path gameplay uses when an item is picked up, so the game
+    handles completion, rewards, the notification and saving. Already-complete
+    challenges are left alone. The backing stat fact changes at once but the
+    challenge itself is evaluated on a later tick, so rows only say ``sent``;
+    callers confirm by re-reading facts afterwards.
+    """
+    rows_in = params.get("challenges")
+    if not isinstance(rows_in, list) or not 0 < len(rows_in) <= MAX_CHALLENGES_PER_REQUEST:
+        return {"ok": False, "error": f"challenges must be a list of 1..{MAX_CHALLENGES_PER_REQUEST} entries"}
+    wanted = []
+    for row in rows_in:
+        name = str((row or {}).get("name") or "") if isinstance(row, dict) else ""
+        if not (3 <= len(name) <= 96 and name.replace("_", "").isalnum() and name.isascii()):
+            return {"ok": False, "error": f"invalid challenge name {name!r}"}
+        amount = row.get("amount", 1)
+        if not isinstance(amount, int) or isinstance(amount, bool):
+            return {"ok": False, "error": "amount must be an integer"}
+        if not 0 < amount <= MAX_CHALLENGE_INCREMENT:
+            return {"ok": False, "error": f"amount must be 1..{MAX_CHALLENGE_INCREMENT}"}
+        wanted.append((name, amount))
+    controller = m._player_controller()
+    if controller is None:
+        return {"ok": False, "error": "no active player"}
+    library, prop = _challenge_api()
+    results = []
+    for name, amount in wanted:
+        handle = _data_handle(prop, name)
+        before = int(library.GetChallengeProgressForPlayer(controller, handle))
+        if library.IsChallengeCompleteForPlayer(controller, handle):
+            results.append({"name": name, "status": "already", "before": before})
+            continue
+        library.IncrementChallengeForPlayer(controller, controller, handle, amount)
+        results.append({"name": name, "status": "sent", "before": before})
+    return {"ok": True, "results": results}
+
+
 # --------------------------------------------------------------------------- #
 # development actions
 # --------------------------------------------------------------------------- #
@@ -311,6 +363,8 @@ def _inspect(m: Any, params: dict[str, Any]) -> dict[str, Any]:
 
 
 def _coerce(prop: Any, value: Any) -> Any:
+    if getattr(getattr(prop, "Class", None), "Name", "") == "GameDataHandleProperty" and isinstance(value, str):
+        return _data_handle(prop, value)
     struct = getattr(prop, "Struct", None)
     if struct is not None and isinstance(value, dict):
         members = {inner.Name: inner for inner in struct._properties()}
@@ -322,7 +376,14 @@ def _coerce(prop: Any, value: Any) -> Any:
     return value
 
 
+def _data_handle(prop: Any, name: str) -> Any:
+    """Game-data handle (a challenge, mission... def) by name for a GameDataHandleProperty."""
+    from unrealsdk.unreal import FGameDataHandle  # noqa: PLC0415
+    return FGameDataHandle(int(prop.TypeHandle), name)
+
+
 _CONTEXT_PARAMS = ("WorldContextObject", "WorldContext", "ContextObject", "OwnerContext")
+_CONTROLLER_PARAMS = ("OakPC", "PC", "PlayerController")
 
 
 def _placeholder(prop: Any) -> Any:
@@ -344,6 +405,31 @@ def _placeholder(prop: Any) -> Any:
     return None
 
 
+def _handle(m: Any, params: dict[str, Any]) -> dict[str, Any]:
+    """How a challenge def name resolves (repr/address), for checking handle validity."""
+    func = _sdk().find_class("OakChallengeBlueprintLibrary")._find("GetChallengeProgressForPlayer")
+    prop = next(p for p in func._properties() if p.Name == "challenge")
+    rows = []
+    for name in params.get("names") or []:
+        handle = _data_handle(prop, str(name))
+        row: dict[str, Any] = {"name": name, "repr": repr(handle)}
+        for attr in ("_name", "_type_handle"):
+            try:
+                row[attr] = getattr(handle, attr)
+            except Exception as exc:
+                row[attr] = f"<{type(exc).__name__}: {exc}>"
+        try:
+            row["address"] = handle._get_address()
+        except Exception as exc:
+            row["address"] = f"<{type(exc).__name__}: {exc}>"
+        try:
+            row["dir"] = [item for item in dir(handle) if not item.startswith("__")][:40]
+        except Exception as exc:
+            row["dir"] = f"<{type(exc).__name__}: {exc}>"
+        rows.append(row)
+    return {"ok": True, "type_handle": int(prop.TypeHandle), "handles": rows}
+
+
 def _call(m: Any, params: dict[str, Any]) -> dict[str, Any]:
     """Call one const/pure getter; anything that might mutate is refused."""
     obj = resolve_target(m, params.get("target"))
@@ -361,7 +447,7 @@ def _call(m: Any, params: dict[str, Any]) -> dict[str, Any]:
             continue
         if prop.Name in args:
             kwargs[prop.Name] = _coerce(prop, args[prop.Name])
-        elif prop.Name in _CONTEXT_PARAMS:
+        elif prop.Name in _CONTEXT_PARAMS + _CONTROLLER_PARAMS:
             kwargs[prop.Name] = m._player_controller()
         elif pflags & CPF_OUT_PARM:
             kwargs[prop.Name] = _placeholder(prop)
@@ -373,6 +459,7 @@ def _call(m: Any, params: dict[str, Any]) -> dict[str, Any]:
 _HANDLERS = {
     "progress_capabilities": _capabilities,
     "progress_facts": _facts,
+    "progress_increment_challenges": _increment_challenges,
     "progress_reload": _reload,
     "progress_classes": _classes,
     "progress_functions": _functions,
@@ -380,4 +467,5 @@ _HANDLERS = {
     "progress_objects": _objects,
     "progress_inspect": _inspect,
     "progress_call": _call,
+    "progress_handle": _handle,
 }

@@ -93,7 +93,9 @@
         "sdu_note": "提升等级时若点数不够，会自动把点数池补足到已用点数。",
         "filter_unlocked": "已解锁",
         "filter_locked": "未解锁",
-        "derived_names": "外观名称由内部代号生成（游戏数据里没有外观的显示名）。"
+        "derived_names": "外观名称由内部代号生成（游戏数据里没有外观的显示名）。",
+        "live_mode_collect": "联机模式：进度直接读取自游戏。收集品可以在这里直接记入游戏，其它修改请退出联机后编辑存档。",
+        "live_collect_note": "勾选未收集的项目会通过游戏自己的挑战计数记入当前角色（游戏在拾取时记账用的就是这个函数），完成判定、奖励和存档都由游戏处理。联机模式下无法取消收集；场景里的物件可能要重新进入地图后才显示为已收集。"
       },
       "ammo": {
         "pistol": "手枪",
@@ -136,7 +138,10 @@
         "saved": "已修改：{what}",
         "invalid": "数值无效",
         "teleport_ok": "已传送到：{what}",
-        "teleport_failed": "传送失败：{error}"
+        "teleport_failed": "传送失败：{error}",
+        "live_collected": "已在游戏中记录 {count} 项：{what}",
+        "live_collect_failed": "在游戏中收集失败：{error}",
+        "live_busy": "另一个联机操作正在进行，请稍后再试。"
       },
       "collectible_names": {
         "vaultdoor": "秘藏之门",
@@ -176,7 +181,9 @@
         "complete_all_missions_title": "全部完成",
         "complete_all_missions_text": "将完成「{what}」中 {count} 个未完成的任务。继续？",
         "reset_all_missions_title": "全部重置",
-        "reset_all_missions_text": "将重置「{what}」中 {count} 个任务（主线任务不会被重置）。继续？"
+        "reset_all_missions_text": "将重置「{what}」中 {count} 个任务（主线任务不会被重置）。继续？",
+        "live_collect_all_title": "在游戏中全部收集？",
+        "live_collect_all_text": "将把「{what}」中 {count} 个未收集的项目记入游戏中的当前角色，由游戏按挑战完成处理，联机模式下无法撤销。继续？"
       },
       "account_groups": {
         "upgrades": "账号升级",
@@ -306,7 +313,9 @@
         "sdu_note": "Raising a level tops the token pool up to the tokens spent when it is short.",
         "filter_unlocked": "Unlocked",
         "filter_locked": "Locked",
-        "derived_names": "Cosmetic names are derived from internal keys (the game data has no display names for them)."
+        "derived_names": "Cosmetic names are derived from internal keys (the game data has no display names for them).",
+        "live_mode_collect": "Live mode: progress is read from the game. Collectibles can be credited in the game from here; leave live mode and edit the save for anything else.",
+        "live_collect_note": "Ticking a missing item credits it to the current character through the game's own challenge counter (the call the game makes on pickup); completion, rewards and saving are left to the game. Collecting cannot be undone in live mode; the object in the world may only show as collected after re-entering the map."
       },
       "ammo": {
         "pistol": "Pistol",
@@ -349,7 +358,10 @@
         "saved": "Updated: {what}",
         "invalid": "Invalid value",
         "teleport_ok": "Teleported to: {what}",
-        "teleport_failed": "Teleport failed: {error}"
+        "teleport_failed": "Teleport failed: {error}",
+        "live_collected": "Collected in the game ({count}): {what}",
+        "live_collect_failed": "Collecting in the game failed: {error}",
+        "live_busy": "Another live action is still running. Try again in a moment."
       },
       "collectible_names": {
         "vaultdoor": "Vault Doors",
@@ -389,7 +401,9 @@
         "complete_all_missions_title": "Complete all",
         "complete_all_missions_text": "Complete {count} unfinished mission(s) in \"{what}\"?",
         "reset_all_missions_title": "Reset all",
-        "reset_all_missions_text": "Reset {count} mission(s) in \"{what}\"? Main missions are never reset."
+        "reset_all_missions_text": "Reset {count} mission(s) in \"{what}\"? Main missions are never reset.",
+        "live_collect_all_title": "Collect all in the game?",
+        "live_collect_all_text": "Credit {count} missing item(s) of \"{what}\" to the current character in the game? The game handles them as completed challenges; this cannot be undone in live mode."
       },
       "account_groups": {
         "upgrades": "Account upgrades",
@@ -519,7 +533,9 @@
         "sdu_note": "Если жетонов не хватает, пул дополняется до потраченного.",
         "filter_unlocked": "Открыто",
         "filter_locked": "Закрыто",
-        "derived_names": "Названия косметики построены из внутренних ключей (в данных игры их нет)."
+        "derived_names": "Названия косметики построены из внутренних ключей (в данных игры их нет).",
+        "live_mode_collect": "Режим live: прогресс читается из игры. Коллекционные предметы можно засчитать в игре прямо здесь; остальное — выйдите из live и правьте сохранение.",
+        "live_collect_note": "Отмеченный предмет засчитывается текущему персонажу через собственный счётчик испытаний игры (тот же вызов, что и при подборе); выполнение, награды и сохранение обрабатывает игра. В режиме live отменить нельзя; объект в мире может отобразиться собранным только после повторного входа на карту."
       },
       "ammo": {
         "pistol": "Пистолет",
@@ -562,7 +578,10 @@
         "saved": "Изменено: {what}",
         "invalid": "Недопустимое значение",
         "teleport_ok": "Телепортация: {what}",
-        "teleport_failed": "Телепортация не удалась: {error}"
+        "teleport_failed": "Телепортация не удалась: {error}",
+        "live_collected": "Засчитано в игре ({count}): {what}",
+        "live_collect_failed": "Не удалось засчитать в игре: {error}",
+        "live_busy": "Выполняется другое действие live. Повторите чуть позже."
       },
       "collectible_names": {
         "vaultdoor": "Двери Хранилищ",
@@ -602,7 +621,9 @@
         "complete_all_missions_title": "Выполнить все",
         "complete_all_missions_text": "Выполнить {count} незавершённых заданий в «{what}»?",
         "reset_all_missions_title": "Сбросить все",
-        "reset_all_missions_text": "Сбросить {count} заданий в «{what}»? Основные задания не сбрасываются."
+        "reset_all_missions_text": "Сбросить {count} заданий в «{what}»? Основные задания не сбрасываются.",
+        "live_collect_all_title": "Собрать всё в игре?",
+        "live_collect_all_text": "Засчитать текущему персонажу {count} несобранных предметов из «{what}»? Игра обработает их как выполненные испытания; в режиме live это не отменить."
       },
       "account_groups": {
         "upgrades": "Улучшения аккаунта",
@@ -732,7 +753,9 @@
         "sdu_note": "Якщо жетонів бракує, пул доповнюється до витраченого.",
         "filter_unlocked": "Відкрито",
         "filter_locked": "Закрито",
-        "derived_names": "Назви косметики побудовано з внутрішніх ключів (у даних гри їх немає)."
+        "derived_names": "Назви косметики побудовано з внутрішніх ключів (у даних гри їх немає).",
+        "live_mode_collect": "Режим live: прогрес читається з гри. Колекційні предмети можна зарахувати в грі просто тут; решту — вийдіть з live і редагуйте збереження.",
+        "live_collect_note": "Позначений предмет зараховується поточному персонажу через власний лічильник випробувань гри (той самий виклик, що й під час підбирання); виконання, нагороди й збереження обробляє гра. У режимі live скасувати не можна; об'єкт у світі може відобразитися зібраним лише після повторного входу на мапу."
       },
       "ammo": {
         "pistol": "Пістолет",
@@ -775,7 +798,10 @@
         "saved": "Змінено: {what}",
         "invalid": "Недопустиме значення",
         "teleport_ok": "Телепортовано: {what}",
-        "teleport_failed": "Телепортація не вдалася: {error}"
+        "teleport_failed": "Телепортація не вдалася: {error}",
+        "live_collected": "Зараховано в грі ({count}): {what}",
+        "live_collect_failed": "Не вдалося зарахувати в грі: {error}",
+        "live_busy": "Виконується інша дія live. Спробуйте трохи згодом."
       },
       "collectible_names": {
         "vaultdoor": "Двері Сховищ",
@@ -815,7 +841,9 @@
         "complete_all_missions_title": "Виконати всі",
         "complete_all_missions_text": "Виконати {count} незавершених завдань у «{what}»?",
         "reset_all_missions_title": "Скинути всі",
-        "reset_all_missions_text": "Скинути {count} завдань у «{what}»? Основні завдання не скидаються."
+        "reset_all_missions_text": "Скинути {count} завдань у «{what}»? Основні завдання не скидаються.",
+        "live_collect_all_title": "Зібрати все в грі?",
+        "live_collect_all_text": "Зарахувати поточному персонажу {count} незібраних предметів із «{what}»? Гра обробить їх як виконані випробування; у режимі live це не скасувати."
       },
       "account_groups": {
         "upgrades": "Покращення акаунта",

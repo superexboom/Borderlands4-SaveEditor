@@ -17,9 +17,11 @@ RowLayout {
     readonly property string view: vmGameProgress.accountView
     readonly property bool cosmeticLedger: vmGameProgress.accountCategory.indexOf("ledger:unlockable_") === 0
 
+    // 先绑定到 var 属性再遍历：直接在 JS 里遍历 VM 的列表属性，每访问一个元素都会重新读取整个列表
+    readonly property var sourceRows: vmGameProgress.accountRows
     readonly property var ledgerRows: {
         if (view !== "ledger") return [];
-        var source = vmGameProgress.accountRows, out = [], last = null;
+        var source = sourceRows, out = [], last = null;
         var needle = search.trim().toLowerCase();
         for (var i = 0; i < source.length; i++) {
             var row = source[i];
@@ -99,7 +101,7 @@ RowLayout {
                 Layout.fillHeight: true
                 spacing: 6
                 ScrollBar.vertical: HusScrollBar { }
-                model: tab.view === "sdu" ? vmGameProgress.accountRows : []
+                model: tab.view === "sdu" ? tab.sourceRows : []
 
                 delegate: Rectangle {
                     id: sduRow
@@ -186,7 +188,7 @@ RowLayout {
             visible: tab.view === "vaultpower"
 
             Repeater {
-                model: tab.view === "vaultpower" ? vmGameProgress.accountRows : []
+                model: tab.view === "vaultpower" ? tab.sourceRows : []
                 delegate: Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 48

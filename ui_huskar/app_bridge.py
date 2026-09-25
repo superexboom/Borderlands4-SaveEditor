@@ -56,6 +56,7 @@ class AppBridge(QObject):
     liveChanged = pyqtSignal()
     runtimeActionFinished = pyqtSignal(str, bool, str)    # action, ok, error（live 运行时动作完成）
     liveProgressChanged = pyqtSignal()                   # live 游戏进度快照 读取中/完成/清空
+    liveChallengesSent = pyqtSignal(object, str)         # results, error（游戏进度页联机收集）
 
     toastRequested = pyqtSignal(str, str)                 # text, kind: success|error|warning|info
     confirmRequested = pyqtSignal(int, str, str, bool)    # id, title, text, isWarning
@@ -664,6 +665,10 @@ class AppBridge(QObject):
 
     def fetch_live_progress(self) -> bool:
         return self.live.fetch_progress()
+
+    def live_increment_challenges(self, rows: list[dict]) -> bool:
+        """游戏进度页联机收集：经游戏自己的挑战计数记入（结果由 liveChallengesSent 回报）。"""
+        return self.live.increment_challenges(list(rows))
 
     @pyqtSlot("QVariantMap")
     def openGeneratedWeapon(self, result: dict) -> None:
