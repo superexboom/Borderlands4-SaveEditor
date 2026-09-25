@@ -8,10 +8,11 @@ and the dirty flag behave like the other editors.
 
 from __future__ import annotations
 
+import json
 import time
 from typing import Any, Callable
 
-from PyQt6.QtCore import pyqtProperty, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QUrl, pyqtProperty, pyqtSignal, pyqtSlot
 
 from core import progress_catalog as cat
 from core import progress_logic as logic
@@ -36,6 +37,13 @@ class GameProgressViewModel(PageViewModel):
         self._challenge_category = ""
         self._collectible_categories: list[dict[str, Any]] = []
         self._collectible_category = ""
+        self._maps: list[dict[str, Any]] = []
+        self._current_map = "World_P"
+        self._markers_cache: tuple[str, list[dict[str, Any]]] | None = None
+        self._layer_overrides: dict[str, bool] = self._load_layer_overrides()
+        self._only_missing = False
+        self._focus_id = ""
+        self._focus_serial = 0
         app.liveChanged.connect(self._on_live_changed)
 
     # ------------------------------------------------------------------ #
@@ -79,9 +87,12 @@ class GameProgressViewModel(PageViewModel):
             self._challenge_categories = self._build_challenge_categories(data)
             self._collectible_categories = logic.collectible_categories(
                 data, self._lang(), self.strings.get("collectible_names") or {})
+            self._maps = logic.map_list(data, self._lang(), self.strings.get("map_names") or {})
         else:
             self._overview, self._summary, self._regions = {}, {}, []
             self._challenge_categories, self._collectible_categories = [], []
+            self._maps = []
+        self._markers_cache = None
         self.dataChanged.emit()
 
     @pyqtProperty(bool, notify=dataChanged)
@@ -383,3 +394,142 @@ class GameProgressViewModel(PageViewModel):
             for stat in stats:
                 logic.set_collected(d, stat, collected)
         self._write(change, title)
+
+    # ------------------------------------------------------------------ #
+    # map
+    # ------------------------------------------------------------------ #
+    _LAYER_SETTINGS_KEY = "progress/map_layers"
+
+    def _load_layer_overrides(self) -> dict[str, bool]:
+        try:
+            raw = json.loads(str(self.app._settings.value(self._LAYER_SETTINGS_KEY, "{}") or "{}"))
+        except (TypeError, ValueError):
+            return {}
+        return {str(key): bool(value) for key, value in raw.items()} if isinstance(raw, dict) else {}
+
+    def _store_layer_overrides(self) -> None:
+        self.app._settings.setValue(self._LAYER_SETTINGS_KEY, json.dumps(self._layer_overrides))
+
+    def _layer_visible(self, type_key: str) -> bool:
+        return self._layer_overrides.get(type_key, logic.default_layer_visible(type_key))
+
+    def _all_markers(self) -> list[dict[str, Any]]:
+        data = self.controller.yaml_obj
+        if self._kind != "character" or not isinstance(data, dict):
+            return []
+        if self._markers_cache is None or self._markers_cache[0] != self._current_map:
+            markers = logic.map_markers(data, self._current_map, self._lang(),
+                                        self.strings.get("collectible_names") or {})
+            for marker in markers:
+                for field in ("icon", "icon_done"):
+                    path = cat.icon_path(marker[field]) if marker[field] else None
+                    marker[field + "_url"] = QUrl.fromLocalFile(str(path)).toString() if path else ""
+            self._markers_cache = (self._current_map, markers)
+        return self._markers_cache[1]
+
+    @pyqtProperty(list, notify=dataChanged)
+    def mapList(self) -> list[dict[str, Any]]:
+        return self._maps
+
+    @pyqtProperty(str, notify=dataChanged)
+    def currentMap(self) -> str:
+        return self._current_map
+
+    @pyqtProperty(str, notify=dataChanged)
+    def mapImage(self) -> str:
+        path = cat.map_image_path(self._current_map)
+        return QUrl.fromLocalFile(str(path)).toString() if path else ""
+
+    @pyqtSlot(str)
+    def setCurrentMap(self, world: str) -> None:
+        if world and world != self._current_map:
+            self._current_map = str(world)
+            self._focus_id = ""
+            self.dataChanged.emit()
+
+    @pyqtProperty(list, notify=dataChanged)
+    def mapLayers(self) -> list[dict[str, Any]]:
+        group_names = self.strings.get("map_groups") or {}
+        layers: dict[str, dict[str, Any]] = {}
+        for marker in self._all_markers():
+            layer = layers.setdefault(marker["type"], {
+                "key": marker["type"], "title": marker["type_title"], "group": marker["group"],
+                "group_title": str(group_names.get(marker["group"], marker["group"])),
+                "icon": marker["icon_url"], "count": 0, "done": 0, "tracked": 0,
+                "visible": self._layer_visible(marker["type"]),
+            })
+            layer["count"] += 1
+            if marker["done"] is not None:
+                layer["tracked"] += 1
+                layer["done"] += int(bool(marker["done"]))
+        order = {group: index for index, group in enumerate(logic.LAYER_GROUPS)}
+        return sorted(layers.values(), key=lambda row: (order.get(row["group"], 99), -row["count"], row["title"]))
+
+    @pyqtProperty(list, notify=dataChanged)
+    def mapMarkers(self) -> list[dict[str, Any]]:
+        out = []
+        for marker in self._all_markers():
+            if not self._layer_visible(marker["type"]) and marker["id"] != self._focus_id:
+                continue
+            if self._only_missing and marker["done"] is not False and marker["id"] != self._focus_id:
+                continue
+            out.append(marker)
+        return out
+
+    @pyqtSlot(str, bool)
+    def setLayerVisible(self, type_key: str, visible: bool) -> None:
+        self._layer_overrides[str(type_key)] = bool(visible)
+        self._store_layer_overrides()
+        self.dataChanged.emit()
+
+    @pyqtSlot(str, bool)
+    def setLayerGroupVisible(self, group: str, visible: bool) -> None:
+        for layer in self.mapLayers:
+            if layer["group"] == group:
+                self._layer_overrides[layer["key"]] = bool(visible)
+        self._store_layer_overrides()
+        self.dataChanged.emit()
+
+    @pyqtProperty(bool, notify=dataChanged)
+    def mapOnlyMissing(self) -> bool:
+        return self._only_missing
+
+    @pyqtSlot(bool)
+    def setMapOnlyMissing(self, value: bool) -> None:
+        self._only_missing = bool(value)
+        self.dataChanged.emit()
+
+    @pyqtProperty(str, notify=dataChanged)
+    def focusMarkerId(self) -> str:
+        return self._focus_id
+
+    @pyqtProperty(int, notify=dataChanged)
+    def focusSerial(self) -> int:
+        return self._focus_serial
+
+    @pyqtSlot(str, result=bool)
+    def focusCollectible(self, stat: str) -> bool:
+        """Select the map point of one collectible and ask the view to center on it."""
+        challenge = next((key for key, row in cat.section("challenges").items() if row.get("stat") == stat), "")
+        location = next(((key, row) for key, row in cat.section("locations").items()
+                         if challenge and row.get("challenge") == challenge
+                         and cat.project(row.get("map", ""), row["x"], row["y"])), None)
+        if not location:
+            return False
+        self._current_map = location[1]["map"]
+        self._focus_id = location[0]
+        self._focus_serial += 1
+        self._markers_cache = None
+        self.dataChanged.emit()
+        return True
+
+    @pyqtSlot(str)
+    def selectMarker(self, marker_id: str) -> None:
+        self._focus_id = str(marker_id)
+        self.dataChanged.emit()
+
+    @pyqtSlot(str, bool)
+    def setMarkerCollected(self, stat: str, collected: bool) -> None:
+        if stat:
+            title = next((row["title"] for row in self._maps if row["key"] == self._current_map), self._current_map)
+            self._write(lambda data: logic.set_collected(data, stat, collected), title)

@@ -77,7 +77,8 @@ LockedListView {
                     HusText {
                         id: countText
                         anchors.right: parent.right
-                        text: (modelData.done || 0) + "/" + (modelData.total || 0)
+                        // 无可追踪项（如只有设施的小地图）显示「—」而不是 0/0
+                        text: modelData.total > 0 ? (modelData.done || 0) + "/" + modelData.total : "—"
                         font.pixelSize: 12
                         color: rowItem.selected ? selStyle.secondaryText
                              : (modelData.total > 0 && modelData.done >= modelData.total ? "#78dba9"

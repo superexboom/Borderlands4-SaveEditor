@@ -13,6 +13,7 @@ Item {
     readonly property var tabsLoc: loc.tabs || ({})
     readonly property var buttons: loc.buttons || ({})
     readonly property bool ready: vmGameProgress.saveLoaded && vmGameProgress.catalogAvailable
+    readonly property int mapTabIndex: 3
 
     EmptyHint {
         anchors.fill: parent
@@ -53,7 +54,8 @@ Item {
             initModel: [
                 { key: "overview", title: page.tabsLoc.overview || "Overview", contentDelegate: overviewContent },
                 { key: "challenges", title: page.tabsLoc.challenges || "Challenges", contentDelegate: challengesContent },
-                { key: "collectibles", title: page.tabsLoc.collectibles || "Collectibles", contentDelegate: collectiblesContent }
+                { key: "collectibles", title: page.tabsLoc.collectibles || "Collectibles", contentDelegate: collectiblesContent },
+                { key: "map", title: page.tabsLoc.map || "Map", contentDelegate: mapContent }
             ]
         }
     }
@@ -77,14 +79,38 @@ Item {
     }
 
     Component {
-        id: collectiblesContent
+        id: mapContent
         Item {
-            ProgressCollectiblesTab {
+            ProgressMapTab {
                 anchors.fill: parent
                 anchors.topMargin: 8
                 visible: vmGameProgress.saveKind === "character"
                 labels: page.labels
                 buttons: page.buttons
+            }
+            EmptyHint {
+                anchors.fill: parent
+                visible: vmGameProgress.saveKind !== "character"
+                description: page.labels.character_only || ""
+            }
+        }
+    }
+
+    Component {
+        id: collectiblesContent
+        Item {
+            ProgressCollectiblesTab {
+                objectName: "collectiblesTab"
+                anchors.fill: parent
+                anchors.topMargin: 8
+                visible: vmGameProgress.saveKind === "character"
+                labels: page.labels
+                buttons: page.buttons
+                mapAvailable: true
+                onShowOnMap: function(stat) {
+                    if (vmGameProgress.focusCollectible(stat))
+                        tabs.currentIndex = page.mapTabIndex;
+                }
             }
             EmptyHint {
                 anchors.fill: parent

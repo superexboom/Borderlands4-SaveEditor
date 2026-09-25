@@ -455,12 +455,168 @@ def set_collected(data: dict[str, Any], stat: str, collected: bool) -> bool:
 _MAP_REGIONS = {"World_P": "kairosgeneric", "Elpis_P": "elpis", "UpperCity_P": "city_upper"}
 
 
-def map_title(world: str, lang: str) -> str:
-    """Readable map name: base maps use region titles, DLC maps their area name."""
+def map_title(world: str, lang: str, templates: dict[str, str] | None = None) -> str:
+    """Readable map name: base maps use region titles, DLC maps their area name.
+
+    ``templates`` may provide ``fortress``/``vault`` patterns such as
+    ``"{region} Fortress"`` for the per-region base-game maps, and explicit
+    per-map names (``World_P`` style keys) for everything else.
+    """
+    templates = templates or {}
+    if templates.get(world):
+        return str(templates[world])
     if world in _MAP_REGIONS:
         return cat.region_title(_MAP_REGIONS[world], lang)
     stem = world[:-2] if world.endswith("_P") else world
+    kind, _, rest = stem.partition("_")
+    region = _region_token(rest)
+    if kind.lower() in ("fortress", "vault") and region and templates.get(kind.lower()):
+        return str(templates[kind.lower()]).format(region=cat.region_title(region, lang))
     area = stem.split("_", 1)[0].lower()
     if area in (cat.catalog().get("areas") or {}) and "_" not in stem:
         return area_title(area, lang)
-    return stem.replace("_", " ")
+    places = _fast_travel_titles(world, lang)
+    return " · ".join(places[:2]) if places else stem.replace("_", " ")
+
+
+def _fast_travel_titles(world: str, lang: str) -> list[str]:
+    """Localized fast-travel station names of a map (sub-maps have no region title)."""
+    names: list[str] = []
+    for location in cat.section("locations").values():
+        if location.get("map") == world and location.get("type") == "discoverylocation_menuio_fasttravel":
+            name = _place_title(location, lang)
+            if name and name not in names:
+                names.append(name)
+    return sorted(names)
+
+
+def _place_title(location: dict[str, Any], lang: str) -> str:
+    """Location display name on one line (station names embed ``<br>``)."""
+    return " ".join(cat.text(location.get("title"), lang).replace("<br>", " ").split())
+
+
+# --------------------------------------------------------------------------- #
+# Map
+# --------------------------------------------------------------------------- #
+LAYER_GROUPS = ("collectible", "menuio", "activity", "secondary", "miscellaneous")
+DEFAULT_LAYERS_ON = ("collectible",)
+DEFAULT_TYPES_ON = ("discoverylocation_menuio_fasttravel",)
+
+
+def layer_group(type_key: str) -> str:
+    """Top-level group of a discovery location type (collectible, menuio...)."""
+    lowered = str(type_key).lower()
+    for group in LAYER_GROUPS:
+        if f"_{group}" in lowered:
+            return group
+    return "miscellaneous"
+
+
+def default_layer_visible(type_key: str) -> bool:
+    return layer_group(type_key) in DEFAULT_LAYERS_ON or type_key in DEFAULT_TYPES_ON
+
+
+# Placeholder discovery types that the game never draws on its own map.
+HIDDEN_TYPES = frozenset({"discoverynothing", "discoverylocation_activity_hidden"})
+
+
+@lru_cache(maxsize=1)
+def _layer_keys() -> dict[str, str]:
+    """Location type -> layer key: variants sharing an English name form one layer.
+
+    ``…_Underground``/``…_SendOnly``/the five bounty-pack travel stations would
+    otherwise show up as duplicate layers; the English name keeps the key stable
+    across UI languages (layer toggles are persisted by key).
+    """
+    buckets: dict[str, list[str]] = {}
+    for type_key, row in cat.section("location_types").items():
+        buckets.setdefault(cat.text(row.get("title"), "en-US") or type_key, []).append(type_key)
+    return {member: min(members, key=lambda key: (len(key), key))
+            for members in buckets.values() for member in members}
+
+
+def layer_key(type_key: str) -> str:
+    return _layer_keys().get(type_key, type_key)
+
+
+def _type_title(type_key: str, lang: str) -> str:
+    row = cat.section("location_types").get(type_key) or {}
+    title = cat.text(row.get("title"), lang)
+    if title:
+        return title
+    name = str(row.get("name") or type_key)
+    return name.replace("DiscoveryLocation_", "").replace("_", " ")
+
+
+def map_list(data: dict[str, Any], lang: str, templates: dict[str, str] | None = None) -> list[dict[str, Any]]:
+    """Maps that have artwork, with collectible progress for challenge-driven points."""
+    challenges = cat.section("challenges")
+    counts: dict[str, list[int]] = {}
+    for location in cat.section("locations").values():
+        world = location.get("map") or ""
+        entry = counts.setdefault(world, [0, 0, 0])
+        entry[0] += 1
+        if location.get("challenge") in challenges and cat.project(world, location["x"], location["y"]):
+            entry[2] += 1
+            if challenge_state(data, location["challenge"])["done"]:
+                entry[1] += 1
+    rows = []
+    for world, info in (cat.maps().get("maps") or {}).items():
+        total, done, driven = counts.get(world, [0, 0, 0])
+        rows.append({"key": world, "title": map_title(world, lang, templates), "points": total,
+                     "done": done, "total": driven, "area_key": world_area(world)})
+    rows.sort(key=lambda row: (row["key"] != "World_P", row["area_key"] != "", -row["total"], row["title"]))
+    return rows
+
+
+def world_area(world: str) -> str:
+    stem = world[:-2] if world.endswith("_P") else world
+    area = stem.split("_", 1)[0].lower()
+    return area if area in (cat.catalog().get("areas") or {}) else ""
+
+
+def map_markers(data: dict[str, Any], world: str, lang: str,
+                overrides: dict[str, str] | None = None) -> list[dict[str, Any]]:
+    """Every discovery point of ``world`` that lands on the map artwork."""
+    challenges = cat.section("challenges")
+    types = cat.section("location_types")
+    titles: dict[str, str] = {}
+    for category, entry in _collectible_index().items():
+        if any((item.get("location") or {}).get("map") == world
+               for group in entry["groups"].values() for item in group):
+            for row in collectible_items(data, category, lang, overrides):
+                titles[row["stat"]] = row["title"]
+    markers = []
+    for location_id, location in cat.section("locations").items():
+        if location.get("map") != world or location.get("type") in HIDDEN_TYPES:
+            continue
+        uv = cat.project(world, location["x"], location["y"])
+        if not uv:
+            continue
+        raw_type = location.get("type") or ""
+        type_key = layer_key(raw_type)
+        # Keep the variant's own icon (bounty-pack stations etc.), falling back to the layer's.
+        type_row = types.get(raw_type) or {}
+        layer_row = types.get(type_key) or {}
+        icon = type_row.get("icon") or layer_row.get("icon") or ""
+        icon_done = type_row.get("icon_done") or layer_row.get("icon_done") or ""
+        challenge = location.get("challenge") or ""
+        row = challenges.get(challenge) or {}
+        stat = str(row.get("stat") or "")
+        done = challenge_state(data, challenge)["done"] if row else None
+        title = titles.get(stat) or _place_title(location, lang) or _type_title(type_key, lang)
+        markers.append({
+            "id": location_id,
+            "u": uv[0],
+            "v": uv[1],
+            "type": type_key,
+            "type_title": _type_title(type_key, lang),
+            "group": layer_group(type_key),
+            "title": title,
+            "stat": stat if is_item_collectible(stat) else "",
+            "challenge": challenge,
+            "done": done,
+            "icon": icon or icon_done,
+            "icon_done": icon_done or icon,
+        })
+    return markers

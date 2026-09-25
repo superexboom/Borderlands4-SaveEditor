@@ -53,7 +53,18 @@
         "missing": "未收集",
         "no_location": "无地图坐标",
         "location": "{map} ({x}, {y})",
-        "select_category": "在左侧选择一个分类"
+        "select_category": "在左侧选择一个分类",
+        "maps": "地图",
+        "layers": "图层",
+        "only_missing": "只显示未收集",
+        "legend_done": "已收集",
+        "legend_missing": "未收集",
+        "legend_other": "其它地点",
+        "status_done": "已收集",
+        "status_missing": "未收集",
+        "status_other": "不可收集",
+        "zoom_hint": "滚轮缩放 · 拖动平移",
+        "no_map": "该地图没有可显示的地点"
       },
       "ammo": {
         "pistol": "手枪",
@@ -73,7 +84,14 @@
         "reset_all": "重置本类全部",
         "collect_all": "全部标记已收集",
         "uncollect_all": "全部标记未收集",
-        "show_on_map": "地图"
+        "show_on_map": "地图",
+        "mark_collected": "标记为已收集",
+        "mark_missing": "标记为未收集",
+        "zoom_in": "放大",
+        "zoom_out": "缩小",
+        "zoom_fit": "适应窗口",
+        "show_all_layers": "全部",
+        "hide_all_layers": "清空"
       },
       "toasts": {
         "saved": "已修改：{what}",
@@ -84,6 +102,20 @@
         "vaultlock": "秘藏之锁",
         "dlc2_echologs": "ECHO日志",
         "dlc1_echologs_recordplayers": "留声机ECHO日志"
+      },
+      "map_groups": {
+        "collectible": "收集品",
+        "menuio": "设施",
+        "activity": "活动",
+        "secondary": "区域",
+        "miscellaneous": "其它"
+      },
+      "map_names": {
+        "fortress": "{region}要塞",
+        "vault": "{region}秘藏",
+        "Intro_P": "序章监狱",
+        "ElpisElevator_P": "厄尔皮斯电梯",
+        "VolcanoFortress_P": "火山要塞"
       }
     }
   },
@@ -141,7 +173,18 @@
         "missing": "Missing",
         "no_location": "No map position",
         "location": "{map} ({x}, {y})",
-        "select_category": "Select a category on the left"
+        "select_category": "Select a category on the left",
+        "maps": "Maps",
+        "layers": "Layers",
+        "only_missing": "Missing only",
+        "legend_done": "Collected",
+        "legend_missing": "Missing",
+        "legend_other": "Other places",
+        "status_done": "Collected",
+        "status_missing": "Missing",
+        "status_other": "Not a collectible",
+        "zoom_hint": "Wheel to zoom · drag to pan",
+        "no_map": "No places to show on this map"
       },
       "ammo": {
         "pistol": "Pistol",
@@ -161,7 +204,14 @@
         "reset_all": "Reset category",
         "collect_all": "Mark all collected",
         "uncollect_all": "Mark all missing",
-        "show_on_map": "Map"
+        "show_on_map": "Map",
+        "mark_collected": "Mark collected",
+        "mark_missing": "Mark missing",
+        "zoom_in": "Zoom in",
+        "zoom_out": "Zoom out",
+        "zoom_fit": "Fit",
+        "show_all_layers": "All",
+        "hide_all_layers": "None"
       },
       "toasts": {
         "saved": "Updated: {what}",
@@ -172,6 +222,20 @@
         "vaultlock": "Vault Locks",
         "dlc2_echologs": "ECHO Logs",
         "dlc1_echologs_recordplayers": "Record Player ECHO Logs"
+      },
+      "map_groups": {
+        "collectible": "Collectibles",
+        "menuio": "Facilities",
+        "activity": "Activities",
+        "secondary": "Areas",
+        "miscellaneous": "Other"
+      },
+      "map_names": {
+        "fortress": "{region} Fortress",
+        "vault": "{region} Vault",
+        "Intro_P": "Prologue Prison",
+        "ElpisElevator_P": "Elpis Elevator",
+        "VolcanoFortress_P": "Volcano Fortress"
       }
     }
   },
@@ -229,7 +293,18 @@
         "missing": "Не собрано",
         "no_location": "Нет позиции на карте",
         "location": "{map} ({x}, {y})",
-        "select_category": "Выберите категорию слева"
+        "select_category": "Выберите категорию слева",
+        "maps": "Карты",
+        "layers": "Слои",
+        "only_missing": "Только несобранные",
+        "legend_done": "Собрано",
+        "legend_missing": "Не собрано",
+        "legend_other": "Другие места",
+        "status_done": "Собрано",
+        "status_missing": "Не собрано",
+        "status_other": "Не коллекционный предмет",
+        "zoom_hint": "Колесо — масштаб · перетаскивание — сдвиг",
+        "no_map": "На этой карте нечего показать"
       },
       "ammo": {
         "pistol": "Пистолет",
@@ -249,7 +324,14 @@
         "reset_all": "Сбросить категорию",
         "collect_all": "Отметить все собранными",
         "uncollect_all": "Отметить все несобранными",
-        "show_on_map": "Карта"
+        "show_on_map": "Карта",
+        "mark_collected": "Отметить собранным",
+        "mark_missing": "Отметить несобранным",
+        "zoom_in": "Приблизить",
+        "zoom_out": "Отдалить",
+        "zoom_fit": "По размеру",
+        "show_all_layers": "Все",
+        "hide_all_layers": "Нет"
       },
       "toasts": {
         "saved": "Изменено: {what}",
@@ -260,6 +342,20 @@
         "vaultlock": "Замки Хранилищ",
         "dlc2_echologs": "ЭХО-записи",
         "dlc1_echologs_recordplayers": "ЭХО-записи с патефонов"
+      },
+      "map_groups": {
+        "collectible": "Коллекции",
+        "menuio": "Объекты",
+        "activity": "Активности",
+        "secondary": "Зоны",
+        "miscellaneous": "Прочее"
+      },
+      "map_names": {
+        "fortress": "Крепость: {region}",
+        "vault": "Хранилище: {region}",
+        "Intro_P": "Тюрьма (пролог)",
+        "ElpisElevator_P": "Лифт Элписа",
+        "VolcanoFortress_P": "Вулканическая крепость"
       }
     }
   },
@@ -317,7 +413,18 @@
         "missing": "Не зібрано",
         "no_location": "Немає позиції на мапі",
         "location": "{map} ({x}, {y})",
-        "select_category": "Оберіть категорію ліворуч"
+        "select_category": "Оберіть категорію ліворуч",
+        "maps": "Мапи",
+        "layers": "Шари",
+        "only_missing": "Лише незібрані",
+        "legend_done": "Зібрано",
+        "legend_missing": "Не зібрано",
+        "legend_other": "Інші місця",
+        "status_done": "Зібрано",
+        "status_missing": "Не зібрано",
+        "status_other": "Не колекційний предмет",
+        "zoom_hint": "Коліщатко — масштаб · перетягування — зсув",
+        "no_map": "На цій мапі нічого показати"
       },
       "ammo": {
         "pistol": "Пістолет",
@@ -337,7 +444,14 @@
         "reset_all": "Скинути категорію",
         "collect_all": "Позначити всі зібраними",
         "uncollect_all": "Позначити всі незібраними",
-        "show_on_map": "Мапа"
+        "show_on_map": "Мапа",
+        "mark_collected": "Позначити зібраним",
+        "mark_missing": "Позначити незібраним",
+        "zoom_in": "Наблизити",
+        "zoom_out": "Віддалити",
+        "zoom_fit": "За розміром",
+        "show_all_layers": "Усі",
+        "hide_all_layers": "Жодного"
       },
       "toasts": {
         "saved": "Змінено: {what}",
@@ -348,6 +462,20 @@
         "vaultlock": "Замки Сховищ",
         "dlc2_echologs": "ЕХО-записи",
         "dlc1_echologs_recordplayers": "ЕХО-записи з патефонів"
+      },
+      "map_groups": {
+        "collectible": "Колекції",
+        "menuio": "Об'єкти",
+        "activity": "Активності",
+        "secondary": "Зони",
+        "miscellaneous": "Інше"
+      },
+      "map_names": {
+        "fortress": "Фортеця: {region}",
+        "vault": "Сховище: {region}",
+        "Intro_P": "В'язниця (пролог)",
+        "ElpisElevator_P": "Ліфт Елпіса",
+        "VolcanoFortress_P": "Вулканічна фортеця"
       }
     }
   }
