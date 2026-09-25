@@ -46,6 +46,11 @@ ItemIdPartOverview.md
 EQUIPMENT_DATA_REPAIR_PLAN.md
 .local/
 
+# 本地开发/QA 脚本不入库；BL4SaveEditorHuskarUI.spec 的 hookspath 依赖
+# tools/pyinstaller_hooks，必须保留
+tools/*
+!tools/pyinstaller_hooks/
+
 # Internal working notes
 *_PLAN.md
 *_AUDIT.md
