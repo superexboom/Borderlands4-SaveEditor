@@ -313,16 +313,16 @@ ColumnLayout {
                     boundsBehavior: Flickable.StopAtBounds
                     ScrollBar.vertical: HusScrollBar { }
                     model: panel.filteredOptions()
-                    property real savedContentY: 0
+                    // Offset from the content start (originY moves with row-height estimates).
+                    property real savedOffset: 0
                     onContentYChanged: {
                         HoverTip.hide();
-                        if (contentY > 1) savedContentY = contentY;
+                        if (contentY - minContentY > 1) savedOffset = contentY - minContentY;
                     }
-                    onMovementEnded: savedContentY = contentY
+                    onMovementEnded: savedOffset = contentY - minContentY
                     onModelChanged: Qt.callLater(function() {
-                        if (savedContentY <= 1) return;
-                        var maxY = Math.max(0, optionsList.contentHeight - optionsList.height);
-                        optionsList.contentY = Math.min(savedContentY, maxY);
+                        if (savedOffset <= 1) return;
+                        optionsList.scrollToContentY(optionsList.minContentY + savedOffset);
                     })
                     // 行悬停详情（对齐主线 picker tooltip；HoverTip 为全局单例气泡）
 

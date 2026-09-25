@@ -206,18 +206,18 @@ ColumnLayout {
             boundsBehavior: Flickable.StopAtBounds
             ScrollBar.vertical: HusScrollBar { }
             model: panel.filteredOptions()
-            property real savedContentY: 0
+            // Offset from the content start (originY moves with row-height estimates).
+            property real savedOffset: 0
             onContentYChanged: {
                 HoverTip.hide();
                 // VM dataChanged replaces the JS model. Restore the user's
                 // previous anchor instead of jumping back to row zero.
-                if (contentY > 1) savedContentY = contentY;
+                if (contentY - minContentY > 1) savedOffset = contentY - minContentY;
             }
-            onMovementEnded: savedContentY = contentY
+            onMovementEnded: savedOffset = contentY - minContentY
             onModelChanged: Qt.callLater(function() {
-                if (savedContentY <= 1) return;
-                var maxY = Math.max(0, catalogList.contentHeight - catalogList.height);
-                catalogList.contentY = Math.min(savedContentY, maxY);
+                if (savedOffset <= 1) return;
+                catalogList.scrollToContentY(catalogList.minContentY + savedOffset);
             })
 
 

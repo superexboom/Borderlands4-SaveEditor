@@ -831,6 +831,17 @@ RowLayout {
                                              : addHover.containsMouse ? selStyle.hover
                                              : "transparent"
                                     }
+                                    // 整行点击/悬停在下层，「+」按钮必须在它之上，否则点击被整行吞掉（只剩双击有效）
+                                    MouseArea {
+                                        id: addHover
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        onClicked: addPartDialog.previewItem = modelData
+                                        onDoubleClicked: addPartDialog.stage(modelData)
+                                        onEntered: HoverTip.showFor(addHover, modelData.tooltip || "", mouseX, mouseY)
+                                        onPositionChanged: HoverTip.showFor(addHover, modelData.tooltip || "", mouseX, mouseY)
+                                        onExited: HoverTip.hideFor(addHover)
+                                    }
                                     RowLayout {
                                         anchors.fill: parent
                                         anchors.leftMargin: 8
@@ -857,16 +868,6 @@ RowLayout {
                                             iconSize: 16
                                             onClicked: addPartDialog.stage(modelData)
                                         }
-                                    }
-                                    MouseArea {
-                                        id: addHover
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        onClicked: addPartDialog.previewItem = modelData
-                                        onDoubleClicked: addPartDialog.stage(modelData)
-                                        onEntered: HoverTip.showFor(addHover, modelData.tooltip || "", mouseX, mouseY)
-                                        onPositionChanged: HoverTip.showFor(addHover, modelData.tooltip || "", mouseX, mouseY)
-                                        onExited: HoverTip.hideFor(addHover)
                                     }
 
 
