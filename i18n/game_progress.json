@@ -1,8 +1,20 @@
 {
   "zh-CN": {
-    "main_window": {"tabs": {"game_progress": "游戏进度"}},
+    "main_window": {
+      "tabs": {
+        "game_progress": "游戏进度"
+      }
+    },
     "game_progress_tab": {
-      "tabs": {"overview": "概览", "missions": "任务", "challenges": "挑战与成就", "collectibles": "收集与探索", "map": "地图", "activities": "活动", "profile": "账号进度"},
+      "tabs": {
+        "overview": "概览",
+        "missions": "任务",
+        "challenges": "挑战与成就",
+        "collectibles": "收集与探索",
+        "map": "地图",
+        "activities": "活动",
+        "profile": "账号进度"
+      },
       "labels": {
         "load_save_first": "请先加载一个存档文件。",
         "no_catalog": "缺少游戏进度数据（core/data/progress_catalog.json），请用 pipeline 的 export-progress-catalog 生成。",
@@ -28,17 +40,69 @@
         "collectibles": "收集品",
         "challenges": "挑战",
         "region_kills": "各区域击杀数",
-        "catalog_version": "数据版本：{version}"
+        "catalog_version": "数据版本：{version}",
+        "achievements": "成就",
+        "value": "当前",
+        "goal": "目标",
+        "aggregate": "由子项汇总",
+        "search": "搜索…",
+        "filter_all": "全部",
+        "filter_done": "已完成",
+        "filter_todo": "未完成",
+        "collected": "已收集",
+        "missing": "未收集",
+        "no_location": "无地图坐标",
+        "location": "{map} ({x}, {y})",
+        "select_category": "在左侧选择一个分类"
       },
-      "ammo": {"pistol": "手枪", "smg": "冲锋枪", "assaultrifle": "突击步枪", "shotgun": "霰弹枪", "sniper": "狙击步枪", "repairkit": "修复套件"},
-      "buttons": {"apply": "应用", "fill_ammo": "补满弹药", "max_currency": "拉满金钱与镒矿"},
-      "toasts": {"saved": "已修改：{what}", "invalid": "数值无效"}
+      "ammo": {
+        "pistol": "手枪",
+        "smg": "冲锋枪",
+        "assaultrifle": "突击步枪",
+        "shotgun": "霰弹枪",
+        "sniper": "狙击步枪",
+        "repairkit": "修复套件"
+      },
+      "buttons": {
+        "apply": "应用",
+        "fill_ammo": "补满弹药",
+        "max_currency": "拉满金钱与镒矿",
+        "complete": "完成",
+        "reset": "重置",
+        "complete_all": "完成本类全部",
+        "reset_all": "重置本类全部",
+        "collect_all": "全部标记已收集",
+        "uncollect_all": "全部标记未收集",
+        "show_on_map": "地图"
+      },
+      "toasts": {
+        "saved": "已修改：{what}",
+        "invalid": "数值无效"
+      },
+      "collectible_names": {
+        "vaultdoor": "秘藏之门",
+        "vaultlock": "秘藏之锁",
+        "dlc2_echologs": "ECHO日志",
+        "dlc1_echologs_recordplayers": "留声机ECHO日志"
+      }
     }
   },
   "en-US": {
-    "main_window": {"tabs": {"game_progress": "Progress"}},
+    "main_window": {
+      "tabs": {
+        "game_progress": "Progress"
+      }
+    },
     "game_progress_tab": {
-      "tabs": {"overview": "Overview", "missions": "Missions", "challenges": "Challenges", "collectibles": "Collectibles", "map": "Map", "activities": "Activities", "profile": "Account"},
+      "tabs": {
+        "overview": "Overview",
+        "missions": "Missions",
+        "challenges": "Challenges",
+        "collectibles": "Collectibles",
+        "map": "Map",
+        "activities": "Activities",
+        "profile": "Account"
+      },
       "labels": {
         "load_save_first": "Please load a save file first.",
         "no_catalog": "Game progress data is missing (core/data/progress_catalog.json); generate it with the pipeline export-progress-catalog command.",
@@ -64,17 +128,69 @@
         "collectibles": "Collectibles",
         "challenges": "Challenges",
         "region_kills": "Kills by region",
-        "catalog_version": "Data version: {version}"
+        "catalog_version": "Data version: {version}",
+        "achievements": "Achievements",
+        "value": "Current",
+        "goal": "Goal",
+        "aggregate": "Sum of sub-challenges",
+        "search": "Search…",
+        "filter_all": "All",
+        "filter_done": "Done",
+        "filter_todo": "Not done",
+        "collected": "Collected",
+        "missing": "Missing",
+        "no_location": "No map position",
+        "location": "{map} ({x}, {y})",
+        "select_category": "Select a category on the left"
       },
-      "ammo": {"pistol": "Pistol", "smg": "SMG", "assaultrifle": "Assault Rifle", "shotgun": "Shotgun", "sniper": "Sniper", "repairkit": "Repkit"},
-      "buttons": {"apply": "Apply", "fill_ammo": "Fill ammo", "max_currency": "Max cash & Eridium"},
-      "toasts": {"saved": "Updated: {what}", "invalid": "Invalid value"}
+      "ammo": {
+        "pistol": "Pistol",
+        "smg": "SMG",
+        "assaultrifle": "Assault Rifle",
+        "shotgun": "Shotgun",
+        "sniper": "Sniper",
+        "repairkit": "Repkit"
+      },
+      "buttons": {
+        "apply": "Apply",
+        "fill_ammo": "Fill ammo",
+        "max_currency": "Max cash & Eridium",
+        "complete": "Complete",
+        "reset": "Reset",
+        "complete_all": "Complete category",
+        "reset_all": "Reset category",
+        "collect_all": "Mark all collected",
+        "uncollect_all": "Mark all missing",
+        "show_on_map": "Map"
+      },
+      "toasts": {
+        "saved": "Updated: {what}",
+        "invalid": "Invalid value"
+      },
+      "collectible_names": {
+        "vaultdoor": "Vault Doors",
+        "vaultlock": "Vault Locks",
+        "dlc2_echologs": "ECHO Logs",
+        "dlc1_echologs_recordplayers": "Record Player ECHO Logs"
+      }
     }
   },
   "ru": {
-    "main_window": {"tabs": {"game_progress": "Прогресс"}},
+    "main_window": {
+      "tabs": {
+        "game_progress": "Прогресс"
+      }
+    },
     "game_progress_tab": {
-      "tabs": {"overview": "Обзор", "missions": "Задания", "challenges": "Испытания", "collectibles": "Коллекции", "map": "Карта", "activities": "Активности", "profile": "Аккаунт"},
+      "tabs": {
+        "overview": "Обзор",
+        "missions": "Задания",
+        "challenges": "Испытания",
+        "collectibles": "Коллекции",
+        "map": "Карта",
+        "activities": "Активности",
+        "profile": "Аккаунт"
+      },
       "labels": {
         "load_save_first": "Сначала загрузите файл сохранения.",
         "no_catalog": "Нет данных прогресса (core/data/progress_catalog.json); создайте их командой pipeline export-progress-catalog.",
@@ -100,17 +216,69 @@
         "collectibles": "Коллекционные предметы",
         "challenges": "Испытания",
         "region_kills": "Убийства по регионам",
-        "catalog_version": "Версия данных: {version}"
+        "catalog_version": "Версия данных: {version}",
+        "achievements": "Достижения",
+        "value": "Текущее",
+        "goal": "Цель",
+        "aggregate": "Сумма подзадач",
+        "search": "Поиск…",
+        "filter_all": "Все",
+        "filter_done": "Выполнено",
+        "filter_todo": "Не выполнено",
+        "collected": "Собрано",
+        "missing": "Не собрано",
+        "no_location": "Нет позиции на карте",
+        "location": "{map} ({x}, {y})",
+        "select_category": "Выберите категорию слева"
       },
-      "ammo": {"pistol": "Пистолет", "smg": "ПП", "assaultrifle": "Штурмовая винтовка", "shotgun": "Дробовик", "sniper": "Снайперская винтовка", "repairkit": "Ремкомплект"},
-      "buttons": {"apply": "Применить", "fill_ammo": "Пополнить патроны", "max_currency": "Максимум денег и эридия"},
-      "toasts": {"saved": "Изменено: {what}", "invalid": "Недопустимое значение"}
+      "ammo": {
+        "pistol": "Пистолет",
+        "smg": "ПП",
+        "assaultrifle": "Штурмовая винтовка",
+        "shotgun": "Дробовик",
+        "sniper": "Снайперская винтовка",
+        "repairkit": "Ремкомплект"
+      },
+      "buttons": {
+        "apply": "Применить",
+        "fill_ammo": "Пополнить патроны",
+        "max_currency": "Максимум денег и эридия",
+        "complete": "Выполнить",
+        "reset": "Сбросить",
+        "complete_all": "Выполнить категорию",
+        "reset_all": "Сбросить категорию",
+        "collect_all": "Отметить все собранными",
+        "uncollect_all": "Отметить все несобранными",
+        "show_on_map": "Карта"
+      },
+      "toasts": {
+        "saved": "Изменено: {what}",
+        "invalid": "Недопустимое значение"
+      },
+      "collectible_names": {
+        "vaultdoor": "Двери Хранилищ",
+        "vaultlock": "Замки Хранилищ",
+        "dlc2_echologs": "ЭХО-записи",
+        "dlc1_echologs_recordplayers": "ЭХО-записи с патефонов"
+      }
     }
   },
   "ua": {
-    "main_window": {"tabs": {"game_progress": "Прогрес"}},
+    "main_window": {
+      "tabs": {
+        "game_progress": "Прогрес"
+      }
+    },
     "game_progress_tab": {
-      "tabs": {"overview": "Огляд", "missions": "Завдання", "challenges": "Випробування", "collectibles": "Колекції", "map": "Мапа", "activities": "Активності", "profile": "Акаунт"},
+      "tabs": {
+        "overview": "Огляд",
+        "missions": "Завдання",
+        "challenges": "Випробування",
+        "collectibles": "Колекції",
+        "map": "Мапа",
+        "activities": "Активності",
+        "profile": "Акаунт"
+      },
       "labels": {
         "load_save_first": "Спочатку завантажте файл збереження.",
         "no_catalog": "Немає даних прогресу (core/data/progress_catalog.json); створіть їх командою pipeline export-progress-catalog.",
@@ -136,11 +304,51 @@
         "collectibles": "Колекційні предмети",
         "challenges": "Випробування",
         "region_kills": "Вбивства за регіонами",
-        "catalog_version": "Версія даних: {version}"
+        "catalog_version": "Версія даних: {version}",
+        "achievements": "Досягнення",
+        "value": "Поточне",
+        "goal": "Мета",
+        "aggregate": "Сума підзавдань",
+        "search": "Пошук…",
+        "filter_all": "Усі",
+        "filter_done": "Виконано",
+        "filter_todo": "Не виконано",
+        "collected": "Зібрано",
+        "missing": "Не зібрано",
+        "no_location": "Немає позиції на мапі",
+        "location": "{map} ({x}, {y})",
+        "select_category": "Оберіть категорію ліворуч"
       },
-      "ammo": {"pistol": "Пістолет", "smg": "ПП", "assaultrifle": "Штурмова гвинтівка", "shotgun": "Дробовик", "sniper": "Снайперська гвинтівка", "repairkit": "Ремкомплект"},
-      "buttons": {"apply": "Застосувати", "fill_ammo": "Поповнити набої", "max_currency": "Максимум грошей та ерідію"},
-      "toasts": {"saved": "Змінено: {what}", "invalid": "Недопустиме значення"}
+      "ammo": {
+        "pistol": "Пістолет",
+        "smg": "ПП",
+        "assaultrifle": "Штурмова гвинтівка",
+        "shotgun": "Дробовик",
+        "sniper": "Снайперська гвинтівка",
+        "repairkit": "Ремкомплект"
+      },
+      "buttons": {
+        "apply": "Застосувати",
+        "fill_ammo": "Поповнити набої",
+        "max_currency": "Максимум грошей та ерідію",
+        "complete": "Виконати",
+        "reset": "Скинути",
+        "complete_all": "Виконати категорію",
+        "reset_all": "Скинути категорію",
+        "collect_all": "Позначити всі зібраними",
+        "uncollect_all": "Позначити всі незібраними",
+        "show_on_map": "Мапа"
+      },
+      "toasts": {
+        "saved": "Змінено: {what}",
+        "invalid": "Недопустиме значення"
+      },
+      "collectible_names": {
+        "vaultdoor": "Двері Сховищ",
+        "vaultlock": "Замки Сховищ",
+        "dlc2_echologs": "ЕХО-записи",
+        "dlc1_echologs_recordplayers": "ЕХО-записи з патефонів"
+      }
     }
   }
 }

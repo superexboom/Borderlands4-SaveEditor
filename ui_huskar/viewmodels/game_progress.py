@@ -15,6 +15,7 @@ from PyQt6.QtCore import pyqtProperty, pyqtSignal, pyqtSlot
 
 from core import progress_catalog as cat
 from core import progress_logic as logic
+from core.unlock_data import CHARACTER_CLASSES
 
 from .base import PageViewModel, register
 
@@ -31,6 +32,10 @@ class GameProgressViewModel(PageViewModel):
         self._overview: dict[str, Any] = {}
         self._summary: dict[str, Any] = {}
         self._regions: list[dict[str, Any]] = []
+        self._challenge_categories: list[dict[str, Any]] = []
+        self._challenge_category = ""
+        self._collectible_categories: list[dict[str, Any]] = []
+        self._collectible_category = ""
         app.liveChanged.connect(self._on_live_changed)
 
     # ------------------------------------------------------------------ #
@@ -71,8 +76,12 @@ class GameProgressViewModel(PageViewModel):
             self._overview = logic.read_overview(data)
             self._summary = logic.completion_summary(data) if cat.available() else {}
             self._regions = logic.region_kills(data, self._lang())
+            self._challenge_categories = self._build_challenge_categories(data)
+            self._collectible_categories = logic.collectible_categories(
+                data, self._lang(), self.strings.get("collectible_names") or {})
         else:
             self._overview, self._summary, self._regions = {}, {}, []
+            self._challenge_categories, self._collectible_categories = [], []
         self.dataChanged.emit()
 
     @pyqtProperty(bool, notify=dataChanged)
@@ -229,3 +238,148 @@ class GameProgressViewModel(PageViewModel):
             logic.set_currency(data, "cash", logic.INT32_MAX)
             logic.set_currency(data, "eridium", logic.INT32_MAX)
         self._write(change, self._labels().get("currencies", "Currencies"))
+
+    # ------------------------------------------------------------------ #
+    # challenges & achievements
+    # ------------------------------------------------------------------ #
+    def _build_challenge_categories(self, data: dict[str, Any]) -> list[dict[str, Any]]:
+        rows = []
+        for key, title, members in logic.challenge_category_keys():
+            if not members:
+                continue
+            if key == logic.ACHIEVEMENTS_CATEGORY:
+                label = str(self._labels().get("achievements", "Achievements"))
+            else:
+                label = cat.text(title, self._lang(), key)
+                if key.startswith("char_"):
+                    # 六个角色分类在游戏里都叫「角色」，补上角色名以便区分
+                    who = next((info["name"] for name, info in CHARACTER_CLASSES.items()
+                                if name.lower() == key[len("char_"):]), "")
+                    label = f"{label} · {who}" if who else label
+            done = sum(1 for member in members if logic.challenge_state(data, member)["done"])
+            rows.append({"key": key, "title": label, "done": done, "total": len(members)})
+        return rows
+
+    @pyqtProperty(list, notify=dataChanged)
+    def challengeCategories(self) -> list[dict[str, Any]]:
+        return self._challenge_categories
+
+    @pyqtProperty(str, notify=dataChanged)
+    def challengeCategory(self) -> str:
+        return self._challenge_category
+
+    @pyqtSlot(str)
+    def setChallengeCategory(self, key: str) -> None:
+        self._challenge_category = str(key)
+        self.dataChanged.emit()
+
+    def _category_members(self) -> list[str]:
+        return next((members for key, _title, members in logic.challenge_category_keys()
+                     if key == self._challenge_category), [])
+
+    @pyqtProperty(list, notify=dataChanged)
+    def challengeRows(self) -> list[dict[str, Any]]:
+        data = self.controller.yaml_obj
+        if self._kind != "character" or not isinstance(data, dict):
+            return []
+        rows = []
+        challenges = cat.section("challenges")
+        for key in self._category_members():
+            row = challenges.get(key) or {}
+            state = logic.challenge_state(data, key)
+            rows.append({
+                "key": key,
+                "title": cat.text(row.get("title"), self._lang(), row.get("name", key)),
+                "desc": cat.text(row.get("desc"), self._lang()),
+                "value": state["value"],
+                "goal": state["goal"],
+                "tiers": " / ".join(str(goal) for goal in state["goals"]) if len(state["goals"]) > 1 else "",
+                "done": state["done"],
+                "aggregate": state["aggregate"],
+            })
+        return rows
+
+    def _challenge_title(self, key: str) -> str:
+        row = cat.section("challenges").get(key) or {}
+        return cat.text(row.get("title"), self._lang(), key)
+
+    @pyqtSlot(str, str)
+    def setChallengeValue(self, key: str, text: str) -> None:
+        value = self._parse_int(text)
+        if value is None or value < 0:
+            self._invalid()
+            return
+        data = self.controller.yaml_obj
+        if not isinstance(data, dict) or logic.challenge_state(data, key)["value"] == value:
+            return
+        self._write(lambda d: logic.set_challenge_value(d, key, value), self._challenge_title(key))
+
+    @pyqtSlot(str, bool)
+    def completeChallenge(self, key: str, done: bool) -> None:
+        self._write(lambda d: logic.complete_challenge(d, key, done), self._challenge_title(key))
+
+    @pyqtSlot(bool)
+    def completeChallengeCategory(self, done: bool) -> None:
+        members = self._category_members()
+        if not members:
+            return
+        title = next((row["title"] for row in self._challenge_categories
+                      if row["key"] == self._challenge_category), self._challenge_category)
+
+        def change(data):
+            seen: set = set()
+            for key in members:
+                logic.complete_challenge(data, key, done, seen)
+        self._write(change, title)
+
+    # ------------------------------------------------------------------ #
+    # collectibles
+    # ------------------------------------------------------------------ #
+    @pyqtProperty(list, notify=dataChanged)
+    def collectibleCategories(self) -> list[dict[str, Any]]:
+        return self._collectible_categories
+
+    @pyqtProperty(str, notify=dataChanged)
+    def collectibleCategory(self) -> str:
+        return self._collectible_category
+
+    @pyqtSlot(str)
+    def setCollectibleCategory(self, key: str) -> None:
+        self._collectible_category = str(key)
+        self.dataChanged.emit()
+
+    @pyqtProperty(list, notify=dataChanged)
+    def collectibleRows(self) -> list[dict[str, Any]]:
+        data = self.controller.yaml_obj
+        if self._kind != "character" or not isinstance(data, dict) or not self._collectible_category:
+            return []
+        lang = self._lang()
+        template = str(self._labels().get("location", "{map} ({x}, {y})"))
+        rows = logic.collectible_items(data, self._collectible_category, lang,
+                                       self.strings.get("collectible_names") or {})
+        for row in rows:
+            row["location_text"] = (template.format(map=logic.map_title(row["map"], lang),
+                                                    x=round(row["x"] / 100), y=round(row["y"] / 100))
+                                    if row["has_location"] else str(self._labels().get("no_location", "")))
+            row["on_map"] = bool(row["has_location"] and cat.project(row["map"], row["x"], row["y"]))
+        return rows
+
+    @pyqtSlot(str, bool)
+    def setCollected(self, stat: str, collected: bool) -> None:
+        title = next((row["title"] for row in self._collectible_categories
+                      if row["key"] == self._collectible_category), stat)
+        self._write(lambda data: logic.set_collected(data, stat, collected), title)
+
+    @pyqtSlot(bool)
+    def setCategoryCollected(self, collected: bool) -> None:
+        data = self.controller.yaml_obj
+        if not isinstance(data, dict) or not self._collectible_category:
+            return
+        stats = [row["stat"] for row in logic.collectible_items(data, self._collectible_category, self._lang())]
+        title = next((row["title"] for row in self._collectible_categories
+                      if row["key"] == self._collectible_category), "")
+
+        def change(d):
+            for stat in stats:
+                logic.set_collected(d, stat, collected)
+        self._write(change, title)

@@ -47,11 +47,50 @@ Item {
 
         HusTabView {
             id: tabs
+            objectName: "progressTabs"
             Layout.fillWidth: true
             Layout.fillHeight: true
             initModel: [
-                { key: "overview", title: page.tabsLoc.overview || "Overview", contentDelegate: overviewContent }
+                { key: "overview", title: page.tabsLoc.overview || "Overview", contentDelegate: overviewContent },
+                { key: "challenges", title: page.tabsLoc.challenges || "Challenges", contentDelegate: challengesContent },
+                { key: "collectibles", title: page.tabsLoc.collectibles || "Collectibles", contentDelegate: collectiblesContent }
             ]
+        }
+    }
+
+    Component {
+        id: challengesContent
+        Item {
+            ProgressChallengesTab {
+                anchors.fill: parent
+                anchors.topMargin: 8
+                visible: vmGameProgress.saveKind === "character"
+                labels: page.labels
+                buttons: page.buttons
+            }
+            EmptyHint {
+                anchors.fill: parent
+                visible: vmGameProgress.saveKind !== "character"
+                description: page.labels.character_only || ""
+            }
+        }
+    }
+
+    Component {
+        id: collectiblesContent
+        Item {
+            ProgressCollectiblesTab {
+                anchors.fill: parent
+                anchors.topMargin: 8
+                visible: vmGameProgress.saveKind === "character"
+                labels: page.labels
+                buttons: page.buttons
+            }
+            EmptyHint {
+                anchors.fill: parent
+                visible: vmGameProgress.saveKind !== "character"
+                description: page.labels.character_only || ""
+            }
         }
     }
 
