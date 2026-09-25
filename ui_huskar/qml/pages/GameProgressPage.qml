@@ -13,7 +13,7 @@ Item {
     readonly property var tabsLoc: loc.tabs || ({})
     readonly property var buttons: loc.buttons || ({})
     readonly property bool ready: vmGameProgress.saveLoaded && vmGameProgress.catalogAvailable
-    readonly property int mapTabIndex: 3
+    readonly property int mapTabIndex: 4
     // 联机快照读不到进度（只有地图可用），其它非角色存档（账号存档）另有提示
     readonly property string nonCharacterHint: vmGameProgress.saveKind === "live"
                                                ? (labels.live_progress_unavailable || "")
@@ -57,10 +57,30 @@ Item {
             Layout.fillHeight: true
             initModel: [
                 { key: "overview", title: page.tabsLoc.overview || "Overview", contentDelegate: overviewContent },
+                { key: "missions", title: page.tabsLoc.missions || "Missions", contentDelegate: missionsContent },
                 { key: "challenges", title: page.tabsLoc.challenges || "Challenges", contentDelegate: challengesContent },
                 { key: "collectibles", title: page.tabsLoc.collectibles || "Collectibles", contentDelegate: collectiblesContent },
                 { key: "map", title: page.tabsLoc.map || "Map", contentDelegate: mapContent }
             ]
+        }
+    }
+
+    Component {
+        id: missionsContent
+        Item {
+            ProgressMissionsTab {
+                objectName: "missionsTab"
+                anchors.fill: parent
+                anchors.topMargin: 8
+                visible: vmGameProgress.saveKind === "character"
+                labels: page.labels
+                buttons: page.buttons
+            }
+            EmptyHint {
+                anchors.fill: parent
+                visible: vmGameProgress.saveKind !== "character"
+                description: page.nonCharacterHint
+            }
         }
     }
 

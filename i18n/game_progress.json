@@ -70,7 +70,18 @@
         "legend_player": "玩家",
         "teleport_need_live": "需要联机模式",
         "teleport_no_position": "尚未读取到玩家位置",
-        "teleport_other_map": "玩家不在这张地图（当前在：{map}）"
+        "teleport_other_map": "玩家不在这张地图（当前在：{map}）",
+        "mission_done": "已完成",
+        "mission_active": "进行中",
+        "mission_none": "未开始",
+        "filter_active": "进行中",
+        "filter_none": "未开始",
+        "objectives": "目标 {done}/{total}",
+        "no_template": "最简完成",
+        "no_template_tip": "没有采集到这个任务的完成存档模板：只写入「已完成」状态，并保留游戏已记录的剧情选择。",
+        "rewards_note": "完成任务只修改任务进度，不会发放经验、现金或物品奖励；一键通关（含剧情标记）请用角色页。",
+        "prerequisites": "还有 {count} 个前置主线未完成",
+        "region_other": "其它"
       },
       "ammo": {
         "pistol": "手枪",
@@ -99,7 +110,10 @@
         "show_all_layers": "全部",
         "hide_all_layers": "清空",
         "teleport": "传送到这里",
-        "locate_player": "定位玩家"
+        "locate_player": "定位玩家",
+        "complete_mission": "完成",
+        "complete_through": "完成至此",
+        "reset_mission": "重置"
       },
       "toasts": {
         "saved": "已修改：{what}",
@@ -126,6 +140,26 @@
         "Intro_P": "序章监狱",
         "ElpisElevator_P": "厄尔皮斯电梯",
         "VolcanoFortress_P": "火山要塞"
+      },
+      "mission_kinds": {
+        "main": "主线任务",
+        "side": "支线任务",
+        "micro": "小任务",
+        "activity": "区域活动"
+      },
+      "mission_areas": {
+        "base": "无主之地4 本体",
+        "extra": "赏金包与其它"
+      },
+      "confirm": {
+        "complete_through_title": "完成至此",
+        "complete_through_text": "「{what}」之前还有 {count} 个主线任务未完成，将一并完成。继续？",
+        "reset_mission_title": "重置任务",
+        "reset_mission_text": "将从存档中移除「{what}」的任务进度，游戏里可以重新接取；已获得的奖励不会收回。继续？",
+        "complete_all_missions_title": "全部完成",
+        "complete_all_missions_text": "将完成「{what}」中 {count} 个未完成的任务。继续？",
+        "reset_all_missions_title": "全部重置",
+        "reset_all_missions_text": "将重置「{what}」中 {count} 个任务（主线任务不会被重置）。继续？"
       }
     }
   },
@@ -200,7 +234,18 @@
         "legend_player": "Player",
         "teleport_need_live": "Requires live mode",
         "teleport_no_position": "Player position not read yet",
-        "teleport_other_map": "The player is on another map ({map})"
+        "teleport_other_map": "The player is on another map ({map})",
+        "mission_done": "Completed",
+        "mission_active": "In progress",
+        "mission_none": "Not started",
+        "filter_active": "In progress",
+        "filter_none": "Not started",
+        "objectives": "Objectives {done}/{total}",
+        "no_template": "Minimal",
+        "no_template_tip": "No captured completion template for this mission: only the completed status is written, keeping the story choices the game already recorded.",
+        "rewards_note": "Completing a mission only changes its progress; no XP, cash or item rewards are granted. For a full story skip (with story flags) use the Character page.",
+        "prerequisites": "{count} earlier main mission(s) not completed",
+        "region_other": "Other"
       },
       "ammo": {
         "pistol": "Pistol",
@@ -229,7 +274,10 @@
         "show_all_layers": "All",
         "hide_all_layers": "None",
         "teleport": "Teleport here",
-        "locate_player": "Locate player"
+        "locate_player": "Locate player",
+        "complete_mission": "Complete",
+        "complete_through": "Complete up to here",
+        "reset_mission": "Reset"
       },
       "toasts": {
         "saved": "Updated: {what}",
@@ -256,6 +304,26 @@
         "Intro_P": "Prologue Prison",
         "ElpisElevator_P": "Elpis Elevator",
         "VolcanoFortress_P": "Volcano Fortress"
+      },
+      "mission_kinds": {
+        "main": "Main missions",
+        "side": "Side missions",
+        "micro": "Micro missions",
+        "activity": "Activities"
+      },
+      "mission_areas": {
+        "base": "Borderlands 4",
+        "extra": "Bounty packs & more"
+      },
+      "confirm": {
+        "complete_through_title": "Complete up to here",
+        "complete_through_text": "{count} earlier main mission(s) before \"{what}\" are not completed and will be completed too. Continue?",
+        "reset_mission_title": "Reset mission",
+        "reset_mission_text": "The progress of \"{what}\" will be removed so the game offers it again; rewards already received are kept. Continue?",
+        "complete_all_missions_title": "Complete all",
+        "complete_all_missions_text": "Complete {count} unfinished mission(s) in \"{what}\"?",
+        "reset_all_missions_title": "Reset all",
+        "reset_all_missions_text": "Reset {count} mission(s) in \"{what}\"? Main missions are never reset."
       }
     }
   },
@@ -330,7 +398,18 @@
         "legend_player": "Игрок",
         "teleport_need_live": "Нужен онлайн-режим",
         "teleport_no_position": "Позиция игрока ещё не получена",
-        "teleport_other_map": "Игрок на другой карте ({map})"
+        "teleport_other_map": "Игрок на другой карте ({map})",
+        "mission_done": "Выполнено",
+        "mission_active": "В процессе",
+        "mission_none": "Не начато",
+        "filter_active": "В процессе",
+        "filter_none": "Не начато",
+        "objectives": "Цели {done}/{total}",
+        "no_template": "Минимально",
+        "no_template_tip": "Нет шаблона завершения для этого задания: записывается только статус «выполнено», сохранённые игрой выборы остаются.",
+        "rewards_note": "Завершение меняет только прогресс задания; опыт, деньги и предметы не выдаются. Полный пропуск сюжета — на странице персонажа.",
+        "prerequisites": "Не выполнено предыдущих основных заданий: {count}",
+        "region_other": "Прочее"
       },
       "ammo": {
         "pistol": "Пистолет",
@@ -359,7 +438,10 @@
         "show_all_layers": "Все",
         "hide_all_layers": "Нет",
         "teleport": "Телепорт сюда",
-        "locate_player": "Найти игрока"
+        "locate_player": "Найти игрока",
+        "complete_mission": "Выполнить",
+        "complete_through": "Выполнить до этого",
+        "reset_mission": "Сбросить"
       },
       "toasts": {
         "saved": "Изменено: {what}",
@@ -386,6 +468,26 @@
         "Intro_P": "Тюрьма (пролог)",
         "ElpisElevator_P": "Лифт Элписа",
         "VolcanoFortress_P": "Вулканическая крепость"
+      },
+      "mission_kinds": {
+        "main": "Основные",
+        "side": "Побочные",
+        "micro": "Микрозадания",
+        "activity": "Активности"
+      },
+      "mission_areas": {
+        "base": "Borderlands 4",
+        "extra": "Наборы наград и прочее"
+      },
+      "confirm": {
+        "complete_through_title": "Выполнить до этого",
+        "complete_through_text": "Перед «{what}» не выполнено основных заданий: {count}. Они тоже будут выполнены. Продолжить?",
+        "reset_mission_title": "Сбросить задание",
+        "reset_mission_text": "Прогресс «{what}» будет удалён, и игра снова предложит задание; полученные награды останутся. Продолжить?",
+        "complete_all_missions_title": "Выполнить все",
+        "complete_all_missions_text": "Выполнить {count} незавершённых заданий в «{what}»?",
+        "reset_all_missions_title": "Сбросить все",
+        "reset_all_missions_text": "Сбросить {count} заданий в «{what}»? Основные задания не сбрасываются."
       }
     }
   },
@@ -460,7 +562,18 @@
         "legend_player": "Гравець",
         "teleport_need_live": "Потрібен онлайн-режим",
         "teleport_no_position": "Позицію гравця ще не отримано",
-        "teleport_other_map": "Гравець на іншій мапі ({map})"
+        "teleport_other_map": "Гравець на іншій мапі ({map})",
+        "mission_done": "Виконано",
+        "mission_active": "Триває",
+        "mission_none": "Не розпочато",
+        "filter_active": "Триває",
+        "filter_none": "Не розпочато",
+        "objectives": "Цілі {done}/{total}",
+        "no_template": "Мінімально",
+        "no_template_tip": "Немає шаблону завершення для цього завдання: записується лише статус «виконано», збережені грою вибори лишаються.",
+        "rewards_note": "Завершення змінює лише прогрес завдання; досвід, гроші й предмети не видаються. Повний пропуск сюжету — на сторінці персонажа.",
+        "prerequisites": "Не виконано попередніх основних завдань: {count}",
+        "region_other": "Інше"
       },
       "ammo": {
         "pistol": "Пістолет",
@@ -489,7 +602,10 @@
         "show_all_layers": "Усі",
         "hide_all_layers": "Жодного",
         "teleport": "Телепорт сюди",
-        "locate_player": "Знайти гравця"
+        "locate_player": "Знайти гравця",
+        "complete_mission": "Виконати",
+        "complete_through": "Виконати до цього",
+        "reset_mission": "Скинути"
       },
       "toasts": {
         "saved": "Змінено: {what}",
@@ -516,6 +632,26 @@
         "Intro_P": "В'язниця (пролог)",
         "ElpisElevator_P": "Ліфт Елпіса",
         "VolcanoFortress_P": "Вулканічна фортеця"
+      },
+      "mission_kinds": {
+        "main": "Основні",
+        "side": "Побічні",
+        "micro": "Мікрозавдання",
+        "activity": "Активності"
+      },
+      "mission_areas": {
+        "base": "Borderlands 4",
+        "extra": "Набори нагород та інше"
+      },
+      "confirm": {
+        "complete_through_title": "Виконати до цього",
+        "complete_through_text": "Перед «{what}» не виконано основних завдань: {count}. Їх теж буде виконано. Продовжити?",
+        "reset_mission_title": "Скинути завдання",
+        "reset_mission_text": "Прогрес «{what}» буде видалено, і гра знову запропонує завдання; отримані нагороди залишаться. Продовжити?",
+        "complete_all_missions_title": "Виконати всі",
+        "complete_all_missions_text": "Виконати {count} незавершених завдань у «{what}»?",
+        "reset_all_missions_title": "Скинути всі",
+        "reset_all_missions_text": "Скинути {count} завдань у «{what}»? Основні завдання не скидаються."
       }
     }
   }

@@ -7,7 +7,9 @@ Display metadata comes from :mod:`core.progress_catalog`.
 
 from __future__ import annotations
 
+import copy
 import math
+import re
 from functools import lru_cache
 from typing import Any
 
@@ -691,3 +693,266 @@ def live_player_marker(position: dict[str, Any] | None, world: str) -> dict[str,
         if ahead:
             row["heading"] = math.degrees(math.atan2(ahead[1] - uv[1], ahead[0] - uv[0]))
     return row
+
+
+# --------------------------------------------------------------------------- #
+# Missions
+# --------------------------------------------------------------------------- #
+# Save layout: missions.local_sets.<set>.{status, missions.<mission>.{status,
+# final, objectives, cursorposition, state}}. A finished mission is
+# ``status: completed`` (+ the endstate facts the game recorded in ``final``);
+# an absent entry means "not started". Contracts, events and dynamic events
+# have no mission set and are never persisted, so they are not listed.
+MISSION_KIND_ORDER = ("main", "side", "micro", "activity")
+_MISSION_KINDS = {
+    "MainMission": "main", "DLC_MainStory": "main",
+    "SideMission": "side", "DLC_SideMission": "side", "FactionMission": "side",
+    "MicroMission": "micro", "DLC_MicroMission": "micro",
+}
+_TRANSIENT_MISSION_TYPES = frozenset({"Contract", "Event", "DynamicEvent", "", "Test"})
+# Set-key tokens -> content area (catalog ``areas`` keys; "extra" = bounty packs,
+# raids, takedowns and other add-ons without an area of their own).
+_MISSION_AREA_TOKENS = (("_cowbell", "cowbell"), ("_dlc1", "cowbell"), ("_harmonica", "harmonica"),
+                        ("_dlc2", "harmonica"), ("_cello", "cello"), ("_banjo", "banjo"))
+_EXTRA_MISSION_TOKENS = ("_dlc", "_raid", "_pearlgen", "_mandolin", "circleofslaughter", "replaychallenge")
+MISSION_AREA_ORDER = ("", "cowbell", "harmonica", "cello", "banjo", "extra")
+
+
+def mission_kind(mission_type: str) -> str:
+    return _MISSION_KINDS.get(str(mission_type or ""), "activity")
+
+
+def mission_area(set_key: str) -> str:
+    key = str(set_key or "").lower()
+    for token, area in _MISSION_AREA_TOKENS:
+        if token in key:
+            return area
+    return "extra" if any(token in key for token in _EXTRA_MISSION_TOKENS) else ""
+
+
+@lru_cache(maxsize=1)
+def _mission_index() -> dict[str, dict[str, Any]]:
+    """Listed missions (persisted kinds with a title) in story/set order."""
+    sets = cat.section("mission_sets")
+    order: dict[str, int] = {}
+
+    def visit(set_key: str, trail: tuple[str, ...] = ()) -> int:
+        if set_key in order:
+            return order[set_key]
+        if set_key in trail:
+            return 0
+        requires = (sets.get(set_key) or {}).get("requires") or []
+        depth = 1 + max((visit(parent, trail + (set_key,)) for parent in requires if parent in sets), default=-1)
+        order[set_key] = depth
+        return depth
+
+    rows: dict[str, dict[str, Any]] = {}
+    for key, row in cat.section("missions").items():
+        set_key = row.get("set") or ""
+        if (not set_key or row.get("type") in _TRANSIENT_MISSION_TYPES or "template" in key
+                or "repeatable" in key or not cat.text(row.get("title"), "en-US")):
+            continue
+        members = (sets.get(set_key) or {}).get("missions") or []
+        rows[key] = {
+            "set": set_key,
+            "kind": mission_kind(row.get("type")),
+            "area": mission_area(set_key),
+            "sort": (visit(set_key), set_key, members.index(key) if key in members else 99, key),
+        }
+    return dict(sorted(rows.items(), key=lambda item: item[1]["sort"]))
+
+
+def _mission_templates() -> dict[str, Any]:
+    from .unlock_data import MISSIONSETS
+    from .unlock_logic import ensure_legacy_unlock_data
+
+    ensure_legacy_unlock_data()
+    return MISSIONSETS
+
+
+def _local_sets(data: dict[str, Any], create: bool = False) -> dict[str, Any]:
+    if create:
+        return get_or_create_dict(get_or_create_dict(data, "missions"), "local_sets")
+    missions = data.get("missions") if isinstance(data, dict) else None
+    sets = missions.get("local_sets") if isinstance(missions, dict) else None
+    return sets if isinstance(sets, dict) else {}
+
+
+def _mission_node(data: dict[str, Any], mission_key: str) -> dict[str, Any] | None:
+    info = _mission_index().get(mission_key) or {}
+    set_node = _local_sets(data).get(info.get("set", ""))
+    missions = set_node.get("missions") if isinstance(set_node, dict) else None
+    node = missions.get(mission_key) if isinstance(missions, dict) else None
+    return node if isinstance(node, dict) else None
+
+
+_GAME_MARKUP = re.compile(r"\[/?boldtext\]", re.IGNORECASE)
+
+
+def game_text(text: Any) -> str:
+    """Game UI text without its markup: ``[newline]`` becomes a line break."""
+    value = _GAME_MARKUP.sub("", str(text or "")).replace("[newline]", "\n")
+    return re.sub(r"\n{3,}", "\n\n", value).strip()
+
+
+def _objective_state(status: Any) -> str:
+    text = str(status or "").lower()
+    if text.startswith("completed"):
+        return "done"
+    if text.startswith("deactivated"):
+        return "skipped"
+    if text.startswith("active"):
+        return "active"
+    return "pending"
+
+
+def mission_state(data: dict[str, Any], mission_key: str) -> str:
+    """``done`` / ``active`` / ``none`` for one listed mission."""
+    node = _mission_node(data, mission_key)
+    if node is None:
+        return "none"
+    return "done" if str(node.get("status") or "").lower() == "completed" else "active"
+
+
+def mission_objectives(data: dict[str, Any], mission_key: str, lang: str) -> list[dict[str, Any]]:
+    """Visible objectives with their saved state (only meaningful while active)."""
+    row = cat.section("missions").get(mission_key) or {}
+    node = _mission_node(data, mission_key) or {}
+    saved = node.get("objectives") if isinstance(node.get("objectives"), dict) else {}
+    finished = str(node.get("status") or "").lower() == "completed"
+    out = []
+    for objective in row.get("objectives") or []:
+        text = game_text(cat.text(objective.get("text"), lang))
+        if not text:
+            continue
+        entry = saved.get(objective.get("id")) or {}
+        out.append({"id": objective.get("id"), "text": text, "child": bool(objective.get("parent")),
+                    "state": "done" if finished else _objective_state(entry.get("status"))})
+    return out
+
+
+def mission_categories(data: dict[str, Any], lang: str) -> list[dict[str, Any]]:
+    """Area x kind categories (``<area>:<kind>``) with completion counts."""
+    counts: dict[str, list[int]] = {}
+    for key, info in _mission_index().items():
+        entry = counts.setdefault(f"{info['area']}:{info['kind']}", [0, 0])
+        entry[1] += 1
+        entry[0] += int(mission_state(data, key) == "done")
+    rows = []
+    for category, (done, total) in counts.items():
+        area, kind = category.split(":", 1)
+        rows.append({"key": category, "area_key": area, "kind": kind, "done": done, "total": total})
+    rows.sort(key=lambda row: (MISSION_AREA_ORDER.index(row["area_key"]) if row["area_key"] in MISSION_AREA_ORDER else 99,
+                               MISSION_KIND_ORDER.index(row["kind"])))
+    return rows
+
+
+def missions_in_category(category: str) -> list[str]:
+    area, _, kind = str(category).partition(":")
+    return [key for key, info in _mission_index().items() if info["area"] == area and info["kind"] == kind]
+
+
+def mission_template(mission_key: str) -> dict[str, Any] | None:
+    """Completed state captured from a real save, when the editor ships one."""
+    info = _mission_index().get(mission_key) or {}
+    template = ((_mission_templates().get(info.get("set", "")) or {}).get("missions") or {}).get(mission_key)
+    return template if isinstance(template, dict) else None
+
+
+def _set_members(set_key: str) -> list[str]:
+    template = _mission_templates().get(set_key)
+    if isinstance(template, dict) and isinstance(template.get("missions"), dict):
+        return list(template["missions"])
+    return [key for key, info in _mission_index().items() if info["set"] == set_key]
+
+
+def _mark_set_if_finished(local_sets: dict[str, Any], set_key: str) -> None:
+    node = local_sets.get(set_key)
+    if not isinstance(node, dict):
+        return
+    missions = node.get("missions") if isinstance(node.get("missions"), dict) else {}
+    members = _set_members(set_key)
+    if not members or not all(str((missions.get(key) or {}).get("status") or "").lower() == "completed"
+                              for key in members):
+        return
+    template = _mission_templates().get(set_key)
+    if isinstance(template, dict):
+        status = template.get("status")
+    else:
+        # Activity and micro containers carry no set status in real saves.
+        status = None if ("zoneactivity" in set_key or set_key.startswith("missionset_micro_")) else "completed"
+    if status:
+        node["status"] = status
+
+
+def complete_mission(data: dict[str, Any], mission_key: str) -> bool:
+    """Write the finished state (captured template, else the minimal ``completed``)."""
+    info = _mission_index().get(mission_key)
+    if not info or mission_state(data, mission_key) == "done":
+        return False
+    local_sets = _local_sets(data, create=True)
+    set_node = local_sets.get(info["set"])
+    if not isinstance(set_node, dict):
+        set_node = local_sets[info["set"]] = {}
+    missions = get_or_create_dict(set_node, "missions")
+    template = mission_template(mission_key)
+    if template:
+        missions[mission_key] = copy.deepcopy(template)
+    else:
+        # No captured template: keep the facts the game already recorded for an
+        # active mission (choices such as "deactivated" branches) and drop only
+        # the in-progress bookkeeping (objectives, cursor, entry point).
+        previous = missions.get(mission_key) if isinstance(missions.get(mission_key), dict) else {}
+        state: dict[str, Any] = {"status": "completed"}
+        for field in ("ui_flags", "final"):
+            if field in previous:
+                state[field] = copy.deepcopy(previous[field])
+        missions[mission_key] = state
+    tracked = (data.get("missions") or {}).get("tracked_missions")
+    if isinstance(tracked, list) and mission_key in tracked:
+        data["missions"]["tracked_missions"] = [key for key in tracked if key != mission_key] or ["none"]
+    _mark_set_if_finished(local_sets, info["set"])
+    return True
+
+
+def reset_mission(data: dict[str, Any], mission_key: str, allow_main: bool = False) -> bool:
+    """Forget one mission so the game offers it again (main story only on request)."""
+    info = _mission_index().get(mission_key)
+    if not info or (info["kind"] == "main" and not allow_main) or mission_state(data, mission_key) == "none":
+        return False
+    local_sets = _local_sets(data)
+    set_node = local_sets.get(info["set"])
+    missions = set_node.get("missions") if isinstance(set_node, dict) else None
+    if not isinstance(missions, dict) or mission_key not in missions:
+        return False
+    del missions[mission_key]
+    set_node.pop("status", None)
+    if not missions:
+        del local_sets[info["set"]]
+    return True
+
+
+def main_prerequisites(mission_key: str) -> list[str]:
+    """Earlier main missions of the same story line (``requires`` chain, story order)."""
+    info = _mission_index().get(mission_key)
+    if not info or info["kind"] != "main":
+        return []
+    sets = cat.section("mission_sets")
+    needed: set[str] = set()
+    stack = list((sets.get(info["set"]) or {}).get("requires") or [])
+    while stack:
+        set_key = stack.pop()
+        if set_key in needed:
+            continue
+        needed.add(set_key)
+        stack.extend((sets.get(set_key) or {}).get("requires") or [])
+    earlier_in_set = [key for key, row in _mission_index().items()
+                      if row["set"] == info["set"] and row["sort"] < info["sort"]]
+    return [key for key, row in _mission_index().items()
+            if row["kind"] == "main" and row["set"] in needed] + earlier_in_set
+
+
+def complete_main_through(data: dict[str, Any], mission_key: str) -> int:
+    """Complete a main mission together with every earlier main mission it depends on."""
+    changed = sum(complete_mission(data, key) for key in main_prerequisites(mission_key))
+    return changed + int(complete_mission(data, mission_key))

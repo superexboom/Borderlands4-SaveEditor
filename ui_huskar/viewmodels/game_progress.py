@@ -17,6 +17,7 @@ from PyQt6.QtCore import QUrl, pyqtProperty, pyqtSignal, pyqtSlot
 from core import progress_catalog as cat
 from core import progress_logic as logic
 from core.unlock_data import CHARACTER_CLASSES
+from core.unlock_logic import update_sdu_points
 
 from .base import PageViewModel, register
 
@@ -37,6 +38,8 @@ class GameProgressViewModel(PageViewModel):
         self._challenge_category = ""
         self._collectible_categories: list[dict[str, Any]] = []
         self._collectible_category = ""
+        self._mission_categories: list[dict[str, Any]] = []
+        self._mission_category = ""
         self._maps: list[dict[str, Any]] = []
         self._current_map = "World_P"
         self._markers_cache: tuple[str, list[dict[str, Any]]] | None = None
@@ -105,9 +108,11 @@ class GameProgressViewModel(PageViewModel):
             self._collectible_categories = logic.collectible_categories(
                 data, self._lang(), self.strings.get("collectible_names") or {})
             self._maps = logic.map_list(data, self._lang(), self.strings.get("map_names") or {})
+            self._mission_categories = self._build_mission_categories(data)
         else:
             self._overview, self._summary, self._regions = {}, {}, []
             self._challenge_categories, self._collectible_categories = [], []
+            self._mission_categories = []
             self._maps = (logic.map_list({}, self._lang(), self.strings.get("map_names") or {}, track=False)
                           if self._kind == "live" else [])
         self._markers_cache = None
@@ -638,3 +643,135 @@ class GameProgressViewModel(PageViewModel):
         else:
             self.app.toast(str(toasts.get("teleport_failed", "Teleport failed: {error}")).format(error=error), "error")
         self._teleport_what = ""
+
+    # ------------------------------------------------------------------ #
+    # missions
+    # ------------------------------------------------------------------ #
+    def _mission_area_title(self, area: str) -> str:
+        names = self.strings.get("mission_areas") or {}
+        if area in ("", "extra"):
+            return str(names.get(area or "base", area or "Base game"))
+        return logic.area_title(area, self._lang())
+
+    def _build_mission_categories(self, data: dict[str, Any]) -> list[dict[str, Any]]:
+        kinds = self.strings.get("mission_kinds") or {}
+        return [dict(row, title=str(kinds.get(row["kind"], row["kind"])), area=self._mission_area_title(row["area_key"]))
+                for row in logic.mission_categories(data, self._lang())]
+
+    @pyqtProperty(list, notify=dataChanged)
+    def missionCategories(self) -> list[dict[str, Any]]:
+        return self._mission_categories
+
+    @pyqtProperty(str, notify=dataChanged)
+    def missionCategory(self) -> str:
+        return self._mission_category
+
+    @pyqtSlot(str)
+    def setMissionCategory(self, key: str) -> None:
+        self._mission_category = str(key)
+        self.dataChanged.emit()
+
+    def _mission_title(self, key: str) -> str:
+        row = cat.section("missions").get(key) or {}
+        return logic.game_text(cat.text(row.get("title"), self._lang(), key))
+
+    def _pending_prerequisites(self, data: dict[str, Any], key: str) -> list[str]:
+        return [item for item in logic.main_prerequisites(key) if logic.mission_state(data, item) != "done"]
+
+    @pyqtProperty(list, notify=dataChanged)
+    def missionRows(self) -> list[dict[str, Any]]:
+        data = self.controller.yaml_obj
+        if self._kind != "character" or not isinstance(data, dict) or not self._mission_category:
+            return []
+        lang = self._lang()
+        other = str(self._labels().get("region_other", "Other"))
+        index = logic._mission_index()
+        rows = []
+        for key in logic.missions_in_category(self._mission_category):
+            row = cat.section("missions").get(key) or {}
+            main = index[key]["kind"] == "main"
+            state = logic.mission_state(data, key)
+            objectives = logic.mission_objectives(data, key, lang) if state == "active" else []
+            region = str(row.get("region") or "")
+            rows.append({
+                "key": key,
+                "title": self._mission_title(key),
+                "desc": logic.game_text(cat.text(row.get("desc"), lang)),
+                "state": state,
+                "objectives": objectives,
+                "objectives_done": sum(1 for item in objectives if item["state"] in ("done", "skipped")),
+                # Main missions keep story order; the rest are grouped by region.
+                "group": "" if main else (cat.region_title(region, lang) if region else other),
+                "template": logic.mission_template(key) is not None,
+                "main": main,
+                "prerequisites": len(self._pending_prerequisites(data, key)) if main and state != "done" else 0,
+                "can_reset": not main and state != "none",
+            })
+        if rows and not rows[0]["main"]:
+            rows.sort(key=lambda item: (item["group"] == other, item["group"]))
+        return rows
+
+    def _confirm(self, key: str, callback: Callable[[], None], warning: bool = False, **values: Any) -> None:
+        texts = (self.strings.get("confirm") or {})
+        title = str(texts.get(key + "_title", ""))
+        text = str(texts.get(key + "_text", "")).format(**values)
+        self.app._request_confirm(title, text, lambda accepted: accepted and callback(), warning)
+
+    def _complete_missions(self, data: dict[str, Any], keys: list[str]) -> int:
+        changed = sum(logic.complete_mission(data, key) for key in keys)
+        if changed and any(logic._mission_index()[key]["kind"] == "activity" for key in keys):
+            update_sdu_points(data)  # activities feed the SDU token pool, like "complete all activities"
+        return changed
+
+    @pyqtSlot(str)
+    def completeMission(self, key: str) -> None:
+        data = self.controller.yaml_obj
+        if not self._editable() or key not in logic._mission_index():
+            return
+        title = self._mission_title(key)
+        pending = self._pending_prerequisites(data, key)
+        if pending:
+            self._confirm("complete_through",
+                          lambda: self._write(lambda d: self._complete_missions(d, pending + [key]), title),
+                          what=title, count=len(pending))
+            return
+        self._write(lambda d: self._complete_missions(d, [key]), title)
+
+    @pyqtSlot(str)
+    def resetMission(self, key: str) -> None:
+        if not self._editable() or key not in logic._mission_index():
+            return
+        title = self._mission_title(key)
+        self._confirm("reset_mission", lambda: self._write(lambda d: logic.reset_mission(d, key), title),
+                      warning=True, what=title)
+
+    def _category_title(self) -> str:
+        row = next((item for item in self._mission_categories if item["key"] == self._mission_category), None)
+        return f"{row['area']} · {row['title']}" if row else self._mission_category
+
+    @pyqtSlot()
+    def completeMissionCategory(self) -> None:
+        data = self.controller.yaml_obj
+        if not self._editable() or not self._mission_category:
+            return
+        keys = [key for key in logic.missions_in_category(self._mission_category)
+                if logic.mission_state(data, key) != "done"]
+        if not keys:
+            return
+        what = self._category_title()
+        self._confirm("complete_all_missions", lambda: self._write(lambda d: self._complete_missions(d, keys), what),
+                      what=what, count=len(keys))
+
+    @pyqtSlot()
+    def resetMissionCategory(self) -> None:
+        data = self.controller.yaml_obj
+        if not self._editable() or not self._mission_category:
+            return
+        keys = [key for key in logic.missions_in_category(self._mission_category)
+                if logic._mission_index()[key]["kind"] != "main" and logic.mission_state(data, key) != "none"]
+        if not keys:
+            return
+        what = self._category_title()
+        self._confirm("reset_all_missions",
+                      lambda: self._write(lambda d: sum(logic.reset_mission(d, key) for key in keys), what),
+                      warning=True, what=what, count=len(keys))
