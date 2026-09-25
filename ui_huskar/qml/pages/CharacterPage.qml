@@ -32,8 +32,6 @@ LockedFlickable {
         fill(specLevelInput, "专精等级");
         // 专精经验值与角色经验值一样是只读的声明式绑定（随等级联动），
         // 命令式赋值会打断绑定，这里不回填。
-        fill(moneyInput, "金钱");
-        fill(eridiumInput, "镒矿");
     }
 
     Component.onCompleted: fillFields(true)
@@ -142,11 +140,11 @@ LockedFlickable {
             }
         }
 
-        // ---- 货币 ----
+        // ---- 货币（Profile 的秘藏卡代币；角色存档的金钱/镒矿在「游戏进度」页） ----
         GlassPanel {
             Layout.fillWidth: true
             Layout.preferredHeight: currencyColumn.implicitHeight + 32
-            visible: !vmCharacter.liveMode && vmCharacter.saveLoaded
+            visible: !vmCharacter.liveMode && vmCharacter.saveLoaded && vmCharacter.isProfileSave
 
             ColumnLayout {
                 id: currencyColumn
@@ -156,27 +154,6 @@ LockedFlickable {
                 anchors.margins: 16
                 spacing: 8
                 HusText { text: page.groups.currency || ""; font.bold: true; color: HusTheme.Primary.colorTextBase }
-                // 主线 QFormLayout：标签列 + 输入列
-                GridLayout {
-                    Layout.fillWidth: true
-                    columns: 2
-                    columnSpacing: 10
-                    rowSpacing: 8
-                    HusText { Layout.preferredWidth: 110; visible: !vmCharacter.isProfileSave; text: page.labels.money || ""; color: HusTheme.Primary.colorTextSecondary }
-                    HusInput {
-                        id: moneyInput
-                        visible: !vmCharacter.isProfileSave
-                        Layout.fillWidth: true
-                        onEditingFinished: vmCharacter.setField("金钱", text)
-                    }
-                    HusText { Layout.preferredWidth: 110; visible: !vmCharacter.isProfileSave; text: page.labels.eridium || ""; color: HusTheme.Primary.colorTextSecondary }
-                    HusInput {
-                        id: eridiumInput
-                        visible: !vmCharacter.isProfileSave
-                        Layout.fillWidth: true
-                        onEditingFinished: vmCharacter.setField("镒矿", text)
-                    }
-                }
                 Repeater {
                     id: vaultRepeater
                     model: vmCharacter.isProfileSave ? vmCharacter.vaultCurrencies : []

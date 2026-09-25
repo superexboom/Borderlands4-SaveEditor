@@ -275,7 +275,7 @@
       "preset_credit": ""
     },
     "buttons": {
-      "apply_changes": "应用角色与货币更改",
+      "apply_changes": "应用角色更改",
       "apply_profile_changes": "应用 Profile 货币更改",
       "sync_levels": "同步背包所有物品等级至当前角色等级",
       "toggle_infinite_ammo": "切换无限弹药",

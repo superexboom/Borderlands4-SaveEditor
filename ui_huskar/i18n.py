@@ -17,6 +17,8 @@ LANGUAGES = (
     ("ua", "Українська"),
 )
 DEFAULT_LANGUAGE = "zh-CN"
+#: 独立维护的多语言文案文件：{"zh-CN": {...}, "en-US": {...}, "ru": {...}, "ua": {...}}
+EXTRA_CATALOGS = ("i18n/game_progress.json",)
 _LANGUAGE_ALIASES = {
     "zh": "zh-CN",
     "zh_cn": "zh-CN",
@@ -30,6 +32,14 @@ _LANGUAGE_ALIASES = {
     "uk-ua": "ua",
     "ua-ua": "ua",
 }
+
+
+def _deep_merge(target: dict[str, Any], extra: dict[str, Any]) -> None:
+    for key, value in extra.items():
+        if isinstance(value, dict) and isinstance(target.get(key), dict):
+            _deep_merge(target[key], value)
+        else:
+            target[key] = value
 
 
 def normalize_language(lang: object) -> str:
@@ -59,6 +69,12 @@ class Localizer:
         self._fallback = resource_loader.load_json_resource(
             resource_loader.get_ui_localization_file(DEFAULT_LANGUAGE)
         ) or {}
+        # 新页面的文案放在独立的多语言文件里（整文件按语言分节），合并进主词库；
+        # 主词库的俄/乌文件为手工维护格式，不适合程序化增改。
+        for name in EXTRA_CATALOGS:
+            extra = resource_loader.load_json_resource(name) or {}
+            _deep_merge(self._data, extra.get(self.lang) or {})
+            _deep_merge(self._fallback, extra.get(DEFAULT_LANGUAGE) or {})
 
     def set_language(self, lang: str) -> None:
         lang = normalize_language(lang)

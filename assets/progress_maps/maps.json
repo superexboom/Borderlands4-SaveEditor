@@ -1,0 +1,566 @@
+{
+ "source_folder": "2026-09-11",
+ "maps": {
+  "World_P": {
+   "image": "World_P.jpg",
+   "size": [
+    4096,
+    4096
+   ],
+   "transform": [
+    1.219196358e-06,
+    0.484803652,
+    1.21918773e-06,
+    0.5660386647
+   ],
+   "approximate": false,
+   "points": 850,
+   "inside": 1.0,
+   "on_content": 0.925
+  },
+  "Elpis_P": {
+   "image": "Elpis_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    5.0000005e-06,
+    0.5680500018,
+    5.0000005e-06,
+    0.1108499611
+   ],
+   "approximate": false,
+   "points": 25,
+   "inside": 0.76,
+   "on_content": 0.64
+  },
+  "ElpisElevator_P": {
+   "image": "ElpisElevator_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    5e-05,
+    0.5305,
+    5e-05,
+    0.465
+   ],
+   "approximate": false,
+   "points": 2,
+   "inside": 1.0,
+   "on_content": 0.0
+  },
+  "Fortress_Grasslands_P": {
+   "image": "Fortress_Grasslands_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    1.111111111e-05,
+    0.9055555556,
+    1.111111111e-05,
+    0.7704591222
+   ],
+   "approximate": false,
+   "points": 14,
+   "inside": 1.0,
+   "on_content": 0.929
+  },
+  "Fortress_Mountains_P": {
+   "image": "Fortress_Mountains_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    1.428571429e-05,
+    0.1898571429,
+    1.428571429e-05,
+    0.8795714286
+   ],
+   "approximate": false,
+   "points": 10,
+   "inside": 1.0,
+   "on_content": 1.0
+  },
+  "Fortress_Shatteredlands_P": {
+   "image": "Fortress_Shatteredlands_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    1.428571429e-05,
+    0.765,
+    1.428571429e-05,
+    0.969
+   ],
+   "approximate": false,
+   "points": 10,
+   "inside": 1.0,
+   "on_content": 0.9
+  },
+  "Intro_P": {
+   "image": "Intro_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    8.888889679e-06,
+    0.3392080924,
+    8.888889679e-06,
+    0.905207796
+   ],
+   "approximate": false,
+   "points": 2,
+   "inside": 1.0,
+   "on_content": 0.5
+  },
+  "UpperCity_P": {
+   "image": "UpperCity_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    1.111111111e-05,
+    0.1521277778,
+    1.111111111e-05,
+    0.5
+   ],
+   "approximate": false,
+   "points": 18,
+   "inside": 0.889,
+   "on_content": 0.667
+  },
+  "Vault_Grasslands_P": {
+   "image": "Vault_Grasslands_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    6.756757213e-06,
+    0.34375603,
+    6.756757213e-06,
+    1.160825315
+   ],
+   "approximate": false,
+   "points": 9,
+   "inside": 1.0,
+   "on_content": 1.0
+  },
+  "Vault_Mountains_P": {
+   "image": "Vault_Mountains_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    7.142857653e-06,
+    0.3321428452,
+    7.142857653e-06,
+    0.2999999857
+   ],
+   "approximate": false,
+   "points": 9,
+   "inside": 1.0,
+   "on_content": 1.0
+  },
+  "Vault_ShatteredLands_P": {
+   "image": "Vault_ShatteredLands_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    7.407407956e-06,
+    0.7714046423,
+    7.407407956e-06,
+    1.214596453
+   ],
+   "approximate": false,
+   "points": 9,
+   "inside": 1.0,
+   "on_content": 1.0
+  },
+  "Banjo_P": {
+   "image": "Banjo_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    1.492537313e-05,
+    0.5885804179,
+    1.492537313e-05,
+    0.3807705672
+   ],
+   "approximate": false,
+   "points": 6,
+   "inside": 1.0,
+   "on_content": 0.667
+  },
+  "Cello_P": {
+   "image": "Cello_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    5.882353633e-06,
+    0.04863178807,
+    5.882353633e-06,
+    0.805364683
+   ],
+   "approximate": false,
+   "points": 27,
+   "inside": 1.0,
+   "on_content": 0.963
+  },
+  "Cowbell_P": {
+   "image": "Cowbell_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    3.0303e-06,
+    0.62074,
+    3.0304e-06,
+    0.40001
+   ],
+   "approximate": false,
+   "points": 121,
+   "inside": 1.0,
+   "on_content": 0.884
+  },
+  "VaultoftheDamned_P": {
+   "image": "VaultoftheDamned_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    1e-05,
+    0.7767711,
+    1e-05,
+    0.973295
+   ],
+   "approximate": false,
+   "points": 21,
+   "inside": 0.762,
+   "on_content": 0.667
+  },
+  "Harmonica_P": {
+   "image": "Harmonica_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    2.0005e-06,
+    0.49348,
+    2.0004e-06,
+    0.52363
+   ],
+   "approximate": false,
+   "points": 147,
+   "inside": 1.0,
+   "on_content": 0.918
+  },
+  "VolcanoFortress_P": {
+   "image": "VolcanoFortress_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    6.666667111e-06,
+    0.3825136922,
+    6.666667111e-06,
+    0.3343680423
+   ],
+   "approximate": false,
+   "points": 12,
+   "inside": 1.0,
+   "on_content": 0.75
+  },
+  "Harp_P": {
+   "image": "Harp_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    4.00000032e-06,
+    0.5,
+    4.00000032e-06,
+    0.4399999952
+   ],
+   "approximate": false,
+   "points": 20,
+   "inside": 1.0,
+   "on_content": 0.9
+  },
+  "Mandolin1_P": {
+   "image": "Mandolin1_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    5.263158449e-06,
+    0.5842105352,
+    5.263158449e-06,
+    0.4736842078
+   ],
+   "approximate": false,
+   "points": 20,
+   "inside": 1.0,
+   "on_content": 1.0
+  },
+  "Mandolin_CoS_P": {
+   "image": "Mandolin_CoS_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    4e-05,
+    3.5231936,
+    4e-05,
+    0.494875752
+   ],
+   "approximate": false,
+   "points": 8,
+   "inside": 1.0,
+   "on_content": 1.0
+  },
+  "Raid1_P": {
+   "image": "Raid1_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    8.333334028e-06,
+    0.8166666931,
+    8.333334028e-06,
+    0.6833333486
+   ],
+   "approximate": false,
+   "points": 7,
+   "inside": 1.0,
+   "on_content": 0.714
+  },
+  "Raid2_P": {
+   "image": "Raid2_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    1.149425287e-05,
+    0.6690667816,
+    1.149425287e-05,
+    1.664665172
+   ],
+   "approximate": false,
+   "points": 7,
+   "inside": 1.0,
+   "on_content": 0.857
+  },
+  "Tuba_P": {
+   "image": "Tuba_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    9.090909091e-06,
+    -0.6663324545,
+    9.090909091e-06,
+    1.446437545
+   ],
+   "approximate": false,
+   "points": 16,
+   "inside": 1.0,
+   "on_content": 1.0
+  },
+  "Viola_ElpisVile_P": {
+   "image": "Viola_ElpisVile_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    6.060606795e-06,
+    0.6872925985,
+    6.060606795e-06,
+    0.5657918201
+   ],
+   "approximate": false,
+   "points": 20,
+   "inside": 0.65,
+   "on_content": 0.55
+  },
+  "Viola_P": {
+   "image": "Viola_P.jpg",
+   "size": [
+    2048,
+    2048
+   ],
+   "transform": [
+    1e-05,
+    0.49,
+    1e-05,
+    0.59
+   ],
+   "approximate": false,
+   "points": 13,
+   "inside": 1.0,
+   "on_content": 0.923
+  }
+ },
+ "icons": {
+  "pingchest": "icons/PingChest.png",
+  "pingdefault": "icons/PingDefault.png",
+  "t_ui_discovery_vault": "icons/T_UI_Discovery_Vault.png",
+  "ico_activities_bunker": "icons/ico_Activities_Bunker.png",
+  "ico_activities_bunker_completed": "icons/ico_Activities_Bunker_Completed.png",
+  "ico_activities_crawlers": "icons/ico_Activities_Crawlers.png",
+  "ico_activities_crawlers_completed": "icons/ico_Activities_Crawlers_Completed.png",
+  "ico_collectables_arjay_log": "icons/ico_Collectables_Arjay_Log.png",
+  "ico_collectables_echo_log": "icons/ico_Collectables_Echo_Log.png",
+  "ico_collectables_shrine": "icons/ico_Collectables_Shrine.png",
+  "ico_collectables_vault_symbol": "icons/ico_Collectables_Vault_Symbol.png",
+  "ico_custom_waypoint": "icons/ico_Custom_Waypoint.png",
+  "ico_ft_fortress": "icons/ico_FT_Fortress.png",
+  "ico_ft_fortress_completed": "icons/ico_FT_Fortress_Completed.png",
+  "ico_ft_level_transition_default": "icons/ico_FT_Level_Transition_default.png",
+  "ico_ft_safehouse": "icons/ico_FT_Safehouse.png",
+  "ico_ft_safehouse_completed": "icons/ico_FT_Safehouse_Completed.png",
+  "ico_ft_silo": "icons/ico_FT_Silo.png",
+  "ico_ft_silo_completed": "icons/ico_FT_Silo_Completed.png",
+  "ico_misc_bounty_board_empty": "icons/ico_Misc_Bounty_Board_Empty.png",
+  "ico_misc_vending_machine_health": "icons/ico_Misc_Vending_Machine_Health.png",
+  "ico_misc_vending_machine_munitions": "icons/ico_Misc_Vending_Machine_Munitions.png",
+  "ico_misc_vending_machine_resupply": "icons/ico_Misc_Vending_Machine_Resupply.png",
+  "ico_activities_auger_mine": "icons/ico_activities_auger_mine.png",
+  "ico_activities_auger_mine_completed": "icons/ico_activities_auger_mine_completed.png",
+  "ico_activities_drill_site": "icons/ico_activities_drill_site.png",
+  "ico_activities_drill_site_completed": "icons/ico_activities_drill_site_completed.png",
+  "ico_activity_waypoint": "icons/ico_activity_waypoint.png",
+  "ico_activity_waypoint_brdcrmb": "icons/ico_activity_waypoint_brdcrmb.png",
+  "ico_activity_waypoint_optnl": "icons/ico_activity_waypoint_optnl.png",
+  "ico_boss_replay": "icons/ico_boss_replay.png",
+  "ico_collectables_arjay_log_completed": "icons/ico_collectables_arjay_log_completed.png",
+  "ico_collectables_cache": "icons/ico_collectables_cache.png",
+  "ico_collectables_cache_completed": "icons/ico_collectables_cache_completed.png",
+  "ico_collectables_dahl_cache": "icons/ico_collectables_dahl_cache.png",
+  "ico_collectables_dahl_cache_complete": "icons/ico_collectables_dahl_cache_complete.png",
+  "ico_collectables_echo_log_completed": "icons/ico_collectables_echo_log_completed.png",
+  "ico_collectables_evocarium": "icons/ico_collectables_evocarium.png",
+  "ico_collectables_evocarium_completed": "icons/ico_collectables_evocarium_completed.png",
+  "ico_collectables_lost_capsule1": "icons/ico_collectables_lost_capsule1.png",
+  "ico_collectables_lost_capsule1_completed": "icons/ico_collectables_lost_capsule1_completed.png",
+  "ico_collectables_lost_capsule2": "icons/ico_collectables_lost_capsule2.png",
+  "ico_collectables_propaganda_speaker": "icons/ico_collectables_propaganda_speaker.png",
+  "ico_collectables_propaganda_speaker_completed": "icons/ico_collectables_propaganda_speaker_completed.png",
+  "ico_collectables_record_player": "icons/ico_collectables_record_player.png",
+  "ico_collectables_record_player_complete": "icons/ico_collectables_record_player_complete.png",
+  "ico_collectables_safe": "icons/ico_collectables_safe.png",
+  "ico_collectables_safe_completed": "icons/ico_collectables_safe_completed.png",
+  "ico_collectables_shrine_completed": "icons/ico_collectables_shrine_completed.png",
+  "ico_collectables_vault_damned": "icons/ico_collectables_vault_damned.png",
+  "ico_collectables_vault_damned_complete": "icons/ico_collectables_vault_damned_complete.png",
+  "ico_collectables_vault_fragment": "icons/ico_collectables_vault_fragment.png",
+  "ico_collectables_vault_fragment_completed": "icons/ico_collectables_vault_fragment_completed.png",
+  "ico_collectables_vault_symbol_completed": "icons/ico_collectables_vault_symbol_completed.png",
+  "ico_collectables_vh_log": "icons/ico_collectables_vh_log.png",
+  "ico_collectables_vh_log_completed": "icons/ico_collectables_vh_log_completed.png",
+  "ico_contract_mission": "icons/ico_contract_mission.png",
+  "ico_dlc_clots": "icons/ico_dlc_clots.png",
+  "ico_dlc_collectables_harmony_echo_logs": "icons/ico_dlc_collectables_harmony_echo_logs.png",
+  "ico_dlc_collectables_harmony_echo_logs_completed": "icons/ico_dlc_collectables_harmony_echo_logs_completed.png",
+  "ico_dlc_collectables_island_safe": "icons/ico_dlc_collectables_island_safe.png",
+  "ico_dlc_collectables_island_safe_completed": "icons/ico_dlc_collectables_island_safe_completed.png",
+  "ico_dlc_collectables_tediore_guns": "icons/ico_dlc_collectables_tediore_guns.png",
+  "ico_dlc_collectables_tediore_guns_completed": "icons/ico_dlc_collectables_tediore_guns_completed.png",
+  "ico_dlc_dahl_bunker": "icons/ico_dlc_dahl_bunker.png",
+  "ico_dlc_dahl_completed": "icons/ico_dlc_dahl_completed.png",
+  "ico_dlc_lock_maingame": "icons/ico_dlc_lock_maingame.png",
+  "ico_dlc_mission_giver_maingame": "icons/ico_dlc_mission_giver_maingame.png",
+  "ico_dlc_rift_boss_totem": "icons/ico_dlc_rift_boss_totem.png",
+  "ico_dlc_safehouse_tiki_bar": "icons/ico_dlc_safehouse_tiki_bar.png",
+  "ico_dlc_safehouse_tiki_bar_completed": "icons/ico_dlc_safehouse_tiki_bar_completed.png",
+  "ico_dlc_scav_pump": "icons/ico_dlc_scav_pump.png",
+  "ico_dlc_scav_pump_completed": "icons/ico_dlc_scav_pump_completed.png",
+  "ico_dlc_shortcut": "icons/ico_dlc_shortcut.png",
+  "ico_dlc_speakeasy_door": "icons/ico_dlc_speakeasy_door.png",
+  "ico_dlc_tediore_grotto": "icons/ico_dlc_tediore_grotto.png",
+  "ico_dlc_tediore_grotto_completed": "icons/ico_dlc_tediore_grotto_completed.png",
+  "ico_dlc_tediore_lockdown": "icons/ico_dlc_tediore_lockdown.png",
+  "ico_dlc_tediore_lockdown_completed": "icons/ico_dlc_tediore_lockdown_completed.png",
+  "ico_dlc_treasure_hunt": "icons/ico_dlc_treasure_hunt.png",
+  "ico_dlc_treasure_hunt_arena": "icons/ico_dlc_treasure_hunt_arena.png",
+  "ico_dlc_treasure_hunt_arena_completed": "icons/ico_dlc_treasure_hunt_arena_completed.png",
+  "ico_dlc_treasure_hunt_completed": "icons/ico_dlc_treasure_hunt_completed.png",
+  "ico_dlc_treasure_hunt_tracker": "icons/ico_dlc_treasure_hunt_tracker.png",
+  "ico_dlc_world_event_volcano": "icons/ico_dlc_world_event_volcano.png",
+  "ico_faction_mission": "icons/ico_faction_mission.png",
+  "ico_faction_mission_npc": "icons/ico_faction_mission_npc.png",
+  "ico_last_death": "icons/ico_last_death.png",
+  "ico_main_mission": "icons/ico_main_mission.png",
+  "ico_main_mission_brdcrmb": "icons/ico_main_mission_brdcrmb.png",
+  "ico_main_mission_brdcrmb_dlc": "icons/ico_main_mission_brdcrmb_dlc.png",
+  "ico_main_mission_dlc": "icons/ico_main_mission_dlc.png",
+  "ico_main_mission_npc": "icons/ico_main_mission_npc.png",
+  "ico_main_mission_optnl": "icons/ico_main_mission_optnl.png",
+  "ico_main_mission_optnl_dlc": "icons/ico_main_mission_optnl_dlc.png",
+  "ico_menu_bank": "icons/ico_menu_bank.png",
+  "ico_menu_firmware_transfer": "icons/ico_menu_firmware_transfer.png",
+  "ico_menu_lost_loot": "icons/ico_menu_lost_loot.png",
+  "ico_menu_respec_station": "icons/ico_menu_respec_station.png",
+  "ico_menu_target_dummies": "icons/ico_menu_target_dummies.png",
+  "ico_menu_vending_black_market": "icons/ico_menu_vending_black_market.png",
+  "ico_misc_generic_poi_2": "icons/ico_misc_generic_poi_2.png",
+  "ico_misc_golden_chests": "icons/ico_misc_golden_chests.png",
+  "ico_misc_legendaries": "icons/ico_misc_legendaries.png",
+  "ico_misc_pearl": "icons/ico_misc_pearl.png",
+  "ico_mission_tracker_raid": "icons/ico_mission_tracker_raid.png",
+  "ico_player_icon": "icons/ico_player_icon.png",
+  "ico_secondary_hub_completed": "icons/ico_secondary_hub_completed.png",
+  "ico_secondary_vault": "icons/ico_secondary_vault.png",
+  "ico_secondary_vault_completed": "icons/ico_secondary_vault_completed.png",
+  "ico_side_mission": "icons/ico_side_mission.png",
+  "ico_side_mission_brdcrmb": "icons/ico_side_mission_brdcrmb.png",
+  "ico_side_mission_brdcrmb_dlc": "icons/ico_side_mission_brdcrmb_dlc.png",
+  "ico_side_mission_dlc": "icons/ico_side_mission_dlc.png",
+  "ico_side_mission_npc": "icons/ico_side_mission_npc.png",
+  "ico_side_mission_npc_dlc": "icons/ico_side_mission_npc_dlc.png",
+  "ico_side_mission_optnl": "icons/ico_side_mission_optnl.png",
+  "ico_side_mission_optnl_dlc": "icons/ico_side_mission_optnl_dlc.png",
+  "ico_trait_mission": "icons/ico_trait_mission.png",
+  "ico_vault_area": "icons/ico_vault_area.png",
+  "ico_vault_fragment_area": "icons/ico_vault_fragment_area.png",
+  "ico_world_event_airship": "icons/ico_world_event_airship.png",
+  "ico_world_event_colosseum": "icons/ico_world_event_colosseum.png",
+  "ico_world_event_meteors": "icons/ico_world_event_meteors.png",
+  "ico_world_event_pearl_gen": "icons/ico_world_event_pearl_gen.png",
+  "ico_world_events_brdcrmb": "icons/ico_world_events_brdcrmb.png",
+  "ico_world_events_optnl": "icons/ico_world_events_optnl.png",
+  "player_class_dark_siren": "icons/player_class_dark_siren.png",
+  "player_class_exo_soldier": "icons/player_class_exo_soldier.png",
+  "player_class_gravitar": "icons/player_class_gravitar.png",
+  "player_class_loveless": "icons/player_class_loveless.png",
+  "player_class_paladin": "icons/player_class_paladin.png",
+  "player_class_robodealer_tooltip": "icons/player_class_robodealer_tooltip.png",
+  "ui_art_celeb_takedown_icon": "icons/ui_art_celeb_takedown_icon.png"
+ }
+}

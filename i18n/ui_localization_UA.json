@@ -275,7 +275,7 @@
       "preset_credit": ""
     },
     "buttons": {
-      "apply_changes": "Застосувати зміни персонажа та валюти",
+      "apply_changes": "Застосувати зміни персонажа",
       "apply_profile_changes": "Застосувати валюти Profile",
       "sync_levels": "Синхронізувати рівні предметів у рюкзаку з персонажем",
       "toggle_infinite_ammo": "Нескінченні набої",

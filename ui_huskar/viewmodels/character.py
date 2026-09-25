@@ -291,7 +291,9 @@ class CharacterViewModel(PageViewModel):
         self._is_profile = bool(data.get("is_profile_save", False))
         self._cur_paths = data.get("cur_paths", {}) or {}
         fields = {}
-        for key in ("名称", "难度", "角色等级", "角色经验值", "专精等级", "专精点数", "金钱", "镒矿"):
+        # 金钱/镒矿已移到「游戏进度」页；这里不再持有，apply_character_data 对缺失
+        # 的货币字段不做写入，避免用本页的旧值覆盖游戏进度页的修改。
+        for key in ("名称", "难度", "角色等级", "角色经验值", "专精等级", "专精点数"):
             fields[key] = str(data.get(key, "") or "")
         for card in VAULT_CARD_TOKENS:
             if isinstance(card, dict) and isinstance(card.get("currency_key"), str):

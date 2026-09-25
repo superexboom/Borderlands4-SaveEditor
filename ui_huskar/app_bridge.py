@@ -23,13 +23,13 @@ from core.theme_manager import ThemeManager
 from .i18n import DEFAULT_LANGUAGE, LANGUAGES, Localizer, normalize_language
 
 PAGE_KEYS = (
-    "select_save", "character", "items", "serial_inspector", "yaml_editor",
+    "select_save", "character", "game_progress", "items", "serial_inspector", "yaml_editor",
     "class_mod", "enhancement", "weapon_editor", "weapon_generator", "god_roll",
     "grenade", "shield", "repkit", "heavy_weapon", "loadout_manager", "converter",
 )
 # HuskarUI HusIcon 字体码点（与主线 nav 按钮一一对应）
 PAGE_ICONS = {
-    "select_save": 0xEAE5, "character": 0xED31, "items": 0xEA0C,
+    "select_save": 0xEAE5, "character": 0xED31, "game_progress": 0xED09, "items": 0xEA0C,
     "serial_inspector": 0xEAB8, "yaml_editor": 0xE9BF, "class_mod": 0xEA52,
     "enhancement": 0xECFB, "weapon_editor": 0xE966, "weapon_generator": 0xEC64,
     "god_roll": 0xEC8D, "grenade": 0xE9A6, "shield": 0xED65,
@@ -37,7 +37,7 @@ PAGE_ICONS = {
     "converter": 0xE9BF,
 }
 # 主线导航在这两组之间有分隔线
-PAGE_GROUPS = (("select_save", "character", "items", "serial_inspector", "yaml_editor"),
+PAGE_GROUPS = (("select_save", "character", "game_progress", "items", "serial_inspector", "yaml_editor"),
                ("class_mod", "enhancement", "weapon_editor", "weapon_generator", "god_roll",
                 "grenade", "shield", "repkit", "heavy_weapon"),
                ("loadout_manager", "converter"))

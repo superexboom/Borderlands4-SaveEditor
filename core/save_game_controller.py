@@ -220,6 +220,15 @@ class SaveGameController:
                 parent[last] = value
         self.mark_dirty()
 
+    def mutate(self, change: Callable[[Dict[str, Any]], Any]) -> Any:
+        """在锁内对已加载存档执行一次逻辑修改（可跨多个节点），完成后置脏。"""
+        with self._lock:
+            if not isinstance(self.yaml_obj, dict):
+                raise ValueError("存档未加载")
+            result = change(self.yaml_obj)
+        self.mark_dirty()
+        return result
+
     def rename_key(self, path: Union[tuple, list], new_key: str) -> None:
         """重命名 dict 键（保持键的原始位置与值不变）。"""
         with self._lock:

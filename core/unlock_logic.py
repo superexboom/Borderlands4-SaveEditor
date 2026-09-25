@@ -950,5 +950,7 @@ def max_ammo(data):
         'shotgun': 220,
         'smg': 1620,
         'sniper': 190,
-        'repkit': 10,
+        # 存档里修复套件弹药的键是 repairkit；早期版本误写成 repkit（游戏不认），顺带清掉
+        'repairkit': 10,
     })
+    ammo.pop('repkit', None)
