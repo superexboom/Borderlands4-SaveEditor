@@ -12,14 +12,21 @@ import json
 import time
 from typing import Any, Callable
 
-from PyQt6.QtCore import QUrl, pyqtProperty, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import Qt, QUrl, pyqtProperty, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QGuiApplication
 
+from core import account_progress as account
 from core import progress_catalog as cat
 from core import progress_logic as logic
 from core.unlock_data import CHARACTER_CLASSES
 from core.unlock_logic import update_sdu_points
 
 from .base import PageViewModel, register
+
+
+# Live progress is re-read when the page opens or the editor window regains focus
+# (e.g. alt-tab back from the game) and the last read is older than this.
+LIVE_STALE_SECONDS = 5.0
 
 
 @register("game_progress", "GameProgressPage.qml")
@@ -40,6 +47,8 @@ class GameProgressViewModel(PageViewModel):
         self._collectible_category = ""
         self._mission_categories: list[dict[str, Any]] = []
         self._mission_category = ""
+        self._account_categories: list[dict[str, Any]] = []
+        self._account_category = "sdu"
         self._maps: list[dict[str, Any]] = []
         self._current_map = "World_P"
         self._markers_cache: tuple[str, list[dict[str, Any]]] | None = None
@@ -53,6 +62,9 @@ class GameProgressViewModel(PageViewModel):
         app.liveChanged.connect(self._on_live_changed)
         app.runtimeActionFinished.connect(self._on_runtime_finished)
         app.liveProgressChanged.connect(self._on_live_progress)
+        qapp = QGuiApplication.instance()
+        if qapp is not None:
+            qapp.applicationStateChanged.connect(self._on_application_state)
 
     # ------------------------------------------------------------------ #
     # helpers
@@ -97,10 +109,19 @@ class GameProgressViewModel(PageViewModel):
     def on_activated(self) -> None:
         super().on_activated()
         # Live: read the game's progress when the page opens (never on a timer).
-        if self.app.liveActive:
-            snapshot, meta, loading, _error = self.app.live_progress()
-            if not loading and (snapshot is None or time.time() - float(meta.get("read_at") or 0) > 120):
-                self.app.fetch_live_progress()
+        self._refresh_live_if_stale()
+
+    def _on_application_state(self, state) -> None:
+        # Coming back from the game (alt-tab) re-reads once while this page is shown.
+        if state == Qt.ApplicationState.ApplicationActive and self.app.pageKey == "game_progress":
+            self._refresh_live_if_stale()
+
+    def _refresh_live_if_stale(self) -> None:
+        if not self.app.liveActive:
+            return
+        snapshot, meta, loading, _error = self.app.live_progress()
+        if not loading and (snapshot is None or time.time() - float(meta.get("read_at") or 0) > LIVE_STALE_SECONDS):
+            self.app.fetch_live_progress()
 
     def _write(self, change: Callable[[dict[str, Any]], Any], what: str) -> bool:
         if not self._editable():
@@ -140,6 +161,8 @@ class GameProgressViewModel(PageViewModel):
             self._mission_categories = []
             self._maps = (logic.map_list({}, self._lang(), self.strings.get("map_names") or {}, track=False)
                           if self._kind == "live" else [])
+        self._account_categories = (self._build_account_categories(data)
+                                    if self._kind == "profile" and isinstance(data, dict) else [])
         self._markers_cache = None
         self.dataChanged.emit()
 
@@ -828,3 +851,113 @@ class GameProgressViewModel(PageViewModel):
         self._confirm("reset_all_missions",
                       lambda: self._write(lambda d: sum(logic.reset_mission(d, key) for key in keys), what),
                       warning=True, what=what, count=len(keys))
+
+    # ------------------------------------------------------------------ #
+    # account progress (profile save)
+    # ------------------------------------------------------------------ #
+    def _account_ledger_title(self, ledger: str) -> str:
+        names = self.strings.get("account_ledgers") or {}
+        if names.get(ledger):
+            return str(names[ledger])
+        if ledger.startswith("sharedprogress_"):
+            token = ledger[len("sharedprogress_"):]
+            place = (logic.area_title(token, self._lang()) if token in (cat.catalog().get("areas") or {})
+                     else cat.region_title(token, self._lang()))
+            return str(names.get("shared_progress_format", "{place}")).format(place=place)
+        who = account.character_name(ledger)
+        return str(names.get("character_format", "{name}")).format(name=who) if who else ledger
+
+    def _build_account_categories(self, data: dict[str, Any]) -> list[dict[str, Any]]:
+        groups = self.strings.get("account_groups") or {}
+        names = self.strings.get("account_ledgers") or {}
+        sdu = account.sdu_rows(data, self._lang())
+        powers = account.vault_power_rows(data)
+        rows = [
+            {"key": "sdu", "title": str(names.get("sdu", "SDU")), "area": str(groups.get("upgrades", "")),
+             "done": sum(row["level"] for row in sdu), "total": sum(row["max"] for row in sdu)},
+            {"key": "vaultpower", "title": str(names.get("vaultpower", "Vault powers")),
+             "area": str(groups.get("upgrades", "")),
+             "done": sum(1 for row in powers if row["activated"]), "total": len(powers)},
+        ]
+        for ledger in account.ledger_keys():
+            done, total = account.ledger_counts(data, ledger)
+            group = "cosmetics" if ledger in account.COSMETIC_LEDGERS else "shared"
+            rows.append({"key": "ledger:" + ledger, "title": self._account_ledger_title(ledger),
+                         "area": str(groups.get(group, group)), "done": done, "total": total})
+        return rows
+
+    @pyqtProperty(list, notify=dataChanged)
+    def accountCategories(self) -> list[dict[str, Any]]:
+        return self._account_categories
+
+    @pyqtProperty(str, notify=dataChanged)
+    def accountCategory(self) -> str:
+        return self._account_category
+
+    @pyqtSlot(str)
+    def setAccountCategory(self, key: str) -> None:
+        self._account_category = str(key)
+        self.dataChanged.emit()
+
+    @pyqtProperty(str, notify=dataChanged)
+    def accountView(self) -> str:
+        return "ledger" if self._account_category.startswith("ledger:") else self._account_category
+
+    @pyqtProperty("QVariantMap", notify=dataChanged)
+    def sduPoints(self) -> dict[str, Any]:
+        data = self.controller.yaml_obj
+        return account.sdu_points(data) if self._kind == "profile" and isinstance(data, dict) else {}
+
+    @pyqtProperty(list, notify=dataChanged)
+    def accountRows(self) -> list[dict[str, Any]]:
+        data = self.controller.yaml_obj
+        if self._kind != "profile" or not isinstance(data, dict):
+            return []
+        if self._account_category == "sdu":
+            return account.sdu_rows(data, self._lang())
+        if self._account_category == "vaultpower":
+            titles = self.strings.get("vault_powers") or {}
+            return [dict(row, title=str(titles.get(row["key"], row["alias"]))) for row in account.vault_power_rows(data)]
+        ledger = self._account_category.partition(":")[2]
+        kinds = self.strings.get("cosmetic_kinds") or {}
+        rows = account.ledger_rows(data, ledger, self._lang())
+        if ledger in account.COSMETIC_LEDGERS:
+            for row in rows:
+                row["group"] = str(kinds.get(row["group"], row["group"]))
+        return rows
+
+    def _account_write(self, change: Callable[[dict[str, Any]], Any], what: str) -> None:
+        def apply(data: dict[str, Any]) -> Any:
+            result = change(data)
+            # Account-wide activity/collectible unlocks feed the SDU token pool (never lowers it).
+            update_sdu_points(data)
+            return result
+        self._write(apply, what)
+
+    def _account_title(self) -> str:
+        row = next((item for item in self._account_categories if item["key"] == self._account_category), None)
+        return row["title"] if row else self._account_category
+
+    @pyqtSlot(str, int)
+    def setSduLevel(self, key: str, level: int) -> None:
+        self._account_write(lambda d: account.set_sdu_level(d, key, level), self._account_title())
+
+    @pyqtSlot(bool)
+    def setAllSdu(self, maxed: bool) -> None:
+        self._account_write(lambda d: account.set_all_sdu(d, maxed), self._account_title())
+
+    @pyqtSlot(str, bool)
+    def setVaultPower(self, alias: str, activated: bool) -> None:
+        self._account_write(lambda d: account.set_vault_power(d, alias, activated), self._account_title())
+
+    @pyqtSlot(str, bool)
+    def setLedgerEntry(self, entry: str, unlocked: bool) -> None:
+        ledger = self._account_category.partition(":")[2]
+        if ledger:
+            self._account_write(lambda d: account.set_entries(d, ledger, [entry], unlocked), self._account_title())
+
+    @pyqtSlot(bool)
+    def setLedgerAll(self, unlocked: bool) -> None:
+        ledger = self._account_category.partition(":")[2]
+        if ledger:
+            self._account_write(lambda d: account.set_ledger(d, ledger, unlocked), self._account_title())

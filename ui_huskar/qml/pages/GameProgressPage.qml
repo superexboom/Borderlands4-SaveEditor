@@ -14,6 +14,11 @@ Item {
     readonly property var buttons: loc.buttons || ({})
     readonly property bool ready: vmGameProgress.saveLoaded && vmGameProgress.catalogAvailable
     readonly property int mapTabIndex: 4
+    readonly property int accountTabIndex: 5
+    // 打开账号存档时直接切到「账号进度」（其余页签只适用于角色存档）
+    readonly property bool profileSave: vmGameProgress.saveKind === "profile"
+    onProfileSaveChanged: if (profileSave) tabs.currentIndex = accountTabIndex
+    Component.onCompleted: if (profileSave) tabs.currentIndex = accountTabIndex
     // 联机快照读不到进度（只有地图可用），其它非角色存档（账号存档）另有提示
     readonly property string nonCharacterHint: vmGameProgress.saveKind !== "live" ? (labels.character_only || "")
                                                : vmGameProgress.liveProgressLoading ? (labels.live_progress_loading || "")
@@ -77,8 +82,28 @@ Item {
                 { key: "missions", title: page.tabsLoc.missions || "Missions", contentDelegate: missionsContent },
                 { key: "challenges", title: page.tabsLoc.challenges || "Challenges", contentDelegate: challengesContent },
                 { key: "collectibles", title: page.tabsLoc.collectibles || "Collectibles", contentDelegate: collectiblesContent },
-                { key: "map", title: page.tabsLoc.map || "Map", contentDelegate: mapContent }
+                { key: "map", title: page.tabsLoc.map || "Map", contentDelegate: mapContent },
+                { key: "account", title: page.tabsLoc.profile || "Account", contentDelegate: accountContent }
             ]
+        }
+    }
+
+    Component {
+        id: accountContent
+        Item {
+            ProgressAccountTab {
+                objectName: "accountTab"
+                anchors.fill: parent
+                anchors.topMargin: 8
+                visible: vmGameProgress.saveKind === "profile"
+                labels: page.labels
+                buttons: page.buttons
+            }
+            EmptyHint {
+                anchors.fill: parent
+                visible: vmGameProgress.saveKind !== "profile"
+                description: page.labels.account_only || ""
+            }
         }
     }
 

@@ -84,7 +84,16 @@
         "region_other": "其它",
         "live_progress_loading": "正在从游戏读取进度…",
         "live_progress_info": "读取于 {time} · {count} 项 · 游戏线程 {ms} ms",
-        "live_progress_error": "读取游戏进度失败：{error}"
+        "live_progress_error": "读取游戏进度失败：{error}",
+        "account_only": "账号进度保存在账号存档（profile.sav）里，请打开账号存档查看和修改。",
+        "sdu_points": "SDU 点数：已用 {spent} / 共 {pool}（剩余 {available}）",
+        "sdu_level": "等级 {level}/{max}",
+        "sdu_spent": "已投入 {spent}/{cost} 点",
+        "sdu_next": "下一级 {cost} 点",
+        "sdu_note": "提升等级时若点数不够，会自动把点数池补足到已用点数。",
+        "filter_unlocked": "已解锁",
+        "filter_locked": "未解锁",
+        "derived_names": "外观名称由内部代号生成（游戏数据里没有外观的显示名）。"
       },
       "ammo": {
         "pistol": "手枪",
@@ -117,7 +126,11 @@
         "complete_mission": "完成",
         "complete_through": "完成至此",
         "reset_mission": "重置",
-        "refresh_live": "刷新进度"
+        "refresh_live": "刷新进度",
+        "sdu_max": "全部满级",
+        "sdu_clear": "全部清零",
+        "unlock_all": "全部解锁",
+        "lock_all": "全部锁定"
       },
       "toasts": {
         "saved": "已修改：{what}",
@@ -164,6 +177,38 @@
         "complete_all_missions_text": "将完成「{what}」中 {count} 个未完成的任务。继续？",
         "reset_all_missions_title": "全部重置",
         "reset_all_missions_text": "将重置「{what}」中 {count} 个任务（主线任务不会被重置）。继续？"
+      },
+      "account_groups": {
+        "upgrades": "账号升级",
+        "shared": "账号共享进度",
+        "cosmetics": "外观"
+      },
+      "account_ledgers": {
+        "sdu": "SDU 升级",
+        "vaultpower": "秘藏力量",
+        "echo_upgrade_challenges": "SDU 点数来源",
+        "echo_log_challenges": "ECHO 日志（账号）",
+        "vault_object_challenges": "秘藏物件",
+        "shared_progress_format": "{place} · 共享进度",
+        "character_format": "{name} 外观",
+        "unlockable_echo4": "ECHO-4 外观",
+        "unlockable_weapons": "武器外观",
+        "unlockable_vehicles": "载具外观",
+        "unlockable_hoverdrives": "悬浮驱动"
+      },
+      "vault_powers": {
+        "EchoNav_VaultPower_01_of_01": "秘藏力量升级 1：提高回复速度",
+        "EchoNav_VaultPower_02_of_03": "秘藏力量升级 2：缩短回复延迟",
+        "EchoNav_VaultPower_03_of_03": "秘藏力量升级 3：每次施放消耗降低 50%"
+      },
+      "cosmetic_kinds": {
+        "Skin": "皮肤",
+        "Head": "头部",
+        "Body": "身体",
+        "Attachment": "挂件",
+        "Mat": "材质",
+        "Shiny": "光幻外观",
+        "Vehicle": "载具"
       }
     }
   },
@@ -252,7 +297,16 @@
         "region_other": "Other",
         "live_progress_loading": "Reading progress from the game...",
         "live_progress_info": "Read at {time} · {count} values · {ms} ms game thread",
-        "live_progress_error": "Reading progress failed: {error}"
+        "live_progress_error": "Reading progress failed: {error}",
+        "account_only": "Account progress lives in the profile save (profile.sav); open it to view and edit.",
+        "sdu_points": "SDU tokens: {spent} used of {pool} ({available} left)",
+        "sdu_level": "Level {level}/{max}",
+        "sdu_spent": "{spent}/{cost} tokens spent",
+        "sdu_next": "Next level {cost}",
+        "sdu_note": "Raising a level tops the token pool up to the tokens spent when it is short.",
+        "filter_unlocked": "Unlocked",
+        "filter_locked": "Locked",
+        "derived_names": "Cosmetic names are derived from internal keys (the game data has no display names for them)."
       },
       "ammo": {
         "pistol": "Pistol",
@@ -285,7 +339,11 @@
         "complete_mission": "Complete",
         "complete_through": "Complete up to here",
         "reset_mission": "Reset",
-        "refresh_live": "Refresh progress"
+        "refresh_live": "Refresh progress",
+        "sdu_max": "Max all",
+        "sdu_clear": "Clear all",
+        "unlock_all": "Unlock all",
+        "lock_all": "Lock all"
       },
       "toasts": {
         "saved": "Updated: {what}",
@@ -332,6 +390,38 @@
         "complete_all_missions_text": "Complete {count} unfinished mission(s) in \"{what}\"?",
         "reset_all_missions_title": "Reset all",
         "reset_all_missions_text": "Reset {count} mission(s) in \"{what}\"? Main missions are never reset."
+      },
+      "account_groups": {
+        "upgrades": "Account upgrades",
+        "shared": "Account-wide progress",
+        "cosmetics": "Cosmetics"
+      },
+      "account_ledgers": {
+        "sdu": "SDU upgrades",
+        "vaultpower": "Vault powers",
+        "echo_upgrade_challenges": "SDU token sources",
+        "echo_log_challenges": "ECHO logs (account)",
+        "vault_object_challenges": "Vault objects",
+        "shared_progress_format": "{place} · shared progress",
+        "character_format": "{name} cosmetics",
+        "unlockable_echo4": "ECHO-4 cosmetics",
+        "unlockable_weapons": "Weapon cosmetics",
+        "unlockable_vehicles": "Vehicle cosmetics",
+        "unlockable_hoverdrives": "Hover drives"
+      },
+      "vault_powers": {
+        "EchoNav_VaultPower_01_of_01": "Vault Power Upgrade 1 · Increased regen speed",
+        "EchoNav_VaultPower_02_of_03": "Vault Power Upgrade 2 · Reduced regen delay",
+        "EchoNav_VaultPower_03_of_03": "Vault Power Upgrade 3 · 50% cost reduction per move"
+      },
+      "cosmetic_kinds": {
+        "Skin": "Skins",
+        "Head": "Heads",
+        "Body": "Bodies",
+        "Attachment": "Attachments",
+        "Mat": "Materials",
+        "Shiny": "Shiny skins",
+        "Vehicle": "Vehicles"
       }
     }
   },
@@ -420,7 +510,16 @@
         "region_other": "Прочее",
         "live_progress_loading": "Чтение прогресса из игры...",
         "live_progress_info": "Прочитано в {time} · {count} значений · {ms} мс игрового потока",
-        "live_progress_error": "Не удалось прочитать прогресс: {error}"
+        "live_progress_error": "Не удалось прочитать прогресс: {error}",
+        "account_only": "Прогресс аккаунта хранится в profile.sav — откройте его для просмотра и правки.",
+        "sdu_points": "Жетоны SDU: потрачено {spent} из {pool} (осталось {available})",
+        "sdu_level": "Уровень {level}/{max}",
+        "sdu_spent": "Потрачено {spent}/{cost}",
+        "sdu_next": "Следующий уровень {cost}",
+        "sdu_note": "Если жетонов не хватает, пул дополняется до потраченного.",
+        "filter_unlocked": "Открыто",
+        "filter_locked": "Закрыто",
+        "derived_names": "Названия косметики построены из внутренних ключей (в данных игры их нет)."
       },
       "ammo": {
         "pistol": "Пистолет",
@@ -453,7 +552,11 @@
         "complete_mission": "Выполнить",
         "complete_through": "Выполнить до этого",
         "reset_mission": "Сбросить",
-        "refresh_live": "Обновить прогресс"
+        "refresh_live": "Обновить прогресс",
+        "sdu_max": "Всё на максимум",
+        "sdu_clear": "Сбросить всё",
+        "unlock_all": "Открыть всё",
+        "lock_all": "Закрыть всё"
       },
       "toasts": {
         "saved": "Изменено: {what}",
@@ -500,6 +603,38 @@
         "complete_all_missions_text": "Выполнить {count} незавершённых заданий в «{what}»?",
         "reset_all_missions_title": "Сбросить все",
         "reset_all_missions_text": "Сбросить {count} заданий в «{what}»? Основные задания не сбрасываются."
+      },
+      "account_groups": {
+        "upgrades": "Улучшения аккаунта",
+        "shared": "Общий прогресс",
+        "cosmetics": "Косметика"
+      },
+      "account_ledgers": {
+        "sdu": "Улучшения SDU",
+        "vaultpower": "Силы хранилища",
+        "echo_upgrade_challenges": "Источники жетонов SDU",
+        "echo_log_challenges": "Записи ЭХО (аккаунт)",
+        "vault_object_challenges": "Объекты хранилищ",
+        "shared_progress_format": "{place} · общий прогресс",
+        "character_format": "Косметика: {name}",
+        "unlockable_echo4": "Косметика ЭХО-4",
+        "unlockable_weapons": "Косметика оружия",
+        "unlockable_vehicles": "Косметика транспорта",
+        "unlockable_hoverdrives": "Ховер-приводы"
+      },
+      "vault_powers": {
+        "EchoNav_VaultPower_01_of_01": "Сила хранилища 1 · быстрее восстановление",
+        "EchoNav_VaultPower_02_of_03": "Сила хранилища 2 · меньше задержка",
+        "EchoNav_VaultPower_03_of_03": "Сила хранилища 3 · стоимость −50%"
+      },
+      "cosmetic_kinds": {
+        "Skin": "Скины",
+        "Head": "Головы",
+        "Body": "Тела",
+        "Attachment": "Аксессуары",
+        "Mat": "Материалы",
+        "Shiny": "Блестящие скины",
+        "Vehicle": "Транспорт"
       }
     }
   },
@@ -588,7 +723,16 @@
         "region_other": "Інше",
         "live_progress_loading": "Читання прогресу з гри...",
         "live_progress_info": "Прочитано о {time} · {count} значень · {ms} мс ігрового потоку",
-        "live_progress_error": "Не вдалося прочитати прогрес: {error}"
+        "live_progress_error": "Не вдалося прочитати прогрес: {error}",
+        "account_only": "Прогрес акаунта зберігається в profile.sav — відкрийте його для перегляду й редагування.",
+        "sdu_points": "Жетони SDU: витрачено {spent} з {pool} (лишилось {available})",
+        "sdu_level": "Рівень {level}/{max}",
+        "sdu_spent": "Витрачено {spent}/{cost}",
+        "sdu_next": "Наступний рівень {cost}",
+        "sdu_note": "Якщо жетонів бракує, пул доповнюється до витраченого.",
+        "filter_unlocked": "Відкрито",
+        "filter_locked": "Закрито",
+        "derived_names": "Назви косметики побудовано з внутрішніх ключів (у даних гри їх немає)."
       },
       "ammo": {
         "pistol": "Пістолет",
@@ -621,7 +765,11 @@
         "complete_mission": "Виконати",
         "complete_through": "Виконати до цього",
         "reset_mission": "Скинути",
-        "refresh_live": "Оновити прогрес"
+        "refresh_live": "Оновити прогрес",
+        "sdu_max": "Усе на максимум",
+        "sdu_clear": "Скинути все",
+        "unlock_all": "Відкрити все",
+        "lock_all": "Закрити все"
       },
       "toasts": {
         "saved": "Змінено: {what}",
@@ -668,6 +816,38 @@
         "complete_all_missions_text": "Виконати {count} незавершених завдань у «{what}»?",
         "reset_all_missions_title": "Скинути всі",
         "reset_all_missions_text": "Скинути {count} завдань у «{what}»? Основні завдання не скидаються."
+      },
+      "account_groups": {
+        "upgrades": "Покращення акаунта",
+        "shared": "Спільний прогрес",
+        "cosmetics": "Косметика"
+      },
+      "account_ledgers": {
+        "sdu": "Покращення SDU",
+        "vaultpower": "Сили сховища",
+        "echo_upgrade_challenges": "Джерела жетонів SDU",
+        "echo_log_challenges": "Записи ЕХО (акаунт)",
+        "vault_object_challenges": "Об'єкти сховищ",
+        "shared_progress_format": "{place} · спільний прогрес",
+        "character_format": "Косметика: {name}",
+        "unlockable_echo4": "Косметика ЕХО-4",
+        "unlockable_weapons": "Косметика зброї",
+        "unlockable_vehicles": "Косметика транспорту",
+        "unlockable_hoverdrives": "Ховер-приводи"
+      },
+      "vault_powers": {
+        "EchoNav_VaultPower_01_of_01": "Сила сховища 1 · швидше відновлення",
+        "EchoNav_VaultPower_02_of_03": "Сила сховища 2 · менша затримка",
+        "EchoNav_VaultPower_03_of_03": "Сила сховища 3 · вартість −50%"
+      },
+      "cosmetic_kinds": {
+        "Skin": "Скіни",
+        "Head": "Голови",
+        "Body": "Тіла",
+        "Attachment": "Аксесуари",
+        "Mat": "Матеріали",
+        "Shiny": "Блискучі скіни",
+        "Vehicle": "Транспорт"
       }
     }
   }
