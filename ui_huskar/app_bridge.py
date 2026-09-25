@@ -82,6 +82,7 @@ class AppBridge(QObject):
         self._confirm_callbacks: dict[int, Callable[[bool], None]] = {}
         self._confirm_seq = 0
         self._vms: dict[str, Any] = {}
+        self._vm_factory: Optional[Callable[[str], Any]] = None
 
         self._autosave_suspend = 0
         self._autosave_failed = False
@@ -109,6 +110,21 @@ class AppBridge(QObject):
 
     def vm(self, key: str) -> Any:
         return self._vms.get(key)
+
+    def set_vm_factory(self, factory: Callable[[str], Any]) -> None:
+        """lazy 启动：由启动器提供"创建+注册+暴露给 QML"的工厂。"""
+        self._vm_factory = factory
+
+    def ensure_vm(self, key: str) -> Any:
+        """取页面 VM，未创建时按需创建。
+
+        lazy 启动只实例化进入过的页面；God Roll→武器编辑器、YAML→各编辑器这类
+        跨页跳转要先把数据灌进目标页 VM，不能假设用户之前打开过目标页。
+        """
+        vm = self._vms.get(key)
+        if vm is None and self._vm_factory is not None and key in PAGE_KEYS:
+            vm = self._vm_factory(key)
+        return vm
 
     def _mark_all_stale(self) -> None:
         for vm in self._vms.values():
@@ -188,10 +204,16 @@ class AppBridge(QObject):
     @pyqtSlot(str)
     def navigate(self, target) -> None:
         index = PAGE_KEYS.index(target) if isinstance(target, str) else int(target)
-        if not 0 <= index < len(PAGE_KEYS) or index == self._page_index:
+        if not 0 <= index < len(PAGE_KEYS):
+            return
+        vm = self.ensure_vm(PAGE_KEYS[index])
+        if index == self._page_index:
+            # 已在目标页（例如停在角色页时从标题栏重新打开存档）：不换页，
+            # 但数据已被标记过期，需要就地刷新，否则页面一直显示上一个存档。
+            if vm is not None:
+                vm.on_activated()
             return
         self._page_index = index
-        vm = self._vms.get(PAGE_KEYS[index])
         if vm is not None:
             vm.on_activated()
         self.pageChanged.emit()
@@ -523,6 +545,12 @@ class AppBridge(QObject):
                         self._set_autosave_indicator(
                             self.tr("main_window.status.recovered"), False)
                         self.saveStateChanged.emit()
+                        # 恢复发生在确认框回调里，此时当前页早已按原存档刷新过；
+                        # 不重新标记过期的话会一直显示恢复前的数据。
+                        self._mark_all_stale()
+                        current = self._vms.get(PAGE_KEYS[self._page_index])
+                        if current is not None:
+                            current.on_activated()
                         return
                 except OSError:
                     pass
@@ -625,7 +653,7 @@ class AppBridge(QObject):
     @pyqtSlot("QVariantMap")
     def openGeneratedWeapon(self, result: dict) -> None:
         """God Roll 结果 → 武器编辑器（对齐主线 handle_open_generated_weapon）。"""
-        vm = self._vms.get("weapon_editor")
+        vm = self.ensure_vm("weapon_editor")
         if vm is None or not hasattr(vm, "open_roll_result"):
             self.toast(self.tr("main_window.dialogs.item_not_found"), "warning")
             return
@@ -648,13 +676,13 @@ class AppBridge(QObject):
         }
         try:
             if type_en in WEAPON_TYPES:
-                vm = self._vms.get("weapon_editor")
+                vm = self.ensure_vm("weapon_editor")
                 if vm is not None:
                     vm.load_weapon_data(dict(item))
                     self.navigate("weapon_editor")
                     return
             key = route.get(type_en)
-            vm = self._vms.get(key) if key else None
+            vm = self.ensure_vm(key) if key else None
             if vm is not None and hasattr(vm, "open_item_serial"):
                 vm.open_item_serial(dict(item))
                 self.navigate(key)
@@ -662,7 +690,7 @@ class AppBridge(QObject):
         except Exception as exc:
             self.toast(f"{type(exc).__name__}: {exc}", "warning")
         # 回退：物品总览页选中
-        items_vm = self._vms.get("items")
+        items_vm = self.ensure_vm("items")
         if items_vm is not None:
             self.navigate("items")
             if not items_vm.selectByPath(list(item.get("original_path") or [])):

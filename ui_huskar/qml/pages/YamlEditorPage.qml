@@ -75,7 +75,7 @@ ColumnLayout {
         Item { Layout.fillWidth: true }
     }
 
-    HusEmpty {
+    EmptyHint {
         Layout.fillWidth: true
         Layout.fillHeight: true
         visible: !vmYamlEditor.saveLoaded

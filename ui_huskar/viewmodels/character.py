@@ -298,6 +298,8 @@ class CharacterViewModel(PageViewModel):
                 fields[card["currency_key"]] = str(data.get(card["currency_key"], "") or "")
         self._fields = fields
         self.dataChanged.emit()
+        # 两个经验值只读框是 xpChanged 驱动的声明式绑定，重载数据时也要通知
+        self.xpChanged.emit()
 
     # ------------------------------------------------------------------
     # live 运行时面板

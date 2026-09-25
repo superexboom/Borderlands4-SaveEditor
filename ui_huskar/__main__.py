@@ -84,18 +84,18 @@ def main() -> int:
     for key, vm in vms.items():
         engine.rootContext().setContextProperty(_qml_name(key), vm)
 
-    def ensure_page_vm() -> None:
-        key = app_bridge.pageKey
-        if key in vms:
-            return
+    # 页面 VM 按需创建：导航到新页面、以及跨页跳转（God Roll→武器编辑器、
+    # YAML→各编辑器）往未打开过的页面灌数据时都由 AppBridge.ensure_vm 调用。
+    # 必须在页面 QML 加载前暴露上下文属性，navigate 会在 pageChanged 之前创建。
+    def create_page_vm(key: str):
         cls, _qml = REGISTRY[key]
         vm = cls(app_bridge)
         vms[key] = vm
         app_bridge.register_vm(key, vm)
-        vm.on_activated()
         engine.rootContext().setContextProperty(_qml_name(key), vm)
+        return vm
 
-    app_bridge.pageChanged.connect(ensure_page_vm)
+    app_bridge.set_vm_factory(create_page_vm)
     bundle_root = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1]))
     qml_path = bundle_root / "ui_huskar" / "qml" / "Main.qml"
     if not qml_path.is_file():

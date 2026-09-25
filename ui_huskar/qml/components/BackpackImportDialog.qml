@@ -87,7 +87,7 @@ HusModal {
                             onDoubleClicked: { dialog.selectedSource = modelData.sourceIndex; dialog.importSelection(); }
                         }
                     }
-                    HusEmpty { anchors.centerIn: parent; visible: list.count === 0; description: dialog.chinese ? "没有匹配的背包物品" : "No matching backpack items" }
+                    EmptyHint { anchors.centerIn: parent; visible: list.count === 0; description: dialog.chinese ? "没有匹配的背包物品" : "No matching backpack items" }
                 }
             }
             RowLayout {

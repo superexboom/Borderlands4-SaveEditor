@@ -156,7 +156,7 @@ HusModal {
                         }
                     }
 
-                    HusEmpty {
+                    EmptyHint {
                         anchors.fill: parent
                         visible: vmSerialInspector.catalogRows.length === 0
                         description: dialog.loc && dialog.loc.no_selection ? dialog.loc.no_selection : ""

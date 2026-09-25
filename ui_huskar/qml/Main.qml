@@ -186,12 +186,11 @@ HusWindow {
         target: appBridge
         function onPageChanged() {
             HoverTip.hide();
-            // HusMenu may drop its declarative selectedKey binding after a
-            // click; force the highlight to follow programmatic navigation too.
-            if (menu) menu.selectedKey = appBridge.pageKey;
-            Qt.callLater(function() {
-                if (menu) menu.selectedKey = appBridge.pageKey;
-            });
+            pageLoader.focus = false;
+            // HusMenu 的高亮由内部 selectedItem 决定，selectedKey 只是回写属性，
+            // 赋值不会移动高亮。程序化跳转（打开存档→角色页、God Roll→武器编辑器）
+            // 必须走 gotoMenu；gotoMenuKey 同时保证语言切换重建菜单后高亮不丢。
+            if (menu) menu.gotoMenu(appBridge.pageKey);
         }
         function onThemeChanged() {
             HusTheme.darkMode = appBridge.dark ? HusTheme.Dark : HusTheme.Light;
@@ -381,22 +380,6 @@ HusWindow {
                         onToggled: appBridge.toggleAnimations()
                     }
                 }
-                RowLayout {
-                    Layout.fillWidth: true
-                    Layout.leftMargin: 4
-                    Layout.rightMargin: 4
-                    spacing: 8
-                    HusText {
-                        Layout.fillWidth: true
-                        text: appBridge.dark ? tr("main_window.header.theme_light")
-                                             : tr("main_window.header.theme_dark")
-                        color: HusTheme.Primary.colorTextBase
-                    }
-                    HusSwitch {
-                        checked: appBridge.dark
-                        onToggled: appBridge.toggleTheme()
-                    }
-                }
             }
         }
     }
@@ -449,8 +432,8 @@ HusWindow {
                             compactMode: window.navigationExpanded ? HusMenu.Mode_Relaxed : HusMenu.Mode_Compact
                             showToolTip: !window.navigationExpanded
                             initModel: appBridge.navigation
-                            selectedKey: appBridge.pageKey
                             onClickMenu: function(deep, key, keyPath, data) { appBridge.navigate(key); }
+                            Component.onCompleted: gotoMenu(appBridge.pageKey)
                         }
                     }
                 }
@@ -476,7 +459,15 @@ HusWindow {
                         var file = appBridge.pageFiles[appBridge.pageKey];
                         return file ? ("pages/" + file) : "";
                     }
-                    onStatusChanged: if (status === Loader.Ready) {
+                    onStatusChanged: {
+                        // vendor HusInput 自带 focus: true。Loader 是焦点域，用户点过任一输入框后
+                        // Loader 会一直持有焦点，新页面挂载时首个输入框（角色页的名称）直接拿到
+                        // activeFocus：fillFields 会跳过有焦点的框，失焦时 editingFinished 还会把
+                        // 空文本写回 VM。换页前先释放焦点域，新页面一律不带输入焦点地出现。
+                        if (status === Loader.Loading || status === Loader.Null)
+                            focus = false;
+                        if (status !== Loader.Ready)
+                            return;
                         Qt.callLater(function() {
                             if (pageLoader.item && pageLoader.item.fillFields)
                                 pageLoader.item.fillFields();

@@ -88,7 +88,7 @@ ColumnLayout {
                         vmSelectSave.selectRow(parseInt(checkedKeys[checkedKeys.length - 1]));
                 }
             }
-        HusEmpty {
+        EmptyHint {
             anchors.fill: parent
             visible: vmSelectSave.saves.length === 0
             description: page.loc.labels ? page.loc.labels.status_no_saves : "No save files found."

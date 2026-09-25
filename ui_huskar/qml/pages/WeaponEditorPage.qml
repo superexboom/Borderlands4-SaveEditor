@@ -367,9 +367,9 @@ RowLayout {
                         }
                     }
 
-                    HusEmpty {
+                    EmptyHint {
                         Layout.fillWidth: true
-                        height: 120
+                        Layout.preferredHeight: 96
                         visible: vmWeaponEditor.partRows.length === 0
                         description: labelsLoc.parse_serial_to_show_parts || ""
                     }
@@ -871,7 +871,7 @@ RowLayout {
 
 
                                 }
-                                HusEmpty {
+                                EmptyHint {
                                     anchors.fill: parent
                                     visible: addPartDialog.filtered().length === 0
                                     description: (page.loc.catalog || ({})).no_matches || "—"
@@ -1032,7 +1032,7 @@ RowLayout {
                                             onClicked: addPartDialog.removeStaged(index)
                                         }
                                     }
-                                    HusEmpty {
+                                    EmptyHint {
                                         anchors.fill: parent
                                         visible: addPartDialog.staged.length === 0
                                         description: (page.loc.dialogs || ({})).no_selection || ""
@@ -1172,7 +1172,7 @@ RowLayout {
                                 }
                             }
                         }
-                        HusEmpty {
+                        EmptyHint {
                             anchors.fill: parent
                             visible: skinList.count === 0
                             description: (page.loc.dialogs || ({})).no_selection || ""

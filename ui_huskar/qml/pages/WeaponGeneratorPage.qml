@@ -36,9 +36,9 @@ LockedFlickable {
         width: page.width - 2
         spacing: 10
 
-        HusEmpty {
+        EmptyHint {
             Layout.fillWidth: true
-            height: 160
+            Layout.preferredHeight: 160
             visible: !vmWeaponGenerator.dataLoaded
             description: vmWeaponGenerator.loadErrorText
         }

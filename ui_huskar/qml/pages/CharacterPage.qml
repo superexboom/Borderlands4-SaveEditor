@@ -18,18 +18,25 @@ LockedFlickable {
     readonly property var groups: loc.groups || ({})
     readonly property var buttons: loc.buttons || ({})
 
-    function fillFields() {
+    // force=true 用于页面首次挂载：此时框里不可能有用户输入，必须无条件回填。
+    // 否则某个输入框恰好带着焦点挂载时会保持空白，失焦后 editingFinished
+    // 还会把空串写回 VM（点"应用"即清空存档里的角色名）。
+    function fillFields(force) {
         var f = vmCharacter.fields;
-        if (!nameInput.activeFocus) nameInput.text = f["名称"] || "";
-        if (!difficultyInput.activeFocus) difficultyInput.text = f["难度"] || "";
-        if (!levelInput.activeFocus) levelInput.text = f["角色等级"] || "";
-        if (!specLevelInput.activeFocus) specLevelInput.text = f["专精等级"] || "";
-        if (!specPointsInput.activeFocus) specPointsInput.text = f["专精点数"] || "";
-        if (!moneyInput.activeFocus) moneyInput.text = f["金钱"] || "";
-        if (!eridiumInput.activeFocus) eridiumInput.text = f["镒矿"] || "";
+        function fill(input, key) {
+            if (force || !input.activeFocus) input.text = f[key] || "";
+        }
+        fill(nameInput, "名称");
+        fill(difficultyInput, "难度");
+        fill(levelInput, "角色等级");
+        fill(specLevelInput, "专精等级");
+        // 专精经验值与角色经验值一样是只读的声明式绑定（随等级联动），
+        // 命令式赋值会打断绑定，这里不回填。
+        fill(moneyInput, "金钱");
+        fill(eridiumInput, "镒矿");
     }
 
-    Component.onCompleted: fillFields()
+    Component.onCompleted: fillFields(true)
 
     Connections {
         target: vmCharacter
@@ -41,9 +48,10 @@ LockedFlickable {
         width: page.width - 2
         spacing: 10
 
-        HusEmpty {
+        EmptyHint {
             Layout.fillWidth: true
-            height: 200
+            // 未加载存档时整页只有这一行提示，占满视口让它居中显示
+            Layout.preferredHeight: Math.max(120, page.height - 20)
             visible: !vmCharacter.saveLoaded && !vmCharacter.liveMode
             description: appBridge.trText("main_window.dialogs.load_save_first")
         }
