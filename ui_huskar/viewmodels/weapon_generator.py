@@ -104,6 +104,7 @@ class WeaponGeneratorViewModel(PageViewModel):
         self._seed = str(random.randint(100, 9999))
         self._flag_index = 0
         self._decoded = ""
+        self._decoded_header = ""
         self._b85 = ""
         self._encode_error = False
         self._stats: list[dict[str, str]] = []
@@ -612,8 +613,10 @@ class WeaponGeneratorViewModel(PageViewModel):
                         "tooltip": "",
                         "kind": "",
                     })
-            slots = [{"key": f"{part_type_en}_{i}", "options": options, "selectedIndex": 0,
-                      "detail": ""} for i in range(num_slots)]
+            # 每个槽位持有独立的选项副本：legit 上色按槽位计算（例如其它槽位
+            # 已选的配件在本槽位要标黄），共享同一列表会让各槽位颜色互相覆盖。
+            slots = [{"key": f"{part_type_en}_{i}", "options": [dict(o) for o in options],
+                      "selectedIndex": 0, "detail": ""} for i in range(num_slots)]
             row, col = PART_LAYOUT[part_type_en]
             groups.append({
                 "partType": part_type_en,
@@ -652,8 +655,12 @@ class WeaponGeneratorViewModel(PageViewModel):
         return None
 
     @staticmethod
-    def _element_candidate_state(value, spec):
-        """对齐 equipment_base._candidate_state 的 ✓/! 语义（ref 恒为 {1:pid}）。"""
+    def _element_candidate_state(value, spec, replace_spec=None):
+        """对齐 equipment_base._candidate_state 的 ✓/! 语义（ref 恒为 {1:pid}）。
+
+        replace_spec 为去掉本组当前选择后的组状态：芯片是单选，点击即替换，
+        按"替换后能否自然生成"判断，已有选择时其它合法芯片不会被误标 "!"。
+        """
         pid = str(value).split(" - ", 1)[0]
         ref = f"1:{pid}" if pid.isdigit() else ""
         if not ref or not isinstance(spec, dict):
@@ -663,25 +670,32 @@ class WeaponGeneratorViewModel(PageViewModel):
         selected = set(spec.get("selected") or [])
         if not (int(spec.get("effective_max", spec.get("max", 0))) > 0 or ref in selected):
             return {"marker": "", "kind": ""}
-        if ref in selected or ref in set(spec.get("remaining_eligible_refs") or []):
+        if isinstance(replace_spec, dict) and replace_spec.get("selected_reachable", True):
+            legal = ref in set(replace_spec.get("remaining_eligible_refs") or [])
+        else:
+            # 已选中只有在选择集可自然生成时才算合法（与装备页一致）
+            legal = ((ref in selected and spec.get("selected_reachable", True))
+                     or ref in set(spec.get("remaining_eligible_refs") or []))
+        if legal:
             return {"marker": "✓", "kind": "legal"}
         return {"marker": "!", "kind": "warning"}
 
-    def _refresh_element_states(self, groups, rules_ready) -> None:
+    def _refresh_element_states(self, groups, rules_ready, item_id=None, cache=None) -> None:
         groups = groups if rules_ready else {}
-        value_lists = {
-            "element1": self._element1_values,
-            "element2": self._element2_values,
-            "pearl_stat": self._pearl_stat_values,
-            "pearl_elem": self._pearl_element_values,
-        }
-        self._element_states = {
-            state_key: [
-                self._element_candidate_state(value, groups.get(group_key))
-                for value in value_lists[state_key]
+        cache = {} if cache is None else cache
+        selections = {state_key: (values, index) for state_key, values, index in self._element_selections()}
+        states = {}
+        for state_key, group_key in _ELEMENT_RULE_GROUPS:
+            values, index = selections[state_key]
+            replace_spec = None
+            if groups and item_id is not None and self._element_value_at(values, index) is not None:
+                replace_spec = self._variant_groups(
+                    cache, ("element", state_key), skip_element=state_key).get(group_key)
+            states[state_key] = [
+                self._element_candidate_state(value, groups.get(group_key), replace_spec)
+                for value in values
             ]
-            for state_key, group_key in _ELEMENT_RULE_GROUPS
-        }
+        self._element_states = states
 
     def _fmt_elem_value(self, row):
         return f"{row['Part_ID']} - {row[self.elemental_stat_col]}"
@@ -794,6 +808,56 @@ class WeaponGeneratorViewModel(PageViewModel):
                     refs.add(f"{item_id}:{value}")
         return refs
 
+    def _element_selections(self):
+        """(规则状态键, 候选值列表, 含 None 首项的当前下标)，顺序即序列号中的顺序。"""
+        return (
+            ("element1", self._element1_values, self._element1_index),
+            ("element2", self._element2_values, self._element2_index),
+            ("pearl_stat", self._pearl_stat_values, self._pearl_stat_index),
+            ("pearl_elem", self._pearl_element_values, self._pearl_element_index),
+        )
+
+    @staticmethod
+    def _slot_values(group):
+        return [slot["options"][slot["selectedIndex"]].get("value") for slot in group["slots"]]
+
+    def _component_tokens(self, m_id, *, skip_element=None, group=None, group_values=()):
+        """当前选择的部件 token；skip_element / group+group_values 用于构造
+        "去掉某个选择"的变体序列号（按槽位计算 legit 候选时使用）。"""
+        parts_list = []
+        selected_rarity = self._rarity_options[self._rarity_index]["value"] if self._rarity_options else ""
+        if selected_rarity in {"Legendary", "Pearl"}:
+            special = self._special_options.get(f"{selected_rarity} Type", [])
+            idx = self._special_index.get(f"{selected_rarity} Type", 0)
+            if 0 <= idx < len(special) and special[idx]["value"] is not None:
+                part_id = str(special[idx]["value"])
+                if part_id.isdigit():
+                    parts_list.append(f"{{{part_id}}}")
+        elif selected_rarity:
+            rarity_id_row = self.weapon_rarity_df[
+                (self.weapon_rarity_df["Manufacturer & Weapon Type ID"] == m_id)
+                & (self.weapon_rarity_df["Stat"] == selected_rarity)
+                & (self.weapon_rarity_df["Description"].isna())]
+            if not rarity_id_row.empty:
+                parts_list.append(f"{{{rarity_id_row.iloc[0]['Part ID']}}}")
+
+        for state_key, values, index in self._element_selections():
+            if state_key == skip_element:
+                continue
+            value = self._element_value_at(values, index)
+            if value is None:
+                continue
+            part_id = value.split(" - ")[0]
+            if part_id.isdigit():
+                parts_list.append(f"{{1:{part_id}}}")
+
+        for part_group in self._part_groups:
+            values = group_values if part_group is group else self._slot_values(part_group)
+            for value in values:
+                if value is not None and str(value).isdigit():
+                    parts_list.append(f"{{{value}}}")
+        return parts_list
+
     def _generate(self) -> None:
         try:
             m_id = self._current_m_id()
@@ -806,44 +870,8 @@ class WeaponGeneratorViewModel(PageViewModel):
             level = self._level if str(self._level).isdigit() else self._character_level
             seed = self._seed if str(self._seed).isdigit() else str(random.randint(100, 9999))
             header = f"{m_id}, 0, 1, {level}| 2, {seed}||"
-            parts_list = []
-
-            selected_rarity = self._rarity_options[self._rarity_index]["value"] if self._rarity_options else ""
-            if selected_rarity in {"Legendary", "Pearl"}:
-                special = self._special_options.get(f"{selected_rarity} Type", [])
-                idx = self._special_index.get(f"{selected_rarity} Type", 0)
-                if 0 <= idx < len(special) and special[idx]["value"] is not None:
-                    part_id = str(special[idx]["value"])
-                    if part_id.isdigit():
-                        parts_list.append(f"{{{part_id}}}")
-            elif selected_rarity:
-                rarity_id_row = self.weapon_rarity_df[
-                    (self.weapon_rarity_df["Manufacturer & Weapon Type ID"] == m_id)
-                    & (self.weapon_rarity_df["Stat"] == selected_rarity)
-                    & (self.weapon_rarity_df["Description"].isna())]
-                if not rarity_id_row.empty:
-                    parts_list.append(f"{{{rarity_id_row.iloc[0]['Part ID']}}}")
-
-            for values, index in (
-                (self._element1_values, self._element1_index),
-                (self._element2_values, self._element2_index),
-                (self._pearl_stat_values, self._pearl_stat_index),
-                (self._pearl_element_values, self._pearl_element_index),
-            ):
-                value = self._element_value_at(values, index)
-                if value is None:
-                    continue
-                part_id = value.split(" - ")[0]
-                if part_id.isdigit():
-                    parts_list.append(f"{{1:{part_id}}}")
-
-            for group in self._part_groups:
-                for slot in group["slots"]:
-                    value = slot["options"][slot["selectedIndex"]].get("value")
-                    if value is not None and str(value).isdigit():
-                        parts_list.append(f"{{{value}}}")
-
-            component_str = " ".join(parts_list)
+            self._decoded_header = header
+            component_str = " ".join(self._component_tokens(m_id))
             self._decoded = f"{header} {component_str} |"
             encoded_serial, err = b_encoder.encode_to_base85(self._decoded)
             self._encode_error = bool(err)
@@ -880,6 +908,8 @@ class WeaponGeneratorViewModel(PageViewModel):
                 (self.all_weapon_parts_df["Manufacturer & Weapon Type ID"] == m_id)
                 & (self.all_weapon_parts_df["Part Type"] == group["partType"])]
             row_by_pid = {str(r["Part ID"]): r for _, r in rows.iterrows()}
+            # 多槽位组每个槽位都有选项副本，同一配件的描述只格式化一次
+            texts: dict[str, str] = {}
             for slot in group["slots"]:
                 # HusSelect 弹层只渲染 label，旧版 popupAboutToShow 的全量属性文本
                 # 在这里预计算到 text，由 _apply_part_kinds 拼上 marker 后写入 label。
@@ -887,10 +917,13 @@ class WeaponGeneratorViewModel(PageViewModel):
                     part_id = option.get("value")
                     if part_id is None:
                         continue
-                    row = row_by_pid.get(str(part_id))
-                    if row is not None:
-                        option["text"] = self._part_option_text(
-                            m_id, str(part_id), row, self._decoded)
+                    part_key = str(part_id)
+                    if part_key not in texts:
+                        row = row_by_pid.get(part_key)
+                        texts[part_key] = self._part_option_text(
+                            m_id, part_key, row, self._decoded) if row is not None else ""
+                    if texts[part_key]:
+                        option["text"] = texts[part_key]
                 selected = slot["options"][slot["selectedIndex"]].get("value")
                 if selected is None:
                     slot["detail"] = ""
@@ -1002,7 +1035,9 @@ class WeaponGeneratorViewModel(PageViewModel):
 
         rules_ready = bool(result.get("rules_available") and result.get("composition_ref"))
         groups = result.get("groups") or {}
-        self._refresh_element_states(groups, rules_ready)
+        # 变体序列号（去掉某个槽位/芯片的选择）的校验结果缓存，仅本次刷新有效
+        variant_cache: dict[Any, dict[str, Any]] = {}
+        self._refresh_element_states(groups, rules_ready, item_id, variant_cache)
         display_matches = {}
         group_categories = {}
         if rules_ready and item_id is not None:
@@ -1067,7 +1102,11 @@ class WeaponGeneratorViewModel(PageViewModel):
                 for ref in group_rule.get("allowed") or []
                 if ref in candidate_refs
             }
-            self._apply_part_kinds(group, item_id, eligible, allowed, preferred_refs)
+            values = self._slot_values(group)
+            for index, slot in enumerate(group["slots"]):
+                legal, duplicates = self._slot_candidates(
+                    group, index, values, matched_groups, groups, item_id, candidate_refs, variant_cache)
+                self._apply_slot_kinds(slot, item_id, legal, allowed, preferred_refs, duplicates)
             lines = [
                 self._rule_message("current", "当前：{current}", "Current: {current}", current=current),
                 self._rule_message("legal_count", "合法数量：{range}", "Legal count: {range}", range=legal_range),
@@ -1103,31 +1142,115 @@ class WeaponGeneratorViewModel(PageViewModel):
         pretty = group_key.replace("_", " ").title()
         return str(self.weapon_localization.get(pretty) or pretty)
 
-    def _apply_part_kinds(self, group, item_id, eligible_refs=(), allowed_refs=(), preferred_refs=()):
-        eligible_refs, allowed_refs, preferred_refs = (
-            set(eligible_refs), set(allowed_refs), set(preferred_refs))
-        for slot in group["slots"]:
-            for option in slot["options"]:
-                part_id = option.get("value")
-                if item_id is None or part_id is None:
-                    kind = ""
+    def _variant_groups(self, cache, key, **overrides):
+        """去掉某个选择后的规则组状态（带缓存）；失败时返回空表。"""
+        if key not in cache:
+            m_id = self._current_m_id()
+            tokens = self._component_tokens(m_id, **overrides) if m_id is not None else []
+            decoded = f"{self._decoded_header} {' '.join(tokens)} |"
+            try:
+                cache[key] = item_display_resolver.validate_weapon_generation(
+                    decoded, allow_incomplete=True).get("groups") or {}
+            except Exception:
+                cache[key] = {}
+        return cache[key]
+
+    @staticmethod
+    def _kept_slot_values(values):
+        """每个配件只保留最先出现的槽位；后出现的同 ID 副本本身就是重复（魔改）。"""
+        first_index = {}
+        for index, value in enumerate(values):
+            if value is not None:
+                first_index.setdefault(value, index)
+        return [value if value is not None and first_index[value] == index else None
+                for index, value in enumerate(values)]
+
+    def _slot_candidates(self, group, index, values, rule_keys, base_groups, item_id,
+                         candidate_refs, cache):
+        """槽位 index 的合法候选 ref 与"已在其它槽位选中"的重复 ref。
+
+        下拉在已有选择的槽位里是"替换"而不是"追加"：候选按
+        （其它槽位的选择 + 该候选）能否自然生成来判断，所以
+        - 已在其它槽位选过的配件在本槽位标黄（再选即重复 = 魔改）；
+        - 组配额已满时，已选槽位里换成其它合法件仍显示为合法，
+          只有空槽位才因"超出上限"整体标黄。
+        """
+        kept = self._kept_slot_values(values)
+        others = [value for i, value in enumerate(kept) if i != index and value is not None]
+        duplicates = {f"{item_id}:{value}" for value in others}
+        own = kept[index]
+
+        def remaining(specs):
+            return {
+                ref
+                for key in rule_keys
+                for ref in (specs.get(key) or {}).get("remaining_eligible_refs") or []
+                if ref in candidate_refs
+            }
+
+        if values[index] is None and kept == values:
+            # 空槽位且没有重复：选择集就是当前整体选择，直接用整体校验结果
+            return remaining(base_groups) - duplicates, duplicates
+        specs = self._variant_groups(
+            cache, (group["partType"], tuple(others)), group=group, group_values=others)
+        reachable = all(
+            (specs.get(key) or {}).get("selected_reachable", True) for key in rule_keys)
+        if specs and reachable:
+            return remaining(specs) - duplicates, duplicates
+        # 去掉本槽位后其余选择反而不可达（组内依赖链由本槽位提供），
+        # 退回整体结果：当前选择本身合法时保留，其余按可追加候选判断。
+        legal = remaining(base_groups)
+        own_ref = f"{item_id}:{own}" if own is not None else ""
+        if own_ref and all(
+                (base_groups.get(key) or {}).get("selected_reachable", True) for key in rule_keys):
+            legal.add(own_ref)
+        return legal - duplicates, duplicates
+
+    def _apply_part_kinds(self, group, item_id, preferred_refs=()):
+        """没有可用规则时的上色：只有官方推荐与同组重复两种提示。"""
+        kept = self._kept_slot_values(self._slot_values(group))
+        for index, slot in enumerate(group["slots"]):
+            duplicates = {
+                f"{item_id}:{value}" for i, value in enumerate(kept) if i != index and value is not None}
+            self._apply_slot_kinds(slot, item_id, preferred_refs=preferred_refs, duplicate_refs=duplicates,
+                                   rules_ready=False)
+
+    def _apply_slot_kinds(self, slot, item_id, legal_refs=(), allowed_refs=(), preferred_refs=(),
+                          duplicate_refs=(), rules_ready=True):
+        legal_refs, allowed_refs, preferred_refs, duplicate_refs = (
+            set(legal_refs), set(allowed_refs), set(preferred_refs), set(duplicate_refs))
+        duplicate_hint = self._rule_message(
+            "candidate_duplicate", "已在同组其它栏位选中，重复选择会判定为魔改",
+            "Already selected in another slot of this group; picking it again makes the build modified")
+        for option in slot["options"]:
+            part_id = option.get("value")
+            hint = ""
+            if item_id is None or part_id is None:
+                kind = ""
+            else:
+                ref = f"{item_id}:{part_id}"
+                if ref in duplicate_refs:
+                    kind = "allowed"
+                    hint = duplicate_hint
+                elif not rules_ready:
+                    kind = "preferred" if ref in preferred_refs else ""
+                elif ref in legal_refs:
+                    kind = "preferred" if ref in preferred_refs else "eligible"
+                elif ref in allowed_refs:
+                    kind = "allowed"
+                elif ref in preferred_refs:
+                    # 规则表未收录的推荐件：规则不下结论，保留推荐色
+                    kind = "preferred"
                 else:
-                    ref = f"{item_id}:{part_id}"
-                    if ref in preferred_refs:
-                        kind = "preferred"
-                    elif ref in eligible_refs:
-                        kind = "eligible"
-                    elif ref in allowed_refs:
-                        kind = "allowed"
-                    else:
-                        kind = ""
-                option["kind"] = kind
-                bg, fg, bold = _KIND_POPUP_STYLE.get(kind, ("", "", False))
-                option["itemBg"] = bg
-                option["itemColor"] = fg
-                option["itemBold"] = bold
-                # label 恢复纯文本（text 为预计算的完整属性描述，见 _refresh_part_details）
-                option["label"] = str(option.get("text") or option.get("label") or "")
+                    kind = ""
+            option["kind"] = kind
+            option["hint"] = hint
+            bg, fg, bold = _KIND_POPUP_STYLE.get(kind, ("", "", False))
+            option["itemBg"] = bg
+            option["itemColor"] = fg
+            option["itemBold"] = bold
+            # label 恢复纯文本（text 为预计算的完整属性描述，见 _refresh_part_details）
+            option["label"] = str(option.get("text") or option.get("label") or "")
 
     # ------------------------------------------------------------------ #
     # 写背包 / 复制

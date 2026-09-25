@@ -1387,6 +1387,8 @@
     "candidate_slot_full": "属于{group}；替换已有配件可保持合法。",
     "candidate_dependency": "属于{group}，但当前搭配或依赖未满足。",
     "candidate_not_allowed": "不属于当前自然模板；仍可作为魔改配件选择。",
+    "candidate_inactive": "当前模板没有启用该槽位；仍可作为魔改配件选择。",
+    "candidate_overfull": "{group} 的已选数量超过自然生成上限。",
     "slot_budget_hint": "显示当前数量与自然生成规则允许的数量；超出仍可编辑。",
     "gold_reason": "金皮肤只是传奇皮肤底层，不属于自然构建模板；已关闭合法搭配指示。",
     "groups": {
@@ -1408,6 +1410,8 @@
       "augment_element_nova": "元素新星",
       "unique": "传奇专长",
       "vile": "恶毒强化",
+      "pearl_elem": "珠光元素",
+      "pearl_stat": "珠光属性",
       "other": "其他"
     }
   },
@@ -1566,7 +1570,8 @@
     "decode_fail": "解码失败",
     "update_level_fail": "更新解码字符串中的等级失败",
     "reencode_fail": "重新编码失败",
-    "write_fail": "回写YAML失败"
+    "write_fail": "回写YAML失败",
+    "equipped": "装备栏"
   },
   "heavy_weapon_tab": {
     "groups": {

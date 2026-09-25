@@ -45,6 +45,7 @@ _FLAG_CODE_ORDER = ("1", "3", "5", "17", "33", "65", "129")
 _KIND_POPUP_BG = {
     "legal": "#304a90e2",
     "warning": "#26e6a439",
+    "modified": "#30ce5b5b",
 }
 
 
@@ -893,26 +894,7 @@ class EquipmentBaseViewModel(PageViewModel):
             if mfg_id is None:
                 self.dataChanged.emit()
                 return
-            level = self._level
-            if self._imported_copy and self._source_header:
-                header = build_header(self._source_header, mfg_id=mfg_id, level=level,
-                                      seed=self._source_seed)
-            else:
-                header = self._default_new_header(mfg_id, level)
-            skill_parts, secondary = self._build_skill_parts(mfg_id)
-            rarity_id = self._current_rarity_id()
-            if rarity_id:
-                skill_parts.insert(0, f"{{{rarity_id}}}")
-            if self._imported_copy:
-                skill_parts.extend(self._preserved_tokens)
-                for parent_id, children in self._preserved_children.items():
-                    secondary.setdefault(parent_id, []).extend(children)
-            for k, v in secondary.items():
-                if v:
-                    skill_parts.append(
-                        f"{{{k}:[{' '.join(map(str, sorted(v)))}]}}" if len(v) > 1
-                        else f"{{{k}:{v[0]}}}")
-            self._raw_output = f"{header}|| " + " ".join(skill_parts) + " |"
+            self._raw_output = self._compose_raw_output(mfg_id)
             encoded, err = b_encoder.encode_to_base85(self._raw_output)
             self._encode_error = bool(err)
             if err:
@@ -931,6 +913,29 @@ class EquipmentBaseViewModel(PageViewModel):
         # QML 全部属性都挂在 dataChanged 上；漏发会导致选择看似“无效”、
         # 穿梭框添加后界面不刷新（手雷/护盾/修复套件/重武器四页整体失灵）。
         self.dataChanged.emit()
+
+    def _compose_raw_output(self, mfg_id: int) -> str:
+        """按当前状态拼出反序列化文本（无副作用，规则指引的变体校验也用它）。"""
+        level = self._level
+        if self._imported_copy and self._source_header:
+            header = build_header(self._source_header, mfg_id=mfg_id, level=level,
+                                  seed=self._source_seed)
+        else:
+            header = self._default_new_header(mfg_id, level)
+        skill_parts, secondary = self._build_skill_parts(mfg_id)
+        rarity_id = self._current_rarity_id()
+        if rarity_id:
+            skill_parts.insert(0, f"{{{rarity_id}}}")
+        if self._imported_copy:
+            skill_parts.extend(self._preserved_tokens)
+            for parent_id, children in self._preserved_children.items():
+                secondary.setdefault(parent_id, []).extend(children)
+        for k, v in secondary.items():
+            if v:
+                skill_parts.append(
+                    f"{{{k}:[{' '.join(map(str, sorted(v)))}]}}" if len(v) > 1
+                    else f"{{{k}:{v[0]}}}")
+        return f"{header}|| " + " ".join(skill_parts) + " |"
 
     def _update_stats(self, decoded: str) -> None:
         try:
@@ -1067,31 +1072,61 @@ class EquipmentBaseViewModel(PageViewModel):
         ref = str(ref or "")
         if not ref:
             return {}
+        # 分级与 core.legit_status.candidate_state（职业模组/强化/武器编辑器）一致：
+        # 选了就会变成魔改的候选一律标 ◇ modified，不再落到无色的 neutral。
+        # 唯一差异：组的原始配额 > 0、只是依赖未满足（如非珠光模板里的珠光组），
+        # 按"条件未满足"标 "!"。
         matched = [groups[key] for key in rule_keys
                    if key in groups and ref in set(groups[key].get("allowed") or [])]
         if not matched:
             return {
-                "kind": "neutral",
-                "marker": "",
+                "kind": "modified",
+                "marker": "◇",
                 "hint": self._legit_text(
                     "candidate_not_allowed",
                     "Not part of this natural template; still selectable as a modified part."),
             }
-        if not any(int(spec.get("effective_max", spec.get("max", 0))) > 0
-                   or ref in set(spec.get("selected") or []) for spec in matched):
-            return {
-                "kind": "neutral",
-                "marker": "",
-                "hint": self._legit_text(
-                    "candidate_not_allowed",
-                    "Not active in this natural template; still selectable as a modified part."),
-            }
-        selected = any(ref in set(spec.get("selected") or []) for spec in matched)
-        remaining = any(ref in set(spec.get("remaining_eligible_refs") or []) for spec in matched)
-        eligible = any(ref in set(spec.get("eligible_refs") or []) for spec in matched)
         names = " / ".join(
             self._generation_group_text(key) for key in rule_keys
             if key in groups and ref in set(groups[key].get("allowed") or []))
+        if not any(int(spec.get("effective_max", spec.get("max", 0))) > 0
+                   or ref in set(spec.get("selected") or []) for spec in matched):
+            if any(int(spec.get("max", 0)) > 0 for spec in matched):
+                template = self._legit_text(
+                    "candidate_dependency",
+                    "Belongs to {group}, but the current pairing or dependency is not satisfied.")
+                return {"kind": "warning", "marker": "!", "hint": template.format(group=names)}
+            return {
+                "kind": "modified",
+                "marker": "◇",
+                "hint": self._legit_text(
+                    "candidate_inactive",
+                    "This template does not activate the slot; still selectable as a modified part."),
+            }
+        selected_counts = [list(spec.get("selected") or []).count(ref) for spec in matched]
+        if any(count > 1 for count in selected_counts):
+            return {
+                "kind": "modified",
+                "marker": "◇",
+                "hint": self._legit_text("reason_duplicate_part", "The same part is selected more than once"),
+            }
+        if any(count and len(spec.get("selected") or []) > int(spec.get("effective_max", spec.get("max", 0)))
+               for count, spec in zip(selected_counts, matched)):
+            return {
+                "kind": "modified",
+                "marker": "◇",
+                "hint": self._legit_text(
+                    "candidate_overfull", "The selected count exceeds the natural limit for {group}.",
+                ).format(group=names),
+            }
+        # "已选中"只有在该组当前选择本身可自然生成时才算合法：非珠光模板里选了
+        # 珠光元素、普通稀有度配传奇枪管等，选择集不可达（selected_reachable=False），
+        # 应与其它不合规候选一样标 "!"，而不是因为"已选"就显示 ✓。
+        selected = any(
+            ref in set(spec.get("selected") or []) and spec.get("selected_reachable", True)
+            for spec in matched)
+        remaining = any(ref in set(spec.get("remaining_eligible_refs") or []) for spec in matched)
+        eligible = any(ref in set(spec.get("eligible_refs") or []) for spec in matched)
         if selected or remaining:
             template = self._legit_text("candidate_legal", "Natural candidate: {group}")
             return {"kind": "legal", "marker": "✓", "hint": template.format(group=names)}
@@ -1130,15 +1165,36 @@ class EquipmentBaseViewModel(PageViewModel):
         self._group_titles[key] = (
             f"{base_title} · {' · '.join(bits)}" if bits else f"{base_title} · —")
         if cfg.get("mode") == "chip":
+            option_groups = self._chip_replacement_groups(key, groups)
             for opt in self._chip_options_state.get(key, []):
                 ref = self._generation_ref_for_option(key, opt.get("pid"))
                 opt["candidate"] = self._candidate_state_for_option(
-                    key, opt.get("pid"), ref, rule_keys, groups)
+                    key, opt.get("pid"), ref, rule_keys, option_groups)
         else:
             for opt in self._picker_src.get(key, []):
                 ref = self._generation_ref_for_option(key, opt.get("data"))
                 opt["candidate"] = self._candidate_state_for_option(
                     key, opt.get("data"), ref, rule_keys, groups)
+
+    def _chip_replacement_groups(self, key: str, groups):
+        """单选下拉点选即"替换"当前选择：候选按去掉本组当前选择后的规则状态评估。
+
+        否则选中一项后组配额已满，同组其它合法项全部显示"槽位已满"，
+        而在单选下拉里换选并不会超出上限（与武器生成器的槽位语义一致）。
+        """
+        mfg_id = self._current_mfg_id()
+        if self._chip_sel.get(key) is None or mfg_id is None:
+            return groups
+        saved = self._chip_sel[key]
+        self._chip_sel[key] = None
+        try:
+            variant = item_display_resolver.validate_weapon_generation(
+                self._compose_raw_output(mfg_id), allow_incomplete=True).get("groups") or {}
+        except Exception:
+            variant = {}
+        finally:
+            self._chip_sel[key] = saved
+        return variant or groups
 
     def _clear_group_candidates(self, key: str) -> None:
         for opt in self._chip_options_state.get(key, []):

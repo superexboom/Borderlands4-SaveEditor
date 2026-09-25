@@ -1385,6 +1385,8 @@
     "candidate_slot_full": "Natural for {group}; replace an existing part to stay legal.",
     "candidate_dependency": "Belongs to {group}, but the current pairing or dependency is not satisfied.",
     "candidate_not_allowed": "Outside this natural template; still selectable as a modified part.",
+    "candidate_inactive": "This template does not activate the slot; still selectable as a modified part.",
+    "candidate_overfull": "The selected count exceeds the natural limit for {group}.",
     "slot_budget_hint": "Shows current count against the natural slot budget; modified counts remain editable.",
     "gold_reason": "Gold Skin is only a legendary-skin foundation and has no natural build; guidance is disabled.",
     "groups": {
@@ -1406,6 +1408,8 @@
       "augment_element_nova": "Nova",
       "unique": "Legendary",
       "vile": "Vile",
+      "pearl_elem": "Pearl Element",
+      "pearl_stat": "Pearl Stat",
       "other": "Other"
     }
   },
@@ -1564,7 +1568,8 @@
     "decode_fail": "Decode failed",
     "update_level_fail": "Failed to update level in decoded string",
     "reencode_fail": "Re-encoding failed",
-    "write_fail": "Failed to write back to YAML"
+    "write_fail": "Failed to write back to YAML",
+    "equipped": "Equipped"
   },
   "heavy_weapon_tab": {
     "groups": {
