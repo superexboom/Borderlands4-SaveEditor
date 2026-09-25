@@ -7,6 +7,7 @@ Display metadata comes from :mod:`core.progress_catalog`.
 
 from __future__ import annotations
 
+import math
 from functools import lru_cache
 from typing import Any
 
@@ -548,8 +549,13 @@ def _type_title(type_key: str, lang: str) -> str:
     return name.replace("DiscoveryLocation_", "").replace("_", " ")
 
 
-def map_list(data: dict[str, Any], lang: str, templates: dict[str, str] | None = None) -> list[dict[str, Any]]:
-    """Maps that have artwork, with collectible progress for challenge-driven points."""
+def map_list(data: dict[str, Any], lang: str, templates: dict[str, str] | None = None,
+             track: bool = True) -> list[dict[str, Any]]:
+    """Maps that have artwork, with collectible progress for challenge-driven points.
+
+    ``track=False`` (live mode: the snapshot holds no progress stats) leaves the
+    progress counts at zero instead of reporting everything as missing.
+    """
     challenges = cat.section("challenges")
     counts: dict[str, list[int]] = {}
     for location in cat.section("locations").values():
@@ -558,14 +564,18 @@ def map_list(data: dict[str, Any], lang: str, templates: dict[str, str] | None =
         entry[0] += 1
         if location.get("challenge") in challenges and cat.project(world, location["x"], location["y"]):
             entry[2] += 1
-            if challenge_state(data, location["challenge"])["done"]:
+            if track and challenge_state(data, location["challenge"])["done"]:
                 entry[1] += 1
     rows = []
     for world, info in (cat.maps().get("maps") or {}).items():
         total, done, driven = counts.get(world, [0, 0, 0])
         rows.append({"key": world, "title": map_title(world, lang, templates), "points": total,
-                     "done": done, "total": driven, "area_key": world_area(world)})
-    rows.sort(key=lambda row: (row["key"] != "World_P", row["area_key"] != "", -row["total"], row["title"]))
+                     "done": done, "total": driven if track else 0, "area_key": world_area(world),
+                     "_order": driven})
+    # Same order with or without tracking (live mode keeps the offline ordering).
+    rows.sort(key=lambda row: (row["key"] != "World_P", row["area_key"] != "", -row["_order"], row["title"]))
+    for row in rows:
+        del row["_order"]
     return rows
 
 
@@ -576,8 +586,12 @@ def world_area(world: str) -> str:
 
 
 def map_markers(data: dict[str, Any], world: str, lang: str,
-                overrides: dict[str, str] | None = None) -> list[dict[str, Any]]:
-    """Every discovery point of ``world`` that lands on the map artwork."""
+                overrides: dict[str, str] | None = None, track: bool = True) -> list[dict[str, Any]]:
+    """Every discovery point of ``world`` that lands on the map artwork.
+
+    ``track=False`` reports every point as untracked (``done`` None); used in
+    live mode where the collected state is not readable.
+    """
     challenges = cat.section("challenges")
     types = cat.section("location_types")
     titles: dict[str, str] = {}
@@ -603,12 +617,15 @@ def map_markers(data: dict[str, Any], world: str, lang: str,
         challenge = location.get("challenge") or ""
         row = challenges.get(challenge) or {}
         stat = str(row.get("stat") or "")
-        done = challenge_state(data, challenge)["done"] if row else None
+        done = challenge_state(data, challenge)["done"] if row and track else None
         title = titles.get(stat) or _place_title(location, lang) or _type_title(type_key, lang)
         markers.append({
             "id": location_id,
             "u": uv[0],
             "v": uv[1],
+            "x": location["x"],
+            "y": location["y"],
+            "z": location.get("z", 0.0),
             "type": type_key,
             "type_title": _type_title(type_key, lang),
             "group": layer_group(type_key),
@@ -620,3 +637,57 @@ def map_markers(data: dict[str, Any], world: str, lang: str,
             "icon_done": icon_done or icon,
         })
     return markers
+
+
+# --------------------------------------------------------------------------- #
+# Live teleport (bl4_live ``teleport_position`` runtime action)
+# --------------------------------------------------------------------------- #
+# Discovery points are the object's own actor location (a wall symbol, a crate);
+# lift the target a little so the pawn is not placed inside the floor. The game
+# side (K2_TeleportTo) still resolves collisions and reports failure.
+TELEPORT_Z_LIFT = 100.0
+
+
+def teleport_target(location_id: str, lift: float = TELEPORT_Z_LIFT) -> dict[str, Any] | None:
+    """Payload for ``teleport_position``: the location's map and world position."""
+    location = cat.section("locations").get(str(location_id or ""))
+    if not location or not location.get("map"):
+        return None
+    return {"map": str(location["map"]), "x": float(location["x"]), "y": float(location["y"]),
+            "z": float(location.get("z", 0.0)) + float(lift)}
+
+
+def same_map(first: Any, second: Any) -> bool:
+    """Runtime world names and catalog map names compare case-insensitively."""
+    return bool(str(first or "").strip()) and str(first).strip().casefold() == str(second or "").strip().casefold()
+
+
+def live_player_marker(position: dict[str, Any] | None, world: str) -> dict[str, Any]:
+    """Project the live player position (runtime ``state.position``) onto ``world``.
+
+    Returns ``available`` (a usable position was reported), ``map`` and, when
+    the player stands on ``world`` inside its artwork, ``on_map`` with ``u``/``v``
+    and a screen ``heading`` in degrees (0 = right, clockwise) derived from yaw.
+    """
+    position = position if isinstance(position, dict) else {}
+    player_map = str(position.get("map") or "").strip()
+    available = bool(position.get("available", True)) and bool(player_map) and all(
+        isinstance(position.get(key), (int, float)) for key in ("x", "y", "z"))
+    row: dict[str, Any] = {"available": available, "map": player_map, "on_map": False,
+                           "u": 0.0, "v": 0.0, "heading": 0.0}
+    if not available:
+        return row
+    row.update({key: float(position[key]) for key in ("x", "y", "z")})
+    if not same_map(player_map, world):
+        return row
+    uv = cat.project(world, row["x"], row["y"])
+    if not uv:
+        return row
+    row.update({"on_map": True, "u": uv[0], "v": uv[1]})
+    yaw = position.get("yaw")
+    if isinstance(yaw, (int, float)):
+        radians = math.radians(float(yaw))
+        ahead = cat.project(world, row["x"] + 100.0 * math.cos(radians), row["y"] + 100.0 * math.sin(radians))
+        if ahead:
+            row["heading"] = math.degrees(math.atan2(ahead[1] - uv[1], ahead[0] - uv[0]))
+    return row

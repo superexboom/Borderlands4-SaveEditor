@@ -54,6 +54,7 @@ class AppBridge(QObject):
     autosaveChanged = pyqtSignal()
     backgroundChanged = pyqtSignal()
     liveChanged = pyqtSignal()
+    runtimeActionFinished = pyqtSignal(str, bool, str)    # action, ok, error（live 运行时动作完成）
 
     toastRequested = pyqtSignal(str, str)                 # text, kind: success|error|warning|info
     confirmRequested = pyqtSignal(int, str, str, bool)    # id, title, text, isWarning
@@ -647,8 +648,12 @@ class AppBridge(QObject):
         return self.live.update_item(dict(payload))
 
     def runtime_action(self, action: str, params: Optional[dict] = None) -> None:
-        """live 运行时操作入口（character 页）。"""
+        """live 运行时操作入口（character 页、游戏进度地图的传送）。"""
         self.live.runtime_action(action, params)
+
+    def live_runtime_state(self) -> dict:
+        """最近一次 live runtime 响应中的 state 快照（离线时为空）。"""
+        return dict(self.live.runtime_state) if self.live.active else {}
 
     @pyqtSlot("QVariantMap")
     def openGeneratedWeapon(self, result: dict) -> None:

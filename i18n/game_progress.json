@@ -18,7 +18,7 @@
       "labels": {
         "load_save_first": "请先加载一个存档文件。",
         "no_catalog": "缺少游戏进度数据（core/data/progress_catalog.json），请用 pipeline 的 export-progress-catalog 生成。",
-        "live_mode": "联机模式下游戏进度页只读；修改请在离线存档中进行。",
+        "live_mode": "联机模式：游戏进度只保存在存档里，联机时读不到；地图页签可查看玩家位置并传送。",
         "profile_save": "当前是 Profile 存档：这里显示账号级进度（秘藏卡、SDU、解锁与共享收集）。",
         "character_only": "该页签仅适用于角色存档。",
         "playtime": "游玩时间",
@@ -64,7 +64,13 @@
         "status_missing": "未收集",
         "status_other": "不可收集",
         "zoom_hint": "滚轮缩放 · 拖动平移",
-        "no_map": "该地图没有可显示的地点"
+        "no_map": "该地图没有可显示的地点",
+        "live_progress_unavailable": "联机模式下读不到游戏进度。请退出联机后打开存档查看或修改。",
+        "status_unknown": "联机模式下收集状态未知",
+        "legend_player": "玩家",
+        "teleport_need_live": "需要联机模式",
+        "teleport_no_position": "尚未读取到玩家位置",
+        "teleport_other_map": "玩家不在这张地图（当前在：{map}）"
       },
       "ammo": {
         "pistol": "手枪",
@@ -91,11 +97,15 @@
         "zoom_out": "缩小",
         "zoom_fit": "适应窗口",
         "show_all_layers": "全部",
-        "hide_all_layers": "清空"
+        "hide_all_layers": "清空",
+        "teleport": "传送到这里",
+        "locate_player": "定位玩家"
       },
       "toasts": {
         "saved": "已修改：{what}",
-        "invalid": "数值无效"
+        "invalid": "数值无效",
+        "teleport_ok": "已传送到：{what}",
+        "teleport_failed": "传送失败：{error}"
       },
       "collectible_names": {
         "vaultdoor": "秘藏之门",
@@ -138,7 +148,7 @@
       "labels": {
         "load_save_first": "Please load a save file first.",
         "no_catalog": "Game progress data is missing (core/data/progress_catalog.json); generate it with the pipeline export-progress-catalog command.",
-        "live_mode": "Game Progress is read-only in live mode; edit an offline save instead.",
+        "live_mode": "Live mode: progress lives in the save file and cannot be read live; the Map tab shows your position and can teleport you.",
         "profile_save": "This is a Profile save: account-wide progress (Vault Cards, SDU, unlocks and shared collectibles) is shown here.",
         "character_only": "This tab applies to character saves only.",
         "playtime": "Playtime",
@@ -184,7 +194,13 @@
         "status_missing": "Missing",
         "status_other": "Not a collectible",
         "zoom_hint": "Wheel to zoom · drag to pan",
-        "no_map": "No places to show on this map"
+        "no_map": "No places to show on this map",
+        "live_progress_unavailable": "Progress cannot be read in live mode. Leave live mode and open the save to view or edit it.",
+        "status_unknown": "Collected state is unknown in live mode",
+        "legend_player": "Player",
+        "teleport_need_live": "Requires live mode",
+        "teleport_no_position": "Player position not read yet",
+        "teleport_other_map": "The player is on another map ({map})"
       },
       "ammo": {
         "pistol": "Pistol",
@@ -211,11 +227,15 @@
         "zoom_out": "Zoom out",
         "zoom_fit": "Fit",
         "show_all_layers": "All",
-        "hide_all_layers": "None"
+        "hide_all_layers": "None",
+        "teleport": "Teleport here",
+        "locate_player": "Locate player"
       },
       "toasts": {
         "saved": "Updated: {what}",
-        "invalid": "Invalid value"
+        "invalid": "Invalid value",
+        "teleport_ok": "Teleported to: {what}",
+        "teleport_failed": "Teleport failed: {error}"
       },
       "collectible_names": {
         "vaultdoor": "Vault Doors",
@@ -258,7 +278,7 @@
       "labels": {
         "load_save_first": "Сначала загрузите файл сохранения.",
         "no_catalog": "Нет данных прогресса (core/data/progress_catalog.json); создайте их командой pipeline export-progress-catalog.",
-        "live_mode": "В онлайн-режиме страница прогресса доступна только для чтения; редактируйте офлайн-сохранение.",
+        "live_mode": "Онлайн-режим: прогресс хранится в сохранении и не читается из игры; на вкладке «Карта» видно позицию игрока и доступна телепортация.",
         "profile_save": "Это Profile-сохранение: здесь показан общий прогресс аккаунта (карты Хранилища, SDU, разблокировки и общие коллекции).",
         "character_only": "Эта вкладка доступна только для сохранений персонажа.",
         "playtime": "Время игры",
@@ -304,7 +324,13 @@
         "status_missing": "Не собрано",
         "status_other": "Не коллекционный предмет",
         "zoom_hint": "Колесо — масштаб · перетаскивание — сдвиг",
-        "no_map": "На этой карте нечего показать"
+        "no_map": "На этой карте нечего показать",
+        "live_progress_unavailable": "В онлайн-режиме прогресс недоступен. Выйдите из него и откройте сохранение.",
+        "status_unknown": "В онлайн-режиме состояние неизвестно",
+        "legend_player": "Игрок",
+        "teleport_need_live": "Нужен онлайн-режим",
+        "teleport_no_position": "Позиция игрока ещё не получена",
+        "teleport_other_map": "Игрок на другой карте ({map})"
       },
       "ammo": {
         "pistol": "Пистолет",
@@ -331,11 +357,15 @@
         "zoom_out": "Отдалить",
         "zoom_fit": "По размеру",
         "show_all_layers": "Все",
-        "hide_all_layers": "Нет"
+        "hide_all_layers": "Нет",
+        "teleport": "Телепорт сюда",
+        "locate_player": "Найти игрока"
       },
       "toasts": {
         "saved": "Изменено: {what}",
-        "invalid": "Недопустимое значение"
+        "invalid": "Недопустимое значение",
+        "teleport_ok": "Телепортация: {what}",
+        "teleport_failed": "Телепортация не удалась: {error}"
       },
       "collectible_names": {
         "vaultdoor": "Двери Хранилищ",
@@ -378,7 +408,7 @@
       "labels": {
         "load_save_first": "Спочатку завантажте файл збереження.",
         "no_catalog": "Немає даних прогресу (core/data/progress_catalog.json); створіть їх командою pipeline export-progress-catalog.",
-        "live_mode": "В онлайн-режимі сторінка прогресу лише для читання; редагуйте офлайн-збереження.",
+        "live_mode": "Онлайн-режим: прогрес зберігається в сейві й не читається з гри; на вкладці «Мапа» видно позицію гравця та доступна телепортація.",
         "profile_save": "Це Profile-збереження: тут показано спільний прогрес акаунта (картки Сховища, SDU, розблокування та спільні колекції).",
         "character_only": "Ця вкладка доступна лише для збережень персонажа.",
         "playtime": "Час гри",
@@ -424,7 +454,13 @@
         "status_missing": "Не зібрано",
         "status_other": "Не колекційний предмет",
         "zoom_hint": "Коліщатко — масштаб · перетягування — зсув",
-        "no_map": "На цій мапі нічого показати"
+        "no_map": "На цій мапі нічого показати",
+        "live_progress_unavailable": "В онлайн-режимі прогрес недоступний. Вийдіть з нього й відкрийте сейв.",
+        "status_unknown": "В онлайн-режимі стан невідомий",
+        "legend_player": "Гравець",
+        "teleport_need_live": "Потрібен онлайн-режим",
+        "teleport_no_position": "Позицію гравця ще не отримано",
+        "teleport_other_map": "Гравець на іншій мапі ({map})"
       },
       "ammo": {
         "pistol": "Пістолет",
@@ -451,11 +487,15 @@
         "zoom_out": "Віддалити",
         "zoom_fit": "За розміром",
         "show_all_layers": "Усі",
-        "hide_all_layers": "Жодного"
+        "hide_all_layers": "Жодного",
+        "teleport": "Телепорт сюди",
+        "locate_player": "Знайти гравця"
       },
       "toasts": {
         "saved": "Змінено: {what}",
-        "invalid": "Недопустиме значення"
+        "invalid": "Недопустиме значення",
+        "teleport_ok": "Телепортовано: {what}",
+        "teleport_failed": "Телепортація не вдалася: {error}"
       },
       "collectible_names": {
         "vaultdoor": "Двері Сховищ",

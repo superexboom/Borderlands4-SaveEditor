@@ -14,6 +14,10 @@ Item {
     readonly property var buttons: loc.buttons || ({})
     readonly property bool ready: vmGameProgress.saveLoaded && vmGameProgress.catalogAvailable
     readonly property int mapTabIndex: 3
+    // 联机快照读不到进度（只有地图可用），其它非角色存档（账号存档）另有提示
+    readonly property string nonCharacterHint: vmGameProgress.saveKind === "live"
+                                               ? (labels.live_progress_unavailable || "")
+                                               : (labels.character_only || "")
 
     EmptyHint {
         anchors.fill: parent
@@ -73,7 +77,7 @@ Item {
             EmptyHint {
                 anchors.fill: parent
                 visible: vmGameProgress.saveKind !== "character"
-                description: page.labels.character_only || ""
+                description: page.nonCharacterHint
             }
         }
     }
@@ -84,14 +88,14 @@ Item {
             ProgressMapTab {
                 anchors.fill: parent
                 anchors.topMargin: 8
-                visible: vmGameProgress.saveKind === "character"
+                visible: vmGameProgress.saveKind === "character" || vmGameProgress.saveKind === "live"
                 labels: page.labels
                 buttons: page.buttons
             }
             EmptyHint {
                 anchors.fill: parent
-                visible: vmGameProgress.saveKind !== "character"
-                description: page.labels.character_only || ""
+                visible: vmGameProgress.saveKind !== "character" && vmGameProgress.saveKind !== "live"
+                description: page.nonCharacterHint
             }
         }
     }
@@ -115,7 +119,7 @@ Item {
             EmptyHint {
                 anchors.fill: parent
                 visible: vmGameProgress.saveKind !== "character"
-                description: page.labels.character_only || ""
+                description: page.nonCharacterHint
             }
         }
     }
@@ -143,7 +147,7 @@ Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 80
                     visible: vmGameProgress.saveKind !== "character"
-                    description: page.labels.character_only || ""
+                    description: page.nonCharacterHint
                 }
 
                 // ---- 完成度 ----

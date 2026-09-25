@@ -44,7 +44,11 @@ class GameProgressViewModel(PageViewModel):
         self._only_missing = False
         self._focus_id = ""
         self._focus_serial = 0
+        self._player_serial = 0
+        self._last_player_map = ""
+        self._teleport_what = ""
         app.liveChanged.connect(self._on_live_changed)
+        app.runtimeActionFinished.connect(self._on_runtime_finished)
 
     # ------------------------------------------------------------------ #
     # helpers
@@ -56,6 +60,16 @@ class GameProgressViewModel(PageViewModel):
         return self.strings.get("labels") or {}
 
     def _on_live_changed(self) -> None:
+        # 玩家换了地图（含首次读到位置）时，地图页签跟到玩家所在地图；之后仍可自由浏览别的图
+        player = logic.live_player_marker(self._live_position(), self._current_map)
+        if self.app.liveActive and player["available"] and player["map"] != self._last_player_map:
+            self._last_player_map = player["map"]
+            world = self._artwork_map(player["map"])
+            if world and world != self._current_map:
+                self._current_map = world
+                self._markers_cache = None
+        elif not self.app.liveActive:
+            self._last_player_map = ""
         self.dataChanged.emit()
 
     def _editable(self) -> bool:
@@ -80,6 +94,9 @@ class GameProgressViewModel(PageViewModel):
     def refresh(self) -> None:
         data = self.controller.yaml_obj
         self._kind = logic.save_kind(data) if isinstance(data, dict) else ""
+        if self.app.liveActive and isinstance(data, dict):
+            # live 快照只有背包/仓库，读不到进度：只提供地图（定位与传送）
+            self._kind = "live"
         if self._kind == "character":
             self._overview = logic.read_overview(data)
             self._summary = logic.completion_summary(data) if cat.available() else {}
@@ -91,7 +108,8 @@ class GameProgressViewModel(PageViewModel):
         else:
             self._overview, self._summary, self._regions = {}, {}, []
             self._challenge_categories, self._collectible_categories = [], []
-            self._maps = []
+            self._maps = (logic.map_list({}, self._lang(), self.strings.get("map_names") or {}, track=False)
+                          if self._kind == "live" else [])
         self._markers_cache = None
         self.dataChanged.emit()
 
@@ -415,11 +433,12 @@ class GameProgressViewModel(PageViewModel):
 
     def _all_markers(self) -> list[dict[str, Any]]:
         data = self.controller.yaml_obj
-        if self._kind != "character" or not isinstance(data, dict):
+        if self._kind not in ("character", "live") or not isinstance(data, dict):
             return []
         if self._markers_cache is None or self._markers_cache[0] != self._current_map:
             markers = logic.map_markers(data, self._current_map, self._lang(),
-                                        self.strings.get("collectible_names") or {})
+                                        self.strings.get("collectible_names") or {},
+                                        track=self._kind == "character")
             for marker in markers:
                 for field in ("icon", "icon_done"):
                     path = cat.icon_path(marker[field]) if marker[field] else None
@@ -533,3 +552,89 @@ class GameProgressViewModel(PageViewModel):
         if stat:
             title = next((row["title"] for row in self._maps if row["key"] == self._current_map), self._current_map)
             self._write(lambda data: logic.set_collected(data, stat, collected), title)
+
+    # ------------------------------------------------------------------ #
+    # live: 玩家位置与传送（bl4_live 的 teleport_position 运行时动作）
+    # ------------------------------------------------------------------ #
+    def _live_position(self) -> dict[str, Any]:
+        state = self.app.live_runtime_state()
+        position = state.get("position") or state.get("position_state") or {}
+        return position if isinstance(position, dict) else {}
+
+    def _artwork_map(self, world: str) -> str:
+        """Catalog map key with artwork matching a runtime world name ("" if none)."""
+        return next((key for key in (cat.maps().get("maps") or {}) if logic.same_map(key, world)), "")
+
+    @pyqtProperty("QVariantMap", notify=dataChanged)
+    def livePlayer(self) -> dict[str, Any]:
+        """Player position projected onto the current map (``on_map`` when drawable)."""
+        if not self.app.liveActive:
+            return {"available": False, "on_map": False}
+        return logic.live_player_marker(self._live_position(), self._current_map)
+
+    @pyqtProperty(int, notify=dataChanged)
+    def playerFocusSerial(self) -> int:
+        return self._player_serial
+
+    @pyqtProperty(bool, notify=dataChanged)
+    def teleportReady(self) -> bool:
+        """Live, player position known and standing on the map being viewed."""
+        return not self._teleport_block_reason()
+
+    @pyqtProperty(str, notify=dataChanged)
+    def teleportHint(self) -> str:
+        return self._teleport_block_reason()
+
+    def _teleport_block_reason(self) -> str:
+        labels = self._labels()
+        if not self.app.liveActive:
+            return str(labels.get("teleport_need_live", "Live mode required."))
+        player = logic.live_player_marker(self._live_position(), self._current_map)
+        if not player["available"]:
+            return str(labels.get("teleport_no_position", "Player position not read yet."))
+        if not logic.same_map(player["map"], self._current_map):
+            world = self._artwork_map(player["map"])
+            where = logic.map_title(world, self._lang(), self.strings.get("map_names") or {}) if world else player["map"]
+            return str(labels.get("teleport_other_map", "The player is on another map ({map}).")).format(map=where)
+        return ""
+
+    @pyqtSlot(str, result=bool)
+    def teleportToMarker(self, marker_id: str) -> bool:
+        """Ask the live mod to move the player to one discovery point of the current map."""
+        target = logic.teleport_target(marker_id)
+        if not target or self._teleport_block_reason() or not logic.same_map(target["map"], self._current_map):
+            return False
+        marker = next((row for row in self._all_markers() if row["id"] == marker_id), None)
+        self._teleport_what = marker["title"] if marker else marker_id
+        self.app.runtime_action("teleport_position", target)
+        return True
+
+    @pyqtSlot()
+    def refreshLivePosition(self) -> None:
+        if self.app.liveActive:
+            self.app.runtime_action("state", {"_quiet": True})
+
+    @pyqtSlot(result=bool)
+    def focusPlayer(self) -> bool:
+        """Switch to the player's map (when it has artwork) and ask the view to center on them."""
+        self.refreshLivePosition()
+        player = logic.live_player_marker(self._live_position(), self._current_map)
+        world = self._artwork_map(player["map"]) if player["available"] else ""
+        if not world:
+            return False
+        if world != self._current_map:
+            self._current_map = world
+            self._markers_cache = None
+        self._player_serial += 1
+        self.dataChanged.emit()
+        return True
+
+    def _on_runtime_finished(self, action: str, ok: bool, error: str) -> None:
+        if action != "teleport_position" or not self._teleport_what:
+            return
+        toasts = self.strings.get("toasts") or {}
+        if ok:
+            self.app.toast(str(toasts.get("teleport_ok", "Teleported: {what}")).format(what=self._teleport_what), "success")
+        else:
+            self.app.toast(str(toasts.get("teleport_failed", "Teleport failed: {error}")).format(error=error), "error")
+        self._teleport_what = ""

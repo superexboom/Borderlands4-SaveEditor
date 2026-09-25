@@ -36,6 +36,8 @@ class LiveManager(QObject):
         self.bridge = None
         self.recovery_pending: bool | None = None
         self.recovery_reason = ""
+        # 最近一次 runtime 响应里的 state（position / currencies / ...），供各页面只读取用
+        self.runtime_state: dict = {}
         self._fetch_thread = None
         self._runtime_worker = None
         self._batch_spawn_worker = None
@@ -226,6 +228,7 @@ class LiveManager(QObject):
             return
 
         self.active = True
+        self.runtime_state = {}
         controller = self.app.controller
         controller.yaml_obj = yaml_like
         controller.save_path = None
@@ -274,6 +277,7 @@ class LiveManager(QObject):
         self.active = False
         self.connecting = False
         self.bridge = None
+        self.runtime_state = {}
         self.recovery_pending = None
         self.recovery_reason = ""
         controller = self.app.controller
@@ -631,6 +635,7 @@ class LiveManager(QObject):
             vm.set_runtime_busy(False)
 
         if err is not None or not isinstance(result, dict):
+            self.app.runtimeActionFinished.emit(action, False, str(err or "invalid response"))
             if not quiet and vm is not None:
                 vm.set_runtime_result(f"{action}: {err or 'invalid response'}", False)
             if action == "claim_lost_loot":
@@ -642,8 +647,12 @@ class LiveManager(QObject):
             return
 
         state = result.get("state")
-        if isinstance(state, dict) and vm is not None:
-            vm.apply_runtime_state(state)
+        if isinstance(state, dict):
+            self.runtime_state.update(state)
+            if vm is not None:
+                vm.apply_runtime_state(state)
+        self.app.runtimeActionFinished.emit(
+            action, bool(result.get("ok")), "" if result.get("ok") else str(result.get("error", "failed")))
 
         delta = result.get("inventory_delta")
         changed_count = int(result.get("claimed_count", result.get("claimed", 0)) or 0)

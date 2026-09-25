@@ -5,6 +5,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import QtQuick.Shapes
 import HuskarUI.Basic
 
 RowLayout {
@@ -16,6 +17,7 @@ RowLayout {
     readonly property color doneColor: "#78dba9"
     readonly property color missingColor: "#e6a439"
     readonly property color focusColor: "#4a90e2"
+    readonly property color playerColor: "#2f7cf6"
 
     readonly property var markers: vmGameProgress.mapMarkers
     readonly property var selected: {
@@ -59,6 +61,8 @@ RowLayout {
     }
     function statusText(marker) {
         if (!marker) return "";
+        // 联机快照读不到进度：可追踪的点位显示「未知」而不是误报未收集
+        if (vmGameProgress.liveMode && marker.challenge) return labels.status_unknown || "";
         if (marker.done === true) return labels.status_done || "Collected";
         if (marker.done === false) return labels.status_missing || "Missing";
         return labels.status_other || "";
@@ -152,6 +156,7 @@ RowLayout {
                 Item { Layout.fillWidth: true }
                 HusCheckBox {
                     objectName: "onlyMissing"
+                    visible: !vmGameProgress.liveMode
                     text: tab.labels.only_missing || ""
                     checked: vmGameProgress.mapOnlyMissing
                     onToggled: vmGameProgress.setMapOnlyMissing(checked)
@@ -265,9 +270,37 @@ RowLayout {
                     font.bold: true
                     font.pixelSize: 16
                 }
-                LegendChip { ring: tab.doneColor; label: tab.labels.legend_done || ""; count: tab.stateCounts.done }
-                LegendChip { ring: tab.missingColor; label: tab.labels.legend_missing || ""; count: tab.stateCounts.missing }
-                LegendChip { ring: "transparent"; label: tab.labels.legend_other || ""; count: tab.stateCounts.other }
+                LegendChip {
+                    visible: !vmGameProgress.liveMode
+                    ring: tab.doneColor; label: tab.labels.legend_done || ""; count: tab.stateCounts.done
+                }
+                LegendChip {
+                    visible: !vmGameProgress.liveMode
+                    ring: tab.missingColor; label: tab.labels.legend_missing || ""; count: tab.stateCounts.missing
+                }
+                LegendChip {
+                    visible: !vmGameProgress.liveMode
+                    ring: "transparent"; label: tab.labels.legend_other || ""; count: tab.stateCounts.other
+                }
+                Row {
+                    visible: !!vmGameProgress.livePlayer.on_map
+                    spacing: 6
+                    Rectangle {
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 12
+                        height: 12
+                        radius: 6
+                        color: tab.playerColor
+                        border.width: 2
+                        border.color: "white"
+                    }
+                    HusText {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: tab.labels.legend_player || ""
+                        font.pixelSize: 12
+                        color: HusTheme.Primary.colorTextSecondary
+                    }
+                }
                 Item { Layout.fillWidth: true }
                 HusText {
                     text: tab.labels.zoom_hint || ""
@@ -276,6 +309,17 @@ RowLayout {
                 }
                 Row {
                     spacing: 2
+                    ToolIconButton {
+                        objectName: "locatePlayer"
+                        visible: vmGameProgress.liveMode
+                        iconSource: HusIcon.AimOutlined
+                        tip: vmGameProgress.livePlayer.available ? (tab.buttons.locate_player || "")
+                                                                  : (tab.labels.teleport_no_position || "")
+                        onClicked: {
+                            if (!vmGameProgress.focusPlayer())
+                                vmGameProgress.refreshLivePosition();
+                        }
+                    }
                     ToolIconButton {
                         iconSource: HusIcon.ZoomOutOutlined
                         tip: tab.buttons.zoom_out || ""
@@ -345,16 +389,27 @@ RowLayout {
                         contentY = mapLayer.y + my * mapLayer.height - vy;
                         clampView();
                     }
+                    // 定位目标：选中的标记（收集品列表「地图」按钮）或 live 玩家位置（「定位玩家」）
+                    property bool pendingPlayer: false
+                    readonly property int playerSerial: vmGameProgress.playerFocusSerial
+
                     function tryFocus() {
-                        if (!pendingFocus || width <= 0 || height <= 0) return;
+                        if ((!pendingFocus && !pendingPlayer) || width <= 0 || height <= 0) return;
                         if (mapImage.status !== Image.Ready || String(mapImage.source) !== vmGameProgress.mapImage) return;
+                        var target = null;
+                        if (pendingPlayer) {
+                            var player = vmGameProgress.livePlayer;
+                            if (player.on_map) target = player;
+                        } else {
+                            target = tab.selected;
+                        }
                         pendingFocus = false;
-                        var marker = tab.selected;
-                        if (!marker) return;
+                        pendingPlayer = false;
+                        if (!target) return;
                         zoom = Math.max(zoom, Math.min(maxZoom, fitZoom * 3));
                         fitted = false;
-                        contentX = mapLayer.x + marker.u * mapLayer.width - width / 2;
-                        contentY = mapLayer.y + marker.v * mapLayer.height - height / 2;
+                        contentX = mapLayer.x + target.u * mapLayer.width - width / 2;
+                        contentY = mapLayer.y + target.v * mapLayer.height - height / 2;
                         clampView();
                     }
 
@@ -363,7 +418,8 @@ RowLayout {
                         else clampView();
                     }
                     onFocusSerialChanged: { pendingFocus = true; Qt.callLater(tryFocus); }
-                    onWidthChanged: if (pendingFocus) Qt.callLater(tryFocus)
+                    onPlayerSerialChanged: { pendingPlayer = true; Qt.callLater(tryFocus); }
+                    onWidthChanged: if (pendingFocus || pendingPlayer) Qt.callLater(tryFocus)
                     onDragStarted: HoverTip.hide()
                     Component.onCompleted: {
                         // 标签页首次创建前已点过「地图」按钮：补一次定位
@@ -486,6 +542,68 @@ RowLayout {
                                 Component.onDestruction: HoverTip.hideFor(marker)
                             }
                         }
+
+                        // live 玩家位置：蓝点 + 朝向箭头（heading 由 yaw 投影到地图得到）
+                        Item {
+                            id: playerMarker
+                            objectName: "playerMarker"
+                            readonly property var player: vmGameProgress.livePlayer
+                            visible: mapImage.status === Image.Ready && !!player.on_map
+                            width: 18
+                            height: 18
+                            x: (player.u || 0) * mapLayer.width - width / 2
+                            y: (player.v || 0) * mapLayer.height - height / 2
+                            z: 10
+
+                            Rectangle {
+                                id: playerHalo
+                                anchors.centerIn: parent
+                                width: parent.width * 2.4
+                                height: width
+                                radius: width / 2
+                                color: tab.playerColor
+                                opacity: 0.25
+                                SequentialAnimation on opacity {
+                                    running: playerMarker.visible
+                                    loops: Animation.Infinite
+                                    NumberAnimation { from: 0.35; to: 0.08; duration: 1200; easing.type: Easing.InOutSine }
+                                    NumberAnimation { from: 0.08; to: 0.35; duration: 1200; easing.type: Easing.InOutSine }
+                                }
+                            }
+                            Shape {
+                                // 朝向箭头：三角形底边藏在圆点下，尖端伸出右侧；整体按 heading 旋转（0° 指向右，顺时针）
+                                anchors.fill: parent
+                                rotation: playerMarker.player.heading || 0
+                                preferredRendererType: Shape.CurveRenderer
+                                ShapePath {
+                                    fillColor: tab.playerColor
+                                    strokeColor: "white"
+                                    strokeWidth: 1.5
+                                    startX: playerMarker.width + 9
+                                    startY: playerMarker.height / 2
+                                    PathLine { x: playerMarker.width - 3; y: playerMarker.height / 2 - 6 }
+                                    PathLine { x: playerMarker.width - 3; y: playerMarker.height / 2 + 6 }
+                                    PathLine { x: playerMarker.width + 9; y: playerMarker.height / 2 }
+                                }
+                            }
+                            Rectangle {
+                                anchors.fill: parent
+                                radius: width / 2
+                                color: tab.playerColor
+                                border.width: 2.5
+                                border.color: "white"
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onEntered: HoverTip.showFor(playerMarker, "<b>" + tab.escapeHtml(tab.labels.legend_player || "") + "</b><br>"
+                                                            + "X " + Math.round(playerMarker.player.x || 0)
+                                                            + " · Y " + Math.round(playerMarker.player.y || 0)
+                                                            + " · Z " + Math.round(playerMarker.player.z || 0), mouseX, mouseY)
+                                onExited: HoverTip.hideFor(playerMarker)
+                            }
+                            Component.onDestruction: HoverTip.hideFor(playerMarker)
+                        }
                     }
                 }
 
@@ -569,12 +687,36 @@ RowLayout {
                             }
                             HusButton {
                                 objectName: "markerToggle"
-                                visible: !!(tab.selected && tab.selected.stat)
+                                visible: !!(tab.selected && tab.selected.stat) && !vmGameProgress.liveMode
                                 enabled: vmGameProgress.editable
                                 type: tab.selected && tab.selected.done === true ? HusButton.Type_Default : HusButton.Type_Primary
                                 text: tab.selected && tab.selected.done === true ? (tab.buttons.mark_missing || "")
                                                                                  : (tab.buttons.mark_collected || "")
                                 onClicked: vmGameProgress.setMarkerCollected(tab.selected.stat, tab.selected.done !== true)
+                            }
+                        }
+
+                        // live：传送到该点（bl4_live teleport_position；仅限玩家所在地图）
+                        RowLayout {
+                            Layout.fillWidth: true
+                            visible: vmGameProgress.liveMode
+                            spacing: 8
+                            HusText {
+                                Layout.fillWidth: true
+                                text: vmGameProgress.teleportHint
+                                visible: text !== ""
+                                font.pixelSize: 12
+                                color: HusTheme.Primary.colorTextTertiary
+                                wrapMode: Text.Wrap
+                            }
+                            Item { Layout.fillWidth: true; visible: vmGameProgress.teleportHint === "" }
+                            HusIconButton {
+                                objectName: "teleportButton"
+                                type: HusButton.Type_Primary
+                                iconSource: HusIcon.EnvironmentOutlined
+                                text: tab.buttons.teleport || ""
+                                enabled: vmGameProgress.teleportReady && !appBridge.liveBusy
+                                onClicked: vmGameProgress.teleportToMarker(tab.selected.id)
                             }
                         }
                     }
