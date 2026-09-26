@@ -1690,9 +1690,15 @@ class ClassModViewModel(PageViewModel):
             return ""
         if perk_id.isdigit():
             return perk_id
-        if perk_id.startswith('"') and perk_id.endswith('"'):
-            return perk_id
-        return f'"{perk_id}"'
+        # Named perks are spelled the way the game writes them back ("ClassMod.<part>";
+        # the data tables use CLASSMOD.). Another spelling still materialises, but
+        # the returned item then no longer matches the requested serial, and a live
+        # add waits for it until the bridge times out.
+        name = perk_id.strip('"')
+        prefix, dot, rest = name.partition(".")
+        if dot and prefix.casefold() == "classmod":
+            name = f"ClassMod.{rest}"
+        return f'"{name}"'
 
     def _load_decoded_copy(self, decoded: str, *, source_name: str, state_flags=None) -> bool:
         header = split_decoded(decoded)
@@ -1744,7 +1750,8 @@ class ClassModViewModel(PageViewModel):
                 source_skill_codes[key] = source_codes
 
         known_numeric_perks = {int(key) for key in self.perks_by_id if str(key).isdigit()}
-        known_path_perks = {str(key) for key in self.perks_by_id if not str(key).isdigit()}
+        # quoted perks: the game writes "ClassMod.x", the tables CLASSMOD.x
+        known_path_perks = {str(key).casefold(): str(key) for key in self.perks_by_id if not str(key).isdigit()}
         perk_counts = Counter()
         path_counts = Counter()
         unknown_perks = []
@@ -1776,8 +1783,8 @@ class ClassModViewModel(PageViewModel):
                     perk_counts[str(token["value"])] += 1
                 else:
                     unknown_perks.append(str(token["value"]))
-            elif token_type == "quoted" and token["value"] in known_path_perks:
-                path_counts[token["value"]] += 1
+            elif token_type == "quoted" and str(token["value"]).casefold() in known_path_perks:
+                path_counts[known_path_perks[str(token["value"]).casefold()]] += 1
             else:
                 unknown_tokens.append(self._component_text(token))
 

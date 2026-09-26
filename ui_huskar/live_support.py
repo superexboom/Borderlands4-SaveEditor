@@ -22,6 +22,7 @@ from ui_huskar.live_workers import (
     _LiveRuntimeWorker,
     _live_inventory_mutation_preflight,
     _live_inventory_recovery_state,
+    _spawn_delivered,
 )
 
 
@@ -409,7 +410,7 @@ class LiveManager(QObject):
             return False
         self._remember_recovery(res)
 
-        if res.get("ok"):
+        if _spawn_delivered(res, 1):
             self._toast(self._text("spawn_success", "A new item was spawned into the game backpack."),
                         "success")
             spawned = res.get("items")

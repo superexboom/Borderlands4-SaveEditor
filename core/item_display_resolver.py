@@ -3339,9 +3339,12 @@ def resolve_classmod_card_details(
             "stat_lines": _classmod_skill_stat_lines(key, level, ranks, lang),
         })
 
-    perk_ids = _group_sub_ids(components, "234")
-    perk_ids.extend(value for value in re.findall(r'"([^"]+)"', decoded_full.split("||", 1)[-1]) if value != "c")
     perk_rows = {row.get("perk_ID", "").strip(): row for row in _rows_by_file("data/class_mods/Class_perk.csv")}
+    # quoted perks: the game writes "ClassMod.x", the table CLASSMOD.x
+    named_perks = {key.casefold(): key for key in perk_rows if not key.isdigit()}
+    perk_ids = _group_sub_ids(components, "234")
+    perk_ids.extend(named_perks.get(value.casefold(), value)
+                    for value in re.findall(r'"([^"]+)"', decoded_full.split("||", 1)[-1]) if value != "c")
     perk_counts = Counter(perk_ids)
     perks = []
     firmware = []

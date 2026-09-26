@@ -33,6 +33,24 @@ class _LiveFetchWorker(QThread):
 _LIVE_INVENTORY_MUTATION_ACTIONS = frozenset({'claim_lost_loot'})
 
 
+def _spawn_delivered(result, count):
+    """True when the game created every requested item with the requested serial.
+
+    BL4Live 0.10.26 also compares part pointers and reports ``ok: False`` when a
+    named class mod perk ("ClassMod.x") resolves to an extra part, although the
+    item is in the backpack with exactly the requested serial. Treat that as
+    delivered so the editor neither reports a failure nor loses the new item.
+    """
+    if not isinstance(result, dict):
+        return False
+    if result.get("ok"):
+        return True
+    items = result.get("items")
+    return (isinstance(items, list) and len(items) == int(count) > 0
+            and int(result.get("added_count") or 0) == int(count)
+            and all(isinstance(item, dict) and item.get("verify_serial") for item in items))
+
+
 def _live_inventory_recovery_state(source):
     """Extract the recovery-lock tri-state and reason from any bridge result."""
     states = []
@@ -635,7 +653,7 @@ class _LiveBatchSpawnWorker(QThread):
             try:
                 result = self._bridge.spawn_many(chunk, "BackpackItems")
                 self.mutation_results.append(result)
-                if result.get("ok"):
+                if _spawn_delivered(result, len(chunk)):
                     success += len(chunk)
                     records = result.get("items")
                     if isinstance(records, list) and len(records) == len(chunk):
