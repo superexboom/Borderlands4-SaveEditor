@@ -221,49 +221,89 @@ def evaluate_group_selection(
         if candidate_allowed(index, requires_active, base_counts):
             initial_pool |= 1 << index
 
-    reachable_masks: set[int] = set()
-    terminal_masks: set[int] = set()
+    # The pool only ever shrinks, and for a candidate still in it `requires` is
+    # already met (active tags only grow) while `excludes` and the tag limits only
+    # tighten. So the pool after a set of picks does not depend on their order: it
+    # is the initial pool minus the picks minus every candidate an active tag
+    # excludes or a full tag rule blocks. That lets the search below track masks
+    # (not (mask, pool) pairs) and filter the pool with precomputed bit masks.
+    excluded_by: dict[str, int] = {}
+    rule_members = [0] * len(normalized_rules)
+    for index, ref in enumerate(allowed):
+        tags = candidate_tags[ref]
+        for tag in tags["excludes"]:
+            excluded_by[tag] = excluded_by.get(tag, 0) | (1 << index)
+        for rule_index, (bucket, _limit) in enumerate(normalized_rules):
+            if tags["adds"] & bucket:
+                rule_members[rule_index] |= 1 << index
+    pick_block: list[int] = []
+    pick_rules: list[tuple[int, ...]] = []
+    for ref in allowed:
+        adds = candidate_tags[ref]["adds"]
+        blocked = 0
+        for tag in adds - widened_only:
+            blocked |= excluded_by.get(tag, 0)
+        pick_block.append(blocked)
+        pick_rules.append(tuple(index for index, (bucket, _limit) in enumerate(normalized_rules) if adds & bucket))
+    rule_limits = [limit for _bucket, limit in normalized_rules]
+
     targets = _target_counts(minimum, maximum, additional_chance)
-    for target in targets:
-        stack = [(0, initial_pool)]
-        visited: set[tuple[int, int]] = set()
-        while stack:
-            mask, pool = stack.pop()
-            if (mask, pool) in visited:
+    largest = max(targets)
+    # One search up to the largest target: a mask is reachable for target t when
+    # it is reachable at all and no larger than t, and terminal for t when it has
+    # exactly t picks or fewer with an empty pool.
+    reachable_masks: set[int] = {0}
+    emptied_masks: set[int] = set()
+    stack = [(0, initial_pool, 0, base_counts)] if largest > 0 else []
+    if initial_pool == 0:
+        emptied_masks.add(0)
+    while stack:
+        mask, pool, blocked, counts = stack.pop()
+        next_size = mask.bit_count() + 1
+        remaining = pool
+        while remaining:
+            bit = remaining & -remaining
+            remaining ^= bit
+            next_mask = mask | bit
+            if next_mask in reachable_masks:
                 continue
-            visited.add((mask, pool))
-            reachable_masks.add(mask)
-            if mask.bit_count() >= target or pool == 0:
-                terminal_masks.add(mask)
+            reachable_masks.add(next_mask)
+            if next_size >= largest:
                 continue
-            remaining = pool
-            while remaining:
-                bit = remaining & -remaining
-                remaining ^= bit
-                index = bit.bit_length() - 1
-                next_mask = mask | bit
-                active, counts = state(next_mask)
-                next_pool = pool & ~bit
-                filtered_pool = 0
-                pending = next_pool
-                while pending:
-                    candidate_bit = pending & -pending
-                    pending ^= candidate_bit
-                    candidate_index = candidate_bit.bit_length() - 1
-                    if candidate_allowed(candidate_index, active, counts):
-                        filtered_pool |= candidate_bit
-                stack.append((next_mask, filtered_pool))
+            index = bit.bit_length() - 1
+            next_blocked = blocked | pick_block[index]
+            next_counts = counts
+            if pick_rules[index]:
+                next_counts = list(counts)
+                for rule_index in pick_rules[index]:
+                    next_counts[rule_index] += 1
+                next_counts = tuple(next_counts)
+            limited = 0
+            for rule_index, count in enumerate(next_counts):
+                if count >= rule_limits[rule_index]:
+                    limited |= rule_members[rule_index]
+            next_pool = pool & ~bit & ~next_blocked & ~limited
+            if next_pool:
+                stack.append((next_mask, next_pool, next_blocked, next_counts))
+            else:
+                emptied_masks.add(next_mask)
+    target_set = set(targets)
+
+    def terminal(mask: int) -> bool:
+        size = mask.bit_count()
+        return size in target_set or (size < largest and mask in emptied_masks)
 
     selected_valid = len(selected) == len(selected_unique) and all(ref in ref_indexes for ref in selected_unique)
     selected_set = set(selected_unique)
     selected_mask = sum(1 << ref_indexes[ref] for ref in selected_unique if ref in ref_indexes)
     selected_reachable = selected_valid and selected_mask in reachable_masks
-    selected_terminal = selected_valid and selected_mask in terminal_masks
-    terminal_supersets = [
-        mask for mask in terminal_masks
-        if selected_reachable and mask & selected_mask == selected_mask
-    ]
-    terminal_counts = sorted({mask.bit_count() for mask in terminal_supersets})
+    selected_terminal = selected_reachable and terminal(selected_mask)
+    terminal_sizes: set[int] = set()
+    if selected_reachable:
+        for mask in reachable_masks:
+            if mask & selected_mask == selected_mask and terminal(mask):
+                terminal_sizes.add(mask.bit_count())
+    terminal_counts = sorted(terminal_sizes)
     effective_min = terminal_counts[0] if terminal_counts else int(minimum)
     effective_max = terminal_counts[-1] if terminal_counts else int(maximum)
 

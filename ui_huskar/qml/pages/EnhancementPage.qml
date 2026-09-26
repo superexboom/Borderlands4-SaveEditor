@@ -399,14 +399,37 @@ LockedFlickable {
         }
         contentDelegate: Item {
             implicitHeight: enhancementRollDialog.height - 4
-            ModRollResultsView {
+            ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 16
-                results: enhancementRollDialog.hasResults ? vmEnhancement.rollResults : []
-                texts: vmEnhancement.rollTexts
-                canAdd: appBridge.saveLoaded
-                onAddRequested: function(indices) { vmEnhancement.addLuckyRollToBackpack(indices); }
-                onCopyRequested: function(index) { vmEnhancement.copyLuckyRoll(index); }
+                spacing: 10
+                ModRollResultsView {
+                    id: rollView
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    results: enhancementRollDialog.hasResults ? vmEnhancement.rollResults : []
+                    texts: vmEnhancement.rollTexts
+                    canAdd: appBridge.saveLoaded
+                    onAddRequested: function(indices) { vmEnhancement.addLuckyRollToBackpack(indices); }
+                    onCopyRequested: function(index) { vmEnhancement.copyLuckyRoll(index); }
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
+                    HusText {
+                        Layout.fillWidth: true
+                        text: enhancementRollDialog.hasResults ? vmEnhancement.rollSummaryText : ""
+                        color: HusTheme.Primary.colorTextSecondary
+                        elide: Text.ElideRight
+                    }
+                    HusButton {
+                        objectName: "enhancementRollAddAll"
+                        text: vmEnhancement.rollTexts.add_all || "Add All"
+                        type: HusButton.Type_Primary
+                        enabled: appBridge.saveLoaded && rollView.results.length > 0
+                        onClicked: vmEnhancement.addAllLuckyRolls()
+                    }
+                }
             }
         }
     }

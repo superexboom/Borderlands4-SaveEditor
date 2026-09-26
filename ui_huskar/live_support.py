@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from PyQt6.QtCore import QObject, QThread, QTimer, pyqtSignal
+from PyQt6.QtCore import QObject, QThread, QTimer, pyqtSignal, pyqtSlot
 
 from core import b_encoder, bl4_functions as bl4f, resource_loader
 from ui_huskar.live_workers import (
@@ -84,6 +84,7 @@ class LiveManager(QObject):
         self._fetch_thread = None
         self._runtime_worker = None
         self._batch_spawn_worker = None
+        self._batch_done_text = ""
         self._workers: set = set()
         self._watchdog: QTimer | None = None
 
@@ -424,15 +425,43 @@ class LiveManager(QObject):
                                error=res.get("error")), "error")
         return False
 
-    def batch_spawn(self, lines: list[str], on_finished) -> None:
-        """批量 roll 写入（live）：callback(success, fail)。"""
-        worker = _LiveBatchSpawnWorker(self.bridge, lines, self)
-        worker.progress.connect(lambda *_args: None)
-        worker.batch_finished.connect(lambda s, f: on_finished(s, f, worker))
+    def add_many_to_backpack(self, serials: list[str], done_text: str) -> bool:
+        """批量写入（roll 结果"全部加入"）：worker 分批 spawn，完成后按 done_text 提示。"""
+        if self.any_busy():
+            self._toast(self.app.tr("main_window.dialogs.batch_busy",
+                                    default="Another batch-add task is already running."), "warning")
+            return False
+        if not self._guard_mutation():
+            return False
+        worker = _LiveBatchSpawnWorker(self.bridge, list(serials), self)
+        worker.batch_finished.connect(self._on_batch_spawned)
+        self._batch_done_text = done_text
         self._batch_spawn_worker = worker
         self._track(worker)
         self._sync_vms()
         worker.start()
+        return True
+
+    @pyqtSlot(int, int)
+    def _on_batch_spawned(self, success: int, fail: int) -> None:
+        worker = self._batch_spawn_worker
+        if worker is None:
+            return
+        self._remember_recovery(worker.mutation_preflight)
+        self._remember_recovery(worker.mutation_results)
+        if worker.blocked_reason:
+            self._toast(self._text(
+                "inventory_mutation_recovery_pending",
+                "Inventory writes are locked until the pending recovery is reviewed or cleared: {reason}",
+                reason=worker.blocked_reason), "warning")
+        else:
+            self._toast(self._batch_done_text.format(success=success, fail=fail),
+                        "success" if success else "warning")
+        if success:
+            if worker.incremental_safe and len(worker.spawned_records) == success:
+                self._commit_inventory_patch(worker.spawned_records)
+            else:
+                self.refresh()
 
     # ------------------------------------------------------------------ #
     # 写操作：更新物品

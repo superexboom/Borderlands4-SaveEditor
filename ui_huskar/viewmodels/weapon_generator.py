@@ -1580,24 +1580,8 @@ class WeaponGeneratorViewModel(PageViewModel):
 
     @pyqtSlot("QVariantList")
     def addRollToBackpack(self, indices) -> None:
-        from core.batch import add_serial_lines
-
-        serials = [self._roll_results[i]["serial"] for i in indices
-                   if isinstance(i, int) and 0 <= i < len(self._roll_results)]
-        if not serials:
-            return
-        texts = self._roll_texts()
-        if not self.controller.yaml_obj:
-            self.app.toast(self.tr("main_window.dialogs.load_save_first"), "warning")
-            return
-        self.app.suspend_autosave(True)
-        success = fail = 0
-        try:
-            for _current, _total, s, f in add_serial_lines(self.controller, serials, self._flag_value()):
-                success, fail = s, f
-        finally:
-            self.app.suspend_autosave(False)
-        self.app.toast(texts["roll_add_done"].format(success=success, fail=fail),
-                       "success" if success else "warning")
-        if success:
-            self.app._mark_items_stale()
+        """选中结果批量加入背包：离线写存档，live 模式分批刷进游戏。"""
+        results = self._roll_results
+        serials = [results[i]["serial"] for i in indices
+                   if isinstance(i, int) and 0 <= i < len(results)]
+        self.app.add_serials_to_backpack(serials, self._flag_value(), self._roll_texts()["roll_add_done"])

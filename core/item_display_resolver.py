@@ -1462,14 +1462,30 @@ def _weapon_generation_refs(decoded: str, root_ref: str, named_refs: dict[str, s
     return sorted(ref for ref in refs if not ref.endswith(":None"))
 
 
-def _weapon_generation_tags(index: dict[str, Any], rules: dict[str, Any], ref: str) -> dict[str, set[str]]:
-    raw = (rules.get("part_selection_tags") or {}).get(ref) or (index.get("part_refs") or {}).get(ref, {}).get(
-        "selection_tags", {}
-    )
-    return {
-        key: {str(value).casefold() for value in raw.get(key, [])}
-        for key in ("adds", "requires", "excludes")
-    }
+# (index, rules) -> {ref: tags}; legality checks look the same parts up thousands of times.
+_GENERATION_TAG_CACHE: dict[tuple[int, int], tuple[Any, Any, dict[str, dict[str, frozenset[str]]]]] = {}
+
+
+def _weapon_generation_tags(index: dict[str, Any], rules: dict[str, Any], ref: str) -> dict[str, frozenset[str]]:
+    """Selection tags of a part (casefolded). Cached per index; the result is shared, do not mutate it."""
+    key = (id(index), id(rules))
+    holder = _GENERATION_TAG_CACHE.get(key)
+    if holder is None or holder[0] is not index or holder[1] is not rules:
+        if len(_GENERATION_TAG_CACHE) >= 8:
+            _GENERATION_TAG_CACHE.clear()
+        holder = (index, rules, {})
+        _GENERATION_TAG_CACHE[key] = holder
+    tags = holder[2].get(ref)
+    if tags is None:
+        raw = (rules.get("part_selection_tags") or {}).get(ref) or (index.get("part_refs") or {}).get(ref, {}).get(
+            "selection_tags", {}
+        )
+        tags = {
+            name: frozenset(str(value).casefold() for value in raw.get(name, []))
+            for name in ("adds", "requires", "excludes")
+        }
+        holder[2][ref] = tags
+    return tags
 
 
 def _weapon_generation_root(ref: str) -> str:
@@ -1560,7 +1576,7 @@ def weapon_generation_context(decoded: str, *, index: dict[str, Any] | None = No
                 _weapon_generation_tags(index, rules, ref)["requires"]
                 for ref in groups[group]["allowed"]
             ]
-            activation_tags = set.intersection(*requires) if requires else set()
+            activation_tags = set(requires[0]).intersection(*requires[1:]) if requires else set()
             groups[group]["activation_tags"] = sorted(activation_tags)
         if group in groups and groups[group].get("selected_reachable"):
             for ref in selected_by_group.get(group, []):

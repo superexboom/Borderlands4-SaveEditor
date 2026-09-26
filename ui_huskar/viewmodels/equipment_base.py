@@ -1716,26 +1716,8 @@ class EquipmentBaseViewModel(PageViewModel):
 
     @pyqtSlot("QVariantList")
     def addRollToBackpack(self, indices) -> None:
-        """把选中结果批量写入背包（同步，与 core.batch 分块一致）。"""
-        from core.batch import add_serial_lines
-
+        """选中结果批量加入背包：离线写存档，live 模式分批刷进游戏。"""
         results = getattr(self, "_roll_results", [])
         serials = [results[i]["serial"] for i in indices
                    if isinstance(i, int) and 0 <= i < len(results)]
-        if not serials:
-            return
-        texts = self._roll_texts()
-        if not self.controller.yaml_obj:
-            self.app.toast(self.tr("main_window.dialogs.load_save_first"), "warning")
-            return
-        self.app.suspend_autosave(True)
-        success = fail = 0
-        try:
-            for _current, _total, s, f in add_serial_lines(self.controller, serials, self._flag_value()):
-                success, fail = s, f
-        finally:
-            self.app.suspend_autosave(False)
-        self.app.toast(texts["roll_add_done"].format(success=success, fail=fail),
-                       "success" if success else "warning")
-        if success:
-            self.app._mark_items_stale()
+        self.app.add_serials_to_backpack(serials, self._flag_value(), self._roll_texts()["roll_add_done"])

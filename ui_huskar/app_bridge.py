@@ -664,6 +664,33 @@ class AppBridge(QObject):
     def _live_add_to_backpack(self, serial_input: str) -> bool:
         return self.live.add_to_backpack(serial_input)
 
+    def add_serials_to_backpack(self, serials, flag: str, done_text: str) -> bool:
+        """批量加入背包（roll 结果"全部加入"）：离线写存档，live 模式分批刷进游戏。
+
+        done_text 是完成提示模板，含 {success} / {fail}。
+        """
+        serials = [str(serial).strip() for serial in serials or () if str(serial or "").strip()]
+        if not serials:
+            return False
+        if not self.controller.yaml_obj:
+            self.toast(self.tr("main_window.dialogs.load_save_first"), "warning")
+            return False
+        if self.live.active:
+            return self.live.add_many_to_backpack(serials, done_text)
+        from core.batch import add_serial_lines
+
+        success = fail = 0
+        self.suspend_autosave(True)
+        try:
+            for _current, _total, success, fail in add_serial_lines(self.controller, serials, flag):
+                pass
+        finally:
+            self.suspend_autosave(False)
+        self.toast(done_text.format(success=success, fail=fail), "success" if success else "warning")
+        if success:
+            self._mark_items_stale()
+        return success > 0
+
     def _live_update_item(self, payload: dict) -> bool:
         return self.live.update_item(dict(payload))
 

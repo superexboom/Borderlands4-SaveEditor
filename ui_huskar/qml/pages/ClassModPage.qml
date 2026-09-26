@@ -443,14 +443,37 @@ LockedFlickable {
         }
         contentDelegate: Item {
             implicitHeight: classRollDialog.height - 4
-            ModRollResultsView {
+            ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 16
-                results: classRollDialog.hasResults ? vmClassMod.rollResults : []
-                texts: vmClassMod.rollTexts
-                canAdd: appBridge.saveLoaded
-                onAddRequested: function(indices) { vmClassMod.addLuckyRollToBackpack(indices); }
-                onCopyRequested: function(index) { vmClassMod.copyLuckyRoll(index); }
+                spacing: 10
+                ModRollResultsView {
+                    id: rollView
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    results: classRollDialog.hasResults ? vmClassMod.rollResults : []
+                    texts: vmClassMod.rollTexts
+                    canAdd: appBridge.saveLoaded
+                    onAddRequested: function(indices) { vmClassMod.addLuckyRollToBackpack(indices); }
+                    onCopyRequested: function(index) { vmClassMod.copyLuckyRoll(index); }
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
+                    HusText {
+                        Layout.fillWidth: true
+                        text: classRollDialog.hasResults ? vmClassMod.rollSummaryText : ""
+                        color: HusTheme.Primary.colorTextSecondary
+                        elide: Text.ElideRight
+                    }
+                    HusButton {
+                        objectName: "classModRollAddAll"
+                        text: vmClassMod.rollTexts.add_all || "Add All"
+                        type: HusButton.Type_Primary
+                        enabled: appBridge.saveLoaded && rollView.results.length > 0
+                        onClicked: vmClassMod.addAllLuckyRolls()
+                    }
+                }
             }
         }
     }

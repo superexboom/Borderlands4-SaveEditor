@@ -774,14 +774,22 @@ class EnhancementViewModel(PageViewModel):
             "core": "核心强化 / 厂商专长" if zh else "Core / Manufacturer Perks",
             "stats": "次要属性" if zh else "Secondary Stats",
             "firmware": "固件" if zh else "Firmware",
+            "add_all": self.app.tr("weapon_gen_tab.buttons.add_all", default="全部加入背包" if zh else "Add All"),
+            "add_done": self.app.tr("weapon_gen_tab.dialogs.roll_add_done",
+                                    default="已加入 {success} 件，失败 {fail} 件" if zh else "Added {success}; failed {fail}"),
         }
 
     @pyqtSlot("QVariantList")
     def addLuckyRollToBackpack(self, indices) -> None:
-        for index in indices or []:
-            if 0 <= int(index) < len(self._roll_results):
-                result = self._roll_results[int(index)]
-                self.app.addSerialToBackpack(result.get("base85", ""), self._flag_value())
+        results = self._roll_results
+        serials = [results[int(index)].get("base85", "") for index in indices or []
+                   if 0 <= int(index) < len(results)]
+        self.app.add_serials_to_backpack(serials, self._flag_value(), self.rollTexts["add_done"])
+
+    @pyqtSlot()
+    def addAllLuckyRolls(self) -> None:
+        """Roll 结果全部加入背包（离线写存档 / live 分批刷进游戏）。"""
+        self.addLuckyRollToBackpack(list(range(len(self._roll_results))))
 
     @pyqtSlot(int)
     def copyLuckyRoll(self, index: int) -> None:

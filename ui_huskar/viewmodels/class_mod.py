@@ -8,6 +8,7 @@ import html
 import threading
 from copy import deepcopy
 from collections import Counter
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -45,6 +46,21 @@ def _category_state(rows: list[dict[str, Any]]) -> str:
     if kinds & {"warning", "modified"}:
         return "warning"
     return "unknown"
+
+
+
+@lru_cache(maxsize=None)
+def _skill_icon_url(icon_file: str, class_name: str) -> str:
+    """file:// URL of a skill icon, "" when missing (cached: option lists ask for every skill)."""
+    if not icon_file:
+        return ""
+    try:
+        path = resource_loader.get_class_mods_image_path(class_name, icon_file)
+        if path and Path(path).exists():
+            return Path(path).as_uri()
+    except Exception:
+        pass
+    return ""
 
 
 @register("class_mod", "ClassModPage.qml")
@@ -1179,14 +1195,22 @@ class ClassModViewModel(PageViewModel):
             "legendary": "传奇专属加成" if zh else "Legendary Bonus",
             "skills": "技能" if zh else "Skills",
             "perks": "专长" if zh else "Perks",
+            "add_all": self.app.tr("weapon_gen_tab.buttons.add_all", default="全部加入背包" if zh else "Add All"),
+            "add_done": self.app.tr("weapon_gen_tab.dialogs.roll_add_done",
+                                    default="已加入 {success} 件，失败 {fail} 件" if zh else "Added {success}; failed {fail}"),
         }
 
     @pyqtSlot("QVariantList")
     def addLuckyRollToBackpack(self, indices) -> None:
-        for index in indices or []:
-            if 0 <= int(index) < len(self._roll_results):
-                result = self._roll_results[int(index)]
-                self.app.addSerialToBackpack(result.get("base85", ""), self._flag_value())
+        results = self._roll_results
+        serials = [results[int(index)].get("base85", "") for index in indices or []
+                   if 0 <= int(index) < len(results)]
+        self.app.add_serials_to_backpack(serials, self._flag_value(), self.rollTexts["add_done"])
+
+    @pyqtSlot()
+    def addAllLuckyRolls(self) -> None:
+        """Roll 结果全部加入背包（离线写存档 / live 分批刷进游戏）。"""
+        self.addLuckyRollToBackpack(list(range(len(self._roll_results))))
 
     @pyqtSlot(int)
     def copyLuckyRoll(self, index: int) -> None:
@@ -1618,15 +1642,7 @@ class ClassModViewModel(PageViewModel):
                 return
 
     def _skill_icon_url(self, icon_file: str, class_name: str) -> str:
-        if not icon_file:
-            return ""
-        try:
-            path = resource_loader.get_class_mods_image_path(class_name, icon_file)
-            if path and Path(path).exists():
-                return Path(path).as_uri()
-        except Exception:
-            pass
-        return ""
+        return _skill_icon_url(str(icon_file or ""), str(class_name or ""))
 
     def _skill_tooltip(self, skill_row, display_name: str) -> str:
         from html import escape
