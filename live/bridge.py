@@ -17,7 +17,7 @@ from typing import Any
 HOST = "127.0.0.1"
 PORT = 28777
 DEFAULT_TIMEOUT = 10.0
-EXPECTED_LIVE_VERSION = "0.10.26"
+EXPECTED_LIVE_VERSION = "0.10.27"
 # progress_increment_challenges accepts at most this many rows per request (progress probe).
 MAX_CHALLENGES_PER_REQUEST = 64
 

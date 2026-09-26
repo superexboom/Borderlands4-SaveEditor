@@ -6,7 +6,7 @@ changes. Enumerate equipped slots, never the global UObject array, in the hot pa
 import math
 import time
 
-VERSION = '0.10.26'
+VERSION = '0.10.27'
 REVISION = 'slot-maintenance-20260919.6'
 
 
