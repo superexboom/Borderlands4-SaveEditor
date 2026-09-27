@@ -120,11 +120,31 @@ def _qml_name(key: str) -> str:
     return "vm" + "".join(part.title() for part in key.split("_"))
 
 
+def _set_taskbar_identity() -> None:
+    """From source the process is python.exe, so the taskbar would group the
+    window under Python's icon; give it its own identity. The frozen exe keeps
+    the exe-derived identity so pinned shortcuts still match."""
+    if sys.platform != "win32" or getattr(sys, "frozen", False):
+        return
+    try:
+        import ctypes
+
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("SuperExboom.BL4SaveEditor")
+    except (AttributeError, OSError):
+        pass
+
+
 def main() -> int:
     QQuickWindow.setGraphicsApi(QSGRendererInterface.GraphicsApi.OpenGL)
+    _set_taskbar_identity()
     app = QApplication(sys.argv)
     app.setApplicationName("Borderlands 4 Save Editor")
     app.setOrganizationName("SuperExboom")
+    # Qt looks for an IDI_ICON1 resource, which PyInstaller does not create:
+    # without this the window and its taskbar button have no icon.
+    from PyQt6.QtGui import QIcon
+    from core.resource_loader import get_resource_path
+    app.setWindowIcon(QIcon(str(get_resource_path("assets/BL4.ico"))))
     _install_teardown_filter()
     engine = QQmlApplicationEngine()
     engine.addImportPath(str(RUNTIME / "qml"))
