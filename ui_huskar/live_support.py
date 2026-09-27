@@ -746,6 +746,8 @@ class LiveManager(QObject):
             self._runtime_worker = None
         if not self.active:
             return
+        if action == "select_player":
+            self._on_player_selected(result, err)
 
         vm = self._character_vm()
         if vm is not None:
@@ -807,6 +809,43 @@ class LiveManager(QObject):
             vm.set_runtime_result(f"{action}: {str(result.get('error', 'failed'))}", False)
             if not isinstance(state, dict):
                 self.runtime_action("state", {"_quiet": True})
+
+    # ------------------------------------------------------------------ #
+    # 联机选人（主机上每位玩家都有控制器；mod 记住选择，所有读写随之切换）
+    # ------------------------------------------------------------------ #
+    def players(self) -> list[dict]:
+        """当前游戏里可选的玩家（旧版 mod 不提供时为空）。"""
+        if not self.active:
+            return []
+        rows = []
+        for row in self.runtime_state.get("players") or []:
+            if isinstance(row, dict) and row.get("key"):
+                rows.append({"key": str(row["key"]), "name": str(row.get("name") or ""),
+                             "local": bool(row.get("local")), "selected": bool(row.get("selected"))})
+        return rows
+
+    def select_player(self, key: str) -> None:
+        current = next((p for p in self.players() if p["selected"]), None)
+        if current is not None and current["key"] == key:
+            return
+        if self.any_busy():
+            self._toast(self._text("runtime_busy", "Another live action is still running."), "warning")
+            self.app.liveChanged.emit()  # 下拉框回到当前玩家
+            return
+        self.runtime_action("select_player", {"player": key, "_quiet": True})
+
+    def _on_player_selected(self, result: dict | None, err) -> None:
+        if err is not None or not isinstance(result, dict) or not result.get("ok"):
+            error = err or (result or {}).get("error") or "failed"
+            self._toast(self._text("player_switch_failed", "Could not switch character: {error}",
+                                   error=error), "error")
+            return
+        if result.get("changed"):
+            # 进度快照属于上一位玩家；背包由通用的 changed → refresh() 重新读取
+            self._reset_progress()
+        selected = result.get("selected") or {}
+        name = str(selected.get("name") or "")
+        self._toast(self._text("player_switched", "Now reading: {name}", name=name or "?"), "success")
 
     # ------------------------------------------------------------------ #
     # 配装（loadout 页）

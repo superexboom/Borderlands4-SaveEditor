@@ -158,6 +158,18 @@ HusWindow {
                 contentDescription: trFormat("main_window.settings.title", {default: "Interface Options"})
                 onClicked: settingsDialog.open()
             }
+            // Co-op: whose character live mode reads (only shown with 2+ players).
+            AppSelect {
+                objectName: "livePlayerSelect"
+                visible: appBridge.liveActive && appBridge.livePlayerOptions.length > 1
+                Layout.alignment: Qt.AlignVCenter
+                Layout.preferredWidth: 190
+                Layout.preferredHeight: 36
+                enabled: !appBridge.liveBusy
+                model: appBridge.livePlayerOptions
+                currentIndex: appBridge.livePlayerIndex
+                onActivated: function(index) { appBridge.selectLivePlayer(index); }
+            }
             HusIconButton {
                 visible: appBridge.liveActive
                 Layout.alignment: Qt.AlignVCenter

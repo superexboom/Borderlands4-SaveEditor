@@ -804,6 +804,28 @@ class AppBridge(QObject):
     def liveRefresh(self) -> None:
         self.live.refresh()
 
+    # 联机时选择读取哪位玩家的角色（mod 在 state 里给出玩家列表；单人时不显示）
+    @pyqtProperty(list, notify=liveChanged)
+    def livePlayerOptions(self) -> list:
+        rows = []
+        for index, player in enumerate(self.live.players(), start=1):
+            name = player["name"] or self.tr("main_window.live.player_unnamed", index=index,
+                                             default=f"Player {index}")
+            label = self.tr("main_window.live.player_local", name=name, default=f"{name} (you)") \
+                if player["local"] else name
+            rows.append({"label": label, "value": player["key"]})
+        return rows
+
+    @pyqtProperty(int, notify=liveChanged)
+    def livePlayerIndex(self) -> int:
+        return next((i for i, player in enumerate(self.live.players()) if player["selected"]), -1)
+
+    @pyqtSlot(int)
+    def selectLivePlayer(self, index: int) -> None:
+        players = self.live.players()
+        if 0 <= index < len(players):
+            self.live.select_player(players[index]["key"])
+
     # ------------------------------------------------------------------
     # 退出清理
     # ------------------------------------------------------------------

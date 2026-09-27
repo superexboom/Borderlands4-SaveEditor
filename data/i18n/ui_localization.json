@@ -161,6 +161,10 @@
       "error_prefix": "错误: "
     },
     "live": {
+      "player_local": "{name}（本机）",
+      "player_unnamed": "玩家 {index}",
+      "player_switched": "已切换到：{name}",
+      "player_switch_failed": "切换角色失败：{error}",
       "title": "在线模式",
       "offline": "离线",
       "online": "在线",

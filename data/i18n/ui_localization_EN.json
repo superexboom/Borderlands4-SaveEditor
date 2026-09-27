@@ -161,6 +161,10 @@
       "error_prefix": "Error: "
     },
     "live": {
+      "player_local": "{name} (you)",
+      "player_unnamed": "Player {index}",
+      "player_switched": "Now reading: {name}",
+      "player_switch_failed": "Could not switch character: {error}",
       "title": "Live Mode",
       "offline": "Live",
       "online": "Live",

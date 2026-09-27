@@ -7,7 +7,7 @@ import math
 import time
 
 VERSION = '0.10.27'
-REVISION = 'slot-maintenance-20260919.6'
+REVISION = 'slot-maintenance-20260927.1'
 
 
 class ValueBindings:
@@ -61,7 +61,8 @@ def install(m):
     m._maintenance_originals = {name: getattr(m, name) for name in (
         '_runtime_action', '_runtime_restore', '_runtime_maintain',
         '_runtime_owned', '_runtime_weapon_behavior_pairs', '_runtime_write',
-        '_runtime_camera_readback', '_runtime_key', '_runtime_behaviors', '_cls') if hasattr(m, name)}
+        '_runtime_camera_readback', '_runtime_key', '_runtime_behaviors', '_cls',
+        '_select_player_controller', '_runtime_snapshot') if hasattr(m, name)}
     base_key = m._runtime_key
     base_behaviors = getattr(m, '_runtime_behaviors', None)
     base_cls = getattr(m, '_cls', None)
@@ -344,8 +345,159 @@ def install(m):
     m._runtime_action = action
     # Snapshot polling must not revive the removed global camera enumeration.
     m._runtime_camera_readback = lambda: {'available': False, 'removed': True}
+    install_player_selection(m)
     m.__version__ = VERSION
     if getattr(m, 'mod', None) is not None:
         m._safe(lambda: setattr(m.mod, 'version', VERSION))
     m._maintenance_revision = REVISION
     m._log('Installed '+REVISION+'; equipped-slot maintenance, FOV disabled.')
+
+
+def install_player_selection(m):
+    """Let the editor choose whose character live mode reads and writes.
+
+    A co-op host has one OakPlayerController per player, and the base picker
+    took the fullest backpack, which was often a friend's. Every live read and
+    write goes through GAME.player_controller, so choosing here moves all of
+    them. The choice survives requests (it is kept on the module) and is
+    matched by PlayerId + name, then by name, because map travel can recreate
+    the PlayerState. Without a choice the local player wins.
+    """
+    if not hasattr(m, '_select_player_controller') or not hasattr(m, '_runtime_snapshot'):
+        return
+    base_snapshot = m._runtime_snapshot
+    base_action = m._runtime_action
+    if not isinstance(getattr(m, '_PLAYER_CHOICE', None), dict):
+        m._PLAYER_CHOICE = None
+
+    def text(value):
+        return str(value or '').strip()
+
+    def player_name(ps):
+        get_name = m._safe(lambda: getattr(ps, 'GetPlayerName', None))
+        name = text(m._safe(get_name, '')) if callable(get_name) else ''
+        for attr in ('PlayerNamePrivate', 'PlayerName'):
+            if name:
+                break
+            name = text(m._safe(lambda attr=attr: getattr(ps, attr, ''), ''))
+        return name
+
+    def player_id(ps):
+        value = m._safe(lambda: int(m._get_field(ps, 'PlayerId')))
+        return value if isinstance(value, int) else None
+
+    def is_local(pc):
+        for fn_name in ('IsLocalController', 'IsLocalPlayerController'):
+            fn = m._safe(lambda fn_name=fn_name: getattr(pc, fn_name, None))
+            if callable(fn):
+                value = m._safe(fn)
+                if value is not None:
+                    return bool(value)
+        player = m._get_field(pc, 'Player')
+        return player is not None and 'localplayer' in m._cls(player).lower()
+
+    def valid_samples(ps, counts):
+        valid = 0
+        for container in ('BackpackItems', 'BankItems'):
+            holder = m._get_field(ps, container)
+            arr = m._get_field(holder, 'items') if holder is not None else None
+            count = (m._safe(lambda arr=arr: len(arr), 0) or 0) if arr is not None else 0
+            counts[container] = count
+            if container != 'BackpackItems':
+                continue
+            for i in range(min(count, 4)):
+                entry = m._safe(lambda arr=arr, i=i: arr[i])
+                inv_item = m._get_field(entry, 'InventoryItem') if entry is not None else None
+                ident = m._get_item_identity(inv_item) if inv_item is not None else None
+                if ident is not None and m._read_identity(ident).get('ok'):
+                    valid += 1
+        return valid
+
+    def candidates():
+        sdk = getattr(m, 'unrealsdk', None)
+        found = m._safe(lambda: list(sdk.find_all('OakPlayerController', False)), []) if sdk else []
+        rows = []
+        for pc in found or []:
+            ps = m._get_field(pc, 'PlayerState')
+            if ps is None:
+                continue
+            counts = {}
+            valid = valid_samples(ps, counts)
+            name, pid, local = player_name(ps), player_id(ps), is_local(pc)
+            if pid is not None:
+                key = f'{pid}:{name}'
+            else:
+                key = f'name:{name}' if name else m._hex(m._addr(ps))
+            info = dict(controller=m._hex(m._addr(pc)), player_state=m._hex(m._addr(ps)),
+                        valid_samples=valid, name=name, player_id=pid, local=local, key=key, **counts)
+            score = (1 if valid else 0, 1 if local else 0,
+                     counts.get('BackpackItems', 0), counts.get('BankItems', 0))
+            rows.append((score, pc, ps, info))
+        return rows
+
+    def select():
+        rows = candidates()
+        choice = m._PLAYER_CHOICE
+        chosen = None
+        if choice:
+            for same in (lambda info: info['key'] == choice['key'],
+                         lambda info: bool(choice['name']) and info['name'] == choice['name']):
+                hits = [row for row in rows if same(row[3])]
+                if hits:
+                    chosen = max(hits, key=lambda row: row[0])
+                    break
+        mode = 'manual' if chosen is not None else 'auto'
+        if chosen is None and rows:
+            chosen = max(rows, key=lambda row: row[0])
+        # One entry per player for the picker; stale menu previews have no
+        # name, no items and no local player behind them.
+        players = {}
+        for _score, _pc, _ps, info in sorted(rows, key=lambda row: row[0], reverse=True):
+            if info['name'] or info['valid_samples'] or info['local']:
+                players.setdefault(info['key'], info)
+        selection = dict(selected=chosen[3] if chosen else {}, candidates=[row[3] for row in rows],
+                         players=sorted(players.values(), key=lambda info: (not info['local'], info['name'])),
+                         mode=mode, choice=choice['key'] if choice else '')
+        return (chosen[1], chosen[2], selection) if chosen else (None, None, selection)
+
+    def player_rows():
+        selection = m.GAME.selection or {}
+        selected = (selection.get('selected') or {}).get('key')
+        return [dict(key=info['key'], name=info['name'], local=info['local'],
+                     selected=info['key'] == selected)
+                for info in selection.get('players') or []]
+
+    def snapshot():
+        state = base_snapshot()
+        if isinstance(state, dict):
+            state['players'] = player_rows()
+            state['player_mode'] = (m.GAME.selection or {}).get('mode', 'auto')
+        return state
+
+    def action(name, params=None):
+        if name not in ('select_player', 'list_players'):
+            return base_action(name, params)
+        params = params or {}
+        if name == 'list_players':
+            return dict(ok=True, action=name, players=player_rows(),
+                        mode=(m.GAME.selection or {}).get('mode', 'auto'))
+        key = text(params.get('player'))
+        before = m.GAME.player_state_addr
+        if key in ('', 'auto'):
+            m._PLAYER_CHOICE = None
+        else:
+            known = (m.GAME.selection or {}).get('players') or []
+            info = next((p for p in known if p['key'] == key), None)
+            if info is None:
+                return dict(ok=False, action=name, error='player not found: ' + key, players=player_rows())
+            m._PLAYER_CHOICE = dict(key=key, name=info['name'])
+        m.GAME.refresh_containers()
+        selection = m.GAME.selection or {}
+        return dict(ok=m.GAME.player_state is not None, action=name,
+                    changed=m.GAME.player_state_addr != before,
+                    selected=selection.get('selected') or {}, mode=selection.get('mode', 'auto'),
+                    players=player_rows())
+
+    m._select_player_controller = select
+    m._runtime_snapshot = snapshot
+    m._runtime_action = action

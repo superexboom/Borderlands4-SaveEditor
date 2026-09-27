@@ -161,6 +161,10 @@
       "error_prefix": "Ошибка: "
     },
     "live": {
+      "player_local": "{name} (вы)",
+      "player_unnamed": "Игрок {index}",
+      "player_switched": "Сейчас выбран: {name}",
+      "player_switch_failed": "Не удалось переключить персонажа: {error}",
       "title": "Онлайн-режим",
       "offline": "Сеть",
       "online": "Сеть",
