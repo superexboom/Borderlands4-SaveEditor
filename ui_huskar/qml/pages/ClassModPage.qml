@@ -478,25 +478,10 @@ LockedFlickable {
         }
     }
 
-    HusModal {
+    Base85ImportDialog {
         id: base85Dialog
-        width: 560
-        closable: true
         title: vmClassMod.sourceTexts.base85_title || ""
-        confirmText: appBridge.trFormat("main_window.dialogs.confirm", {default: "OK"})
-        cancelText: appBridge.trText("main_window.dialogs.cancel")
-        onConfirm: { vmClassMod.importBase85(base85Input.text); close(); }
-        onCancel: close()
-        contentDelegate: Item {
-            implicitHeight: 90
-            ColumnLayout {
-                anchors.fill: parent
-                HusInput {
-                    id: base85Input
-                    Layout.fillWidth: true
-                    placeholderText: "@U..."
-                }
-            }
-        }
+        description: vmClassMod.sourceTexts.base85_label || ""
+        onSubmitted: function(serial) { vmClassMod.importBase85(serial); }
     }
 }

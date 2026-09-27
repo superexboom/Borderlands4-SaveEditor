@@ -48,7 +48,7 @@ ColumnLayout {
         frame.card.model = vmSerialInspector.cardModel;
         Qt.callLater(function() {
             frame.grabToImage(function(result) {
-                result.saveToFile(path);
+                appBridge.notifyExport(path, result.saveToFile(path));
                 frame.destroy();
             });
         });

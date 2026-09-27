@@ -903,11 +903,7 @@ class SerialInspectorViewModel(PageViewModel):
     # -- 剪贴板 / 导出 ------------------------------------------------------
     @pyqtSlot(str)
     def copyText(self, text: str) -> None:
-        if not text:
-            return
-        clipboard = QGuiApplication.clipboard()
-        if clipboard:
-            clipboard.setText(text)
+        self.app.copy_text(text)
 
     @pyqtSlot(str)
     def copyForm(self, key: str) -> None:
@@ -934,9 +930,7 @@ class SerialInspectorViewModel(PageViewModel):
     def copyJson(self) -> None:
         if not self._report:
             return
-        clipboard = QGuiApplication.clipboard()
-        if clipboard:
-            clipboard.setText(json.dumps(self._report, ensure_ascii=False, indent=2, default=str))
+        self.app.copy_text(json.dumps(self._report, ensure_ascii=False, indent=2, default=str))
 
     @pyqtSlot()
     def exportJson(self) -> None:
@@ -953,7 +947,9 @@ class SerialInspectorViewModel(PageViewModel):
             with open(path, "w", encoding="utf-8") as handle:
                 json.dump(self._report, handle, ensure_ascii=False, indent=2, default=str)
         except OSError:
-            pass
+            self.app.notifyExport(path, False)
+            return
+        self.app.notifyExport(path, True)
 
     @pyqtSlot(result=str)
     def askCardPath(self) -> str:
@@ -1170,9 +1166,7 @@ class SerialInspectorViewModel(PageViewModel):
 
         def _copy(accepted: bool) -> None:
             if accepted:
-                clipboard = QGuiApplication.clipboard()
-                if clipboard:
-                    clipboard.setText(serial)
+                self.app.copy_text(serial)
 
         self.app._request_confirm(
             self._tr(loc, "catalog", "copy_title"),

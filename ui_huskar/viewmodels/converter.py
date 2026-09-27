@@ -16,7 +16,6 @@ from typing import Any
 import yaml
 
 from PyQt6.QtCore import QObject, QThread, QTimer, pyqtProperty, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QGuiApplication
 
 from core import b_encoder, decoder_logic, resource_loader
 from core.batch import add_serial_lines
@@ -484,11 +483,11 @@ class ConverterViewModel(PageViewModel):
 
     @pyqtSlot()
     def copySerial(self) -> None:
-        QGuiApplication.clipboard().setText(self._serial_text)
+        self.app.copy_text(self._serial_text)
 
     @pyqtSlot()
     def copyDeser(self) -> None:
-        QGuiApplication.clipboard().setText(self._deser_text)
+        self.app.copy_text(self._deser_text)
 
     # ------------------------------------------------------------------
     # 分组二：批量互转

@@ -199,10 +199,12 @@ HusWindow {
             HusTheme.animationEnabled = appBridge.animations;
         }
         function onToastRequested(text, kind) {
-            if (kind === "error") notification.error("BL4", text, 3600);
-            else if (kind === "warning") notification.warning("BL4", text, 3200);
-            else if (kind === "success") message.success(text, 1800);
-            else message.info(text, 1800);
+            // Longer texts (decrypt details, backup names) stay up long enough to read.
+            var extra = Math.min(4000, Math.max(0, text.length - 20) * 60);
+            if (kind === "error") notification.error("BL4", text, 3600 + extra);
+            else if (kind === "warning") notification.warning("BL4", text, 3200 + extra);
+            else if (kind === "success") message.success(text, 1800 + extra);
+            else message.info(text, 1800 + extra);
         }
     }
 
@@ -235,8 +237,10 @@ HusWindow {
         }
     }
 
-    HusMessage { id: message; z: 1000; topMargin: captionBar.height + 10 }
-    HusNotification { id: notification; z: 1001; position: HusNotification.Position_TopRight; topMargin: captionBar.height + 10 }
+    // Both lay their toasts out against their own size; without a fill they
+    // are 0x0 and every toast is clipped away.
+    HusMessage { id: message; anchors.fill: parent; z: 1000; topMargin: captionBar.height + 10 }
+    HusNotification { id: notification; anchors.fill: parent; z: 1001; position: HusNotification.Position_TopRight; topMargin: captionBar.height + 10 }
 
     // ---- 背景：壁纸 + 高斯模糊 + 叠加层（对齐主线 BackgroundWidget） ----
     Item {

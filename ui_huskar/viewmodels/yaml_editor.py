@@ -14,7 +14,6 @@ from typing import Any
 import yaml
 from PyQt6.QtCore import pyqtProperty, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QUndoCommand, QUndoStack
-from PyQt6.QtWidgets import QApplication
 
 from core.yaml_io import dump_yaml, get_yaml_loader
 from core.yaml_model import format_scalar, parse_scalar, scalar_type_name
@@ -455,7 +454,7 @@ class YamlEditorViewModel(PageViewModel):
             return
         path = item["pathTuple"]
         text = ".".join(f"[{p}]" if isinstance(p, int) else str(p) for p in path)
-        QApplication.clipboard().setText(text)
+        self.app.copy_text(text)
 
     @pyqtSlot(int)
     def copyValue(self, row: int) -> None:
@@ -465,7 +464,7 @@ class YamlEditorViewModel(PageViewModel):
         value = self.controller.get_node(item["pathTuple"])
         text = dump_yaml(value, sort_keys=False, allow_unicode=True) \
             if isinstance(value, (dict, list)) else format_scalar(value)
-        QApplication.clipboard().setText(text)
+        self.app.copy_text(text)
 
     # -- 范围删除 -------------------------------------------------------------- #
     @pyqtSlot(result="QVariantMap")

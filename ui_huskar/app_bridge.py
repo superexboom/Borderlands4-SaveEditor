@@ -327,6 +327,22 @@ class AppBridge(QObject):
     def toast(self, text: str, kind: str = "info") -> None:
         self.toastRequested.emit(text, kind)
 
+    def copy_text(self, text: str) -> None:
+        """剪贴板复制 + “已复制”提示；空文本不动剪贴板。"""
+        if not text:
+            return
+        from PyQt6.QtGui import QGuiApplication
+
+        QGuiApplication.clipboard().setText(text)
+        self.toast(self.tr("main_window.dialogs.copied", default="Copied to clipboard"), "success")
+
+    @pyqtSlot(str, bool)
+    def notifyExport(self, path: str, ok: bool) -> None:
+        if ok:
+            self.toast(self.tr("main_window.dialogs.export_done", file=path, default=f"Exported: {path}"), "success")
+        else:
+            self.toast(self.tr("main_window.dialogs.export_failed", file=path, default=f"Export failed: {path}"), "error")
+
     def set_status(self, text: str) -> None:
         self._status = text
         self.statusChanged.emit()

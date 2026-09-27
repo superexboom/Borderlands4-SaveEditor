@@ -18,6 +18,7 @@ LockedFlickable {
     readonly property var groupsLoc: loc.groups || ({})
     readonly property var labelsLoc: loc.labels || ({})
     readonly property var dialogsLoc: loc.dialogs || ({})
+    readonly property var buttonsLoc: loc.buttons || ({})
 
     SelectionStyle { id: pageSelStyle }
 
@@ -80,7 +81,7 @@ LockedFlickable {
                 HusText { text: groupsLoc.output || ""; font.bold: true; color: HusTheme.Primary.colorTextBase }
                 RowLayout {
                     spacing: 8
-                    HusText { Layout.preferredWidth: 86; text: labelsLoc.deserialize || "Deserialize:"; color: HusTheme.Primary.colorTextSecondary }
+                    HusText { Layout.preferredWidth: 86; text: labelsLoc.raw || "Deserialize:"; color: HusTheme.Primary.colorTextSecondary }
                     HusInput {
                         Layout.fillWidth: true
                         readOnly: true
@@ -88,7 +89,7 @@ LockedFlickable {
                     }
                     HusIconButton {
                         iconSource: HusIcon.CopyOutlined
-                        contentDescription: dialogsLoc.copy || "Copy"
+                        contentDescription: buttonsLoc.copy || "Copy"
                         onClicked: vm.copyRawToClipboard()
                     }
                 }
@@ -103,7 +104,7 @@ LockedFlickable {
                     }
                     HusIconButton {
                         iconSource: HusIcon.CopyOutlined
-                        contentDescription: dialogsLoc.copy || "Copy"
+                        contentDescription: buttonsLoc.copy || "Copy"
                         onClicked: vm.copyBase85ToClipboard()
                     }
                     AppSelect {
@@ -113,7 +114,7 @@ LockedFlickable {
                         onActivated: function(index) { vm.setFlagIndex(index); }
                     }
                     HusIconButton {
-                        text: labelsLoc.add_to_backpack || ""
+                        text: buttonsLoc.add_to_backpack || ""
                         type: HusButton.Type_Primary
                         iconSource: HusIcon.PlusOutlined
                         enabled: vm && !vm.encodeError && appBridge.saveLoaded
@@ -487,27 +488,11 @@ LockedFlickable {
     BackpackImportDialog { id: backpackDialog; vm: page.vm }
 
     // ---- Base85 导入对话框 ----
-    HusModal {
+    Base85ImportDialog {
         id: base85Dialog
-        width: 560
-        closable: true
-        title: vm && vm.sourceTexts ? vm.sourceTexts.base85 : ""
-        confirmText: appBridge.trFormat("main_window.dialogs.confirm", {default: "OK"})
-        cancelText: appBridge.trText("main_window.dialogs.cancel")
-        onConfirm: { vm.importBase85(base85Input.text); close(); }
-        onCancel: close()
-
-        contentDelegate: Item {
-            implicitHeight: 90
-            ColumnLayout {
-                anchors.fill: parent
-                HusInput {
-                    id: base85Input
-                    Layout.fillWidth: true
-                    placeholderText: "@U..."
-                }
-            }
-        }
+        title: (vm && vm.sourceTexts ? vm.sourceTexts : ({})).base85_title || ""
+        description: (vm && vm.sourceTexts ? vm.sourceTexts : ({})).base85_label || ""
+        onSubmitted: function(serial) { vm.importBase85(serial); }
     }
 
     // ---- Roll 结果对话框（约束编辑在幸运按钮箭头的 rollPopup 里） ----

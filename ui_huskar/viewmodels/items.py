@@ -12,7 +12,6 @@ from __future__ import annotations
 from typing import Any
 
 from PyQt6.QtCore import QTimer, pyqtProperty, pyqtSignal, pyqtSlot
-from PyQt6.QtWidgets import QApplication
 
 from core import item_card_model, resource_loader
 from core.item_filter import matches_item_search, prepare_item_search
@@ -331,7 +330,7 @@ class ItemsViewModel(PageViewModel):
         key = {"name": "name", "serial": "serial", "decoded": "decoded_full",
                "parts": "decoded_parts"}.get(field)
         if key:
-            QApplication.clipboard().setText(str(item.get(key, "") or ""))
+            self.app.copy_text(str(item.get(key, "") or ""))
 
     @pyqtSlot(int, str)
     def copyCell(self, row: int, column: str) -> None:
@@ -341,7 +340,7 @@ class ItemsViewModel(PageViewModel):
         row_data = self._rows[row]
         if row_data["rowType"] != "item":
             return
-        QApplication.clipboard().setText(str(row_data.get(column, "") or ""))
+        self.app.copy_text(str(row_data.get(column, "") or ""))
 
     @pyqtSlot("QVariantList", result=bool)
     def selectByPath(self, original_path) -> bool:

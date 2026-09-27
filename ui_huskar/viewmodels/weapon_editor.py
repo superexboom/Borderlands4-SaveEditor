@@ -14,7 +14,6 @@ from typing import Any
 
 import pandas as pd
 from PyQt6.QtCore import pyqtProperty, pyqtSignal, pyqtSlot
-from PyQt6.QtWidgets import QApplication
 
 from core import b_encoder, bl4_functions as bl4f, decoder_logic, item_display_resolver, resource_loader
 from core.legit_status import cross_group_conflict
@@ -404,7 +403,7 @@ class WeaponEditorViewModel(PageViewModel):
             return
         serial = str(rows[row]["_item"].get("serial", "") or "")
         if serial:
-            QApplication.clipboard().setText(serial)
+            self.app.copy_text(serial)
 
     @pyqtSlot(int)
     def copyPartText(self, index: int) -> None:
@@ -417,7 +416,7 @@ class WeaponEditorViewModel(PageViewModel):
         else:
             text = "  ".join(v for v in (row["name"], row["internal"]) if v)
         if text:
-            QApplication.clipboard().setText(text)
+            self.app.copy_text(text)
 
     # ------------------------------------------------------------------ #
     # 载入 / 解析
