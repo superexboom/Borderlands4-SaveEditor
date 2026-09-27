@@ -135,12 +135,45 @@ class GrenadeViewModel(EquipmentBaseViewModel):
             })
         return items
 
+    def _part_category(self, mfg_id, part_id):
+        ref = (item_display_resolver._item_index().get("part_refs") or {}).get(f"{int(mfg_id)}:{int(part_id)}") or {}
+        return str(ref.get("category") or "")
+
+    def _composition_of_part(self, mfg_id, part_id):
+        """Name of the legendary whose own rules list this part (272:13 -> 协调一致)."""
+        refs = item_display_resolver._item_index().get("part_refs") or {}
+        target = f"{int(mfg_id)}:{int(part_id)}"
+        for key, ref in refs.items():
+            owner, _, pid = key.partition(":")
+            if owner != str(mfg_id) or ref.get("category") != "inv_comp":
+                continue
+            if any(target in (rule.get("part_refs") or [])
+                   for rule in (ref.get("selection_rules") or {}).get("part_types", [])):
+                return self._composition_item_name(int(mfg_id), int(pid))
+        return ""
+
+    def _legendary_body_rows(self, mfg_id):
+        # Some legendaries (协调一致, 铋尖匕首, 瀑布, 滑溜溜, 反制措施) carry their
+        # own body. The CSV files it as a legendary perk, but the rules count it
+        # as the manufacturer perk, so it belongs in that picker.
+        df = self.df_mfg[(self.df_mfg["Manufacturer ID"] == mfg_id)
+                         & (self.df_mfg["Part_type"] == "Legendary Perk")]
+        return [r for _, r in df.iterrows() if self._part_category(mfg_id, r["Part_ID"]) == "body"]
+
     def _group_items(self, key, mfg_id):
         if key == "mfg_perk":
             items = []
             df = self.df_mfg[(self.df_mfg["Manufacturer ID"] == mfg_id) & (self.df_mfg["Part_type"] == "Perk")]
             for _, r in df.iterrows():
                 text, part_id = self._fmt_row(r)
+                items.append({"key": f"m{part_id}", "label": text, "category": None, "data": int(part_id)})
+            for r in self._legendary_body_rows(mfg_id):
+                text, part_id = self._fmt_row(r)
+                owner = self._composition_of_part(mfg_id, part_id)
+                if owner:  # tell it apart from the standard body of the same name
+                    name, sep, rest = text.partition(" - ")
+                    tag = f"（{owner}）" if self.current_lang == "zh-CN" else f" ({owner})"
+                    text = f"{name}{tag}{sep}{rest}"
                 items.append({"key": f"m{part_id}", "label": text, "category": None, "data": int(part_id)})
             return items
         if key == "legendary":
@@ -155,10 +188,12 @@ class GrenadeViewModel(EquipmentBaseViewModel):
         df_leg["sort_key"] = df_leg["Manufacturer ID"].apply(lambda x: 0 if x == current_mfg else 1)
         df_leg = df_leg.sort_values(by=["sort_key", "Manufacturer ID", "Part_ID"])
         for _, r in df_leg.iterrows():
+            pid, mid = int(r["Part_ID"]), int(r["Manufacturer ID"])
+            if mid == current_mfg and self._part_category(mid, pid) == "body":
+                continue  # listed with the manufacturer perks (_legendary_body_rows)
             mfg_name = self._get_mfg_name(r["Manufacturer ID"])
             text, _ = self._fmt_row(r)
             label = f"{mfg_name} - {text}".strip(" -")
-            pid, mid = int(r["Part_ID"]), int(r["Manufacturer ID"])
             items.append({
                 "key": f"l{mid}:{pid}", "label": label,
                 "category": "current" if mid == current_mfg else "other",
