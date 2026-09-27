@@ -123,8 +123,18 @@ class ShieldViewModel(EquipmentBaseViewModel):
     def _chip_options(self, key, mfg_id):
         if key == "element":
             df = self.df_main[self.df_main["Shield_perk_main_ID"] == 246]
-            return self._chip_option_list(
-                key, df[df["Part_type"] == "Elemental Resistance"], self._fmt_row)
+            rows = df[df["Part_type"] == "Elemental Resistance"]
+            # 246:21 part_normal is the natural "no resistance" element: every shield
+            # template needs one element part and Pocket Buddies only allows this one,
+            # while the chip's plain "None" writes nothing at all.
+            normal = (item_display_resolver._item_index().get("part_refs") or {}).get(
+                f"{self.ELEMENT_PARENT}:21") or {}
+            if str(normal.get("part") or "").casefold() == "part_normal" and 21 not in set(rows["Part_ID"]):
+                rows = pd.concat([pd.DataFrame([{
+                    "Shield_perk_main_ID": self.ELEMENT_PARENT, "Part_ID": 21,
+                    "Part_type": "Elemental Resistance", "Stat": self._no_element_text(), "Description": "",
+                }]), rows], ignore_index=True)
+            return self._chip_option_list(key, rows, self._fmt_row)
         if key == "firmware":
             return self._chip_option_list(
                 key, self._firmware_group_df("Shield_perk_main_ID", 246), self._fmt_row)
@@ -221,6 +231,19 @@ class ShieldViewModel(EquipmentBaseViewModel):
             }
         return self._mfg_model_map
 
+    def _composition_unique_body(self, mfg_id) -> bool:
+        """The selected legendary composition brings its own body (e.g. 312:9 -> 312:8 Super Soldier)."""
+        rarity_id = self._current_rarity_id()
+        if rarity_id is None:
+            return False
+        refs = item_display_resolver._item_index().get("part_refs") or {}
+        composition = refs.get(f"{int(mfg_id)}:{int(rarity_id)}") or {}
+        return any(
+            (refs.get(str(ref_key)) or {}).get("category") == "body"
+            for rule in (composition.get("selection_rules") or {}).get("part_types", [])
+            for ref_key in rule.get("part_refs") or []
+        )
+
     def _build_skill_parts(self, mfg_id):
         skill_parts, secondary = [], {}
         leg_entries = self._entries("legendary")
@@ -228,10 +251,13 @@ class ShieldViewModel(EquipmentBaseViewModel):
             int(entry["data"][1]) == int(mfg_id) and self._legendary_facet(entry["data"]) == "body"
             for entry in leg_entries
         )
-        # Model part
+        # Model part. A legendary whose composition names its own body replaces the
+        # standard one: emitting both made every such shield "modified" before its
+        # legendary was even picked, and marked that legendary "!" (body slot full).
         if self._imported_copy and getattr(self, "_source_model_present", False):
             skill_parts.append(f"{{{self.mfg_model_map[mfg_id]}}}")
-        elif not self._imported_copy and not has_legendary_body and mfg_id in self.mfg_model_map:
+        elif (not self._imported_copy and not has_legendary_body
+              and not self._composition_unique_body(mfg_id) and mfg_id in self.mfg_model_map):
             skill_parts.append(f"{{{self.mfg_model_map[mfg_id]}}}")
         other_mfg = {}
         for e in leg_entries:

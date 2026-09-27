@@ -17,6 +17,7 @@ from PyQt6.QtCore import pyqtProperty, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import QApplication
 
 from core import b_encoder, bl4_functions as bl4f, decoder_logic, item_display_resolver, resource_loader
+from core.legit_status import cross_group_conflict
 
 from .base import PageViewModel, register
 
@@ -1447,6 +1448,19 @@ class WeaponEditorViewModel(PageViewModel):
                         "This part belongs to the {group} pool, but its condition is not satisfied.{suffix} It remains selectable.",
                         group=group_text,
                         suffix=condition_zh if self.current_lang == "zh-CN" else condition_en),
+                }
+            elif cross_group_conflict(context, ref, self._decoded):
+                # eligible in its own group, but it clashes with a part of another group
+                item["candidate"] = {
+                    "kind": "warning", "marker": "!",
+                    "badge": self._rule_message(
+                        "conflict_pick_badge", "与已选配件冲突 · {progress}", "Conflicts with a pick · {progress}",
+                        progress=progress),
+                    "hint": self._rule_message(
+                        "conflict_pick_hint",
+                        "该配件属于 {group} 的生成池，但会与其他组已选的配件冲突；直接添加会成为魔改。",
+                        "This part belongs to the {group} pool, but it conflicts with a part picked in another group; adding it makes the build modified.",
+                        group=group_text),
                 }
             else:
                 item["candidate"] = {

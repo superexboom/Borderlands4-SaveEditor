@@ -1626,6 +1626,171 @@ def weapon_generation_context(decoded: str, *, index: dict[str, Any] | None = No
     }
 
 
+def generation_requirement_providers(groups: dict[str, Any], ref: str, *,
+                                     index: dict[str, Any] | None = None) -> list[str]:
+    """Parts of the current template that add a tag ``ref`` requires.
+
+    Used to explain a candidate whose group is still inactive: Stray's elements
+    need ``body_acc_ele``, which only its body accessory ``part_body_d`` adds.
+    Parts already selected are skipped (their tags are active anyway).
+    """
+    index = _item_index() if index is None else index
+    rules = index.get("weapon_generation_rules") or {}
+    needed = _weapon_generation_tags(index, rules, str(ref))["requires"]
+    if not needed:
+        return []
+    own = (index.get("part_refs") or {}).get(str(ref), {})
+    own_group = str(own.get("selection_group") or own.get("category") or "").casefold()
+    providers: list[str] = []
+    for group, spec in (groups or {}).items():
+        if str(group).casefold() == own_group or not isinstance(spec, dict):
+            continue
+        selected = set(spec.get("selected") or [])
+        for candidate in spec.get("allowed") or []:
+            if candidate in selected or candidate in providers:
+                continue
+            if _weapon_generation_tags(index, rules, candidate)["adds"] & needed:
+                providers.append(candidate)
+    return providers
+
+
+def generation_conflict_possible(result: dict[str, Any], ref: str, replaced: tuple[str, ...] | list[str] = (), *,
+                                 index: dict[str, Any] | None = None) -> bool:
+    """Cheap pre-check: could adding ``ref`` break the build through another group?
+
+    Group states only see the tags of groups evaluated before them, so a part can
+    look natural and still clash with a part picked in a later group: an excluded
+    tag either way, or a composition tag limit (one licensed part per weapon).
+    ``replaced`` are the selected refs the candidate would replace. A ``True``
+    answer should be confirmed by validating the build with the part added.
+    """
+    index = _item_index() if index is None else index
+    rules = index.get("weapon_generation_rules") or {}
+    tags = _weapon_generation_tags(index, rules, str(ref))
+    others = list(result.get("selected_part_refs") or [])
+    for old in replaced:
+        if old in others:
+            others.remove(old)
+    # Validation files a part under its own selection group: a part offered through
+    # another group's pool (Daedalus underbarrel 13:63 is a foregrip) is judged there.
+    entry = (index.get("part_refs") or {}).get(str(ref)) or {}
+    own_group = str(entry.get("selection_group") or entry.get("category") or "").casefold()
+    own_spec = (result.get("groups") or {}).get(own_group)
+    if own_group and isinstance(own_spec, dict):
+        if str(ref) not in set(own_spec.get("allowed") or []):
+            return True
+        own_selected = [item for item in own_spec.get("selected") or [] if item not in replaced]
+        if len(own_selected) >= int(own_spec.get("max", 1)):
+            return True
+    other_tags = [_weapon_generation_tags(index, rules, other) for other in others]
+    active = {str(tag).casefold() for tag in result.get("base_tags") or []}
+    for other in other_tags:
+        active |= other["adds"]
+    if tags["excludes"] & active:
+        return True
+    if any(tags["adds"] & other["excludes"] for other in other_tags):
+        return True
+    for rule in result.get("tag_rules") or []:
+        bucket = {str(tag).casefold() for tag in rule.get("tags", [])}
+        if tags["adds"] & bucket and sum(bool(other["adds"] & bucket) for other in other_tags) >= int(rule.get("max", 1)):
+            return True
+    return False
+
+
+def generation_blocked_groups(result: dict[str, Any], ref: str, replaced: tuple[str, ...] | list[str] = (), *,
+                              index: dict[str, Any] | None = None) -> list[str]:
+    """Required groups that adding ``ref`` would leave without any usable part.
+
+    Picking a part can be fine on its own and still make the build impossible to
+    complete: class mod stat 234:49 (stat group 2) excludes the same tag as 234:29,
+    the only part stat group 1 allows. Returns the groups still below their minimum
+    whose remaining candidates all clash with ``ref``.
+    """
+    index = _item_index() if index is None else index
+    rules = index.get("weapon_generation_rules") or {}
+    tags = _weapon_generation_tags(index, rules, str(ref))
+    if not tags["adds"] and not tags["excludes"]:
+        return []
+    part_refs = index.get("part_refs") or {}
+    entry = part_refs.get(str(ref)) or {}
+    own_group = str(entry.get("selection_group") or entry.get("category") or "").casefold()
+    # Groups are filled in part_types order and an exclusion only bites a part
+    # picked after the tag appeared: a later part excluding an earlier part's tag
+    # is a clash, the reverse is not (Bismuth grenade: the Nuke stat excludes the
+    # "jakobs" tag every Bismuth payload adds, and payloads come first).
+    order = {str(group).casefold(): position for position, group in enumerate(result.get("part_types") or [])}
+
+    def group_of(item: str) -> str:
+        found = part_refs.get(str(item)) or {}
+        return str(found.get("selection_group") or found.get("category") or "").casefold()
+
+    def clash(a: str, b: str) -> bool:
+        a_tags = _weapon_generation_tags(index, rules, a)
+        b_tags = _weapon_generation_tags(index, rules, b)
+        a_position = order.get(group_of(a), len(order))
+        b_position = order.get(group_of(b), len(order))
+        if a_position > b_position:           # a is picked after b
+            return bool(a_tags["excludes"] & b_tags["adds"])
+        if a_position < b_position:
+            return bool(b_tags["excludes"] & a_tags["adds"])
+        return bool(a_tags["excludes"] & b_tags["adds"] or b_tags["excludes"] & a_tags["adds"])
+
+    current = [item for item in result.get("selected_part_refs") or [] if item not in replaced]
+    groups = result.get("groups") or {}
+    providable = {str(tag).casefold() for tag in result.get("base_tags") or []}
+    for spec in groups.values():
+        for item in (spec.get("allowed") or []) if isinstance(spec, dict) else []:
+            providable |= _weapon_generation_tags(index, rules, item)["adds"]
+    own_spec = groups.get(own_group) if own_group else None
+    if isinstance(own_spec, dict):
+        own_selected = [item for item in own_spec.get("selected") or [] if item not in replaced]
+        own_options = [item for item in own_spec.get("allowed") or [] if item not in own_selected
+                       and not any(clash(item, other) for other in current)]
+        if (len(own_selected) < int(own_spec.get("effective_min", own_spec.get("min", 0)) or 0)
+                and own_options == [str(ref)]):
+            return []  # the only part a required group can take is forced, never a trap
+    open_groups: list[tuple[str, list[str]]] = []
+    for group, spec in groups.items():
+        if str(group).casefold() == own_group or not isinstance(spec, dict):
+            continue
+        selected = [item for item in spec.get("selected") or [] if item not in replaced]
+        need = int(spec.get("effective_min", spec.get("min", 0)) or 0)
+        if (not need and int(spec.get("min", 0) or 0) > 0 and not int(spec.get("effective_max", 0) or 0)
+                and any(_weapon_generation_tags(index, rules, item)["requires"] <= providable
+                        for item in spec.get("allowed") or [])):
+            # not active yet, but a later pick can activate it (Bismuth payloads wait
+            # for the element) and then it is required
+            need = int(spec.get("min", 0) or 0)
+        if len(selected) >= need:
+            continue
+        # Judge the whole pool, not today's eligible parts: picking ``ref`` changes
+        # what becomes eligible (a Maliwan body adds "maliwan", turning the
+        # non-Maliwan switch elements off and the Maliwan ones on). Parts whose
+        # requirements nothing in the template can provide are left out.
+        options = [item for item in spec.get("allowed") or []
+                   if item != ref and item not in selected
+                   and _weapon_generation_tags(index, rules, item)["requires"] <= providable]
+        # only blame ``ref`` for a group the current picks still leave open
+        viable = [item for item in options if not any(clash(item, other) for other in current)]
+        if viable:
+            open_groups.append((str(group), viable))
+
+    blocked = [group for group, viable in open_groups if all(clash(ref, item) for item in viable)]
+    # Tag limits (at most two licensed parts): a required group whose only parts
+    # all carry the limited tag needs one of the remaining slots (Daedalus
+    # shotgun Bio's barrel accessory is the licensed Hyperion shield).
+    for rule in result.get("tag_rules") or []:
+        bucket = {str(tag).casefold() for tag in rule.get("tags", [])}
+        if not tags["adds"] & bucket:
+            continue
+        used = sum(bool(_weapon_generation_tags(index, rules, item)["adds"] & bucket) for item in current) + 1
+        needing = [group for group, viable in open_groups if group not in blocked
+                   and all(_weapon_generation_tags(index, rules, item)["adds"] & bucket for item in viable)]
+        if needing and used + len(needing) > int(rule.get("max", 1)):
+            blocked.extend(needing)
+    return blocked
+
+
 def validate_weapon_generation(decoded: str, allow_incomplete: bool = False, *, index: dict[str, Any] | None = None) -> dict[str, Any]:
     index = _item_index() if index is None else index
     context = weapon_generation_context(decoded, index=index)

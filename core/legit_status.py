@@ -9,7 +9,13 @@ from __future__ import annotations
 from collections import Counter
 from typing import Any
 
-from .item_display_resolver import validate_weapon_generation
+from functools import lru_cache
+
+from .item_display_resolver import (
+    generation_blocked_groups,
+    generation_conflict_possible,
+    validate_weapon_generation,
+)
 
 
 STATUS_LABELS = {
@@ -147,9 +153,35 @@ def option_status(option: dict[str, Any], language: str = "zh-CN") -> dict[str, 
     }
 
 
+@lru_cache(maxsize=4096)
+def _status_with_part(decoded: str, root: str, ref: str) -> tuple[str, str]:
+    """(status, first hard violation code) of ``decoded`` with part ``ref`` appended."""
+    owner, _, part = ref.partition(":")
+    token = f"{{{part}}}" if owner == root else f"{{{owner}:{part}}}"
+    head, sep, tail = decoded.rpartition("|")
+    trial = f"{head} {token} {sep}{tail}" if sep else f"{decoded} {token}"
+    result = validate_weapon_generation(trial, allow_incomplete=True)
+    hard = next((str(item.get("code") or "") for item in result.get("violations") or []
+                 if item.get("code") not in {"count_below", "tag_count_below"}), "")
+    return str(result.get("status") or ""), hard
+
+
+def cross_group_conflict(context: dict[str, Any], ref: str, decoded: str) -> str:
+    """Violation code if adding ``ref`` breaks the build through another group, else "".
+
+    Group states only see the tags of the groups evaluated before them, so a part
+    that clashes with a part of another group (excluded tag, one-licensed-part
+    limit) still looks addable; this confirms such a clash on the full build.
+    """
+    if not decoded or not generation_conflict_possible(context, ref):
+        return ""
+    status, code = _status_with_part(decoded, str(context.get("root_ref") or ""), ref)
+    return (code or "modified") if status == "modified" else ""
+
+
 def candidate_state(
     context: dict[str, Any], refs: list[str] | tuple[str, ...] | str,
-    language: str = "zh-CN", *, label: str = "",
+    language: str = "zh-CN", *, label: str = "", decoded: str = "",
 ) -> dict[str, Any]:
     """Describe whether one picker option can be added to the current build.
 
@@ -219,6 +251,30 @@ def candidate_state(
             "hint": f"该部件属于 {names}，但当前依赖或排除关系无法到达这个组合。" if zh else
                     f"The part belongs to {names}, but current dependencies or exclusions make the combination unreachable.",
         }
+    if remaining and decoded and not any(ref in set(spec.get("selected") or []) for _g, spec, ref in active):
+        # A group only sees the tags of the groups evaluated before it: a part that
+        # clashes with a part of another group (excluded tag, one-licensed-part
+        # limit) still looks addable. Confirm by validating the build with it.
+        for _group, _spec, ref in active:
+            code = cross_group_conflict(context, ref, decoded)
+            if code:
+                return {
+                    "kind": "warning", "marker": "!", "badge": "与已选部件冲突" if zh else "Conflicts with a pick",
+                    "hint": (f"它属于合法池（{names}），但与其他组已选的部件冲突"
+                             f"（{code}）；加上后会变成魔改。" if zh else
+                             f"It belongs to the natural pool ({names}), but it conflicts with a part picked in "
+                             f"another group ({code}); adding it makes the build modified."),
+                }
+    if remaining and not selected:
+        blocked = [group for _group, _spec, ref in active for group in generation_blocked_groups(context, ref)]
+        if blocked:
+            blocked_names = " / ".join(dict.fromkeys(
+                GROUP_LABELS_ZH.get(group, group) if zh else group.replace("_", " ").title() for group in blocked))
+            return {
+                "kind": "warning", "marker": "!", "badge": "会卡住必选组" if zh else "Blocks a required group",
+                "hint": (f"它本身可以选，但选上后 {blocked_names} 就没有能用的部件了，整件无法补齐。" if zh else
+                         f"It can be picked, but then {blocked_names} has no usable part left and the build cannot be completed."),
+            }
     if remaining:
         return {
             "kind": "legal", "marker": "✓", "badge": "合法候选" if zh else "Natural candidate",

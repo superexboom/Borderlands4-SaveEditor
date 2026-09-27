@@ -612,6 +612,46 @@ class EquipmentBaseViewModel(PageViewModel):
                     return name
         return ""
 
+    def _composition_item_name(self, mfg_id: int, part_id: int) -> str:
+        """In-game title of a rarity composition (legendaries), from NCS.
+
+        Grenade/shield/heavy compositions carry the title themselves; repkit
+        legendaries keep it on the linked unique part (290:9 Font of Life ->
+        290:8 "生命源泉", whose effect is titled "永恒").  The rarity CSV names
+        legendaries after their skins ("超级士兵皮肤"), so it is only a fallback.
+        """
+        refs = item_display_resolver._item_index().get("part_refs") or {}
+        key = "zh" if self.current_lang == "zh-CN" else "en"
+
+        def title(ref):
+            names = ref.get("name") or {}
+            text = str(names.get(key) or names.get("en") or "").strip()
+            return "" if text.casefold() in {"", "nan", "none"} else text
+
+        composition = refs.get(f"{int(mfg_id)}:{int(part_id)}") or {}
+        name = title(composition)
+        if name:
+            return name
+        for rule in (composition.get("selection_rules") or {}).get("part_types", []):
+            for ref_key in rule.get("part_refs") or []:
+                child = refs.get(str(ref_key)) or {}
+                if child.get("category") in {"primary_augment", "secondary_augment", "unique", "body"}:
+                    name = title(child)
+                    if name:
+                        return name
+        return ""
+
+    def _rarity_display_name(self, mfg_id: int, part_id: int, description: Any) -> str:
+        """Name shown after the rarity: NCS title, else the CSV text without its skin suffix."""
+        text = "" if pd.isna(description) else str(description or "").strip()
+        if text.casefold() in {"nan", "none"}:
+            text = ""
+        if text in {"金皮肤"} or text.casefold() == "gold skin":
+            return text
+        return (self._composition_item_name(mfg_id, part_id)
+                or self._strip_skin_suffix(text)
+                or self._ncs_rarity_child_name(mfg_id, part_id))
+
     def _rebuild_rarity_options(self, mfg_id: int) -> None:
         rarity_rows = self.df_mfg[
             (self.df_mfg["Manufacturer ID"] == mfg_id) & (self.df_mfg["Part_type"] == "Rarity")
@@ -622,7 +662,9 @@ class EquipmentBaseViewModel(PageViewModel):
         options = []
         for _, r in rarity_rows.iterrows():
             desc = r["Description"]
-            if pd.isna(desc) or not str(desc).strip():
+            if "legendary" in str(r["Stat"]).casefold():
+                desc = self._rarity_display_name(mfg_id, int(r["Part_ID"]), desc)
+            elif pd.isna(desc) or not str(desc).strip():
                 # NCS keeps some named legendary composition labels on the
                 # linked primary augment rather than the rarity CSV row (for
                 # example Torgue Repkit 261:9 -> 261:8 Outburst).
@@ -1025,9 +1067,77 @@ class EquipmentBaseViewModel(PageViewModel):
             "groups": " · ".join(group_bits),
         }
         self._guidance_groups = groups
+        self._guidance_result = result
         self._guidance_ready = ready
         for key, rule_keys in mapping.items():
             self._set_group_guidance(key, rule_keys, groups, ready)
+        if ready and status != "modified":
+            for key in mapping:
+                self._verify_legal_candidates(key)
+
+    def _verify_legal_candidates(self, key: str) -> None:
+        """Demote a ✓ candidate that would make the current build modified.
+
+        Group states only see exclusions and tag limits from the groups evaluated
+        before them, so a part could be marked natural although it conflicts with a
+        part picked in another group (Jakobs Bismuth legendary perks, Order
+        grenades' Seeker perk). Each ✓ option is checked by validating the build
+        with that option added (a single-choice group replaces its current pick).
+        """
+        cfg = self._group_cfg(key)
+        mfg_id = self._current_mfg_id()
+        if not cfg or mfg_id is None:
+            return
+
+        def check(opt, ref="", replaced=()):
+            try:
+                result = item_display_resolver.validate_weapon_generation(
+                    self._compose_raw_output(mfg_id), allow_incomplete=True)
+            except Exception:
+                return
+            if result.get("status") != "modified":
+                blocked = item_display_resolver.generation_blocked_groups(
+                    getattr(self, "_guidance_result", None) or {"groups": self._guidance_groups},
+                    ref, replaced) if ref else []
+                if blocked:
+                    template = self._legit_text(
+                        "candidate_blocks_group",
+                        "Can be picked, but then {group} has no usable part left.")
+                    opt["candidate"] = {"kind": "warning", "marker": "!", "hint": template.format(
+                        group=" / ".join(self._generation_group_text(group) for group in blocked))}
+                return
+            reasons = [self._generation_violation_text(item) for item in result.get("violations") or []
+                       if item.get("code") not in {"count_below", "tag_count_below"}]
+            opt["candidate"] = {
+                "kind": "warning",
+                "marker": "!",
+                "hint": reasons[0] if reasons else self._legit_text(
+                    "reason_modified", "Does not match the natural-generation rules"),
+            }
+
+        if cfg.get("mode") == "chip":
+            saved = self._chip_sel.get(key)
+            try:
+                for opt in self._chip_options_state.get(key, []):
+                    if (opt.get("candidate") or {}).get("kind") != "legal" or opt.get("pid") in (None, saved):
+                        continue
+                    self._chip_sel[key] = opt.get("pid")
+                    current = self._generation_ref_for_option(key, saved) if saved is not None else ""
+                    check(opt, self._generation_ref_for_option(key, opt.get("pid")), (current,) if current else ())
+            finally:
+                self._chip_sel[key] = saved
+            return
+        saved_entries = self._picker_sel.get(key, [])
+        chosen = {entry.get("key") for entry in saved_entries}
+        try:
+            for opt in self._picker_src.get(key, []):
+                if (opt.get("candidate") or {}).get("kind") != "legal" or opt.get("key") in chosen:
+                    continue
+                self._picker_sel[key] = saved_entries + [
+                    {"key": opt.get("key"), "label": "", "data": opt.get("data"), "count": 1}]
+                check(opt, self._generation_ref_for_option(key, opt.get("data")))
+        finally:
+            self._picker_sel[key] = saved_entries
 
     def _generation_violation_text(self, violation: dict[str, Any]) -> str:
         code = str(violation.get("code") or "")
@@ -1154,6 +1264,24 @@ class EquipmentBaseViewModel(PageViewModel):
             for rule_key, spec in specs
             if int(spec.get("effective_max", spec.get("max", 0))) > 0 or spec.get("selected")
         ]
+        # Pickers that share rule groups (repkit legendary / universal both map to
+        # primary + secondary augment) only list the groups their own options can
+        # fill; otherwise the legendary perk showed up as "primary 1/1" under the
+        # universal list too, as if it had been picked twice.
+        # A group that is not active yet (a repkit resistance before its carrier)
+        # shows its own quota instead of borrowing the shared element group's.
+        own_refs = self._group_option_refs(key, cfg)
+        if len(specs) > 1 and own_refs:
+            relevant = [
+                (rule_key, spec) for rule_key, spec in specs
+                if own_refs & set(spec.get("allowed") or []) or own_refs & set(spec.get("selected") or [])
+            ]
+            if relevant:
+                active = [(rule_key, spec) for rule_key, spec in relevant if (rule_key, spec) in visible]
+                visible = active or [
+                    (rule_key, {**spec, "effective_min": spec.get("min", 0), "effective_max": spec.get("max", 0)})
+                    for rule_key, spec in relevant if int(spec.get("max", 0)) > 0
+                ]
         bits = []
         for rule_key, spec in visible:
             actual = len(spec.get("selected") or [])
@@ -1174,6 +1302,23 @@ class EquipmentBaseViewModel(PageViewModel):
                 ref = self._generation_ref_for_option(key, opt.get("data"))
                 opt["candidate"] = self._candidate_state_for_option(
                     key, opt.get("data"), ref, rule_keys, groups)
+
+    def _group_option_refs(self, key: str, cfg: dict[str, Any]) -> set[str]:
+        if cfg.get("mode") == "chip":
+            values = [opt.get("pid") for opt in self._chip_options_state.get(key, [])]
+        else:
+            values = [opt.get("data") for opt in self._picker_src.get(key, [])]
+        refs = set()
+        for value in values:
+            if value is None:
+                continue
+            try:
+                ref = self._generation_ref_for_option(key, value)
+            except (TypeError, ValueError):
+                ref = ""
+            if ref:
+                refs.add(ref)
+        return refs
 
     def _chip_replacement_groups(self, key: str, groups):
         """单选下拉点选即"替换"当前选择：候选按去掉本组当前选择后的规则状态评估。
@@ -1403,6 +1548,9 @@ class EquipmentBaseViewModel(PageViewModel):
         if rows.empty:
             return ""
         row = rows.iloc[0]
+        name = self._composition_item_name(root_id, part_id)
+        if name:
+            return name
         value = row.get("Description")
         if pd.isna(value) or str(value).strip().casefold() in {"", "nan", "none"}:
             value = row.get("Description_EN")

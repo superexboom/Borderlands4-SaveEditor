@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import re
 
-from core import item_display_resolver
+import pandas as pd
+
+from core import item_display_resolver, resource_loader
 from core.equipment_data import load_repkit_data
 from core.serial_import import parse_components
 
@@ -28,6 +30,7 @@ class RepkitViewModel(EquipmentBaseViewModel):
         "prefix": ("payload",),
         "resistance": ("augment_element_resist", "element"),
         "immunity": ("augment_element_immunity", "element"),
+        "element": ("element",),
         "firmware": ("firmware",),
         "legendary": ("primary_augment", "secondary_augment", "vile"),
         "universal": ("primary_augment", "secondary_augment",
@@ -41,6 +44,8 @@ class RepkitViewModel(EquipmentBaseViewModel):
         for _i in _ids:
             _DERIVED_MAP[_i] = _derived
     DERIVED_IDS = {98, 99, 100, 101, 102}
+    # element parts 243:98..102 (part_element_<name>) -> weapon element row for the label
+    _ELEMENT_LABEL_ROWS = {"corrosive": 10, "cryo": 11, "fire": 12, "radiation": 13, "shock": 14}
 
     _CARRIER_FIXED = {}
     for _eff, _carrier in ((range(22, 27), 76), (range(27, 32), 78),
@@ -69,6 +74,10 @@ class RepkitViewModel(EquipmentBaseViewModel):
             {"key": "prefix", "mode": "chip", "title_key": "prefix"},
             {"key": "resistance", "mode": "chip", "title_key": "resistance"},
             {"key": "immunity", "mode": "chip", "title_key": "immunity"},
+            # Every natural repkit has one element part; a resistance / immunity
+            # derives it, but a kit whose secondary slot holds a regular augment
+            # needs it on its own (e.g. Font of Life + Enrage + element).
+            {"key": "element", "mode": "chip", "title_key": "element"},
             {"key": "firmware", "mode": "chip", "title_key": "firmware"},
             {"key": "legendary", "mode": "picker", "title_key": "legendary", "stackable": False},
             {"key": "universal", "mode": "picker", "title_key": "universal", "stackable": True},
@@ -77,6 +86,10 @@ class RepkitViewModel(EquipmentBaseViewModel):
     def _initial_preserved_children(self):
         self._primary_carriers = set()
         return {}
+
+    def _extra_family_load(self):
+        self._element_df = resource_loader.load_localized_csv_resource(
+            "data/weapon/elemental.csv", self.current_lang)
 
     # ------------------------------------------------------------------ #
     # 规则指引
@@ -169,7 +182,26 @@ class RepkitViewModel(EquipmentBaseViewModel):
             return self._chip_option_list(key, df[df["Part_type"] == "Resistance"], self._fmt_row)
         if key == "immunity":
             return self._chip_option_list(key, df[df["Part_type"] == "Immunity"], self._fmt_row)
+        if key == "element":
+            return self._chip_option_list(key, self._element_rows(), self._fmt_row)
         return None
+
+    def _element_rows(self):
+        """243:98..102 are NCS-only (no CSV row, no name): label them like weapon elements."""
+        refs = item_display_resolver._item_index().get("part_refs") or {}
+        names = {}
+        element_df = getattr(self, "_element_df", None)
+        if element_df is not None:
+            for _, row in element_df.iterrows():
+                names[int(row["Part_ID"])] = str(row["Stat"])
+        rows = []
+        for part_id in sorted(self.DERIVED_IDS):
+            internal = str((refs.get(f"{self.SECONDARY_PARENT}:{part_id}") or {}).get("part") or "")
+            element = internal.rpartition("_")[2].casefold()
+            label = names.get(self._ELEMENT_LABEL_ROWS.get(element, -1)) or element or str(part_id)
+            rows.append({"Repkit_perk_main_ID": self.SECONDARY_PARENT, "Part_ID": part_id,
+                         "Part_type": "Element", "Stat": label, "Description": ""})
+        return pd.DataFrame(rows, columns=["Repkit_perk_main_ID", "Part_ID", "Part_type", "Stat", "Description"])
 
     def _universal_items(self):
         items = []
@@ -249,6 +281,11 @@ class RepkitViewModel(EquipmentBaseViewModel):
             derived = self._DERIVED_MAP.get(pid)
             if derived is not None:
                 derived_ids.add(derived)
+        element_pid = self._chip_sel.get("element")
+        if element_pid is not None:
+            # the chosen element also covers a resistance / immunity of the same element
+            secondary.setdefault(self.SECONDARY_PARENT, []).append(element_pid)
+            derived_ids.discard(element_pid)
         secondary.setdefault(self.SECONDARY_PARENT, []).extend(sorted(derived_ids))
         for e in self._entries("universal"):
             for _ in range(int(e.get("count", 1))):
@@ -353,6 +390,8 @@ class RepkitViewModel(EquipmentBaseViewModel):
         for child in pending_derived:
             if child in generated:
                 generated.remove(child)
+            elif self._chip_sel.get("element") is None and self._select_group_pid("element", child):
+                pass
             else:
                 extra_secondary.append(child)
         if extra_secondary:

@@ -11,6 +11,8 @@ Rectangle {
     property string fullText: text      // 完整文本（悬停提示用）
     property bool checked: false
     property string kind: ""            // "" | "legal" | "warning" | "modified" | "unknown"
+    property string hint: ""            // 为什么是这个标记（依赖、模板不启用……），悬停时显示
+    readonly property string tipText: hint !== "" ? fullText + "\n" + hint : fullText
     signal clicked()
 
     SelectionStyle { id: chipStyle }
@@ -55,8 +57,8 @@ Rectangle {
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         onClicked: chip.clicked()
-        onEntered: if (chip.fullText !== chip.text) HoverTip.showFor(chip, chip.fullText, mouseX, mouseY)
-        onPositionChanged: if (containsMouse && chip.fullText !== chip.text) HoverTip.showFor(chip, chip.fullText, mouseX, mouseY)
+        onEntered: if (chip.tipText !== chip.text) HoverTip.showFor(chip, chip.tipText, mouseX, mouseY)
+        onPositionChanged: if (containsMouse && chip.tipText !== chip.text) HoverTip.showFor(chip, chip.tipText, mouseX, mouseY)
         onExited: HoverTip.hideFor(chip)
     }
 }

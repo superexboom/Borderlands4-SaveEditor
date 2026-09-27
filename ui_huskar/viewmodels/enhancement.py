@@ -241,7 +241,7 @@ class EnhancementViewModel(PageViewModel):
             result.append({"index": idx, "label": label.strip(), "detail": detail.strip(),
                  "checked": bool(self._perk_checked.get(idx, False)),
                  **candidate_state(self._generation_context, f"{root}:{idx}", self.current_lang,
-                                   label=label.strip())})
+                                   label=label.strip(), decoded=self._raw_output)})
         return result
 
     @pyqtProperty(list, notify=dataChanged)
@@ -276,6 +276,7 @@ class EnhancementViewModel(PageViewModel):
                         "data": {"mfg": mfg, "idx": idx},
                         **candidate_state(
                             self._generation_context, f"{data['code']}:{idx}", self.current_lang,
+                            decoded=self._raw_output,
                             label=f"{self._display_text(perk['name'], perk.get('name_zh'))} — {self._display_text(mfg, self.localization_data.get(mfg))}"),
                     })
         return sorted(items, key=lambda x: (
@@ -339,7 +340,8 @@ class EnhancementViewModel(PageViewModel):
                 "tooltip": tooltip,
                 "searchText": search_text,
                 "data": {"code": code},
-                **candidate_state(self._generation_context, f"247:{code}", self.current_lang, label=name),
+                **candidate_state(self._generation_context, f"247:{code}", self.current_lang, label=name,
+                                  decoded=self._raw_output),
             })
         return sorted(items, key=lambda x: (
             _CANDIDATE_ORDER.get(str(x.get("kind") or "unknown"), 3),

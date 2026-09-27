@@ -325,6 +325,7 @@ LockedFlickable {
                                 fullText: modelData.label
                                 checked: vmWeaponGenerator.element1Index === index
                                 kind: modelData.kind || ""
+                                hint: modelData.hint || ""
                                 onClicked: vmWeaponGenerator.setElement1Index(index)
                             }
                         }
@@ -346,6 +347,7 @@ LockedFlickable {
                                 fullText: modelData.label
                                 checked: vmWeaponGenerator.element2Index === index
                                 kind: modelData.kind || ""
+                                hint: modelData.hint || ""
                                 onClicked: vmWeaponGenerator.setElement2Index(index)
                             }
                         }
@@ -370,6 +372,7 @@ LockedFlickable {
                                     fullText: modelData.label
                                     checked: vmWeaponGenerator.pearlStatIndex === index
                                     kind: modelData.kind || ""
+                                    hint: modelData.hint || ""
                                     onClicked: vmWeaponGenerator.setPearlStatIndex(index)
                                 }
                             }
@@ -389,6 +392,7 @@ LockedFlickable {
                                     fullText: modelData.label
                                     checked: vmWeaponGenerator.pearlElementIndex === index
                                     kind: modelData.kind || ""
+                                    hint: modelData.hint || ""
                                     onClicked: vmWeaponGenerator.setPearlElementIndex(index)
                                 }
                             }

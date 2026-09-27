@@ -638,13 +638,14 @@ class WeaponGeneratorViewModel(PageViewModel):
     def _element_options_view(self, values, state_key):
         """元素芯片选项：label 为原始 "pid - 描述" 值，marker/kind 为合法候选状态。"""
         states = self._element_states.get(state_key) or []
-        options = [{"label": self.get_localized_string(_NONE_VALUE), "marker": "", "kind": ""}]
+        options = [{"label": self.get_localized_string(_NONE_VALUE), "marker": "", "kind": "", "hint": ""}]
         for i, value in enumerate(values):
             state = states[i] if i < len(states) else {}
             options.append({
                 "label": value,
                 "marker": str(state.get("marker", "")),
                 "kind": str(state.get("kind", "")),
+                "hint": str(state.get("hint", "")),
             })
         return options
 
@@ -654,22 +655,45 @@ class WeaponGeneratorViewModel(PageViewModel):
             return values[index - 1]
         return None
 
-    @staticmethod
-    def _element_candidate_state(value, spec, replace_spec=None):
-        """对齐 equipment_base._candidate_state 的 ✓/! 语义（ref 恒为 {1:pid}）。
+    def _legit_hint(self, key, fallback, **fmt):
+        text = str((self.legit_loc or {}).get(key) or fallback)
+        return text.format(**fmt) if fmt else text
+
+    def _element_candidate_state(self, value, spec, replace_spec=None, groups=None, item_id=None):
+        """对齐 equipment_base._candidate_state 的 ✓/!/◇ 语义（ref 恒为 {1:pid}）。
 
         replace_spec 为去掉本组当前选择后的组状态：芯片是单选，点击即替换，
         按"替换后能否自然生成"判断，已有选择时其它合法芯片不会被误标 "!"。
+        元素组要靠别的配件激活时（偏离的元素需要基座附件 part_body_d）
+        标 "!" 并在提示里写出要先选的配件，而不是什么都不标。
         """
         pid = str(value).split(" - ", 1)[0]
         ref = f"1:{pid}" if pid.isdigit() else ""
         if not ref or not isinstance(spec, dict):
-            return {"marker": "", "kind": ""}
+            return {"marker": "", "kind": "", "hint": ""}
         if ref not in set(spec.get("allowed") or []):
-            return {"marker": "", "kind": ""}
+            return {"marker": "◇", "kind": "modified", "hint": self._legit_hint(
+                "candidate_not_allowed", "Outside this natural template; still selectable as a modified part.")}
         selected = set(spec.get("selected") or [])
         if not (int(spec.get("effective_max", spec.get("max", 0))) > 0 or ref in selected):
-            return {"marker": "", "kind": ""}
+            if int(spec.get("max", 0)) <= 0:
+                # e.g. Ohm I Got: the composition sets its element slot to 0..0
+                return {"marker": "◇", "kind": "modified", "hint": self._legit_hint(
+                    "candidate_inactive",
+                    "This template does not activate the slot; still selectable as a modified part.")}
+            providers = item_display_resolver.generation_requirement_providers(groups or {}, ref)
+            names = []
+            for provider in providers[:3]:
+                owner, _, part_id = provider.partition(":")
+                name = item_display_resolver.weapon_part_name(int(owner), part_id, self.current_lang) \
+                    if owner.isdigit() else ""
+                names.append(f"{name or provider} ({provider})")
+            hint = (self._legit_hint("candidate_needs_part", "Select first: {parts}", parts=", ".join(names))
+                    if names else self._legit_hint(
+                        "candidate_dependency",
+                        "Belongs to {group}, but the current pairing or dependency is not satisfied.",
+                        group=self.get_localized_string("Element", "Element")))
+            return {"marker": "!", "kind": "warning", "hint": hint}
         if isinstance(replace_spec, dict) and replace_spec.get("selected_reachable", True):
             legal = ref in set(replace_spec.get("remaining_eligible_refs") or [])
         else:
@@ -677,8 +701,8 @@ class WeaponGeneratorViewModel(PageViewModel):
             legal = ((ref in selected and spec.get("selected_reachable", True))
                      or ref in set(spec.get("remaining_eligible_refs") or []))
         if legal:
-            return {"marker": "✓", "kind": "legal"}
-        return {"marker": "!", "kind": "warning"}
+            return {"marker": "✓", "kind": "legal", "hint": ""}
+        return {"marker": "!", "kind": "warning", "hint": ""}
 
     def _refresh_element_states(self, groups, rules_ready, item_id=None, cache=None) -> None:
         groups = groups if rules_ready else {}
@@ -692,7 +716,7 @@ class WeaponGeneratorViewModel(PageViewModel):
                 replace_spec = self._variant_groups(
                     cache, ("element", state_key), skip_element=state_key).get(group_key)
             states[state_key] = [
-                self._element_candidate_state(value, groups.get(group_key), replace_spec)
+                self._element_candidate_state(value, groups.get(group_key), replace_spec, groups, item_id)
                 for value in values
             ]
         self._element_states = states
@@ -821,9 +845,10 @@ class WeaponGeneratorViewModel(PageViewModel):
     def _slot_values(group):
         return [slot["options"][slot["selectedIndex"]].get("value") for slot in group["slots"]]
 
-    def _component_tokens(self, m_id, *, skip_element=None, group=None, group_values=()):
+    def _component_tokens(self, m_id, *, skip_element=None, group=None, group_values=(), element_values=None):
         """当前选择的部件 token；skip_element / group+group_values 用于构造
-        "去掉某个选择"的变体序列号（按槽位计算 legit 候选时使用）。"""
+        "去掉某个选择"的变体序列号（按槽位计算 legit 候选时使用）；
+        element_values={状态键: 值} 把某个元素芯片换成指定值（复核候选时使用）。"""
         parts_list = []
         selected_rarity = self._rarity_options[self._rarity_index]["value"] if self._rarity_options else ""
         if selected_rarity in {"Legendary", "Pearl"}:
@@ -844,7 +869,10 @@ class WeaponGeneratorViewModel(PageViewModel):
         for state_key, values, index in self._element_selections():
             if state_key == skip_element:
                 continue
-            value = self._element_value_at(values, index)
+            if element_values and state_key in element_values:
+                value = element_values[state_key]
+            else:
+                value = self._element_value_at(values, index)
             if value is None:
                 continue
             part_id = value.split(" - ")[0]
@@ -965,6 +993,13 @@ class WeaponGeneratorViewModel(PageViewModel):
             code = f"{code}_{foreign_kind}"
         key, zh, en = labels.get(code, ("", str(code or ""), str(code or "")))
         text = self._rule_message(key, zh, en) if key else en
+        group_key = str(violation.get("group") or "")
+        if group_key and code in {"count_below", "count_above"}:
+            # name the group ("missing: barrel (0/1)"), not just "parts are missing"
+            first_ref = next(iter((getattr(self, "_rule_groups_seen", {}).get(group_key) or {}).get("allowed") or []), "")
+            label = self._rule_group_label(group_key, first_ref, self._current_m_id())
+            if label:
+                text += ("：" if self.current_lang == "zh-CN" else ": ") + label
         actual = violation.get("actual")
         limit = violation.get("min", violation.get("max"))
         if actual is not None and limit is not None:
@@ -1002,6 +1037,7 @@ class WeaponGeneratorViewModel(PageViewModel):
             "unknown": ("status_unknown", "规则未知", "Rules unknown"),
         }
         status = str(result.get("status") or "unknown")
+        self._rule_groups_seen = result.get("groups") or {}
         status_key, status_zh, status_en = status_labels.get(status, status_labels["unknown"])
         status_text = self._rule_message(status_key, status_zh, status_en)
         violations = [self._rule_violation_text(item) for item in result.get("violations", [])]
@@ -1119,6 +1155,8 @@ class WeaponGeneratorViewModel(PageViewModel):
                     "no_legal_candidates", "当前配件条件下没有合法候选",
                     "No legal candidates under the current part conditions"))
             group["badgeTip"] = "\n".join(lines)
+        if rules_ready and item_id is not None and status != "modified":
+            self._demote_traps(variant_cache, result, item_id)
 
     def _rule_group_label(self, group_key: str, ref: str, item_id) -> str:
         """规则组显示名：legit 组表 → 组内首个 allowed 配件的配件类型标题 → 标题化回退。"""
@@ -1154,6 +1192,85 @@ class WeaponGeneratorViewModel(PageViewModel):
             except Exception:
                 cache[key] = {}
         return cache[key]
+
+    def _variant_result(self, cache, key, **overrides):
+        """Full validation of a variant serial (cached per refresh); {} on failure."""
+        key = ("result",) + tuple(key)
+        if key not in cache:
+            m_id = self._current_m_id()
+            tokens = self._component_tokens(m_id, **overrides) if m_id is not None else []
+            decoded = f"{self._decoded_header} {' '.join(tokens)} |"
+            try:
+                cache[key] = item_display_resolver.validate_weapon_generation(decoded, allow_incomplete=True)
+            except Exception:
+                cache[key] = {}
+        return cache[key]
+
+    def _trap_hint(self, result):
+        reasons = [self._rule_violation_text(item) for item in result.get("violations") or []
+                   if item.get("code") not in {"count_below", "tag_count_below"}]
+        return reasons[0] if reasons else self._rule_message("status_modified", "魔改", "Modified")
+
+    @staticmethod
+    def _warn_slot_option(option, hint) -> None:
+        option["kind"] = "allowed"
+        option["hint"] = hint
+        option["itemBg"], option["itemColor"], option["itemBold"] = _KIND_POPUP_STYLE.get(
+            "allowed", ("", "", False))
+
+    def _blocks_hint(self, blocked, item_id):
+        return self._legit_hint(
+            "candidate_blocks_group", "Can be picked, but then {group} has no usable part left.",
+            group=" / ".join(self._rule_group_label(group, "", item_id) for group in blocked))
+
+    def _demote_traps(self, cache, base_result, item_id) -> None:
+        """Re-check every legal-coloured option by validating the build with it applied.
+
+        A group only sees tags added by the groups evaluated before it, so cross-group
+        exclusions and tag limits (Tediore payload, Hyperion weapon shield, pearl
+        elements) only show up in the full validation: such an option turns yellow
+        and says why, instead of promising a natural build it would break.
+        """
+        for group in self._part_groups:
+            values = self._slot_values(group)
+            for index, slot in enumerate(group["slots"]):
+                current = values[index]
+                replaced = (f"{item_id}:{current}",) if current is not None else ()
+                for option_index, option in enumerate(slot["options"]):
+                    if option.get("kind") not in ("preferred", "eligible") or option_index == slot["selectedIndex"]:
+                        continue
+                    candidate_ref = f"{item_id}:{option.get('value')}"
+                    blocked = item_display_resolver.generation_blocked_groups(base_result, candidate_ref, replaced)
+                    if blocked:
+                        self._warn_slot_option(option, self._blocks_hint(blocked, item_id))
+                        continue
+                    if not item_display_resolver.generation_conflict_possible(base_result, candidate_ref, replaced):
+                        continue
+                    trial = list(values)
+                    trial[index] = option.get("value")
+                    result = self._variant_result(
+                        cache, ("slot", group["partType"], tuple(trial)), group=group, group_values=trial)
+                    if result.get("status") == "modified":
+                        self._warn_slot_option(option, self._trap_hint(result))
+        for state_key, values, index in self._element_selections():
+            states = self._element_states.get(state_key) or []
+            current = str(self._element_value_at(values, index) or "").split(" - ", 1)[0]
+            replaced = (f"1:{current}",) if current.isdigit() else ()
+            for value_index, value in enumerate(values):
+                state = states[value_index] if value_index < len(states) else {}
+                if state.get("kind") != "legal" or value_index + 1 == index:
+                    continue
+                pid = str(value).split(" - ", 1)[0]
+                blocked = item_display_resolver.generation_blocked_groups(base_result, f"1:{pid}", replaced)
+                if blocked:
+                    states[value_index] = {"marker": "!", "kind": "warning", "hint": self._blocks_hint(blocked, item_id)}
+                    continue
+                if not item_display_resolver.generation_conflict_possible(base_result, f"1:{pid}", replaced):
+                    continue
+                result = self._variant_result(
+                    cache, ("element", state_key, value), element_values={state_key: value})
+                if result.get("status") == "modified":
+                    states[value_index] = {"marker": "!", "kind": "warning", "hint": self._trap_hint(result)}
 
     @staticmethod
     def _kept_slot_values(values):

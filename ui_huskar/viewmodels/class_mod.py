@@ -266,7 +266,8 @@ class ClassModViewModel(PageViewModel):
         return self._legit_status
 
     def _candidate(self, ref: str, label: str = "") -> dict[str, Any]:
-        return candidate_state(self._generation_context, ref, self.current_lang, label=label)
+        return candidate_state(self._generation_context, ref, self.current_lang, label=label,
+                               decoded=self._raw_output)
 
     def _group_progress(self, group_names: tuple[str, ...]) -> str:
         specs = [self._generation_context.get("groups", {}).get(name) for name in group_names]

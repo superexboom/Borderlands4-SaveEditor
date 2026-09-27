@@ -123,25 +123,29 @@ class HeavyWeaponViewModel(EquipmentBaseViewModel):
         needs_base = "body_acc_ele" in set(element_tags.get("requires") or [])
         base_id = self._element_base_part_id()
         selected_body = {int(entry["data"]) for entry in self._entries("body_acc")}
-        missing_base = needs_base and base_id is not None and base_id not in selected_body
+        # Maliwan heavies get body_acc_ele from the body itself: when the rules
+        # already reach the chosen element, no accessory is missing.
+        element_spec = groups.get("body_ele") or {}
+        element_reached = bool(element_ref and element_ref in set(element_spec.get("selected") or [])
+                               and element_spec.get("selected_reachable", False))
+        missing_base = (needs_base and base_id is not None and base_id not in selected_body
+                        and not element_reached)
         if key == "element":
             spec = groups.get("body_ele") or {}
-            if ref not in set(spec.get("allowed") or []):
+            if ref not in set(spec.get("allowed") or []) or state.get("kind") == "legal":
                 return state
+            # The rules already know who provides body_acc_ele (a body accessory, or
+            # the body itself on Maliwan heavies); only name the accessory when one
+            # exists and is missing, instead of demanding one that is not there.
             option_tags = (refs.get(ref) or {}).get("selection_tags") or {}
-            if "body_acc_ele" in set(option_tags.get("requires") or []) and base_id not in selected_body:
+            if ("body_acc_ele" in set(option_tags.get("requires") or [])
+                    and base_id is not None and base_id not in selected_body):
                 return {
                     "kind": "warning",
                     "marker": "!",
                     "hint": self._element_base_hint(base_id),
                 }
-            return {
-                "kind": "legal",
-                "marker": "✓",
-                "hint": self._legit_text("candidate_legal", "Natural candidate: {group}").format(
-                    group=self._generation_group_text("body_ele")
-                ),
-            }
+            return state
         elif key == "body_acc" and missing_base and int(data) != base_id:
             return {
                 "kind": "warning",

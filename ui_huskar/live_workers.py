@@ -604,6 +604,7 @@ class _LiveBatchSpawnWorker(QThread):
         self.mutation_preflight = None
         self.mutation_results = []
         self.blocked_reason = ''
+        self.last_error = ''
 
     def run(self):
         success = 0
@@ -626,8 +627,9 @@ class _LiveBatchSpawnWorker(QThread):
                     if err:
                         raise ValueError(err)
                 serials.append(serial)
-            except Exception:
+            except Exception as exc:
                 fail += 1
+                self.last_error = str(exc)
         completed = fail
         self.progress.emit(completed, total, success, fail)
 
@@ -667,9 +669,11 @@ class _LiveBatchSpawnWorker(QThread):
                 else:
                     fail += len(chunk)
                     self.incremental_safe = False
-            except Exception:
+                    self.last_error = str((result or {}).get('error') or '')
+            except Exception as exc:
                 fail += len(chunk)
                 self.incremental_safe = False
+                self.last_error = f"{type(exc).__name__}: {exc}"
             completed += len(chunk)
             pending, reason = _live_inventory_recovery_state(result)
             if pending is True:

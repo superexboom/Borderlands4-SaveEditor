@@ -20,9 +20,7 @@ from ui_huskar.live_workers import (
     _LiveItemApplyWorker,
     _LiveLoadoutWorker,
     _LiveRuntimeWorker,
-    _live_inventory_mutation_preflight,
     _live_inventory_recovery_state,
-    _spawn_delivered,
 )
 
 
@@ -377,15 +375,11 @@ class LiveManager(QObject):
     # 写操作：单件添加 / 批量（roll）
     # ------------------------------------------------------------------ #
     def add_to_backpack(self, serial_input: str) -> bool:
+        """单件加入：只在这里编码，spawn 交给后台 worker（游戏确认到货前不阻塞界面）。"""
         if self.any_busy():
             self._toast(self._text("runtime_busy", "Another live action is still running."), "warning")
             return False
         if not self._guard_mutation():
-            return False
-        preflight = _live_inventory_mutation_preflight(self.bridge)
-        self._remember_recovery(preflight)
-        if preflight["blocked"]:
-            self._guard_mutation()
             return False
         try:
             serial_input = serial_input.strip()
@@ -401,30 +395,7 @@ class LiveManager(QObject):
             self._toast(self._text("add_encode_failed", "Failed to encode the live item: {error}",
                                    error=exc), "error")
             return False
-
-        try:
-            res = self.bridge.spawn(final_serial, "BackpackItems")
-        except Exception as exc:
-            self._toast(self._text("spawn_failed", "Live item spawn failed: {error}",
-                                   error=f"{type(exc).__name__}: {exc}"), "error")
-            return False
-        self._remember_recovery(res)
-
-        if _spawn_delivered(res, 1):
-            self._toast(self._text("spawn_success", "A new item was spawned into the game backpack."),
-                        "success")
-            spawned = res.get("items")
-            if isinstance(spawned, list) and len(spawned) == 1:
-                record = dict(spawned[0])
-                record["container"] = "BackpackItems"
-                record["idx"] = record.get("index")
-                self._commit_inventory_patch([record])
-            else:
-                self.refresh()
-            return True
-        self._toast(self._text("spawn_rejected", "The game rejected the live item spawn: {error}",
-                               error=res.get("error")), "error")
-        return False
+        return self._start_spawn_worker([final_serial], None)
 
     def add_many_to_backpack(self, serials: list[str], done_text: str) -> bool:
         """批量写入（roll 结果"全部加入"）：worker 分批 spawn，完成后按 done_text 提示。"""
@@ -434,7 +405,11 @@ class LiveManager(QObject):
             return False
         if not self._guard_mutation():
             return False
-        worker = _LiveBatchSpawnWorker(self.bridge, list(serials), self)
+        return self._start_spawn_worker(list(serials), done_text)
+
+    def _start_spawn_worker(self, serials: list[str], done_text: str | None) -> bool:
+        """done_text 为 None 表示单件加入（用单件的成功 / 拒绝提示）。"""
+        worker = _LiveBatchSpawnWorker(self.bridge, serials, self)
         worker.batch_finished.connect(self._on_batch_spawned)
         self._batch_done_text = done_text
         self._batch_spawn_worker = worker
@@ -455,6 +430,13 @@ class LiveManager(QObject):
                 "inventory_mutation_recovery_pending",
                 "Inventory writes are locked until the pending recovery is reviewed or cleared: {reason}",
                 reason=worker.blocked_reason), "warning")
+        elif self._batch_done_text is None:
+            if success:
+                self._toast(self._text("spawn_success", "A new item was spawned into the game backpack."),
+                            "success")
+            else:
+                self._toast(self._text("spawn_rejected", "The game rejected the live item spawn: {error}",
+                                       error=worker.last_error or "?"), "error")
         else:
             self._toast(self._batch_done_text.format(success=success, fail=fail),
                         "success" if success else "warning")

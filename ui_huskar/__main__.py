@@ -53,6 +53,45 @@ def _install_teardown_filter():
     qInstallMessageHandler(handler)
 
 
+def _install_exception_hook(app_bridge) -> None:
+    """Unhandled exceptions in slots / QML calls: log and toast instead of aborting.
+
+    With the default sys.excepthook PyQt6 calls qFatal() for an exception that
+    escapes a slot, which terminates the whole editor (a bad key in the YAML
+    editor used to close it). The traceback goes to stderr and errors.log in
+    the app data folder; the user sees an error toast.
+    """
+    import traceback
+    from datetime import datetime
+
+    from PyQt6.QtCore import QStandardPaths
+
+    log_dir = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation)
+    log_path = Path(log_dir) / "errors.log" if log_dir else None
+
+    def hook(exc_type, exc, tb):
+        text = "".join(traceback.format_exception(exc_type, exc, tb))
+        print(text, file=sys.stderr)
+        if log_path is not None:
+            try:
+                log_path.parent.mkdir(parents=True, exist_ok=True)
+                if log_path.exists() and log_path.stat().st_size > 1_000_000:
+                    log_path.replace(log_path.with_suffix(".old.log"))
+                with log_path.open("a", encoding="utf-8") as log:
+                    log.write(f"--- {datetime.now().isoformat(timespec='seconds')}\n{text}\n")
+            except OSError:
+                pass
+        if _TEARDOWN:
+            return
+        try:
+            app_bridge.toast(f"{app_bridge.tr('main_window.dialogs.critical')}: "
+                             f"{exc_type.__name__}: {exc}", "error")
+        except Exception:
+            pass
+
+    sys.excepthook = hook
+
+
 def create_bridges(settings=None, *, lazy: bool = False) -> tuple[AppBridge, dict[str, object]]:
     """创建壳桥接层与全部页面视图模型（供启动器和测试复用）。
 
@@ -97,6 +136,7 @@ def main() -> int:
     engine.warnings.connect(lambda values: warnings.extend(
         f"{item.url().toString()}:{item.line()}: {item.description()}" for item in values))
     app_bridge, vms = create_bridges(lazy=True)
+    _install_exception_hook(app_bridge)
     engine.rootContext().setContextProperty("appBridge", app_bridge)
     for key, vm in vms.items():
         engine.rootContext().setContextProperty(_qml_name(key), vm)
