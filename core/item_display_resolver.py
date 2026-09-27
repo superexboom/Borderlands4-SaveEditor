@@ -1773,21 +1773,27 @@ def generation_blocked_groups(result: dict[str, Any], ref: str, replaced: tuple[
         # only blame ``ref`` for a group the current picks still leave open
         viable = [item for item in options if not any(clash(item, other) for other in current)]
         if viable:
-            open_groups.append((str(group), viable))
+            open_groups.append((str(group), viable, need - len(selected)))
 
-    blocked = [group for group, viable in open_groups if all(clash(ref, item) for item in viable)]
-    # Tag limits (at most two licensed parts): a required group whose only parts
-    # all carry the limited tag needs one of the remaining slots (Daedalus
-    # shotgun Bio's barrel accessory is the licensed Hyperion shield).
+    blocked = [group for group, viable, _missing in open_groups if all(clash(ref, item) for item in viable)]
+    # Tag limits (at most two licensed parts): a required group that still needs k
+    # parts but has only n parts without the limited tag must spend k - n of the
+    # remaining slots (Daedalus shotgun Bio's barrel accessory is the licensed
+    # Hyperion shield; Split Ray needs 3 barrel accessories and only 2 are unlicensed).
     for rule in result.get("tag_rules") or []:
         bucket = {str(tag).casefold() for tag in rule.get("tags", [])}
         if not tags["adds"] & bucket:
             continue
         used = sum(bool(_weapon_generation_tags(index, rules, item)["adds"] & bucket) for item in current) + 1
-        needing = [group for group, viable in open_groups if group not in blocked
-                   and all(_weapon_generation_tags(index, rules, item)["adds"] & bucket for item in viable)]
-        if needing and used + len(needing) > int(rule.get("max", 1)):
-            blocked.extend(needing)
+        reserved: dict[str, int] = {}
+        for group, viable, missing in open_groups:
+            if group in blocked:
+                continue
+            untagged = sum(not _weapon_generation_tags(index, rules, item)["adds"] & bucket for item in viable)
+            if missing > untagged:
+                reserved[group] = missing - untagged
+        if reserved and used + sum(reserved.values()) > int(rule.get("max", 1)):
+            blocked.extend(reserved)
     return blocked
 
 

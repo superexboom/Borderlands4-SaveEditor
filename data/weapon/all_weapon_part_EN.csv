@@ -908,6 +908,7 @@
 15,Order,Assault Rifle,10,Manufacturer Part,ORD_AR.part_shield_ricochet,
 15,Order,Assault Rifle,11,Manufacturer Part,ORD_AR.part_shield_ammo,
 15,Order,Assault Rifle,12,Manufacturer Part,ORD_AR.part_shield_amp,
+15,Order,Assault Rifle,85,Manufacturer Part,ORD_AR.part_shield_ricochet_testament,
 15,Order,Assault Rifle,13,Magazine,ORD_AR.part_mag_01,
 15,Order,Assault Rifle,14,Magazine,ORD_AR.part_mag_02,
 15,Order,Assault Rifle,15,Magazine,ORD_AR.part_mag_04_cov,
