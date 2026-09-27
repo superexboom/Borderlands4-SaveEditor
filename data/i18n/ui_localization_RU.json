@@ -770,6 +770,7 @@
       "range_none": "В этом диапазоне нет предметов",
       "range_confirm": "Удалить",
       "delete_confirm": "Удалить узлов: {count}?",
+      "key_exists": "Ключ уже существует: {key}",
       "error": "Ошибка",
       "delete": "Удалить",
       "confirm": "ОК",

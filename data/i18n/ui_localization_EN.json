@@ -770,6 +770,7 @@
       "range_none": "No items in this range",
       "range_confirm": "Delete",
       "delete_confirm": "Delete {count} node(s)?",
+      "key_exists": "Key already exists: {key}",
       "error": "Error",
       "delete": "Delete",
       "confirm": "OK",

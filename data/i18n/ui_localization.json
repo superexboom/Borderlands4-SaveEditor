@@ -770,6 +770,7 @@
       "range_none": "该范围内没有物品",
       "range_confirm": "删除",
       "delete_confirm": "确认删除 {count} 个节点？",
+      "key_exists": "键已存在：{key}",
       "error": "错误",
       "delete": "删除",
       "confirm": "确定",

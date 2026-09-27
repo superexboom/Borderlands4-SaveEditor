@@ -94,6 +94,9 @@ class YamlEditorViewModel(PageViewModel):
     STRINGS_SECTION = "yaml_tab"
 
     dataChanged = pyqtSignal()
+    # 行模型单独通知：选中、搜索等只发 dataChanged，不让 ListView 重建全部行
+    # （重建会在点击处理或输入框失焦提交的途中销毁正在处理事件的 delegate）
+    rowsChanged = pyqtSignal()
     revealRequested = pyqtSignal(int)  # 需要滚动定位的行号
 
     VIEW_TREE, VIEW_SOURCE, VIEW_SPLIT = 0, 1, 2
@@ -101,8 +104,10 @@ class YamlEditorViewModel(PageViewModel):
     def __init__(self, app, parent=None):
         super().__init__(app, parent)
         self.undo_stack = QUndoStack(self)
-        self.undo_stack.canUndoChanged.connect(lambda _v: self.dataChanged.emit())
-        self.undo_stack.canRedoChanged.connect(lambda _v: self.dataChanged.emit())
+        # 信号直连信号：VM 销毁时 Qt 自动断开。lambda 会在退出时被撤销栈
+        # 的析构回调到已删除的 VM 上，抛出的异常会让 PyQt 直接终止进程。
+        self.undo_stack.canUndoChanged.connect(self.dataChanged)
+        self.undo_stack.canRedoChanged.connect(self.dataChanged)
         self._synced_version = -1
         self._source_valid = True
         self._source_error = ""
@@ -132,17 +137,16 @@ class YamlEditorViewModel(PageViewModel):
         """版本号不一致才重建（与主线一致）。"""
         if self.controller.yaml_obj is None:
             self._rows = []
+            self.rowsChanged.emit()
             self.dataChanged.emit()
             return
         if self._synced_version == self.controller.version:
             return
-        self._rebuild_rows()
         self._source_text = self.controller.get_yaml_string()
         self._synced_version = self.controller.version
         self._serial_info_map = None
         self.undo_stack.clear()
-        if self._diff_enabled:
-            self._recompute_diff()
+        self._refresh_rows()
         self.dataChanged.emit()
 
     def on_language_changed(self) -> None:
@@ -180,11 +184,19 @@ class YamlEditorViewModel(PageViewModel):
         if self.controller.yaml_obj is not None:
             walk(self.controller.yaml_obj, (), 0)
         self._rows = rows
+        self.rowsChanged.emit()
+
+    def _refresh_rows(self) -> None:
+        """数据变化后重建一次行（开着变更对比时连同对比标记一起算）。"""
+        if self._diff_enabled:
+            self._recompute_diff()
+        else:
+            self._rebuild_rows()
 
     # ------------------------------------------------------------------ #
     # QML 属性
     # ------------------------------------------------------------------ #
-    @pyqtProperty(list, notify=dataChanged)
+    @pyqtProperty(list, notify=rowsChanged)
     def rows(self) -> list[dict[str, Any]]:
         return [{k: v for k, v in row.items() if k != "pathTuple"} for row in self._rows]
 
@@ -350,12 +362,28 @@ class YamlEditorViewModel(PageViewModel):
 
     @pyqtSlot(int, str, result=bool)
     def renameKey(self, row: int, new_key: str) -> bool:
+        # redo() 在 push 里执行，它抛出的异常会让 PyQt 终止进程：先校验。
+        # 键名没改（双击后直接点别处）不算重命名。
         item = self._row_at(row)
-        if item is None or item["isIntKey"] or not new_key.strip():
+        new_key = new_key.strip()
+        if item is None or item["isIntKey"] or not new_key:
             return False
-        self.undo_stack.push(_CmdRename(self, item["pathTuple"], new_key.strip(),
+        path = item["pathTuple"]
+        if new_key == path[-1]:
+            return False
+        parent = self.controller.get_node(path[:-1])
+        if not isinstance(parent, dict):
+            return False
+        if new_key in parent:
+            self._toast_key_exists(new_key)
+            return False
+        self.undo_stack.push(_CmdRename(self, path, new_key,
                                         self.strings.get("ops", {}).get("rename", "重命名键")))
         return True
+
+    def _toast_key_exists(self, key: str) -> None:
+        text = self.strings.get("dialogs", {}).get("key_exists", "键已存在：{key}")
+        self.app.toast(text.format(key=key), "warning")
 
     @pyqtSlot(int, str, str, result=bool)
     def addChild(self, row: int, key: str, type_key: str) -> bool:
@@ -370,6 +398,9 @@ class YamlEditorViewModel(PageViewModel):
         new_value = defaults.get(type_key)
         child_key = key.strip() if isinstance(value, dict) else None
         if isinstance(value, dict) and not child_key:
+            return False
+        if isinstance(value, dict) and child_key in value:
+            self._toast_key_exists(child_key)
             return False
         cmd = _CmdAddChild(self, path, child_key, new_value,
                            self.strings.get("ops", {}).get("add_child", "添加子节点"))
@@ -582,13 +613,11 @@ class YamlEditorViewModel(PageViewModel):
         return result
 
     def _after_mutation(self, source_edit: bool = False) -> None:
-        self._rebuild_rows()
         self._synced_version = self.controller.version
         self._serial_info_map = None
         if not source_edit:
             self._source_text = self.controller.get_yaml_string()
-        if self._diff_enabled:
-            self._recompute_diff()
+        self._refresh_rows()
         self.app._mark_items_stale()
         self.dataChanged.emit()
 

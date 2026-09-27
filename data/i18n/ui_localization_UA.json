@@ -770,6 +770,7 @@
       "range_none": "У цьому діапазоні немає предметів",
       "range_confirm": "Видалити",
       "delete_confirm": "Видалити вузлів: {count}?",
+      "key_exists": "Ключ уже існує: {key}",
       "error": "Помилка",
       "delete": "Видалити",
       "confirm": "Гаразд",

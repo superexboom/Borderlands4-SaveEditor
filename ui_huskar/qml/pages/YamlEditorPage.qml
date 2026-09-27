@@ -167,11 +167,17 @@ ColumnLayout {
                                 }
                                 HusInput {
                                     id: renameInput
+                                    objectName: "yamlInlineEditor"
                                     property int row: -1
                                     anchors.fill: parent
                                     visible: false
+                                    // 回车和失焦都会发 editingFinished：先清 row，清焦点时再触发也不会重复提交
                                     onEditingFinished: {
-                                        vmYamlEditor.renameKey(row, text);
+                                        const target = row;
+                                        row = -1;
+                                        if (target >= 0)
+                                            vmYamlEditor.renameKey(target, text);
+                                        focus = false;
                                         visible = false;
                                     }
                                     onActiveFocusChanged: if (!activeFocus) visible = false
@@ -201,14 +207,18 @@ ColumnLayout {
                             }
                             HusInput {
                                 id: valueEditor
+                                objectName: "yamlInlineEditor"
                                 property int row: -1
                                 property string initialText: ""
                                 Layout.fillWidth: true
                                 visible: row === index
                                 text: initialText
                                 onEditingFinished: {
-                                    vmYamlEditor.editValue(row, text);
+                                    const target = row;
                                     row = -1;
+                                    if (target >= 0)
+                                        vmYamlEditor.editValue(target, text);
+                                    focus = false;
                                     visible = false;
                                 }
                                 onActiveFocusChanged: if (!activeFocus && row === index) { row = -1; visible = false; }
@@ -226,6 +236,16 @@ ColumnLayout {
                             acceptedButtons: Qt.LeftButton | Qt.RightButton
                             propagateComposedEvents: true
                             onClicked: function(mouse) {
+                                // 键名 / 值输入框失焦即提交，提交会重建行模型、销毁本 delegate：
+                                // 这次点击只结束编辑，不再读 modelData / index。
+                                // 输入框在 treeList 这个焦点域里，forceActiveFocus 列表会把焦点
+                                // 还给输入框本身，所以直接清掉它的 focus（焦点留在列表上）。
+                                const focused = page.Window.activeFocusItem;
+                                if (focused && focused.objectName === "yamlInlineEditor") {
+                                    mouse.accepted = false;
+                                    focused.focus = false;
+                                    return;
+                                }
                                 vmYamlEditor.selectRow(index);
                                 treeList.currentIndex = index;
                                 // 键列（缩进箭头+键名 220）之内聚焦 key 列，其余聚焦 value 列
