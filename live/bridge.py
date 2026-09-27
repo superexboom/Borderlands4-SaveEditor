@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import socket
 import struct
+import time
 from typing import Any
 
 HOST = "127.0.0.1"
@@ -24,6 +25,28 @@ MAX_CHALLENGES_PER_REQUEST = 64
 
 class BridgeError(RuntimeError):
     pass
+
+
+class _LostFrame(BridgeError):
+    """The connection closed before a whole reply arrived."""
+
+
+# Longest junk seen in front of a reply: a SOCKS5 UDP header with a domain name.
+_MAX_JUNK = 262
+_READ_ONLY_OPS = frozenset({"ping", "info", "player", "read", "list", "resolve"})
+_READ_ONLY_RUNTIME_ACTIONS = frozenset({
+    "state", "runtime_state", "position_state", "currency_state", "currencies", "economy_state",
+    "metrics", "runtime_metrics", "lost_loot_state", "list_players",
+    "loadout_capabilities", "loadout_snapshot", "loadout_recovery", "resolve_live_item",
+    "progress_facts", "progress_capabilities",
+})
+
+
+def _is_read_only(req: dict[str, Any]) -> bool:
+    op = str(req.get("op") or "")
+    if op == "runtime":
+        return str(req.get("action") or "") in _READ_ONLY_RUNTIME_ACTIONS
+    return op in _READ_ONLY_OPS
 
 
 class Bridge:
@@ -39,32 +62,54 @@ class Bridge:
     def _roundtrip(self, req: dict[str, Any], timeout: float | None = None) -> dict[str, Any]:
         body = json.dumps(req, ensure_ascii=False).encode("utf-8")
         to = self.timeout if timeout is None else timeout
-        with socket.create_connection((self.host, self.port), timeout=to) as conn:
-            conn.settimeout(to)
-            conn.sendall(struct.pack(">I", len(body)) + body)
-            hdr = self._recv(conn, 4)
-            if not hdr:
-                raise BridgeError("no response header")
-            (n,) = struct.unpack(">I", hdr)
-            if not (0 < n <= 1 << 24):
-                raise BridgeError(f"bad response length {n}")
-            payload = self._recv(conn, n)
-            if payload is None:
-                raise BridgeError("response truncated")
-            resp = json.loads(payload.decode("utf-8"))
-            if not isinstance(resp, dict):
-                raise BridgeError("response not a JSON object")
-            return resp
+        # Game accelerators that redirect the game process's traffic can reset
+        # this loopback connection. Only requests that change nothing are resent.
+        attempts = 3 if _is_read_only(req) else 1
+        for attempt in range(attempts):
+            try:
+                with socket.create_connection((self.host, self.port), timeout=to) as conn:
+                    conn.settimeout(to)
+                    conn.sendall(struct.pack(">I", len(body)) + body)
+                    return self._read_frame(conn)
+            except (ConnectionResetError, ConnectionAbortedError, _LostFrame):
+                if attempt + 1 == attempts:
+                    raise BridgeError("connection to the game was reset") from None
+                time.sleep(0.05)
+        raise AssertionError("unreachable")
 
     @staticmethod
-    def _recv(conn: socket.socket, n: int) -> bytes | None:
+    def _read_frame(conn: socket.socket) -> dict[str, Any]:
+        """Read one ``[length][json object]`` reply.
+
+        A game accelerator hooked into the game process can put a SOCKS5 UDP
+        header (``00 00 00 01`` + address + port) in front of the reply. Skip
+        such junk: the reply body is always a JSON object, so the real frame is
+        the first length whose body starts with ``{`` and parses.
+        """
         buf = b""
-        while len(buf) < n:
-            chunk = conn.recv(n - len(buf))
+        while True:
+            waiting = False
+            for start in range(min(len(buf) - 4, _MAX_JUNK + 1)):
+                if buf[start + 4] != 0x7B:  # "{"
+                    continue
+                (n,) = struct.unpack_from(">I", buf, start)
+                if not (2 <= n <= 1 << 24):
+                    continue
+                if len(buf) < start + 4 + n:
+                    waiting = True  # may be the real frame; junk can look like one too
+                    continue
+                try:
+                    resp = json.loads(buf[start + 4:start + 4 + n].decode("utf-8"))
+                except ValueError:
+                    continue
+                if isinstance(resp, dict):
+                    return resp
+            if not waiting and len(buf) > _MAX_JUNK + 4:
+                raise BridgeError("malformed response from the game")
+            chunk = conn.recv(1 << 16)
             if not chunk:
-                return None
+                raise _LostFrame("response truncated" if buf else "no response header")
             buf += chunk
-        return buf
 
     # ---- API -----------------------------------------------------------
     def ping(self) -> bool:

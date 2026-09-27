@@ -839,6 +839,10 @@ class LiveManager(QObject):
             error = err or (result or {}).get("error") or "failed"
             self._toast(self._text("player_switch_failed", "Could not switch character: {error}",
                                    error=error), "error")
+            # A lost reply can hide a switch that did happen: re-read whoever
+            # the game now targets (the refresh also brings back the player list).
+            self._reset_progress()
+            self.refresh()
             return
         if result.get("changed"):
             # 进度快照属于上一位玩家；背包由通用的 changed → refresh() 重新读取
