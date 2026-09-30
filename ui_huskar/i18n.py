@@ -16,6 +16,7 @@ LANGUAGES = (
     ("en-US", "English"),
     ("ru", "Русский"),
     ("ua", "Українська"),
+    ("de", "Deutsch"),
 )
 DEFAULT_LANGUAGE = "zh-CN"
 _LANGUAGE_ALIASES = {
@@ -30,6 +31,10 @@ _LANGUAGE_ALIASES = {
     "uk": "ua",
     "uk-ua": "ua",
     "ua-ua": "ua",
+    "de-de": "de",
+    "de_de": "de",
+    "german": "de",
+    "deutsch": "de",
 }
 
 
