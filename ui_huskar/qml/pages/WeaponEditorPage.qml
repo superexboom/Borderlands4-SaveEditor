@@ -43,6 +43,7 @@ RowLayout {
             }
             LockedListView {
                 id: browserList
+                objectName: "weaponBrowserList"
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true
@@ -50,6 +51,26 @@ RowLayout {
                 ScrollBar.vertical: HusScrollBar { }
                 model: vmWeaponEditor.browserRows
                 activeFocusOnTab: true
+                // Selecting a row republishes browserRows (the "selected" flag), which
+                // rebuilds the model and resets the view to the top: keep the position
+                // unless the rows themselves changed (search, other save).
+                property real savedOffset: 0
+                property int savedRows: -1
+                onContentYChanged: if (contentY - minContentY > 1) savedOffset = contentY - minContentY
+                onMovementEnded: savedOffset = contentY - minContentY
+                onModelChanged: {
+                    var rows = model || [];
+                    var keep = rows.length === savedRows;
+                    var offset = savedOffset;
+                    savedRows = rows.length;
+                    if (!keep) savedOffset = 0;
+                    Qt.callLater(function() {
+                        for (var i = 0; i < rows.length; i++) {
+                            if (rows[i].selected) { browserList.currentIndex = i; break; }
+                        }
+                        if (keep && offset > 1) browserList.scrollToContentY(browserList.minContentY + offset);
+                    });
+                }
 
                 // Ctrl+C 复制选中武器的 Base85 序列
                 Keys.onPressed: function(event) {
