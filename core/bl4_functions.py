@@ -151,19 +151,16 @@ def apply_character_and_currency_changes(data: Dict[str, Any], yaml_data: Dict[s
 
 # ── Item Processing Logic ─────────────────────────────────────────────────────
 from . import decoder_logic
-from . import item_display_resolver
+from . import game_text, item_display_resolver
 from typing import TypedDict, List
 from .resource_loader import load_json_resource, get_ui_localization_file
 
-# 全局本地化缓存
-localization_cache = None
 current_localization_lang = 'zh-CN'
 
 def set_language(lang: str):
-    """Sets the current language and clears the localization cache."""
-    global current_localization_lang, localization_cache
+    """Sets the language used for game text in processed item rows."""
+    global current_localization_lang
     current_localization_lang = lang
-    localization_cache = None
 
 def get_sync_localization() -> Dict[str, str]:
     """加载并返回同步背包等级相关的错误信息本地化字典。"""
@@ -184,22 +181,8 @@ def get_sync_localization() -> Dict[str, str]:
     }
 
 def get_localized_string(key: str) -> str:
-    """获取本地化字符串，如果未找到则返回原始键"""
-    global localization_cache
-    if localization_cache is None:
-        if current_localization_lang == 'zh-CN':
-            # 尝试加载武器本地化文件
-            weapon_loc = load_json_resource('data/weapon/weapon_localization_zh-CN.json') or {}
-            # 尝试加载物品本地化文件
-            item_loc = load_json_resource('data/i18n/item_localization_zh-CN.json') or {}
-            # 合并字典
-            localization_cache = {**weapon_loc, **item_loc}
-        else:
-            # For English or other languages, assume keys are already English
-            # or load specific EN files if they exist in future
-            localization_cache = {}
-            
-    return localization_cache.get(key, key)
+    """Manufacturer, item type, rarity or character name in the current language."""
+    return game_text.localize_label(key, current_localization_lang)
 
 class ProcessedItem(TypedDict):
     name: str

@@ -7,6 +7,11 @@ import HuskarUI.Basic
 
 LockedFlickable {
     id: page
+    // Read the language first so the binding re-evaluates on a language switch.
+    function tr(path) {
+        var language = appBridge.language;
+        return appBridge.trText(path);
+    }
     contentWidth: width
     contentHeight: column.implicitHeight
     clip: true
@@ -466,11 +471,11 @@ LockedFlickable {
                         stackable: !!group.stackable
                         clearText: (loc.buttons && loc.buttons.clear) || "Clear"
                         addText: (loc.buttons && loc.buttons.add_selected)
-                                 || (appBridge.language === "zh-CN" ? "添加所选 →" : "Add selected →")
+                                 || page.tr("picker.add_selected")
                         availText: (loc.misc && loc.misc.available)
-                                   || (appBridge.language === "zh-CN" ? "可选" : "Available")
+                                   || page.tr("picker.available")
                         selectedText: (loc.misc && loc.misc.selected)
-                                      || (appBridge.language === "zh-CN" ? "已选" : "Selected")
+                                      || page.tr("picker.selected")
                         onAddRequested: function(keys) { vm.addPickerItems(group.key, keys); }
                         onRemoveRequested: function(index) { vm.removePickerItem(group.key, index); }
                         onCountChanged: function(indices, value) { vm.setPickerItemsCount(group.key, indices, value); }

@@ -17,7 +17,7 @@ def get_ui_localization_file(lang: str) -> str:
     Get the UI localization file name for the given language code.
     
     Args:
-        lang: Language code (e.g., 'zh-CN', 'en-US', 'ru', 'ua')
+        lang: Language code (e.g., 'zh-CN', 'en-US', 'ru', 'ua', 'de')
         
     Returns:
         Filename of the localization JSON.
@@ -26,7 +26,8 @@ def get_ui_localization_file(lang: str) -> str:
         'zh-CN': 'data/i18n/ui_localization.json',
         'en-US': 'data/i18n/ui_localization_EN.json',
         'ru': 'data/i18n/ui_localization_RU.json',
-        'ua': 'data/i18n/ui_localization_UA.json'
+        'ua': 'data/i18n/ui_localization_UA.json',
+        'de': 'data/i18n/ui_localization_DE.json',
     }
     return mapping.get(lang, 'data/i18n/ui_localization_EN.json')
 
@@ -47,10 +48,10 @@ _FLAG_FALLBACK_EN = {
 def get_flag_labels(lang: str) -> dict:
     """Localized {code: label} flag map shared by all editor tabs.
 
-    Reads weapon_editor_tab.flags from the language's UI localization (all four
-    languages ship these) and falls back to English per-key on any miss.
+    Reads weapon_editor_tab.flags from the language's UI localization (every
+    language ships these) and falls back to English per-key on any miss.
     所有编辑器标签页共用的本地化标记映射；读取该语言 UI 本地化中的
-    weapon_editor_tab.flags（四种语言均已提供），缺失项按键回退到英文。
+    weapon_editor_tab.flags（每种语言均已提供），缺失项按键回退到英文。
     """
     full = load_json_resource(get_ui_localization_file(lang)) or {}
     flags = full.get("weapon_editor_tab", {}).get("flags", {}) or {}
@@ -141,21 +142,28 @@ def load_text_resource(relative_path: Union[str, Path]) -> Optional[str]:
 
 def load_localized_csv_resource(relative_path: Union[str, Path], lang: str):
     """
-    Load a merged EN/ZH CSV and expose old-compatible Stat/Description columns.
+    Load a localized CSV and expose old-compatible Stat/Description columns.
 
-    Merged data keeps localized text in Stat_ZH/Stat_EN and
-    Description_ZH/Description_EN. Existing tabs still read Stat/Description.
+    The data keeps game text in Stat_EN/_ZH/_RU/_DE and Description_EN/_ZH/_RU/_DE
+    (Russian/German filled by the update pipeline); tabs read Stat/Description.
+    Cells missing in the UI language fall back to English, as the game does.
     """
     import pandas as pd
+    from .game_text import text_lang
 
     resource_path = get_resource_path(relative_path)
     df = pd.read_csv(resource_path)
-    suffix = "EN" if lang in ["en-US", "ru", "ua"] else "ZH"
+    suffix = text_lang(lang).upper()
 
     for base_col in ("Stat", "Description"):
-        localized_col = f"{base_col}_{suffix}"
+        localized_col, english_col = f"{base_col}_{suffix}", f"{base_col}_EN"
         if localized_col in df.columns:
-            df[base_col] = df[localized_col]
+            column = df[localized_col]
+            if english_col in df.columns and localized_col != english_col:
+                column = column.where(column.notna() & (column.astype(str).str.strip() != ""), df[english_col])
+            df[base_col] = column
+        elif english_col in df.columns:
+            df[base_col] = df[english_col]
 
     return df
 
@@ -194,19 +202,6 @@ def get_class_mods_data_path(filename: str) -> Optional[Path]:
         文件路径，失败时返回None
     """
     return get_resource_path(f"data/class_mods/{filename}")
-
-def load_class_mods_json(filename: str, use_literal_eval: bool = False) -> Optional[Dict[str, Any]]:
-    """
-    加载类模组JSON文件
-    
-    Args:
-        filename: 文件名
-        use_literal_eval: 是否使用ast.literal_eval解析
-        
-    Returns:
-        解析后的数据，失败时返回None
-    """
-    return load_json_resource(f"data/class_mods/{filename}", use_literal_eval)
 
 def load_class_mods_csv(filename: str) -> List[Dict[str, str]]:
     """
@@ -278,7 +273,7 @@ def get_enhancement_data() -> Optional[Dict[str, Any]]:
     从CSV文件加载enhancement数据并构建与原格式兼容的数据结构
     
     Returns:
-        与原enhancement_data.txt格式兼容的数据字典，包含中文翻译
+        与原enhancement_data.txt格式兼容的数据字典；词条名按语言放在 names 中
     """
     try:
         # 加载CSV数据
@@ -290,9 +285,11 @@ def get_enhancement_data() -> Optional[Dict[str, Any]]:
             print("Enhancement CSV文件加载失败")
             return None
         
-        # 构建英文名到中文名的映射表
-        localization_map = {}
-        
+        def names(row: Dict[str, str]) -> Dict[str, str]:
+            """Perk name per game text language (Russian/German from the pipeline)."""
+            out = {code: (row.get(f'perk_name_{code.upper()}') or '').strip() for code in ('en', 'zh', 'ru', 'de')}
+            return {code: text for code, text in out.items() if text}
+
         # 构建manufacturers数据
         manufacturers = {}
         for row in manufacturers_csv:
@@ -300,11 +297,7 @@ def get_enhancement_data() -> Optional[Dict[str, Any]]:
             mfg_id = int(row['manufacturers_ID'])
             perk_id = int(row['perk_ID'])
             perk_name_en = row['perk_name_EN']
-            perk_name_zh = row.get('perk_name_ZH', perk_name_en)
-            
-            # 添加到本地化映射
-            localization_map[perk_name_en] = perk_name_zh
-            
+
             if mfg_name not in manufacturers:
                 manufacturers[mfg_name] = {
                     'code': mfg_id,
@@ -312,31 +305,21 @@ def get_enhancement_data() -> Optional[Dict[str, Any]]:
                     'perks': [],
                     'rarities': {}
                 }
-            
+
             manufacturers[mfg_name]['perks'].append({
                 'index': perk_id,
                 'name': perk_name_en,
-                'name_zh': perk_name_zh
+                'names': names(row),
             })
-        
+
         # 构建rarities数据
         rarity_map_247 = {}
-        rarity_localization = {
-            'Common': '普通',
-            'Uncommon': '罕见',
-            'Rare': '稀有',
-            'Epic': '史诗',
-            'Legendary': '传奇'
-        }
-        for rarity_en, rarity_zh in rarity_localization.items():
-            localization_map[rarity_en] = rarity_zh
-        
         for row in rarity_csv:
             mfg_id = int(row['manufacturers_ID'])
             mfg_name = row['manufacturers_name']
             rarity_id = int(row['rarity_ID'])
             rarity_name = row['rarity']
-            
+
             if mfg_id == 247:
                 # 247的稀有度映射
                 rarity_map_247[rarity_name] = rarity_id
@@ -344,45 +327,20 @@ def get_enhancement_data() -> Optional[Dict[str, Any]]:
                 # 普通制造商的稀有度
                 if mfg_name in manufacturers:
                     manufacturers[mfg_name]['rarities'][rarity_name] = rarity_id
-        
+
         # 构建secondary_247数据
         secondary_247 = []
         for row in perks_csv:
-            perk_id = int(row['perk_ID'])
-            perk_name_en = row['perk_name_EN']
-            perk_name_zh = row.get('perk_name_ZH', perk_name_en)
-            
-            # 添加到本地化映射
-            localization_map[perk_name_en] = perk_name_zh
-            
             secondary_247.append({
-                'code': perk_id,
-                'name': perk_name_en,
-                'name_zh': perk_name_zh
+                'code': int(row['perk_ID']),
+                'name': row['perk_name_EN'],
+                'names': names(row),
             })
-        
-        # 添加制造商名称的本地化
-        mfg_name_localization = {
-            'Atlas': '阿特拉斯',
-            'COV': '秘藏之子',
-            'Daedalus': '代达洛斯',
-            'Hyperion': '亥伯龙',
-            'Jakobs': '雅各布斯',
-            'Maliwan': '马里旺',
-            'Ripper': '开颅者',
-            'Tediore': '泰迪尔',
-            'The Order': '教团',
-            'Torgue': '托格',
-            'Vladof': '弗拉多夫'
-        }
-        for mfg_en, mfg_zh in mfg_name_localization.items():
-            localization_map[mfg_en] = mfg_zh
-        
+
         return {
             'manufacturers': manufacturers,
             'rarity_map_247': rarity_map_247,
             'secondary_247': secondary_247,
-            'localization': localization_map
         }
         
     except Exception as e:
@@ -400,18 +358,6 @@ def get_weapon_data_path(filename: str) -> Optional[Path]:
         文件路径，失败时返回None
     """
     return get_resource_path(f"data/weapon/{filename}")
-
-def load_weapon_json(filename: str) -> Optional[Dict[str, Any]]:
-    """
-    加载武器编辑器JSON文件
-    
-    Args:
-        filename: 文件名
-        
-    Returns:
-        解析后的数据，失败时返回None
-    """
-    return load_json_resource(f"data/weapon/{filename}")
 
 def get_grenade_data_path(filename: str) -> Optional[Path]:
     """

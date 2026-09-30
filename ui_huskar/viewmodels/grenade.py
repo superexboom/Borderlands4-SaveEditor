@@ -172,7 +172,7 @@ class GrenadeViewModel(EquipmentBaseViewModel):
                 owner = self._composition_of_part(mfg_id, part_id)
                 if owner:  # tell it apart from the standard body of the same name
                     name, sep, rest = text.partition(" - ")
-                    tag = f"（{owner}）" if self.current_lang == "zh-CN" else f" ({owner})"
+                    tag = self.app.tr("common.owner_suffix", owner=owner)
                     text = f"{name}{tag}{sep}{rest}"
                 items.append({"key": f"m{part_id}", "label": text, "category": None, "data": int(part_id)})
             return items

@@ -7,7 +7,7 @@ from functools import lru_cache
 from html import escape
 from typing import Any
 
-from . import equipment_display_stats, resource_loader, weapon_display_stats
+from . import equipment_display_stats, game_text, resource_loader, ui_text, weapon_display_stats
 from .weapon_generation_logic import evaluate_group_selection
 
 
@@ -19,20 +19,6 @@ WEAPON_SMG_IDS = {19, 20, 21, 22}
 WEAPON_SHOTGUN_IDS = {7, 8, 9, 10, 11, 12}
 HEAVY_TYPE = "Heavy Weapon"
 GENERIC_PART_TYPES = {"Rarity", "Model"}
-RARITY_ZH = {
-    "Common": "普通",
-    "common": "普通",
-    "Uncommon": "罕见",
-    "uncommon": "罕见",
-    "Rare": "稀有",
-    "rare": "稀有",
-    "Epic": "史诗",
-    "epic": "史诗",
-    "Legendary": "传奇",
-    "legendary": "传奇",
-    "Pearl": "珠光",
-    "pearl": "珠光",
-}
 # Rarities whose inv_comp skin names a weapon, highest priority last.
 # Epic and below keep barrel-derived names, so their named inv_comp entries
 # (grenade/shield prefix words like "Gate", "Scab") stay prefixes.
@@ -58,22 +44,23 @@ def _lang_is_zh(lang: str) -> bool:
 
 
 def _text(row: dict[str, str], lang: str) -> str:
-    if _lang_is_zh(lang):
-        return (row.get("Stat_ZH") or row.get("perk_name_ZH") or row.get("Stat") or "").strip()
-    return (row.get("Stat_EN") or row.get("perk_name_EN") or row.get("Stat") or "").strip()
+    return (game_text.csv_text(row, "Stat", lang) or game_text.csv_text(row, "perk_name", lang)
+            or row.get("Stat") or "").strip()
 
 
 def _desc(row: dict[str, str], lang: str) -> str:
-    if _lang_is_zh(lang):
-        return (row.get("Description_ZH") or "").strip()
-    return (row.get("Description_EN") or row.get("Description") or "").strip()
+    return (game_text.csv_text(row, "Description", lang) or row.get("Description") or "").strip()
 
 
 def _rarity_text(value: str, lang: str) -> str:
     value = (value or "").strip()
-    if _lang_is_zh(lang):
-        return RARITY_ZH.get(value, value)
-    return value[:1].upper() + value[1:] if value.islower() else value
+    value = value[:1].upper() + value[1:] if value.islower() else value
+    return game_text.term(value, lang)
+
+
+def _t(key: str, lang: str, **fmt: Any) -> str:
+    """Interface text of the item card / part descriptions."""
+    return ui_text.tr(f"item_text.{key}", lang, **fmt)
 
 
 def _clean_markup(text: str) -> str:
@@ -477,7 +464,7 @@ def _index_part_name(item_id: int, part_id: str, lang: str) -> tuple[str, str]:
     index = _item_index()
     part_ref = (index.get("part_refs") or {}).get(f"{item_id}:{part_id}", {})
     name = part_ref.get("name") or {}
-    key = "zh" if _lang_is_zh(lang) else "en"
+    key = game_text.text_lang(lang)
     if _valid_name(name.get(key, "")):
         return name.get(key, ""), "ncs_name"
     if _valid_name(name.get("en", "")):
@@ -511,7 +498,7 @@ def _component_part_refs(item_id: int, components: list[dict[str, Any]]) -> list
 def _name_part_text(name_part: str, lang: str) -> tuple[str, float]:
     name_part = str(name_part or "").strip().rstrip("'").rsplit("'", 1)[-1]
     entry = (_item_index().get("inv_name_parts") or {}).get(str(name_part).lower(), {})
-    key = "zh" if _lang_is_zh(lang) else "en"
+    key = game_text.text_lang(lang)
     text = entry.get(key) or entry.get("en") or ""
     try:
         priority = float(entry.get("priority", 0))
@@ -537,7 +524,7 @@ def _nonweapon_name(item_id: int, components: list[dict[str, Any]], lang: str) -
     disable_prefixes = any(str(ref.get("disable_prefixes", "")).casefold() == "true" for ref in part_refs)
     has_named_composition = any(
         ref.get("category") == "inv_comp"
-        and _valid_name(((ref.get("name") or {}).get("zh" if _lang_is_zh(lang) else "en") or (ref.get("name") or {}).get("en", "")))
+        and _valid_name(((ref.get("name") or {}).get(game_text.text_lang(lang)) or (ref.get("name") or {}).get("en", "")))
         for ref in part_refs
     )
     root_name_parts: dict[str, list[str]] = {"prefix": [], "title": [], "suffix": []}
@@ -576,7 +563,7 @@ def _nonweapon_name(item_id: int, components: list[dict[str, Any]], lang: str) -
     if family == "repair_kit" and not sections["title"]:
         for ref in part_refs:
             if ref.get("category") == "primary_augment":
-                name = ((ref.get("name") or {}).get("zh" if _lang_is_zh(lang) else "en")
+                name = ((ref.get("name") or {}).get(game_text.text_lang(lang))
                         or (ref.get("name") or {}).get("en", ""))
                 if _valid_name(name):
                     sections["title"].append((1000, 0, name))
@@ -592,7 +579,7 @@ def _nonweapon_name(item_id: int, components: list[dict[str, Any]], lang: str) -
                 for candidate in (_item_index().get("part_refs") or {}).values():
                     if str(candidate.get("part") or "").casefold() != wanted:
                         continue
-                    name = ((candidate.get("name") or {}).get("zh" if _lang_is_zh(lang) else "en")
+                    name = ((candidate.get("name") or {}).get(game_text.text_lang(lang))
                             or (candidate.get("name") or {}).get("en", ""))
                     if _valid_name(name):
                         sections["title"].append((1000, 0, name))
@@ -628,7 +615,7 @@ def _shield_prefix(item_id: int, components: list[dict[str, Any]], lang: str) ->
         if row:
             selected.setdefault(row, set()).add(str(ref.get("category")))
     words: list[str] = []
-    key = "zh" if _lang_is_zh(lang) else "en"
+    key = game_text.text_lang(lang)
     for row, categories in selected.items():
         values = table.get(re.sub(r"[^a-z0-9]+", "", row.lower()), {})
         column = "both" if len(categories) > 1 else ("primary" if "primary_augment" in categories else "secondary")
@@ -646,7 +633,7 @@ def _strategy_key(value: str) -> str:
 def _strategy_text(entry: dict[str, Any] | None, lang: str) -> str:
     if not entry:
         return ""
-    key = "zh" if _lang_is_zh(lang) else "en"
+    key = game_text.text_lang(lang)
     return (entry.get(key) or entry.get("en") or "").strip()
 
 
@@ -722,55 +709,55 @@ def _part_ref(item_id: int, part_id: str) -> dict[str, Any]:
 
 
 WEAPON_PART_STAT_LABELS = {
-    "Damage": ("伤害", "Damage"),
-    "CritDamage": ("暴击伤害", "Critical Damage"),
-    "FireRate": ("射速", "Fire Rate"),
-    "ChargeTime": ("蓄力时间", "Charge Time"),
-    "ReloadSpeed": ("装填时间", "Reload Time"),
-    "MagSize": ("弹匣容量", "Magazine Capacity"),
-    "Accuracy": ("散布", "Spread"),
-    "ElementalPower": ("元素伤害", "Elemental Damage"),
-    "ADSProficiency": ("瞄准时间", "ADS Time"),
-    "DamageRadius": ("爆炸范围", "Splash Radius"),
-    "SplashDamage": ("溅射伤害", "Splash Damage"),
-    "MeleeDamage": ("近战伤害", "Melee Damage"),
-    "ProjectileSpeed": ("弹丸速度", "Projectile Speed"),
-    "ThrowDamage": ("投掷伤害", "Thrown Damage"),
+    "Damage": "damage",
+    "CritDamage": "critical_damage",
+    "FireRate": "fire_rate",
+    "ChargeTime": "charge_time",
+    "ReloadSpeed": "reload_time",
+    "MagSize": "magazine_capacity",
+    "Accuracy": "spread",
+    "ElementalPower": "elemental_damage",
+    "ADSProficiency": "ads_time",
+    "DamageRadius": "splash_radius",
+    "SplashDamage": "splash_damage",
+    "MeleeDamage": "melee_damage",
+    "ProjectileSpeed": "projectile_speed",
+    "ThrowDamage": "thrown_damage",
 }
 WEAPON_PART_ATTRIBUTE_LABELS = {
-    "weapon_damage": ("伤害", "Damage"),
-    "weapon_damage_modifier_add_critical_hit": ("暴击伤害", "Critical Damage"),
-    "weapon_fire_rate": ("射速", "Fire Rate"),
-    "weapon_reload_time": ("装填时间", "Reload Time"),
-    "weapon_max_loaded_ammo": ("弹匣容量", "Magazine Capacity"),
-    "weapon_spread": ("散布", "Spread"),
-    "weapon_accuracy_impulse": ("精准度冲量", "Accuracy Impulse"),
-    "accuracy_resource_max_value": ("精准度资源", "Accuracy Resource"),
-    "weapon_recoil_scale": ("后坐力", "Recoil"),
-    "weapon_recoil_scale_x": ("水平后坐力", "Horizontal Recoil"),
-    "weapon_recoil_scale_y": ("垂直后坐力", "Vertical Recoil"),
-    "weapon_sway_scale": ("晃动", "Sway"),
-    "weapon_sway_zoom_scale": ("晃动", "Sway"),
-    "weapon_sway_accuracy_scale": ("晃动", "Sway"),
-    "weapon_sway_zoom_accuracy_scale": ("晃动", "Sway"),
-    "weapon_zoom_duration": ("瞄准时间", "ADS Time"),
-    "weapon_zoom_fov_scale": ("瞄准视野", "ADS FOV"),
-    "weapon_equip_time": ("装备时间", "Equip Time"),
-    "weapon_damage_radius": ("爆炸范围", "Splash Radius"),
-    "weapon_damage_modifier_base_status_effect_damage": ("元素伤害", "Elemental Damage"),
-    "weapon_damage_modifier_base_status_effect_chance": ("元素触发率", "Elemental Chance"),
-    "weapon_projectile_speed_scale": ("弹丸速度", "Projectile Speed"),
-    "weapon_projectile_per_shot": ("弹丸数", "Projectiles"),
-    "weapon_shot_cost": ("弹药消耗", "Ammo Cost"),
-    "weapon_charge_time": ("蓄力时间", "Charge Time"),
-    "weapon_auto_burst_count": ("连发数", "Burst Count"),
-    "weapon_burst_fire_delay": ("连发间隔", "Burst Delay"),
-    "weapon_switch_mode_time_scale": ("模式切换时间", "Mode Switch Time"),
-    "weapon_ted_throw_damage_scale": ("投掷伤害", "Thrown Damage"),
-    "weapon_ted_throw_radius": ("投掷爆炸范围", "Thrown Splash Radius"),
-    "weapon_ted_thrusterscalar": ("投掷推进力", "Thrown Thrust"),
-    "weapon_ted_thrustercount": ("投掷推进器", "Thrown Thrusters"),
-    "weapon_tor_sticky_attach_damage_scale": ("粘弹伤害", "Sticky Damage"),
+    "weapon_damage": "damage",
+    "weapon_damage_modifier_add_critical_hit": "critical_damage",
+    "weapon_fire_rate": "fire_rate",
+    "weapon_reload_time": "reload_time",
+    "weapon_max_loaded_ammo": "magazine_capacity",
+    "weapon_spread": "spread",
+    "weapon_accuracy_impulse": "accuracy_impulse",
+    "accuracy_resource_max_value": "accuracy_resource",
+    "weapon_recoil_scale": "recoil",
+    "weapon_recoil_scale_x": "horizontal_recoil",
+    "weapon_recoil_scale_y": "vertical_recoil",
+    "weapon_sway_scale": "sway",
+    "weapon_sway_zoom_scale": "sway",
+    "weapon_sway_accuracy_scale": "sway",
+    "weapon_sway_zoom_accuracy_scale": "sway",
+    "weapon_zoom_duration": "ads_time",
+    "weapon_zoom_fov_scale": "ads_fov",
+    "weapon_equip_time": "equip_time",
+    "weapon_damage_radius": "splash_radius",
+    "weapon_damage_modifier_base_status_effect_damage": "elemental_damage",
+    "weapon_damage_modifier_base_status_effect_chance": "elemental_chance",
+    "weapon_projectile_speed_scale": "projectile_speed",
+    "weapon_projectile_per_shot": "projectiles",
+    "weapon_shot_cost": "ammo_cost",
+    "weapon_charge_time": "charge_time",
+    "weapon_auto_burst_count": "burst_count",
+    "weapon_burst_fire_delay": "burst_delay",
+    "weapon_switch_mode_time_scale": "mode_switch_time",
+    "weapon_ted_throw_damage_scale": "thrown_damage",
+    "weapon_ted_throw_radius": "thrown_splash_radius",
+    "weapon_ted_thrusterscalar": "thrown_thrust",
+    "weapon_ted_thrustercount": "thrown_thrusters",
+    "weapon_tor_sticky_attach_damage_scale": "sticky_damage",
 }
 WEAPON_PART_INTERNAL_ATTRIBUTES = {
     # Aim-charge animation blendspace scale. Every weapon body part carries this
@@ -789,8 +776,8 @@ WEAPON_PART_INTERNAL_ATTRIBUTES = {
 }
 
 
-def _part_label(labels: tuple[str, str], lang: str) -> str:
-    return labels[0] if _lang_is_zh(lang) else labels[1]
+def _part_label(key: str, lang: str) -> str:
+    return ui_text.tr(f"item_text.stats.{key}", lang, default=key)
 
 
 def _part_number(value: float, decimals: int = 3) -> str:
@@ -830,7 +817,7 @@ def _part_row_value(row: Any, *keys: str) -> str:
 
 def weapon_part_name(item_id: int, part_id: str, lang: str = "zh-CN", row: Any = None) -> str:
     """Return the maintained part name without reusing the old hand-written effect text."""
-    key = "zh" if _lang_is_zh(lang) else "en"
+    key = game_text.text_lang(lang)
 
     # Checked before the CSV because the CSV carries the same wrong name: the
     # game reuses the generic barrel's name for some legendary gimmick parts
@@ -842,10 +829,7 @@ def weapon_part_name(item_id: int, part_id: str, lang: str = "zh-CN", row: Any =
     if _valid_name(name):
         return name
 
-    if _lang_is_zh(lang):
-        name = _part_row_value(row, "Name_ZH", "Name")
-    else:
-        name = _part_row_value(row, "Name_EN", "Name")
+    name = _part_row_value(row, game_text.csv_column("Name", lang), "Name")
     if _valid_name(name):
         return name
 
@@ -860,7 +844,7 @@ def weapon_part_name(item_id: int, part_id: str, lang: str = "zh-CN", row: Any =
         return name
 
     # Transition support for the old CSV: only its first barrel/behavior title is a name.
-    legacy = _part_row_value(row, "Stat_ZH" if _lang_is_zh(lang) else "Stat_EN", "Stat")
+    legacy = _part_row_value(row, game_text.csv_column("Stat", lang), "Stat_EN", "Stat")
     if ref.get("category") == "barrel":
         return legacy.split(",", maxsplit=1)[0].strip()
     if (ref.get("uistats") or ref.get("uistats_include")) and legacy and not re.match(
@@ -892,7 +876,7 @@ def _part_mode_suffix(value: Any, lang: str) -> str:
         secondary_only = False
     if not secondary_only:
         return ""
-    return "（副模式）" if _lang_is_zh(lang) else " (secondary mode)"
+    return _t("secondary_mode", lang)
 
 
 def _part_stat_context(decoded_full: str, item_id: int, index: dict[str, Any]) -> tuple[str, str]:
@@ -937,7 +921,7 @@ def _part_stat_operations(
         delta *= float((spec.get("manufacturer_multipliers") or {}).get(provider, 1.0))
         if spec.get("invert"):
             delta = -delta
-        label = _part_label(WEAPON_PART_STAT_LABELS.get(attr, (attr, attr)), lang)
+        label = _part_label(WEAPON_PART_STAT_LABELS.get(attr, attr), lang)
         if attr == "CritDamage":
             if abs(delta) > 0.000001:
                 direct.append(f"{label} {delta:+.0%}{mode}")
@@ -983,9 +967,9 @@ def _part_direct_effects(
                 if abs(value - 1.0) > 0.000001:
                     operations.setdefault((label, mode), []).append((3, value))
             elif attr == "weapon_projectile_per_shot" and value > 1:
-                direct.append(f"{label} {_part_number(value)}/发{mode}" if _lang_is_zh(lang) else f"{label} {_part_number(value)}/shot{mode}")
+                direct.append(f"{label} {_part_number(value)}/{_t('unit_shot', lang)}{mode}")
             elif attr == "weapon_shot_cost" and value > 1:
-                direct.append(f"{label} {_part_number(value)}/发{mode}" if _lang_is_zh(lang) else f"{label} {_part_number(value)}/shot{mode}")
+                direct.append(f"{label} {_part_number(value)}/{_t('unit_shot', lang)}{mode}")
             elif attr == "weapon_damage_radius" and value > 0:
                 direct.append(f"{label} {_part_number(value)}cm{mode}")
             elif attr in {"weapon_reload_time", "weapon_zoom_duration", "weapon_equip_time", "weapon_charge_time", "weapon_burst_fire_delay"} and value > 0:
@@ -1029,9 +1013,9 @@ def _magazine_description(ref: dict[str, Any], index: dict[str, Any], lang: str)
     lines: list[str] = []
     license_name = next((name for tag, name in (("borg_mag", "Borg"), ("tor_mag", "Torgue")) if tag in tags), "")
     if "cov_mag" in tags:
-        lines.append("COV 机制" if _lang_is_zh(lang) else "COV Mechanism")
+        lines.append(_t("cov_mechanism", lang))
     elif license_name:
-        lines.append(f"{license_name} 授权" if _lang_is_zh(lang) else f"{license_name}-licensed")
+        lines.append(_t("licensed", lang, name=game_text.term(license_name, lang)))
 
     capacity = stats.get("capacity")
     reload_time = stats.get("reload_time")
@@ -1070,21 +1054,21 @@ def _magazine_description(ref: dict[str, Any], index: dict[str, Any], lang: str)
         shots = 1.0 / float(heat_impulse)
     if mechanism == "cov":
         if shots:
-            lines.append(f"约 {_part_number(float(shots), 1)} 发过热" if _lang_is_zh(lang) else f"~{_part_number(float(shots), 1)} shots to overheat")
+            lines.append(_t("shots_to_overheat", lang, n=_part_number(float(shots), 1)))
         cooldown_rate = heat.get("cooldown_rate")
         if cooldown_rate:
-            lines.append(f"散热速度 {_part_number(float(cooldown_rate))}/s" if _lang_is_zh(lang) else f"Cooling {_part_number(float(cooldown_rate))}/s")
+            lines.append(_t("cooling_rate", lang, n=_part_number(float(cooldown_rate))))
         cooldown_delay = heat.get("cooldown_delay") or heat.get("overheat_cooldown_delay")
         if cooldown_delay:
-            lines.append(f"散热延迟 {_part_number(float(cooldown_delay))}s" if _lang_is_zh(lang) else f"Cooling Delay {_part_number(float(cooldown_delay))}s")
+            lines.append(_t("cooling_delay", lang, n=_part_number(float(cooldown_delay))))
         repair_time = heat.get("repair_time") or heat.get("overheat_time") or reload_time
         if repair_time:
-            lines.append(f"完全过热维修 {_part_number(float(repair_time))}s" if _lang_is_zh(lang) else f"Overheat Repair {_part_number(float(repair_time))}s")
+            lines.append(_t("overheat_repair", lang, n=_part_number(float(repair_time))))
     else:
         if capacity is not None and float(capacity) > 0:
-            lines.append(f"原始弹容 {_part_number(float(capacity))}" if _lang_is_zh(lang) else f"Base Capacity {_part_number(float(capacity))}")
+            lines.append(_t("base_capacity", lang, n=_part_number(float(capacity))))
         if reload_time is not None and float(reload_time) > 0:
-            lines.append(f"装填时间 {_part_number(float(reload_time))}s" if _lang_is_zh(lang) else f"Reload Time {_part_number(float(reload_time))}s")
+            lines.append(_t("reload_time", lang, n=_part_number(float(reload_time))))
     return lines, {"weapon_max_loaded_ammo", "weapon_reload_time", "weapon_heat_impulse"}
 
 
@@ -1094,10 +1078,7 @@ def _thrown_reload_description(ref: dict[str, Any], lang: str) -> tuple[list[str
         return [], set()
     reload_time = float(stats.get("reload_time", 2.0))
     complete = float(stats.get("reload_complete_percent", 0.75))
-    if _lang_is_zh(lang):
-        lines = [f"投掷换弹时间 {_part_number(reload_time)}s", f"换弹完成点 {complete:.0%}"]
-    else:
-        lines = [f"Thrown Reload {_part_number(reload_time)}s", f"Reload Complete {complete:.0%}"]
+    lines = [_t("thrown_reload", lang, n=_part_number(reload_time)), _t("reload_complete", lang, n=f"{complete:.0%}")]
     return lines, {"weapon_reload_time", "weapon_reload_complete_percent"}
 
 
@@ -1110,19 +1091,19 @@ def _adapter_description(ref: dict[str, Any], lang: str) -> tuple[list[str], set
             capacity = float(value)
         except (TypeError, ValueError):
             continue
-        text = f"弹匣容量 {_part_number(capacity)}" if _lang_is_zh(lang) else f"Magazine Capacity {_part_number(capacity)}"
+        text = _t("magazine_capacity", lang, n=_part_number(capacity))
         return [text], {"weapon_max_loaded_ammo"}
     return [], set()
 
 
 def _base_value_description(ref: dict[str, Any], lang: str) -> list[str]:
     labels = {
-        "damage_value": ("基础伤害", "Base Damage", ""),
-        "firerate_value": ("基础射速", "Base Fire Rate", "/s"),
-        "accuracy_value": ("基础精准值", "Base Accuracy", ""),
-        "spread_value": ("基础扩散值", "Base Spread", ""),
-        "damageradius_value": ("爆炸范围", "Splash Radius", "cm"),
-        "projectilespershot_value": ("弹丸数", "Projectiles", "/发" if _lang_is_zh(lang) else "/shot"),
+        "damage_value": ("base_damage", ""),
+        "firerate_value": ("base_fire_rate", "/s"),
+        "accuracy_value": ("base_accuracy", ""),
+        "spread_value": ("base_spread", ""),
+        "damageradius_value": ("splash_radius", "cm"),
+        "projectilespershot_value": ("projectiles", "/" + _t("unit_shot", lang)),
     }
     lines: list[str] = []
     for base_ref in ref.get("weapon_base_value_refs", []):
@@ -1136,7 +1117,7 @@ def _base_value_description(ref: dict[str, Any], lang: str) -> list[str]:
                 continue
             if value <= 0 or (str(key).lower() == "projectilespershot_value" and value <= 1):
                 continue
-            lines.append(f"{_part_label(label[:2], lang)} {_part_number(value)}{label[2]}")
+            lines.append(f"{_part_label(label[0], lang)} {_part_number(value)}{label[1]}")
     return list(dict.fromkeys(lines))
 
 
@@ -1220,7 +1201,7 @@ def _fill_uistat_args(text: str, entry: dict[str, Any], index: dict[str, Any]) -
 
 
 def _part_behavior_text(ref: dict[str, Any], index: dict[str, Any], lang: str) -> str:
-    key = "zh" if _lang_is_zh(lang) else "en"
+    key = game_text.text_lang(lang)
     for uistat_id in [*ref.get("uistats_include", []), *ref.get("uistats", [])]:
         entry = (index.get("uistats") or {}).get(str(uistat_id).lower(), {})
         text = _clean_markup(entry.get(key, "") or entry.get("en", ""))
@@ -1275,30 +1256,27 @@ def _barrel_description(item_id: int, part_id: str, decoded_full: str, lang: str
         return []
     stats = resolve_weapon_stats(candidate)
     if all(key in stats for key in ("damage", "accuracy", "fire_rate")):
-        if _lang_is_zh(lang):
-            lines = [f"{stats['damage']}伤害", f"{stats['accuracy']}%精准度", f"{float(stats['fire_rate']):.1f}/s射速"]
-            optional = (("critical_damage", "%爆伤"), ("ammo_cost", "/发"), ("splash_radius", "cm爆炸范围"))
-        else:
-            lines = [f"{stats['damage']} Damage", f"{stats['accuracy']}% Accuracy", f"{float(stats['fire_rate']):.1f}/s Fire Rate"]
-            optional = (("critical_damage", "% Crit"), ("ammo_cost", "/shot"), ("splash_radius", "cm Splash"))
-        for key, suffix in optional:
+        lines = [_t("barrel_damage", lang, n=stats["damage"]), _t("barrel_accuracy", lang, n=stats["accuracy"]),
+                 _t("barrel_fire_rate", lang, n=f"{float(stats['fire_rate']):.1f}")]
+        optional = (("critical_damage", "barrel_crit"), ("ammo_cost", "barrel_ammo_cost"), ("splash_radius", "barrel_splash"))
+        for key, text_key in optional:
             value = int(stats.get(key) or 0)
             if (key == "critical_damage" and value) or (key == "ammo_cost" and value > 1) or (key == "splash_radius" and value > 0):
-                lines.append(f"{value:+d}{suffix}" if key == "critical_damage" else f"{value}{suffix}")
+                lines.append(_t(text_key, lang, n=f"{value:+d}" if key == "critical_damage" else value))
         return lines
 
     values = next((entry.get("values", {}) for entry in _part_ref(item_id, part_id).get("weapon_base_value_refs", []) if entry.get("values")), {})
     labels = {
-        "accuracy_value": ("基础精准值", "Base Accuracy"),
-        "firerate_value": ("基础射速", "Base Fire Rate"),
-        "projectilespershot_value": ("弹丸数", "Projectiles"),
+        "accuracy_value": "base_accuracy",
+        "firerate_value": "base_fire_rate",
+        "projectilespershot_value": "projectiles",
     }
     lines: list[str] = []
     for key, label in labels.items():
         value = values.get(key)
         if value is None or (key == "projectilespershot_value" and float(value) <= 1):
             continue
-        suffix = "/发" if _lang_is_zh(lang) and key == "projectilespershot_value" else "/shot" if key == "projectilespershot_value" else "/s" if key == "firerate_value" else ""
+        suffix = "/" + _t("unit_shot", lang) if key == "projectilespershot_value" else "/s" if key == "firerate_value" else ""
         lines.append(f"{_part_label(label, lang)} {_part_number(float(value))}{suffix}")
     return lines
 
@@ -1315,9 +1293,9 @@ def _scope_description(item_id: int, part_id: str, decoded_full: str, lang: str)
         ads_time = None
     lines: list[str] = []
     if fov is not None:
-        lines.append(f"瞄准视野 ×{_part_number(fov)}" if _lang_is_zh(lang) else f"ADS FOV ×{_part_number(fov)}")
+        lines.append(_t("ads_fov", lang, n=_part_number(fov)))
     if ads_time is not None:
-        lines.append(f"开镜时间 {_part_number(ads_time)}s" if _lang_is_zh(lang) else f"ADS Time {_part_number(ads_time)}s")
+        lines.append(_t("ads_time", lang, n=_part_number(ads_time)))
     return lines
 
 
@@ -1325,18 +1303,18 @@ def _ammo_switch_description(ref: dict[str, Any], lang: str) -> list[str]:
     stats = ref.get("ammo_switch_stats") or {}
     mode = stats.get("mode") or {}
     ammo = mode.get("ammo") or {}
-    ammo_name = ammo.get("zh" if _lang_is_zh(lang) else "en", "")
+    ammo_name = game_text.pick(ammo, lang)
     lines = []
     if ammo_name:
-        lines.append(f"次要开火消耗{ammo_name}" if _lang_is_zh(lang) else f"Secondary fire consumes {ammo_name}")
+        lines.append(_t("secondary_ammo", lang, ammo=ammo_name))
     labels = {
-        "damage_scale": ("伤害", "Damage"), "firerate_scale": ("射速", "Fire Rate"),
-        "reloadtime_scale": ("装填时间", "Reload Time"), "spread_scale": ("扩散", "Spread"),
-        "maxaccuracy_scale": ("最大精准度", "Max Accuracy"), "recoil_scale": ("后坐力", "Recoil"),
-        "projpershot_scale": ("弹丸数", "Projectiles"), "ammocost_add": ("弹药消耗", "Ammo Cost"),
-        "zoomduration_scale": ("开镜时间", "ADS Time"), "equiptime_scale": ("切枪时间", "Equip Time"),
-        "putdowntime_scale": ("收枪时间", "Putdown Time"), "accimpulse_scale": ("精准度冲量", "Accuracy Impulse"),
-        "critdamage_add": ("暴击伤害", "Crit Damage"),
+        "damage_scale": "damage", "firerate_scale": "fire_rate",
+        "reloadtime_scale": "reload_time", "spread_scale": "spread_scale",
+        "maxaccuracy_scale": "max_accuracy", "recoil_scale": "recoil",
+        "projpershot_scale": "projectiles", "ammocost_add": "ammo_cost",
+        "zoomduration_scale": "ads_time_scope", "equiptime_scale": "equip_time_swap",
+        "putdowntime_scale": "putdown_time", "accimpulse_scale": "accuracy_impulse",
+        "critdamage_add": "crit_damage_short",
     }
     for key, value in (stats.get("effects") or {}).items():
         key = str(key).lower()
@@ -1346,7 +1324,7 @@ def _ammo_switch_description(ref: dict[str, Any], lang: str) -> list[str]:
         suffix, label = match
         number = float(value)
         if suffix == "ammocost_add" and number:
-            lines.append(f"{_part_label(label, lang)} +{_part_number(number)}/发" if _lang_is_zh(lang) else f"{_part_label(label, lang)} +{_part_number(number)}/shot")
+            lines.append(f"{_part_label(label, lang)} +{_part_number(number)}/{_t('unit_shot', lang)}")
         elif suffix.endswith("_add") and number:
             lines.append(f"{_part_label(label, lang)} {number:+.0%}")
         elif suffix.endswith("_value") and number:
@@ -1356,9 +1334,14 @@ def _ammo_switch_description(ref: dict[str, Any], lang: str) -> list[str]:
     return lines
 
 
+def no_stat_texts() -> frozenset[str]:
+    """The "no stat changes" placeholder in every UI language (for comparisons)."""
+    return frozenset(_t("no_stat_changes", lang) for lang in ui_text.UI_LANGUAGES)
+
+
 def no_stat_changes_text(lang: str = "zh-CN") -> str:
     """The placeholder shown when a part resolves to no stat effect at all."""
-    return "无属性变化" if _lang_is_zh(lang) else "No stat changes"
+    return _t("no_stat_changes", lang)
 
 
 def format_weapon_part_description(
@@ -1371,7 +1354,7 @@ def format_weapon_part_description(
     if not ref:
         return fallback
     if part_type == "Body":
-        return "固有配件" if _lang_is_zh(lang) else "Intrinsic Part"
+        return _t("intrinsic_part", lang)
     if ref.get("category") == "barrel":
         return ", ".join(_barrel_description(item_id, part_id, decoded_full, lang)) or fallback
     if ref.get("category") == "scope":
@@ -1399,17 +1382,13 @@ def format_weapon_part_description(
     tags = {str(tag).lower() for tag in ref.get("weapon_tags", [])}
     part_name = str(ref.get("part") or "").lower()
     if "part_underbarrel_05_ammoswitcher" in part_name:
-        lines = [
-            "启用弹药模式切换；具体模式由厂商授权部件选择"
-            if _lang_is_zh(lang)
-            else "Enables ammo mode switching; the manufacturer part selects the mode"
-        ]
+        lines = [_t("ammo_switcher", lang)]
     elif ref.get("ammo_switch_stats"):
         lines = _ammo_switch_description(ref, lang)
     elif "part_barrel_licensed_hyp" in part_name:
-        lines.insert(0, "启用亥伯龙前置武器护盾及其护盾配件" if _lang_is_zh(lang) else "Enables the Hyperion front weapon shield and its shield parts")
+        lines.insert(0, _t("hyperion_shield", lang))
     elif "part_underbarrel_06_malswitch" in part_name:
-        lines.insert(0, "在已配置的两种元素伤害间切换" if _lang_is_zh(lang) else "Switches between the two configured elemental damage types")
+        lines.insert(0, _t("element_switch", lang))
 
     behavior = _part_behavior_text(ref, index, lang)
     suppress_behavior = ref.get("category") == "barrel" or (ref.get("category") == "magazine" and bool(tags & {"cov_mag", "borg_mag"}))
@@ -1947,6 +1926,11 @@ def validate_weapon_generation(decoded: str, allow_incomplete: bool = False, *, 
     return {"status": status, **context, "violations": violations}
 
 
+def _name_key(text: Any) -> str:
+    """Comparison key for two spellings of one name (case, spaces, hyphens)."""
+    return re.sub(r"[\s\-]+", "", str(text or "")).casefold()
+
+
 def _weapon_csv_barrel_name(item_id: int, part_id: str, lang: str) -> str:
     rows = _weapon_parts(lang)
     for row in rows:
@@ -1962,7 +1946,7 @@ def _weapon_csv_barrel_name(item_id: int, part_id: str, lang: str) -> str:
 
 
 def _weapon_has_named_barrel_variant(item_id: int, ref: dict[str, Any], lang: str) -> bool:
-    key = "zh" if _lang_is_zh(lang) else "en"
+    key = game_text.text_lang(lang)
     tags = {str(tag).lower() for tag in ref.get("weapon_tags", [])}
     unique_tags = {tag for tag in tags if tag.startswith("uni_")}
     if not unique_tags:
@@ -2007,7 +1991,7 @@ def _weapon_rarity_component_name(item_id: int, ids: list[str], key: str) -> str
 
 
 def _weapon_root_name(item_id: int, ids: list[str], lang: str) -> tuple[str, str]:
-    key = "zh" if _lang_is_zh(lang) else "en"
+    key = game_text.text_lang(lang)
     if item_id == 11 and ("7" in ids or "8" in ids) and any(part_id in ids for part_id in ("79", "80")):
         names: list[str] = []
         barrel_id = "8" if "8" in ids else "7"
@@ -2036,8 +2020,14 @@ def _weapon_root_name(item_id: int, ids: list[str], lang: str) -> tuple[str, str
             continue
         ncs_name = ((ref.get("name") or {}).get(key) or (ref.get("name") or {}).get("en", "")).strip()
         if item_id == 16 and part_id == "1" and "71" in ids and _valid_name(ncs_name):
-            return ("升级版" + ncs_name) if _lang_is_zh(lang) else ("Upgraded " + ncs_name), "ncs_name"
+            return _t("upgraded", lang, name=ncs_name), "ncs_name"
         csv_name = _weapon_csv_barrel_name(item_id, part_id, lang)
+        if key not in ("zh", "en") and (ref.get("name") or {}).get(key):
+            # The barrel CSVs are English/Chinese only: the NCS name carries the
+            # other languages when it names the same barrel.
+            english = _weapon_csv_barrel_name(item_id, part_id, "en-US")
+            if _name_key(english) == _name_key((ref.get("name") or {}).get("en")):
+                csv_name = ncs_name
         if item_id == 3 and part_id == "75" and _valid_name(ncs_name):
             return ncs_name, "ncs_name"
         if _valid_name(ncs_name) and "·" in ncs_name:
@@ -2531,7 +2521,7 @@ def _heavy_strategy_word(item_id: int, ids: list[str], section: str, lang: str) 
     strategy = (_item_index().get("heavy_strategies") or {}).get(str(item_id))
     if not strategy:
         return ""
-    key = "zh" if _lang_is_zh(lang) else "en"
+    key = game_text.text_lang(lang)
     section_data = strategy.get(section, {})
     item = _first_combo(ids, section_data.get("rules", []))
     rule = item[1] if item else _first_single(ids, section_data.get("singles", []))
@@ -2657,21 +2647,19 @@ def _classmod_name(item_id: int, ids: list[str], lang: str) -> tuple[str, str, s
             if name_id in seen and card_id in seen:
                 row = by_code.get((str(item_id), name_id))
                 if row:
-                    key = "name_ZH" if _lang_is_zh(lang) else "name_EN"
                     rarity = _rarity_text(row.get("rarity", ""), lang)
-                    name = _with_prefix(prefix, row.get(key, "") or row.get("name_EN", ""))
+                    name = _with_prefix(prefix, game_text.csv_text(row, "name", lang))
                     return name, rarity, "classmod_pair"
     for part_id in ids:
         row = by_code.get((str(item_id), part_id))
         if row:
-            key = "name_ZH" if _lang_is_zh(lang) else "name_EN"
             row_rarity = row.get("rarity", "")
             rarity = normal_rarity if row_rarity == "normal" else _rarity_text(row_rarity, lang)
-            name = _with_prefix(prefix, row.get(key, "") or row.get("name_EN", ""))
+            name = _with_prefix(prefix, game_text.csv_text(row, "name", lang))
             return name, rarity, "classmod_csv"
         ref = _part_ref(item_id, part_id)
         if ref.get("category") == "class_mod_body":
-            key = "zh" if _lang_is_zh(lang) else "en"
+            key = game_text.text_lang(lang)
             body_name = (ref.get("name") or {}).get(key) or (ref.get("name") or {}).get("en", "")
             if _valid_name(body_name):
                 return _with_prefix(prefix, body_name), normal_rarity, "classmod_index"
@@ -2686,7 +2674,7 @@ def _with_prefix(prefix: str, name: str) -> str:
 
 def _classmod_prefix(item_id: int, ids: list[str], lang: str) -> str:
     prefixes = (_item_index().get("classmod_prefixes") or {}).get(str(item_id), {})
-    key = "zh" if _lang_is_zh(lang) else "en"
+    key = game_text.text_lang(lang)
     seen_bodies: list[str] = []
     seen_passives: list[str] = []
     for part_id in ids:
@@ -2779,8 +2767,7 @@ def format_weapon_stat(key: str, value: Any, lang: str = "zh-CN") -> str:
     if key in {"elemental_chance", "elemental_chance_mode02", "cryo_efficiency", "cryo_efficiency_mode02"}:
         return f"{int(value)}%"
     if key == "ammo_cost":
-        suffix = {"zh-CN": "发", "ru": "выстрел", "ua": "постріл"}.get(lang, "shot")
-        return f"{int(value)}/{suffix}"
+        return f"{int(value)}/{_t('unit_shot', lang)}"
     if key == "splash_radius":
         return f"{int(value)}cm"
     return str(value)
@@ -2794,14 +2781,14 @@ def format_equipment_stat(key: str, value: Any, lang: str = "zh-CN") -> str:
     if key in {"dps", "elemental_dps", "elemental_dps_mode02"}:
         return f"{int(value):,}"
     if key in {"fire_rate", "recharge_rate"}:
-        suffix = "/秒" if _lang_is_zh(lang) else "/s"
+        suffix = "/" + _t("unit_second", lang)
         return f"{float(value):.1f}{suffix}" if key == "fire_rate" else f"{int(value):,}{suffix}"
     if key == "recharge_delay":
-        return f"{float(value):.1f}{'秒' if _lang_is_zh(lang) else 's'}"
+        return f"{float(value):.1f}{_t('unit_second', lang)}"
     if key in {"cooldown", "duration"}:
-        return f"{int(value)}{'秒' if _lang_is_zh(lang) else 's'}"
+        return f"{int(value)}{_t('unit_second', lang)}"
     if key in {"radius", "splash_radius"}:
-        return f"{int(value)}{'厘米' if _lang_is_zh(lang) else 'cm'}"
+        return f"{int(value)}{_t('unit_cm', lang)}"
     if key == "critical_damage":
         return f"{int(value):+d}%" if value else "0%"
     if key in {"elemental_chance", "elemental_chance_mode02", "cryo_efficiency", "cryo_efficiency_mode02"}:
@@ -2816,25 +2803,25 @@ def format_equipment_stat(key: str, value: Any, lang: str = "zh-CN") -> str:
 
 
 EQUIPMENT_PART_STAT_LABELS = {
-    "damage": ("伤害", "Damage"),
-    "radius": ("爆炸范围", "Blast Radius"),
-    "cooldown": ("冷却", "Cooldown"),
-    "charges": ("充能次数", "Charges"),
-    "critical_damage": ("暴击伤害", "Critical Damage"),
-    "critical_chance": ("暴击几率", "Critical Chance"),
-    "capacity": ("护盾容量", "Shield Capacity"),
-    "recharge_delay": ("恢复延迟", "Recharge Delay"),
-    "recharge_rate": ("恢复速率", "Recharge Rate"),
-    "armor_segments": ("护甲段数", "Armor Segments"),
-    "damage_reduction": ("伤害减免", "Damage Reduction"),
-    "healing": ("治疗量", "Healing"),
-    "instant_healing": ("即时治疗", "Instant Healing"),
-    "health_over_time": ("持续治疗", "Healing Over Time"),
-    "duration": ("持续时间", "Duration"),
-    "accuracy": ("精准度", "Accuracy"),
-    "fire_rate": ("射速", "Fire Rate"),
-    "magazine": ("弹容", "Magazine"),
-    "splash_radius": ("爆炸范围", "Splash Radius"),
+    "damage": "damage",
+    "radius": "blast_radius",
+    "cooldown": "cooldown",
+    "charges": "charges",
+    "critical_damage": "critical_damage",
+    "critical_chance": "critical_chance",
+    "capacity": "shield_capacity",
+    "recharge_delay": "recharge_delay",
+    "recharge_rate": "recharge_rate",
+    "armor_segments": "armor_segments",
+    "damage_reduction": "damage_reduction",
+    "healing": "healing",
+    "instant_healing": "instant_healing",
+    "health_over_time": "healing_over_time",
+    "duration": "duration",
+    "accuracy": "accuracy",
+    "fire_rate": "fire_rate",
+    "magazine": "magazine",
+    "splash_radius": "splash_radius",
 }
 
 SKILL_TEXT_STYLES = {
@@ -2900,7 +2887,7 @@ def equipment_firmware_parts(owner: Any) -> list[tuple[str, str]]:
 def equipment_part_name(ref_key: str, lang: str = "zh-CN", fallback: str = "") -> str:
     index = _item_index()
     ref = (index.get("part_refs") or {}).get(ref_key) or {}
-    key = "zh" if _lang_is_zh(lang) else "en"
+    key = game_text.text_lang(lang)
     if ref.get("category") == "firmware":
         # Firmware names live in the shared table, keyed by the internal part string.
         try:
@@ -3003,7 +2990,7 @@ def format_equipment_part_description(
                 None,
             )
             if resist is not None:
-                text = f"{abs(resist):.0%}抗性" if _lang_is_zh(lang) else f"{abs(resist):.0%} Resistance"
+                text = _t("resistance_value", lang, value=f"{abs(resist):.0%}")
                 if text not in lines:
                     lines.append(text)
         except (KeyError, TypeError, ValueError):
@@ -3046,7 +3033,7 @@ def format_equipment_part_description(
         if key not in after or after.get(key) == before.get(key):
             continue
         value = format_equipment_stat(key, after[key], lang)
-        label = labels[0] if _lang_is_zh(lang) else labels[1]
+        label = _part_label(labels, lang)
         joined = " ".join(lines).casefold()
         if label.casefold() in joined or (
             key == "critical_chance"
@@ -3103,12 +3090,8 @@ def equipment_firmware_entry(ref_key: str, item_type: str, lang: str) -> dict[st
     row = next((r for r in _rows_by_file(_EQUIPMENT_FIRMWARE_TABLE) if (r.get("part") or "").strip() == internal), None)
     if row is None:
         return None
-    zh = _lang_is_zh(lang)
-
     def pick(stem: str) -> str:
-        if zh:
-            return (row.get(f"{stem}_ZH") or "").strip() or (row.get(f"{stem}_EN") or "").strip()
-        return (row.get(f"{stem}_EN") or "").strip() or (row.get(f"{stem}_ZH") or "").strip()
+        return game_text.csv_text(row, stem, lang).strip()
 
     name = pick("Name")
     descs = [pick(f"Desc_L{level}") for level in (1, 2, 3)]
@@ -3164,7 +3147,7 @@ def resolve_equipment_card_details(
         if category in {"element", "body_ele"}:
             element = next((value for marker, value in _EQUIPMENT_ELEMENT_KEYS.items() if marker in part_name), element)
             description = format_equipment_part_description(decoded_full, item_type, ref_key, lang)
-            if "抗性" in description or "resistance" in description.casefold():
+            if _t("resistance_word", lang).casefold() in description.casefold():
                 element_text = description
             continue
 
@@ -3195,7 +3178,7 @@ def resolve_equipment_card_details(
             if not any(marker in ui_key for marker in ("redtext", "red_text")):
                 continue
             ui = (index.get("uistats") or {}).get(ui_key) or {}
-            text = _clean_markup(ui.get("zh" if _lang_is_zh(lang) else "en") or ui.get("en") or "")
+            text = _clean_markup(ui.get(game_text.text_lang(lang)) or ui.get("en") or "")
             if text and "{" not in text and text not in red_texts:
                 red_texts.append(text)
 
@@ -3212,7 +3195,7 @@ def resolve_equipment_card_details(
 
 
 def _localized_uistat_text(ui: dict[str, Any], lang: str) -> str:
-    text = str(ui.get("zh" if _lang_is_zh(lang) else "en") or ui.get("en") or "")
+    text = str(ui.get(game_text.text_lang(lang)) or ui.get("en") or "")
     if not _lang_is_zh(lang):
         return text
     try:
@@ -3365,7 +3348,7 @@ def _classmod_skill_stat_lines(
     def localized(value: Any, fallback: str) -> str:
         if not isinstance(value, dict):
             return fallback
-        return str(value.get("zh" if _lang_is_zh(lang) else "en") or value.get("en") or fallback)
+        return str(value.get(game_text.text_lang(lang)) or value.get("en") or fallback)
 
     def display_number(arg: dict[str, Any]) -> str | None:
         if not condition_matches(arg.get("displaycondition") or {}):
@@ -3489,19 +3472,19 @@ def resolve_classmod_card_details(
     for key in order[:max(0, skill_limit)]:
         row = rows_by_key[key]
         codes = [row.get(f"skill_ID_{index}", "").strip() for index in range(1, 6)]
-        name = row.get("skill_name_ZH" if _lang_is_zh(lang) else "skill_name_EN", "") or row.get("skill_name_EN", "")
+        name = game_text.csv_text(row, "skill_name", lang)
         if class_name == "C4sh":
             name = re.sub(r" [BGR]$", "", name)
         skills.append({
             "key": key,
             "name": name,
-            "description": row.get("description_ZH" if _lang_is_zh(lang) else "description_EN", "") or row.get("description_EN", ""),
+            "description": game_text.csv_text(row, "description", lang),
             "points": counts[key],
             "max_points": sum(bool(code) for code in codes),
             "selected_codes": selected_codes[key],
             "skill_type": row.get("skill_type", ""),
             "tree_color": row.get("tree_color", ""),
-            "tree_name": row.get("tree_name_ZH" if _lang_is_zh(lang) else "tree_name_EN", "") or row.get("tree_name_EN", ""),
+            "tree_name": game_text.csv_text(row, "tree_name", lang),
             "graph_name": row.get("graph_name", ""),
             "node_name": row.get("node_name", ""),
             "skill_internal": row.get("skill_internal", ""),
@@ -3528,7 +3511,7 @@ def resolve_classmod_card_details(
             if entry:
                 firmware.append({**entry, "count": perk_counts[perk_id]})
             elif row:
-                name = row.get("perk_name_ZH" if _lang_is_zh(lang) else "perk_name_EN", "") or row.get("perk_name_EN", "")
+                name = game_text.csv_text(row, "perk_name", lang)
                 firmware.append({
                     "id": perk_id,
                     "name": name,
@@ -3544,7 +3527,7 @@ def resolve_classmod_card_details(
             continue
         entry = {
             "id": perk_id,
-            "name": row.get("perk_name_ZH" if _lang_is_zh(lang) else "perk_name_EN", "") or row.get("perk_name_EN", ""),
+            "name": game_text.csv_text(row, "perk_name", lang),
             "count": perk_counts[perk_id],
             "category": row.get("perk_category", ""),
             "internal": row.get("perk_internal", ""),
@@ -3609,7 +3592,6 @@ def resolve_enhancement_card_details(decoded_full: str, lang: str = "zh-CN") -> 
         for row in _rows_by_file("data/enhancement/Enhancement_perk.csv")
         if row.get("manufacturers_ID", "").strip() == "247"
     }
-    localized = "perk_name_ZH" if _lang_is_zh(lang) else "perk_name_EN"
 
     effects = []
     for part_id in simple_ids:
@@ -3617,7 +3599,7 @@ def resolve_enhancement_card_details(decoded_full: str, lang: str = "zh-CN") -> 
             continue
         row = core_rows.get((str(item_id), part_id))
         if row:
-            effects.append({"id": part_id, "text": row.get(localized, "") or row.get("perk_name_EN", "")})
+            effects.append({"id": part_id, "text": game_text.csv_text(row, "perk_name", lang)})
 
     stacked_counts: Counter[tuple[str, str]] = Counter()
     stacked_order: list[tuple[str, str]] = []
@@ -3642,7 +3624,7 @@ def resolve_enhancement_card_details(decoded_full: str, lang: str = "zh-CN") -> 
             "manufacturer_id": owner,
             "manufacturer": row.get("manufacturers_name", ""),
             "id": part_id,
-            "text": row.get(localized, "") or row.get("perk_name_EN", ""),
+            "text": game_text.csv_text(row, "perk_name", lang),
             "count": stacked_counts[(owner, part_id)],
         })
 
@@ -3658,7 +3640,7 @@ def resolve_enhancement_card_details(decoded_full: str, lang: str = "zh-CN") -> 
             else:
                 row = shared_rows.get(part_id)
                 if row:
-                    text = row.get(localized, "") or row.get("perk_name_EN", "")
+                    text = game_text.csv_text(row, "perk_name", lang)
                     firmware.append({
                         "id": part_id,
                         "text": text,
@@ -3672,7 +3654,7 @@ def resolve_enhancement_card_details(decoded_full: str, lang: str = "zh-CN") -> 
         row = shared_rows.get(part_id)
         if not row:
             continue
-        text = row.get(localized, "") or row.get("perk_name_EN", "")
+        text = game_text.csv_text(row, "perk_name", lang)
         entry = {"id": part_id, "text": text}
         if category in {"stat_group1", "stat_group2", "stat_group3"}:
             entry["group"] = category

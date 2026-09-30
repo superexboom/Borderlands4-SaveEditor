@@ -17,7 +17,7 @@ import re
 from functools import lru_cache
 from typing import Any
 
-from core import b_encoder, bl4_functions, decoder_logic, lookup, resource_loader
+from core import b_encoder, bl4_functions, decoder_logic, game_text, lookup, resource_loader, ui_text
 from core import item_display_resolver as resolver
 from core import weapon_display_stats
 from core.item_display_resolver import HEAVY_TYPE, WEAPON_TYPES
@@ -41,7 +41,7 @@ _PROVENANCE_TAG_ORDER = (
 # format_weapon_part_description returns this literal both for parts that truly
 # have no stats and for parts whose payload cannot be rendered. Inspector output
 # distinguishes the two by checking the ref payload directly.
-NO_STAT_TEXTS = {"无属性变化", "No stat changes"}
+NO_STAT_TEXTS = resolver.no_stat_texts()
 
 # Exact strings produced by lookup.get_kind_enums / dynamic_item_kind. Only
 # these four have an entry in equipment_native_models.models, which is what
@@ -85,12 +85,8 @@ _ELEMENTAL_CARRIERS = {
     "243:89": "elemental_nova_base",
 }
 
-_ELEMENTAL_CARRIER_FALLBACK = {
-    "elemental_resist_base": {"zh": "元素抗性基座", "en": "Elemental Resistance Base"},
-    "elemental_immunity_base": {"zh": "元素免疫基座", "en": "Elemental Immunity Base"},
-    "elemental_splat_base": {"zh": "元素喷溅基座", "en": "Elemental Splat Base"},
-    "elemental_nova_base": {"zh": "元素新星基座", "en": "Elemental Nova Base"},
-}
+_CARRIER_LABEL_KEYS = ("elemental_resist_base", "elemental_immunity_base",
+                       "elemental_splat_base", "elemental_nova_base")
 
 _ELEMENTAL_CARRIER_CATEGORIES = {
     "elemental_resist_base": "augment_element_resist",
@@ -99,36 +95,18 @@ _ELEMENTAL_CARRIER_CATEGORIES = {
     "elemental_nova_base": "augment_element_nova",
 }
 
-_ELEMENT_LABELS = {
-    "normal": {"zh": "无元素", "en": "No Element"},
-    "corrosive": {"zh": "腐蚀", "en": "Corrosive"},
-    "cryo": {"zh": "冰冻", "en": "Cryo"},
-    "fire": {"zh": "燃烧", "en": "Incendiary"},
-    "radiation": {"zh": "辐射", "en": "Radiation"},
-    "shock": {"zh": "电击", "en": "Shock"},
-    "kinetic": {"zh": "动能", "en": "Kinetic"},
-    "sonic": {"zh": "声波", "en": "Sonic"},
+#: part-name marker -> game term ("fire" parts are the game's Incendiary)
+_ELEMENT_TERMS = {
+    "normal": "", "corrosive": "Corrosive", "cryo": "Cryo", "fire": "Incendiary",
+    "radiation": "Radiation", "shock": "Shock", "kinetic": "Kinetic", "sonic": "Sonic",
 }
 
 _SHIELD_PART_SUBTYPES = {"237": "armor", "248": "energy"}
 
 
-@lru_cache(maxsize=8)
 def _carrier_labels(lang: str) -> dict[str, str]:
-    """Localized carrier names, falling back to the built-in zh/en pair."""
-    try:
-        loc = resource_loader.load_json_resource(
-            resource_loader.get_ui_localization_file(lang)
-        ) or {}
-        table = ((loc.get("serial_inspector_tab") or {}).get("part_carriers")) or {}
-    except Exception:
-        table = {}
-    zh = resolver._lang_is_zh(lang)
-    out: dict[str, str] = {}
-    for key, pair in _ELEMENTAL_CARRIER_FALLBACK.items():
-        value = str(table.get(key) or "").strip()
-        out[key] = value or pair["zh" if zh else "en"]
-    return out
+    """Localized carrier names (serial_inspector_tab.part_carriers)."""
+    return {key: ui_text.tr(f"serial_inspector_tab.part_carriers.{key}", lang) for key in _CARRIER_LABEL_KEYS}
 
 
 def _blank(text: str) -> bool:
@@ -138,15 +116,15 @@ def _blank(text: str) -> bool:
 def _element_part_label(ref: dict[str, Any], item_type: str, lang: str) -> str:
     part = str(ref.get("part") or "").casefold()
     element = next(
-        (name for name in _ELEMENT_LABELS if f"_{name}" in part or part.endswith(name)),
+        (name for name in _ELEMENT_TERMS if f"_{name}" in part or part.endswith(name)),
         "",
     )
     if not element:
         return ""
-    label = _ELEMENT_LABELS[element]["zh" if resolver._lang_is_zh(lang) else "en"]
-    if item_type == "Shield" and element == "normal":
-        return "无元素抗性" if resolver._lang_is_zh(lang) else "No Elemental Resistance"
-    return label
+    if element == "normal":
+        key = "no_elemental_resistance" if item_type == "Shield" else "no_element"
+        return ui_text.tr(f"serial_inspector_tab.labels.{key}", lang)
+    return game_text.term(_ELEMENT_TERMS[element], lang)
 
 
 def _gold_skin_selected(item_id: int, item_type: str, rows: list[dict[str, Any]]) -> bool:
@@ -683,11 +661,7 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
                 description = _carrier_labels(lang).get(carrier, "")
 
         if key == "243:104" and (_blank(description) or description in NO_STAT_TEXTS):
-            description = (
-                "基准治疗载荷（治疗量、持续时间与冷却均为 1x）"
-                if resolver._lang_is_zh(lang)
-                else "Baseline healing payload (1x healing, duration and cooldown)"
-            )
+            description = ui_text.tr("serial_inspector_tab.labels.baseline_healing", lang)
 
         if description in NO_STAT_TEXTS or _blank(description):
             # Separate "genuinely cosmetic" from "payload present but unmapped".
@@ -710,9 +684,7 @@ def part_rows(decoded_full: str, item_id: int, item_type: str, lang: str = "zh-C
         except Exception:
             display_name = ""
         if _blank(display_name):
-            display_name = str(
-                names.get("zh" if resolver._lang_is_zh(lang) else "en") or names.get("en") or ""
-            ).strip()
+            display_name = game_text.pick(names, lang).strip()
         if _blank(display_name):
             display_name = str(detail.get("name") or "").strip()
         if _blank(display_name) and category in {"element", "body_ele"}:

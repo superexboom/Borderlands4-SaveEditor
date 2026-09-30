@@ -14,11 +14,12 @@ import pandas as pd
 from PyQt6.QtCore import pyqtProperty, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import QApplication
 
-from core import b_encoder, item_display_resolver, resource_loader
+from core import b_encoder, game_text, item_display_resolver, resource_loader
 from core.weapon_generation_logic import sample_composition_parts
 from core import item_card_data
 
 from .base import PageViewModel, register
+from .weapon_editor import TAXONOMY_KEYS
 
 _FLAG_CODE_ORDER = ("1", "3", "5", "17", "33", "65", "129")
 _RARITY_ORDER = ("Common", "Uncommon", "Rare", "Epic", "Legendary", "Pearl")
@@ -148,7 +149,7 @@ class WeaponGeneratorViewModel(PageViewModel):
         self.stats_loc = (self.app.localizer.section("weapon_editor_tab") or {}).get("stats", {})
         self.weapon_taxonomy = (self.app.localizer.section("weapon_editor_tab") or {}).get("taxonomy", {})
         try:
-            suffix = "_EN" if lang in ("en-US", "ru", "ua") else ""
+            suffix = "" if lang == "zh-CN" else "_EN"
 
             def get_path(base_name):
                 name_with_suffix = base_name.replace(".csv", f"{suffix}.csv")
@@ -161,17 +162,16 @@ class WeaponGeneratorViewModel(PageViewModel):
             self.all_weapon_parts_df["Part ID"] = (
                 self.all_weapon_parts_df["Part ID"].astype("Int64").astype(str).replace("<NA>", ""))
             self.elemental_df = pd.read_csv(resource_loader.get_weapon_data_path("elemental.csv"))
-            self.elemental_stat_col = "Stat_ZH" if lang == "zh-CN" else "Stat"
+            self.elemental_df["Stat_UI"] = game_text.frame_column(self.elemental_df, lang, {"en": "Stat", "zh": "Stat_ZH", "ru": "Stat_RU", "de": "Stat_DE"})
+            self.elemental_stat_col = "Stat_UI"
             self.weapon_rarity_df = pd.read_csv(get_path("weapon_rarity.csv"))
-            self.rarity_desc_col = "Description_ZH" if lang == "zh-CN" else "Description"
+            self.weapon_rarity_df["Description_UI"] = game_text.frame_column(self.weapon_rarity_df, lang, {"en": "Description", "zh": "Description_ZH", "ru": "Description_RU", "de": "Description_DE"})
+            self.rarity_desc_col = "Description_UI"
             self.item_index = resource_loader.load_item_json("item_name_index.json") or {}
             self.weapon_rules = self.item_index.get("weapon_generation_rules") or {}
             catalog = resource_loader.load_json_resource("core/data/embedded_serial_catalog.json") or {}
             preferred_parts = catalog.get("preferred_parts") if isinstance(catalog, dict) else None
             self.preferred_parts = preferred_parts if isinstance(preferred_parts, dict) else {}
-            self.weapon_localization = (
-                resource_loader.load_weapon_json("weapon_localization_zh-CN.json") or {}
-                if lang == "zh-CN" else {})
             self._flags = resource_loader.get_flag_labels(lang)
             self._flag_labels = [self._flags[k] for k in _FLAG_CODE_ORDER if k in self._flags]
         except Exception as exc:
@@ -209,20 +209,21 @@ class WeaponGeneratorViewModel(PageViewModel):
             for section in ("labels", "buttons", "dialogs"):
                 if key in self.ui_loc.get(section, {}):
                     return self.ui_loc[section][key]
-        return self.weapon_localization.get(str(key), default or str(key))
-
-    def _get_english_key(self, localized_value):
-        if not localized_value or not self.weapon_localization:
-            return localized_value
-        reverse_map = {v: k for k, v in self.weapon_localization.items()}
-        return reverse_map.get(localized_value, localized_value)
+        if str(key) == _NONE_VALUE:
+            return self.app.tr("common.none")
+        # Part types (Body, Barrel ...) are interface words; manufacturers,
+        # weapon types and rarities are game terms.
+        taxonomy_key = TAXONOMY_KEYS.get(str(key))
+        if taxonomy_key and self.weapon_taxonomy.get(taxonomy_key):
+            return str(self.weapon_taxonomy[taxonomy_key])
+        label = game_text.localize_label(key, self.current_lang)
+        return label if label != str(key) else (default or str(key))
 
     def _section_text(self, key):
         return self.ui_loc.get("sections", {}).get(key) or _SECTION_FALLBACKS.get(key, key)
 
-    def _rule_message(self, key, zh, en, **fmt):
-        fallback = zh if self.current_lang == "zh-CN" else en
-        text = self.weapon_rule_loc.get(key, fallback)
+    def _rule_message(self, key, en, **fmt):
+        text = self.weapon_rule_loc.get(key, en)
         return text.format(**fmt) if fmt else text
 
     # ------------------------------------------------------------------ #
@@ -967,39 +968,39 @@ class WeaponGeneratorViewModel(PageViewModel):
     # ------------------------------------------------------------------ #
     def _rule_violation_text(self, violation):
         labels = {
-            "rules_unavailable": ("violation_rules_unavailable", "规则数据不可用", "Rule data unavailable"),
-            "weapon_rules_missing": ("violation_weapon_rules_missing", "缺少该武器规则", "Weapon rules missing"),
-            "unknown_composition": ("violation_unknown_composition", "未选择或无法识别武器模板", "Weapon composition is missing or unknown"),
-            "multiple_compositions": ("violation_multiple_compositions", "存在多个武器模板", "Multiple weapon compositions"),
-            "foreign_root_part": ("violation_foreign_root_part", "存在跨来源配件", "Foreign part"),
-            "foreign_root_part_manufacturer": ("violation_foreign_root_part_manufacturer", "存在跨厂商配件", "Cross-manufacturer part"),
-            "foreign_root_part_type": ("violation_foreign_root_part_type", "存在跨类型配件", "Cross-type part"),
-            "unknown_part": ("violation_unknown_part", "存在未知配件", "Unknown weapon part"),
-            "part_not_allowed": ("violation_part_not_allowed", "存在非自然生成配件", "Part is outside the natural pool"),
-            "count_below": ("violation_count_below", "配件尚未补齐", "Required parts are missing"),
-            "count_above": ("violation_count_above", "配件数量超过自然上限", "Part count exceeds the natural maximum"),
-            "duplicate_part": ("violation_duplicate_part", "存在重复配件", "Duplicate part"),
-            "missing_required_tag": ("violation_missing_required_tag", "配件依赖未满足", "Part dependency is not satisfied"),
-            "excluded_tag_conflict": ("violation_excluded_tag_conflict", "配件条件冲突", "Part conditions conflict"),
-            "tag_limit": ("violation_tag_limit", "授权类配件超过上限", "Tagged part count exceeds the limit"),
-            "forced_part_missing": ("violation_forced_part_missing", "缺少模板固有配件", "Forced composition part is missing"),
-            "conditional_availability": ("violation_conditional_availability", "仅在特定条件下生成", "Available only in a special context"),
-            "unresolved_rule_parts": ("violation_unresolved_rule_parts", "规则仍有未解析配件", "Rule contains unresolved parts"),
-            "inheritance_cycle": ("violation_inheritance_cycle", "模板规则继承异常", "Composition rule inheritance cycle"),
+            "rules_unavailable": ("violation_rules_unavailable", "Rule data unavailable"),
+            "weapon_rules_missing": ("violation_weapon_rules_missing", "Weapon rules missing"),
+            "unknown_composition": ("violation_unknown_composition", "Weapon composition is missing or unknown"),
+            "multiple_compositions": ("violation_multiple_compositions", "Multiple weapon compositions"),
+            "foreign_root_part": ("violation_foreign_root_part", "Foreign part"),
+            "foreign_root_part_manufacturer": ("violation_foreign_root_part_manufacturer", "Cross-manufacturer part"),
+            "foreign_root_part_type": ("violation_foreign_root_part_type", "Cross-type part"),
+            "unknown_part": ("violation_unknown_part", "Unknown weapon part"),
+            "part_not_allowed": ("violation_part_not_allowed", "Part is outside the natural pool"),
+            "count_below": ("violation_count_below", "Required parts are missing"),
+            "count_above": ("violation_count_above", "Part count exceeds the natural maximum"),
+            "duplicate_part": ("violation_duplicate_part", "Duplicate part"),
+            "missing_required_tag": ("violation_missing_required_tag", "Part dependency is not satisfied"),
+            "excluded_tag_conflict": ("violation_excluded_tag_conflict", "Part conditions conflict"),
+            "tag_limit": ("violation_tag_limit", "Tagged part count exceeds the limit"),
+            "forced_part_missing": ("violation_forced_part_missing", "Forced composition part is missing"),
+            "conditional_availability": ("violation_conditional_availability", "Available only in a special context"),
+            "unresolved_rule_parts": ("violation_unresolved_rule_parts", "Rule contains unresolved parts"),
+            "inheritance_cycle": ("violation_inheritance_cycle", "Composition rule inheritance cycle"),
         }
         code = violation.get("code")
         foreign_kind = str(violation.get("foreign_kind") or "")
         if code == "foreign_root_part" and foreign_kind:
             code = f"{code}_{foreign_kind}"
-        key, zh, en = labels.get(code, ("", str(code or ""), str(code or "")))
-        text = self._rule_message(key, zh, en) if key else en
+        key, en = labels.get(code, ("", str(code or "")))
+        text = self._rule_message(key, en) if key else en
         group_key = str(violation.get("group") or "")
         if group_key and code in {"count_below", "count_above"}:
             # name the group ("missing: barrel (0/1)"), not just "parts are missing"
             first_ref = next(iter((getattr(self, "_rule_groups_seen", {}).get(group_key) or {}).get("allowed") or []), "")
             label = self._rule_group_label(group_key, first_ref, self._current_m_id())
             if label:
-                text += ("：" if self.current_lang == "zh-CN" else ": ") + label
+                text += self.app.tr("common.colon_suffix", text=label)
         actual = violation.get("actual")
         limit = violation.get("min", violation.get("max"))
         if actual is not None and limit is not None:
@@ -1030,26 +1031,25 @@ class WeaponGeneratorViewModel(PageViewModel):
                       "rules_available": False, "composition_ref": ""}
 
         status_labels = {
-            "legal": ("status_legal", "自然生成", "Legal"),
-            "incomplete": ("status_incomplete", "待补齐", "Incomplete"),
-            "modified": ("status_modified", "魔改", "Modified"),
-            "conditional": ("status_conditional", "条件限定", "Conditional"),
-            "unknown": ("status_unknown", "规则未知", "Rules unknown"),
+            "legal": ("status_legal", "Legal"),
+            "incomplete": ("status_incomplete", "Incomplete"),
+            "modified": ("status_modified", "Modified"),
+            "conditional": ("status_conditional", "Conditional"),
+            "unknown": ("status_unknown", "Rules unknown"),
         }
         status = str(result.get("status") or "unknown")
         self._rule_groups_seen = result.get("groups") or {}
-        status_key, status_zh, status_en = status_labels.get(status, status_labels["unknown"])
-        status_text = self._rule_message(status_key, status_zh, status_en)
+        status_key, status_en = status_labels.get(status, status_labels["unknown"])
+        status_text = self._rule_message(status_key, status_en)
         violations = [self._rule_violation_text(item) for item in result.get("violations", [])]
         item_id = self._current_m_id()
         preferred_refs = self._preferred_refs_for_composition(result.get("composition_ref"))
         status_lines = violations or [self._rule_message(
-            "matches_rules", "符合当前自然生成规则", "Matches the current generation rules")]
+            "matches_rules", "Matches the current generation rules")]
         if preferred_refs and item_id is not None:
             selected = len(preferred_refs & self._selected_part_refs(item_id))
             status_lines.append(self._rule_message(
-                "preferred_selected_count", "已选 {selected}/{total} 个官方推荐件",
-                "Selected {selected}/{total} recommended parts",
+                "preferred_selected_count", "Selected {selected}/{total} recommended parts",
                 selected=selected, total=len(preferred_refs)))
         self._rule_badge = {"text": status_text, "status": status,
                             "tooltip": "\n".join(status_lines)}
@@ -1103,14 +1103,14 @@ class WeaponGeneratorViewModel(PageViewModel):
             if not rules_ready or item_id is None:
                 group["badge"] = f"{current} / —"
                 group["badgeTip"] = self._rule_message(
-                    "select_composition", "选择武器模板后显示合法范围", "Select a composition to show its legal range")
+                    "select_composition", "Select a composition to show its legal range")
                 self._apply_part_kinds(group, item_id, preferred_refs=preferred_refs)
                 continue
             rows, candidate_refs, matched_groups = display_matches.get(part_type, (None, set(), []))
             if not matched_groups:
                 group["badge"] = f"{current} / —"
                 group["badgeTip"] = self._rule_message(
-                    "no_group_rule", "该显示分组没有独立生成规则", "No separate generation rule for this display group")
+                    "no_group_rule", "No separate generation rule for this display group")
                 self._apply_part_kinds(group, item_id, preferred_refs=preferred_refs)
                 continue
             matched = [groups[g] for g in matched_groups]
@@ -1121,7 +1121,6 @@ class WeaponGeneratorViewModel(PageViewModel):
             legal_range = str(legal_min) if legal_min == legal_max else f"{legal_min}–{legal_max}"
             group["badge"] = self._rule_message(
                 "shared_current_legal" if shared else "current_legal",
-                "共享配额 当前{current}/合法{range}" if shared else "当前{current}/合法{range}",
                 "shared {current}/{range}" if shared else "{current}/{range}",
                 current=current, range=legal_range)
             eligible = sorted({
@@ -1144,16 +1143,15 @@ class WeaponGeneratorViewModel(PageViewModel):
                     group, index, values, matched_groups, groups, item_id, candidate_refs, variant_cache)
                 self._apply_slot_kinds(slot, item_id, legal, allowed, preferred_refs, duplicates)
             lines = [
-                self._rule_message("current", "当前：{current}", "Current: {current}", current=current),
-                self._rule_message("legal_count", "合法数量：{range}", "Legal count: {range}", range=legal_range),
+                self._rule_message("current", "Current: {current}", current=current),
+                self._rule_message("legal_count", "Legal count: {range}", range=legal_range),
             ]
             if eligible:
-                lines.append(self._rule_message("legal_candidates", "合法候选：", "Legal candidates:"))
+                lines.append(self._rule_message("legal_candidates", "Legal candidates:"))
                 lines.extend(self._rule_candidate_text(ref, rows) for ref in eligible)
             else:
                 lines.append(self._rule_message(
-                    "no_legal_candidates", "当前配件条件下没有合法候选",
-                    "No legal candidates under the current part conditions"))
+                    "no_legal_candidates", "No legal candidates under the current part conditions"))
             group["badgeTip"] = "\n".join(lines)
         if rules_ready and item_id is not None and status != "modified":
             self._demote_traps(variant_cache, result, item_id)
@@ -1178,7 +1176,7 @@ class WeaponGeneratorViewModel(PageViewModel):
         if special:
             return str(special)
         pretty = group_key.replace("_", " ").title()
-        return str(self.weapon_localization.get(pretty) or pretty)
+        return str(self.get_localized_string(pretty) or pretty)
 
     def _variant_groups(self, cache, key, **overrides):
         """去掉某个选择后的规则组状态（带缓存）；失败时返回空表。"""
@@ -1209,7 +1207,7 @@ class WeaponGeneratorViewModel(PageViewModel):
     def _trap_hint(self, result):
         reasons = [self._rule_violation_text(item) for item in result.get("violations") or []
                    if item.get("code") not in {"count_below", "tag_count_below"}]
-        return reasons[0] if reasons else self._rule_message("status_modified", "魔改", "Modified")
+        return reasons[0] if reasons else self._rule_message("status_modified", "Modified")
 
     @staticmethod
     def _warn_slot_option(option, hint) -> None:
@@ -1337,8 +1335,7 @@ class WeaponGeneratorViewModel(PageViewModel):
         legal_refs, allowed_refs, preferred_refs, duplicate_refs = (
             set(legal_refs), set(allowed_refs), set(preferred_refs), set(duplicate_refs))
         duplicate_hint = self._rule_message(
-            "candidate_duplicate", "已在同组其它栏位选中，重复选择会判定为魔改",
-            "Already selected in another slot of this group; picking it again makes the build modified")
+            "candidate_duplicate", "Already selected in another slot of this group; picking it again makes the build modified")
         for option in slot["options"]:
             part_id = option.get("value")
             hint = ""
@@ -1448,7 +1445,7 @@ class WeaponGeneratorViewModel(PageViewModel):
                     continue
                 rarity = str(composition.get("rarity") or "")
                 named = bool(str(names.get("en") or "").strip() or str(names.get("zh") or "").strip())
-                preferred_name = names.get("zh") if self.current_lang == "zh-CN" else names.get("en")
+                preferred_name = game_text.pick(names, self.current_lang)
                 name = str(preferred_name or names.get("en") or names.get("zh") or "").strip()
                 rarity_label = self.weapon_taxonomy.get(
                     rarity.casefold(), self.get_localized_string(rarity, rarity))
@@ -1551,9 +1548,7 @@ class WeaponGeneratorViewModel(PageViewModel):
         name = display.get("display_name") or candidate.get("name") or "—"
         rarity = display.get("rarity") or candidate["rarity_label"]
         element = self._roll_element_text(selected)
-        rarity_color = item_card_data.WEAPON_CARD_RARITY_COLORS.get(
-            str(candidate.get("rarity") or "").casefold()) or item_card_data.WEAPON_CARD_RARITY_COLORS.get(
-            str(rarity).casefold()) or "#78909C"
+        rarity_color = item_card_data.rarity_color(candidate.get("rarity"), rarity) or "#78909C"
         return {
             "serial": serial,
             "decoded": decoded,

@@ -219,21 +219,21 @@ class YamlEditorViewModel(PageViewModel):
     def statusValidText(self) -> str:
         status = self.strings.get("status", {})
         if not self._source_valid:
-            return status.get("invalid", "YAML 无效：{error}").format(error=self._source_error)
-        return status.get("valid", "YAML 有效")
+            return status.get("invalid", "YAML invalid: {error}").format(error=self._source_error)
+        return status.get("valid", "YAML valid")
 
     @pyqtProperty(str, notify=dataChanged)
     def statusNodesText(self) -> str:
         if self.controller.yaml_obj is None:
             return ""
-        return self.strings.get("status", {}).get("nodes", "共 {count} 个节点").format(
+        return self.strings.get("status", {}).get("nodes", "{count} nodes").format(
             count=self._count_nodes())
 
     @pyqtProperty(str, notify=dataChanged)
     def statusModifiedText(self) -> str:
         if self.controller.yaml_obj is None:
             return ""
-        return self.strings.get("status", {}).get("modified", "● {count} 处未保存修改").format(
+        return self.strings.get("status", {}).get("modified", "● {count} unsaved change(s)").format(
             count=1 if self.controller.dirty else 0)
 
     @pyqtProperty(bool, notify=dataChanged)
@@ -250,7 +250,7 @@ class YamlEditorViewModel(PageViewModel):
 
     @pyqtProperty(str, notify=dataChanged)
     def diffButtonText(self) -> str:
-        label = self.strings.get("buttons", {}).get("diff", "变更对比")
+        label = self.strings.get("buttons", {}).get("diff", "Changes")
         n = len(self._diff_added) + len(self._diff_modified) + self._diff_removed_count
         return f"{label} · {n}" if n else label
 
@@ -272,7 +272,7 @@ class YamlEditorViewModel(PageViewModel):
     def breadcrumbText(self) -> str:
         row = self._row_at(self._selected_row)
         if row is None:
-            return self.strings.get("inspector", {}).get("no_selection", "未选择节点")
+            return self.strings.get("inspector", {}).get("no_selection", "No node selected")
         return " › ".join(row["path"]) if row["path"] else "—"
 
     @pyqtProperty(bool, notify=dataChanged)
@@ -287,18 +287,18 @@ class YamlEditorViewModel(PageViewModel):
         ins = self.strings.get("inspector", {})
         return (
             f"{item.get('name', '')}\n"
-            f"{ins.get('level', '等级')}: {item.get('level', '?')}  ·  "
-            f"{ins.get('type', '类型')}: {item.get('type', '?')}  ·  "
-            f"{ins.get('manufacturer', '制造商')}: {item.get('manufacturer', '?')}\n"
-            f"{ins.get('container', '位置')}: {item.get('container', '?')}  ·  "
-            f"{ins.get('slot', '槽位')}: {item.get('slot', '?')}  ·  "
-            f"{ins.get('state_flags', '状态标志')}: {item.get('state_flags', '')}"
+            f"{ins.get('level', 'Level')}: {item.get('level', '?')}  ·  "
+            f"{ins.get('type', 'Type')}: {item.get('type', '?')}  ·  "
+            f"{ins.get('manufacturer', 'Manufacturer')}: {item.get('manufacturer', '?')}\n"
+            f"{ins.get('container', 'Container')}: {item.get('container', '?')}  ·  "
+            f"{ins.get('slot', 'Slot')}: {item.get('slot', '?')}  ·  "
+            f"{ins.get('state_flags', 'State flags')}: {item.get('state_flags', '')}"
         )
 
     @pyqtProperty(str, notify=dataChanged)
     def pinnedText(self) -> str:
         ins = self.strings.get("inspector", {})
-        return ins.get("pinned", "常用路径：") + "  " + " · ".join(
+        return ins.get("pinned", "Pinned paths:") + "  " + " · ".join(
             ["state.currencies", "state.experience", "state.ammo", "state.inventory"])
 
     # ------------------------------------------------------------------ #
@@ -353,10 +353,10 @@ class YamlEditorViewModel(PageViewModel):
         old_value = self.controller.get_node(path)
         new_value, ok = parse_scalar(text, old_value)
         if not ok:
-            self.app.toast(self.strings.get("dialogs", {}).get("error", "错误"), "error")
+            self.app.toast(self.strings.get("dialogs", {}).get("error", "Error"), "error")
             return False
         self.undo_stack.push(_CmdSetValue(self, path, new_value,
-                                          self.strings.get("ops", {}).get("set_value", "修改值")))
+                                          self.strings.get("ops", {}).get("set_value", "Set value")))
         return True
 
     @pyqtSlot(int, str, result=bool)
@@ -377,11 +377,11 @@ class YamlEditorViewModel(PageViewModel):
             self._toast_key_exists(new_key)
             return False
         self.undo_stack.push(_CmdRename(self, path, new_key,
-                                        self.strings.get("ops", {}).get("rename", "重命名键")))
+                                        self.strings.get("ops", {}).get("rename", "Rename key")))
         return True
 
     def _toast_key_exists(self, key: str) -> None:
-        text = self.strings.get("dialogs", {}).get("key_exists", "键已存在：{key}")
+        text = self.strings.get("dialogs", {}).get("key_exists", "Key already exists: {key}")
         self.app.toast(text.format(key=key), "warning")
 
     @pyqtSlot(int, str, str, result=bool)
@@ -402,7 +402,7 @@ class YamlEditorViewModel(PageViewModel):
             self._toast_key_exists(child_key)
             return False
         cmd = _CmdAddChild(self, path, child_key, new_value,
-                           self.strings.get("ops", {}).get("add_child", "添加子节点"))
+                           self.strings.get("ops", {}).get("add_child", "Add child"))
         self.undo_stack.push(cmd)
         if cmd.new_path:
             self._expanded.add(path)
@@ -425,10 +425,10 @@ class YamlEditorViewModel(PageViewModel):
                 new_key = f"{base}_{n}"
                 n += 1
             self.undo_stack.push(_CmdAddChild(self, parent_path, new_key, value,
-                                              self.strings.get("ops", {}).get("duplicate", "复制节点")))
+                                              self.strings.get("ops", {}).get("duplicate", "Duplicate")))
         elif isinstance(parent, list):
             self.undo_stack.push(_CmdAddChild(self, parent_path, None, value,
-                                              self.strings.get("ops", {}).get("duplicate", "复制节点")))
+                                              self.strings.get("ops", {}).get("duplicate", "Duplicate")))
         else:
             return False
         return True
@@ -444,7 +444,7 @@ class YamlEditorViewModel(PageViewModel):
         if not paths:
             return
         self.undo_stack.push(_CmdDelete(self, paths,
-                                        f"{self.strings.get('ops', {}).get('delete', '删除')} ({len(paths)})"))
+                                        f"{self.strings.get('ops', {}).get('delete', 'Delete')} ({len(paths)})"))
         self._multi_selected = set()
 
     @pyqtSlot(int)
@@ -499,7 +499,7 @@ class YamlEditorViewModel(PageViewModel):
         if paths:
             self.undo_stack.push(_CmdDelete(
                 self, paths,
-                f"{self.strings.get('ops', {}).get('range_delete', '批量删除')} [{a}, {b}] ({len(paths)})"))
+                f"{self.strings.get('ops', {}).get('range_delete', 'Delete slot range…')} [{a}, {b}] ({len(paths)})"))
 
     # -- 撤销/重做/对比 ---------------------------------------------------------- #
     @pyqtSlot()
@@ -680,20 +680,20 @@ class YamlEditorViewModel(PageViewModel):
     def _annotation_for(self, path, key, value) -> str:
         status = self.strings.get("status", {})
         if isinstance(value, dict):
-            return status.get("object_items", "对象 · {count} 项").format(count=len(value))
+            return status.get("object_items", "object · {count}").format(count=len(value))
         if isinstance(value, list):
-            return status.get("list_items", "列表 · {count} 项").format(count=len(value))
+            return status.get("list_items", "list · {count}").format(count=len(value))
         if key == "serial" and isinstance(value, str) and value.startswith("@U"):
             if self._serial_info_map is None:
                 self._build_serial_info_map()
             item = (self._serial_info_map or {}).get(tuple(path))
             if item:
-                return status.get("serial_ok", "已解码 · Lv{level} {name}").format(
+                return status.get("serial_ok", "Decoded · Lv{level} {name}").format(
                     level=item.get("level", "?"), name=item.get("name", ""))
-            return self.strings.get("inspector", {}).get("unresolved", "未识别")
+            return self.strings.get("inspector", {}).get("unresolved", "Unresolved")
         if key == "state_flags" and isinstance(value, int) and not isinstance(value, bool):
             bits = [str(i) for i in range(value.bit_length()) if value & (1 << i)]
-            return status.get("flags_bits", "位 {bits}").format(bits=" + ".join(bits)) if bits else "0"
+            return status.get("flags_bits", "bits {bits}").format(bits=" + ".join(bits)) if bits else "0"
         return ""
 
     def _change_for(self, path) -> str | None:

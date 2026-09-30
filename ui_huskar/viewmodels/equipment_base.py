@@ -21,6 +21,7 @@ from PyQt6.QtWidgets import QApplication
 from core import (
     b_encoder,
     bl4_functions as bl4f,
+    game_text,
     item_display_resolver,
     lookup,
     resource_loader,
@@ -109,7 +110,6 @@ class EquipmentBaseViewModel(PageViewModel):
         self._roll_count = 5
         self.df_main = None
         self.df_mfg = None
-        self.localization: dict[str, str] = {}
         self.mfg_ids = list(self.MFG_IDS)
 
         self._load_family_data(self.current_lang)
@@ -181,7 +181,7 @@ class EquipmentBaseViewModel(PageViewModel):
     # ------------------------------------------------------------------ #
     def _load_family_data(self, lang: str) -> None:
         self.current_lang = lang
-        self.df_main, self.df_mfg, self.localization = self.load_data(lang)
+        self.df_main, self.df_mfg = self.load_data(lang)
         self.ui_loc = self.app.localizer.section(self.UI_LOC_KEY)
         self.legit_loc = self.app.localizer.section("equipment_legit")
         self._flags = resource_loader.get_flag_labels(lang)
@@ -210,7 +210,8 @@ class EquipmentBaseViewModel(PageViewModel):
         self._level = self._character_level
 
     def _(self, text: Any) -> str:
-        return self.localization.get(str(text), str(text))
+        """Rarity/manufacturer/type name in the UI language, from the game's text."""
+        return game_text.localize_label(text, self.current_lang)
 
     def _group_base_title(self, cfg: dict[str, Any]) -> str:
         return str(self.ui_loc.get("groups", {}).get(cfg.get("title_key", ""), cfg.get("title_key", "")))
@@ -621,11 +622,8 @@ class EquipmentBaseViewModel(PageViewModel):
         legendaries after their skins ("超级士兵皮肤"), so it is only a fallback.
         """
         refs = item_display_resolver._item_index().get("part_refs") or {}
-        key = "zh" if self.current_lang == "zh-CN" else "en"
-
         def title(ref):
-            names = ref.get("name") or {}
-            text = str(names.get(key) or names.get("en") or "").strip()
+            text = game_text.pick(ref.get("name") or {}, self.current_lang).strip()
             return "" if text.casefold() in {"", "nan", "none"} else text
 
         composition = refs.get(f"{int(mfg_id)}:{int(part_id)}") or {}
@@ -699,7 +697,7 @@ class EquipmentBaseViewModel(PageViewModel):
         if rows.empty:
             return False
         row = rows.iloc[0]
-        values = [row.get("Description", ""), row.get("Description_ZH", ""), row.get("Description_EN", "")]
+        values = [row.get("Description", ""), row.get("Description_ZH", ""), row.get("Description_EN", "")]  # 金皮肤 = Gold Skin
         normalized = {str(value).strip().casefold() for value in values if pd.notna(value)}
         return bool(normalized.intersection({"gold skin", "goldskin", "金皮肤"}))
 
@@ -1435,29 +1433,13 @@ class EquipmentBaseViewModel(PageViewModel):
     # ------------------------------------------------------------------ #
     rollFinished = pyqtSignal(bool)  # True=有结果，False=无合法结果
 
-    #: “类型”字段标签的 equipment_roll 键名（按族）；本地化仅 shield_type，
-    #: 其余族走 _ROLL_TYPE_FALLBACK 四语言硬编码回退。
+    #: “类型”字段标签的 equipment_roll 键名（按族）。
     _ROLL_TYPE_LOC_KEY = {"Grenade": "grenade", "Shield": "shield",
                           "Repkit": "repkit", "Heavy Weapon": "heavy_weapon"}
-    _ROLL_TYPE_FALLBACK = {
-        "Grenade": {"zh-CN": "手雷类型", "en-US": "Grenade Type",
-                    "ru": "Тип гранаты", "ua": "Тип гранати"},
-        "Shield": {"zh-CN": "护盾类型", "en-US": "Shield Type",
-                   "ru": "Тип щита", "ua": "Тип щита"},
-        "Repkit": {"zh-CN": "修复套件类型", "en-US": "Repkit Type",
-                   "ru": "Тип ремкомплекта", "ua": "Тип ремкомплекту"},
-        "Heavy Weapon": {"zh-CN": "重武器类型", "en-US": "Heavy Weapon Type",
-                         "ru": "Тип тяжёлого оружия", "ua": "Тип важкої зброї"},
-    }
 
     def _roll_type_field_label(self, generic: dict, labels: dict) -> str:
         family = self._ROLL_TYPE_LOC_KEY.get(self.BACKPACK_TYPE_EN, "")
-        localized = str(generic.get(f"{family}_type") or "") if family else ""
-        if localized:
-            return localized
-        fallback = self._ROLL_TYPE_FALLBACK.get(self.BACKPACK_TYPE_EN) or {}
-        return str(fallback.get(self.current_lang) or fallback.get("en-US")
-                   or labels.get("weapon_type", "Type"))
+        return str((generic.get(f"{family}_type") if family else "") or labels.get("weapon_type", "Type"))
 
     def _roll_texts(self) -> dict[str, str]:
         weapon = self.app.localizer.section("weapon_gen_tab") or {}
@@ -1534,9 +1516,7 @@ class EquipmentBaseViewModel(PageViewModel):
         return value[:-2].strip() if value.endswith("皮肤") else value
 
     def _roll_catalog_name(self, root_id, composition_ref, composition) -> str:
-        names = composition.get("name") or {}
-        preferred = names.get("zh") if self.current_lang == "zh-CN" else names.get("en")
-        name = str(preferred or names.get("en") or names.get("zh") or "").strip()
+        name = game_text.pick(composition.get("name") or {}, self.current_lang).strip()
         if name.casefold() not in {"nan", "none"} and name:
             return name
         part_id = int(str(composition_ref).partition(":")[2])
@@ -1673,9 +1653,7 @@ class EquipmentBaseViewModel(PageViewModel):
         name = str(display.get("display_name") or candidate.get("name") or "—")
         rarity = str(display.get("rarity") or candidate["rarity_label"])
         element = self._roll_element_text(decoded, root_id)
-        rarity_color = item_card_data.WEAPON_CARD_RARITY_COLORS.get(
-            str(candidate.get("rarity") or "").casefold()) or item_card_data.WEAPON_CARD_RARITY_COLORS.get(
-            rarity.casefold()) or "#78909C"
+        rarity_color = item_card_data.rarity_color(candidate.get("rarity"), rarity) or "#78909C"
         return {
             "serial": serial,
             "decoded": decoded,

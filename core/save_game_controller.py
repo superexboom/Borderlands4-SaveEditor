@@ -19,6 +19,12 @@ except ImportError:
     yaml = None
 
 from . import bl4_functions as bl4f
+from . import ui_text
+
+
+def _msg(key: str, **fmt: Any) -> str:
+    """Controller message in the current UI language (shown in toasts)."""
+    return ui_text.tr(f"controller.{key}", bl4f.current_localization_lang, **fmt)
 from . import b_encoder
 from .yaml_io import get_yaml_loader, dump_yaml
 from datetime import datetime
@@ -199,19 +205,19 @@ class SaveGameController:
             elif isinstance(node, dict):
                 node = node[part]
             else:
-                raise KeyError(f"路径中断于: {part!r}")
+                raise KeyError(_msg("path_broken", part=repr(part)))
         return node
 
     def get_node(self, path: Union[tuple, list]) -> Any:
         with self._lock:
             if self.yaml_obj is None:
-                raise ValueError("存档未加载")
+                raise ValueError(_msg("not_loaded"))
             return self._resolve(path)
 
     def set_value(self, path: Union[tuple, list], value: Any) -> None:
         with self._lock:
             if not path:
-                raise ValueError("不能替换根节点")
+                raise ValueError(_msg("cannot_replace_root"))
             parent = self._resolve(path[:-1])
             last = path[-1]
             if isinstance(parent, list):
@@ -224,7 +230,7 @@ class SaveGameController:
         """在锁内对已加载存档执行一次逻辑修改（可跨多个节点），完成后置脏。"""
         with self._lock:
             if not isinstance(self.yaml_obj, dict):
-                raise ValueError("存档未加载")
+                raise ValueError(_msg("not_loaded"))
             result = change(self.yaml_obj)
         self.mark_dirty()
         return result
@@ -235,11 +241,11 @@ class SaveGameController:
             parent = self._resolve(path[:-1])
             old_key = path[-1]
             if not isinstance(parent, dict):
-                raise ValueError("只有字典节点的键可以重命名")
+                raise ValueError(_msg("rename_dict_only"))
             if old_key not in parent:
                 raise KeyError(old_key)
             if new_key in parent:
-                raise ValueError(f"键已存在: {new_key}")
+                raise ValueError(_msg("key_exists", key=new_key))
             # 重建 dict 以保持键顺序
             rebuilt = {}
             for k, v in parent.items():
@@ -255,14 +261,14 @@ class SaveGameController:
             if isinstance(node, dict):
                 skey = str(key)
                 if skey in node:
-                    raise ValueError(f"键已存在: {skey}")
+                    raise ValueError(_msg("key_exists", key=skey))
                 node[skey] = value
                 new_path = tuple(path) + (skey,)
             elif isinstance(node, list):
                 node.append(value)
                 new_path = tuple(path) + (len(node) - 1,)
             else:
-                raise ValueError("只能向字典或列表添加子节点")
+                raise ValueError(_msg("add_child_container_only"))
         self.mark_dirty()
         return new_path
 
@@ -349,7 +355,7 @@ class SaveGameController:
             start_slot, end_slot = end_slot, start_slot
         found = self.find_backpack()
         if not found:
-            raise ValueError("未找到背包节点")
+            raise ValueError(_msg("backpack_missing"))
         bp_path, backpack = found
         targets = [tuple(bp_path) + (f"slot_{n}",)
                    for n in range(start_slot, end_slot + 1)
@@ -407,7 +413,7 @@ class SaveGameController:
         with self._lock:
             target = Path(path_to_save) if path_to_save else self.save_path
             if target is None:
-                raise RuntimeError("没有可保存的目标路径")
+                raise RuntimeError(_msg("no_save_path"))
             yaml_string = self.get_yaml_string()
             data = self.encrypt_save(yaml_string)
 
@@ -620,7 +626,7 @@ class SaveGameController:
         """同步背包物品等级到角色等级。"""
         with self._lock:
             if not self.yaml_obj:
-                return 0, 0, ["存档未加载"]
+                return 0, 0, [_msg("not_loaded")]
             result = bl4f.sync_inventory_item_levels(self.yaml_obj)
         if result[0] > 0:
             self.mark_dirty()
@@ -662,7 +668,7 @@ class SaveGameController:
         返回一个表示操作结果的字符串消息。
         """
         if not self.yaml_obj:
-            raise ValueError("存档未加载，无法更新物品。")
+            raise ValueError(_msg("update_not_loaded"))
 
         result_msg: Optional[str] = None
         try:
@@ -698,18 +704,18 @@ class SaveGameController:
                     new_level = new_level_int
                     full_decoded_str = original_item_data.get("decoded_full", "")
                     if not full_decoded_str:
-                        raise ValueError("无法更新，原始物品缺少'decoded_full'信息。")
+                        raise ValueError(_msg("update_missing_decoded"))
 
                     updated_decoded_str = bl4f.update_level_in_decoded_str(full_decoded_str, new_level)
                     if not updated_decoded_str:
-                        raise ValueError("无法在解码字符串中更新等级。")
+                        raise ValueError(_msg("update_level_failed"))
 
                     new_serial, err = b_encoder.encode_to_base85(updated_decoded_str, new_level=new_level)
                     if err:
-                        raise ValueError(f"从新等级重新编码失败: {err}")
+                        raise ValueError(_msg("reencode_level_failed", error=err))
 
                     item_node['serial'] = new_serial
-                    result_msg = f"成功从新等级 {new_level} 重新编码物品。"
+                    result_msg = _msg("reencoded_level", level=new_level)
 
                 # 优先级2: 解码ID改变，需要重编码
                 elif decoded_id_str and decoded_id_str != original_item_data.get("decoded_parts"):
@@ -718,17 +724,17 @@ class SaveGameController:
 
                     new_serial, err = b_encoder.encode_to_base85(reconstructed_full_str)
                     if err:
-                        raise ValueError(f"从解码ID重新编码失败: {err}")
+                        raise ValueError(_msg("reencode_id_failed", error=err))
 
                     item_node['serial'] = new_serial
-                    result_msg = "成功从解码ID重新编码物品。"
+                    result_msg = _msg("reencoded_id")
 
                 # 如果没有重编码，只更新序列号
                 else:
                     new_serial = new_item_data.get("serial")
                     if new_serial and new_serial != item_node.get('serial'):
                         item_node['serial'] = new_serial
-                        result_msg = "成功更新物品序列号。"
+                        result_msg = _msg("serial_updated")
 
                 # 已装备物品是背包物品的镜像（按 serial 配对），改一侧必须同步另一侧，
                 # 否则进游戏会被卸下；改的是装备栏那份时背包本体也要跟上，否则编辑丢失。
@@ -737,12 +743,12 @@ class SaveGameController:
                         self.yaml_obj, item_path, old_serial, item_node.get('serial'))
 
         except (KeyError, IndexError) as e:
-            raise ValueError(f"在存档中找不到物品路径: {item_path} ({e})")
+            raise ValueError(_msg("item_path_missing", path=item_path, error=e))
 
         if result_msg is not None:
             self.mark_dirty()
             return result_msg
-        return "未检测到任何更改。"
+        return _msg("no_changes")
 
     def apply_unlock_preset(self, preset_name: str, params: Dict[str, Any] = None) -> bool:
         with self._lock:

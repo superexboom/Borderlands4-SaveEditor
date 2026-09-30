@@ -23,7 +23,7 @@ from functools import lru_cache
 from html import escape
 from typing import Any
 
-from core import item_display_resolver, resource_loader
+from core import game_text, item_display_resolver, resource_loader, ui_text
 from core.item_card_data import (
     CLASSMOD_PORTRAITS,
     EQUIPMENT_CARD_FIELDS,
@@ -53,7 +53,9 @@ def theme() -> dict[str, Any]:
 
 
 def rarity_key(rarity: Any) -> str:
-    return RARITY_HEADER_KEYS.get(str(rarity or "").strip().casefold(), "common")
+    text = str(rarity or "").strip()
+    return (RARITY_HEADER_KEYS.get(text.casefold())
+            or RARITY_HEADER_KEYS.get(game_text.english_term(text).casefold(), "common"))
 
 
 def _zh(lang: str) -> bool:
@@ -121,10 +123,10 @@ def _base(item: dict[str, Any], lang: str, level_label: str, kind: str) -> dict[
     return {
         "kind": kind,
         "item_type": str(item.get("type_en") or ""),
-        "rarity": rarity_key(item.get("rarity")),
+        "rarity": rarity_key(item.get("rarity_en") or item.get("rarity")),
         "name": str(item.get("name") or "-"),
         "type_label": str(item.get("type") or ""),
-        "level_text": (f"{level}级" if _zh(lang) else f"{level_label} {level}") if level else "",
+        "level_text": ui_text.tr("item_card.level_text", lang, level=level, label=level_label) if level else "",
         "manufacturer": _manufacturer_card_key(item),
         "thumbnail": "",
         "thumbnail_kind": kind,
@@ -182,12 +184,12 @@ def _firmware(entries: list[dict[str, Any]], lang: str) -> dict[str, Any] | None
     stem = FIRMWARE_ICON_ALIASES.get(stem, stem)
     icon = _ui_asset(f"ico_firmware_{stem}_big.png") or _existing(f"assets/item_card/extra/ico_firmware_{stem}_big.png")
     level = max(0, min(3, int(entry.get("level") or 0)))
-    return {"name": name or ("技能工艺" if _zh(lang) else "Skillcraft"), "icon": icon,
+    return {"name": name or ui_text.tr("item_card.skillcraft", lang), "icon": icon,
             "level": level, "count_text": f"{level}/3"}
 
 
-def _headline(value: str, zh_label: str, en_label: str, lang: str) -> dict[str, str] | None:
-    return {"value": value, "label": zh_label if _zh(lang) else en_label} if value else None
+def _headline(value: str, label_key: str, lang: str) -> dict[str, str] | None:
+    return {"value": value, "label": ui_text.tr(f"item_card.{label_key}", lang)} if value else None
 
 
 # --------------------------------------------------------------------------- #
@@ -208,7 +210,7 @@ def _weapon(item: dict[str, Any], lang: str, level_label: str, icon_px: int) -> 
     card["primary"] = [_stat(icon_file, value(key)) for key, icon_file in WEAPON_CARD_PRIMARY_STATS]
     card["tertiary"] = [_stat(WEAPON_CARD_SECONDARY_ICONS[key], value(key)) for key in _secondary_stat_keys(stats)]
     card["headline"] = _headline(item_display_resolver.format_weapon_stat("dps", stats.get("dps"), lang),
-                                 "伤害输出", "Damage Output", lang)
+                                 "damage_output", lang)
     details = _weapon_card_details(str(item.get("decoded_full") or ""), stats, lang)
     card["augments"] = [_augment(entry, icon_px) for entry in details.get("display_entries", details["entries"])]
     suffix = "_mode02" if stats.get("element_mode02") else ""
@@ -247,7 +249,7 @@ def _equipment(item: dict[str, Any], lang: str, level_label: str, icon_px: int) 
             formatted = ""
         if formatted and key == "health_over_time" and stats.get("duration") not in (None, ""):
             duration = item_display_resolver.format_equipment_stat("duration", stats["duration"], lang)
-            return f"{formatted}{'，持续' if _zh(lang) else ', '}{duration}"
+            return f"{formatted}{ui_text.tr('item_card.duration_joiner', lang)}{duration}"
         return str(formatted or raw)
 
     visible = [(key, icon_file, stats[key]) for key, icon_file in fields if stats.get(key) not in (None, "")]
@@ -259,19 +261,19 @@ def _equipment(item: dict[str, Any], lang: str, level_label: str, icon_px: int) 
     card["primary"] = [_stat(icon_file, value(key, raw)) for key, icon_file, raw in visible[:first]]
     card["tertiary"] = [_stat(icon_file, value(key, raw)) for key, icon_file, raw in visible[first:]]
     if dps not in (None, ""):
-        card["headline"] = _headline(value("dps", dps), "伤害输出", "Damage Output", lang)
+        card["headline"] = _headline(value("dps", dps), "damage_output", lang)
     elif healing not in (None, ""):
-        card["headline"] = _headline(value("healing", healing), "治疗", "Healing", lang)
+        card["headline"] = _headline(value("healing", healing), "healing", lang)
 
     details = item_display_resolver.resolve_equipment_card_details(str(item.get("decoded_full") or ""), item_type, lang)
     entries = list(details.get("entries", []))
     charges = stats.get("charges")
     if item_type == "Repkit" and isinstance(charges, (int, float)) and charges > 1:
         manufacturer = str(item.get("manufacturer") or "")
-        text = (f"[secondary]{manufacturer}[/secondary] - 该修复套件拥有[secondary]{int(charges)}[/secondary]个能量点"
-                if _zh(lang) else
-                f"[secondary]{manufacturer}[/secondary] - This Repkit has [secondary]{int(charges)}[/secondary] charges")
-        if not any("能量点" in str(e.get("text")) or "charges" in str(e.get("text")).casefold() for e in entries):
+        text = (f"[secondary]{manufacturer}[/secondary] - "
+                + ui_text.tr("item_card.repkit_charges", lang, count=int(charges)))
+        charge_words = {ui_text.tr("item_card.charges_word", code).casefold() for code in ui_text.UI_LANGUAGES}
+        if not any(word in str(e.get("text")).casefold() for word in charge_words for e in entries):
             entries.append({"text": text, "markup": text, "icon_asset": "", "display_kind": "normal"})
     card["augments"] = [_augment(entry, icon_px) for entry in item_display_resolver.limit_item_card_entries(entries)]
 

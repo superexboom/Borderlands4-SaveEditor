@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any
 
 from core import resource_loader
+from core.ui_text import EXTRA_CATALOGS, deep_merge as _deep_merge
 
 LANGUAGES = (
     ("zh-CN", "中文"),
@@ -17,8 +18,6 @@ LANGUAGES = (
     ("ua", "Українська"),
 )
 DEFAULT_LANGUAGE = "zh-CN"
-#: 独立维护的多语言文案文件：{"zh-CN": {...}, "en-US": {...}, "ru": {...}, "ua": {...}}
-EXTRA_CATALOGS = ("data/i18n/game_progress.json",)
 _LANGUAGE_ALIASES = {
     "zh": "zh-CN",
     "zh_cn": "zh-CN",
@@ -32,14 +31,6 @@ _LANGUAGE_ALIASES = {
     "uk-ua": "ua",
     "ua-ua": "ua",
 }
-
-
-def _deep_merge(target: dict[str, Any], extra: dict[str, Any]) -> None:
-    for key, value in extra.items():
-        if isinstance(value, dict) and isinstance(target.get(key), dict):
-            _deep_merge(target[key], value)
-        else:
-            target[key] = value
 
 
 def normalize_language(lang: object) -> str:

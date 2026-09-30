@@ -2,71 +2,12 @@
 
 import re
 
-from core import decoder_logic
-
-
-_SOURCE_TEXTS = {
-    "zh-CN": {
-        "new_source": "来源：新建物品",
-        "backpack": "从背包选择",
-        "base85": "导入 Base85",
-        "reset": "重置为新建",
-        "backpack_title": "选择背包物品",
-        "search": "搜索名称、厂商或类型…",
-        "base85_title": "导入 Base85",
-        "base85_label": "粘贴物品 Base85 序列：",
-        "imported": "来源：{name}（副本）",
-        "no_save": "请先加载存档。",
-        "wrong_type": "该序列不是此编辑器支持的物品。",
-        "import_error": "导入失败",
-    },
-    "en-US": {
-        "new_source": "Source: New item",
-        "backpack": "Backpack",
-        "base85": "Import Base85",
-        "reset": "Reset to new",
-        "backpack_title": "Select backpack item",
-        "search": "Search name, manufacturer, or type…",
-        "base85_title": "Import Base85",
-        "base85_label": "Paste an item Base85 serial:",
-        "imported": "Source: {name} (copy)",
-        "no_save": "Load a save before choosing from the backpack.",
-        "wrong_type": "This serial is not an item supported by this editor.",
-        "import_error": "Import failed",
-    },
-    "ru": {
-        "new_source": "Источник: новый предмет",
-        "backpack": "Из рюкзака",
-        "base85": "Base85",
-        "reset": "Новый",
-        "backpack_title": "Выбор предмета из рюкзака",
-        "search": "Поиск по имени, производителю или типу…",
-        "base85_title": "Импорт Base85",
-        "base85_label": "Вставьте Base85 предмета:",
-        "imported": "Источник: {name} (копия)",
-        "no_save": "Сначала загрузите сохранение.",
-        "wrong_type": "Этот код не поддерживается данным редактором.",
-        "import_error": "Ошибка импорта",
-    },
-    "ua": {
-        "new_source": "Джерело: новий предмет",
-        "backpack": "З рюкзака",
-        "base85": "Base85",
-        "reset": "Новий",
-        "backpack_title": "Вибір предмета з рюкзака",
-        "search": "Пошук за назвою, виробником або типом…",
-        "base85_title": "Імпорт Base85",
-        "base85_label": "Вставте Base85 предмета:",
-        "imported": "Джерело: {name} (копія)",
-        "no_save": "Спочатку завантажте збереження.",
-        "wrong_type": "Цей код не підтримується цим редактором.",
-        "import_error": "Помилка імпорту",
-    },
-}
+from core import decoder_logic, ui_text
 
 
 def source_texts(lang):
-    return _SOURCE_TEXTS.get(lang, _SOURCE_TEXTS["en-US"])
+    """Texts of the item-source bar (catalog section ``item_source``)."""
+    return dict(ui_text.section("item_source", lang))
 
 
 def decode_base85(serial):

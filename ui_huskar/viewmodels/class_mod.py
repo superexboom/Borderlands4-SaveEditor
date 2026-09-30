@@ -15,7 +15,7 @@ from typing import Any
 from PyQt6.QtCore import pyqtProperty, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import QApplication
 
-from core import b_encoder, item_display_resolver, resource_loader
+from core import b_encoder, game_text, item_display_resolver, resource_loader
 from core.legit_status import candidate_state, evaluate as evaluate_legit
 from core.serial_import import (
     build_header,
@@ -99,7 +99,7 @@ class ClassModViewModel(PageViewModel):
         self._b85_output = ""
         self._encode_error = False
         self._legit_status: dict[str, Any] = {
-            "status": "unknown", "label": "未知", "detail": ""
+            "status": "unknown", "label": "", "detail": ""
         }
         self._generation_context: dict[str, Any] = {}
         self._roll_results: list[dict[str, Any]] = []
@@ -154,18 +154,19 @@ class ClassModViewModel(PageViewModel):
 
     def _load_lang_data(self) -> None:
         self.current_lang = str(self.app.language)
-        if self.current_lang in ("en-US", "ru", "ua"):
-            self.localization = {}
-        else:
-            self.localization = resource_loader.load_class_mods_json("class_localization.json") or {}
         self._flags = resource_loader.get_flag_labels(self.current_lang)
         self._flag_labels = [self._flags[k] for k in _FLAG_CODE_ORDER if k in self._flags]
 
     def _(self, text: Any) -> str:
-        return self.localization.get(str(text), str(text))
+        """Class (character) or rarity name in the UI language, from the game's text."""
+        return game_text.localize_label(text, self.current_lang)
 
-    def _pick_text(self, zh: str, en: str) -> str:
-        return zh if self.current_lang == "zh-CN" else en
+    def _col(self, row: dict[str, Any], base: str) -> str:
+        """``<base>_EN/_ZH/_RU/_DE`` cell in the UI language (English fallback)."""
+        return game_text.csv_text(row, base, self.current_lang)
+
+    def _search_cols(self, row: dict[str, Any], base: str) -> str:
+        return " ".join(dict.fromkeys(str(row.get(f"{base}_{code}") or "") for code in ("EN", "ZH", "RU", "DE")))
 
     def _loc(self, section: str, key: str, en: str, **fmt: Any) -> str:
         text = self.strings.get(section, {}).get(key) or en
@@ -228,9 +229,7 @@ class ClassModViewModel(PageViewModel):
     def nameOptions(self) -> list[dict[str, Any]]:
         options = []
         for row in self._name_rows():
-            name_en = row.get("name_EN", "")
-            name_zh = row.get("name_ZH", "")
-            display = name_zh if (self.current_lang == "zh-CN" and name_zh) else name_en
+            display = self._col(row, "name")
             code = str(row.get("name_code", ""))
             effect = self._legendary_effect(code) if self.legendaryEnabled else ""
             options.append({"label": display, "value": display,
@@ -281,7 +280,7 @@ class ClassModViewModel(PageViewModel):
 
     @pyqtProperty(str, notify=dataChanged)
     def legendaryGuidance(self) -> str:
-        return "额外名称均为魔改" if self.current_lang == "zh-CN" else "Extra names are modified"
+        return self.app.tr("class_mod_tab.guidance.extra_names_modified")
 
     @pyqtProperty(str, notify=dataChanged)
     def skillGuidance(self) -> str:
@@ -361,10 +360,8 @@ class ClassModViewModel(PageViewModel):
         primary_display = self._current_name_display()
         items = []
         for name_row in legendary_names:
-            name_en = name_row.get("name_EN", "")
-            name_zh = name_row.get("name_ZH", "")
             name_code = name_row.get("name_code", "")
-            display_name = name_zh if (self.current_lang == "zh-CN" and name_zh) else name_en
+            display_name = self._col(name_row, "name")
             if display_name == primary_display:
                 continue
             effect = self._legendary_effect(str(name_code))
@@ -374,7 +371,7 @@ class ClassModViewModel(PageViewModel):
                 "label": display_name or str(name_code),
                 "detail": effect,
                 "tooltip": effect,
-                "searchText": f"{name_en} {name_zh} {name_code} {effect}",
+                "searchText": f"{self._search_cols(name_row, 'name')} {name_code} {effect}",
                 "data": {"name_code": name_code},
                 **state,
             })
@@ -395,7 +392,7 @@ class ClassModViewModel(PageViewModel):
         for row in skills_list:
             color = row.get("tree_color", "")
             if color:
-                tree_names[color] = self._pick_text(row.get("tree_name_ZH", ""), row.get("tree_name_EN", ""))
+                tree_names[color] = self._col(row, "tree_name")
         color_labels = {
             "red": self._loc("skill_trees", "red", "Red"),
             "green": self._loc("skill_trees", "green", "Green"),
@@ -423,8 +420,7 @@ class ClassModViewModel(PageViewModel):
         color_order = {"red": 0, "green": 1, "blue": 2}
         for skill_row in skills_list:
             skill_en = skill_row.get("skill_name_EN", "")
-            skill_zh = skill_row.get("skill_name_ZH", "")
-            localized_name = skill_zh if self.current_lang == "zh-CN" and skill_zh else skill_en
+            localized_name = self._col(skill_row, "skill_name") or skill_en
             display_name = re.sub(r" [BGR]$", "", localized_name) if current_class_en == "C4sh" else localized_name
             codes = []
             for i in range(1, 6):
@@ -432,7 +428,7 @@ class ClassModViewModel(PageViewModel):
                 if code:
                     codes.append(int(code))
             color = skill_row.get("tree_color", "")
-            tree_name = self._pick_text(skill_row.get("tree_name_ZH", ""), skill_row.get("tree_name_EN", ""))
+            tree_name = self._col(skill_row, "tree_name")
             stable_key = skill_row.get("skill_key") or f"{current_class_id}:{codes[0] if codes else skill_en}"
             count = counts.get(stable_key, 0)
             next_code = codes[min(count, len(codes) - 1)] if codes else None
@@ -447,7 +443,7 @@ class ClassModViewModel(PageViewModel):
                 "tooltip": self._skill_tooltip(skill_row, display_name),
                 "maxCount": len(codes),
                 "count": count,
-                "searchText": f"{skill_en} {skill_zh} {tree_name} {skill_row.get('skill_internal', '')}",
+                "searchText": f"{self._search_cols(skill_row, 'skill_name')} {tree_name} {skill_row.get('skill_internal', '')}",
                 "data": {"codes": codes, "skill_key": stable_key},
                 **state,
             })
@@ -496,7 +492,6 @@ class ClassModViewModel(PageViewModel):
         for perk_row in self.perks_data:
             perk_id = perk_row.get("perk_ID", "")
             perk_en = perk_row.get("perk_name_EN", "")
-            perk_zh = perk_row.get("perk_name_ZH", "")
             internal = perk_row.get("perk_internal", "")
             category = perk_row.get("perk_category", "other") or "other"
             firmware = (
@@ -513,9 +508,9 @@ class ClassModViewModel(PageViewModel):
                 search_text = " ".join((perk_id, internal, display_name, *descs))
                 tooltip = "\n".join(tooltip_lines)
             else:
-                display_name = perk_zh if self.current_lang == "zh-CN" and perk_zh else perk_en
+                display_name = self._col(perk_row, "perk_name") or perk_en
                 detail = f"{internal}  ·  ID {perk_id}" if internal else f"ID {perk_id}"
-                search_text = f"{perk_id} {internal} {perk_en} {perk_zh}"
+                search_text = f"{perk_id} {internal} {self._search_cols(perk_row, 'perk_name')}"
                 tooltip = detail
             ref = f"234:{perk_id}"
             state = self._candidate(ref, display_name)
@@ -635,7 +630,7 @@ class ClassModViewModel(PageViewModel):
     def _build_lucky_current(self) -> bool:
         """Fill the current class/rarity/name template with one natural build."""
         if not self._generation_context.get("composition_ref"):
-            self.app.toast(self._pick_text("当前模板没有可用的自然生成规则。", "No natural generation rule is available for this template."), "warning")
+            self.app.toast(self.app.tr("class_mod_tab.guidance.no_generation_rule"), "warning")
             return False
 
         state_fields = (
@@ -990,7 +985,7 @@ class ClassModViewModel(PageViewModel):
                     name_code = str(row.get("name_code", ""))
                     if not name_code.isdigit():
                         continue
-                    label = self._pick_text(row.get("name_ZH", ""), row.get("name_EN", ""))
+                    label = self._col(row, "name")
                     catalog.append({
                         "class": class_en, "rarity": rarity_en,
                         "name": label, "name_code": name_code,
@@ -1000,7 +995,7 @@ class ClassModViewModel(PageViewModel):
 
     @pyqtProperty("QVariantMap", notify=dataChanged)
     def rollConstraintOptions(self) -> dict[str, Any]:
-        random_label = "随机" if self.current_lang == "zh-CN" else "Random"
+        random_label = self.app.tr("item_roll.random")
         classes = [{"label": random_label, "value": None}, *self.classOptions]
         rarities = [{"label": random_label, "value": None}, *self.rarityOptions]
         names = [{"label": random_label, "value": None}]
@@ -1103,10 +1098,7 @@ class ClassModViewModel(PageViewModel):
         finally:
             self._restore_roll_state(saved)
         self._roll_results = results
-        self._roll_summary = (
-            f"已生成 {len(results)} 个合法职业模组" if self.current_lang == "zh-CN"
-            else f"Generated {len(results)} legal class mods"
-        )
+        self._roll_summary = self.app.tr("item_roll.class_mod_generated", count=len(results))
         self.dataChanged.emit()
         self.rollFinished.emit(bool(results))
         return bool(results)
@@ -1176,29 +1168,28 @@ class ClassModViewModel(PageViewModel):
 
     @pyqtProperty("QVariantMap", notify=dataChanged)
     def rollTexts(self) -> dict[str, str]:
-        zh = self.current_lang == "zh-CN"
+        roll = lambda key: self.app.tr(f"item_roll.{key}")
         return {
-            "lucky": "手气不错" if zh else "I'm Feeling Lucky",
-            "rolling": "生成中…" if zh else "Generating…",
-            "results_title": "职业模组随机结果" if zh else "Class Mod Roll Results",
-            "select_result": "从左侧选择一个职业模组" if zh else "Select a class mod",
-            "add_one": "加入背包" if zh else "Add to Backpack",
-            "copy": "复制 Base85" if zh else "Copy Base85",
-            "constraints_title": "随机选项" if zh else "Roll Options",
-            "class": "职业" if zh else "Class",
-            "rarity": "稀有度" if zh else "Rarity",
-            "named_item": "传奇名称" if zh else "Named Class Mod",
-            "count": "数量" if zh else "Count",
-            "matches": "可用模板：{count}" if zh else "Matching templates: {count}",
-            "no_matches": "没有可用模板" if zh else "No matching templates",
-            "roll": "开始 Roll" if zh else "Roll",
-            "no_legal_result": "没有可生成的合法职业模组" if zh else "No legal class-mod result",
-            "legendary": "传奇专属加成" if zh else "Legendary Bonus",
-            "skills": "技能" if zh else "Skills",
-            "perks": "专长" if zh else "Perks",
-            "add_all": self.app.tr("weapon_gen_tab.buttons.add_all", default="全部加入背包" if zh else "Add All"),
-            "add_done": self.app.tr("weapon_gen_tab.dialogs.roll_add_done",
-                                    default="已加入 {success} 件，失败 {fail} 件" if zh else "Added {success}; failed {fail}"),
+            "lucky": roll("lucky"),
+            "rolling": roll("rolling"),
+            "results_title": roll("class_mod_results_title"),
+            "select_result": roll("class_mod_select_result"),
+            "add_one": roll("add_one"),
+            "copy": roll("copy"),
+            "constraints_title": roll("constraints_title"),
+            "class": roll("class"),
+            "rarity": roll("rarity"),
+            "named_item": roll("named_item"),
+            "count": roll("count"),
+            "matches": roll("matches"),
+            "no_matches": roll("no_matches"),
+            "roll": roll("roll"),
+            "no_legal_result": roll("class_mod_no_legal"),
+            "legendary": roll("legendary"),
+            "skills": roll("skills"),
+            "perks": roll("perks"),
+            "add_all": self.app.tr("weapon_gen_tab.buttons.add_all"),
+            "add_done": self.app.tr("weapon_gen_tab.dialogs.roll_add_done"),
         }
 
     @pyqtSlot("QVariantList")
@@ -1601,9 +1592,7 @@ class ClassModViewModel(PageViewModel):
     def _name_display_list(self) -> list[str]:
         result = []
         for name_row in self._name_rows():
-            name_en = name_row.get("name_EN", "")
-            name_zh = name_row.get("name_ZH", "")
-            result.append(name_zh if (self.current_lang == "zh-CN" and name_zh) else name_en)
+            result.append(self._col(name_row, "name"))
         return result
 
     def _current_name_display(self) -> str:
@@ -1615,9 +1604,7 @@ class ClassModViewModel(PageViewModel):
     def _current_name_code(self) -> int:
         display = self._current_name_display()
         for name_row in self._name_rows():
-            name_en = name_row.get("name_EN", "")
-            name_zh = name_row.get("name_ZH", "")
-            candidate = name_zh if (self.current_lang == "zh-CN" and name_zh) else name_en
+            candidate = self._col(name_row, "name")
             if candidate == display:
                 code = name_row.get("name_code", "")
                 return int(code) if str(code).isdigit() else 0
@@ -1647,7 +1634,7 @@ class ClassModViewModel(PageViewModel):
 
     def _skill_tooltip(self, skill_row, display_name: str) -> str:
         from html import escape
-        desc_text = self._pick_text(skill_row.get("description_ZH", ""), skill_row.get("description_EN", ""))
+        desc_text = self._col(skill_row, "description")
         if not desc_text:
             return ""
         skill_type = (self._loc("skill_trees", "passive", "Passive")
@@ -1803,9 +1790,8 @@ class ClassModViewModel(PageViewModel):
             self._class_index = self.CLASS_NAMES.index(class_en)
             self._rarity_index = _RARITIES.index(rarity_en)
             display_name = next(
-                (name_zh if (self.current_lang == "zh-CN" and name_zh) else name_en
+                (self._col(row, "name")
                  for row in name_rows
-                 for name_en, name_zh in [(row.get("name_EN", ""), row.get("name_ZH", ""))]
                  if str(row.get("name_code", "")).isdigit() and int(row["name_code"]) == name_code),
                 None)
             if not display_name:

@@ -7,6 +7,11 @@ import "../components"
 // 强化模组编辑器页：对齐主线 QtEnhancementEditorTab
 LockedFlickable {
     id: page
+    // Read the language first so the binding re-evaluates on a language switch.
+    function tr(path) {
+        var language = appBridge.language;
+        return appBridge.trText(path);
+    }
     objectName: "enhancementPage"
     enabled: !vmEnhancement.rollBusy
     contentWidth: width
@@ -185,7 +190,7 @@ LockedFlickable {
                     HusButton {
                         objectName: "enhancementLuckyRoll"
                         text: "🎲 " + (vmEnhancement.rollBusy
-                              ? (vmEnhancement.rollTexts.rolling || "生成中…")
+                              ? vmEnhancement.rollTexts.rolling
                               : (vmEnhancement.rollTexts.lucky || ""))
                         enabled: vmEnhancement.dataLoaded && !vmEnhancement.rollBusy
                         onClicked: vmEnhancement.startQuickRoll()
@@ -254,9 +259,9 @@ LockedFlickable {
                 entries: vmEnhancement.stackEntries
                 stackable: false
                 clearText: (vmLoc.buttons || ({})).clear || "Clear"
-                addText: (vmLoc.buttons || ({})).add_selected || ((appBridge.language === "zh-CN") ? "添加所选 →" : "Add selected →")
-                availText: (vmLoc.picker || ({})).available || ((appBridge.language === "zh-CN") ? "可选" : "Available")
-                selectedText: (vmLoc.picker || ({})).selected_stacks || ((appBridge.language === "zh-CN") ? "已选专长" : "Selected Stacks")
+                addText: (vmLoc.buttons || ({})).add_selected || page.tr("picker.add_selected")
+                availText: (vmLoc.picker || ({})).available || page.tr("picker.available")
+                selectedText: (vmLoc.picker || ({})).selected_stacks || page.tr("picker.selected_stacks")
                 onAddRequested: function(keys) { vmEnhancement.addStackItems(keys); }
                 onRemoveRequested: function(index) { vmEnhancement.removeStackItem(index); }
                 onClearRequested: vmEnhancement.clearStack()
@@ -282,9 +287,9 @@ LockedFlickable {
                 entries: vmEnhancement.statEntries
                 listHeight: 720
                 clearText: (vmLoc.buttons || ({})).clear || "Clear"
-                addText: (vmLoc.buttons || ({})).add_selected || ((appBridge.language === "zh-CN") ? "添加所选 →" : "Add selected →")
-                availText: (vmLoc.picker || ({})).available || ((appBridge.language === "zh-CN") ? "可选" : "Available")
-                selectedText: (vmLoc.picker || ({})).selected_stats || ((appBridge.language === "zh-CN") ? "已选属性" : "Selected Stats")
+                addText: (vmLoc.buttons || ({})).add_selected || page.tr("picker.add_selected")
+                availText: (vmLoc.picker || ({})).available || page.tr("picker.available")
+                selectedText: (vmLoc.picker || ({})).selected_stats || page.tr("picker.selected_stats")
                 onAddRequested: function(keys) { vmEnhancement.addStatItems(keys); }
                 onRemoveRequested: function(index) { vmEnhancement.removeStatItem(index); }
                 onCountChanged: function(indices, value) { vmEnhancement.setStatItemsCount(indices, value); }

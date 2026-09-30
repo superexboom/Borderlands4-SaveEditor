@@ -7,7 +7,7 @@ from math import ceil, floor
 import re
 from typing import Any, Iterable
 
-from . import weapon_display_stats as weapon
+from . import game_text, weapon_display_stats as weapon
 
 
 FAMILY_BY_ITEM_TYPE = {
@@ -1200,7 +1200,7 @@ def _display_uistat_number(value: float, attribute: str, template: str, arg: dic
         if arg.get("bdisplayplussign") and value > 0:
             rendered = "+" + rendered
         formattext = arg.get("formattext") or {}
-        fmt = formattext.get("zh" if lang == "zh-CN" else "en") or formattext.get("en") or "$VALUE$"
+        fmt = game_text.pick(formattext, lang, "$VALUE$")
         return rendered if fmt in {"$VALUE$", "$VALUE$s", "$VALUE$秒"} else str(fmt).replace("$VALUE$", rendered)
     augment_percent = bool(arg.get("_inventory_augment")) and abs(value) <= 1.0 and not any(
         marker in attr for marker in ("count", "segment", "radius", "duration", "time", "target", "missile", "charge")
@@ -1223,7 +1223,7 @@ def _display_uistat_number(value: float, attribute: str, template: str, arg: dic
     else:
         rendered = f"{value:.2f}".rstrip("0").rstrip(".")
     formattext = arg.get("formattext") or {}
-    fmt = formattext.get("zh" if lang == "zh-CN" else "en") or formattext.get("en") or "$VALUE$"
+    fmt = game_text.pick(formattext, lang, "$VALUE$")
     if fmt in {"$VALUE$", "$VALUE$s", "$VALUE$秒"}:
         return rendered
     return str(fmt).replace("$VALUE$", rendered)
@@ -1423,7 +1423,10 @@ def equipment_part_uistat_descriptions(
         if any(marker in ui_key for marker in ("redtext", "red_text", "typeline")):
             continue
         ui = (model.get("ui_stats") or {}).get(ui_key) or (index.get("uistats") or {}).get(ui_key) or {}
-        text = str(ui.get("zh" if lang == "zh-CN" else "en") or ui.get("en") or "")
+        text = game_text.pick(ui, lang)
+        # The number format (percent, sign) is read from the English template: the
+        # heuristics look for words such as "chance" or "resistance".
+        english = str(ui.get("en") or text)
         placeholders = set(re.findall(r"\{(\w+)\}", text))
         args = ((ui.get("statvalue") or {}).get("args") or {})
         folded = {str(key).casefold(): value for key, value in args.items()}
@@ -1447,7 +1450,10 @@ def equipment_part_uistat_descriptions(
             display_arg = {**arg, "_inventory_augment": "inventoryaugmentattributevalueresolver" in resolver_kind}
             text = text.replace(
                 f"{{{placeholder}}}",
-                _display_uistat_number(value, attribute, _placeholder_context(text, placeholder), display_arg, lang),
+                _display_uistat_number(
+                    value, attribute,
+                    _placeholder_context(english if f"{{{placeholder}}}" in english else text, placeholder),
+                    display_arg, lang),
             )
         text = re.sub(r"\[glyph\].*?\[/glyph\]", "", text, flags=re.IGNORECASE)
         markup = " ".join(text.split())  # values filled in, highlight/icon tags kept (item card)

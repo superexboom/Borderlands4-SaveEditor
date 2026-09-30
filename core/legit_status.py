@@ -11,6 +11,7 @@ from typing import Any
 
 from functools import lru_cache
 
+from . import ui_text
 from .item_display_resolver import (
     generation_blocked_groups,
     generation_conflict_possible,
@@ -18,22 +19,8 @@ from .item_display_resolver import (
 )
 
 
-STATUS_LABELS = {
-    "zh-CN": {
-        "legal": "Legit · 合法",
-        "incomplete": "未完成",
-        "modified": "非法组合",
-        "unknown": "未知",
-        "conditional": "条件合法",
-    },
-    "en-US": {
-        "legal": "Legit · Legal",
-        "incomplete": "Incomplete",
-        "modified": "Invalid combination",
-        "unknown": "Unknown",
-        "conditional": "Conditional",
-    },
-}
+#: status -> catalog key under ``legit.status``
+STATUS_KEYS = ("legal", "incomplete", "modified", "unknown", "conditional")
 
 STATUS_COLORS = {
     "legal": "legal",
@@ -43,66 +30,28 @@ STATUS_COLORS = {
     "conditional": "conditional",
 }
 
-REASON_LABELS = {
-    "zh-CN": {
-        "count_below": "必需槽位尚未填满",
-        "count_above": "超过该槽位的最大数量",
-        "part_not_allowed": "包含当前模板不允许的部件",
-        "foreign_root_part": "包含其他物品类型或厂商的部件",
-        "unknown_part": "存在索引未识别的部件",
-        "unknown_composition": "稀有度模板无法识别",
-        "rules_unavailable": "没有可用的生成规则",
-        "weapon_rules_missing": "当前根类型没有生成规则",
-        "unresolved_rule_parts": "规则中仍有未解析的部件",
-        "conditional_availability": "规则带有版本或场景条件",
-        "duplicate_part": "同一部件重复占用槽位",
-        "tag_count_below": "标签数量未达到规则要求",
-        "tag_limit": "标签数量超过规则上限",
-        "missing_required_tag": "缺少前置依赖标签",
-        "excluded_tag_conflict": "与排除标签冲突",
-        "inheritance_cycle": "规则继承出现循环",
-        "invalid_serial": "序列格式无效",
-    },
-    "en-US": {
-        "count_below": "Required slots are not filled",
-        "count_above": "Slot count exceeds the rule maximum",
-        "part_not_allowed": "A part is not allowed by this template",
-        "foreign_root_part": "A part belongs to another type or manufacturer",
-        "unknown_part": "A part is missing from the index",
-        "unknown_composition": "The rarity template is unknown",
-        "rules_unavailable": "No generation rules are available",
-        "weapon_rules_missing": "No rules exist for this root type",
-        "unresolved_rule_parts": "The rule contains unresolved parts",
-        "conditional_availability": "The rule has a version or context condition",
-        "duplicate_part": "The same part occupies a slot more than once",
-        "tag_count_below": "Required tag count is not met",
-        "tag_limit": "Tag count exceeds the rule limit",
-        "missing_required_tag": "A dependency tag is missing",
-        "excluded_tag_conflict": "An exclusion tag conflicts",
-        "inheritance_cycle": "Rule inheritance contains a cycle",
-        "invalid_serial": "The serial format is invalid",
-    },
-}
-
-GROUP_LABELS_ZH = {
-    "class_mod_body": "传奇名称", "passive_points": "技能点", "action_skill_mod": "主动技能加成",
-    "special_passive": "特殊技能", "stat_group1": "属性槽 1", "stat_group2": "属性槽 2",
-    "stat_group3": "属性槽 3", "firmware": "固件", "core_augment": "核心强化",
-    "body": "稀有度核心",
-}
-
-
 def _language(language: str) -> str:
-    return "zh-CN" if str(language).startswith("zh") else "en-US"
+    return str(language or "zh-CN")
+
+
+def _t(key: str, language: str, **fmt: Any) -> str:
+    return ui_text.tr(f"legit.{key}", _language(language), **fmt)
+
+
+def _status_label(status: str, language: str) -> str:
+    return _t(f"status.{status if status in STATUS_KEYS else 'unknown'}", language)
+
+
+def _group_label(group: str, language: str) -> str:
+    return ui_text.tr(f"legit.groups.{group}", _language(language),
+                      default=str(group).replace("_", " ").title())
 
 
 def _detail(violations: list[dict[str, Any]], language: str) -> str:
-    lang = _language(language)
-    labels = REASON_LABELS[lang]
     counts = Counter(str(row.get("code", "unknown")) for row in violations)
     lines = []
     for code, count in counts.items():
-        label = labels.get(code, code)
+        label = ui_text.tr(f"legit.reasons.{code}", _language(language), default=code)
         lines.append(f"{label} ×{count}" if count > 1 else label)
     return "\n".join(lines)
 
@@ -115,23 +64,15 @@ def evaluate(decoded: str, language: str = "zh-CN", *, index: dict[str, Any] | N
         status = "unknown"
         result = {"status": status, "violations": [{"code": "invalid_serial", "error": str(exc)}]}
     raw_status = str(result.get("status") or "unknown")
-    status = raw_status if raw_status in STATUS_LABELS["zh-CN"] else "unknown"
+    status = raw_status if raw_status in STATUS_KEYS else "unknown"
     violations = list(result.get("violations") or [])
     detail = _detail(violations, language)
     if not detail:
-        detail = (
-            "规则完整，已选部件都能在当前 NCS 生成池中完成。"
-            if _language(language) == "zh-CN" else
-            "The selected parts form a complete build in the current NCS pool."
-        ) if status == "legal" else (
-            "尚未发现足够的规则或部件数据，暂不判定。"
-            if _language(language) == "zh-CN" else
-            "There is not enough rule or part data to decide."
-        )
+        detail = _t("detail_legal" if status == "legal" else "detail_unknown", language)
     return {
         "status": STATUS_COLORS.get(status, "unknown"),
         "rawStatus": status,
-        "label": STATUS_LABELS[_language(language)].get(status, STATUS_LABELS[_language(language)]["unknown"]),
+        "label": _status_label(status, language),
         "detail": detail,
         "violations": violations,
         "coverageComplete": bool(result.get("coverage_complete")),
@@ -145,10 +86,9 @@ def option_status(option: dict[str, Any], language: str = "zh-CN") -> dict[str, 
     kind = str(option.get("kind") or option.get("candidate", {}).get("kind") or "unknown")
     mapping = {"legal": "legal", "warning": "conditional", "unknown": "unknown"}
     status = mapping.get(kind, "unknown")
-    lang = _language(language)
     return {
         "status": status,
-        "label": STATUS_LABELS[lang].get(status, STATUS_LABELS[lang]["unknown"]),
+        "label": _status_label(status, language),
         "detail": str(option.get("hint") or option.get("tooltip") or ""),
     }
 
@@ -190,11 +130,10 @@ def candidate_state(
     not repeatedly run the generation evaluator.
     """
     refs = [str(ref) for ref in ([refs] if isinstance(refs, str) else refs) if ref]
-    zh = _language(language) == "zh-CN"
+    c = lambda key, **fmt: _t(f"candidate.{key}", language, **fmt)
     if not refs or not context.get("rules_available") or not context.get("composition_ref"):
         return {
-            "kind": "unknown", "marker": "?", "badge": "规则未知" if zh else "Rules unknown",
-            "hint": "没有足够的规则数据判断这个部件。" if zh else "There is not enough rule data to classify this part.",
+            "kind": "unknown", "marker": "?", "badge": c("unknown_badge"), "hint": c("unknown_hint"),
         }
     groups = context.get("groups") or {}
     matched: list[tuple[str, dict[str, Any], str]] = []
@@ -204,12 +143,8 @@ def candidate_state(
                 matched.append((str(group), spec, ref))
     if not matched:
         return {
-            "kind": "modified", "marker": "◇", "badge": "非自然配件" if zh else "Modified part",
-            "hint": (
-                f"{label or '该部件'}不在当前传奇/稀有度模板的自然生成池内；仍可作为魔改选择。"
-                if zh else
-                f"{label or 'This part'} is outside the natural pool for the current template; it remains selectable as a modified part."
-            ),
+            "kind": "modified", "marker": "◇", "badge": c("outside_badge"),
+            "hint": c("outside_hint", label=label or _t("this_part", language)),
         }
 
     active = [(group, spec, ref) for group, spec, ref in matched
@@ -217,39 +152,31 @@ def candidate_state(
               or ref in set(spec.get("selected") or [])]
     if not active:
         return {
-            "kind": "modified", "marker": "◇", "badge": "当前模板不启用" if zh else "Inactive in template",
-            "hint": "部件存在于基础池，但当前模板没有启用对应槽位。" if zh else
-                    "The part exists in the base pool, but this template does not activate its slot.",
+            "kind": "modified", "marker": "◇", "badge": c("inactive_badge"), "hint": c("inactive_hint"),
         }
 
     names = " / ".join(dict.fromkeys(
-        GROUP_LABELS_ZH.get(group, group) if zh else group.replace("_", " ").title()
-        for group, _spec, _ref in active))
+        _group_label(group, language) for group, _spec, _ref in active))
     selected = any(ref in set(spec.get("selected") or []) for _group, spec, ref in active)
     remaining = any(ref in set(spec.get("remaining_eligible_refs") or []) for _group, spec, ref in active)
     eligible = any(ref in set(spec.get("eligible_refs") or []) for _group, spec, ref in active)
     duplicate = any(list(context.get("selected_part_refs") or []).count(ref) > 1 for ref in refs)
     if duplicate:
         return {
-            "kind": "modified", "marker": "◇", "badge": "重复部件" if zh else "Duplicate part",
-            "hint": "该部件重复占用了自然生成槽位。" if zh else "This part occupies a natural slot more than once.",
+            "kind": "modified", "marker": "◇", "badge": c("duplicate_badge"), "hint": c("duplicate_hint"),
         }
     overfull = any(ref in set(spec.get("selected") or [])
                    and len(spec.get("selected") or []) > int(spec.get("effective_max", spec.get("max", 0)))
                    for _group, spec, ref in active)
     if overfull:
         return {
-            "kind": "modified", "marker": "◇", "badge": "超过槽位上限" if zh else "Slot limit exceeded",
-            "hint": f"当前 {names} 的已选数量超过自然生成上限。" if zh else
-                    f"The selected count exceeds the natural limit for {names}.",
+            "kind": "modified", "marker": "◇", "badge": c("overfull_badge"), "hint": c("overfull_hint", names=names),
         }
     blocked_selected = any(ref in set(spec.get("selected") or []) and not spec.get("selected_reachable", False)
                            for _group, spec, ref in active)
     if blocked_selected:
         return {
-            "kind": "warning", "marker": "!", "badge": "当前组合冲突" if zh else "Current combination conflicts",
-            "hint": f"该部件属于 {names}，但当前依赖或排除关系无法到达这个组合。" if zh else
-                    f"The part belongs to {names}, but current dependencies or exclusions make the combination unreachable.",
+            "kind": "warning", "marker": "!", "badge": c("unreachable_badge"), "hint": c("unreachable_hint", names=names),
         }
     if remaining and decoded and not any(ref in set(spec.get("selected") or []) for _g, spec, ref in active):
         # A group only sees the tags of the groups evaluated before it: a part that
@@ -259,48 +186,31 @@ def candidate_state(
             code = cross_group_conflict(context, ref, decoded)
             if code:
                 return {
-                    "kind": "warning", "marker": "!", "badge": "与已选部件冲突" if zh else "Conflicts with a pick",
-                    "hint": (f"它属于合法池（{names}），但与其他组已选的部件冲突"
-                             f"（{code}）；加上后会变成魔改。" if zh else
-                             f"It belongs to the natural pool ({names}), but it conflicts with a part picked in "
-                             f"another group ({code}); adding it makes the build modified."),
+                    "kind": "warning", "marker": "!", "badge": c("conflict_badge"),
+                    "hint": c("conflict_hint", names=names, code=code),
                 }
     if remaining and not selected:
         blocked = [group for _group, _spec, ref in active for group in generation_blocked_groups(context, ref)]
         if blocked:
-            blocked_names = " / ".join(dict.fromkeys(
-                GROUP_LABELS_ZH.get(group, group) if zh else group.replace("_", " ").title() for group in blocked))
+            blocked_names = " / ".join(dict.fromkeys(_group_label(group, language) for group in blocked))
             return {
-                "kind": "warning", "marker": "!", "badge": "会卡住必选组" if zh else "Blocks a required group",
-                "hint": (f"它本身可以选，但选上后 {blocked_names} 就没有能用的部件了，整件无法补齐。" if zh else
-                         f"It can be picked, but then {blocked_names} has no usable part left and the build cannot be completed."),
+                "kind": "warning", "marker": "!", "badge": c("blocks_badge"), "hint": c("blocks_hint", names=blocked_names),
             }
     if remaining:
         return {
-            "kind": "legal", "marker": "✓", "badge": "合法候选" if zh else "Natural candidate",
-            "hint": f"当前构筑可继续选择该部件（{names}）。" if zh else
-                    f"This part can be added to the current build ({names}).",
+            "kind": "legal", "marker": "✓", "badge": c("legal_badge"), "hint": c("legal_hint", names=names),
         }
     if selected:
         return {
-            "kind": "legal", "marker": "✓", "badge": "已选合法部件" if zh else "Selected natural part",
-            "hint": f"该部件已在当前自然构筑中（{names}）。" if zh else
-                    f"This part is already present in the natural build ({names}).",
+            "kind": "legal", "marker": "✓", "badge": c("selected_badge"), "hint": c("selected_hint", names=names),
         }
     if eligible:
         return {
-            "kind": "warning", "marker": "!", "badge": "槽位已满" if zh else "Slot is full",
-            "hint": f"它属于合法池（{names}），但当前槽位已满；替换现有部件后可保持合法。" if zh else
-                    f"It belongs to the natural pool ({names}), but the slot is full; replace an existing part to stay legal.",
+            "kind": "warning", "marker": "!", "badge": c("full_badge"), "hint": c("full_hint", names=names),
         }
     limited = any(ref in set(spec.get("tag_limited_refs") or []) for _group, spec, ref in active)
     return {
         "kind": "warning", "marker": "!",
-        "badge": ("标签上限" if limited else "条件未满足") if zh else
-                 ("Tag limit" if limited else "Condition unmet"),
-        "hint": (
-            f"它属于合法池（{names}），但当前依赖、排除关系或数量上限不允许直接添加。"
-            if zh else
-            f"It belongs to the natural pool ({names}), but current dependencies, exclusions, or limits block it."
-        ),
+        "badge": c("tag_limit_badge" if limited else "condition_badge"),
+        "hint": c("condition_hint", names=names),
     }

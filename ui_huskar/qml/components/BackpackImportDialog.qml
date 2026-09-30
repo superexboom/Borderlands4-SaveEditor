@@ -7,9 +7,13 @@ HusModal {
     id: dialog
     objectName: "backpackDialog"
     property var vm: null
+    // Read the language first so the binding re-evaluates on a language switch.
+    function tr(path) {
+        var language = appBridge.language;
+        return appBridge.trText(path);
+    }
     property int selectedSource: -1
     property string query: ""
-    readonly property bool chinese: appBridge.language === "zh-CN"
     title: vm ? vm.sourceTexts.backpack_title || vm.sourceTexts.backpack : ""
     width: Math.min(820, parent ? parent.width - 32 : 820)
     height: Math.min(600, parent ? parent.height - 32 : 600)
@@ -51,7 +55,7 @@ HusModal {
                 id: search
                 objectName: "backpackSearch"
                 Layout.fillWidth: true
-                placeholderText: dialog.chinese ? "搜索名称、厂商、类型或等级…" : "Search name, manufacturer, type or level…"
+                placeholderText: dialog.tr("backpack_import.search")
                 onTextChanged: { dialog.query = text; dialog.selectedSource = -1; }
             }
             Rectangle {
@@ -87,13 +91,13 @@ HusModal {
                             onDoubleClicked: { dialog.selectedSource = modelData.sourceIndex; dialog.importSelection(); }
                         }
                     }
-                    EmptyHint { anchors.centerIn: parent; visible: list.count === 0; description: dialog.chinese ? "没有匹配的背包物品" : "No matching backpack items" }
+                    EmptyHint { anchors.centerIn: parent; visible: list.count === 0; description: dialog.tr("backpack_import.empty") }
                 }
             }
             RowLayout {
-                HusText { Layout.fillWidth: true; text: dialog.chinese ? "双击导入，或选择物品后确认" : "Double-click to import, or select and confirm"; color: HusTheme.Primary.colorTextSecondary }
-                HusButton { text: dialog.chinese ? "取消" : "Cancel"; onClicked: dialog.close() }
-                HusButton { objectName: "backpackConfirm"; text: dialog.chinese ? "导入所选" : "Import selected"; type: HusButton.Type_Primary; enabled: dialog.selectedSource >= 0; onClicked: dialog.importSelection() }
+                HusText { Layout.fillWidth: true; text: dialog.tr("backpack_import.hint"); color: HusTheme.Primary.colorTextSecondary }
+                HusButton { text: dialog.tr("main_window.dialogs.cancel"); onClicked: dialog.close() }
+                HusButton { objectName: "backpackConfirm"; text: dialog.tr("backpack_import.import_selected"); type: HusButton.Type_Primary; enabled: dialog.selectedSource >= 0; onClicked: dialog.importSelection() }
             }
         }
     }

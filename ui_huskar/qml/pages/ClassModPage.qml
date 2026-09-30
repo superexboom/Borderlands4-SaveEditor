@@ -7,6 +7,11 @@ import "../components"
 // 职业模组编辑器页：对齐主线 QtClassModEditorTab
 LockedFlickable {
     id: page
+    // Read the language first so the binding re-evaluates on a language switch.
+    function tr(path) {
+        var language = appBridge.language;
+        return appBridge.trText(path);
+    }
     objectName: "classModPage"
     enabled: !vmClassMod.rollBusy
     contentWidth: width
@@ -168,7 +173,7 @@ LockedFlickable {
                     HusButton {
                         objectName: "classModLuckyRoll"
                         text: "🎲 " + (vmClassMod.rollBusy
-                              ? (vmClassMod.rollTexts.rolling || "生成中…")
+                              ? vmClassMod.rollTexts.rolling
                               : (vmClassMod.rollTexts.lucky || ""))
                         enabled: vmClassMod.dataLoaded && !vmClassMod.rollBusy
                         onClicked: vmClassMod.startQuickRoll()
@@ -261,9 +266,9 @@ LockedFlickable {
                 // Legendary name stays prominent; its effect text is secondary.
                 emphasizeDetails: false
                 clearText: (vmLoc.legendary || ({})).clear || "Clear"
-                addText: appBridge.language === "zh-CN" ? "添加所选 →" : "Add selected →"
-                availText: appBridge.language === "zh-CN" ? "可选" : "Available"
-                selectedText: appBridge.language === "zh-CN" ? "已选" : "Selected"
+                addText: page.tr("picker.add_selected")
+                availText: page.tr("picker.available")
+                selectedText: page.tr("picker.selected")
                 onAddRequested: function(keys) { vmClassMod.addLegItems(keys); }
                 onRemoveRequested: function(index) { vmClassMod.removeLegItem(index); }
                 onClearRequested: vmClassMod.clearLeg()

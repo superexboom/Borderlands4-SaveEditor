@@ -12,7 +12,7 @@ from typing import Any
 from PyQt6.QtCore import pyqtProperty, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import QApplication
 
-from core import b_encoder, item_display_resolver, resource_loader
+from core import b_encoder, game_text, item_display_resolver, resource_loader
 from core.legit_status import candidate_state, evaluate as evaluate_legit
 from core.weapon_generation_logic import sample_composition_parts
 from core.serial_import import (
@@ -91,7 +91,7 @@ class EnhancementViewModel(PageViewModel):
         self._b85_output = ""
         self._encode_error = False
         self._legit_status: dict[str, Any] = {
-            "status": "unknown", "label": "未知", "detail": ""
+            "status": "unknown", "label": "", "detail": ""
         }
         self._generation_context: dict[str, Any] = {}
         self._roll_results: list[dict[str, Any]] = []
@@ -118,19 +118,18 @@ class EnhancementViewModel(PageViewModel):
     # ------------------------------------------------------------------ #
     def _load_lang_data(self) -> None:
         self.current_lang = str(self.app.language)
-        self.localization_data = (
-            enhancement_data.get("localization", {}) if enhancement_data else {})
         self._flags = resource_loader.get_flag_labels(self.current_lang)
         self._flag_labels = [self._flags[k] for k in _FLAG_CODE_ORDER if k in self._flags]
 
     def _(self, text: Any) -> str:
-        return self.localization_data.get(str(text), str(text))
+        return game_text.term(text, self.current_lang)
 
-    def _display_text(self, english: Any, chinese: Any = "") -> str:
-        """Use the translated catalog only for Chinese; keep English source text elsewhere."""
-        if self.current_lang == "zh-CN" and str(chinese or "").strip():
-            return str(chinese)
-        return str(english or "")
+    def _perk_text(self, perk: dict[str, Any]) -> str:
+        """Perk name in the UI language (game text; English where the game has none)."""
+        return game_text.pick(perk.get("names") or {}, self.current_lang, str(perk.get("name") or ""))
+
+    def _search_names(self, perk: dict[str, Any]) -> str:
+        return " ".join(dict.fromkeys([str(perk.get("name") or ""), *(perk.get("names") or {}).values()]))
 
     def _loc(self, section: str, key: str, en: str, **fmt: Any) -> str:
         text = self.strings.get(section, {}).get(key) or en
@@ -181,7 +180,7 @@ class EnhancementViewModel(PageViewModel):
     def mfgOptions(self) -> list[dict[str, Any]]:
         if not enhancement_data:
             return []
-        return [{"label": self._display_text(name, self.localization_data.get(name)), "value": name}
+        return [{"label": self._(name), "value": name}
                 for name in sorted(enhancement_data.get("manufacturers", {}).keys())]
 
     @pyqtProperty(int, notify=dataChanged)
@@ -195,7 +194,7 @@ class EnhancementViewModel(PageViewModel):
             return []
         rarities = enhancement_data["manufacturers"][mfg_en]["rarities"]
         order = ["Common", "Uncommon", "Rare", "Epic", "Legendary"]
-        return [{"label": self._display_text(r, self.localization_data.get(r)), "value": r}
+        return [{"label": self._(r), "value": r}
                 for r in order if r in rarities]
 
     @pyqtProperty(int, notify=dataChanged)
@@ -226,7 +225,7 @@ class EnhancementViewModel(PageViewModel):
             if idx not in perk_map:
                 continue
             perk = perk_map[idx]
-            full = self._display_text(perk.get("name"), perk.get("name_zh"))
+            full = self._perk_text(perk)
             label, detail = full, ""
             if " -" in full:
                 label, detail = full.split(" -", 1)
@@ -250,7 +249,7 @@ class EnhancementViewModel(PageViewModel):
         current = self._current_mfg_en()
         for mfg in sorted(enhancement_data.get("manufacturers", {}).keys()):
             if mfg != current:
-                cats.append({"key": mfg, "label": self._display_text(mfg, self.localization_data.get(mfg))})
+                cats.append({"key": mfg, "label": self._(mfg)})
         options = self.stackOptions
         for category in cats:
             rows = options if category["key"] == "all" else [
@@ -270,14 +269,14 @@ class EnhancementViewModel(PageViewModel):
                     idx = perk["index"]
                     items.append({
                         "key": f"{mfg}:{idx}",
-                        "label": f"{self._display_text(perk['name'], perk.get('name_zh'))} — {self._display_text(mfg, self.localization_data.get(mfg))}",
+                        "label": f"{self._perk_text(perk)} — {self._(mfg)}",
                         "category": mfg,
-                        "searchText": f"{perk['name']} {perk.get('name_zh', '')} {mfg} {self.localization_data.get(mfg, '')}",
+                        "searchText": f"{self._search_names(perk)} {mfg} {self._(mfg)}",
                         "data": {"mfg": mfg, "idx": idx},
                         **candidate_state(
                             self._generation_context, f"{data['code']}:{idx}", self.current_lang,
                             decoded=self._raw_output,
-                            label=f"{self._display_text(perk['name'], perk.get('name_zh'))} — {self._display_text(mfg, self.localization_data.get(mfg))}"),
+                            label=f"{self._perk_text(perk)} — {self._(mfg)}"),
                     })
         return sorted(items, key=lambda x: (
             _CANDIDATE_ORDER.get(str(x.get("kind") or "unknown"), 3),
@@ -328,10 +327,10 @@ class EnhancementViewModel(PageViewModel):
                 tooltip = "\n".join(f"L{level}: {text}" for level, text in enumerate(descs, 1) if text)
                 search_text = " ".join((str(code), firmware.get("internal", ""), name, *descs))
             else:
-                name = self._display_text(name_en, self.localization_data.get(name_en))
+                name = self._perk_text(stat)
                 cat, sub = self._classify_247(name_en)
                 tooltip = name
-                search_text = f"{code} {name_en} {name}"
+                search_text = f"{code} {self._search_names(stat)}"
             items.append({
                 "key": str(code),
                 "label": f"[{code}] {name}",
@@ -393,7 +392,7 @@ class EnhancementViewModel(PageViewModel):
 
     @pyqtProperty(str, notify=dataChanged)
     def stackGuidance(self) -> str:
-        return "跨厂商项通常为魔改" if self.current_lang == "zh-CN" else "Cross-manufacturer parts are usually modified"
+        return self.app.tr("enhancement_tab.guidance.cross_manufacturer")
 
     @pyqtProperty(str, notify=dataChanged)
     def statGuidance(self) -> str:
@@ -574,8 +573,8 @@ class EnhancementViewModel(PageViewModel):
                     "description": row.get("tooltip", ""), "accent": "#39BCE8"}
             (firmware if row.get("category") == "firmware" else stats).append(item)
         return {
-            "name": f"{self._display_text(self._current_mfg_en(), self.localization_data.get(self._current_mfg_en()))} · {'强化模组' if self.current_lang == 'zh-CN' else 'Enhancement'}",
-            "manufacturer": self._display_text(self._current_mfg_en(), self.localization_data.get(self._current_mfg_en())),
+            "name": self.app.tr("enhancement_tab.guidance.item_name", manufacturer=self._(self._current_mfg_en())),
+            "manufacturer": self._(self._current_mfg_en()),
             "rarity": self._current_rarity_en() or "",
             "level": self._level,
             "status": self._legit_status.get("rawStatus", "unknown"),
@@ -589,7 +588,7 @@ class EnhancementViewModel(PageViewModel):
 
     @pyqtProperty("QVariantMap", notify=dataChanged)
     def rollConstraintOptions(self) -> dict[str, Any]:
-        random_label = "随机" if self.current_lang == "zh-CN" else "Random"
+        random_label = self.app.tr("item_roll.random")
         mfgs = [{"label": random_label, "value": None}, *self.mfgOptions]
         rarity_values = []
         for data in enhancement_data.get("manufacturers", {}).values():
@@ -598,7 +597,7 @@ class EnhancementViewModel(PageViewModel):
                     rarity_values.append(value)
         order = {value: index for index, value in enumerate(("Common", "Uncommon", "Rare", "Epic", "Legendary"))}
         rarities = [{"label": random_label, "value": None}]
-        rarities.extend({"label": self._display_text(value, self.localization_data.get(value)), "value": value}
+        rarities.extend({"label": self._(value), "value": value}
                         for value in sorted(rarity_values, key=lambda value: order.get(value, 99)))
         return {"manufacturers": mfgs, "rarities": rarities}
 
@@ -687,10 +686,7 @@ class EnhancementViewModel(PageViewModel):
         finally:
             self._restore_roll_state(saved)
         self._roll_results = results
-        self._roll_summary = (
-            f"已生成 {len(results)} 个合法强化模组" if self.current_lang == "zh-CN"
-            else f"Generated {len(results)} legal enhancements"
-        )
+        self._roll_summary = self.app.tr("item_roll.enhancement_generated", count=len(results))
         self.dataChanged.emit()
         self.rollFinished.emit(bool(results))
         return bool(results)
@@ -757,28 +753,27 @@ class EnhancementViewModel(PageViewModel):
 
     @pyqtProperty("QVariantMap", notify=dataChanged)
     def rollTexts(self) -> dict[str, str]:
-        zh = self.current_lang == "zh-CN"
+        roll = lambda key, **fmt: self.app.tr(f"item_roll.{key}", **fmt)
         return {
-            "lucky": "手气不错" if zh else "I'm Feeling Lucky",
-            "rolling": "生成中…" if zh else "Generating…",
-            "results_title": "强化模组随机结果" if zh else "Enhancement Roll Results",
-            "select_result": "从左侧选择一个强化模组" if zh else "Select an enhancement",
-            "add_one": "加入背包" if zh else "Add to Backpack",
-            "copy": "复制 Base85" if zh else "Copy Base85",
-            "constraints_title": "随机选项" if zh else "Roll Options",
-            "manufacturer": "厂商" if zh else "Manufacturer",
-            "rarity": "稀有度" if zh else "Rarity",
-            "count": "数量" if zh else "Count",
-            "matches": "可用模板：{count}" if zh else "Matching templates: {count}",
-            "no_matches": "没有可用模板" if zh else "No matching templates",
-            "roll": "开始 Roll" if zh else "Roll",
-            "no_legal_result": "没有可生成的合法强化模组" if zh else "No legal enhancement result",
-            "core": "核心强化 / 厂商专长" if zh else "Core / Manufacturer Perks",
-            "stats": "次要属性" if zh else "Secondary Stats",
-            "firmware": "固件" if zh else "Firmware",
-            "add_all": self.app.tr("weapon_gen_tab.buttons.add_all", default="全部加入背包" if zh else "Add All"),
-            "add_done": self.app.tr("weapon_gen_tab.dialogs.roll_add_done",
-                                    default="已加入 {success} 件，失败 {fail} 件" if zh else "Added {success}; failed {fail}"),
+            "lucky": roll("lucky"),
+            "rolling": roll("rolling"),
+            "results_title": roll("enhancement_results_title"),
+            "select_result": roll("enhancement_select_result"),
+            "add_one": roll("add_one"),
+            "copy": roll("copy"),
+            "constraints_title": roll("constraints_title"),
+            "manufacturer": roll("manufacturer"),
+            "rarity": roll("rarity"),
+            "count": roll("count"),
+            "matches": roll("matches"),
+            "no_matches": roll("no_matches"),
+            "roll": roll("roll"),
+            "no_legal_result": roll("enhancement_no_legal"),
+            "core": roll("core"),
+            "stats": roll("stats"),
+            "firmware": roll("firmware"),
+            "add_all": self.app.tr("weapon_gen_tab.buttons.add_all"),
+            "add_done": self.app.tr("weapon_gen_tab.dialogs.roll_add_done"),
         }
 
     @pyqtSlot("QVariantList")

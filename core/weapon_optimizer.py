@@ -8,7 +8,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Iterable, Mapping
 
-from core import b_encoder, item_display_resolver
+from core import b_encoder, game_text, item_display_resolver
 
 
 AUTO = "*"
@@ -163,6 +163,8 @@ class WeaponGodRollOptimizer:
                     "rarity": str(composition.get("rarity") or ""),
                     "name_en": str(names.get("en") or "").strip(),
                     "name_zh": str(names.get("zh") or "").strip(),
+                    "name_ru": str(names.get("ru") or "").strip(),
+                    "name_de": str(names.get("de") or "").strip(),
                     "part": str(composition.get("part") or ""),
                 })
         return rows
@@ -1035,8 +1037,7 @@ class WeaponGodRollOptimizer:
         weapon = self.weapons[str(request.root_id)]
         composition = weapon["compositions"][str(request.composition_ref)]
         names = composition.get("name") or {}
-        preferred_name = names.get("zh") if language == "zh-CN" else names.get("en")
-        name = str(preferred_name or names.get("en") or names.get("zh") or composition.get("part") or "—")
+        name = str(game_text.pick(names, language) or composition.get("part") or "—")
         rarity = str(composition.get("rarity") or "")
         formatted = {
             key: item_display_resolver.format_weapon_stat(key, stats.get(key), language) or "—"

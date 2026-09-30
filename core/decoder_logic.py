@@ -73,7 +73,8 @@ def decode_serial_to_string(serial_b85: str) -> (str, list, str or None):
         - An error message string if an error occurs, otherwise None.
     """
     if not serial_b85 or not serial_b85.startswith("@U"):
-        return "", [], "无效的序列号: 它必须以'@U'开头。"
+        from . import bl4_functions, ui_text  # bl4_functions imports this module
+        return "", [], ui_text.tr("controller.invalid_serial_prefix", bl4_functions.current_localization_lang)
 
     try:
         decoded_data = decode(serial_b85)

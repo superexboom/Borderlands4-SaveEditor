@@ -14,7 +14,7 @@ from typing import Any
 import pandas as pd
 from PyQt6.QtCore import pyqtProperty, pyqtSignal, pyqtSlot
 
-from core import bl4_functions as bl4f
+from core import bl4_functions as bl4f, game_text
 from core import decoder_logic, item_display_resolver, lookup, resource_loader
 from core.unlock_data import CHARACTER_CLASSES
 
@@ -23,11 +23,6 @@ from .base import PageViewModel, register
 WEAPON_SLOT_KEYS = {"slot_0", "slot_1", "slot_2", "slot_3"}
 SDU_GRAPH_NAME = "sdu_upgrades"
 
-_SLOT_FALLBACK = {
-    "slot_0": "武器1", "slot_1": "武器2", "slot_2": "武器3", "slot_3": "武器4",
-    "slot_4": "护盾", "slot_5": "重武器/手雷", "slot_6": "修复套件",
-    "slot_7": "强化模组", "slot_8": "职业模组",
-}
 
 CLASS_IDS = {"Amon": 255, "Harlowe": 259, "Rafa": 256, "Vex": 254, "C4sh": 404, "C4SH": 404}
 CLASS_NAME_ALIASES = {"C4SH": "C4sh"}
@@ -80,7 +75,6 @@ class LoadoutManagerViewModel(PageViewModel):
         self._skill_rows: list[dict[str, str]] = []
         self._load_weapon_csv_data()
         self._load_skills_csv_data()
-        self._load_weapon_localization()
 
     # ------------------------------------------------------------------ #
     # i18n
@@ -95,12 +89,11 @@ class LoadoutManagerViewModel(PageViewModel):
         return val
 
     def _t_slot(self, slot_key: str) -> str:
-        return self.strings.get("slots", {}).get(slot_key, _SLOT_FALLBACK.get(slot_key, slot_key))
+        return self.strings.get("slots", {}).get(slot_key, slot_key)
 
     def on_language_changed(self) -> None:
         super().on_language_changed()
         self.current_lang = str(self.app.language)
-        self._load_weapon_localization()
         if self._manual_read_active:
             self._refresh_equipped_display_from_yaml()
             self._refresh_skills_display_from_yaml()
@@ -119,16 +112,6 @@ class LoadoutManagerViewModel(PageViewModel):
         except Exception:
             self.all_weapon_parts_df = pd.DataFrame()
             self.weapon_rarity_df = pd.DataFrame()
-
-    def _load_weapon_localization(self):
-        if self.current_lang == "zh-CN":
-            try:
-                self.weapon_localization = (
-                    resource_loader.load_weapon_json("weapon_localization_zh-CN.json") or {})
-            except Exception:
-                self.weapon_localization = {}
-        else:
-            self.weapon_localization = {}
 
     def _load_skills_csv_data(self):
         self.skills_data = resource_loader.load_class_mods_csv("Skills.csv")
@@ -281,10 +264,9 @@ class LoadoutManagerViewModel(PageViewModel):
                 mapping_row.get("graph_coord", "") or mapping_row.get("node_name", ""),
                 mapped_name,
             )
-            display_name = skill_row.get("skill_name_EN", "").strip() or mapped_name
-            zh_name = (skill_row.get("skill_name_ZH", "") or mapping_row.get("skill_name_ZH", "")).strip()
-            if self.current_lang == "zh-CN" and zh_name:
-                display_name = zh_name
+            display_name = (game_text.csv_text(skill_row, "skill_name", self.current_lang)
+                            or game_text.csv_text(mapping_row, "skill_name", self.current_lang)
+                            or mapped_name).strip()
             return display_name, self._skill_icon_url(skill_row.get("icon_file", ""), class_name)
 
         mapped_name = self.skill_name_mapping.get(skill_name_en, skill_name_en)
@@ -307,12 +289,7 @@ class LoadoutManagerViewModel(PageViewModel):
                         skill_row = row
                         break
         if skill_row:
-            skill_name_en_canonical = skill_row.get("skill_name_EN", lookup_name)
-            zh_name = skill_row.get("skill_name_ZH", "")
-            if self.current_lang == "zh-CN" and zh_name:
-                display_name = zh_name
-            else:
-                display_name = skill_name_en_canonical
+            display_name = game_text.csv_text(skill_row, "skill_name", self.current_lang, lookup_name)
             icon_url = self._skill_icon_url(skill_row.get("icon_file", ""), class_name)
         return display_name, icon_url
 

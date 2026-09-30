@@ -6,7 +6,7 @@ Used by the card model (``core.item_card_model``) and the roll result views.
 import re
 from typing import Any, Dict, List
 
-from core import item_display_resolver, resource_loader, weapon_display_stats
+from core import game_text, item_display_resolver, resource_loader, ui_text, weapon_display_stats
 
 
 WEAPON_CARD_TYPE_ICONS = {
@@ -79,37 +79,38 @@ EQUIPMENT_CARD_FIELDS = {
 }
 
 
+#: Keyed by the English rarity; ``rarity_color`` also accepts localized names.
 WEAPON_CARD_RARITY_COLORS = {
     "common": "#BDBBD1",
-    "普通": "#BDBBD1",
     "uncommon": "#5AC54F",
-    "罕见": "#5AC54F",
     "rare": "#00A0CE",
-    "稀有": "#00A0CE",
     "epic": "#B648DB",
-    "史诗": "#B648DB",
     "legendary": "#FFD900",
-    "传奇": "#FFD900",
     "pearl": "#97FFD2",
     "pearlescent": "#97FFD2",
-    "珠光": "#97FFD2",
 }
+
+
+
+def rarity_color(*values: Any) -> str:
+    """Card colour for the first rarity (English or localized) that has one."""
+    for value in values:
+        key = str(value or "").strip().casefold()
+        color = WEAPON_CARD_RARITY_COLORS.get(key) or WEAPON_CARD_RARITY_COLORS.get(
+            game_text.english_term(value).casefold())
+        if color:
+            return color
+    return ""
 
 
 RARITY_HEADER_KEYS = {
     "common": "common",
-    "普通": "common",
     "uncommon": "uncommon",
-    "罕见": "uncommon",
     "rare": "rare",
-    "稀有": "rare",
     "epic": "epic",
-    "史诗": "epic",
     "legendary": "legendary",
-    "传奇": "legendary",
     "pearl": "pearl",
     "pearlescent": "pearl",
-    "珠光": "pearl",
 }
 
 
@@ -187,14 +188,18 @@ _GENERIC_WEAPON_UISTAT_PREFIXES = (
 )
 
 
+#: part-name marker -> game term ("fire" parts are the game's Incendiary)
 _ELEMENT_NAMES = {
-    "kinetic": {"zh": "动能伤害", "en": "Kinetic Damage"},
-    "shock": {"zh": "电击伤害", "en": "Shock Damage"},
-    "radiation": {"zh": "辐射伤害", "en": "Radiation Damage"},
-    "corrosive": {"zh": "腐蚀伤害", "en": "Corrosive Damage"},
-    "cryo": {"zh": "冰冻伤害", "en": "Cryo Damage"},
-    "fire": {"zh": "燃烧伤害", "en": "Incendiary Damage"},
+    "kinetic": "Kinetic", "shock": "Shock", "radiation": "Radiation",
+    "corrosive": "Corrosive", "cryo": "Cryo", "fire": "Incendiary",
 }
+
+
+def _element_damage_name(element: str, current_lang: str) -> str:
+    """"Cryo Damage" etc. as the game writes it in the UI language."""
+    term = _ELEMENT_NAMES.get(element)
+    entry = (game_text.terms().get("element_damage") or {}).get(term or "")
+    return game_text.pick(entry, current_lang) if entry else ""
 
 
 def _clean_card_markup(text: Any) -> str:
@@ -207,17 +212,12 @@ def _element_card_text(stats: Dict[str, Any], element: str, current_lang: str, s
     cryo_key = f"cryo_efficiency{suffix}"
     if element == "cryo" and stats.get(cryo_key) not in (None, ""):
         value = int(stats[cryo_key])
-        return f"{value}%冰冻效率" if current_lang == "zh-CN" else f"{value}% Cryo Efficiency"
+        return ui_text.tr("item_card.cryo_efficiency", current_lang, value=value)
     dps = stats.get(f"elemental_dps{suffix}")
     chance = stats.get(f"elemental_chance{suffix}")
     if dps not in (None, "") and chance not in (None, ""):
-        return (
-            f"{int(dps):,}伤害/秒 | {int(chance)}%几率"
-            if current_lang == "zh-CN"
-            else f"{int(dps):,} DMG/s | {int(chance)}% Chance"
-        )
-    lang_key = "zh" if current_lang == "zh-CN" else "en"
-    return (_ELEMENT_NAMES.get(element) or {}).get(lang_key, "")
+        return ui_text.tr("item_card.element_dps", current_lang, dps=f"{int(dps):,}", chance=int(chance))
+    return _element_damage_name(element, current_lang)
 
 
 def _repkit_element_card_modes(
@@ -246,16 +246,7 @@ def _repkit_element_card_text(element: str, entries: List[Dict[str, Any]], curre
     modes = _repkit_element_card_modes(element, entries)
     if not modes:
         return ""
-    lang_key = "zh" if current_lang == "zh-CN" else "en"
-    labels = []
-    for key, mode in modes:
-        base = (_ELEMENT_NAMES.get(key) or {}).get(lang_key, "")
-        base = base.removesuffix("伤害") if current_lang == "zh-CN" else base.removesuffix(" Damage")
-        labels.append(
-            f"{base}{'免疫' if mode == 'immunity' else '抗性'}"
-            if current_lang == "zh-CN"
-            else f"{base} {'Immunity' if mode == 'immunity' else 'Resistance'}"
-        )
+    labels = [ui_text.tr(f"item_card.{mode}.{key}", current_lang) for key, mode in modes]
     return " / ".join(labels)
 
 
@@ -312,14 +303,13 @@ def _format_weapon_arg(raw: Any) -> str:
 
 def _render_weapon_uistat(entry: Dict[str, Any], stats: Dict[str, Any], current_lang: str,
                           keep_markup: bool = False) -> str:
-    lang_key = "zh" if current_lang == "zh-CN" else "en"
-    text = str(entry.get(lang_key) or entry.get("en") or "")
+    text = game_text.pick(entry, current_lang)
     args = ((entry.get("statvalue") or {}).get("args") or {})
 
     def replacement(match: re.Match[str]) -> str:
         arg = args.get(match.group(1)) or {}
         template = arg.get("formattext") or {}
-        template_text = str(template.get(lang_key) or template.get("en") or "")
+        template_text = game_text.pick(template, current_lang)
         value = _format_weapon_arg(_weapon_stat_arg_value(arg.get("attribute", ""), stats))
         if template_text and "$VALUE$" not in template_text:
             return _clean_card_markup(template_text)
@@ -411,7 +401,6 @@ def _weapon_card_details(decoded_full: str, stats: Dict[str, Any], current_lang:
         element = pearl_element
     elif element and element not in elements:
         elements.insert(0, element)
-    lang_key = "zh" if current_lang == "zh-CN" else "en"
     return {
         "rows": rows,
         "entries": entries,
@@ -420,5 +409,5 @@ def _weapon_card_details(decoded_full: str, stats: Dict[str, Any], current_lang:
         "display_red_texts": red_texts[:1],
         "element": element,
         "elements": elements,
-        "element_text": (_ELEMENT_NAMES.get(element) or {}).get(lang_key, ""),
+        "element_text": _element_damage_name(element, current_lang),
     }

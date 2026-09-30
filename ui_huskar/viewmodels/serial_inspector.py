@@ -17,7 +17,7 @@ from typing import Any
 from PyQt6.QtCore import QObject, pyqtProperty, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QGuiApplication
 
-from core import item_card_model, item_display_resolver, resource_loader, serial_inspect
+from core import game_text, item_card_model, item_display_resolver, resource_loader, serial_inspect
 
 from .base import PageViewModel, register
 
@@ -537,9 +537,8 @@ class SerialInspectorViewModel(PageViewModel):
     def _catalog_localized(self, value: Any) -> str:
         if not isinstance(value, dict):
             return str(value or "")
-        zh = self._lang == "zh-CN"
-        keys = ("zh", "zh-CN", "en", "en-US") if zh else ("en", "en-US", "zh", "zh-CN")
-        return next((str(value.get(key) or "") for key in keys if value.get(key)), "")
+        return game_text.pick({**value, "en": value.get("en") or value.get("en-US"),
+                               "zh": value.get("zh") or value.get("zh-CN")}, self._lang)
 
     def _rebuild_provenance(self) -> None:
         report = self._report

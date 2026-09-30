@@ -200,7 +200,7 @@ LockedFlickable {
                     Layout.fillWidth: true
                     spacing: 8
                     HusButton {
-                        text: scroll.loc.buttons ? (scroll.loc.buttons.import_yaml || "导入 YAML") : "导入 YAML"
+                        text: (scroll.loc.buttons || ({})).import_yaml || ""
                         onClicked: vmConverter.importBatchAddYaml()
                     }
                     HusButton {

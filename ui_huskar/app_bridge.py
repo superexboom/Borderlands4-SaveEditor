@@ -401,7 +401,7 @@ class AppBridge(QObject):
         if not file_path:
             return
         if self.live.active:
-            self.toast(self.tr("main_window.dialogs.live_mode_active", default="Live 模式下无法打开存档"), "warning")
+            self.toast(self.tr("main_window.dialogs.live_mode_active"), "warning")
             return
         backup_dir = None
         selector = self._vms.get("select_save")
@@ -736,7 +736,7 @@ class AppBridge(QObject):
         """God Roll 结果 → 武器编辑器（对齐主线 handle_open_generated_weapon）。"""
         vm = self.ensure_vm("weapon_editor")
         if vm is None or not hasattr(vm, "open_roll_result"):
-            self.toast(self.tr("main_window.dialogs.item_not_found"), "warning")
+            self.toast(self.tr("main_window.status.item_not_found"), "warning")
             return
         try:
             vm.open_roll_result(dict(result))

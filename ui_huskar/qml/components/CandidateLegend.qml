@@ -4,14 +4,18 @@ import HuskarUI.Basic
 
 Flow {
     id: legend
-    property bool chinese: appBridge.language === "zh-CN"
+    // Read the language first so the binding re-evaluates on a language switch.
+    function tr(path) {
+        var language = appBridge.language;
+        return appBridge.trText(path);
+    }
     spacing: 12
     Repeater {
         model: [
-            { label: legend.chinese ? "合法候选" : "Natural", color: "#4a90e2" },
-            { label: legend.chinese ? "条件未满足" : "Blocked", color: "#e6a439" },
-            { label: legend.chinese ? "魔改配件" : "Modified", color: "#ce5b5b" },
-            { label: legend.chinese ? "规则未知" : "Unknown", color: "#687080" }
+            { label: legend.tr("candidate_legend.natural"), color: "#4a90e2" },
+            { label: legend.tr("candidate_legend.blocked"), color: "#e6a439" },
+            { label: legend.tr("candidate_legend.modified"), color: "#ce5b5b" },
+            { label: legend.tr("candidate_legend.unknown"), color: "#687080" }
         ]
         delegate: Row {
             spacing: 5

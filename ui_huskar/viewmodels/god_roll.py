@@ -7,7 +7,7 @@ from typing import Any
 
 from PyQt6.QtCore import QObject, QThread, pyqtProperty, pyqtSignal, pyqtSlot
 
-from core import item_display_resolver, lookup, resource_loader, serial_inspect
+from core import game_text, item_display_resolver, lookup, resource_loader, serial_inspect
 from core.weapon_optimizer import AUTO, ELEMENT_GROUPS, NONE, GodRollRequest, WeaponGodRollOptimizer
 from core import item_card_data
 
@@ -31,64 +31,13 @@ _GROUP_KEYS = {
     "body_ele": "element", "secondary_ele": "element_switch",
     "pearl_elem": "pearl_elements", "pearl_stat": "pearl_stat",
 }
-_ELEMENT_NAMES = {
-    "corrosive": {"zh-CN": "腐蚀", "en-US": "Corrosive"},
-    "cryo": {"zh-CN": "冰冻", "en-US": "Cryo"},
-    "fire": {"zh-CN": "火焰", "en-US": "Fire"},
-    "incendiary": {"zh-CN": "火焰", "en-US": "Fire"},
-    "radiation": {"zh-CN": "辐射", "en-US": "Radiation"},
-    "shock": {"zh-CN": "电击", "en-US": "Shock"},
-    "normal": {"zh-CN": "无元素", "en-US": "No Element"},
+#: part-name marker -> game term (the "fire" parts are the game's Incendiary)
+_ELEMENT_TERMS = {
+    "corrosive": "Corrosive", "cryo": "Cryo", "fire": "Incendiary", "incendiary": "Incendiary",
+    "radiation": "Radiation", "shock": "Shock",
 }
 _EFFORTS = {"fast": (7_500, 3.0), "balanced": (25_000, 8.0), "deep": (150_000, 30.0)}
 
-_FALLBACK = {
-    "title": "God Roll Optimizer", "source": "Target weapon", "manufacturer": "Manufacturer",
-    "weapon_type": "Weapon Type", "rarity": "Rarity", "weapon": "Weapon", "mode": "Mode",
-    "legal": "Legal build", "unrestricted": "Cross-manufacturer", "level": "Level",
-    "barrel": "Fixed barrel", "torgue": "Torgue requirement", "torgue_any": "No requirement",
-    "torgue_sticky": "Must include sticky", "torgue_impact": "Must include impact/normal",
-    "base_element": "Base element", "secondary_element": "Dual/secondary element",
-    "pearl_element": "Pearl override", "auto": "Auto optimize",
-    "auto_available": "Auto optimize (candidate available, not guaranteed)",
-    "unavailable": "Unavailable for this weapon", "none": "No element",
-    "force_element": "Allow forced illegal element",
-    "force_hint": "The result is marked modified when only the element violates the native build rules.",
-    "score_note": "Ranking uses a paper stat model; red-text, ricochet, and delayed sticky mechanics are not fully modeled.",
-    "score_profile": "Score profile", "score_profile_sustained_dps": "Sustained DPS",
-    "score_profile_burst": "Burst Damage", "score_profile_crit_element": "Crit / Element",
-    "score_profile_balanced": "Balanced", "score_explanation": "Score explanation",
-    "score_total": "Score", "score_short": "Score", "score_metric_dps": "Sustained DPS",
-    "score_metric_damage": "Damage", "score_metric_fire_rate": "Fire Rate",
-    "score_metric_magazine": "Magazine", "score_metric_critical_damage": "Critical Damage",
-    "score_metric_elemental_dps": "Elemental DPS", "score_metric_reload_time": "Reload",
-    "score_warning": "Paper score; red text, ricochet, and delayed sticky mechanics are not modeled.",
-    "score_missing": "Unavailable metrics: {metrics}", "open_editor": "Open in Weapon Editor",
-    "limits": "Unrestricted group limits", "group": "Group", "pool": "Pool",
-    "minimum": "Min", "maximum": "Max", "effort": "Search budget",
-    "fast": "Fast (3 seconds)", "balanced": "Balanced (8 seconds)", "deep": "Deep (30 seconds)",
-    "top_n": "Results", "search": "Find God Rolls", "cancel": "Cancel",
-    "idle": "Choose a target and start searching.",
-    "running": "Explored {attempted} · valid {accepted} · best score {best}",
-    "done": "Found {count} builds from {attempted} attempts in {elapsed:.1f}s. Budget-best; global optimum is not yet proven.",
-    "done_exact": "Exhausted {frontier} legal builds in {elapsed:.1f}s and proved the Top {count}.",
-    "cancelled": "Search cancelled; showing the best results found so far.",
-    "no_results": "No build matched the selected constraints.",
-    "error": "God Roll search failed: {error}",
-    "offline_only": "God Roll generation is an offline save feature.",
-    "select_flag": "Flag", "add_start": "Adding {count} item(s)...",
-    "add_done": "Added {success}; failed {fail}",
-    "results_scope": "{mode} · {profile} · fixed barrel {barrel} · budget-best Top {count}",
-    "results_scope_exact": "{mode} · {profile} · fixed barrel {barrel} · proven Top {count}",
-    "parts_title": "Part Details", "no_part_details": "No part details",
-    "effects_title": "Skills",
-    "no_part_effect": "No stat changes", "source_current": "Current weapon",
-    "source_universal": "Universal pool", "status_element_modified": "Element-only Modified",
-    "generated": "Generated {count} legal weapons", "select_result": "Select a generated weapon",
-    "no_element": "No Element", "level_value": "Lv{level}", "close": "Close",
-    "add_one": "Add This", "add_all": "Add All", "copy_base85": "Copy Base85",
-    "copied": "Base85 copied", "back": "Back",
-}
 
 
 class _GodRollWorker(QThread):
@@ -183,20 +132,19 @@ class GodRollViewModel(PageViewModel):
         self.taxonomy = (self.app.localizer.section("weapon_editor_tab") or {}).get("taxonomy") or {}
         self.stats_loc = (self.app.localizer.section("weapon_editor_tab") or {}).get("stats") or {}
         self.rule_loc = self.app.localizer.section("weapon_rules") or {}
-        self.item_names = (
-            resource_loader.load_json_resource("data/i18n/item_localization_zh-CN.json") or {}
-            if self.current_lang == "zh-CN" else {})
         self._flags = resource_loader.get_flag_labels(self.current_lang)
         self._flag_labels = [self._flags[k] for k in _FLAG_CODE_ORDER if k in self._flags]
         self._option_cache.clear()
         self._catalog_name_cache.clear()
 
     def _text(self, key: str) -> str:
-        return str((self.loc or {}).get(key) or _FALLBACK.get(key) or key)
+        return str((self.loc or {}).get(key) or key)
 
     def on_language_changed(self) -> None:
         super().on_language_changed()
         self._load_lang_data()
+        if self._worker is None and not self._raw_results:
+            self._status = self._text("idle")
         self._render_last_results()
         self.dataChanged.emit()
 
@@ -216,7 +164,7 @@ class GodRollViewModel(PageViewModel):
         if not canonical:
             canonical = {"borg": "Ripper", "order": "Order"}.get(
                 str(value or "").casefold(), self._humanize(value))
-        return str(self.item_names.get(canonical) or canonical)
+        return game_text.term(canonical, self.current_lang)
 
     def _weapon_type_label(self, value):
         canonical = "Assault Rifle" if str(value or "") == "AssaultRifle" else str(value or "")
@@ -245,8 +193,9 @@ class GodRollViewModel(PageViewModel):
 
     def _element_name(self, ref):
         part = self.optimizer.part_label(ref).casefold()
-        names = [key for key in _ELEMENT_NAMES if key in part]
-        labels = [_ELEMENT_NAMES[key].get(self.current_lang, _ELEMENT_NAMES[key]["en-US"]) for key in names]
+        if "normal" in part:
+            return self._text("no_element")
+        labels = [game_text.term(term, self.current_lang) for key, term in _ELEMENT_TERMS.items() if key in part]
         return " + ".join(dict.fromkeys(labels)) or f"{ref} · {self.optimizer.part_label(ref)}"
 
     def _catalog_name(self, row):
@@ -254,8 +203,7 @@ class GodRollViewModel(PageViewModel):
         cached = self._catalog_name_cache.get(cache_key)
         if cached is not None:
             return cached
-        name = row.get("name_zh") if self.current_lang == "zh-CN" else row.get("name_en")
-        name = name or row.get("name_en") or row.get("name_zh") or row.get("part")
+        name = game_text.pick_field(row, "name", self.current_lang) or row.get("part")
         name = str(name or row.get("composition_ref"))
         if not name.casefold().startswith("comp_"):
             self._catalog_name_cache[cache_key] = name
@@ -300,7 +248,7 @@ class GodRollViewModel(PageViewModel):
     # ------------------------------------------------------------------ #
     @pyqtProperty("QVariantMap", notify=dataChanged)
     def texts(self) -> dict[str, str]:
-        keys = set(_FALLBACK) | set(self.loc or {})
+        keys = set(self.loc or {})
         return {key: self._text(key) for key in sorted(keys)}
 
     @pyqtProperty(bool, notify=dataChanged)
@@ -1029,7 +977,7 @@ class GodRollViewModel(PageViewModel):
         row["weapon_type_key"] = weapon_type_key
         row["rarity_key"] = rarity_key
         names = composition.get("name") or {}
-        preferred_name = names.get("zh") if self.current_lang == "zh-CN" else names.get("en")
+        preferred_name = game_text.pick(names, self.current_lang)
         base_name = str(
             preferred_name or names.get("en") or names.get("zh")
             or composition.get("part") or row.get("name") or "—"
@@ -1047,9 +995,7 @@ class GodRollViewModel(PageViewModel):
         row["weapon_type"] = self._weapon_type_label(weapon_type_key)
         row["rarity"] = str(display.get("rarity") or "") or self._rarity_label(rarity_key)
         row["rarity_color"] = (
-            item_card_data.WEAPON_CARD_RARITY_COLORS.get(rarity_key.casefold())
-            or item_card_data.WEAPON_CARD_RARITY_COLORS.get(str(row["rarity"]).casefold())
-            or "#78909C"
+            item_card_data.rarity_color(rarity_key, row["rarity"]) or "#78909C"
         )
         # 未选中行的淡稀有度底色（对齐旧版列表 item.setBackground alpha 28）
         row["rarity_tint"] = f"#1C{str(row['rarity_color']).lstrip('#')}"

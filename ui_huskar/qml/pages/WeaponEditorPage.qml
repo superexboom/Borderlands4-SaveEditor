@@ -1117,7 +1117,7 @@ RowLayout {
 
                 HusInput {
                     Layout.fillWidth: true
-                    placeholderText: (loc.catalog || ({})).search_skin || qsTr("搜索皮肤…")
+                    placeholderText: (loc.catalog || ({})).search_skin || ""
                     onTextChanged: skinDialog.searchText = text
                 }
 
