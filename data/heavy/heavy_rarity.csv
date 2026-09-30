@@ -1,39 +1,39 @@
-﻿Manufacturer ID,Part_ID,Part_type,Stat_ZH,Stat_EN,Description_ZH,Description_EN
-273,13,Rarity,Legendary,Legendary,金皮肤,Gold Skin
-273,30,Rarity,Common,Common,,
-273,31,Rarity,Uncommon,Uncommon,,
-273,32,Rarity,Rare,Rare,,
-273,33,Rarity,Epic,Epic,,
-273,34,Rarity,Legendary,Legendary,风流倜傥皮肤,Sprezzatura Skin
-273,36,Rarity,Legendary,Legendary,渡鸦之火皮肤,Ravenfire Skin
-273,38,Rarity,Legendary,Legendary,响尾蛇皮肤,Sidewinder Skin
-273,39,Rarity,Uncommon,Uncommon,,
-273,43,Rarity,Legendary,Legendary,海姆达尔皮肤,Heimdahl Skin
-273,45,Rarity,Legendary,Legendary,徘徊剥削者皮肤,Loiter Sploiter Skin
-275,10,Rarity,Legendary,Legendary,金皮肤,Gold Skin
-275,26,Rarity,Common,Common,,
-275,27,Rarity,Uncommon,Uncommon,,
-275,28,Rarity,Rare,Rare,,
-275,29,Rarity,Epic,Epic,,
-275,31,Rarity,Legendary,Legendary,唱片骑师皮肤,Disc Jockey Skin
-275,32,Rarity,Legendary,Legendary,直播网红皮肤,Streamer Skin
-275,36,Rarity,Legendary,Legendary,环球旅行家皮肤,Jetsetter Skin
-275,38,Rarity,Legendary,Legendary,德劳普纳皮肤,Draupner Skin
-282,1,Rarity,Legendary,Legendary,迹象皮肤,Inkling Skin
-282,3,Rarity,Legendary,Legendary,金皮肤,Gold Skin
-282,21,Rarity,Common,Common,,
-282,22,Rarity,Uncommon,Uncommon,,
-282,23,Rarity,Rare,Rare,,
-282,24,Rarity,Epic,Epic,,
-282,26,Rarity,Legendary,Legendary,阿特林机枪皮肤,Atling Gun Skin
-282,31,Rarity,Legendary,Legendary,高射炮皮肤,Flak Cannon Skin
-282,33,Rarity,Pearl,Pearl,四方肌皮肤,Quadratus Skin
-289,1,Rarity,Legendary,Legendary,瓶装闪电皮肤,Bottled Lightning Skin
-289,4,Rarity,Legendary,Legendary,金皮肤,Gold Skin
-289,20,Rarity,Common,Common,,
-289,21,Rarity,Uncommon,Uncommon,,
-289,22,Rarity,Rare,Rare,,
-289,23,Rarity,Epic,Epic,,
-289,25,Rarity,Legendary,Legendary,伽马虚空皮肤,Gamma Void Skin
-289,28,Rarity,Legendary,Legendary,灵液皮肤,Ichor Skin
-289,29,Rarity,Legendary,Legendary,库珀欺诈者皮肤,Cooper Duper Skin
+﻿Manufacturer ID,Part_ID,Part_type,Stat_ZH,Stat_EN,Stat_RU,Stat_DE,Description_ZH,Description_EN,Description_RU,Description_DE
+273,13,Rarity,Legendary,Legendary,Легендарные,Legendär,金皮肤,Gold Skin,Золотая расцветка,Goldener Skin
+273,30,Rarity,Common,Common,Обычные,Gewöhnlich,,,,
+273,31,Rarity,Uncommon,Uncommon,Необычные,Ungewöhnlich,,,,
+273,32,Rarity,Rare,Rare,Редкие,Selten,,,,
+273,33,Rarity,Epic,Epic,Эпические,Episch,,,,
+273,34,Rarity,Legendary,Legendary,Легендарные,Legendär,风流倜傥,Sprezzatura,КЭЖУАЛ,
+273,36,Rarity,Legendary,Legendary,Легендарные,Legendär,渡鸦之火,Ravenfire,ПЛАМЕННЫЙ ВОРОН,
+273,38,Rarity,Legendary,Legendary,Легендарные,Legendär,响尾蛇,Sidewinder,ГРЕМУЧНИК,
+273,39,Rarity,Uncommon,Uncommon,Необычные,Ungewöhnlich,,,,
+273,43,Rarity,Legendary,Legendary,Легендарные,Legendär,海姆达尔,Heimdahl,ХЕЙМДАЛЬ,
+273,45,Rarity,Legendary,Legendary,Легендарные,Legendär,徘徊剥削者,Loiter Sploiter,ХАКЕР-ШМАКЕР,
+275,10,Rarity,Legendary,Legendary,Легендарные,Legendär,金皮肤,Gold Skin,Золотая расцветка,Goldener Skin
+275,26,Rarity,Common,Common,Обычные,Gewöhnlich,,,,
+275,27,Rarity,Uncommon,Uncommon,Необычные,Ungewöhnlich,,,,
+275,28,Rarity,Rare,Rare,Редкие,Selten,,,,
+275,29,Rarity,Epic,Epic,Эпические,Episch,,,,
+275,31,Rarity,Legendary,Legendary,Легендарные,Legendär,唱片骑师,Disc Jockey,ДИСК-ЖОКЕЙ,
+275,32,Rarity,Legendary,Legendary,Легендарные,Legendär,直播网红,Streamer,СТРИМЕР,
+275,36,Rarity,Legendary,Legendary,Легендарные,Legendär,环球旅行家,Jetsetter,ПАФОСНЫЙ ПУТЕШЕСТВЕННИК,
+275,38,Rarity,Legendary,Legendary,Легендарные,Legendär,德劳普纳,Draupner,ДРАУПНЕР,
+282,1,Rarity,Legendary,Legendary,Легендарные,Legendär,迹象,Inkling,НАМЕК,
+282,3,Rarity,Legendary,Legendary,Легендарные,Legendär,金皮肤,Gold Skin,Золотая расцветка,Goldener Skin
+282,21,Rarity,Common,Common,Обычные,Gewöhnlich,,,,
+282,22,Rarity,Uncommon,Uncommon,Необычные,Ungewöhnlich,,,,
+282,23,Rarity,Rare,Rare,Редкие,Selten,,,,
+282,24,Rarity,Epic,Epic,Эпические,Episch,,,,
+282,26,Rarity,Legendary,Legendary,Легендарные,Legendär,阿特林机枪,Atling Gun,ПУЛЕМЕТ АТЛИНГА,
+282,31,Rarity,Legendary,Legendary,Легендарные,Legendär,高射炮,Flak Cannon,ЗЕНИТНЫЙ ОГОНЬ,
+282,33,Rarity,Pearl,Pearl,Перламутровый,Perlmutt,四方肌,Quadratus,КВАДРАТУС,
+289,1,Rarity,Legendary,Legendary,Легендарные,Legendär,瓶装闪电,Bottled Lightning,ГРЯНУВШИЙ ГРОМ,
+289,4,Rarity,Legendary,Legendary,Легендарные,Legendär,金皮肤,Gold Skin,Золотая расцветка,Goldener Skin
+289,20,Rarity,Common,Common,Обычные,Gewöhnlich,,,,
+289,21,Rarity,Uncommon,Uncommon,Необычные,Ungewöhnlich,,,,
+289,22,Rarity,Rare,Rare,Редкие,Selten,,,,
+289,23,Rarity,Epic,Epic,Эпические,Episch,,,,
+289,25,Rarity,Legendary,Legendary,Легендарные,Legendär,伽马虚空,Gamma Void,ГАММА-ОМУТ,
+289,28,Rarity,Legendary,Legendary,Легендарные,Legendär,灵液,Ichor,ИХОР,
+289,29,Rarity,Legendary,Legendary,Легендарные,Legendär,库珀欺诈者,Cooper Duper,Купер-Дупер,

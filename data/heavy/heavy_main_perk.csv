@@ -1,6 +1,6 @@
-﻿Heavy_perk_main_ID,Part_ID,Part_type,Stat_ZH,Stat_EN,Description_ZH,Description_EN
-1,10,Element,腐蚀,Corrosive,,
-1,11,Element,冰冻,Cryo,,
-1,12,Element,点燃,Fire,,
-1,13,Element,辐射,Radiation,,
-1,14,Element,电击,Shock,,
+﻿Heavy_perk_main_ID,Part_ID,Part_type,Stat_ZH,Stat_EN,Stat_RU,Stat_DE,Description_ZH,Description_EN,Description_RU,Description_DE
+1,10,Element,腐蚀,Corrosive,Коррозия,Korrosion,,,,
+1,11,Element,冰冻,Cryo,Холод,Kryo,,,,
+1,12,Element,点燃,Fire,Огонь,Brand,,,,
+1,13,Element,辐射,Radiation,Радиация,Strahlung,,,,
+1,14,Element,电击,Shock,Шок,Schock,,,,

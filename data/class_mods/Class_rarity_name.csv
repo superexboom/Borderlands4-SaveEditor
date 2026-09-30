@@ -1,126 +1,126 @@
-﻿class_ID,class_name,rarity,name_code,name_EN,name_ZH
-255,Amon,legendary,10,Furnace,熔炉
-255,Amon,legendary,11,Elementalist,元素使者
-255,Amon,legendary,12,Blacksmith,铁匠
-255,Amon,legendary,13,Shatterwight,碎尸者
-255,Amon,legendary,14,Viking,维京人
-255,Amon,legendary,15,Forge Master,锻造大师
-255,Amon,legendary,66,Lamplighter,点灯行者
-255,Amon,legendary,540,Tempest,风暴
-255,Amon,legendary,544,Artificer,军工技师
-255,Amon,normal,1,Brawler,重拳手
-255,Amon,normal,2,Grenadier,掷弹兵
-255,Amon,normal,3,Icebringer,寒冰使者
-255,Amon,normal,4,Torchbearer,火炬手
-255,Amon,normal,5,Stormcaller,风暴召唤师
-255,Amon,normal,6,Soldier,士兵
-255,Amon,normal,7,Commando,突击兵
-255,Amon,normal,8,Cyborg,机械人
-255,Amon,normal,9,Outlaw,法外狂徒
-255,Amon,normal,65,Guardian,护卫者
-255,Amon,legendary,546,Damned,诅咒
-255,Amon,legendary,542,Wastelander,废土客
-259,Harlowe,legendary,10,Bio Robot,生化机器
-259,Harlowe,legendary,11,Reactor,反应堆
-259,Harlowe,legendary,12,Generator,发电机
-259,Harlowe,legendary,13,Driver,司机
-259,Harlowe,legendary,14,Skeptic,怀疑论者
-259,Harlowe,legendary,15,Scientist,科学家
-259,Harlowe,legendary,540,Trooper,超级战士
-259,Harlowe,legendary,542,Phlebotomist,抽血师
-259,Harlowe,legendary,546,Plasmaphile,血浆爱好者
-259,Harlowe,normal,1,Chemist,化学家
-259,Harlowe,normal,2,Assistant,助手
-259,Harlowe,normal,3,Physicist,物理学家
-259,Harlowe,normal,4,Controller,控制者
-259,Harlowe,normal,5,Compiler,编译者
-259,Harlowe,normal,6,Specialist,专家
-259,Harlowe,normal,7,Bookworm,书呆子
-259,Harlowe,normal,8,Radiologist,放射学家
-259,Harlowe,normal,9,Savant,博学者
-259,Harlowe,normal,220,Breaker,击破者
-259,Harlowe,legendary,548,Chirurgeon,外科医生
-259,Harlowe,legendary,544,Ultracapacitor,超级电容
-256,Rafa,legendary,10,Dancer,舞者
-256,Rafa,legendary,11,Filantropo,慈善家
-256,Rafa,legendary,12,Instigator,煽动者
-256,Rafa,legendary,13,Buster,破坏分子
-256,Rafa,legendary,14,Esgrimidor,击剑手
-256,Rafa,legendary,15,Grenazerker,掷弹狂战士
-256,Rafa,legendary,539,Overdriver,超速驾驶
-256,Rafa,legendary,540,Reaparición,重新显现
-256,Rafa,legendary,544,Bombastic,夸夸其谈
-256,Rafa,normal,1,Genio,天才艺术家
-256,Rafa,normal,2,Soldado,士兵
-256,Rafa,normal,3,Demolitionist,爆破专家
-256,Rafa,normal,4,Tecnico,技术员
-256,Rafa,normal,5,Mercenario,雇佣兵
-256,Rafa,normal,6,Gearhead,技术宅
-256,Rafa,normal,7,Trooper,战士
-256,Rafa,normal,8,Tanker,坦克手
-256,Rafa,normal,9,Practitioner,实践者
-256,Rafa,legendary,546,Power-Puncher,强力拳击手
-256,Rafa,legendary,542,Masochist,受虐狂
-254,Vex,legendary,10,Technomancer,科技术士
-254,Vex,legendary,11,Avatar,神通
-254,Vex,legendary,12,Undead Eye,亡灵之眼
-254,Vex,legendary,13,Kindread Spirits,契合知音
-254,Vex,legendary,14,Illusionist,幻术师
-254,Vex,legendary,15,Teen Witch,少女巫师
-254,Vex,legendary,538,Misericorde,慈悲为怀
-254,Vex,legendary,539,Configuration,配置
-254,Vex,legendary,543,Grim Sister,冷酷姐姐
-254,Vex,normal,1,Transistor,晶体管
-254,Vex,normal,2,Firedancer,火焰舞者
-254,Vex,normal,3,Naturalist,博物学家
-254,Vex,normal,4,Weaver,编织者
-254,Vex,normal,5,Radiance,光辉
-254,Vex,normal,6,Ritualist,祭祀
-254,Vex,normal,7,Alchemist,炼金术师
-254,Vex,normal,8,Commander,指挥官
-254,Vex,normal,9,Hunter,猎人
-254,Vex,normal,221,Psion,灵能者
-254,Vex,legendary,545,Living Weapon,活体武器
-254,Vex,legendary,541,GOAT,史上最强
-404,C4sh,legendary,11,Rounder,巡回者
-404,C4sh,legendary,12,Ludopath,嗜赌如命
-404,C4sh,legendary,13,Hotshot,能人
-404,C4sh,legendary,14,Cooler,冷却器
-404,C4sh,legendary,15,Whale,鲸鱼
-404,C4sh,legendary,51,Windrider,驭风者
-404,C4sh,legendary,222,Gamer,玩家
-404,C4sh,legendary,538,Hooligan,街头混混
-404,C4sh,legendary,543,Prestidigitator,魔术师
-404,C4sh,normal,1,Pistoleer,手枪手
-404,C4sh,normal,2,Bane,祸根
-404,C4sh,normal,3,Gambler,赌徒
-404,C4sh,normal,4,Puppeteer,傀儡师
-404,C4sh,normal,5,Swindler,欺诈高手
-404,C4sh,normal,6,Antagonist,对立者
-404,C4sh,normal,7,Powderbot,粉末机器人
-404,C4sh,normal,8,Triggerbot,触发机器人
-404,C4sh,normal,9,Crack Shot,百发百中
-404,C4sh,normal,10,Pack Leader,头狼
-404,C4sh,legendary,545,Trainer,训练师
-404,C4sh,legendary,541,Table Hopper,换桌客
-402,Loveless,legendary,1,Functional Human,功能性人类
-402,Loveless,legendary,2,Trackstar,田径明星
-402,Loveless,legendary,3,Memory Hoarder,记忆囤积者
-402,Loveless,legendary,4,Montage Maker,蒙太奇大师
-402,Loveless,legendary,5,Virophile,嗜毒者
-402,Loveless,legendary,6,Devourer,吞噬者
-402,Loveless,normal,7,System,系统
-402,Loveless,normal,8,Eminence,显赫人物
-402,Loveless,normal,9,Corrupter,腐化者
-402,Loveless,normal,10,Defragger,碎片整理器
-402,Loveless,normal,11,Wyrmkind,蛇龙族
-402,Loveless,normal,12,Royal We,寡人
-402,Loveless,normal,13,Assimilator,同化者
-402,Loveless,normal,14,Researcher,研究员
-402,Loveless,normal,15,Hacktivist,黑客侠
-402,Loveless,normal,51,Keylogger,键盘记录器
-402,Loveless,legendary,222,Puppetmaster,傀儡师
-402,Loveless,legendary,538,Plague Engineer,瘟疫工程师
-402,Loveless,legendary,539,Boomer,爆破手
-402,Loveless,legendary,540,Martyr,殉道者
-402,Loveless,legendary,545,Programmer,程序员
+﻿class_ID,class_name,rarity,name_code,name_EN,name_ZH,name_RU,name_DE
+255,Amon,legendary,10,Furnace,熔炉,ГОРН,
+255,Amon,legendary,11,Elementalist,元素使者,ВЛАСТЕЛИН СТИХИЙ,
+255,Amon,legendary,12,Blacksmith,铁匠,КУЗНЕЦ,
+255,Amon,legendary,13,Shatterwight,碎尸者,БИЧ ДУХОВ,
+255,Amon,legendary,14,Viking,维京人,ВИКИНГ,
+255,Amon,legendary,15,Forge Master,锻造大师,МАСТЕР КУЗНИ,
+255,Amon,legendary,66,Lamplighter,点灯行者,ФОНАРЩИК,
+255,Amon,legendary,540,Tempest,风暴,ШТОРМ,
+255,Amon,legendary,544,Artificer,军工技师,МЕХАНИК,
+255,Amon,normal,1,Brawler,重拳手,ЗАДИРА,
+255,Amon,normal,2,Grenadier,掷弹兵,ГРЕНАДЕР,
+255,Amon,normal,3,Icebringer,寒冰使者,ЛЕДОНОСЕЦ,
+255,Amon,normal,4,Torchbearer,火炬手,СВЕТОЧ,
+255,Amon,normal,5,Stormcaller,风暴召唤师,БУРЕЗНАТЕЦ,
+255,Amon,normal,6,Soldier,士兵,СОЛДАТ,
+255,Amon,normal,7,Commando,突击兵,СПЕЦНАЗОВСКИЙ,
+255,Amon,normal,8,Cyborg,机械人,КИБОРГ,
+255,Amon,normal,9,Outlaw,法外狂徒,ДИКАРЬ,
+255,Amon,normal,65,Guardian,护卫者,СТРАЖ,
+255,Amon,legendary,546,Damned,诅咒,ОБЛОМНЫЙ,
+255,Amon,legendary,542,Wastelander,废土客,ЖИТЕЛЬ ПУСТОШЕЙ,
+259,Harlowe,legendary,10,Bio Robot,生化机器,БИОРОБОТ,
+259,Harlowe,legendary,11,Reactor,反应堆,РЕАКТОР,
+259,Harlowe,legendary,12,Generator,发电机,ГЕНЕРАТОР,
+259,Harlowe,legendary,13,Driver,司机,ВОДИТЕЛЬ,
+259,Harlowe,legendary,14,Skeptic,怀疑论者,СКЕПТИК,
+259,Harlowe,legendary,15,Scientist,科学家,УЧЕНЫЙ,
+259,Harlowe,legendary,540,Trooper,超级战士,ДЕСАНТНИК,
+259,Harlowe,legendary,542,Phlebotomist,抽血师,ФЛЕБОТОМИСТ,
+259,Harlowe,legendary,546,Plasmaphile,血浆爱好者,ПЛАЗМОФИЛ,
+259,Harlowe,normal,1,Chemist,化学家,ХИМИК,
+259,Harlowe,normal,2,Assistant,助手,АССИСТЕНТ,
+259,Harlowe,normal,3,Physicist,物理学家,ФИЗИК,
+259,Harlowe,normal,4,Controller,控制者,МАНИПУЛЯТОР,
+259,Harlowe,normal,5,Compiler,编译者,КОМПИЛЯТОР,
+259,Harlowe,normal,6,Specialist,专家,СПЕЦИАЛИСТ,
+259,Harlowe,normal,7,Bookworm,书呆子,КНИГОЧЕЙ,
+259,Harlowe,normal,8,Radiologist,放射学家,РАДИОЛОГ,
+259,Harlowe,normal,9,Savant,博学者,САВАНТ,
+259,Harlowe,normal,220,Breaker,击破者,КРУШИТЕЛЬ,
+259,Harlowe,legendary,548,Chirurgeon,外科医生,ХИРУРПЕРАЦИОННЫЙ,
+259,Harlowe,legendary,544,Ultracapacitor,超级电容,УЛЬТРАКОНДЕНСАТОР,
+256,Rafa,legendary,10,Dancer,舞者,ТАНЦОР,
+256,Rafa,legendary,11,Filantropo,慈善家,FILÁNTROPO,
+256,Rafa,legendary,12,Instigator,煽动者,ПОДСТРЕКАТЕЛЬ,
+256,Rafa,legendary,13,Buster,破坏分子,РАЗДИРАТЕЛЬ,
+256,Rafa,legendary,14,Esgrimidor,击剑手,ESGRIMIDOR,
+256,Rafa,legendary,15,Grenazerker,掷弹狂战士,ШИЗОГРЕНАДЕР,
+256,Rafa,legendary,539,Overdriver,超速驾驶,ФОРСАЖНИК,
+256,Rafa,legendary,540,Reaparición,重新显现,REAPARACIÓN,
+256,Rafa,legendary,544,Bombastic,夸夸其谈,ВЗРЫВНОЙ ХАРАКТЕР,
+256,Rafa,normal,1,Genio,天才艺术家,ГЕНИЙ,
+256,Rafa,normal,2,Soldado,士兵,SOLDADO,
+256,Rafa,normal,3,Demolitionist,爆破专家,ПОДРЫВНИК,
+256,Rafa,normal,4,Tecnico,技术员,TÉCNICO,
+256,Rafa,normal,5,Mercenario,雇佣兵,НАЕМНИК,
+256,Rafa,normal,6,Gearhead,技术宅,ГАДЖЕТ-ФРИК,
+256,Rafa,normal,7,Trooper,战士,ДЕСАНТНИК,
+256,Rafa,normal,8,Tanker,坦克手,ШТУРМОВИК,
+256,Rafa,normal,9,Practitioner,实践者,ПРАКТИК,
+256,Rafa,legendary,546,Power-Puncher,强力拳击手,ПНЕВМОУДАРНИК,
+256,Rafa,legendary,542,Masochist,受虐狂,МАЗОХИСТСКИЙ,
+254,Vex,legendary,10,Technomancer,科技术士,ТЕХНОМАНТ,
+254,Vex,legendary,11,Avatar,神通,АВАТАР,
+254,Vex,legendary,12,Undead Eye,亡灵之眼,ВЗОР СМЕРТИ,
+254,Vex,legendary,13,Kindread Spirits,契合知音,ДУШЕВНЫЙ,
+254,Vex,legendary,14,Illusionist,幻术师,ИЛЛЮЗИОНИСТ,
+254,Vex,legendary,15,Teen Witch,少女巫师,ЦВЕТ ВЕДЬМОВСТВА,
+254,Vex,legendary,538,Misericorde,慈悲为怀,МИЗЕРИКОРД,
+254,Vex,legendary,539,Configuration,配置,СОСТАВ,
+254,Vex,legendary,543,Grim Sister,冷酷姐姐,ГРИМ СИСТЕР,
+254,Vex,normal,1,Transistor,晶体管,ПОЛУПРОВОДНИК,
+254,Vex,normal,2,Firedancer,火焰舞者,ОГНЕЛОВЕЦ,
+254,Vex,normal,3,Naturalist,博物学家,НАТУРАЛИСТ,
+254,Vex,normal,4,Weaver,编织者,МАСТЕР ПЛЕТЕНИЯ,
+254,Vex,normal,5,Radiance,光辉,СВЕТОЧ,
+254,Vex,normal,6,Ritualist,祭祀,МАСТЕР РИТУАЛОВ,
+254,Vex,normal,7,Alchemist,炼金术师,АЛХИМИК,
+254,Vex,normal,8,Commander,指挥官,КОМАНДИР,
+254,Vex,normal,9,Hunter,猎人,ОХОТНИК,
+254,Vex,normal,221,Psion,灵能者,ПСИОНИК,
+254,Vex,legendary,545,Living Weapon,活体武器,ЖИВОЙ АРСЕНАЛ,
+254,Vex,legendary,541,GOAT,史上最强,ЧЕРНЫЙ КОЗЕЛ,
+404,C4sh,legendary,11,Rounder,巡回者,КАТАЛА,
+404,C4sh,legendary,12,Ludopath,嗜赌如命,ЛУДОМАН,
+404,C4sh,legendary,13,Hotshot,能人,ПРОЖЖЕНЫЙ,
+404,C4sh,legendary,14,Cooler,冷却器,ОХЛАДИТЕЛЬ,
+404,C4sh,legendary,15,Whale,鲸鱼,КИТ,
+404,C4sh,legendary,51,Windrider,驭风者,ВЕТРОЛЕТ,
+404,C4sh,legendary,222,Gamer,玩家,ГЕЙМЕР,
+404,C4sh,legendary,538,Hooligan,街头混混,ХУЛИГАН,
+404,C4sh,legendary,543,Prestidigitator,魔术师,ПРЕСТИДИЖИТАТОР,
+404,C4sh,normal,1,Pistoleer,手枪手,ПИСТОЛЕТЧИК,
+404,C4sh,normal,2,Bane,祸根,БИЧУЮЩИЙ,
+404,C4sh,normal,3,Gambler,赌徒,ИГРОК,
+404,C4sh,normal,4,Puppeteer,傀儡师,КУКЛОВОД,
+404,C4sh,normal,5,Swindler,欺诈高手,МАХИНАТОР,
+404,C4sh,normal,6,Antagonist,对立者,АНТАГОНИСТ,
+404,C4sh,normal,7,Powderbot,粉末机器人,ПОРОХОБОТ,
+404,C4sh,normal,8,Triggerbot,触发机器人,ВЫСТРЕЛБОТ,
+404,C4sh,normal,9,Crack Shot,百发百中,КЛАССНЫЙ СТРЕЛОК,
+404,C4sh,normal,10,Pack Leader,头狼,ЛИДЕР СТАИ,
+404,C4sh,legendary,545,Trainer,训练师,ИНСТРУКТОР,
+404,C4sh,legendary,541,Table Hopper,换桌客,ИГРОК-НЕПОСЕДА,
+402,Loveless,legendary,1,Functional Human,功能性人类,ФУНКЦИОНАЛЬНЫЙ ЧЕЛОВЕК,
+402,Loveless,legendary,2,Trackstar,田径明星,ЗВЕЗДА СЛЕЖКИ,
+402,Loveless,legendary,3,Memory Hoarder,记忆囤积者,Барахольщик памяти,
+402,Loveless,legendary,4,Montage Maker,蒙太奇大师,МОНТАЖНЫЙ,
+402,Loveless,legendary,5,Virophile,嗜毒者,ВИРУСОФИЛ,
+402,Loveless,legendary,6,Devourer,吞噬者,ПОЖИРАТЕЛЬ,
+402,Loveless,normal,7,System,系统,МЕХАНИЗМ,
+402,Loveless,normal,8,Eminence,显赫人物,ПРЕВОСХОДИТЕЛЬ,
+402,Loveless,normal,9,Corrupter,腐化者,ОКИСЛИТЕЛЬ,
+402,Loveless,normal,10,Defragger,碎片整理器,ДЕФРАГМЕНТАТОР,
+402,Loveless,normal,11,Wyrmkind,蛇龙族,ЗМЕЕЗНАТЕЦ,
+402,Loveless,normal,12,Royal We,寡人,"КОРОЛЕВСКОЕ ""МЫ""",
+402,Loveless,normal,13,Assimilator,同化者,АССИМИЛЯТОР,
+402,Loveless,normal,14,Researcher,研究员,ИССЛЕДОВАТЕЛЬ,
+402,Loveless,normal,15,Hacktivist,黑客侠,ХАКЕР-АКТИВИСТ,
+402,Loveless,normal,51,Keylogger,键盘记录器,Перехватчик ввода,
+402,Loveless,legendary,222,Puppetmaster,傀儡师,КУКЛОВОД,
+402,Loveless,legendary,538,Plague Engineer,瘟疫工程师,ЧУМНОЙ ИНЖЕНЕР,
+402,Loveless,legendary,539,Boomer,爆破手,БУМЕР,
+402,Loveless,legendary,540,Martyr,殉道者,МУЧЕНИЧЕСКИЙ,
+402,Loveless,legendary,545,Programmer,程序员,ПРОГРАММИСТ,

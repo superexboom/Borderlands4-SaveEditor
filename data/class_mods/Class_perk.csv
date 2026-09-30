@@ -1,106 +1,106 @@
-﻿perk_ID,perk_name_EN,perk_name_ZH,perk_internal,perk_category
-1,+10% Melee Critical Hit Chance,+10% 近战暴击率,stat2_criticalhitchance_melee,utility
-2,+25% Ordnance Cooldown Rate,+25% 炮械冷却速率,stat2_ordnance_cooldown,skill
-3,+25% Ordnance Cooldown Rate,+25% 炮械冷却速率,stat_ordnance_cooldown,skill
-4,+45% Minion Damage,+45% 仆从伤害,statspecial_miniondamage,skill
-5,+10% Lifesteal,+10% 吸血,statspecial_lifesteal,defense
-6,+45% Command Skill Cooldown Rate,+45% 命令技能冷却速率,statspecial_commandskill_cooldown,skill
-7,-33% Phase Clone Health loss over time,-33% 相位克隆体生命值持续损失,statspecial_phaseclone_healthloss,skill
-8,+45% Attunement Skill Duration,+45% 调和技能持续时间,statspecial_attunement_duration,skill
-9,+10% Ordnance Critical Hit Chance,+10% 炮械暴击率,stat_criticalhitchance_ordnance,skill
-10,+10% Ordnance Critical Hit Chance,+10% 炮械暴击率,stat2_criticalhitchance_ordnance,skill
-11,+10% Skill Critical Hit Chance,+10% 技能暴击率,stat_criticalhitchance_skill,skill
-12,+10% Skill Critical Hit Chance,+10% 技能暴击率,stat2_criticalhitchance_skill,skill
-13,+10% Gun Critical Hit Chance,+10% 枪械暴击率提升,stat2_criticalhitchance_gun,weapon
-14,+10% Gun Critical Hit Chance,+10% 枪械暴击率提升,stat_criticalhitchance_gun,weapon
-15,+60% Action Skill Damage,+60% 主动技能伤害,stat2_actionskill_damage,skill
-16,+60% Action Skill Damage,+60% 主动技能伤害,stat_actionskill_damage,skill
-17,+45% Ordnance Damage,+45% 炮械伤害,stat2_ordnance_damage,skill
-18,+45% Ordnance Damage,+45% 炮械伤害,stat_ordnance_damage,skill
-19,+20% Damage Dealt,+20% 造成伤害,stat_all_damage,utility
-20,+20% Damage Dealt,+20% 造成伤害,stat2_all_damage,utility
-21,+30% Status Effect Application Chance,+30% 状态效果施加率,stat2_statuseffect_chance,element
-22,+30% Status Effect Damage,+30% 状态效果伤害,stat2_statuseffect_damage,element
-23,+30% Status Effect Application Chance,+30% 状态效果施加率,stat_statuseffect_chance,element
-24,+30% Status Effect Damage,+30% 状态效果伤害,stat_statuseffect_damage,element
-25,+40% Kinetic Damage,+40% 动能伤害,stat2_kinetic_damage,element
-26,+25% Elemental Damage,+25% 元素伤害,stat2_elemental_damage,element
-27,+40% Kinetic Damage,+40% 动能伤害,stat_kinetic_damage,element
-28,+25% Elemental Damage,+25% 元素伤害,stat_elemental_damage,element
-29,+45% Action Skill Duration,+45% 主动技能持续时间,stat_skill_duration,skill
-30,+30% Gun Damage,+30% 枪械伤害,stat_weapon_damage,weapon
-31,+35% Splash Damage,+35% 溅射伤害,stat_splash_damage,weapon
-32,+45% Skill Damage,+45% 技能伤害,stat_skill_damage,skill
-33,+25% Action Skill Cooldown Rate,+25% 主动技能冷却速率,stat_skill_cooldown_rate,skill
-34,+50% Energy Shield Regeneration Rate,+50% 能量护盾恢复速率,stat_shield_regen_rate,defense
-35,+26% Reload Speed,+26% 装填时间,stat_reload_speed,weapon
-36,+60% Melee Damage,+60% 近战伤害,stat_melee_damage,utility
-37,+2603 Maximum Health Capacity,+2603 最大生命值容量,stat_max_health,defense
-38,+20% Fire Rate,+20% 射速,stat_fire_rate,weapon
-39,+25% Damage Reduction,+25% 伤害减免,stat_damage_reduction,defense
-40,+35% Critical Hit Damage,+35% 暴击率,stat_crit_damage,weapon
-41,+56 Health Regen per second,+56 每秒生命值恢复,stat_health_regen,defense
-42,+20% Movement Speed,+20% 移动速度,stat_speed,utility
-43,.+45% Pistol Damage,手枪伤害,stat_pistol_damage,weapon
-44,+45% SMG Damage,+45% 微冲伤害,stat_smg_damage,weapon
-45,+45% AR Damage,+45% 突击步枪伤害,stat_assaultrifle_damage,weapon
-46,+45% Shotgun Damage,+45% 霰弹枪伤害,stat_shotgun_damage,weapon
-47,+2231 Maximum Shield Capacity,+2231 最大护盾容量,stat_shield_capacity,defense
-48,+45% Sniper Damage,+45% 狙击步枪伤害,stat_sniper_damage,weapon
-49,+45% Action Skill Duration,+45% 主动技能持续时间,stat2_skill_duration,skill
-50,+30% Gun Damage,+30% 枪械伤害,stat2_weapon_damage,weapon
-51,+35% Splash Damage,+35% 溅射伤害,stat2_splash_damage,weapon
-52,+45% Skill Damage,+45% 技能伤害,stat2_skill_damage,skill
-53,+25% Action Skill Cooldown Rate,+25% 主动技能冷却速率,stat2_skill_cooldown_rate,skill
-54,+50% Energy Shield Regeneration Rate,+50% 能量护盾恢复速率,stat2_shield_regen_rate,defense
-55,+26% Reload Speed,+26% 装填时间,stat2_reload_speed,weapon
-56,+60% Melee Damage,+60% 近战伤害,stat2_melee_damage,utility
-57,+2603 Maximum Health Capacity,+2603 最大生命值容量,stat2_max_health,defense
-58,+20% Fire Rate,+20% 射速,stat2_fire_rate,weapon
-59,+25% Damage Reduction,+25% 伤害减免,stat2_damage_reduction,defense
-60,+35% Critical Hit Damage,+35% 暴击率,stat2_crit_damage,weapon
-61,+56 Health Regen per second,+56 每秒生命值恢复,stat2_health_regen,defense
-62,+20% Movement Speed,+20% 移动速度,stat2_speed,utility
-63,+45% Pistol Damage,+45% 手枪伤害,stat2_pistol_damage,weapon
-64,+45% SMG Damage,+45% 微冲伤害,stat2_smg_damage,weapon
-65,+45% AR Damage,+45% 突击步枪伤害,stat2_assaultrifle_damage,weapon
-66,+45% Shotgun Damage,+45% 霰弹枪伤害,stat2_shotgun_damage,weapon
-67,+2231 Maximum Shield Capacity,+2231 最大护盾容量,stat2_shield_capacity,defense
-68,+45% Sniper Damage,+45% 狙击步枪伤害,stat2_sniper_damage,weapon
-74,,,part_firmware_risky_boots,firmware
-75,,,part_firmware_god_killer,firmware
-76,,,part_firmware_reel_big_fist,firmware
-77,,,part_firmware_lifeblood,firmware
-78,,,part_firmware_airstrike,firmware
-79,,,part_firmware_high_caliber,firmware
-80,,,part_firmware_gadget_ahoy,firmware
-81,,,part_firmware_baker,firmware
-82,,,part_firmware_oscar_mike,firmware
-83,,,part_firmware_rubberband_man,firmware
-84,,,part_firmware_deadeye,firmware
-85,,,part_firmware_action_fist,firmware
-86,,,part_firmware_goojfc,firmware
-87,,,part_firmware_atlas_ex,firmware
-88,,,part_firmware_atlas_infinum,firmware
-89,,,part_firmware_trickshot,firmware
-90,,,part_firmware_jacked,firmware
-91,,,part_firmware_get_throwin,firmware
-92,,,part_firmware_heating_up,firmware
-93,,,part_firmware_bullets_to_spare,firmware
-94,,,part_firmware_daeddy_o,firmware
-95,+60% Stasis Damage,+60% 静止术伤害,statspecial_stasis_damage,element
-96,+60% Hazard Damage,+60% 危害源伤害,statspecial_puddle_damage,element
-97,+60% Forgeskill Damage,+60% 锻造技艺伤害,statspecial_forgeskill_damage,skill
-98,+60% Detonation Damage,+60% 引爆伤害,statspecial_detonation_damage,element
-99,+45% Cryo Damage,+45% 冰冻伤害,statspecial_cryo_damage,element
-100,+45% Forgedrone Duration,+45% 锻造无人机持续时间,statspecial_forgedrone_duration,skill
-101,+45% Incendiary Damage,+45% 火焰伤害,statspecial_incendiary_damage,element
-102,+10% Melee Critical Hit Chance,+10% 近战暴击率,stat_criticalhitchance_melee,utility
-103,,,part_firmware_skillcraft,firmware
-104,,,part_firmware_active_fire,firmware
-CLASSMOD.statspecial_gliding_damage,+105% Damage while Gliding,滑翔时造成+105%伤害,statspecial_gliding_damage,utility
-CLASSMOD.statspecial_ricochet_damage,+30% Ricochet Damage,+30% 跳弹伤害,statspecial_ricochet_damage,utility
-CLASSMOD.statspecial_executable_damage,+20% Executable Damage,+20% 可执行文件伤害,statspecial_executable_damage,utility
-CLASSMOD.statspecial_function_damage,+20% Function Damage,+20% 函数功能伤害,statspecial_function_damage,utility
-106,,,part_firmware_bruiser,firmware
-105,+20% Movement Speed,+20% 移动速度,statspecial_movementspeed,utility
+﻿perk_ID,perk_name_EN,perk_name_ZH,perk_name_RU,perk_name_DE,perk_internal,perk_category
+1,+10% Melee Critical Hit Chance,+10% 近战暴击率,Шанс критического удара в ближнем бою: +10%,+10% Kritische Nahkampf-Trefferchance,stat2_criticalhitchance_melee,utility
+2,+25% Ordnance Cooldown Rate,+25% 炮械冷却速率,Скорость восстановления снарядов: +25%,+25% Kampfmittel-Abklinggeschwindigkeit,stat2_ordnance_cooldown,skill
+3,+25% Ordnance Cooldown Rate,+25% 炮械冷却速率,Скорость восстановления снарядов: +25%,+25% Kampfmittel-Abklinggeschwindigkeit,stat_ordnance_cooldown,skill
+4,+45% Minion Damage,+45% 仆从伤害,Урон от приспешника: +45%,+45% Gefährtenschaden,statspecial_miniondamage,skill
+5,+10% Lifesteal,+10% 吸血,Кража здоровья: +10%,+10% Lebensraub,statspecial_lifesteal,defense
+6,+45% Command Skill Cooldown Rate,+45% 命令技能冷却速率,Скорость восстановления навыка приказа: +45%,+45% Kommando-Skill Abklinggeschwindigkeit,statspecial_commandskill_cooldown,skill
+7,-33% Phase Clone Health loss over time,-33% 相位克隆体生命值持续损失,Потеря здоровья фазового клона со временем: -33%,-33% Phasenklon Allmählicher Gesundheitsverlust,statspecial_phaseclone_healthloss,skill
+8,+45% Attunement Skill Duration,+45% 调和技能持续时间,Время действия навыка гармоничности: +45%,+45% Einstimmungs-Skill-Dauer,statspecial_attunement_duration,skill
+9,+10% Ordnance Critical Hit Chance,+10% 炮械暴击率,Шанс критического попадания снарядами: +10%,+10% Kritische Kampfmittel-Trefferchance,stat_criticalhitchance_ordnance,skill
+10,+10% Ordnance Critical Hit Chance,+10% 炮械暴击率,Шанс критического попадания снарядами: +10%,+10% Kritische Kampfmittel-Trefferchance,stat2_criticalhitchance_ordnance,skill
+11,+10% Skill Critical Hit Chance,+10% 技能暴击率,Шанс критического попадания от навыка: +10%,+10% Kritische Skill-Trefferchance,stat_criticalhitchance_skill,skill
+12,+10% Skill Critical Hit Chance,+10% 技能暴击率,Шанс критического попадания от навыка: +10%,+10% Kritische Skill-Trefferchance,stat2_criticalhitchance_skill,skill
+13,+10% Gun Critical Hit Chance,+10% 枪械暴击率提升,Шанс критического попадания при стрельбе: +10%,+10% Kritische Schusswaffen-Trefferchance,stat2_criticalhitchance_gun,weapon
+14,+10% Gun Critical Hit Chance,+10% 枪械暴击率提升,Шанс критического попадания при стрельбе: +10%,+10% Kritische Schusswaffen-Trefferchance,stat_criticalhitchance_gun,weapon
+15,+60% Action Skill Damage,+60% 主动技能伤害,Урон от активного навыка: +60%,+60% Action-Skill-Schaden,stat2_actionskill_damage,skill
+16,+60% Action Skill Damage,+60% 主动技能伤害,Урон от активного навыка: +60%,+60% Action-Skill-Schaden,stat_actionskill_damage,skill
+17,+45% Ordnance Damage,+45% 炮械伤害,Урон от снарядов: +45%,+45% Kampfmittel-Schaden,stat2_ordnance_damage,skill
+18,+45% Ordnance Damage,+45% 炮械伤害,Урон от снарядов: +45%,+45% Kampfmittel-Schaden,stat_ordnance_damage,skill
+19,+20% Damage Dealt,+20% 造成伤害,Наносимый урон: +20%,+20% Verursachter Schaden,stat_all_damage,utility
+20,+20% Damage Dealt,+20% 造成伤害,Наносимый урон: +20%,+20% Verursachter Schaden,stat2_all_damage,utility
+21,+30% Status Effect Application Chance,+30% 状态效果施加率,Шанс наложения временного стихийного эффекта: +30%,+30% Statuseffekt-Anwendungschance,stat2_statuseffect_chance,element
+22,+30% Status Effect Damage,+30% 状态效果伤害,Временной стихийный урон: +30%,+30% Statuseffekt-Schaden,stat2_statuseffect_damage,element
+23,+30% Status Effect Application Chance,+30% 状态效果施加率,Шанс наложения временного стихийного эффекта: +30%,+30% Statuseffekt-Anwendungschance,stat_statuseffect_chance,element
+24,+30% Status Effect Damage,+30% 状态效果伤害,Временной стихийный урон: +30%,+30% Statuseffekt-Schaden,stat_statuseffect_damage,element
+25,+40% Kinetic Damage,+40% 动能伤害,Кинетический урон: +40%,+40% Kinetikschaden,stat2_kinetic_damage,element
+26,+25% Elemental Damage,+25% 元素伤害,Стихийный урон: +25%,+25% Elementarschaden,stat2_elemental_damage,element
+27,+40% Kinetic Damage,+40% 动能伤害,Кинетический урон: +40%,+40% Kinetikschaden,stat_kinetic_damage,element
+28,+25% Elemental Damage,+25% 元素伤害,Стихийный урон: +25%,+25% Elementarschaden,stat_elemental_damage,element
+29,+45% Action Skill Duration,+45% 主动技能持续时间,Время действия активного навыка: +45%,+45% Action-Skill-Dauer,stat_skill_duration,skill
+30,+30% Gun Damage,+30% 枪械伤害,Урон от стрельбы: +30%,+30% Schusswaffen-Schaden,stat_weapon_damage,weapon
+31,+35% Splash Damage,+35% 溅射伤害,Урон по площади: +35%,+35% Indirekter Schadensradius,stat_splash_damage,weapon
+32,+45% Skill Damage,+45% 技能伤害,Урон от навыков: +45%,+45% Skill-Schaden,stat_skill_damage,skill
+33,+25% Action Skill Cooldown Rate,+25% 主动技能冷却速率,Скорость восстановления активного навыка +25%,+25% Action-Skill-Abklinggeschwindigkeit,stat_skill_cooldown_rate,skill
+34,+50% Energy Shield Regeneration Rate,+50% 能量护盾恢复速率,Скорость подзарядки энергетического щита: +50%,+50% Energieschild-Regenerationsrate,stat_shield_regen_rate,defense
+35,+26% Reload Speed,+26% 装填时间,Скорость перезарядки: +26%,+26% Nachladegeschwindigkeit,stat_reload_speed,weapon
+36,+60% Melee Damage,+60% 近战伤害,Урон в ближнем бою: +60%,+60% Nahkampfschaden,stat_melee_damage,utility
+37,+2603 Maximum Health Capacity,+2603 最大生命值容量,Макс. здоровье: +2603,+2603 Maximale Gesundheitskapazität,stat_max_health,defense
+38,+20% Fire Rate,+20% 射速,Скорострельность: +20%,+20% Feuerrate,stat_fire_rate,weapon
+39,+25% Damage Reduction,+25% 伤害减免,Уменьшение урона: +25%,+25% Schadensreduktion,stat_damage_reduction,defense
+40,+35% Critical Hit Damage,+35% 暴击率,Критический урон: +35%,+35% Kritischer Trefferschaden,stat_crit_damage,weapon
+41,+56 Health Regen per second,+56 每秒生命值恢复,Восстановление здоровья в секунду: +56,+56 Gesundheitsregeneration pro Sekunde,stat_health_regen,defense
+42,+20% Movement Speed,+20% 移动速度,Скорость перемещения: +20%,+20% Bewegungsgeschwindigkeit,stat_speed,utility
+43,+45% Pistol Damage,+45% 手枪伤害,Урон от пистолетов: +45%,+45% Pistolenschaden,stat_pistol_damage,weapon
+44,+45% SMG Damage,+45% 微冲伤害,Урон от пистолетов-пулеметов: +45%,+45% SMG-Schaden,stat_smg_damage,weapon
+45,+45% AR Damage,+45% 突击步枪伤害,Урон от автоматов: +45%,+45% Assault-Rifle-Schaden,stat_assaultrifle_damage,weapon
+46,+45% Shotgun Damage,+45% 霰弹枪伤害,Урон от дробовиков: +45%,+45% Shotgun-Schaden,stat_shotgun_damage,weapon
+47,+2231 Maximum Shield Capacity,+2231 最大护盾容量,Максимальная емкость щита: +2231,+2231 Maximale Schildkapazität,stat_shield_capacity,defense
+48,+45% Sniper Damage,+45% 狙击步枪伤害,Урон от снайперских винтовок: +45%,+45% Sniper-Schaden,stat_sniper_damage,weapon
+49,+45% Action Skill Duration,+45% 主动技能持续时间,Время действия активного навыка: +45%,+45% Action-Skill-Dauer,stat2_skill_duration,skill
+50,+30% Gun Damage,+30% 枪械伤害,Урон от стрельбы: +30%,+30% Schusswaffen-Schaden,stat2_weapon_damage,weapon
+51,+35% Splash Damage,+35% 溅射伤害,Урон по площади: +35%,+35% Indirekter Schadensradius,stat2_splash_damage,weapon
+52,+45% Skill Damage,+45% 技能伤害,Урон от навыков: +45%,+45% Skill-Schaden,stat2_skill_damage,skill
+53,+25% Action Skill Cooldown Rate,+25% 主动技能冷却速率,Скорость восстановления активного навыка +25%,+25% Action-Skill-Abklinggeschwindigkeit,stat2_skill_cooldown_rate,skill
+54,+50% Energy Shield Regeneration Rate,+50% 能量护盾恢复速率,Скорость подзарядки энергетического щита: +50%,+50% Energieschild-Regenerationsrate,stat2_shield_regen_rate,defense
+55,+26% Reload Speed,+26% 装填时间,Скорость перезарядки: +26%,+26% Nachladegeschwindigkeit,stat2_reload_speed,weapon
+56,+60% Melee Damage,+60% 近战伤害,Урон в ближнем бою: +60%,+60% Nahkampfschaden,stat2_melee_damage,utility
+57,+2603 Maximum Health Capacity,+2603 最大生命值容量,Макс. здоровье: +2603,+2603 Maximale Gesundheitskapazität,stat2_max_health,defense
+58,+20% Fire Rate,+20% 射速,Скорострельность: +20%,+20% Feuerrate,stat2_fire_rate,weapon
+59,+25% Damage Reduction,+25% 伤害减免,Уменьшение урона: +25%,+25% Schadensreduktion,stat2_damage_reduction,defense
+60,+35% Critical Hit Damage,+35% 暴击率,Критический урон: +35%,+35% Kritischer Trefferschaden,stat2_crit_damage,weapon
+61,+56 Health Regen per second,+56 每秒生命值恢复,Восстановление здоровья в секунду: +56,+56 Gesundheitsregeneration pro Sekunde,stat2_health_regen,defense
+62,+20% Movement Speed,+20% 移动速度,Скорость перемещения: +20%,+20% Bewegungsgeschwindigkeit,stat2_speed,utility
+63,+45% Pistol Damage,+45% 手枪伤害,Урон от пистолетов: +45%,+45% Pistolenschaden,stat2_pistol_damage,weapon
+64,+45% SMG Damage,+45% 微冲伤害,Урон от пистолетов-пулеметов: +45%,+45% SMG-Schaden,stat2_smg_damage,weapon
+65,+45% AR Damage,+45% 突击步枪伤害,Урон от автоматов: +45%,+45% Assault-Rifle-Schaden,stat2_assaultrifle_damage,weapon
+66,+45% Shotgun Damage,+45% 霰弹枪伤害,Урон от дробовиков: +45%,+45% Shotgun-Schaden,stat2_shotgun_damage,weapon
+67,+2231 Maximum Shield Capacity,+2231 最大护盾容量,Максимальная емкость щита: +2231,+2231 Maximale Schildkapazität,stat2_shield_capacity,defense
+68,+45% Sniper Damage,+45% 狙击步枪伤害,Урон от снайперских винтовок: +45%,+45% Sniper-Schaden,stat2_sniper_damage,weapon
+74,,,,,part_firmware_risky_boots,firmware
+75,,,,,part_firmware_god_killer,firmware
+76,,,,,part_firmware_reel_big_fist,firmware
+77,,,,,part_firmware_lifeblood,firmware
+78,,,,,part_firmware_airstrike,firmware
+79,,,,,part_firmware_high_caliber,firmware
+80,,,,,part_firmware_gadget_ahoy,firmware
+81,,,,,part_firmware_baker,firmware
+82,,,,,part_firmware_oscar_mike,firmware
+83,,,,,part_firmware_rubberband_man,firmware
+84,,,,,part_firmware_deadeye,firmware
+85,,,,,part_firmware_action_fist,firmware
+86,,,,,part_firmware_goojfc,firmware
+87,,,,,part_firmware_atlas_ex,firmware
+88,,,,,part_firmware_atlas_infinum,firmware
+89,,,,,part_firmware_trickshot,firmware
+90,,,,,part_firmware_jacked,firmware
+91,,,,,part_firmware_get_throwin,firmware
+92,,,,,part_firmware_heating_up,firmware
+93,,,,,part_firmware_bullets_to_spare,firmware
+94,,,,,part_firmware_daeddy_o,firmware
+95,+60% Stasis Damage,+60% 静止术伤害,Урон от стазиса: +60%,+60% Stasis-Schaden,statspecial_stasis_damage,element
+96,+60% Hazard Damage,+60% 危害源伤害,Урон от опасности: +60%,+60% Gefahrenschaden,statspecial_puddle_damage,element
+97,+60% Forgeskill Damage,+60% 锻造技艺伤害,Урон от навыка Кузни: +60%,+60% Schmiede-Skill-Schaden,statspecial_forgeskill_damage,skill
+98,+60% Detonation Damage,+60% 引爆伤害,Урон от детонации: +60%,+60% Detonationsschaden,statspecial_detonation_damage,element
+99,+45% Cryo Damage,+45% 冰冻伤害,Урон от холода: +45%,+45% Kryo-Schaden,statspecial_cryo_damage,element
+100,+45% Forgedrone Duration,+45% 锻造无人机持续时间,Время действия дрона Кузни: +45%,+45% Schmiededrohnen-Dauer,statspecial_forgedrone_duration,skill
+101,+45% Incendiary Damage,+45% 火焰伤害,Урон от огня: +45%,+45% Brandschaden,statspecial_incendiary_damage,element
+102,+10% Melee Critical Hit Chance,+10% 近战暴击率,Шанс критического удара в ближнем бою: +10%,+10% Kritische Nahkampf-Trefferchance,stat_criticalhitchance_melee,utility
+103,,,,,part_firmware_skillcraft,firmware
+104,,,,,part_firmware_active_fire,firmware
+CLASSMOD.statspecial_gliding_damage,+105% Damage while Gliding,滑翔时造成+105%伤害,Урон при планировании: +105%,+105% Schaden beim Gleiten,statspecial_gliding_damage,utility
+CLASSMOD.statspecial_ricochet_damage,+30% Ricochet Damage,+30% 跳弹伤害,Урон от рикошета: +30%,+30% Abprallschaden,statspecial_ricochet_damage,utility
+CLASSMOD.statspecial_executable_damage,+20% Executable Damage,+20% 可执行文件伤害,Урон от исполняемого файла: +20%,+20% Programm-Schaden,statspecial_executable_damage,utility
+CLASSMOD.statspecial_function_damage,+20% Function Damage,+20% 函数功能伤害,Урон от функции: +20%,+20% Funktions-Schaden,statspecial_function_damage,utility
+106,,,,,part_firmware_bruiser,firmware
+105,+20% Movement Speed,+20% 移动速度,Скорость перемещения: +20%,+20% Bewegungsgeschwindigkeit,statspecial_movementspeed,utility

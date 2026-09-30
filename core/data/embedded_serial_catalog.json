@@ -25,7 +25,8 @@
       "composition_ref": "13:85",
       "name": {
         "en": "First Impression",
-        "zh": "第一印象"
+        "zh": "第一印象",
+        "ru": "ПЕРВЫЙ КОНТАКТ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -230,7 +231,8 @@
       "composition_ref": "13:83",
       "name": {
         "en": "Mercredi",
-        "zh": "星期三"
+        "zh": "星期三",
+        "ru": "MERCREDI"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -451,7 +453,8 @@
       "composition_ref": "15:81",
       "name": {
         "en": "Divided Glow",
-        "zh": "分裂光芒"
+        "zh": "分裂光芒",
+        "ru": "РАЗДЕЛЕННЫЙ СПОЛОХ"
       },
       "type": "Assault Rifle",
       "level": 60,
@@ -544,7 +547,8 @@
       "composition_ref": "18:105",
       "name": {
         "en": "Eradication",
-        "zh": "根除"
+        "zh": "根除",
+        "ru": "ИСТРЕБИТЕЛЬ"
       },
       "type": "Assault Rifle",
       "level": 60,
@@ -635,7 +639,8 @@
       "composition_ref": "27:89",
       "name": {
         "en": "Flash Fuel",
-        "zh": "闪光燃料"
+        "zh": "闪光燃料",
+        "ru": "ЛЕГКОВОСПЛАМЕНЯЮЩИЙСЯ МАТЕРИАЛ"
       },
       "type": "Assault Rifle",
       "level": 60,
@@ -700,7 +705,8 @@
       "composition_ref": "298:12",
       "name": {
         "en": "Countermeasure",
-        "zh": "反制措施"
+        "zh": "反制措施",
+        "ru": "КОНТРМЕРА"
       },
       "type": "Grenade",
       "level": 50,
@@ -909,7 +915,8 @@
       "composition_ref": "270:12",
       "name": {
         "en": "Pressure Kettle",
-        "zh": "高压锅"
+        "zh": "高压锅",
+        "ru": "СКОРОВАРКА"
       },
       "type": "Grenade",
       "level": 60,
@@ -984,7 +991,8 @@
       "composition_ref": "272:15",
       "name": {
         "en": "Alignment",
-        "zh": "协调一致"
+        "zh": "协调一致",
+        "ru": "СЛАЖЕННОСТЬ"
       },
       "type": "Grenade",
       "level": 60,
@@ -1035,7 +1043,8 @@
       "composition_ref": "278:15",
       "name": {
         "en": "Transmitter",
-        "zh": "发射器"
+        "zh": "发射器",
+        "ru": "Передатчик"
       },
       "type": "Grenade",
       "level": 30,
@@ -1220,7 +1229,8 @@
       "composition_ref": "273:38",
       "name": {
         "en": "Sidewinder",
-        "zh": "响尾蛇"
+        "zh": "响尾蛇",
+        "ru": "ГРЕМУЧНИК"
       },
       "type": "Heavy Weapon",
       "level": 30,
@@ -1409,7 +1419,8 @@
       "composition_ref": "2:87",
       "name": {
         "en": "Shield Overflow",
-        "zh": "护盾泛滥"
+        "zh": "护盾泛滥",
+        "ru": "ПЕРЕПОЛНЕНЫЙ ЩИТ"
       },
       "type": "Pistol",
       "level": 60,
@@ -1476,7 +1487,8 @@
       "composition_ref": "4:87",
       "name": {
         "en": "Rhythm",
-        "zh": "韵律"
+        "zh": "韵律",
+        "ru": "РИТМ"
       },
       "type": "Pistol",
       "level": 60,
@@ -1559,7 +1571,8 @@
       "composition_ref": "6:59",
       "name": {
         "en": "Hardpoint",
-        "zh": "承力点"
+        "zh": "承力点",
+        "ru": "ТАРАН"
       },
       "type": "Pistol",
       "level": 50,
@@ -1728,7 +1741,8 @@
       "composition_ref": "19:56",
       "name": {
         "en": "Roil",
-        "zh": "激怒"
+        "zh": "激怒",
+        "ru": "ОСАДОК"
       },
       "type": "SMG",
       "level": 50,
@@ -1901,7 +1915,8 @@
       "composition_ref": "21:83",
       "name": {
         "en": "Matador's Match",
-        "zh": "斗牛大赛"
+        "zh": "斗牛大赛",
+        "ru": "РОК МАТАДОРА"
       },
       "type": "SMG",
       "level": 1,
@@ -2104,7 +2119,8 @@
       "composition_ref": "22:105",
       "name": {
         "en": "Tempered Essence",
-        "zh": "淬炼精髓"
+        "zh": "淬炼精髓",
+        "ru": "ЗАКАЛЕННЫЙ ЭКСТРАКТ"
       },
       "type": "SMG",
       "level": 60,
@@ -2173,7 +2189,8 @@
       "composition_ref": "300:14",
       "name": {
         "en": "Over Swarm",
-        "zh": "蜂群过境"
+        "zh": "蜂群过境",
+        "ru": "ПЕРЕРОЙ"
       },
       "type": "Shield",
       "level": 60,
@@ -2248,7 +2265,8 @@
       "composition_ref": "8:58",
       "name": {
         "en": "Missilaser",
-        "zh": "导弹激光"
+        "zh": "导弹激光",
+        "ru": "ЛАЗЕРОСТРЕЛ"
       },
       "type": "Shotgun",
       "level": 50,
@@ -2415,7 +2433,8 @@
       "composition_ref": "12:79",
       "name": {
         "en": "ARC-TAN",
-        "zh": "正反切"
+        "zh": "正反切",
+        "ru": "АРК-ТАНГ"
       },
       "type": "Shotgun",
       "level": 50,
@@ -2632,7 +2651,8 @@
       "composition_ref": "12:83",
       "name": {
         "en": "Cormano",
-        "zh": "科尔马诺"
+        "zh": "科尔马诺",
+        "ru": "КОРМАНО"
       },
       "type": "Shotgun",
       "level": 60,
@@ -2717,7 +2737,8 @@
       "composition_ref": "16:91",
       "name": {
         "en": "Light Gun",
-        "zh": "轻型枪械"
+        "zh": "轻型枪械",
+        "ru": "СВЕТОВОД"
       },
       "type": "Sniper",
       "level": 60,
@@ -2806,7 +2827,8 @@
       "composition_ref": "23:56",
       "name": {
         "en": "Tankbuster",
-        "zh": "反坦克炮"
+        "zh": "反坦克炮",
+        "ru": "ИСТРЕБИТЕЛЬ ТАНКОВ"
       },
       "type": "Sniper",
       "level": 50,
@@ -3025,7 +3047,8 @@
       "composition_ref": "26:79",
       "name": {
         "en": "Rooker",
-        "zh": "浪子"
+        "zh": "浪子",
+        "ru": "РУКЕР"
       },
       "type": "Sniper",
       "level": 50,
@@ -3196,7 +3219,8 @@
       "composition_ref": "25:83",
       "name": {
         "en": "Stealth & Seek",
-        "zh": "潜行与追踪"
+        "zh": "潜行与追踪",
+        "ru": "ВОДЯЩИЙ"
       },
       "type": "Sniper",
       "level": 60,
@@ -3287,7 +3311,8 @@
       "composition_ref": "2:55",
       "name": {
         "en": "Aggro Bonn-91",
-        "zh": "敌对 波恩91"
+        "zh": "敌对 波恩91",
+        "ru": "АГРЕССИВНЫЙ БОНН-91"
       },
       "type": "Pistol",
       "level": 1,
@@ -3416,7 +3441,8 @@
       "composition_ref": "13:95",
       "name": {
         "en": "Combative Spec-Tec",
-        "zh": "好斗 特种科技"
+        "zh": "好斗 特种科技",
+        "ru": "БОЕВИТЫЙ СПЕЦ-ТЕХ"
       },
       "type": "Assault Rifle",
       "level": 40,
@@ -3551,7 +3577,8 @@
       "composition_ref": "13:98",
       "name": {
         "en": "Synchonized Spec-Tec",
-        "zh": "同步化 特种科技"
+        "zh": "同步化 特种科技",
+        "ru": "СИНХРОННЫЙ СПЕЦ-ТЕХ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -3692,7 +3719,8 @@
       "composition_ref": "13:97",
       "name": {
         "en": "Rogue Split-Second F.A.N.G.",
-        "zh": "侠盗 瞬间 獠牙"
+        "zh": "侠盗 瞬间 獠牙",
+        "ru": "ИЗГНАННЫЙ МОМЕНТАЛЬНЫЙ К.Л.Ы.К."
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -3835,7 +3863,8 @@
       "composition_ref": "13:96",
       "name": {
         "en": "Combative Spec-Tec",
-        "zh": "好斗 特种科技"
+        "zh": "好斗 特种科技",
+        "ru": "БОЕВИТЫЙ СПЕЦ-ТЕХ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -3970,7 +3999,8 @@
       "composition_ref": "13:97",
       "name": {
         "en": "Forceful Storming F.A.N.G.",
-        "zh": "强制 风暴 獠牙"
+        "zh": "强制 风暴 獠牙",
+        "ru": "СИЛОВОЙ БУШУЮЩИЙ К.Л.Ы.К."
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -4111,7 +4141,8 @@
       "composition_ref": "13:19",
       "name": {
         "en": "Rogue F.A.N.G.",
-        "zh": "侠盗 獠牙"
+        "zh": "侠盗 獠牙",
+        "ru": "ИЗГНАННЫЙ К.Л.Ы.К."
       },
       "type": "Assault Rifle",
       "level": 1,
@@ -4246,7 +4277,8 @@
       "composition_ref": "14:89",
       "name": {
         "en": "Perforator",
-        "zh": "穿孔机"
+        "zh": "穿孔机",
+        "ru": "ПЕРФОРАТОР"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -4379,7 +4411,8 @@
       "composition_ref": "14:90",
       "name": {
         "en": "Healthy Perforator",
-        "zh": "健康 穿孔机"
+        "zh": "健康 穿孔机",
+        "ru": "ЗДОРОВЫЙ ПЕРФОРАТОР"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -4440,7 +4473,8 @@
       "composition_ref": "14:89",
       "name": {
         "en": "Perforator",
-        "zh": "穿孔机"
+        "zh": "穿孔机",
+        "ru": "ПЕРФОРАТОР"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -4575,7 +4609,8 @@
       "composition_ref": "14:89",
       "name": {
         "en": "Perforator",
-        "zh": "穿孔机"
+        "zh": "穿孔机",
+        "ru": "ПЕРФОРАТОР"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -4708,7 +4743,8 @@
       "composition_ref": "14:38",
       "name": {
         "en": "Nutritious Assaultomatic",
-        "zh": "营养丰富 自动突击"
+        "zh": "营养丰富 自动突击",
+        "ru": "ПИТАТЕЛЬНЫЙ АВТОМАТОМАТ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -4851,7 +4887,8 @@
       "composition_ref": "15:95",
       "name": {
         "en": "Indiction",
-        "zh": "法令"
+        "zh": "法令",
+        "ru": "ИНДИКТ"
       },
       "type": "Assault Rifle",
       "level": 40,
@@ -4982,7 +5019,8 @@
       "composition_ref": "15:96",
       "name": {
         "en": "Spoken Indiction",
-        "zh": "言灵 法令"
+        "zh": "言灵 法令",
+        "ru": "ВЫСКАЗАННЫЙ ИНДИКТ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -5113,7 +5151,8 @@
       "composition_ref": "15:96",
       "name": {
         "en": "Prosperous Canillated Schema",
-        "zh": "繁荣 吟诵 蓝图"
+        "zh": "繁荣 吟诵 蓝图",
+        "ru": "ПРОЦВЕТАЮЩИЙ ПРОТОЧЕННЫЙ АЛГОРИТМ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -5246,7 +5285,8 @@
       "composition_ref": "17:95",
       "name": {
         "en": "Truncheon",
-        "zh": "警棍"
+        "zh": "警棍",
+        "ru": "ЖЕЗЛ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -5375,7 +5415,8 @@
       "composition_ref": "17:96",
       "name": {
         "en": "Revelling Handle",
-        "zh": "狂欢 手柄"
+        "zh": "狂欢 手柄",
+        "ru": "ГУЛЯЩИЙ СТВОЛ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -5508,7 +5549,8 @@
       "composition_ref": "17:95",
       "name": {
         "en": "Handle",
-        "zh": "手柄"
+        "zh": "手柄",
+        "ru": "СТВОЛ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -5637,7 +5679,8 @@
       "composition_ref": "18:95",
       "name": {
         "en": "Buzzymuzz",
-        "zh": "嗡嗡枪口"
+        "zh": "嗡嗡枪口",
+        "ru": "БУХАРЬ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -5768,7 +5811,8 @@
       "composition_ref": "18:65",
       "name": {
         "en": "Wombo Combo",
-        "zh": "超杀连击"
+        "zh": "超杀连击",
+        "ru": "ВОМБО-КОМБО"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -5989,7 +6033,8 @@
       "composition_ref": "18:95",
       "name": {
         "en": "Gruppagrak",
-        "zh": "咕噜咆哮"
+        "zh": "咕噜咆哮",
+        "ru": "ДРУЖИННИК"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -6122,7 +6167,8 @@
       "composition_ref": "18:95",
       "name": {
         "en": "Gruppagrak",
-        "zh": "咕噜咆哮"
+        "zh": "咕噜咆哮",
+        "ru": "ДРУЖИННИК"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -6255,7 +6301,8 @@
       "composition_ref": "18:98",
       "name": {
         "en": "Industrialized Buzzymuzz",
-        "zh": "工业化 嗡嗡枪口"
+        "zh": "工业化 嗡嗡枪口",
+        "ru": "ИНДУСТРИАЛЬНЫЙ БУХАРЬ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -6392,7 +6439,8 @@
       "composition_ref": "27:72",
       "name": {
         "en": "Put Watching Rougarou",
-        "zh": "放入 观看 狼人"
+        "zh": "放入 观看 狼人",
+        "ru": "УЛОЖЕННЫЙ НАБЛЮДАЮЩИЙ РУГАРУ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -6531,7 +6579,8 @@
       "composition_ref": "27:95",
       "name": {
         "en": "Hidden Rougarou",
-        "zh": "隐藏 狼人"
+        "zh": "隐藏 狼人",
+        "ru": "СПРЯТАННЫЙ РУГАРУ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -6662,7 +6711,8 @@
       "composition_ref": "27:97",
       "name": {
         "en": "Sudden Unseen Karkadann",
-        "zh": "意外 隐身 独角兽"
+        "zh": "意外 隐身 独角兽",
+        "ru": "НЕПРЕДСКАЗУЕМЫЙ НЕВИДАННЫЙ КАРКАДАНН"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -6797,7 +6847,8 @@
       "composition_ref": "27:70",
       "name": {
         "en": "Cooking Unseen Karkadann",
-        "zh": "烹饪 隐身 独角兽"
+        "zh": "烹饪 隐身 独角兽",
+        "ru": "БУРЛЯЩИЙ НЕВИДАННЫЙ КАРКАДАНН"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -6934,7 +6985,8 @@
       "composition_ref": "273:33",
       "name": {
         "en": "Junk-Drunk Tonguewag",
-        "zh": "烂醉 舌头摇摆"
+        "zh": "烂醉 舌头摇摆",
+        "ru": "ПЬЯНЫЙ В ХЛАМ БОЛТОЛОГ"
       },
       "type": "Heavy Weapon",
       "level": 50,
@@ -7065,7 +7117,8 @@
       "composition_ref": "2:55",
       "name": {
         "en": "Aggro Bonn-91",
-        "zh": "敌对 波恩91"
+        "zh": "敌对 波恩91",
+        "ru": "АГРЕССИВНЫЙ БОНН-91"
       },
       "type": "Pistol",
       "level": 50,
@@ -7194,7 +7247,8 @@
       "composition_ref": "4:74",
       "name": {
         "en": "A",
-        "zh": "A级"
+        "zh": "A级",
+        "ru": "И"
       },
       "type": "Pistol",
       "level": 50,
@@ -7333,7 +7387,8 @@
       "composition_ref": "3:95",
       "name": {
         "en": "Lurking Cuca",
-        "zh": "潜伏 妖婆"
+        "zh": "潜伏 妖婆",
+        "ru": "РЫЩУЩИЙ КУКА"
       },
       "type": "Pistol",
       "level": 50,
@@ -7464,7 +7519,8 @@
       "composition_ref": "3:1",
       "name": {
         "en": "Lurking Cuca",
-        "zh": "潜伏 妖婆"
+        "zh": "潜伏 妖婆",
+        "ru": "РЫЩУЩИЙ КУКА"
       },
       "type": "Pistol",
       "level": 50,
@@ -7597,7 +7653,8 @@
       "composition_ref": "3:71",
       "name": {
         "en": "Lurking Cuca",
-        "zh": "潜伏 妖婆"
+        "zh": "潜伏 妖婆",
+        "ru": "РЫЩУЩИЙ КУКА"
       },
       "type": "Pistol",
       "level": 50,
@@ -7728,7 +7785,8 @@
       "composition_ref": "5:98",
       "name": {
         "en": "Double-Creme Pocketshot",
-        "zh": "双重奶霜 微型射击"
+        "zh": "双重奶霜 微型射击",
+        "ru": "СЛИВОЧНЫЙ КАРМАНОСТРЕЛ"
       },
       "type": "Pistol",
       "level": 40,
@@ -7957,7 +8015,8 @@
       "composition_ref": "5:95",
       "name": {
         "en": "Quality-Assured Widget",
-        "zh": "质量保证 小装置"
+        "zh": "质量保证 小装置",
+        "ru": "КАЧЕСТВЕННЫЙ ПРИБАМБАС"
       },
       "type": "Pistol",
       "level": 40,
@@ -8090,7 +8149,8 @@
       "composition_ref": "5:97",
       "name": {
         "en": "Sent Bulk-Order Widget",
-        "zh": "发送 批量订单 小装置"
+        "zh": "发送 批量订单 小装置",
+        "ru": "ОТПРАВЛЯЕМЫЙ ОПТОВЫЙ ПРИБАМБАС"
       },
       "type": "Pistol",
       "level": 50,
@@ -8231,7 +8291,8 @@
       "composition_ref": "5:97",
       "name": {
         "en": "Hucked Guaranteed Widget",
-        "zh": "抛开 担保 小装置"
+        "zh": "抛开 担保 小装置",
+        "ru": "ШВЫРЯЕМЫЙ ГАРАНТИРОВАННЫЙ ПРИБАМБАС"
       },
       "type": "Pistol",
       "level": 60,
@@ -8294,7 +8355,8 @@
       "composition_ref": "19:96",
       "name": {
         "en": "Scouring Phage",
-        "zh": "冲刷 噬菌体"
+        "zh": "冲刷 噬菌体",
+        "ru": "АБРАЗИВНЫЙ ПОЖИРАТЕЛЬ"
       },
       "type": "SMG",
       "level": 50,
@@ -8425,7 +8487,8 @@
       "composition_ref": "19:97",
       "name": {
         "en": "Searing Infestation",
-        "zh": "灼热 侵扰"
+        "zh": "灼热 侵扰",
+        "ru": "ОБЖИГАЮЩИЙ ПАРАЗИТ"
       },
       "type": "SMG",
       "level": 50,
@@ -8566,7 +8629,8 @@
       "composition_ref": "19:97",
       "name": {
         "en": "Crammed Aching Phage",
-        "zh": "塞满 疼痛 噬菌体"
+        "zh": "塞满 疼痛 噬菌体",
+        "ru": "НАПИЧКАННЫЙ БОЛЕЗНЕННЫЙ ПОЖИРАТЕЛЬ"
       },
       "type": "SMG",
       "level": 60,
@@ -8623,7 +8687,8 @@
       "composition_ref": "19:97",
       "name": {
         "en": "Delusional Phage",
-        "zh": "妄想 噬菌体"
+        "zh": "妄想 噬菌体",
+        "ru": "БРЕДОВЫЙ ПОЖИРАТЕЛЬ"
       },
       "type": "SMG",
       "level": 60,
@@ -8680,7 +8745,8 @@
       "composition_ref": "21:58",
       "name": {
         "en": "Crepuscular Ephemeris",
-        "zh": "朦胧 星历"
+        "zh": "朦胧 星历",
+        "ru": "ТУСКЛЫЙ ЭФЕМЕРИД"
       },
       "type": "SMG",
       "level": 40,
@@ -8813,7 +8879,8 @@
       "composition_ref": "21:98",
       "name": {
         "en": "Plasma Static Synastry",
-        "zh": "电浆 静态 共鸣"
+        "zh": "电浆 静态 共鸣",
+        "ru": "ПЛАЗМЕННЫЙ СТАТИЧЕСКИЙ СИНАСТРИЙ"
       },
       "type": "SMG",
       "level": 50,
@@ -8956,7 +9023,8 @@
       "composition_ref": "7:95",
       "name": {
         "en": "Aching Weldwyrm",
-        "zh": "疼痛 熔焊巨龙"
+        "zh": "疼痛 熔焊巨龙",
+        "ru": "БОЛЕЗНЕННЫЙ СВАРКОЗМЕЙ"
       },
       "type": "Shotgun",
       "level": 40,
@@ -9087,7 +9155,8 @@
       "composition_ref": "7:96",
       "name": {
         "en": "Aching Hellhound",
-        "zh": "疼痛 地狱猎犬"
+        "zh": "疼痛 地狱猎犬",
+        "ru": "БОЛЕЗНЕННЫЙ ИЗВЕРГ"
       },
       "type": "Shotgun",
       "level": 50,
@@ -9222,7 +9291,8 @@
       "composition_ref": "9:83",
       "name": {
         "en": "Hellwalker",
-        "zh": "地狱行者"
+        "zh": "地狱行者",
+        "ru": "АДОХОД"
       },
       "type": "Shotgun",
       "level": 50,
@@ -9353,7 +9423,8 @@
       "composition_ref": "8:97",
       "name": {
         "en": "Threatening Caliburn",
-        "zh": "威胁 王者之剑"
+        "zh": "威胁 王者之剑",
+        "ru": "УГРОЖАЮЩИЙ КАЛИБУР"
       },
       "type": "Shotgun",
       "level": 100,
@@ -9448,7 +9519,8 @@
       "composition_ref": "8:59",
       "name": {
         "en": "Forceful Storming Durendal",
-        "zh": "强制 风暴 圣剑"
+        "zh": "强制 风暴 圣剑",
+        "ru": "СИЛОВОЙ БУШУЮЩИЙ ДЮРАНДАЛЬ"
       },
       "type": "Shotgun",
       "level": 100,
@@ -9535,7 +9607,8 @@
       "composition_ref": "16:89",
       "name": {
         "en": "Socialized Ragoon",
-        "zh": "社会化 暴徒"
+        "zh": "社会化 暴徒",
+        "ru": "СОЦИАЛИСТИЧЕСКИЙ НАДЗОР"
       },
       "type": "Sniper",
       "level": 100,
@@ -9596,7 +9669,8 @@
       "composition_ref": "17:96",
       "name": {
         "en": "Strong Handle",
-        "zh": "强大 手柄"
+        "zh": "强大 手柄",
+        "ru": "СИЛЬНЫЙ СТВОЛ"
       },
       "type": "Assault Rifle",
       "level": 13,
@@ -9727,7 +9801,8 @@
       "composition_ref": "18:96",
       "name": {
         "en": "Toochney Buzzymuzz",
-        "zh": "易怒 嗡嗡枪口"
+        "zh": "易怒 嗡嗡枪口",
+        "ru": "БОГАТЫРСКИЙ БУХАРЬ"
       },
       "type": "Assault Rifle",
       "level": 13,
@@ -9948,7 +10023,8 @@
       "composition_ref": "292:4",
       "name": {
         "en": "Concentrated 100% Real Juice",
-        "zh": "集中 100%纯果汁"
+        "zh": "集中 100%纯果汁",
+        "ru": "СОСРЕДОТОЧЕННЫЙ НАТУРАЛЬНЫЙ СОК"
       },
       "type": "Enhancement",
       "level": 30,
@@ -10153,7 +10229,8 @@
       "composition_ref": "298:1",
       "name": {
         "en": "EXPLODER",
-        "zh": "雷管"
+        "zh": "雷管",
+        "ru": "ВЗРЫВЧАТКА"
       },
       "type": "Grenade",
       "level": 13,
@@ -10330,7 +10407,8 @@
       "composition_ref": "267:4",
       "name": {
         "en": "Throwing Knife",
-        "zh": "飞刀"
+        "zh": "飞刀",
+        "ru": "ФИНКА"
       },
       "type": "Grenade",
       "level": 2,
@@ -10675,7 +10753,8 @@
       "composition_ref": "291:1",
       "name": {
         "en": "Impact Grenade",
-        "zh": "冲击手雷"
+        "zh": "冲击手雷",
+        "ru": "УДАРНАЯ ГРАНАТА"
       },
       "type": "Grenade",
       "level": 30,
@@ -10876,7 +10955,8 @@
       "composition_ref": "2:95",
       "name": {
         "en": "Split-Second Bonn-91",
-        "zh": "瞬间 波恩91"
+        "zh": "瞬间 波恩91",
+        "ru": "МОМЕНТАЛЬНЫЙ БОНН-91"
       },
       "type": "Pistol",
       "level": 30,
@@ -11093,7 +11173,8 @@
       "composition_ref": "2:55",
       "name": {
         "en": "Aggro Bonn-91",
-        "zh": "敌对 波恩91"
+        "zh": "敌对 波恩91",
+        "ru": "АГРЕССИВНЫЙ БОНН-91"
       },
       "type": "Pistol",
       "level": 1,
@@ -11306,7 +11387,8 @@
       "composition_ref": "3:95",
       "name": {
         "en": "Stalking Cuca",
-        "zh": "跟踪 妖婆"
+        "zh": "跟踪 妖婆",
+        "ru": "КРАДУЩИЙСЯ КУКА"
       },
       "type": "Pistol",
       "level": 2,
@@ -11605,7 +11687,8 @@
       "composition_ref": "5:96",
       "name": {
         "en": "Dentist-Approved Widget",
-        "zh": "牙医推荐 小装置"
+        "zh": "牙医推荐 小装置",
+        "ru": "ОДОБРЕННЫЙ СТОМАТОЛОГАМИ ПРИБАМБАС"
       },
       "type": "Pistol",
       "level": 13,
@@ -11824,7 +11907,8 @@
       "composition_ref": "274:3",
       "name": {
         "en": "Mini Scabber",
-        "zh": "小型 破烂"
+        "zh": "小型 破烂",
+        "ru": "МИНИ СТРУПИК"
       },
       "type": "Repkit",
       "level": 13,
@@ -12003,7 +12087,8 @@
       "composition_ref": "277:3",
       "name": {
         "en": "Standard Stim",
-        "zh": "标准 兴奋剂"
+        "zh": "标准 兴奋剂",
+        "ru": "СТАНДАРТНЫЙ СТИМУЛЯТОР"
       },
       "type": "Repkit",
       "level": 30,
@@ -12206,7 +12291,8 @@
       "composition_ref": "269:1",
       "name": {
         "en": "Mega Sobirat",
-        "zh": "兆 吸能"
+        "zh": "兆 吸能",
+        "ru": "МЕГА НАСТОЙ"
       },
       "type": "Repkit",
       "level": 2,
@@ -12409,7 +12495,8 @@
       "composition_ref": "20:96",
       "name": {
         "en": "Bellicose GCX",
-        "zh": "斗狠 GCX"
+        "zh": "斗狠 GCX",
+        "ru": "ДРАЧЛИВЫЙ GCX"
       },
       "type": "SMG",
       "level": 2,
@@ -12630,7 +12717,8 @@
       "composition_ref": "22:96",
       "name": {
         "en": "Rigged Flewdy",
-        "zh": "操纵 液态"
+        "zh": "操纵 液态",
+        "ru": "ПОДСТРОЕННЫЙ СМЕРЧ"
       },
       "type": "SMG",
       "level": 13,
@@ -12827,7 +12915,8 @@
       "composition_ref": "306:1",
       "name": {
         "en": "Stein",
-        "zh": "豪饮"
+        "zh": "豪饮",
+        "ru": "КАМЕНЬ"
       },
       "type": "Shield",
       "level": 30,
@@ -13028,7 +13117,8 @@
       "composition_ref": "312:1",
       "name": {
         "en": "Cover",
-        "zh": "掩护"
+        "zh": "掩护",
+        "ru": "ПОКРОВ"
       },
       "type": "Shield",
       "level": 2,
@@ -13229,7 +13319,8 @@
       "composition_ref": "279:3",
       "name": {
         "en": "Gate",
-        "zh": "大门"
+        "zh": "大门",
+        "ru": "ПОРТАЛ"
       },
       "type": "Shield",
       "level": 13,
@@ -13406,7 +13497,8 @@
       "composition_ref": "11:95",
       "name": {
         "en": "Thrown Ultra HD EZ-Blast",
-        "zh": "抛出 超高清 傻瓜式爆破"
+        "zh": "抛出 超高清 傻瓜式爆破",
+        "ru": "МЕТАЕМЫЙ ULTRA HD ПРОБИВАТЕЛЬ"
       },
       "type": "Shotgun",
       "level": 30,
@@ -13621,7 +13713,8 @@
       "composition_ref": "25:97",
       "name": {
         "en": "Progressing Midheaven",
-        "zh": "进展 中天"
+        "zh": "进展 中天",
+        "ru": "ПРОГРЕССИРУЮЩИЙ ЗЕНИТ"
       },
       "type": "Sniper",
       "level": 13,
@@ -13848,7 +13941,8 @@
       "composition_ref": "15:97",
       "name": {
         "en": "Vested Simultaneous Schema",
-        "zh": "既定 同时 蓝图"
+        "zh": "既定 同时 蓝图",
+        "ru": "ПЕРЕХОДЯЩИЙ ОДНОВРЕМЕННЫЙ АЛГОРИТМ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -13989,7 +14083,8 @@
       "composition_ref": "2:55",
       "name": {
         "en": "Aggro Bonn-91",
-        "zh": "敌对 波恩91"
+        "zh": "敌对 波恩91",
+        "ru": "АГРЕССИВНЫЙ БОНН-91"
       },
       "type": "Pistol",
       "level": 1,
@@ -14118,7 +14213,8 @@
       "composition_ref": "2:95",
       "name": {
         "en": "Split-Second Bonn-91",
-        "zh": "瞬间 波恩91"
+        "zh": "瞬间 波恩91",
+        "ru": "МОМЕНТАЛЬНЫЙ БОНН-91"
       },
       "type": "Pistol",
       "level": 30,
@@ -14335,7 +14431,8 @@
       "composition_ref": "2:55",
       "name": {
         "en": "Aggro Bonn-91",
-        "zh": "敌对 波恩91"
+        "zh": "敌对 波恩91",
+        "ru": "АГРЕССИВНЫЙ БОНН-91"
       },
       "type": "Pistol",
       "level": 50,
@@ -14464,7 +14561,8 @@
       "composition_ref": "2:55",
       "name": {
         "en": "Aggro Bonn-91",
-        "zh": "敌对 波恩91"
+        "zh": "敌对 波恩91",
+        "ru": "АГРЕССИВНЫЙ БОНН-91"
       },
       "type": "Pistol",
       "level": 1,
@@ -14677,7 +14775,8 @@
       "composition_ref": "4:74",
       "name": {
         "en": "A",
-        "zh": "A级"
+        "zh": "A级",
+        "ru": "И"
       },
       "type": "Pistol",
       "level": 50,
@@ -14816,7 +14915,8 @@
       "composition_ref": "3:95",
       "name": {
         "en": "Lurking Cuca",
-        "zh": "潜伏 妖婆"
+        "zh": "潜伏 妖婆",
+        "ru": "РЫЩУЩИЙ КУКА"
       },
       "type": "Pistol",
       "level": 50,
@@ -14947,7 +15047,8 @@
       "composition_ref": "3:1",
       "name": {
         "en": "Lurking Cuca",
-        "zh": "潜伏 妖婆"
+        "zh": "潜伏 妖婆",
+        "ru": "РЫЩУЩИЙ КУКА"
       },
       "type": "Pistol",
       "level": 50,
@@ -15080,7 +15181,8 @@
       "composition_ref": "3:71",
       "name": {
         "en": "Lurking Cuca",
-        "zh": "潜伏 妖婆"
+        "zh": "潜伏 妖婆",
+        "ru": "РЫЩУЩИЙ КУКА"
       },
       "type": "Pistol",
       "level": 50,
@@ -15211,7 +15313,8 @@
       "composition_ref": "3:95",
       "name": {
         "en": "Stalking Cuca",
-        "zh": "跟踪 妖婆"
+        "zh": "跟踪 妖婆",
+        "ru": "КРАДУЩИЙСЯ КУКА"
       },
       "type": "Pistol",
       "level": 2,
@@ -15510,7 +15613,8 @@
       "composition_ref": "5:98",
       "name": {
         "en": "Double-Creme Pocketshot",
-        "zh": "双重奶霜 微型射击"
+        "zh": "双重奶霜 微型射击",
+        "ru": "СЛИВОЧНЫЙ КАРМАНОСТРЕЛ"
       },
       "type": "Pistol",
       "level": 40,
@@ -15739,7 +15843,8 @@
       "composition_ref": "5:95",
       "name": {
         "en": "Quality-Assured Widget",
-        "zh": "质量保证 小装置"
+        "zh": "质量保证 小装置",
+        "ru": "КАЧЕСТВЕННЫЙ ПРИБАМБАС"
       },
       "type": "Pistol",
       "level": 40,
@@ -15872,7 +15977,8 @@
       "composition_ref": "5:97",
       "name": {
         "en": "Sent Bulk-Order Widget",
-        "zh": "发送 批量订单 小装置"
+        "zh": "发送 批量订单 小装置",
+        "ru": "ОТПРАВЛЯЕМЫЙ ОПТОВЫЙ ПРИБАМБАС"
       },
       "type": "Pistol",
       "level": 50,
@@ -16013,7 +16119,8 @@
       "composition_ref": "6:59",
       "name": {
         "en": "Hardpoint",
-        "zh": "承力点"
+        "zh": "承力点",
+        "ru": "ТАРАН"
       },
       "type": "Pistol",
       "level": 50,
@@ -16182,7 +16289,8 @@
       "composition_ref": "7:95",
       "name": {
         "en": "Aching Weldwyrm",
-        "zh": "疼痛 熔焊巨龙"
+        "zh": "疼痛 熔焊巨龙",
+        "ru": "БОЛЕЗНЕННЫЙ СВАРКОЗМЕЙ"
       },
       "type": "Shotgun",
       "level": 40,
@@ -16313,7 +16421,8 @@
       "composition_ref": "7:96",
       "name": {
         "en": "Aching Hellhound",
-        "zh": "疼痛 地狱猎犬"
+        "zh": "疼痛 地狱猎犬",
+        "ru": "БОЛЕЗНЕННЫЙ ИЗВЕРГ"
       },
       "type": "Shotgun",
       "level": 50,
@@ -16448,7 +16557,8 @@
       "composition_ref": "9:83",
       "name": {
         "en": "Hellwalker",
-        "zh": "地狱行者"
+        "zh": "地狱行者",
+        "ru": "АДОХОД"
       },
       "type": "Shotgun",
       "level": 50,
@@ -16579,7 +16689,8 @@
       "composition_ref": "8:58",
       "name": {
         "en": "Missilaser",
-        "zh": "导弹激光"
+        "zh": "导弹激光",
+        "ru": "ЛАЗЕРОСТРЕЛ"
       },
       "type": "Shotgun",
       "level": 50,
@@ -16746,7 +16857,8 @@
       "composition_ref": "306:1",
       "name": {
         "en": "Stein",
-        "zh": "豪饮"
+        "zh": "豪饮",
+        "ru": "КАМЕНЬ"
       },
       "type": "Shield",
       "level": 30,
@@ -16947,7 +17059,8 @@
       "composition_ref": "11:95",
       "name": {
         "en": "Thrown Ultra HD EZ-Blast",
-        "zh": "抛出 超高清 傻瓜式爆破"
+        "zh": "抛出 超高清 傻瓜式爆破",
+        "ru": "МЕТАЕМЫЙ ULTRA HD ПРОБИВАТЕЛЬ"
       },
       "type": "Shotgun",
       "level": 30,
@@ -17162,7 +17275,8 @@
       "composition_ref": "278:15",
       "name": {
         "en": "Transmitter",
-        "zh": "发射器"
+        "zh": "发射器",
+        "ru": "Передатчик"
       },
       "type": "Grenade",
       "level": 30,
@@ -17347,7 +17461,8 @@
       "composition_ref": "312:1",
       "name": {
         "en": "Cover",
-        "zh": "掩护"
+        "zh": "掩护",
+        "ru": "ПОКРОВ"
       },
       "type": "Shield",
       "level": 2,
@@ -17548,7 +17663,8 @@
       "composition_ref": "13:95",
       "name": {
         "en": "Combative Spec-Tec",
-        "zh": "好斗 特种科技"
+        "zh": "好斗 特种科技",
+        "ru": "БОЕВИТЫЙ СПЕЦ-ТЕХ"
       },
       "type": "Assault Rifle",
       "level": 40,
@@ -17683,7 +17799,8 @@
       "composition_ref": "13:98",
       "name": {
         "en": "Synchonized Spec-Tec",
-        "zh": "同步化 特种科技"
+        "zh": "同步化 特种科技",
+        "ru": "СИНХРОННЫЙ СПЕЦ-ТЕХ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -17824,7 +17941,8 @@
       "composition_ref": "13:85",
       "name": {
         "en": "First Impression",
-        "zh": "第一印象"
+        "zh": "第一印象",
+        "ru": "ПЕРВЫЙ КОНТАКТ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -18029,7 +18147,8 @@
       "composition_ref": "13:97",
       "name": {
         "en": "Rogue Split-Second F.A.N.G.",
-        "zh": "侠盗 瞬间 獠牙"
+        "zh": "侠盗 瞬间 獠牙",
+        "ru": "ИЗГНАННЫЙ МОМЕНТАЛЬНЫЙ К.Л.Ы.К."
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -18172,7 +18291,8 @@
       "composition_ref": "13:96",
       "name": {
         "en": "Combative Spec-Tec",
-        "zh": "好斗 特种科技"
+        "zh": "好斗 特种科技",
+        "ru": "БОЕВИТЫЙ СПЕЦ-ТЕХ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -18307,7 +18427,8 @@
       "composition_ref": "13:97",
       "name": {
         "en": "Forceful Storming F.A.N.G.",
-        "zh": "强制 风暴 獠牙"
+        "zh": "强制 风暴 獠牙",
+        "ru": "СИЛОВОЙ БУШУЮЩИЙ К.Л.Ы.К."
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -18448,7 +18569,8 @@
       "composition_ref": "13:19",
       "name": {
         "en": "Rogue F.A.N.G.",
-        "zh": "侠盗 獠牙"
+        "zh": "侠盗 獠牙",
+        "ru": "ИЗГНАННЫЙ К.Л.Ы.К."
       },
       "type": "Assault Rifle",
       "level": 1,
@@ -18583,7 +18705,8 @@
       "composition_ref": "14:89",
       "name": {
         "en": "Perforator",
-        "zh": "穿孔机"
+        "zh": "穿孔机",
+        "ru": "ПЕРФОРАТОР"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -18716,7 +18839,8 @@
       "composition_ref": "14:89",
       "name": {
         "en": "Perforator",
-        "zh": "穿孔机"
+        "zh": "穿孔机",
+        "ru": "ПЕРФОРАТОР"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -18851,7 +18975,8 @@
       "composition_ref": "14:89",
       "name": {
         "en": "Perforator",
-        "zh": "穿孔机"
+        "zh": "穿孔机",
+        "ru": "ПЕРФОРАТОР"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -18984,7 +19109,8 @@
       "composition_ref": "14:38",
       "name": {
         "en": "Nutritious Assaultomatic",
-        "zh": "营养丰富 自动突击"
+        "zh": "营养丰富 自动突击",
+        "ru": "ПИТАТЕЛЬНЫЙ АВТОМАТОМАТ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -19127,7 +19253,8 @@
       "composition_ref": "292:4",
       "name": {
         "en": "Concentrated 100% Real Juice",
-        "zh": "集中 100%纯果汁"
+        "zh": "集中 100%纯果汁",
+        "ru": "СОСРЕДОТОЧЕННЫЙ НАТУРАЛЬНЫЙ СОК"
       },
       "type": "Enhancement",
       "level": 30,
@@ -19332,7 +19459,8 @@
       "composition_ref": "277:3",
       "name": {
         "en": "Standard Stim",
-        "zh": "标准 兴奋剂"
+        "zh": "标准 兴奋剂",
+        "ru": "СТАНДАРТНЫЙ СТИМУЛЯТОР"
       },
       "type": "Repkit",
       "level": 30,
@@ -19535,7 +19663,8 @@
       "composition_ref": "15:95",
       "name": {
         "en": "Indiction",
-        "zh": "法令"
+        "zh": "法令",
+        "ru": "ИНДИКТ"
       },
       "type": "Assault Rifle",
       "level": 40,
@@ -19666,7 +19795,8 @@
       "composition_ref": "15:96",
       "name": {
         "en": "Spoken Indiction",
-        "zh": "言灵 法令"
+        "zh": "言灵 法令",
+        "ru": "ВЫСКАЗАННЫЙ ИНДИКТ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -19797,7 +19927,8 @@
       "composition_ref": "15:97",
       "name": {
         "en": "Vested Simultaneous Schema",
-        "zh": "既定 同时 蓝图"
+        "zh": "既定 同时 蓝图",
+        "ru": "ПЕРЕХОДЯЩИЙ ОДНОВРЕМЕННЫЙ АЛГОРИТМ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -19936,7 +20067,8 @@
       "composition_ref": "15:96",
       "name": {
         "en": "Prosperous Canillated Schema",
-        "zh": "繁荣 吟诵 蓝图"
+        "zh": "繁荣 吟诵 蓝图",
+        "ru": "ПРОЦВЕТАЮЩИЙ ПРОТОЧЕННЫЙ АЛГОРИТМ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -20069,7 +20201,8 @@
       "composition_ref": "267:4",
       "name": {
         "en": "Throwing Knife",
-        "zh": "飞刀"
+        "zh": "飞刀",
+        "ru": "ФИНКА"
       },
       "type": "Grenade",
       "level": 2,
@@ -20414,7 +20547,8 @@
       "composition_ref": "269:1",
       "name": {
         "en": "Mega Sobirat",
-        "zh": "兆 吸能"
+        "zh": "兆 吸能",
+        "ru": "МЕГА НАСТОЙ"
       },
       "type": "Repkit",
       "level": 2,
@@ -20617,7 +20751,8 @@
       "composition_ref": "273:38",
       "name": {
         "en": "Sidewinder",
-        "zh": "响尾蛇"
+        "zh": "响尾蛇",
+        "ru": "ГРЕМУЧНИК"
       },
       "type": "Heavy Weapon",
       "level": 30,
@@ -20806,7 +20941,8 @@
       "composition_ref": "273:33",
       "name": {
         "en": "Junk-Drunk Tonguewag",
-        "zh": "烂醉 舌头摇摆"
+        "zh": "烂醉 舌头摇摆",
+        "ru": "ПЬЯНЫЙ В ХЛАМ БОЛТОЛОГ"
       },
       "type": "Heavy Weapon",
       "level": 50,
@@ -20937,7 +21073,8 @@
       "composition_ref": "291:1",
       "name": {
         "en": "Impact Grenade",
-        "zh": "冲击手雷"
+        "zh": "冲击手雷",
+        "ru": "УДАРНАЯ ГРАНАТА"
       },
       "type": "Grenade",
       "level": 30,
@@ -21138,7 +21275,8 @@
       "composition_ref": "17:95",
       "name": {
         "en": "Truncheon",
-        "zh": "警棍"
+        "zh": "警棍",
+        "ru": "ЖЕЗЛ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -21267,7 +21405,8 @@
       "composition_ref": "17:96",
       "name": {
         "en": "Revelling Handle",
-        "zh": "狂欢 手柄"
+        "zh": "狂欢 手柄",
+        "ru": "ГУЛЯЩИЙ СТВОЛ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -21400,7 +21539,8 @@
       "composition_ref": "17:95",
       "name": {
         "en": "Handle",
-        "zh": "手柄"
+        "zh": "手柄",
+        "ru": "СТВОЛ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -21529,7 +21669,8 @@
       "composition_ref": "19:96",
       "name": {
         "en": "Scouring Phage",
-        "zh": "冲刷 噬菌体"
+        "zh": "冲刷 噬菌体",
+        "ru": "АБРАЗИВНЫЙ ПОЖИРАТЕЛЬ"
       },
       "type": "SMG",
       "level": 50,
@@ -21660,7 +21801,8 @@
       "composition_ref": "19:56",
       "name": {
         "en": "Roil",
-        "zh": "激怒"
+        "zh": "激怒",
+        "ru": "ОСАДОК"
       },
       "type": "SMG",
       "level": 50,
@@ -21833,7 +21975,8 @@
       "composition_ref": "19:97",
       "name": {
         "en": "Searing Infestation",
-        "zh": "灼热 侵扰"
+        "zh": "灼热 侵扰",
+        "ru": "ОБЖИГАЮЩИЙ ПАРАЗИТ"
       },
       "type": "SMG",
       "level": 50,
@@ -21974,7 +22117,8 @@
       "composition_ref": "18:95",
       "name": {
         "en": "Buzzymuzz",
-        "zh": "嗡嗡枪口"
+        "zh": "嗡嗡枪口",
+        "ru": "БУХАРЬ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -22105,7 +22249,8 @@
       "composition_ref": "18:65",
       "name": {
         "en": "Wombo Combo",
-        "zh": "超杀连击"
+        "zh": "超杀连击",
+        "ru": "ВОМБО-КОМБО"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -22326,7 +22471,8 @@
       "composition_ref": "18:95",
       "name": {
         "en": "Gruppagrak",
-        "zh": "咕噜咆哮"
+        "zh": "咕噜咆哮",
+        "ru": "ДРУЖИННИК"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -22459,7 +22605,8 @@
       "composition_ref": "18:95",
       "name": {
         "en": "Gruppagrak",
-        "zh": "咕噜咆哮"
+        "zh": "咕噜咆哮",
+        "ru": "ДРУЖИННИК"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -22592,7 +22739,8 @@
       "composition_ref": "18:98",
       "name": {
         "en": "Industrialized Buzzymuzz",
-        "zh": "工业化 嗡嗡枪口"
+        "zh": "工业化 嗡嗡枪口",
+        "ru": "ИНДУСТРИАЛЬНЫЙ БУХАРЬ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -22729,7 +22877,8 @@
       "composition_ref": "21:58",
       "name": {
         "en": "Crepuscular Ephemeris",
-        "zh": "朦胧 星历"
+        "zh": "朦胧 星历",
+        "ru": "ТУСКЛЫЙ ЭФЕМЕРИД"
       },
       "type": "SMG",
       "level": 40,
@@ -22862,7 +23011,8 @@
       "composition_ref": "21:98",
       "name": {
         "en": "Plasma Static Synastry",
-        "zh": "电浆 静态 共鸣"
+        "zh": "电浆 静态 共鸣",
+        "ru": "ПЛАЗМЕННЫЙ СТАТИЧЕСКИЙ СИНАСТРИЙ"
       },
       "type": "SMG",
       "level": 50,
@@ -23005,7 +23155,8 @@
       "composition_ref": "21:83",
       "name": {
         "en": "Matador's Match",
-        "zh": "斗牛大赛"
+        "zh": "斗牛大赛",
+        "ru": "РОК МАТАДОРА"
       },
       "type": "SMG",
       "level": 1,
@@ -23208,7 +23359,8 @@
       "composition_ref": "20:96",
       "name": {
         "en": "Bellicose GCX",
-        "zh": "斗狠 GCX"
+        "zh": "斗狠 GCX",
+        "ru": "ДРАЧЛИВЫЙ GCX"
       },
       "type": "SMG",
       "level": 2,
@@ -23429,7 +23581,8 @@
       "composition_ref": "26:79",
       "name": {
         "en": "Rooker",
-        "zh": "浪子"
+        "zh": "浪子",
+        "ru": "РУКЕР"
       },
       "type": "Sniper",
       "level": 50,
@@ -23600,7 +23753,8 @@
       "composition_ref": "27:72",
       "name": {
         "en": "Put Watching Rougarou",
-        "zh": "放入 观看 狼人"
+        "zh": "放入 观看 狼人",
+        "ru": "УЛОЖЕННЫЙ НАБЛЮДАЮЩИЙ РУГАРУ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -23739,7 +23893,8 @@
       "composition_ref": "27:95",
       "name": {
         "en": "Hidden Rougarou",
-        "zh": "隐藏 狼人"
+        "zh": "隐藏 狼人",
+        "ru": "СПРЯТАННЫЙ РУГАРУ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -23870,7 +24025,8 @@
       "composition_ref": "27:97",
       "name": {
         "en": "Sudden Unseen Karkadann",
-        "zh": "意外 隐身 独角兽"
+        "zh": "意外 隐身 独角兽",
+        "ru": "НЕПРЕДСКАЗУЕМЫЙ НЕВИДАННЫЙ КАРКАДАНН"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -24005,7 +24161,8 @@
       "composition_ref": "27:70",
       "name": {
         "en": "Cooking Unseen Karkadann",
-        "zh": "烹饪 隐身 独角兽"
+        "zh": "烹饪 隐身 独角兽",
+        "ru": "БУРЛЯЩИЙ НЕВИДАННЫЙ КАРКАДАНН"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -24142,7 +24299,8 @@
       "composition_ref": "5:96",
       "name": {
         "en": "Dentist-Approved Widget",
-        "zh": "牙医推荐 小装置"
+        "zh": "牙医推荐 小装置",
+        "ru": "ОДОБРЕННЫЙ СТОМАТОЛОГАМИ ПРИБАМБАС"
       },
       "type": "Pistol",
       "level": 13,
@@ -24361,7 +24519,8 @@
       "composition_ref": "298:12",
       "name": {
         "en": "Countermeasure",
-        "zh": "反制措施"
+        "zh": "反制措施",
+        "ru": "КОНТРМЕРА"
       },
       "type": "Grenade",
       "level": 50,
@@ -24570,7 +24729,8 @@
       "composition_ref": "312:1",
       "name": {
         "en": "Cover",
-        "zh": "掩护"
+        "zh": "掩护",
+        "ru": "ПОКРОВ"
       },
       "type": "Shield",
       "level": 2,
@@ -24747,7 +24907,8 @@
       "composition_ref": "12:79",
       "name": {
         "en": "ARC-TAN",
-        "zh": "正反切"
+        "zh": "正反切",
+        "ru": "АРК-ТАНГ"
       },
       "type": "Shotgun",
       "level": 50,
@@ -24964,7 +25125,8 @@
       "composition_ref": "13:83",
       "name": {
         "en": "Mercredi",
-        "zh": "星期三"
+        "zh": "星期三",
+        "ru": "MERCREDI"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -25185,7 +25347,8 @@
       "composition_ref": "269:1",
       "name": {
         "en": "Mega Sobirat",
-        "zh": "兆 吸能"
+        "zh": "兆 吸能",
+        "ru": "МЕГА НАСТОЙ"
       },
       "type": "Repkit",
       "level": 2,
@@ -25364,7 +25527,8 @@
       "composition_ref": "17:96",
       "name": {
         "en": "Strong Handle",
-        "zh": "强大 手柄"
+        "zh": "强大 手柄",
+        "ru": "СИЛЬНЫЙ СТВОЛ"
       },
       "type": "Assault Rifle",
       "level": 13,
@@ -25495,7 +25659,8 @@
       "composition_ref": "18:96",
       "name": {
         "en": "Toochney Buzzymuzz",
-        "zh": "易怒 嗡嗡枪口"
+        "zh": "易怒 嗡嗡枪口",
+        "ru": "БОГАТЫРСКИЙ БУХАРЬ"
       },
       "type": "Assault Rifle",
       "level": 13,
@@ -25716,7 +25881,8 @@
       "composition_ref": "20:96",
       "name": {
         "en": "Bellicose GCX",
-        "zh": "斗狠 GCX"
+        "zh": "斗狠 GCX",
+        "ru": "ДРАЧЛИВЫЙ GCX"
       },
       "type": "SMG",
       "level": 2,
@@ -25913,7 +26079,8 @@
       "composition_ref": "23:56",
       "name": {
         "en": "Tankbuster",
-        "zh": "反坦克炮"
+        "zh": "反坦克炮",
+        "ru": "ИСТРЕБИТЕЛЬ ТАНКОВ"
       },
       "type": "Sniper",
       "level": 50,
@@ -26132,7 +26299,8 @@
       "composition_ref": "25:97",
       "name": {
         "en": "Progressing Midheaven",
-        "zh": "进展 中天"
+        "zh": "进展 中天",
+        "ru": "ПРОГРЕССИРУЮЩИЙ ЗЕНИТ"
       },
       "type": "Sniper",
       "level": 13,
@@ -26359,7 +26527,8 @@
       "composition_ref": "298:1",
       "name": {
         "en": "EXPLODER",
-        "zh": "雷管"
+        "zh": "雷管",
+        "ru": "ВЗРЫВЧАТКА"
       },
       "type": "Grenade",
       "level": 13,
@@ -26536,7 +26705,8 @@
       "composition_ref": "274:3",
       "name": {
         "en": "Mini Scabber",
-        "zh": "小型 破烂"
+        "zh": "小型 破烂",
+        "ru": "МИНИ СТРУПИК"
       },
       "type": "Repkit",
       "level": 13,
@@ -26715,7 +26885,8 @@
       "composition_ref": "279:3",
       "name": {
         "en": "Gate",
-        "zh": "大门"
+        "zh": "大门",
+        "ru": "ПОРТАЛ"
       },
       "type": "Shield",
       "level": 13,
@@ -26892,7 +27063,8 @@
       "composition_ref": "22:96",
       "name": {
         "en": "Rigged Flewdy",
-        "zh": "操纵 液态"
+        "zh": "操纵 液态",
+        "ru": "ПОДСТРОЕННЫЙ СМЕРЧ"
       },
       "type": "SMG",
       "level": 13,
@@ -27089,7 +27261,8 @@
       "composition_ref": "4:87",
       "name": {
         "en": "Rhythm",
-        "zh": "韵律"
+        "zh": "韵律",
+        "ru": "РИТМ"
       },
       "type": "Pistol",
       "level": 60,
@@ -27172,7 +27345,8 @@
       "composition_ref": "8:97",
       "name": {
         "en": "Threatening Caliburn",
-        "zh": "威胁 王者之剑"
+        "zh": "威胁 王者之剑",
+        "ru": "УГРОЖАЮЩИЙ КАЛИБУР"
       },
       "type": "Shotgun",
       "level": 100,
@@ -27267,7 +27441,8 @@
       "composition_ref": "8:59",
       "name": {
         "en": "Forceful Storming Durendal",
-        "zh": "强制 风暴 圣剑"
+        "zh": "强制 风暴 圣剑",
+        "ru": "СИЛОВОЙ БУШУЮЩИЙ ДЮРАНДАЛЬ"
       },
       "type": "Shotgun",
       "level": 100,
@@ -27354,7 +27529,8 @@
       "composition_ref": "300:14",
       "name": {
         "en": "Over Swarm",
-        "zh": "蜂群过境"
+        "zh": "蜂群过境",
+        "ru": "ПЕРЕРОЙ"
       },
       "type": "Shield",
       "level": 60,
@@ -27429,7 +27605,8 @@
       "composition_ref": "12:83",
       "name": {
         "en": "Cormano",
-        "zh": "科尔马诺"
+        "zh": "科尔马诺",
+        "ru": "КОРМАНО"
       },
       "type": "Shotgun",
       "level": 60,
@@ -27514,7 +27691,8 @@
       "composition_ref": "16:91",
       "name": {
         "en": "Light Gun",
-        "zh": "轻型枪械"
+        "zh": "轻型枪械",
+        "ru": "СВЕТОВОД"
       },
       "type": "Sniper",
       "level": 60,
@@ -27603,7 +27781,8 @@
       "composition_ref": "270:12",
       "name": {
         "en": "Pressure Kettle",
-        "zh": "高压锅"
+        "zh": "高压锅",
+        "ru": "СКОРОВАРКА"
       },
       "type": "Grenade",
       "level": 60,
@@ -27678,7 +27857,8 @@
       "composition_ref": "15:81",
       "name": {
         "en": "Divided Glow",
-        "zh": "分裂光芒"
+        "zh": "分裂光芒",
+        "ru": "РАЗДЕЛЕННЫЙ СПОЛОХ"
       },
       "type": "Assault Rifle",
       "level": 60,
@@ -27771,7 +27951,8 @@
       "composition_ref": "18:105",
       "name": {
         "en": "Eradication",
-        "zh": "根除"
+        "zh": "根除",
+        "ru": "ИСТРЕБИТЕЛЬ"
       },
       "type": "Assault Rifle",
       "level": 60,
@@ -27862,7 +28043,8 @@
       "composition_ref": "25:83",
       "name": {
         "en": "Stealth & Seek",
-        "zh": "潜行与追踪"
+        "zh": "潜行与追踪",
+        "ru": "ВОДЯЩИЙ"
       },
       "type": "Sniper",
       "level": 60,
@@ -27953,7 +28135,8 @@
       "composition_ref": "2:87",
       "name": {
         "en": "Shield Overflow",
-        "zh": "护盾泛滥"
+        "zh": "护盾泛滥",
+        "ru": "ПЕРЕПОЛНЕНЫЙ ЩИТ"
       },
       "type": "Pistol",
       "level": 60,
@@ -28020,7 +28203,8 @@
       "composition_ref": "5:97",
       "name": {
         "en": "Hucked Guaranteed Widget",
-        "zh": "抛开 担保 小装置"
+        "zh": "抛开 担保 小装置",
+        "ru": "ШВЫРЯЕМЫЙ ГАРАНТИРОВАННЫЙ ПРИБАМБАС"
       },
       "type": "Pistol",
       "level": 60,
@@ -28083,7 +28267,8 @@
       "composition_ref": "272:15",
       "name": {
         "en": "Alignment",
-        "zh": "协调一致"
+        "zh": "协调一致",
+        "ru": "СЛАЖЕННОСТЬ"
       },
       "type": "Grenade",
       "level": 60,
@@ -28134,7 +28319,8 @@
       "composition_ref": "14:90",
       "name": {
         "en": "Healthy Perforator",
-        "zh": "健康 穿孔机"
+        "zh": "健康 穿孔机",
+        "ru": "ЗДОРОВЫЙ ПЕРФОРАТОР"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -28195,7 +28381,8 @@
       "composition_ref": "16:89",
       "name": {
         "en": "Socialized Ragoon",
-        "zh": "社会化 暴徒"
+        "zh": "社会化 暴徒",
+        "ru": "СОЦИАЛИСТИЧЕСКИЙ НАДЗОР"
       },
       "type": "Sniper",
       "level": 100,
@@ -28256,7 +28443,8 @@
       "composition_ref": "19:97",
       "name": {
         "en": "Crammed Aching Phage",
-        "zh": "塞满 疼痛 噬菌体"
+        "zh": "塞满 疼痛 噬菌体",
+        "ru": "НАПИЧКАННЫЙ БОЛЕЗНЕННЫЙ ПОЖИРАТЕЛЬ"
       },
       "type": "SMG",
       "level": 60,
@@ -28313,7 +28501,8 @@
       "composition_ref": "19:97",
       "name": {
         "en": "Delusional Phage",
-        "zh": "妄想 噬菌体"
+        "zh": "妄想 噬菌体",
+        "ru": "БРЕДОВЫЙ ПОЖИРАТЕЛЬ"
       },
       "type": "SMG",
       "level": 60,
@@ -28370,7 +28559,8 @@
       "composition_ref": "22:105",
       "name": {
         "en": "Tempered Essence",
-        "zh": "淬炼精髓"
+        "zh": "淬炼精髓",
+        "ru": "ЗАКАЛЕННЫЙ ЭКСТРАКТ"
       },
       "type": "SMG",
       "level": 60,
@@ -28439,7 +28629,8 @@
       "composition_ref": "27:89",
       "name": {
         "en": "Flash Fuel",
-        "zh": "闪光燃料"
+        "zh": "闪光燃料",
+        "ru": "ЛЕГКОВОСПЛАМЕНЯЮЩИЙСЯ МАТЕРИАЛ"
       },
       "type": "Assault Rifle",
       "level": 60,
@@ -28506,7 +28697,8 @@
       "composition_ref": "27:72",
       "name": {
         "en": "Put Watching Rougarou",
-        "zh": "放入 观看 狼人"
+        "zh": "放入 观看 狼人",
+        "ru": "УЛОЖЕННЫЙ НАБЛЮДАЮЩИЙ РУГАРУ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -28640,7 +28832,8 @@
       "category": "inspector",
       "display_name": {
         "en": "Put Watching Rougarou",
-        "zh": "放入 观看 狼人"
+        "zh": "放入 观看 狼人",
+        "ru": "УЛОЖЕННЫЙ НАБЛЮДАЮЩИЙ РУГАРУ"
       }
     },
     {
@@ -28651,7 +28844,8 @@
       "composition_ref": "15:97",
       "name": {
         "en": "Vested Simultaneous Schema",
-        "zh": "既定 同时 蓝图"
+        "zh": "既定 同时 蓝图",
+        "ru": "ПЕРЕХОДЯЩИЙ ОДНОВРЕМЕННЫЙ АЛГОРИТМ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -28785,7 +28979,8 @@
       "category": "inspector",
       "display_name": {
         "en": "Vested Simultaneous Schema",
-        "zh": "既定 同时 蓝图"
+        "zh": "既定 同时 蓝图",
+        "ru": "ПЕРЕХОДЯЩИЙ ОДНОВРЕМЕННЫЙ АЛГОРИТМ"
       }
     },
     {
@@ -28796,7 +28991,8 @@
       "composition_ref": "2:55",
       "name": {
         "en": "Aggro Bonn-91",
-        "zh": "敌对 波恩91"
+        "zh": "敌对 波恩91",
+        "ru": "АГРЕССИВНЫЙ БОНН-91"
       },
       "type": "Pistol",
       "level": 1,
@@ -28920,7 +29116,8 @@
       "category": "mission",
       "display_name": {
         "en": "Aggro Bonn-91",
-        "zh": "敌对 波恩91"
+        "zh": "敌对 波恩91",
+        "ru": "АГРЕССИВНЫЙ БОНН-91"
       }
     },
     {
@@ -28931,7 +29128,8 @@
       "composition_ref": "4:74",
       "name": {
         "en": "A",
-        "zh": "A级"
+        "zh": "A级",
+        "ru": "И"
       },
       "type": "Pistol",
       "level": 50,
@@ -29065,7 +29263,8 @@
       "category": "npc_weapon",
       "display_name": {
         "en": "A",
-        "zh": "A级"
+        "zh": "A级",
+        "ru": "И"
       }
     },
     {
@@ -29079,7 +29278,8 @@
         "zh": "赦免",
         "uuid": "F98DA3A24AAC025A7FAB1191A3789D21",
         "key": "np_absolution",
-        "source": "inv_name_part4"
+        "source": "inv_name_part4",
+        "ru": "ИСКУПЛЕНИЕ"
       },
       "type": "Pistol",
       "level": null,
@@ -29112,7 +29312,8 @@
       "category": "npc_weapon",
       "display_name": {
         "en": "Absolution",
-        "zh": "赦免"
+        "zh": "赦免",
+        "ru": "ИСКУПЛЕНИЕ"
       }
     },
     {
@@ -29123,7 +29324,8 @@
       "composition_ref": "27:70",
       "name": {
         "en": "Cooking Unseen Karkadann",
-        "zh": "烹饪 隐身 独角兽"
+        "zh": "烹饪 隐身 独角兽",
+        "ru": "БУРЛЯЩИЙ НЕВИДАННЫЙ КАРКАДАНН"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -29255,7 +29457,8 @@
       "category": "npc_weapon",
       "display_name": {
         "en": "Cooking Unseen Karkadann",
-        "zh": "烹饪 隐身 独角兽"
+        "zh": "烹饪 隐身 独角兽",
+        "ru": "БУРЛЯЩИЙ НЕВИДАННЫЙ КАРКАДАНН"
       }
     },
     {
@@ -29266,7 +29469,8 @@
       "composition_ref": "8:59",
       "name": {
         "en": "Forceful Storming Durendal",
-        "zh": "强制 风暴 圣剑"
+        "zh": "强制 风暴 圣剑",
+        "ru": "СИЛОВОЙ БУШУЮЩИЙ ДЮРАНДАЛЬ"
       },
       "type": "Shotgun",
       "level": 100,
@@ -29348,7 +29552,8 @@
       "category": "npc_weapon",
       "display_name": {
         "en": "Forceful Storming Durendal",
-        "zh": "强制 风暴 圣剑"
+        "zh": "强制 风暴 圣剑",
+        "ru": "СИЛОВОЙ БУШУЮЩИЙ ДЮРАНДАЛЬ"
       }
     },
     {
@@ -29403,7 +29608,8 @@
       "composition_ref": "3:1",
       "name": {
         "en": "Lurking Cuca",
-        "zh": "潜伏 妖婆"
+        "zh": "潜伏 妖婆",
+        "ru": "РЫЩУЩИЙ КУКА"
       },
       "type": "Pistol",
       "level": 50,
@@ -29531,7 +29737,8 @@
       "category": "npc_weapon",
       "display_name": {
         "en": "Lurking Cuca",
-        "zh": "潜伏 妖婆"
+        "zh": "潜伏 妖婆",
+        "ru": "РЫЩУЩИЙ КУКА"
       }
     },
     {
@@ -29542,7 +29749,8 @@
       "composition_ref": "3:71",
       "name": {
         "en": "Lurking Cuca",
-        "zh": "潜伏 妖婆"
+        "zh": "潜伏 妖婆",
+        "ru": "РЫЩУЩИЙ КУКА"
       },
       "type": "Pistol",
       "level": 50,
@@ -29668,7 +29876,8 @@
       "category": "npc_weapon",
       "display_name": {
         "en": "Lurking Cuca",
-        "zh": "潜伏 妖婆"
+        "zh": "潜伏 妖婆",
+        "ru": "РЫЩУЩИЙ КУКА"
       }
     },
     {
@@ -29723,7 +29932,8 @@
       "composition_ref": "14:38",
       "name": {
         "en": "Nutritious Assaultomatic",
-        "zh": "营养丰富 自动突击"
+        "zh": "营养丰富 自动突击",
+        "ru": "ПИТАТЕЛЬНЫЙ АВТОМАТОМАТ"
       },
       "type": "Assault Rifle",
       "level": 50,
@@ -29861,7 +30071,8 @@
       "category": "npc_weapon",
       "display_name": {
         "en": "Nutritious Assaultomatic",
-        "zh": "营养丰富 自动突击"
+        "zh": "营养丰富 自动突击",
+        "ru": "ПИТАТЕЛЬНЫЙ АВТОМАТОМАТ"
       }
     },
     {
@@ -29916,7 +30127,8 @@
       "composition_ref": "13:19",
       "name": {
         "en": "Rogue F.A.N.G.",
-        "zh": "侠盗 獠牙"
+        "zh": "侠盗 獠牙",
+        "ru": "ИЗГНАННЫЙ К.Л.Ы.К."
       },
       "type": "Assault Rifle",
       "level": 1,
@@ -30046,7 +30258,8 @@
       "category": "npc_weapon",
       "display_name": {
         "en": "Rogue F.A.N.G.",
-        "zh": "侠盗 獠牙"
+        "zh": "侠盗 獠牙",
+        "ru": "ИЗГНАННЫЙ К.Л.Ы.К."
       }
     },
     {
@@ -30057,7 +30270,8 @@
       "composition_ref": "16:89",
       "name": {
         "en": "Socialized Ragoon",
-        "zh": "社会化 暴徒"
+        "zh": "社会化 暴徒",
+        "ru": "СОЦИАЛИСТИЧЕСКИЙ НАДЗОР"
       },
       "type": "Sniper",
       "level": 100,
@@ -30113,7 +30327,8 @@
       "category": "npc_weapon",
       "display_name": {
         "en": "Socialized Ragoon",
-        "zh": "社会化 暴徒"
+        "zh": "社会化 暴徒",
+        "ru": "СОЦИАЛИСТИЧЕСКИЙ НАДЗОР"
       }
     },
     {
@@ -30212,7 +30427,8 @@
       "composition_ref": "2:55",
       "name": {
         "en": "Aggro Bonn-91",
-        "zh": "敌对 波恩91"
+        "zh": "敌对 波恩91",
+        "ru": "АГРЕССИВНЫЙ БОНН-91"
       },
       "type": "Pistol",
       "level": 1,
@@ -30420,7 +30636,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "characters · Aggro Bonn-91",
-        "zh": "characters · 敌对 波恩91"
+        "zh": "characters · 敌对 波恩91",
+        "ru": "characters · АГРЕССИВНЫЙ БОНН-91"
       }
     },
     {
@@ -30431,7 +30648,8 @@
       "composition_ref": "20:96",
       "name": {
         "en": "Bellicose GCX",
-        "zh": "斗狠 GCX"
+        "zh": "斗狠 GCX",
+        "ru": "ДРАЧЛИВЫЙ GCX"
       },
       "type": "SMG",
       "level": 2,
@@ -30647,7 +30865,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "prologueskip · Bellicose GCX",
-        "zh": "prologueskip · 斗狠 GCX"
+        "zh": "prologueskip · 斗狠 GCX",
+        "ru": "prologueskip · ДРАЧЛИВЫЙ GCX"
       }
     },
     {
@@ -30658,7 +30877,8 @@
       "composition_ref": "312:1",
       "name": {
         "en": "Cover",
-        "zh": "掩护"
+        "zh": "掩护",
+        "ru": "ПОКРОВ"
       },
       "type": "Shield",
       "level": 2,
@@ -30854,7 +31074,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "prologueskip · Cover",
-        "zh": "prologueskip · 掩护"
+        "zh": "prologueskip · 掩护",
+        "ru": "prologueskip · ПОКРОВ"
       }
     },
     {
@@ -30865,7 +31086,8 @@
       "composition_ref": "269:1",
       "name": {
         "en": "Mega Sobirat",
-        "zh": "兆 吸能"
+        "zh": "兆 吸能",
+        "ru": "МЕГА НАСТОЙ"
       },
       "type": "Repkit",
       "level": 2,
@@ -31063,7 +31285,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "prologueskip · Mega Sobirat",
-        "zh": "prologueskip · 兆 吸能"
+        "zh": "prologueskip · 兆 吸能",
+        "ru": "prologueskip · МЕГА НАСТОЙ"
       }
     },
     {
@@ -31074,7 +31297,8 @@
       "composition_ref": "3:95",
       "name": {
         "en": "Stalking Cuca",
-        "zh": "跟踪 妖婆"
+        "zh": "跟踪 妖婆",
+        "ru": "КРАДУЩИЙСЯ КУКА"
       },
       "type": "Pistol",
       "level": 2,
@@ -31368,7 +31592,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "prologueskip · Stalking Cuca",
-        "zh": "prologueskip · 跟踪 妖婆"
+        "zh": "prologueskip · 跟踪 妖婆",
+        "ru": "prologueskip · КРАДУЩИЙСЯ КУКА"
       }
     },
     {
@@ -31379,7 +31604,8 @@
       "composition_ref": "267:4",
       "name": {
         "en": "Throwing Knife",
-        "zh": "飞刀"
+        "zh": "飞刀",
+        "ru": "ФИНКА"
       },
       "type": "Grenade",
       "level": 2,
@@ -31719,7 +31945,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "prologueskip · Throwing Knife",
-        "zh": "prologueskip · 飞刀"
+        "zh": "prologueskip · 飞刀",
+        "ru": "prologueskip · ФИНКА"
       }
     },
     {
@@ -31730,7 +31957,8 @@
       "composition_ref": "5:96",
       "name": {
         "en": "Dentist-Approved Widget",
-        "zh": "牙医推荐 小装置"
+        "zh": "牙医推荐 小装置",
+        "ru": "ОДОБРЕННЫЙ СТОМАТОЛОГАМИ ПРИБАМБАС"
       },
       "type": "Pistol",
       "level": 13,
@@ -31944,7 +32172,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "skiptodlc cowbell · Dentist-Approved Widget",
-        "zh": "skiptodlc cowbell · 牙医推荐 小装置"
+        "zh": "skiptodlc cowbell · 牙医推荐 小装置",
+        "ru": "skiptodlc cowbell · ОДОБРЕННЫЙ СТОМАТОЛОГАМИ ПРИБАМБАС"
       }
     },
     {
@@ -31955,7 +32184,8 @@
       "composition_ref": "298:1",
       "name": {
         "en": "EXPLODER",
-        "zh": "雷管"
+        "zh": "雷管",
+        "ru": "ВЗРЫВЧАТКА"
       },
       "type": "Grenade",
       "level": 13,
@@ -32127,7 +32357,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "skiptodlc cowbell · EXPLODER",
-        "zh": "skiptodlc cowbell · 雷管"
+        "zh": "skiptodlc cowbell · 雷管",
+        "ru": "skiptodlc cowbell · ВЗРЫВЧАТКА"
       }
     },
     {
@@ -32138,7 +32369,8 @@
       "composition_ref": "279:3",
       "name": {
         "en": "Gate",
-        "zh": "大门"
+        "zh": "大门",
+        "ru": "ПОРТАЛ"
       },
       "type": "Shield",
       "level": 13,
@@ -32310,7 +32542,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "skiptodlc cowbell · Gate",
-        "zh": "skiptodlc cowbell · 大门"
+        "zh": "skiptodlc cowbell · 大门",
+        "ru": "skiptodlc cowbell · ПОРТАЛ"
       }
     },
     {
@@ -32321,7 +32554,8 @@
       "composition_ref": "274:3",
       "name": {
         "en": "Mini Scabber",
-        "zh": "小型 破烂"
+        "zh": "小型 破烂",
+        "ru": "МИНИ СТРУПИК"
       },
       "type": "Repkit",
       "level": 13,
@@ -32495,7 +32729,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "skiptodlc cowbell · Mini Scabber",
-        "zh": "skiptodlc cowbell · 小型 破烂"
+        "zh": "skiptodlc cowbell · 小型 破烂",
+        "ru": "skiptodlc cowbell · МИНИ СТРУПИК"
       }
     },
     {
@@ -32506,7 +32741,8 @@
       "composition_ref": "25:97",
       "name": {
         "en": "Progressing Midheaven",
-        "zh": "进展 中天"
+        "zh": "进展 中天",
+        "ru": "ПРОГРЕССИРУЮЩИЙ ЗЕНИТ"
       },
       "type": "Sniper",
       "level": 13,
@@ -32728,7 +32964,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "skiptodlc cowbell · Progressing Midheaven",
-        "zh": "skiptodlc cowbell · 进展 中天"
+        "zh": "skiptodlc cowbell · 进展 中天",
+        "ru": "skiptodlc cowbell · ПРОГРЕССИРУЮЩИЙ ЗЕНИТ"
       }
     },
     {
@@ -32739,7 +32976,8 @@
       "composition_ref": "22:96",
       "name": {
         "en": "Rigged Flewdy",
-        "zh": "操纵 液态"
+        "zh": "操纵 液态",
+        "ru": "ПОДСТРОЕННЫЙ СМЕРЧ"
       },
       "type": "SMG",
       "level": 13,
@@ -32931,7 +33169,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "skiptodlc cowbell · Rigged Flewdy",
-        "zh": "skiptodlc cowbell · 操纵 液态"
+        "zh": "skiptodlc cowbell · 操纵 液态",
+        "ru": "skiptodlc cowbell · ПОДСТРОЕННЫЙ СМЕРЧ"
       }
     },
     {
@@ -32942,7 +33181,8 @@
       "composition_ref": "17:96",
       "name": {
         "en": "Strong Handle",
-        "zh": "强大 手柄"
+        "zh": "强大 手柄",
+        "ru": "СИЛЬНЫЙ СТВОЛ"
       },
       "type": "Assault Rifle",
       "level": 13,
@@ -33068,7 +33308,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "skiptodlc cowbell · Strong Handle",
-        "zh": "skiptodlc cowbell · 强大 手柄"
+        "zh": "skiptodlc cowbell · 强大 手柄",
+        "ru": "skiptodlc cowbell · СИЛЬНЫЙ СТВОЛ"
       }
     },
     {
@@ -33079,7 +33320,8 @@
       "composition_ref": "18:96",
       "name": {
         "en": "Toochney Buzzymuzz",
-        "zh": "易怒 嗡嗡枪口"
+        "zh": "易怒 嗡嗡枪口",
+        "ru": "БОГАТЫРСКИЙ БУХАРЬ"
       },
       "type": "Assault Rifle",
       "level": 13,
@@ -33295,7 +33537,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "skiptodlc cowbell · Toochney Buzzymuzz",
-        "zh": "skiptodlc cowbell · 易怒 嗡嗡枪口"
+        "zh": "skiptodlc cowbell · 易怒 嗡嗡枪口",
+        "ru": "skiptodlc cowbell · БОГАТЫРСКИЙ БУХАРЬ"
       }
     },
     {
@@ -33306,7 +33549,8 @@
       "composition_ref": "292:4",
       "name": {
         "en": "Concentrated 100% Real Juice",
-        "zh": "集中 100%纯果汁"
+        "zh": "集中 100%纯果汁",
+        "ru": "СОСРЕДОТОЧЕННЫЙ НАТУРАЛЬНЫЙ СОК"
       },
       "type": "Enhancement",
       "level": 30,
@@ -33506,7 +33750,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "ultimatevaulthunterskip · Concentrated 100% Real Juice",
-        "zh": "ultimatevaulthunterskip · 集中 100%纯果汁"
+        "zh": "ultimatevaulthunterskip · 集中 100%纯果汁",
+        "ru": "ultimatevaulthunterskip · СОСРЕДОТОЧЕННЫЙ НАТУРАЛЬНЫЙ СОК"
       }
     },
     {
@@ -33517,7 +33762,8 @@
       "composition_ref": "291:1",
       "name": {
         "en": "Impact Grenade",
-        "zh": "冲击手雷"
+        "zh": "冲击手雷",
+        "ru": "УДАРНАЯ ГРАНАТА"
       },
       "type": "Grenade",
       "level": 30,
@@ -33713,7 +33959,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "ultimatevaulthunterskip · Impact Grenade",
-        "zh": "ultimatevaulthunterskip · 冲击手雷"
+        "zh": "ultimatevaulthunterskip · 冲击手雷",
+        "ru": "ultimatevaulthunterskip · УДАРНАЯ ГРАНАТА"
       }
     },
     {
@@ -33724,7 +33971,8 @@
       "composition_ref": "2:95",
       "name": {
         "en": "Split-Second Bonn-91",
-        "zh": "瞬间 波恩91"
+        "zh": "瞬间 波恩91",
+        "ru": "МОМЕНТАЛЬНЫЙ БОНН-91"
       },
       "type": "Pistol",
       "level": 30,
@@ -33936,7 +34184,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "ultimatevaulthunterskip · Split-Second Bonn-91",
-        "zh": "ultimatevaulthunterskip · 瞬间 波恩91"
+        "zh": "ultimatevaulthunterskip · 瞬间 波恩91",
+        "ru": "ultimatevaulthunterskip · МОМЕНТАЛЬНЫЙ БОНН-91"
       }
     },
     {
@@ -33947,7 +34196,8 @@
       "composition_ref": "277:3",
       "name": {
         "en": "Standard Stim",
-        "zh": "标准 兴奋剂"
+        "zh": "标准 兴奋剂",
+        "ru": "СТАНДАРТНЫЙ СТИМУЛЯТОР"
       },
       "type": "Repkit",
       "level": 30,
@@ -34145,7 +34395,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "ultimatevaulthunterskip · Standard Stim",
-        "zh": "ultimatevaulthunterskip · 标准 兴奋剂"
+        "zh": "ultimatevaulthunterskip · 标准 兴奋剂",
+        "ru": "ultimatevaulthunterskip · СТАНДАРТНЫЙ СТИМУЛЯТОР"
       }
     },
     {
@@ -34156,7 +34407,8 @@
       "composition_ref": "306:1",
       "name": {
         "en": "Stein",
-        "zh": "豪饮"
+        "zh": "豪饮",
+        "ru": "КАМЕНЬ"
       },
       "type": "Shield",
       "level": 30,
@@ -34352,7 +34604,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "ultimatevaulthunterskip · Stein",
-        "zh": "ultimatevaulthunterskip · 豪饮"
+        "zh": "ultimatevaulthunterskip · 豪饮",
+        "ru": "ultimatevaulthunterskip · КАМЕНЬ"
       }
     },
     {
@@ -34363,7 +34616,8 @@
       "composition_ref": "11:95",
       "name": {
         "en": "Thrown Ultra HD EZ-Blast",
-        "zh": "抛出 超高清 傻瓜式爆破"
+        "zh": "抛出 超高清 傻瓜式爆破",
+        "ru": "МЕТАЕМЫЙ ULTRA HD ПРОБИВАТЕЛЬ"
       },
       "type": "Shotgun",
       "level": 30,
@@ -34573,7 +34827,8 @@
       "category": "profile_loadout",
       "display_name": {
         "en": "ultimatevaulthunterskip · Thrown Ultra HD EZ-Blast",
-        "zh": "ultimatevaulthunterskip · 抛出 超高清 傻瓜式爆破"
+        "zh": "ultimatevaulthunterskip · 抛出 超高清 傻瓜式爆破",
+        "ru": "ultimatevaulthunterskip · МЕТАЕМЫЙ ULTRA HD ПРОБИВАТЕЛЬ"
       }
     }
   ],
@@ -34586,7 +34841,8 @@
         "zh": "正在行动",
         "uuid": "5D8ACBA74D979307BA30129A43C9A196",
         "key": "np_OM",
-        "source": "inv_name_part4"
+        "source": "inv_name_part4",
+        "ru": "ОСКАР МАЙК"
       },
       "serial": "",
       "source_kind": "preferredparts",
@@ -34611,7 +34867,8 @@
             "zh": "正在行动",
             "uuid": "5D8ACBA74D979307BA30129A43C9A196",
             "key": "np_OM",
-            "source": "inv_name_part4"
+            "source": "inv_name_part4",
+            "ru": "ОСКАР МАЙК"
           }
         },
         {
