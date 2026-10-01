@@ -1,6 +1,8 @@
 import uuid
 import copy
 import re
+
+from .character_xp import calc_xp_for_level
 from .unlock_data import (
     COLLECTIBLES, MISSIONSETS, UNLOCKABLES, LOCATIONS,
     CHARACTER_CLASSES, MAX_LEVEL, SAFEHOUSE_SILO_LOCATIONS,
@@ -529,30 +531,9 @@ def set_character_to_max_level(data):
 def set_character_level(data, level):
     state = get_or_create_dict(data, 'state')
     experience = get_or_create_list(state, 'experience')
-    
-    # Placeholder for XP calculation if not available
-    # Using a rough approximation or hardcoded values if possible would be better
-    # For now, I will assume level 50 has specific XP if MAX_LEVEL is 50, 
-    # otherwise I might need the formula.
-    # Since calculateCharacterXp is missing, I'll just put a placeholder value or 0
-    # However, the JS code says:
-    # let xp = typeof CHARACTER_LEVEL_XP === 'object' ... : calculateCharacterXp(level);
-    # If I set points to 0, it might be weird.
-    # Let's assume level 50 is what user wants mostly.
-    # From unlockAllSpecialization we saw huge XP.
-    # I will define a simple placeholder xp calculation or just set it to a high number if level 50?
-    # No, I should try to be safe.
-    
-    # NOTE: Assuming a simple linear or exponential curve is risky.
-    # I'll just set a dummy value if I can't calculate it, or if level is 50 I can try to guess.
-    # But wait, `set_character_to_max_level` is what is used.
-    
-    # Hardcoded XP values for known level caps
-    level_xp_map = {
-        50: 3430227,
-        60: 5714893,
-    }
-    xp = level_xp_map.get(level, 0)
+    # The level and its XP must agree: XP left at a lower level's value made
+    # "max level" characters sit at level 70 with level-60 XP.
+    xp = calc_xp_for_level(level)
 
     idx = -1
     for i, exp in enumerate(experience):
@@ -562,8 +543,7 @@ def set_character_level(data, level):
     
     if idx != -1:
         experience[idx]['level'] = level
-        if xp > 0:
-            experience[idx]['points'] = xp
+        experience[idx]['points'] = max(xp, int(experience[idx].get('points') or 0))
 
     progression = get_or_create_dict(data, 'progression')
     point_pools = get_or_create_dict(progression, 'point_pools')
