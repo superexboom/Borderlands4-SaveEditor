@@ -463,38 +463,50 @@ ColumnLayout {
     }
 
     // ---- 添加子节点 ----
+    // 只替换 bodyDelegate（contentDelegate 会连确定/取消按钮一起丢掉）；委托内的 id
+    // 在 onConfirm 里取不到，输入值放在 dialog 上
     HusModal {
         id: addChildDialog
+        objectName: "addChildDialog"
+        property string childKey: ""
+        property int typeIndex: 0
+        readonly property var typeOptions: {
+            var t = (page.loc.types || ({}));
+            return ["str", "int", "float", "bool", "null", "dict", "list"].map(function(k) {
+                return { key: k, label: t[k] || k };
+            });
+        }
         width: 380
         closable: true
         title: (loc.dialogs || ({})).add_child_title || ""
         confirmText: (loc.dialogs || ({})).confirm || "OK"
         cancelText: (loc.dialogs || ({})).cancel || "Cancel"
+        onAboutToShow: { childKey = ""; typeIndex = 0; }
         onConfirm: {
-            vmYamlEditor.addChild(treeList.currentIndex, childKeyInput.text, childTypeSelect.model[childTypeSelect.currentIndex].key);
             close();
+            vmYamlEditor.addChild(treeList.currentIndex, childKey, typeOptions[typeIndex].key);
         }
         onCancel: close()
-        contentDelegate: Item {
-            implicitHeight: addChildColumn.implicitHeight
-            ColumnLayout {
-                id: addChildColumn
-                anchors.left: parent.left
-                anchors.right: parent.right
-                spacing: 10
-                HusText { text: (loc.dialogs || ({})).child_key || ""; color: HusTheme.Primary.colorTextSecondary }
-                HusInput { id: childKeyInput; Layout.fillWidth: true }
-                HusText { text: (loc.dialogs || ({})).child_type || ""; color: HusTheme.Primary.colorTextSecondary }
-                AppSelect {
-                    id: childTypeSelect
-                    Layout.fillWidth: true
-                    model: {
-                        var t = (page.loc.types || ({}));
-                        return ["str", "int", "float", "bool", "null", "dict", "list"].map(function(k) {
-                            return { key: k, label: t[k] || k };
-                        });
-                    }
+        bodyDelegate: Column {
+            spacing: 10
+            HusText { text: (loc.dialogs || ({})).child_key || ""; color: HusTheme.Primary.colorTextSecondary }
+            HusInput {
+                id: childKeyInput
+                width: parent.width
+                onTextChanged: addChildDialog.childKey = text
+                Connections {
+                    target: addChildDialog
+                    function onAboutToShow() { childKeyInput.text = ""; }
+                    function onOpened() { childKeyInput.forceActiveFocus(); }
                 }
+            }
+            HusText { text: (loc.dialogs || ({})).child_type || ""; color: HusTheme.Primary.colorTextSecondary }
+            AppSelect {
+                width: parent.width
+                model: addChildDialog.typeOptions
+                textRole: "label"
+                currentIndex: addChildDialog.typeIndex
+                onActivated: function(index) { addChildDialog.typeIndex = index; }
             }
         }
     }
@@ -502,16 +514,29 @@ ColumnLayout {
     // ---- 重命名 ----
     HusModal {
         id: renameDialog
+        objectName: "renameDialog"
+        property string newName: ""
         width: 380
         closable: true
         title: opsLoc.rename || ""
         confirmText: (loc.dialogs || ({})).confirm || "OK"
         cancelText: (loc.dialogs || ({})).cancel || "Cancel"
-        onConfirm: { vmYamlEditor.renameKey(treeList.currentIndex, renameField.text); close(); }
+        onAboutToShow: {
+            var row = vmYamlEditor.rows[treeList.currentIndex];
+            newName = row ? String(row.key) : "";
+        }
+        onConfirm: { close(); vmYamlEditor.renameKey(treeList.currentIndex, newName); }
         onCancel: close()
-        contentDelegate: Item {
-            implicitHeight: renameField.implicitHeight
-            HusInput { id: renameField; anchors.fill: parent }
+        bodyDelegate: HusInput {
+            id: renameField
+            width: parent ? parent.width : 0
+            onTextChanged: renameDialog.newName = text
+            Keys.onReturnPressed: renameDialog.confirm()
+            Keys.onEnterPressed: renameDialog.confirm()
+            Connections {
+                target: renameDialog
+                function onOpened() { renameField.text = renameDialog.newName; renameField.forceActiveFocus(); renameField.selectAll(); }
+            }
         }
     }
 

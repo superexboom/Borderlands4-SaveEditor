@@ -293,32 +293,38 @@ RowLayout {
     }
 
     // ---- 配置名称输入 ----
+    // 只替换 bodyDelegate（contentDelegate 会连确定/取消按钮一起丢掉）；输入放在 dialog.name 上
     HusModal {
         id: nameDialog
+        objectName: "loadoutNameDialog"
+        property string name: ""
         width: 420
         closable: true
         title: (loc.dialogs || ({})).name_prompt_title || ""
         confirmText: appBridge.trFormat("main_window.dialogs.confirm", {default: "OK"})
         cancelText: appBridge.trText("main_window.dialogs.cancel")
-        onConfirm: { vmLoadoutManager.saveLoadout(nameInput.text); close(); }
+        onAboutToShow: name = ""
+        onConfirm: { close(); vmLoadoutManager.saveLoadout(name); }
         onCancel: close()
-        contentDelegate: Item {
-            implicitHeight: nameColumn.implicitHeight
-            ColumnLayout {
-                id: nameColumn
-                anchors.left: parent.left
-                anchors.right: parent.right
-                spacing: 10
-                HusText {
-                    text: (loc.dialogs || ({})).name_prompt_msg || ""
-                    color: HusTheme.Primary.colorTextSecondary
-                    wrapMode: Text.Wrap
-                    Layout.fillWidth: true
-                }
-                HusInput {
-                    id: nameInput
-                    Layout.fillWidth: true
-                    placeholderText: (page.loc.labels || ({})).config_name || ""
+        bodyDelegate: Column {
+            spacing: 10
+            HusText {
+                width: parent.width
+                text: (loc.dialogs || ({})).name_prompt_msg || ""
+                color: HusTheme.Primary.colorTextSecondary
+                wrapMode: Text.Wrap
+            }
+            HusInput {
+                id: nameInput
+                width: parent.width
+                placeholderText: (page.loc.labels || ({})).config_name || ""
+                onTextChanged: nameDialog.name = text
+                Keys.onReturnPressed: nameDialog.confirm()
+                Keys.onEnterPressed: nameDialog.confirm()
+                Connections {
+                    target: nameDialog
+                    function onAboutToShow() { nameInput.text = ""; }
+                    function onOpened() { nameInput.forceActiveFocus(); }
                 }
             }
         }
