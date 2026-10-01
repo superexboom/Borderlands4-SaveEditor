@@ -107,8 +107,14 @@ def set_vault_hunter_levels(data: dict[str, Any], level: int, highest: int) -> N
 # --------------------------------------------------------------------------- #
 # Completion summary
 # --------------------------------------------------------------------------- #
+def _count_leaves(node: dict[str, Any]) -> int:
+    return sum(_count_leaves(value) if isinstance(value, dict) else int(_int(value) > 0)
+               for value in node.values())
+
+
 def _stat_value(stats: Any, stat_path: str) -> int:
-    """Value of ``stats.a.b.c`` in the save; parent dicts count their leaves."""
+    """Value of ``stats.a.b.c`` in the save; parent dicts count their leaves at any depth
+    (``echologs_arjay.el_a_grasslands.gra_arj_01`` counts toward ``echologs_arjay``)."""
     node = stats
     for key in stat_path.split(".")[1:]:
         if not isinstance(node, dict):
@@ -117,7 +123,7 @@ def _stat_value(stats: Any, stat_path: str) -> int:
         if node is None:
             return 0
     if isinstance(node, dict):
-        return sum(1 for value in node.values() if _int(value) > 0)
+        return _count_leaves(node)
     return _int(node)
 
 
@@ -247,6 +253,28 @@ def _challenge_children() -> dict[str, tuple[str, ...]]:
 
 
 @lru_cache(maxsize=1)
+def _stat_children() -> dict[str, tuple[str, ...]]:
+    """Challenges counted through a stat subtree: ``49_harp_responses_all`` -> its six
+    ``49_harp_responses_all.<npc>`` challenges.  The catalog gives these no ``parent``;
+    the save nests their stats under the counting challenge's stat."""
+    rows = cat.section("challenges")
+    by_stat: dict[str, list[str]] = {}
+    for key, row in rows.items():
+        if row.get("stat"):
+            by_stat.setdefault(row["stat"], []).append(key)
+    children: dict[str, list[str]] = {}
+    for key, row in rows.items():
+        parts = str(row.get("stat") or "").split(".")
+        for cut in range(len(parts) - 1, 1, -1):
+            owners = [owner for owner in by_stat.get(".".join(parts[:cut]), ()) if owner != key]
+            if owners:
+                for owner in owners:
+                    children.setdefault(owner, []).append(key)
+                break
+    return {key: tuple(sorted(value)) for key, value in children.items()}
+
+
+@lru_cache(maxsize=1)
 def _achievement_keys() -> tuple[str, ...]:
     rows = cat.section("challenges")
 
@@ -278,13 +306,14 @@ def challenge_state(data: dict[str, Any], key: str) -> dict[str, Any]:
     else:
         value = challenge_value(data, row)
         goal = max(goals) if goals else 0
-    return {"value": value, "goal": goal, "goals": goals, "aggregate": bool(children),
+    return {"value": value, "goal": goal, "goals": goals,
+            "aggregate": bool(children or _stat_children().get(key)),
             "done": goal > 0 and value >= goal}
 
 
 def set_challenge_value(data: dict[str, Any], key: str, value: int) -> bool:
     row = cat.section("challenges").get(key) or {}
-    if _challenge_children().get(key):
+    if _challenge_children().get(key) or _stat_children().get(key):
         return False
     return set_stat_value(data, str(row.get("stat") or ""), value)
 
@@ -304,6 +333,11 @@ def complete_challenge(data: dict[str, Any], key: str, done: bool = True, _seen:
         return 0
     if not done and state["value"] == 0:
         return 0
+    stat_children = _stat_children().get(key, ())
+    if stat_children:
+        # The stat is a subtree the game fills one entry at a time: writing a
+        # number over it would destroy that shape, so complete the entries.
+        return sum(complete_challenge(data, child, done, seen) for child in stat_children)
     return int(set_stat_value(data, str(row.get("stat") or ""), state["goal"] if done else 0))
 
 
