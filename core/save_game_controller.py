@@ -72,6 +72,7 @@ class SaveGameController:
         self._lock = threading.RLock()
         # 脏标记与版本号：任何 mutation 都会 bump version 并置脏，供自动保存与视图按需刷新
         self._dirty = False
+        self.last_preset_changed = False
         self.version = 0
         self._dirty_listeners: List[Callable[[], None]] = []
         # 加载时深拷贝快照，用于"变更对比"与节点重置
@@ -751,11 +752,14 @@ class SaveGameController:
         return _msg("no_changes")
 
     def apply_unlock_preset(self, preset_name: str, params: Dict[str, Any] = None) -> bool:
+        """Apply one preset; ``last_preset_changed`` tells whether the save actually changed."""
         with self._lock:
             if not self.yaml_obj:
                 raise RuntimeError("No save loaded")
+            before = copy.deepcopy(self.yaml_obj)
             ok = self._apply_unlock_preset_locked(preset_name, params)
-        if ok:
+            self.last_preset_changed = ok and self.yaml_obj != before
+        if self.last_preset_changed:
             self.mark_dirty()
         return ok
 

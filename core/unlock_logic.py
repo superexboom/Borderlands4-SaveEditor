@@ -225,6 +225,9 @@ def complete_all_collectibles(data):
             key_lower = str(key).casefold()
             if key_lower == 'echo_log_challenges' or key_lower.startswith('sharedprogress_'):
                 merge_profile_unlockable_entries(data, key)
+        # Ledgers that exist only in the catalog's challenge unlocks (sharedprogress_harmonica).
+        merge_catalog_ledgers(data, lambda ledger, entry: ledger == 'echo_log_challenges'
+                              or ledger.startswith('sharedprogress_'))
         merge_profile_unlockable_entries(
             data, 'echo_upgrade_challenges', 'echo_upgrade_challenges.collect')
         update_sdu_points(data)
@@ -235,6 +238,10 @@ def complete_all_collectibles(data):
     openworld = get_or_create_dict(stats, 'openworld')
     collectibles = get_or_create_dict(openworld, 'collectibles')
     
+    # Profile-less character saves: the catalog covers every DLC collectible
+    # family (Harmonica Tediore, Harp/Viola echo logs, ...).
+    collect_catalog_collectibles(data)
+
     for category, values in COLLECTIBLES.items():
         if isinstance(values, dict):
             cat_dict = get_or_create_dict(collectibles, category)
@@ -323,22 +330,69 @@ def merge_missionsets_with_prefix(data, prefix):
 def complete_all_missions(data):
     if is_profile_save(data):
         merge_profile_unlockable_entries(data, 'echo_upgrade_challenges', 'echo_upgrade_challenges.activity')
-        merge_profile_unlockable_entries(data, 'sharedprogress_cowbell', 'SharedProgress_Cowbell.zoneactivity')
+        # DLC zone activities (Cowbell, Harmonica, ...) are account-wide entries.
+        merge_catalog_ledgers(data, lambda ledger, entry: ledger.startswith('sharedprogress_')
+                              and '.zoneactivity' in entry.lower())
         discover_safehouse_locations(data)
         update_sdu_points(data)
         return
 
+    finished = epilogue_finished(data)
     merge_missionsets_with_prefix(data, 'missionset_')
-    stage_epilogue_mission(data)
+    complete_catalog_missions(data)
+    stage_epilogue_mission(data, finished)
     set_story_values(data)
     open_all_vault_doors(data)
     discover_safehouse_locations(data)
     update_sdu_points(data)
 
 def complete_all_story_missions(data):
+    finished = epilogue_finished(data)
     merge_missionsets_with_prefix(data, 'missionset_main_')
-    stage_epilogue_mission(data)
+    complete_catalog_missions(data, kinds=('main',))
+    stage_epilogue_mission(data, finished)
     set_story_values(data)
+
+# The shipped mission templates predate the later DLCs (Harmonica/FL4K, Mandolin,
+# Viola, ...).  The Game Progress catalog lists every persisted mission, so the
+# presets complete whatever the templates miss the same way that tab does.
+# The epilogue is left to stage_epilogue_mission (staged active, never downgraded).
+EPILOGUE_MISSION = 'mission_main_cityepilogue'
+
+
+def complete_catalog_missions(data, kinds=None):
+    from . import progress_logic
+    changed = 0
+    for key, info in progress_logic._mission_index().items():
+        if key != EPILOGUE_MISSION and (kinds is None or info['kind'] in kinds):
+            changed += progress_logic.complete_mission(data, key)
+    return changed
+
+
+def complete_catalog_challenges(data, achievements=False):
+    """Every challenge of the in-game menu (or the achievements group) at its final goal."""
+    from . import progress_logic
+    seen = set()
+    for category, _title, keys in progress_logic.challenge_category_keys():
+        if (category == progress_logic.ACHIEVEMENTS_CATEGORY) == achievements:
+            for key in keys:
+                progress_logic.complete_challenge(data, key, True, seen)
+
+
+def collect_catalog_collectibles(data):
+    from . import progress_logic
+    for stat, item in progress_logic._collectibles_by_stat().items():
+        if not progress_logic._item_collected(data, item):
+            progress_logic.set_collected(data, stat, True)
+
+
+def merge_catalog_ledgers(data, wanted):
+    """Profile ledger entries known to the Game Progress catalog, filtered by ``wanted(ledger, entry)``."""
+    from . import account_progress
+    for ledger, entries in account_progress._ledger_catalog().items():
+        picked = [entry for entry in entries if wanted(ledger, entry)]
+        if picked:
+            account_progress.set_entries(data, ledger, picked, True)
 
 def complete_all_safehouse_missions(data):
     if is_profile_save(data):
@@ -353,10 +407,20 @@ def complete_all_safehouse_missions(data):
     discover_safehouse_locations(data)
     update_sdu_points(data)
 
-def stage_epilogue_mission(data):
+def epilogue_finished(data):
+    sets = (data.get('missions') or {}).get('local_sets') if isinstance(data.get('missions'), dict) else None
+    node = (((sets or {}).get('missionset_main_cityepilogue') or {}).get('missions') or {}).get(EPILOGUE_MISSION)
+    return isinstance(node, dict) and str(node.get('status') or '').lower() == 'completed'
+
+
+def stage_epilogue_mission(data, finished=None):
+    """Leave the epilogue active (the game then plays the ending), unless the character
+    had already finished it: staging must never take a completed ending back."""
+    if epilogue_finished(data) if finished is None else finished:
+        return
     missions = get_or_create_dict(data, 'missions')
     local_sets = get_or_create_dict(missions, 'local_sets')
-    
+
     local_sets['missionset_main_cityepilogue'] = {
         'missions': {
             'mission_main_cityepilogue': {
@@ -684,6 +748,8 @@ def complete_all_challenges(data):
     complete_phosphene_challenges(data)
     for category in ('challenge', 'dlc_challenges', 'shinygear'):
         apply_stat_targets(data, STAT_TARGETS.get(category, {}))
+    # DLC character/area challenges (Loveless, Harmonica, ...) from the catalog.
+    complete_catalog_challenges(data)
 
 def complete_uvh_challenges(data):
     counters = {
@@ -896,6 +962,7 @@ def complete_all_achievements(data):
     }
     update_stats_counters(data, counters, 'achievements')
     apply_stat_targets(data, STAT_TARGETS.get('achievements', {}))
+    complete_catalog_challenges(data, achievements=True)
     merge_missionsets_with_prefix(data, 'missionset_zoneactivity_')
 
 def complete_discovery_achievements(data):

@@ -532,36 +532,42 @@ LockedFlickable {
         Item { Layout.preferredHeight: 6 }
     }
 
-    // 更换职业对话框
+    // 更换职业对话框：只替换 bodyDelegate（contentDelegate 会连确定/取消按钮一起丢掉），
+    // 委托内的 id 在 onConfirm 里取不到，选中项放在 dialog 上
     HusModal {
         id: classDialog
+        objectName: "classDialog"
+        property int selectedIndex: 0
         anchors.centerIn: parent
         width: 380
+        closable: true
         title: (page.loc.dialogs || ({})).change_class_title || ""
         confirmText: appBridge.trFormat("main_window.dialogs.confirm", {default: "OK"})
         cancelText: appBridge.trText("main_window.dialogs.cancel")
+        onAboutToShow: selectedIndex = Math.max(0, vmCharacter.currentClassIndex)
         onConfirm: {
-            vmCharacter.changeClass(classSelect.model[classSelect.currentIndex].key);
+            var option = vmCharacter.classOptions[selectedIndex];
             close();
+            if (option)
+                vmCharacter.changeClass(option.key);
         }
         onCancel: close()
-        contentDelegate: Item {
-            implicitHeight: classColumn.implicitHeight
-            ColumnLayout {
-                id: classColumn
-                anchors.left: parent.left
-                anchors.right: parent.right
-                spacing: 10
-                HusText {
-                    text: (page.loc.dialogs || ({})).select_class || ""
-                    color: HusTheme.Primary.colorTextBase
-                }
-                AppSelect {
-                    id: classSelect
-                    Layout.fillWidth: true
-                    model: vmCharacter.classOptions
-                    textRole: "label"
-                }
+        bodyDelegate: Column {
+            spacing: 10
+            HusText {
+                width: parent.width
+                text: (page.loc.dialogs || ({})).select_class || ""
+                color: HusTheme.Primary.colorTextBase
+                wrapMode: Text.Wrap
+            }
+            AppSelect {
+                id: classSelect
+                objectName: "classSelect"
+                width: parent.width
+                model: vmCharacter.classOptions
+                textRole: "label"
+                currentIndex: classDialog.selectedIndex
+                onActivated: function(index) { classDialog.selectedIndex = index; }
             }
         }
     }

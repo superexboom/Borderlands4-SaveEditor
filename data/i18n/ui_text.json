@@ -321,7 +321,8 @@
         "live_mode_active": "Live 模式下无法打开存档",
         "char_applied_changes": "角色数据已应用：{changes}",
         "char_no_changes": "没有需要应用的修改。",
-        "change_separator": "；"
+        "change_separator": "；",
+        "preset_no_change": "{name}：存档里已经是这个状态，没有需要更改的内容。"
       }
     },
     "game_compose": {
@@ -662,7 +663,8 @@
         "live_mode_active": "A save cannot be opened in live mode",
         "char_applied_changes": "Character data applied: {changes}",
         "char_no_changes": "Nothing to apply: no field was changed.",
-        "change_separator": "; "
+        "change_separator": "; ",
+        "preset_no_change": "{name}: the save already has this, nothing was changed."
       }
     },
     "game_compose": {
@@ -1003,7 +1005,8 @@
         "live_mode_active": "В онлайн-режиме нельзя открыть сохранение",
         "char_applied_changes": "Данные персонажа применены: {changes}",
         "char_no_changes": "Нечего применять: поля не изменены.",
-        "change_separator": "; "
+        "change_separator": "; ",
+        "preset_no_change": "{name}: в сохранении это уже есть, ничего не изменено."
       }
     },
     "game_compose": {
@@ -1344,7 +1347,8 @@
         "live_mode_active": "В онлайн-режимі не можна відкрити збереження",
         "char_applied_changes": "Дані персонажа застосовано: {changes}",
         "char_no_changes": "Нічого застосовувати: поля не змінено.",
-        "change_separator": "; "
+        "change_separator": "; ",
+        "preset_no_change": "{name}: у збереженні це вже є, нічого не змінено."
       }
     },
     "game_compose": {
@@ -1685,7 +1689,8 @@
         "live_mode_active": "Im Live-Modus kann kein Spielstand geöffnet werden",
         "char_applied_changes": "Charakterdaten übernommen: {changes}",
         "char_no_changes": "Nichts zu übernehmen: Es wurde kein Feld geändert.",
-        "change_separator": "; "
+        "change_separator": "; ",
+        "preset_no_change": "{name}: Der Spielstand hat das bereits, es wurde nichts geändert."
       }
     },
     "game_compose": {

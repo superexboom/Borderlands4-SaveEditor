@@ -117,6 +117,7 @@ class CharacterViewModel(PageViewModel):
         self._loaded: dict[str, str] = {}
         self._cur_paths: dict[str, Any] = {}
         self._is_profile = False
+        self._class_key = ""
         self._live_state: dict[str, Any] = {}
         self._runtime_busy = False
         self._runtime_status = ""
@@ -289,35 +290,41 @@ class CharacterViewModel(PageViewModel):
         if not self.controller.yaml_obj:
             self.app.toast(self.tr("main_window.dialogs.load_save_first"), "warning")
             return
-        if self.controller.apply_unlock_preset(action, {}):
-            self.app.toast(self.tr("main_window.dialogs.preset_applied").format(
-                name=self._preset_label(action)), "success")
-            self.app._mark_all_stale()
-            self._stale = False
-            self.refresh()
-        else:
-            self.app.toast(self.tr("main_window.dialogs.preset_fail").format(
-                name=self._preset_label(action)), "error")
+        self._run_preset(action, {}, self._preset_label(action))
+
+    def _run_preset(self, action: str, params: dict[str, Any], name: str) -> None:
+        """Apply one preset; say so when the save already had everything it sets."""
+        if not self.controller.apply_unlock_preset(action, params):
+            self.app.toast(self.tr("main_window.dialogs.preset_fail").format(name=name), "error")
+            return
+        if not self.controller.last_preset_changed:
+            self.app.toast(self.tr("main_window.dialogs.preset_no_change").format(name=name), "info")
+            return
+        self.app.toast(self.tr("main_window.dialogs.preset_applied").format(name=name), "success")
+        self.app._mark_all_stale()
+        self._stale = False
+        self.refresh()
 
     @pyqtProperty(list, notify=dataChanged)
     def classOptions(self) -> list[dict[str, str]]:
         return [{"key": key, "label": f"{info['class']} ({info['name']})"}
                 for key, info in CHARACTER_CLASSES.items()]
 
+    @pyqtProperty(int, notify=dataChanged)
+    def currentClassIndex(self) -> int:
+        """Row of the save's class in classOptions (the class dialog starts there), or -1."""
+        return next((index for index, key in enumerate(CHARACTER_CLASSES) if key == self._class_key), -1)
+
     @pyqtSlot(str)
     def changeClass(self, class_key: str) -> None:
         if self._is_profile or not self.controller.yaml_obj:
             return
         class_name = next((option["label"] for option in self.classOptions if option["key"] == class_key), class_key)
-        if self.controller.apply_unlock_preset("set_character_class", {"class_key": class_key}):
-            self.app.toast(self.tr("main_window.dialogs.preset_applied").format(
-                name=class_name), "success")
-            self.app._mark_all_stale()
-            self._stale = False
-            self.refresh()
-        else:
-            self.app.toast(self.tr("main_window.dialogs.preset_fail").format(
-                name=class_name), "error")
+        if class_key == self._class_key:
+            # set_character_class always issues a new character GUID; nothing to change here.
+            self.app.toast(self.tr("main_window.dialogs.preset_no_change").format(name=class_name), "info")
+            return
+        self._run_preset("set_character_class", {"class_key": class_key}, class_name)
 
     # ------------------------------------------------------------------
     # 数据填充
@@ -325,6 +332,8 @@ class CharacterViewModel(PageViewModel):
     def refresh(self) -> None:
         data = self.controller.get_character_data() or {}
         self._is_profile = bool(data.get("is_profile_save", False))
+        state = (self.controller.yaml_obj or {}).get("state") if isinstance(self.controller.yaml_obj, dict) else None
+        self._class_key = str((state or {}).get("class") or "").removeprefix("Char_")
         self._cur_paths = data.get("cur_paths", {}) or {}
         fields = {}
         # 金钱/镒矿已移到「游戏进度」页；这里不再持有，apply_character_data 对缺失
