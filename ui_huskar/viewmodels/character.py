@@ -46,6 +46,12 @@ CHAR_PRESETS = (
     ("max_ammo", "max_ammo"),
 )
 
+# 字段 -> labels 键（应用后的提示列出改了哪些字段）
+FIELD_LABEL_KEYS = {
+    "名称": "name", "难度": "difficulty", "角色等级": "level", "角色经验值": "xp",
+    "专精等级": "spec_level", "专精点数": "spec_points",
+}
+
 # live 面板布局描述（label_key, action）；toggles 与按钮的分区与主线一致
 LIVE_SECTIONS = (
     ("live_survival", (
@@ -108,6 +114,7 @@ class CharacterViewModel(PageViewModel):
     def __init__(self, app, parent=None):
         super().__init__(app, parent)
         self._fields: dict[str, str] = {}
+        self._loaded: dict[str, str] = {}
         self._cur_paths: dict[str, Any] = {}
         self._is_profile = False
         self._live_state: dict[str, Any] = {}
@@ -198,13 +205,37 @@ class CharacterViewModel(PageViewModel):
         if not self.controller.yaml_obj:
             return
         data = {k: v for k, v in self._fields.items()}
+        changes = self._field_changes(data)
+        if not changes:
+            self.app.toast(self.tr("main_window.dialogs.char_no_changes"), "info")
+            return
         if self.controller.apply_character_data(data, self._cur_paths):
-            self.app.toast(self.tr("main_window.dialogs.char_applied"), "success")
+            self.app.toast(self.tr("main_window.dialogs.char_applied_changes").format(
+                changes=self.tr("main_window.dialogs.change_separator").join(changes)), "success")
             self.app._mark_all_stale()
             self._stale = False
             self.refresh()
         else:
             self.app.toast(self.tr("main_window.dialogs.char_apply_error"), "error")
+
+    def _field_changes(self, data: dict[str, Any]) -> list[str]:
+        """``Level: 50 → 60`` for every field that differs from the loaded save."""
+        labels = self.strings.get("labels", {})
+        changes = []
+        for key, value in data.items():
+            old = str(self._loaded.get(key, "") or "").strip()
+            new = str(value or "").strip()
+            if old != new:
+                label = str(labels.get(FIELD_LABEL_KEYS.get(key, ""), "") or key).rstrip(":： ")
+                changes.append(f"{label}: {old or '—'} → {new or '—'}")
+        return changes
+
+    def _preset_label(self, action: str) -> str:
+        presets = self.strings.get("presets", {})
+        for key, preset_action in (*WORLD_PRESETS, *CHAR_PRESETS):
+            if preset_action == action:
+                return str(presets.get(key) or key)
+        return action
 
     @pyqtSlot()
     def syncLevels(self) -> None:
@@ -257,12 +288,14 @@ class CharacterViewModel(PageViewModel):
             self.app.toast(self.tr("main_window.dialogs.load_save_first"), "warning")
             return
         if self.controller.apply_unlock_preset(action, {}):
-            self.app.toast(self.tr("main_window.dialogs.preset_applied").format(name=action), "success")
+            self.app.toast(self.tr("main_window.dialogs.preset_applied").format(
+                name=self._preset_label(action)), "success")
             self.app._mark_all_stale()
             self._stale = False
             self.refresh()
         else:
-            self.app.toast(self.tr("main_window.dialogs.preset_fail").format(name=action), "error")
+            self.app.toast(self.tr("main_window.dialogs.preset_fail").format(
+                name=self._preset_label(action)), "error")
 
     @pyqtProperty(list, notify=dataChanged)
     def classOptions(self) -> list[dict[str, str]]:
@@ -273,15 +306,16 @@ class CharacterViewModel(PageViewModel):
     def changeClass(self, class_key: str) -> None:
         if self._is_profile or not self.controller.yaml_obj:
             return
+        class_name = next((option["label"] for option in self.classOptions if option["key"] == class_key), class_key)
         if self.controller.apply_unlock_preset("set_character_class", {"class_key": class_key}):
             self.app.toast(self.tr("main_window.dialogs.preset_applied").format(
-                name="set_character_class"), "success")
+                name=class_name), "success")
             self.app._mark_all_stale()
             self._stale = False
             self.refresh()
         else:
             self.app.toast(self.tr("main_window.dialogs.preset_fail").format(
-                name="set_character_class"), "error")
+                name=class_name), "error")
 
     # ------------------------------------------------------------------
     # 数据填充
@@ -299,6 +333,7 @@ class CharacterViewModel(PageViewModel):
             if isinstance(card, dict) and isinstance(card.get("currency_key"), str):
                 fields[card["currency_key"]] = str(data.get(card["currency_key"], "") or "")
         self._fields = fields
+        self._loaded = dict(fields)
         self.dataChanged.emit()
         # 两个经验值只读框是 xpChanged 驱动的声明式绑定，重载数据时也要通知
         self.xpChanged.emit()
