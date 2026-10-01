@@ -1482,11 +1482,8 @@ class EquipmentBaseViewModel(PageViewModel):
         return texts
 
     def _localized_item_type(self) -> str:
-        key = {
-            "Grenade": "grenade", "Shield": "shield", "Repkit": "repkit",
-            "Heavy Weapon": "heavy_weapon",
-        }.get(self.BACKPACK_TYPE_EN, "")
-        return str((self.app.localizer.section("tabs") or {}).get(key) or self.ITEM_LABEL)
+        """The item type as the game names it (Granate, Гранаты, 手雷)."""
+        return game_text.term(self.BACKPACK_TYPE_EN, self.current_lang) or self.ITEM_LABEL
 
     def _roll_type_value(self, root_id) -> str:
         return str((getattr(self, "MFG_TYPE_BASE", {}) or {}).get(int(root_id)) or self.BACKPACK_TYPE_EN)
