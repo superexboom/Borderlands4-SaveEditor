@@ -221,12 +221,14 @@ class CharacterViewModel(PageViewModel):
     def _field_changes(self, data: dict[str, Any]) -> list[str]:
         """``Level: 50 → 60`` for every field that differs from the loaded save."""
         labels = self.strings.get("labels", {})
+        field_labels = {key: str(labels.get(label_key) or key) for key, label_key in FIELD_LABEL_KEYS.items()}
+        field_labels.update({row["key"]: row["label"] for row in self.vaultCurrencies})
         changes = []
         for key, value in data.items():
             old = str(self._loaded.get(key, "") or "").strip()
             new = str(value or "").strip()
             if old != new:
-                label = str(labels.get(FIELD_LABEL_KEYS.get(key, ""), "") or key).rstrip(":： ")
+                label = field_labels.get(key, key).rstrip(":： ")
                 changes.append(f"{label}: {old or '—'} → {new or '—'}")
         return changes
 
