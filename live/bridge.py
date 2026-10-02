@@ -137,7 +137,7 @@ class Bridge:
             req,
             timeout=(90 if action == "apply_loadout"
                      else 30 if action in {"rebuild_item_cache", "publish_backpack_item"}
-                     else 15 if action == "claim_lost_loot" else 5),
+                     else 15 if action in {"claim_lost_loot", "skill_apply"} else 5),
         )
         if "ok" not in resp:
             raise BridgeError("malformed runtime response")

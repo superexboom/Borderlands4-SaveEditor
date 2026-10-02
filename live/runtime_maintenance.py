@@ -7,7 +7,7 @@ import math
 import time
 
 VERSION = '0.10.28'
-REVISION = 'slot-maintenance-20261002.10'
+REVISION = 'slot-maintenance-20261002.12'
 
 # Weapon values, movement, crit, stamina and cooldown features change only when the
 # game rebuilds them (equip, reload, buffs): refresh them at 5 Hz.  Health and shield
@@ -484,6 +484,7 @@ def install(m):
     install_player_selection(m)
     install_xp_guard(m)
     install_drop_replay(m)
+    install_skill_builds(m)
     m.__version__ = VERSION
     if getattr(m, 'mod', None) is not None:
         m._safe(lambda: setattr(m.mod, 'version', VERSION))
@@ -623,6 +624,139 @@ def install_drop_replay(m):
     if isinstance(getattr(m, '_CALLBACKS', None), dict) and 'drop' in m._CALLBACKS:
         m._CALLBACKS['drop'] = lambda obj, args, ret, func: None
         m._RUNTIME_STATE['dedicated_drop_100'] = False
+
+
+def install_skill_builds(m):
+    """Live skill builds through the game's own progress graph server functions.
+
+    ``skill_snapshot`` reads every GbxProgressGraph on the player's
+    GbxProgressionManager (index-addressed nodes: points spent, bonus points,
+    activation).  ``skill_apply`` resets the graphs of the requested point pools,
+    spends the wanted points again (several passes, so tier/trunk prerequisites
+    resolve), toggles activations that still differ (augments, capstones, action
+    skills: the owning group is found by trying each group), and optionally sets
+    bonus points (overlimit).  Every step goes through Server_SpendProgressPoints /
+    Server_ResetSpentPoints / Server_ActivateNodeInGroup / Server_AddBonusPoints,
+    so the game validates points and prerequisites itself.  Verified in game on
+    2026-10-02 (reset + respend, augment swap, bonus add/remove).
+    """
+    base_action = m._runtime_action
+
+    def graphs():
+        manager = m._get_field(m._runtime_pawn(), 'GbxProgressionManager')
+        rows = m._safe(lambda: list(m._get_field(manager, 'ProgressGraphs')), []) if manager is not None else []
+        return manager, rows or []
+
+    def graph_name(graph):
+        return str(m._safe(lambda: graph.ProgressGraphDef._name, '') or '')
+
+    def node_rows(graph):
+        return [dict(i=i, spent=int(n.ProgressPointsSpent), bonus=int(n.BonusPoints), active=bool(n.bIsActivated),
+                     level=int(n.ActivationLevel), unlocked=bool(n.bIsUnlocked))
+                for i, n in enumerate(list(graph.nodes))]
+
+    def describe(graph):
+        definition = graph.ProgressGraphDef
+        return dict(graph=graph_name(graph), type=int(m._safe(lambda: definition.GraphType, 0) or 0),
+                    pool=str(getattr(m._safe(lambda: definition.PointPool), '_name', '') or ''),
+                    groups=len(m._safe(lambda: list(graph.Groups), []) or []), nodes=node_rows(graph))
+
+    def snapshot():
+        manager, rows = graphs()
+        if manager is None:
+            return dict(ok=False, error='no progression manager (no player in the world)')
+        container = m._get_field(manager, 'ProgressPointsContainer')
+        pools = m._safe(lambda: [int(v) for v in m._get_field(container, 'PointsAcquiredPerPool')], [])
+        return dict(ok=True, points_per_pool=pools, graphs=[describe(graph) for graph in rows])
+
+    def set_activation(graph, index, on, level=0):
+        groups = len(m._safe(lambda: list(graph.Groups), []) or []) or 1
+        for group in range(groups):
+            graph.Server_ActivateNodeInGroup(group, index, bool(on), int(level))
+            if bool(graph.nodes[index].bIsActivated) == bool(on):
+                return True
+        return False
+
+    def apply(params):
+        _, rows = graphs()
+        by_name = {graph_name(graph).lower(): graph for graph in rows}
+        targets = {}
+        for entry in params.get('graphs') or []:
+            graph = by_name.get(str(entry.get('graph') or '').lower())
+            if graph is not None:
+                targets[graph_name(graph).lower()] = (graph, {int(n['i']): n for n in entry.get('nodes') or []})
+        unknown = [str(e.get('graph')) for e in params.get('graphs') or [] if str(e.get('graph') or '').lower() not in by_name]
+        bad_nodes = [f"{name}/{index}" for name, (graph, nodes) in targets.items()
+                     for index in nodes if not 0 <= index < len(list(graph.nodes))]
+        if unknown or bad_nodes or not targets:
+            # Another class's build (or a stale catalog): refuse before anything is reset.
+            return dict(ok=False, error='build does not match this character', unknown_graphs=unknown,
+                        bad_nodes=bad_nodes[:20], applied=0)
+        reset_pools = {str(p).lower() for p in params.get('reset_pools') or []}
+        # 1. reset every graph of the requested pools (and every target point graph)
+        for graph in rows:
+            info = describe(graph)
+            if info['pool'].lower() in reset_pools or (graph_name(graph).lower() in targets and info['type'] == 0):
+                graph.Server_ResetSpentPoints()
+        # 2. spend, in passes, until nothing more is accepted
+        for _ in range(8):
+            progress = 0
+            for graph, nodes in targets.values():
+                for index in sorted(nodes):
+                    want = int(nodes[index].get('spent') or 0)
+                    have = int(graph.nodes[index].ProgressPointsSpent)
+                    if want > have:
+                        graph.Server_SpendProgressPoints(index, want - have)
+                        progress += int(graph.nodes[index].ProgressPointsSpent) - have
+            if not progress:
+                break
+        # 3. activations that still differ (activation graphs; only nodes the build lists)
+        for graph, nodes in targets.values():
+            if describe(graph)['type'] != 1:
+                continue
+            current = {row['i'] for row in node_rows(graph) if row['active']}
+            wanted = {i for i, node in nodes.items() if node.get('active')}
+            for index in sorted(current - wanted):
+                set_activation(graph, index, False)
+            for index in sorted(wanted - current):
+                set_activation(graph, index, True, int(nodes[index].get('level') or 0))
+        # 4. bonus points (overlimit) only on request
+        if params.get('bonus'):
+            for graph, nodes in targets.values():
+                for index, node in nodes.items():
+                    delta = int(node.get('bonus') or 0) - int(graph.nodes[index].BonusPoints)
+                    if delta:
+                        graph.Server_AddBonusPoints(index, delta)
+        # 5. verify
+        mismatches = []
+        for name, (graph, nodes) in targets.items():
+            live = node_rows(graph)
+            graph_type = describe(graph)['type']
+            for index, node in nodes.items():
+                row = live[index] if index < len(live) else None
+                if row is None:
+                    mismatches.append(dict(graph=name, i=index, reason='no such node'))
+                    continue
+                if int(node.get('spent') or 0) != row['spent']:
+                    mismatches.append(dict(graph=name, i=index, want=node.get('spent'), have=row['spent']))
+                if graph_type == 1 and bool(node.get('active')) != row['active']:
+                    mismatches.append(dict(graph=name, i=index, want_active=bool(node.get('active')), active=row['active']))
+                if params.get('bonus') and int(node.get('bonus') or 0) != row['bonus']:
+                    mismatches.append(dict(graph=name, i=index, want_bonus=node.get('bonus'), bonus=row['bonus']))
+        return dict(ok=not mismatches and not unknown, applied=len(targets), unknown_graphs=unknown,
+                    mismatches=mismatches[:40], snapshot=snapshot())
+
+    def action(name, params=None):
+        if name == 'skill_snapshot':
+            return dict(action=name, **snapshot())
+        if name == 'skill_apply':
+            try:
+                return dict(action=name, **apply(params or {}))
+            except Exception as exc:
+                return dict(ok=False, action=name, error=f'{type(exc).__name__}: {exc}')
+        return base_action(name, params)
+
+    m._runtime_action = action
 
 
 def install_player_selection(m):
