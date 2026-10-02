@@ -1,13 +1,14 @@
 """BL4Live 0.10.25 maintenance repair, installed in the game's bl4_live package.
 
-All calls run on the existing game-thread dispatcher. No DLL or native offset
-changes. Enumerate equipped slots, never the global UObject array, in the hot path.
+All calls run on the existing game-thread dispatcher. No DLL changes; native
+offsets are only moved to a known game build (``install_native_rebase``).
+Enumerate equipped slots, never the global UObject array, in the hot path.
 """
 import math
 import time
 
 VERSION = '0.10.28'
-REVISION = 'slot-maintenance-20261002.12'
+REVISION = 'slot-maintenance-20261002.13'
 
 # Weapon values, movement, crit, stamina and cooldown features change only when the
 # game rebuilds them (equip, reload, buffs): refresh them at 5 Hz.  Health and shield
@@ -16,6 +17,47 @@ SLOW_INTERVAL = 0.2
 SKILL_TTL = 1.0
 EQUIPPED_TTL = 0.25
 HEALTH_LAYER_TTL = 2.0
+
+# Native functions the base code calls by fixed address, per Borderlands4.exe build
+# (PE TimeDateStamp): name -> (RVA, exact code prefix at that RVA).  The base code was
+# written for an August build; build 25372571 (Steam, 2026-09-18) moved them.  Found by
+# searching the exe for the base code's prefixes with rel32 operands masked; every
+# match below has the same masked bytes and a consistent shift with its neighbours.
+NATIVE_BUILDS = {
+    1789399121: {
+        '_INVENTORY_IDENTITY_DTOR': (0x369D14, '56574883ec284889cee8a2020000488d8ea0000000'),
+        '_INVENTORY_IDENTITY_COPY': (
+            0x6FFBEE, '415741565657534883ec204889d74889ce488b02488901488b42084889410848c741100000000048'),
+        '_INVENTORY_IDENTITY_COPY_ASSIGN': (
+            0x7B53FA,
+            '5657534883ec204889d74889ce488b02488901488b4208488941084883c2104883c110e8b8000000488d5720488d4e20'
+            'e803010000488d5730488d4e30e84e010000488b8790000000488b8f980000004885c97566488b9e98000000488986'
+            '9000000048898e980000004885db75528a87c10000008886c1000000488d564048'),
+        '_INVENTORY_IDENTITY_FROM_SERIAL': (
+            0x88E2A4, '4157415641554154565755534881ece80000004889d34889ce488b057c16e70b'),
+        '_INVENTORY_LOCAL_ITEM_CHANGED': (
+            0x106F838,
+            '5657534883ec304889d64889cf488b05f400690b4831e048894424288b82080100008b924001000083f8ff7460488d5e'
+            '108b8ef800000039d00f8480000000898640010000898e48010000488d4f184889dae8990000008a860d0100008886'
+            '440100004889f94889dae882000000'),
+        '_INVENTORY_ITEM_SLOT_COMPATIBILITY': (0x3DB2884, '415741565657534883ec30488b05aad09408'),
+        '_FNAME_FIND_OR_STORE_WSTRING': (0x56E0E14, '5657534881ec400400004889ce'),
+        '_INVENTORY_SERVER_IMPLEMENTATION_EXPECTED': (
+            0x5DA1374,
+            '564883ec204889d6488b89380c00004885c974084889f2e824000000488b8e500100004885c975114883c6504889f1'
+            '4883c4205ee967895cfae8f60c26faebe8'),
+        '_INVENTORY_TRANSACTION_COPY_ASSIGN': (
+            0x5DCE316,
+            '56574883ec284889d74889ce8b4208894108488b024889018a05f5a8b706488b4a103c010f84a400000048894e1048'
+            '8b4f1848894e18488b4f20a8010f859800000048894e20488b4f2848894e28488b4f30a8010f858c00000048894e30'
+            '488b4f3848894e38488b4f40a8010f858000000048894e40488b474848894648488d4e50488d5750e859709efa0f10'
+            '87280100000f118628010000ba38010000488d0c164801fae81c7599fe0f1087600100000f1186600100008b8770'
+            '0100008986700100004889f04883c4285f5ec3'),
+        '_INVENTORY_TRANSACTION_CTOR': (0x5E09686, '564883ec300f297424204889ce48c74104ffffffff'),
+        '_INVENTORY_TRANSACTION_VALIDATE': (0x5E09814, '0fb61183fa077575837908ff0f8474030000'),
+    },
+}
+NATIVE_PREFIX_TABLES = ('_INVENTORY_NATIVE_PREFIXES', '_IDENTITY_MATERIALIZE_PREFIXES', '_IDENTITY_DIRTY_PREFIXES')
 
 
 class ValueBindings:
@@ -435,7 +477,8 @@ def install(m):
                           maintain_errors=getattr(m, '_RUNTIME_MAINTAIN_ERROR_COUNT', 0),
                           equipped=[dict(cls=m._cls(a),path=m._path(a)) for a in actors(pawn)],
                           saved_originals={k:len(v) for k,v in m._RUNTIME_ORIGINALS.items()},
-                          xp=dict(applied=getattr(m, '_XP_APPLIED', None), guard=dict(getattr(m, '_XP_GUARD', None) or {})))
+                          xp=dict(applied=getattr(m, '_XP_APPLIED', None), guard=dict(getattr(m, '_XP_GUARD', None) or {})),
+                          native_rebase=dict(getattr(m, '_NATIVE_REBASE', None) or {}))
             if (params or {}).get('clear'):
                 for key in stats:
                     stats[key] = 0
@@ -481,6 +524,7 @@ def install(m):
     m._runtime_action = action
     # Snapshot polling must not revive the removed global camera enumeration.
     m._runtime_camera_readback = lambda: {'available': False, 'removed': True}
+    install_native_rebase(m)
     install_player_selection(m)
     install_xp_guard(m)
     install_drop_replay(m)
@@ -490,6 +534,55 @@ def install(m):
         m._safe(lambda: setattr(m.mod, 'version', VERSION))
     m._maintenance_revision = REVISION
     m._log('Installed '+REVISION+'; equipped-slot maintenance, FOV disabled.')
+
+
+def install_native_rebase(m):
+    """Point the base code's fixed native addresses at the running game build.
+
+    Live loadout apply and backpack publish refuse to run unless the code at each
+    address starts with the expected bytes; on build 25372571 every inventory gate
+    failed ("server transaction implementation pointer changed").  The build is read
+    from the loaded image's PE header; the move happens only when every listed
+    prefix matches at its new address, so an unknown build keeps the base values
+    and the gates keep refusing.  Idempotent (hot reinstalls see the moved values).
+    """
+    base = getattr(m, 'IMAGE_BASE', 0)
+    header = m._rd(base, 0x400) if base else None
+    status = {}
+    m._NATIVE_REBASE = status
+    if not header or len(header) < 0x200:
+        status['error'] = 'image header unreadable'
+        return
+    pe = int.from_bytes(header[0x3C:0x40], 'little')
+    if not 0 < pe <= 0x300 or header[pe:pe + 4] != b'PE\0\0':
+        status['error'] = 'no PE header'
+        return
+    stamp = int.from_bytes(header[pe + 8:pe + 12], 'little')
+    size = int.from_bytes(header[pe + 80:pe + 84], 'little')
+    status.update(pe_timestamp=stamp, image_size=hex(size))
+    if size > getattr(m, 'IMAGE_SIZE', 0):
+        m.IMAGE_SIZE = size  # vtable / method range checks
+    table = NATIVE_BUILDS.get(stamp)
+    if not table:
+        status['build'] = 'base'
+        return
+    moved = {}
+    for name, (rva, prefix) in table.items():
+        old = getattr(m, name, None)
+        expected = bytes.fromhex(prefix)
+        if not isinstance(old, int) or (m._rd(base + rva, len(expected)) or b'') != expected:
+            status['error'] = f'{name} does not match build {stamp}'
+            return
+        moved[name] = (old, base + rva, expected)
+    remap = {old: (new, expected) for old, new, expected in moved.values()}
+    for table_name in NATIVE_PREFIX_TABLES:
+        prefixes = getattr(m, table_name, None)
+        if isinstance(prefixes, dict):
+            setattr(m, table_name, {remap.get(address, (address, code))[0]: remap.get(address, (address, code))[1]
+                                    for address, code in prefixes.items()})
+    for name, (_old, new, _expected) in moved.items():
+        setattr(m, name, new)
+    status.update(build=stamp, moved=len(moved))
 
 
 def install_xp_guard(m):

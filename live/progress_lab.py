@@ -930,6 +930,21 @@ def count_pickups(m: Any, args: dict[str, Any]) -> dict[str, Any]:
     return {"ok": True, "count": len(pickups), "rows": _pickup_rows(m, pickups[: int(args.get("limit") or 10)])}
 
 
+def native_gates(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    import ctypes
+    k32 = ctypes.WinDLL("kernel32")
+    k32.GetModuleHandleW.restype = ctypes.c_void_p
+    base = k32.GetModuleHandleW(None) or 0
+    pc = m._player_controller()
+    pc_addr = m._addr(pc)
+    vtable = m._u64(m._rd(pc_addr, 8) or b"", 0) if pc_addr else 0
+    submit = m._u64(m._rd(vtable + m._INVENTORY_SERVER_IMPLEMENTATION_VTABLE_OFFSET, 8) or b"", 0) if vtable else 0
+    return {"ok": True, "module_base": hex(base), "image_base": hex(m.IMAGE_BASE), "vtable": hex(vtable),
+            "submit": hex(submit), "submit_rva": hex(submit - base) if base else None,
+            "expected": hex(m._INVENTORY_SERVER_IMPLEMENTATION_EXPECTED),
+            "mismatches": m._inventory_native_gate()[:4]}
+
+
 TESTS = {name: fn for name, fn in globals().items() if callable(fn) and not name.startswith("_")
          and name not in {"run", "annotations"}}
 
