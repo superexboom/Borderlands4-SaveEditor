@@ -566,27 +566,7 @@ class _LiveLoadoutWorker(QThread):
                         'error': 'fresh loadout snapshot is missing epoch or snapshot_hash',
                     }
                 else:
-                    # The mod's verified swap needs an item in the slot; slots the
-                    # player emptied are filled afterwards with equip_empty_slot
-                    # (their targets may only be freed by the swaps).
-                    empty = {
-                        slot.get('slot_index') for slot in snapshot.get('slots') or []
-                        if isinstance(slot, dict) and slot.get('source_handle') == -1
-                    }
-                    entries = list(self._context.get('entries') or [])
-                    swaps = [e for e in entries if e.get('slot_index') not in empty]
-                    fills = [e for e in entries if e.get('slot_index') in empty]
-                    if swaps:
-                        result = self._bridge.apply_loadout(
-                            epoch=snapshot['epoch'],
-                            snapshot_hash=snapshot['snapshot_hash'],
-                            entries=swaps,
-                        )
-                    else:
-                        result = {'ok': True, 'action': 'apply_loadout', 'verified': True,
-                                  'applied': [], 'skipped': []}
-                    if fills and isinstance(result, dict) and result.get('ok') and result.get('verified'):
-                        self._fill_empty_slots(fills, result)
+                    result = self._apply_entries(snapshot)
                 if self._context.get('skills') and isinstance(result, dict) and result.get('ok'):
                     result['skills'] = self._skill_call('skill_apply', self._context['skills'])
             elif self._operation == 'recovery':
@@ -617,6 +597,83 @@ class _LiveLoadoutWorker(QThread):
         )
 
 
+    def _apply_entries(self, snapshot):
+        """Clear the slots the loadout had empty, swap occupied slots, then fill empty ones.
+
+        The mod's verified swap needs an item in the slot on both sides, so slots
+        are emptied first (this can free targets of the swaps) with unequip_slot,
+        and slots that are empty after the swaps get equip_empty_slot.
+        """
+        entries = list(self._context.get('entries') or [])
+        listed = {e.get('slot_index') for e in entries}
+        rows = [s for s in snapshot.get('slots') or [] if isinstance(s, dict) and not s.get('locked')]
+        if self._context.get('clear_unlisted'):
+            clear = {s.get('slot_index') for s in rows} - listed
+        else:
+            clear = set(self._context.get('clear_slots') or []) - listed
+        cleared = []
+        for row in rows:
+            if row.get('slot_index') in clear and isinstance(row.get('source_handle'), int)                     and row['source_handle'] >= 0:
+                failure = self._clear_slot(row, cleared)
+                if failure:
+                    return {'ok': False, 'action': 'apply_loadout', 'applied': cleared, **failure}
+        if cleared:
+            snapshot = self._bridge.loadout_snapshot()
+            if not snapshot.get('ok'):
+                return snapshot
+        empty = {
+            slot.get('slot_index') for slot in snapshot.get('slots') or []
+            if isinstance(slot, dict) and slot.get('source_handle') == -1
+        }
+        swaps = [e for e in entries if e.get('slot_index') not in empty]
+        fills = [e for e in entries if e.get('slot_index') in empty]
+        if swaps:
+            result = self._bridge.apply_loadout(
+                epoch=snapshot['epoch'],
+                snapshot_hash=snapshot['snapshot_hash'],
+                entries=swaps,
+            )
+        else:
+            result = {'ok': True, 'action': 'apply_loadout', 'verified': True,
+                      'applied': [], 'skipped': []}
+        if not isinstance(result, dict):
+            return result
+        if fills and result.get('ok') and result.get('verified'):
+            self._fill_empty_slots(fills, result)
+        result['applied'] = cleared + list(result.get('applied') or [])
+        return result
+
+    def _clear_slot(self, row, cleared):
+        """Unequip one slot (the item stays in the backpack); a failure dict or None."""
+        slot_index = row.get('slot_index')
+        snapshot = self._bridge.loadout_snapshot()
+        reply = self._bridge.runtime_action(
+            'unequip_slot', epoch=snapshot.get('epoch'), slot_index=slot_index,
+            serial_sha256=row.get('serial_sha256'),
+        ) if snapshot.get('ok') else snapshot
+        if not reply.get('ok') or not reply.get('submitted'):
+            return {'uncertain': bool(reply.get('uncertain')),
+                    'error': f"slot {slot_index}: {reply.get('error') or 'unequip rejected'}"}
+        if not self._wait_slot(slot_index, -1, ''):
+            return {'uncertain': True, 'error': f'slot {slot_index}: the game did not unequip the item in time'}
+        cleared.append({'slot_index': slot_index, 'before_handle': reply.get('before_handle'),
+                        'target_handle': -1, 'cleared_slot': True})
+        return None
+
+    def _wait_slot(self, slot_index, handle, fingerprint, timeout=3.0):
+        """Poll loadout snapshots until ``slot_index`` holds ``handle`` (-1: empty)."""
+        deadline = time.monotonic() + timeout
+        while True:
+            current = self._bridge.loadout_snapshot()
+            slot = next((s for s in current.get('slots') or []
+                         if isinstance(s, dict) and s.get('slot_index') == slot_index), {})
+            if slot.get('source_handle') == handle and (
+                    handle == -1 or str(slot.get('serial_sha256') or '').lower() == fingerprint):
+                return True
+            if time.monotonic() >= deadline:
+                return False
+            time.sleep(0.1)
+
     def _fill_empty_slots(self, entries, result):
         """Equip each entry into its (empty) slot and wait for the game to show it."""
         applied = result.setdefault('applied', [])
@@ -631,21 +688,12 @@ class _LiveLoadoutWorker(QThread):
                 result.update(ok=False, verified=False, uncertain=bool(reply.get('uncertain')),
                               error=f"slot {slot_index}: {reply.get('error') or 'equip rejected'}")
                 return
-            deadline = time.monotonic() + 3.0
-            while True:
-                current = self._bridge.loadout_snapshot()
-                slot = next((s for s in current.get('slots') or []
-                             if isinstance(s, dict) and s.get('slot_index') == slot_index), {})
-                if (slot.get('source_handle') == reply.get('target_handle')
-                        and str(slot.get('serial_sha256') or '').lower() == reply.get('target_serial_sha256')):
-                    applied.append({'slot_index': slot_index, 'before_handle': -1,
-                                    'target_handle': reply.get('target_handle'), 'filled_empty_slot': True})
-                    break
-                if time.monotonic() >= deadline:
-                    result.update(ok=False, verified=False, uncertain=True,
-                                  error=f'slot {slot_index}: the game did not equip the item in time')
-                    return
-                time.sleep(0.1)
+            if not self._wait_slot(slot_index, reply.get('target_handle'), reply.get('target_serial_sha256')):
+                result.update(ok=False, verified=False, uncertain=True,
+                              error=f'slot {slot_index}: the game did not equip the item in time')
+                return
+            applied.append({'slot_index': slot_index, 'before_handle': -1,
+                            'target_handle': reply.get('target_handle'), 'filled_empty_slot': True})
 
     def _skill_call(self, action, params):
         try:

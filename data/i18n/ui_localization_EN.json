@@ -1697,7 +1697,7 @@
       "live_save_success": "Live loadout {slot} saved to:\n{path}",
       "live_save_fail": "Failed to save live loadout: {error}",
       "confirm_live_apply_title": "Confirm Live Loadout",
-      "confirm_live_apply_msg": "Apply the loadout from Slot {slot} to the current live character?\n\nEquipment: only listed non-empty equipment slots are replaced; slots saved as empty are not cleared or restored, cross-slot cycles are not supported, and every target item must still be in the backpack.\nSkills: if the loadout stored skills, the character's skill and specialization points are reset and spent again as saved, and the action skill, augments and capstones are equipped; the game validates points and prerequisites itself.\nThe current loadout will be read and verified again before applying.",
+      "confirm_live_apply_msg": "Apply the loadout from Slot {slot} to the current live character?\n\nEquipment: slots are set as saved; slots that were empty in a live-saved loadout are unequipped (the items stay in the backpack), while loadouts from a save file never empty slots. Cross-slot cycles are not supported, and every target item must still be in the backpack.\nSkills: if the loadout stored skills, the character's skill and specialization points are reset and spent again as saved, and the action skill, augments and capstones are equipped; the game validates points and prerequisites itself.\nThe current loadout will be read and verified again before applying.",
       "live_apply_success": "Live loadout {slot} applied.\nChanged {applied} item(s); skipped {skipped} item(s).",
       "live_apply_cache_pending": "Some runtime models or item-card caches are still refreshing.",
       "live_apply_fail_title": "Live Loadout Failed",

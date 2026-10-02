@@ -764,10 +764,14 @@ class LoadoutManagerViewModel(PageViewModel):
         if not isinstance(rows, list):
             raise ValueError("live loadout snapshot has no slots")
         equipped_items = []
+        empty_slots = []
         for row in rows:
             if not isinstance(row, dict) or row.get("locked"):
                 continue
             slot_index = row.get("slot_index")
+            if row.get("source_handle") == -1 and isinstance(slot_index, int) and not isinstance(slot_index, bool):
+                empty_slots.append(slot_index)
+                continue
             serial = str(row.get("serial") or "")
             fingerprint = self._live_item_fingerprint(serial, str(row.get("serial_sha256") or ""))
             occurrence = row.get("occurrence")
@@ -791,6 +795,7 @@ class LoadoutManagerViewModel(PageViewModel):
             "timestamp": datetime.now().isoformat(timespec="seconds"),
             "source": "live",
             "equipped_items": equipped_items,
+            "empty_slots": empty_slots,
             "skill_graphs": skill_rows,
         }
 
@@ -817,6 +822,15 @@ class LoadoutManagerViewModel(PageViewModel):
                 entry["occurrence"] = occurrence
             entries.append(entry)
         payload = {"entries": entries}
+        # Slots the loadout had empty are emptied too.  Live saves list them; older
+        # live saves mean "every unlisted slot".  Offline loadouts never clear (their
+        # equipment list may lack slot kinds), nor does a build without equipment.
+        empty_slots = saved.get("empty_slots")
+        if entries and isinstance(empty_slots, list):
+            payload["clear_slots"] = sorted({s for s in empty_slots if isinstance(s, int)
+                                             and not isinstance(s, bool) and s not in seen_slots})
+        elif entries and saved.get("source") == "live":
+            payload["clear_unlisted"] = True
         skills, unknown = skill_graphs.save_graphs_to_apply(saved.get("skill_graphs") or [])
         if skills["graphs"] and not unknown:
             payload["skills"] = skills

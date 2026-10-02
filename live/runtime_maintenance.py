@@ -8,7 +8,7 @@ import math
 import time
 
 VERSION = '0.10.28'
-REVISION = 'slot-maintenance-20261002.14'
+REVISION = 'slot-maintenance-20261002.15'
 
 # Weapon values, movement, crit, stamina and cooldown features change only when the
 # game rebuilds them (equip, reload, buffs): refresh them at 5 Hz.  Health and shield
@@ -854,108 +854,94 @@ def install_skill_builds(m):
 
 
 def install_empty_slot_equip(m):
-    """``equip_empty_slot``: equip a backpack item into an empty equipment slot.
+    """``equip_empty_slot`` / ``unequip_slot``: single-slot inventory transactions.
 
     The base loadout path only submits type-2 transactions (swap the item in a slot
-    for a backpack item), which need an item in the slot; a slot the player emptied
-    failed with "equipment slot N has no stable source item identity".  Read from
-    the game build 25372571 executor (2026-10-02): type 4 unequips item [+4] from
-    slot [+0x160]; type 5 equips backpack item [+4] into slot [+0x160] (after
-    checking it is not equipped and fits the slot, and unequipping whatever is
-    there).  This action submits type 5 for an empty slot through the same gates
-    and host/server implementation as the base swap.  The caller verifies the
-    result from the next loadout snapshots (the game applies it on a later tick).
+    for a backpack item), so it can neither fill a slot the player emptied ("equipment
+    slot N has no stable source item identity") nor empty a slot the loadout saved as
+    empty.  Read from the game build 25372571 executor (2026-10-02): type 4 unequips
+    item [+4] from slot [+0x160] (the item stays in the backpack); type 5 equips
+    backpack item [+4] into slot [+0x160] (after checking it is not equipped and fits
+    the slot, and unequipping whatever is there).  Both go through the same gates,
+    readiness probe and host/server implementation as the base swap.  The caller
+    verifies the result from the next loadout snapshots (the game applies it on a
+    later tick).  ``dry_run`` validates without submitting.
     """
     import ctypes
     import struct
     base_action = m._runtime_action
 
-    def fail(error, **extra):
-        return dict(ok=False, action='equip_empty_slot', error=error, **extra)
+    def fail(name, error, **extra):
+        return dict(ok=False, action=name, error=error, **extra)
 
-    def equip(params):
+    def before_state(name, params):
         epoch = str(params.get('epoch') or '').strip()
         slot_index = m._live_int(params.get('slot_index'))
-        fingerprint = str(params.get('serial_sha256') or '').strip().lower()
-        occurrence = m._live_int(params.get('occurrence')) if params.get('occurrence') is not None else None
-        if not epoch or slot_index is None or not fingerprint:
-            return fail('epoch, slot_index and serial_sha256 are required')
+        if not epoch or slot_index is None:
+            return fail(name, 'epoch and slot_index are required')
         if not 0 <= slot_index < 0x80:
-            return fail('slot_index is out of native range')
+            return fail(name, 'slot_index is out of native range')
         if m._RUNTIME_REGISTRY.get('loadout_recovery'):
-            return fail('unresolved loadout recovery requires review')
+            return fail(name, 'unresolved loadout recovery requires review')
         capabilities = m._runtime_loadout_capabilities()
         if not capabilities.get('native_equip_swap'):
-            return fail(str(capabilities.get('reason') or 'native equipment transactions are unavailable'))
+            return fail(name, str(capabilities.get('reason') or 'native equipment transactions are unavailable'))
         before = m._runtime_loadout_snapshot()
         slots = before.get('slots') if isinstance(before.get('slots'), list) else []
         if not before.get('ok') or before.get('epoch') != epoch:
-            return fail('inventory epoch changed', expected_epoch=epoch, actual_epoch=before.get('epoch'))
+            return fail(name, 'inventory epoch changed', expected_epoch=epoch, actual_epoch=before.get('epoch'))
         slot = next((s for s in slots if s.get('slot_index') == slot_index), None)
         if slot is None:
-            return fail('slot_index is out of range')
+            return fail(name, 'slot_index is out of range')
         if slot.get('locked'):
-            return fail(f'equipment slot {slot_index} is locked')
-        if m._live_int(slot.get('source_handle')) != -1:
-            return fail(f'equipment slot {slot_index} is not empty')
-        records, records_epoch = m._live_inventory_records()
-        if records_epoch != epoch:
-            return fail('inventory epoch changed during resolution')
-        candidates = [r for r in records if r.get('container') == 'BackpackItems'
-                      and str(r.get('serial_sha256') or '').lower() == fingerprint
-                      and (occurrence is None or r.get('occurrence') == occurrence)]
-        if len(candidates) != 1:
-            return fail(f"target resolution is {'missing' if not candidates else 'ambiguous'}",
-                        candidate_count=len(candidates))
-        target = candidates[0]
-        target_handle = m._live_int(target.get('handle'))
-        target_instance_id = m._live_int(target.get('instance_id'))
-        if target_handle is None or target_handle < 0 or target_instance_id is None:
-            return fail('target has no stable live identity')
-        if any(m._live_int(s.get('source_handle')) == target_handle for s in slots):
-            return fail('target item is still equipped in another slot')
+            return fail(name, f'equipment slot {slot_index} is locked')
+        return dict(ok=True, epoch=epoch, slot_index=slot_index, slot=slot, slots=slots)
 
+    def submit(name, kind, handle, slot_index, dry_run):
+        """Gate, probe, build and submit one type-4/5 transaction for ``handle``."""
         pc, pawn = m._player_controller(), m._runtime_pawn()
         pc_addr, pawn_addr = m._addr(pc), m._addr(pawn)
         if not pc_addr or not pawn_addr:
-            return fail('active player objects are unavailable')
+            return fail(name, 'active player objects are unavailable')
         if m._safe(lambda: bool(pc.HasAuthority())) is not True:
-            return fail('native equipment transactions are host/standalone only')
+            return fail(name, 'native equipment transactions are host/standalone only')
         container_iface, _ = m._interface_pointer(pc, 'GbxItemContainerOwner')
         equipped_iface, _ = m._interface_pointer(pawn, 'GbxEquippedInventorySlotOwner')
         if not container_iface or not equipped_iface:
-            return fail('inventory transaction interfaces are unavailable')
+            return fail(name, 'inventory transaction interfaces are unavailable')
         if not m._native_interface_method_gate(container_iface, (0x20,))[0] or not m._native_interface_method_gate(
                 equipped_iface, (0x10, 0x30, 0x38, 0x48, 0x50, 0xA0))[0]:
-            return fail('inventory transaction interface method gate failed')
+            return fail(name, 'inventory transaction interface method gate failed')
         executor = m._u64(m._rd(pc_addr + 0xC38, 8) or b'', 0)
         if not m._looks_ptr(executor) or not m._readable(executor, 0x238):
-            return fail('inventory transaction executor is unavailable')
+            return fail(name, 'inventory transaction executor is unavailable')
         vtable = m._u64(m._rd(pc_addr, 8) or b'', 0)
-        submit = m._u64(m._rd(vtable + m._INVENTORY_SERVER_IMPLEMENTATION_VTABLE_OFFSET, 8) or b'', 0)
-        if submit != m._INVENTORY_SERVER_IMPLEMENTATION_EXPECTED or not m._is_executable(submit):
-            return fail('server transaction implementation pointer changed')
+        implementation = m._u64(m._rd(vtable + m._INVENTORY_SERVER_IMPLEMENTATION_VTABLE_OFFSET, 8) or b'', 0)
+        if implementation != m._INVENTORY_SERVER_IMPLEMENTATION_EXPECTED or not m._is_executable(implementation):
+            return fail(name, 'server transaction implementation pointer changed')
         if m._inventory_native_gate():
-            return fail('inventory native code gate failed')
+            return fail(name, 'inventory native code gate failed')
         backpack_name, _ = m._native_item_container_fname(container_iface, 'BackpackContainer')
         if not backpack_name or not any(backpack_name):
-            return fail('BackpackContainer FName is empty')
-        readiness = m._native_equip_readiness(container_iface, equipped_iface, backpack_name,
-                                              slot_index, -1, target_handle)
+            return fail(name, 'BackpackContainer FName is empty')
+        # equip: the slot holds nothing (-1); unequip: the slot holds the item itself
+        readiness = m._native_equip_readiness(container_iface, equipped_iface, backpack_name, slot_index,
+                                              -1 if kind == 5 else handle, handle)
         checks = dict(readiness.get('checks') or {})
-        checks.pop('source_entry', None)  # the slot is empty: there is no source item
+        if kind == 5:
+            checks.pop('source_entry', None)  # an empty slot has no source item
         if not checks or not all(checks.values()):
-            return fail('native equipment readiness gate failed', readiness=readiness)
+            return fail(name, 'native equipment readiness gate failed', readiness=readiness)
 
         transaction = ctypes.create_string_buffer(m._INVENTORY_TRANSACTION_SIZE)
         address = ctypes.addressof(transaction)
         if address & 0xF:
-            return fail('transaction buffer is not 16-byte aligned')
+            return fail(name, 'transaction buffer is not 16-byte aligned')
         ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_void_p)(m._INVENTORY_TRANSACTION_CTOR)(address)
         consumed = False
         try:
-            struct.pack_into('<B', transaction, 0x00, 5)
-            struct.pack_into('<i', transaction, 0x04, target_handle)
+            struct.pack_into('<B', transaction, 0x00, kind)
+            struct.pack_into('<i', transaction, 0x04, handle)
             for offset, value in ((0x10, pc_addr), (0x18, container_iface), (0x20, pc_addr),
                                   (0x28, container_iface), (0x30, pawn_addr), (0x38, equipped_iface),
                                   (0x40, pawn_addr), (0x48, equipped_iface)):
@@ -965,28 +951,77 @@ def install_empty_slot_equip(m):
             struct.pack_into('<B', transaction, 0x160, slot_index)
             struct.pack_into('<B', transaction, 0x161, 0xFF)
             if not ctypes.CFUNCTYPE(ctypes.c_bool, ctypes.c_void_p)(m._INVENTORY_TRANSACTION_VALIDATE)(address):
-                return fail('native transaction validation failed')
-            if params.get('dry_run') is True:
-                return dict(ok=True, action='equip_empty_slot', dry_run=True, slot_index=slot_index,
-                            target_handle=target_handle, readiness=readiness)
+                return fail(name, 'native transaction validation failed')
+            if dry_run:
+                return dict(ok=True, action=name, dry_run=True, slot_index=slot_index, handle=handle,
+                            readiness=readiness)
             consumed = True  # the server implementation owns (and destroys) it from here
-            ctypes.CFUNCTYPE(None, ctypes.c_void_p, ctypes.c_void_p)(submit)(pc_addr, address)
+            ctypes.CFUNCTYPE(None, ctypes.c_void_p, ctypes.c_void_p)(implementation)(pc_addr, address)
         except Exception as exc:
-            return fail(f'native transaction failed: {type(exc).__name__}: {exc}', submitted=consumed,
+            return fail(name, f'native transaction failed: {type(exc).__name__}: {exc}', submitted=consumed,
                         uncertain=consumed)
         finally:
             if not consumed:
                 m._destroy_native_inventory_transaction(address)
-        return dict(ok=True, action='equip_empty_slot', submitted=True, slot_index=slot_index,
-                    target_handle=target_handle, target_instance_id=target_instance_id,
-                    target_serial_sha256=fingerprint, before_epoch=epoch)
+        return dict(ok=True, action=name, submitted=True, slot_index=slot_index)
+
+    def equip(params):
+        name = 'equip_empty_slot'
+        state = before_state(name, params)
+        if not state['ok']:
+            return state
+        slot_index, slots = state['slot_index'], state['slots']
+        fingerprint = str(params.get('serial_sha256') or '').strip().lower()
+        occurrence = m._live_int(params.get('occurrence')) if params.get('occurrence') is not None else None
+        if not fingerprint:
+            return fail(name, 'serial_sha256 is required')
+        if m._live_int(state['slot'].get('source_handle')) != -1:
+            return fail(name, f'equipment slot {slot_index} is not empty')
+        records, records_epoch = m._live_inventory_records()
+        if records_epoch != state['epoch']:
+            return fail(name, 'inventory epoch changed during resolution')
+        candidates = [r for r in records if r.get('container') == 'BackpackItems'
+                      and str(r.get('serial_sha256') or '').lower() == fingerprint
+                      and (occurrence is None or r.get('occurrence') == occurrence)]
+        if len(candidates) != 1:
+            status = 'missing' if not candidates else 'ambiguous'
+            return fail(name, f'target resolution is {status}', candidate_count=len(candidates))
+        target_handle = m._live_int(candidates[0].get('handle'))
+        target_instance_id = m._live_int(candidates[0].get('instance_id'))
+        if target_handle is None or target_handle < 0 or target_instance_id is None:
+            return fail(name, 'target has no stable live identity')
+        if any(m._live_int(s.get('source_handle')) == target_handle for s in slots):
+            return fail(name, 'target item is still equipped in another slot')
+        result = submit(name, 5, target_handle, slot_index, params.get('dry_run') is True)
+        if result.get('ok'):
+            result.update(target_handle=target_handle, target_instance_id=target_instance_id,
+                          target_serial_sha256=fingerprint, before_epoch=state['epoch'])
+        return result
+
+    def unequip(params):
+        name = 'unequip_slot'
+        state = before_state(name, params)
+        if not state['ok']:
+            return state
+        slot_index, slot = state['slot_index'], state['slot']
+        handle = m._live_int(slot.get('source_handle'))
+        if handle is None or handle < 0:
+            return fail(name, f'equipment slot {slot_index} is already empty')
+        fingerprint = str(params.get('serial_sha256') or '').strip().lower()
+        if slot.get('join_status') != 'unique' or str(slot.get('serial_sha256') or '').lower() != fingerprint:
+            return fail(name, f'equipment slot {slot_index} holds a different item')
+        result = submit(name, 4, handle, slot_index, params.get('dry_run') is True)
+        if result.get('ok'):
+            result.update(before_handle=handle, before_serial_sha256=fingerprint, before_epoch=state['epoch'])
+        return result
 
     def action(name, params=None):
-        if name == 'equip_empty_slot':
+        handler = {'equip_empty_slot': equip, 'unequip_slot': unequip}.get(name)
+        if handler is not None:
             try:
-                return equip(dict(params or {}))
+                return handler(dict(params or {}))
             except Exception as exc:
-                return fail(f'{type(exc).__name__}: {exc}')
+                return fail(name, f'{type(exc).__name__}: {exc}')
         return base_action(name, params)
 
     m._runtime_action = action
