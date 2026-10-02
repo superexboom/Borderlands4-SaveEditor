@@ -733,6 +733,198 @@ def replay_dead(m: Any, args: dict[str, Any]) -> dict[str, Any]:
     return {"ok": True, "replayed": rows, "total_handled": len(handled)}
 
 
+def progression_dump(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    """Read-only view of pawn.GbxProgressionManager (fields, graphs, nodes, point pools)."""
+    import sys
+    summarize = sys.modules[__name__.rpartition(".")[0] + ".progress_probe"].summarize
+    pawn = m._runtime_pawn()
+    manager = m._get_field(pawn, "GbxProgressionManager")
+    if manager is None:
+        return {"ok": False, "error": "no GbxProgressionManager on the pawn"}
+    kind = getattr(manager, "_type", None) or manager.Class
+    out = {"class": kind.Name, "fields": {}}
+    for prop in kind._properties():
+        if prop.Class.Name in ("DelegateProperty", "MulticastInlineDelegateProperty", "MulticastSparseDelegateProperty"):
+            continue
+        value = m._safe(lambda prop=prop: manager._get_field(prop))
+        out["fields"][prop.Name] = {"type": prop.Class.Name,
+                                    "value": summarize(value, int(args.get("depth") or 3), int(args.get("limit") or 4))}
+    return {"ok": True, **out}
+
+
+def graph_def_probe(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    """What a GbxProgressGraphDef pointer exposes in Python (attributes, a few fields)."""
+    pawn = m._runtime_pawn()
+    manager = m._get_field(pawn, "GbxProgressionManager")
+    graph = list(m._get_field(manager, "ProgressGraphs"))[int(args.get("index") or 0)]
+    ptr = graph.ProgressGraphDef
+    out = {"type": type(ptr).__name__, "attrs": [a for a in dir(ptr) if not a.startswith("__")]}
+    for attr in out["attrs"]:
+        value = m._safe(lambda attr=attr: getattr(ptr, attr))
+        out[f"value.{attr}"] = str(value)[:300]
+    data = m._safe(lambda: ptr._get_data() if hasattr(ptr, "_get_data") else None)
+    out["data"] = str(data)[:1500] if data is not None else None
+    return {"ok": True, **out}
+
+
+def _plain(m: Any, value: Any, depth: int = 2) -> Any:
+    if value is None or isinstance(value, (bool, int, float, str)):
+        return value
+    name = getattr(value, "_name", None)
+    if isinstance(name, str) and type(value).__name__ in ("FGbxDefPtr", "FGameDataHandle"):
+        return name
+    kind = getattr(value, "_type", None)
+    if kind is not None and hasattr(kind, "_properties") and depth > 0:
+        return {p.Name: _plain(m, m._safe(lambda p=p: value._get_field(p)), depth - 1)
+                for p in kind._properties() if p.Class.Name not in ("MapProperty", "SetProperty")}
+    try:
+        if depth > 0 and hasattr(value, "__len__") and not isinstance(value, (bytes, dict)):
+            return [_plain(m, value[i], depth - 1) for i in range(min(len(value), 64))]
+    except Exception:
+        pass
+    return str(value)[:120]
+
+
+def skill_snapshot(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    """Every progress graph of the player: def name/type/pool, def nodes and live node state."""
+    pawn = m._runtime_pawn()
+    manager = m._get_field(pawn, "GbxProgressionManager")
+    pools = list(m._get_field(m._get_field(manager, "ProgressPointsContainer"), "PointsAcquiredPerPool"))
+    graphs = []
+    for graph in list(m._get_field(manager, "ProgressGraphs")):
+        entry = {"errors": []}
+        try:
+            definition = graph.ProgressGraphDef
+            entry.update(graph=definition._name, type=int(m._safe(lambda: definition.GraphType, 0) or 0),
+                         pool=getattr(m._safe(lambda: definition.PointPool), "_name", None))
+            def_nodes = m._safe(lambda: list(definition.nodes), []) or []
+            live = list(graph.nodes)
+            rows = []
+            for index, state in enumerate(live):
+                row = {"i": index, "spent": state.ProgressPointsSpent, "bonus": state.BonusPoints,
+                       "unlocked": state.bIsUnlocked, "active": state.bIsActivated, "level": state.ActivationLevel}
+                if index < len(def_nodes):
+                    try:
+                        row["def"] = _plain(m, def_nodes[index], int(args.get("depth") or 1))
+                    except Exception as exc:
+                        entry["errors"].append(f"node {index}: {type(exc).__name__}: {exc}"[:120])
+                rows.append(row)
+            entry["nodes"] = rows
+            entry["groups"] = len(list(graph.Groups))
+        except Exception as exc:
+            entry["errors"].append(f"{type(exc).__name__}: {exc}"[:160])
+        graphs.append(entry)
+    return {"ok": True, "points_per_pool": pools, "graphs": graphs}
+
+
+def _graph_by_name(m: Any, name: str) -> Any:
+    manager = m._get_field(m._runtime_pawn(), "GbxProgressionManager")
+    for graph in list(m._get_field(manager, "ProgressGraphs")):
+        if str(graph.ProgressGraphDef._name).lower() == name.lower():
+            return graph
+    return None
+
+
+def _graph_state(graph: Any) -> list[dict[str, Any]]:
+    return [{"i": i, "spent": n.ProgressPointsSpent, "bonus": n.BonusPoints, "active": n.bIsActivated,
+             "level": n.ActivationLevel, "unlocked": n.bIsUnlocked} for i, n in enumerate(list(graph.nodes))]
+
+
+def skill_reapply(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    """Reset one point-spending graph and spend the same points again; compare before/after."""
+    graph = _graph_by_name(m, str(args["graph"]))
+    if graph is None:
+        return {"ok": False, "error": "graph not found"}
+    before = _graph_state(graph)
+    wanted = {row["i"]: row["spent"] for row in before if row["spent"] > 0}
+    graph.Server_ResetSpentPoints()
+    after_reset = _graph_state(graph)
+    passes = []
+    for _ in range(6):
+        progress = 0
+        for index in sorted(wanted):
+            have = graph.nodes[index].ProgressPointsSpent
+            need = wanted[index] - have
+            if need <= 0:
+                continue
+            graph.Server_SpendProgressPoints(index, need)
+            got = graph.nodes[index].ProgressPointsSpent - have
+            progress += got
+        passes.append(progress)
+        if not progress:
+            break
+    after = _graph_state(graph)
+    same = [(b["spent"], b["active"]) for b in before] == [(a["spent"], a["active"]) for a in after]
+    return {"ok": same, "same_as_before": same, "passes": passes,
+            "before": [(r["i"], r["spent"], r["active"]) for r in before if r["spent"] or r["active"]],
+            "after_reset": [(r["i"], r["spent"], r["active"]) for r in after_reset if r["spent"] or r["active"]],
+            "after": [(r["i"], r["spent"], r["active"]) for r in after if r["spent"] or r["active"]]}
+
+
+def graph_groups(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    """Def groups of one graph (node membership, limits) plus live group/node state."""
+    graph = _graph_by_name(m, str(args["graph"]))
+    definition = graph.ProgressGraphDef
+    groups = m._safe(lambda: list(definition.Groups), None)
+    out = {"def_groups": None if groups is None else [_plain(m, g, int(args.get("depth") or 3)) for g in groups],
+           "def_groups_raw": str(m._safe(lambda: definition.Groups))[:1500],
+           "live_groups": [_plain(m, g, 2) for g in list(graph.Groups)],
+           "nodes": _graph_state(graph)}
+    return {"ok": True, **out}
+
+
+def skill_swap_back(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    """Activate node ``other`` in ``group`` (swapping the equipped choice), then the original back."""
+    graph = _graph_by_name(m, str(args["graph"]))
+    group, original, other = int(args.get("group") or 0), int(args["original"]), int(args["other"])
+    active = lambda: [r["i"] for r in _graph_state(graph) if r["active"]]
+    before = active()
+    graph.Server_ActivateNodeInGroup(group, other, True, 0)
+    swapped = active()
+    graph.Server_ActivateNodeInGroup(group, original, True, 0)
+    after = active()
+    return {"ok": after == before, "before": before, "swapped": swapped, "after": after}
+
+
+def skill_activation_steps(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    """Run a list of Server_ActivateNodeInGroup(group, node, on) steps, log the active set after each,
+    then restore the original active set (deactivate extras, re-activate originals)."""
+    graph = _graph_by_name(m, str(args["graph"]))
+    active = lambda: [r["i"] for r in _graph_state(graph) if r["active"]]
+    before = active()
+    log = []
+    for group, node, on in args.get("steps") or []:
+        graph.Server_ActivateNodeInGroup(int(group), int(node), bool(on), 0)
+        log.append({"step": [group, node, on], "active": active()})
+    restore = args.get("restore") or []
+    for group, node, on in restore:
+        graph.Server_ActivateNodeInGroup(int(group), int(node), bool(on), 0)
+    after = active()
+    return {"ok": after == before, "before": before, "log": log, "after": after}
+
+
+def skill_bonus_test(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    """Server_AddBonusPoints(node, n); then reset+respend the graph and see whether the bonus stays."""
+    graph = _graph_by_name(m, str(args["graph"]))
+    node = int(args["node"])
+    row = lambda: _graph_state(graph)[node]
+    before = row()
+    graph.Server_AddBonusPoints(node, int(args.get("points") or 1))
+    with_bonus = row()
+    reapplied = skill_reapply(m, {"graph": args["graph"]})
+    after = row()
+    return {"ok": True, "before": before, "with_bonus": with_bonus, "after_reset_respend": after,
+            "reapply_same": reapplied.get("same_as_before")}
+
+
+def skill_add_bonus(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    graph = _graph_by_name(m, str(args["graph"]))
+    node = int(args["node"])
+    before = _graph_state(graph)[node]
+    graph.Server_AddBonusPoints(node, int(args["points"]))
+    return {"ok": True, "before": before, "after": _graph_state(graph)[node]}
+
+
 def count_pickups(m: Any, args: dict[str, Any]) -> dict[str, Any]:
     pickups = _pickups(m)
     return {"ok": True, "count": len(pickups), "rows": _pickup_rows(m, pickups[: int(args.get("limit") or 10)])}
