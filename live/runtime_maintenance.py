@@ -7,7 +7,15 @@ import math
 import time
 
 VERSION = '0.10.28'
-REVISION = 'slot-maintenance-20260927.1'
+REVISION = 'slot-maintenance-20261002.10'
+
+# Weapon values, movement, crit, stamina and cooldown features change only when the
+# game rebuilds them (equip, reload, buffs): refresh them at 5 Hz.  Health and shield
+# locks stay on the 25 Hz tick but refill only what is below full.
+SLOW_INTERVAL = 0.2
+SKILL_TTL = 1.0
+EQUIPPED_TTL = 0.25
+HEALTH_LAYER_TTL = 2.0
 
 
 class ValueBindings:
@@ -41,7 +49,7 @@ class ValueBindings:
 
 
 def install(m):
-    from unrealsdk.unreal import WeakPointer
+    from unrealsdk.unreal import UObject, WeakPointer
     if getattr(m._runtime_maintain, '_maintenance_revision', None) == REVISION:
         return
     # Keep one set of base functions when explicitly updating this module in an
@@ -62,7 +70,10 @@ def install(m):
         '_runtime_action', '_runtime_restore', '_runtime_maintain',
         '_runtime_owned', '_runtime_weapon_behavior_pairs', '_runtime_write',
         '_runtime_camera_readback', '_runtime_key', '_runtime_behaviors', '_cls',
-        '_select_player_controller', '_runtime_snapshot') if hasattr(m, name)}
+        '_select_player_controller', '_runtime_snapshot', '_runtime_refill_health_types',
+        '_runtime_selected_action_skill', '_runtime_set_combat_xp_scale',
+        '_runtime_refresh_xp_context', '_runtime_add_xp_modifier', '_runtime_combat_xp_value',
+        '_runtime_remove_xp_modifiers') if hasattr(m, name)}
     base_key = m._runtime_key
     base_behaviors = getattr(m, '_runtime_behaviors', None)
     base_cls = getattr(m, '_cls', None)
@@ -72,7 +83,14 @@ def install(m):
     cycle_cache = {}
     missing_fields = {}
     weapon_plan = [None, None, 0., None]
-    stats = dict(ticks=0, runs=0, writes=0, last_ms=0., max_ms=0., total_ms=0.)
+    stats = dict(ticks=0, runs=0, slow_runs=0, writes=0, last_ms=0., max_ms=0., total_ms=0.)
+    key_cache = {}
+    equipped_cache = [0., 0, []]
+    slow_last = [0.]
+    health_layers = {}
+    struct_missing = {}
+    skill_cache = [0., 0, None, '']
+    base_selected_skill = getattr(m, '_runtime_selected_action_skill', None)
 
     def cached(name, obj, read):
         if context[0] is None:
@@ -83,7 +101,20 @@ def install(m):
         return cycle_cache[key]
 
     def identity(obj, attr, sub=''):
-        return (cached('key', obj, lambda o: base_key(o, '')[0]), attr, sub)
+        # The reflected path is rebuilt from strings on every call; keep it per live
+        # object (weakly, re-checked by address) instead of per maintenance cycle.
+        address = m._addr(obj)
+        hit = key_cache.get(address) if address else None
+        if hit is not None:
+            live = hit[0]()
+            if live is not None and m._addr(live) == address:
+                return (hit[1], attr, sub)
+        base = base_key(obj, '')[0]
+        if address and isinstance(obj, UObject):
+            if len(key_cache) > 1024:
+                key_cache.clear()
+            key_cache[address] = (WeakPointer(obj), base)
+        return (base, attr, sub)
 
     def behaviors(obj):
         return cached('behaviors', obj, lambda o: list(base_behaviors(o)))
@@ -152,6 +183,85 @@ def install(m):
                 addresses.add(address)
         return result
 
+    def equipped(pawn, now):
+        """Equipped inventory actors, re-enumerated at most every EQUIPPED_TTL seconds."""
+        address = m._addr(pawn)
+        if address == equipped_cache[1] and now - equipped_cache[0] < EQUIPPED_TTL:
+            rows = [weak() for weak in equipped_cache[2]]
+            if all(row is not None for row in rows):
+                return rows
+        rows = actors(pawn)
+        equipped_cache[:] = [now, address, [WeakPointer(row) for row in rows]]
+        return rows
+
+    def refill_below_full(pawn, needle, now, *, always=False):
+        """Health/shield lock.  The fast tick refills only a layer below 100 %; the 5 Hz
+        pass (always=True) refills unconditionally.  Health-type handles are cached: each
+        read converts the whole resolved definition and was the costliest part."""
+        lib = m._runtime_static('DamageStatics')
+        if lib is None:
+            return 0
+        key = (m._addr(pawn), needle)
+        entry = health_layers.get(key)
+        if entry is None or now - entry[0] > HEALTH_LAYER_TTL:
+            rows = []
+            health = m._get_field(pawn, 'HealthState')
+            for state in m._safe(lambda: list(m._get_field(health, 'HealthTypeStates')), []) or []:
+                handle = m._get_field(state, 'HealthType')
+                label = str(m._safe(lambda handle=handle: handle._name, '') or '').lower()
+                if needle == 'shield':
+                    selected = 'shield' in label and 'overshield' not in label
+                else:
+                    selected = 'flesh' in label
+                if selected:
+                    layer = m._safe(lambda handle=handle: int(lib.GetHealthPoolLayerOfType(pawn, handle, True)), -1)
+                    rows.append((handle, layer))
+            if len(health_layers) > 8:
+                health_layers.clear()
+            entry = health_layers[key] = (now, rows)
+        writes = 0
+        for handle, layer in entry[1]:
+            percent = 0. if always or layer < 0 else m._safe(lambda layer=layer: float(lib.GetHealthPoolPercent(pawn, layer)), 0.)
+            if percent < 0.999:
+                try:
+                    lib.RefillHealthPercent(Context=pawn, HealthType=handle, Percent=1.0, MaxPercent=1.0)
+                    writes += 1
+                except Exception:
+                    pass
+        return writes
+
+    def jumps_used(pawn):
+        """Infinite jump between full passes: rewrite only once a jump counter moved."""
+        movement = m._get_field(pawn, 'OakCharacterMovement') or m._get_field(pawn, 'CharacterMovement')
+        for obj in (pawn, movement):
+            if obj is None:
+                continue
+            for field in ('JumpCurrentCount', 'CurrentJumpCount', 'JumpedCount'):
+                value = m._safe(lambda obj=obj, field=field: getattr(obj, field, 0), 0)
+                if m._runtime_number(value) and value:
+                    return True
+        return False
+
+    def refill_health_types(pawn, needle):
+        return refill_below_full(pawn, needle, time.perf_counter(), always=True)
+
+    def selected_action_skill(pawn):
+        """The slotted action skill, re-resolved at most every SKILL_TTL seconds."""
+        now = time.perf_counter()
+        address = m._addr(pawn)
+        if address == skill_cache[1] and now - skill_cache[0] < SKILL_TTL:
+            if skill_cache[2] is None:
+                return None  # no slotted action skill a moment ago (also cached: the scan is the cost)
+            script = skill_cache[2]()
+            if script is not None:
+                return script, skill_cache[3]
+        found = base_selected_skill(pawn)
+        if found is None:
+            skill_cache[:] = [now, address, None, '']
+            return None
+        skill_cache[:] = [now, address, WeakPointer(found[0]), found[1]]
+        return found
+
     def owned(class_name, pawn):
         cls = classes.get(class_name)
         if cls is None:
@@ -184,8 +294,19 @@ def install(m):
         # Most behavior classes do not own most of the legacy feature fields.
         # Avoid repeating failed reflection lookups at 25 Hz. The weak UClass
         # proves that the same schema is still alive before reusing the miss.
-        cls = m._get_field(obj, 'Class')
-        absent = None
+        if not isinstance(obj, UObject):
+            # Reflected structs (HealthState, DamageCauserData) have no Class; asking
+            # for one is a slow failing lookup.  Key their misses by struct type.
+            absent = struct_missing.setdefault(m._safe(lambda: obj._type.Name, '') or '', set())
+            if attr in absent:
+                return 0
+            cls = None
+        else:
+            try:
+                cls = obj.Class
+            except Exception:
+                cls = None
+            absent = None
         if cls is not None:
             address = m._addr(cls)
             existing = missing_fields.get(address)
@@ -208,22 +329,22 @@ def install(m):
                 continue
             ref = None
             key = m._runtime_key(obj, attr, sub)
-            if feature not in m._RUNTIME_TRANSIENT_FEATURES:
-                try:
-                    ref = WeakPointer(obj)
-                except TypeError:
-                    # Reflected structs are not UObjects. Reacquire them from
-                    # their weak owner rather than retaining a stale UStruct.
-                    if feature in ('backpack_size', 'bank_size'):
-                        parent = m.GAME.player_state
-                        field = 'BackpackContainer' if feature == 'backpack_size' else 'BankContainer'
-                    else:
-                        parent = m._runtime_pawn()
-                        field = 'HealthState' if feature == 'repairkit_no_cd' else 'DamageCauserData'
-                    parent_ref = WeakPointer(parent)
-                    ref = lambda parent_ref=parent_ref, field=field: m._get_field(parent_ref(), field) if parent_ref() is not None else None
-                    key = (m._runtime_key(parent, '')[0] + '.' + field, attr, sub)
             originals = m._RUNTIME_ORIGINALS.setdefault(feature, {})
+            if feature not in m._RUNTIME_TRANSIENT_FEATURES and isinstance(obj, UObject):
+                if key not in originals:  # the weak reference only serves a later restore
+                    ref = WeakPointer(obj)
+            elif feature not in m._RUNTIME_TRANSIENT_FEATURES:
+                # Reflected structs are not UObjects. Reacquire them from
+                # their weak owner rather than retaining a stale UStruct.
+                if feature in ('backpack_size', 'bank_size'):
+                    parent = m.GAME.player_state
+                    field = 'BackpackContainer' if feature == 'backpack_size' else 'BankContainer'
+                else:
+                    parent = m._runtime_pawn()
+                    field = 'HealthState' if feature == 'repairkit_no_cd' else 'DamageCauserData'
+                parent_ref = WeakPointer(parent)
+                ref = lambda parent_ref=parent_ref, field=field: m._get_field(parent_ref(), field) if parent_ref() is not None else None
+                key = (m._runtime_key(parent, '')[0] + '.' + field, attr, sub)
             if key not in originals:
                 originals[key] = (ref, current)
             target = m._runtime_target(originals[key][1], value, scale, minimum)
@@ -272,16 +393,27 @@ def install(m):
             pawn = m._runtime_pawn()
             if pawn is None:
                 return 0
-            context[0] = actors(pawn)
+            context[0] = equipped(pawn, now)
             # The formerly unconditional FOV scan has deliberately been removed.
-            writes = apply_weapons(pawn, force, now)
-            writes += m._runtime_apply_player_features(pawn)
+            writes = 0
+            if force or now - slow_last[0] >= SLOW_INTERVAL:
+                slow_last[0] = now
+                stats['slow_runs'] += 1
+                writes += apply_weapons(pawn, force, now)
+                writes += m._runtime_apply_player_features(pawn)  # includes the full health/shield refill
+                writes += m._runtime_apply_backpack_size()
+                size = int(state.get('bank_size') or 0)
+                if 'bank_size' in m._RUNTIME_ORIGINALS:
+                    writes += write('bank_size',m._get_field(m.GAME.player_state,'BankContainer'),'MaxSize',value=size) if size else restore('bank_size')
+            else:
+                if state.get('health_lock'):
+                    writes += refill_below_full(pawn, 'health', now)
+                if state.get('shield_lock'):
+                    writes += refill_below_full(pawn, 'shield', now)
+            # Jump features act on the jump in progress: keep them on every tick.
             writes += m._runtime_apply_jump_scale(pawn)
-            writes += m._runtime_apply_infinite_jump(pawn)
-            writes += m._runtime_apply_backpack_size()
-            size = int(state.get('bank_size') or 0)
-            if 'bank_size' in m._RUNTIME_ORIGINALS:
-                writes += write('bank_size',m._get_field(m.GAME.player_state,'BankContainer'),'MaxSize',value=size) if size else restore('bank_size')
+            if slow_last[0] == now or not state.get('infinite_jump') or jumps_used(pawn):
+                writes += m._runtime_apply_infinite_jump(pawn)
             stats['writes'] += writes
             return writes
         finally:
@@ -298,11 +430,12 @@ def install(m):
             return dict(ok=False, action=name, error='FOV controls have been removed.')
         if name == 'maintenance_diagnostics':
             pawn = m._runtime_pawn()
-            result = dict(ok=True,version=VERSION,revision=REVISION,interval=m._RUNTIME_INTERVAL,stats=dict(stats),discovery_strategy='equipped_slots',
+            result = dict(ok=True,version=VERSION,revision=REVISION,interval=m._RUNTIME_INTERVAL,slow_interval=SLOW_INTERVAL,stats=dict(stats),discovery_strategy='equipped_slots',
                           runtime_settings=dict(m._RUNTIME_STATE),pawn_available=pawn is not None,
                           maintain_errors=getattr(m, '_RUNTIME_MAINTAIN_ERROR_COUNT', 0),
                           equipped=[dict(cls=m._cls(a),path=m._path(a)) for a in actors(pawn)],
-                          saved_originals={k:len(v) for k,v in m._RUNTIME_ORIGINALS.items()})
+                          saved_originals={k:len(v) for k,v in m._RUNTIME_ORIGINALS.items()},
+                          xp=dict(applied=getattr(m, '_XP_APPLIED', None), guard=dict(getattr(m, '_XP_GUARD', None) or {})))
             if (params or {}).get('clear'):
                 for key in stats:
                     stats[key] = 0
@@ -342,15 +475,154 @@ def install(m):
     m._runtime_write = write
     m._runtime_restore = restore
     m._runtime_maintain = maintain
+    m._runtime_refill_health_types = refill_health_types
+    if base_selected_skill is not None:
+        m._runtime_selected_action_skill = selected_action_skill
     m._runtime_action = action
     # Snapshot polling must not revive the removed global camera enumeration.
     m._runtime_camera_readback = lambda: {'available': False, 'removed': True}
     install_player_selection(m)
+    install_xp_guard(m)
+    install_drop_replay(m)
     m.__version__ = VERSION
     if getattr(m, 'mod', None) is not None:
         m._safe(lambda: setattr(m.mod, 'version', VERSION))
     m._maintenance_revision = REVISION
     m._log('Installed '+REVISION+'; equipped-slot maintenance, FOV disabled.')
+
+
+def install_xp_guard(m):
+    """Combat XP multiplier without ever removing a modifier.
+
+    Measured 2026-10-02: GbxAttributeBlueprintLibrary.RemoveModifierFromGbxAttribute
+    (and the legacy RemoveAttributeModifier) report success for the handle Python
+    gets back from AddModifierToGbxAttribute, but the modifier stays: the handle
+    arrives as an empty struct.  Every modifier the base code ever added therefore
+    stayed in force.  Its "compensation" (add 1/scale, then remove both) kept the
+    numbers right while nothing was really removed, but the pawn-change rebind
+    (death, driving, travel) removed without compensating and added another scale
+    on top: 3.3 -> 9.9 -> 29.7, while the editor showed 1x.
+
+    Here the mod only ever adds: it tracks the product of everything it applied
+    (``m._XP_APPLIED``) and reaches a new scale with one factor new/old.  The
+    modifier lives on the player's blackboard, so it is added and read through the
+    controller; death and vehicles need no handling.  Once a second the value is
+    checked: back at the bare base means the modifiers are gone (map travel) and the
+    scale is re-applied; any other difference is a real XP bonus change and becomes
+    the new base.
+    """
+    if not hasattr(m, '_runtime_set_combat_xp_scale') or not hasattr(m, '_runtime_add_xp_modifier'):
+        return
+    base_add = m._runtime_add_xp_modifier
+    if not isinstance(getattr(m, '_XP_APPLIED', None), float):
+        # Hot install over the base code: its live modifiers multiply to its scale.
+        m._XP_APPLIED = float(m._RUNTIME_REGISTRY.get('xp_scale', 1.0) or 1.0)
+    if not isinstance(getattr(m, '_XP_GUARD', None), dict):
+        m._XP_GUARD = {}
+
+    def controller():
+        return m._player_controller()
+
+    def close(a, b):
+        return a is not None and b is not None and abs(a - b) <= max(0.005, abs(b) * 0.005)
+
+    def scale_now():
+        return float(m._RUNTIME_STATE.get('experience_reward_scale', 1.0) or 1.0)
+
+    def value():
+        pc = controller()
+        library = m._runtime_static('GbxAttributeBlueprintLibrary')
+        if pc is None or library is None:
+            return None
+        try:
+            result = float(library.GetValueOfAttribute(m._RUNTIME_XP_ATTRIBUTE, pc, -1.0))
+        except Exception:
+            return None
+        return None if result == -1.0 else result
+
+    def add(library, _context, factor):
+        return base_add(library, controller(), factor)
+
+    def apply_factor(factor):
+        """Multiply the live value by ``factor`` (one more modifier); False when it failed."""
+        if abs(factor - 1.0) < 1e-6:
+            return True
+        library = m._runtime_static('GbxAttributeBlueprintLibrary')
+        if library is None or controller() is None:
+            return False
+        handle, action, error = add(library, None, factor)
+        if handle is None or action != 0:
+            m._warn(f'combat XP modifier x{factor:.4f} failed: {error}')
+            return False
+        m._XP_APPLIED *= factor
+        return True
+
+    def set_scale(requested):
+        scale = max(1.0, min(10.0, float(requested)))
+        current = value()
+        if current is None:
+            return {'ok': False, 'error': 'combat XP attribute unavailable (no player)', 'state': dict(m._RUNTIME_STATE)}
+        base = current / m._XP_APPLIED
+        if not apply_factor(scale / m._XP_APPLIED):
+            return {'ok': False, 'error': 'combat XP modifier failed', 'state': dict(m._RUNTIME_STATE)}
+        m._RUNTIME_STATE['experience_reward_scale'] = scale
+        m._RUNTIME_REGISTRY['xp_scale'] = scale
+        m._RUNTIME_XP_MODIFIERS[:] = []  # the base code's handles: removal never worked
+        pc = controller()
+        m._RUNTIME_XP_CONTEXT_KEY = (m._addr(pc), m._path(pc)) if scale != 1.0 and pc is not None else None
+        m._RUNTIME_REGISTRY['xp_context_key'] = m._RUNTIME_XP_CONTEXT_KEY
+        m._XP_GUARD = dict(base=base, checked=time.perf_counter())
+        m._RUNTIME_XP_REFRESH_STATUS = {'ok': True, 'value_after': value(), 'expected': base * scale}
+        return {'ok': True, 'feature': 'experience_reward_scale', 'value': scale, 'scope': 'combat_xp',
+                'resolved': value(), 'state': dict(m._RUNTIME_STATE)}
+
+    def remove_all(*, compensate=True):
+        del compensate
+        result = set_scale(1.0)
+        return 1 if result.get('ok') else 0
+
+    def refresh():
+        guard = m._XP_GUARD
+        if not guard:
+            return False
+        now = time.perf_counter()
+        if now - guard.get('checked', 0.) < 1.0:
+            return False
+        guard['checked'] = now
+        current = value()
+        if current is None:
+            return False
+        if close(current, guard['base'] * m._XP_APPLIED):
+            return False
+        scale = scale_now()
+        if scale != 1.0 and close(current, guard['base']):
+            # Our modifiers went with the old blackboard (map travel): start over.
+            m._XP_APPLIED = 1.0
+            return bool(set_scale(scale).get('ok'))
+        guard['base'] = current / m._XP_APPLIED  # a real XP bonus changed underneath
+        return False
+
+    m._runtime_add_xp_modifier = add
+    m._runtime_combat_xp_value = value
+    m._runtime_set_combat_xp_scale = set_scale
+    m._runtime_remove_xp_modifiers = remove_all
+    m._runtime_refresh_xp_context = refresh
+
+
+def install_drop_replay(m):
+    """Retire the dedicated-drop hook (the editor no longer offers the feature).
+
+    It spawned the dead actor's ItemPoolList through SpawnItemsFromItemPoolUsingActor_Drop
+    with a hard-coded GameDataHandle type (4160); the game expects 4144 there, rejects
+    every call ("type mismatch") and never resolves ItemPoolList names anyway, so it
+    dropped nothing.  Re-running OakCharacter.DropLoot on a dead enemy (tested
+    2026-10-02 on 16 kills) drops nothing either, and DropLoot / kill XP never reach a
+    UFunction hook because the game calls them natively.  The hook stays registered
+    (hooks survive reloads); its callback now does nothing.
+    """
+    if isinstance(getattr(m, '_CALLBACKS', None), dict) and 'drop' in m._CALLBACKS:
+        m._CALLBACKS['drop'] = lambda obj, args, ret, func: None
+        m._RUNTIME_STATE['dedicated_drop_100'] = False
 
 
 def install_player_selection(m):
