@@ -1695,11 +1695,11 @@
       "name_prompt_title": "为配置命名",
       "name_prompt_msg": "请输入当前配置的名称（取消则使用默认名称）:",
       "live_unavailable": "在线模式当前不可用。",
-      "live_no_entries": "当前配装中没有可应用的装备。",
+      "live_no_entries": "当前配装中没有可应用的装备或技能。",
       "live_save_success": "在线配装 {slot} 已保存至:\n{path}",
       "live_save_fail": "保存在线配装失败: {error}",
       "confirm_live_apply_title": "确认在线换装",
-      "confirm_live_apply_msg": "即将把槽位 {slot} 的装备应用到当前在线角色。\n\n仅替换预设中列出的非空装备槽，不修改技能；保存时为空的槽位不会被清空或恢复，跨槽环形互换暂不支持。所有目标物品必须仍在背包内。\n应用前会重新读取当前配装并校验，是否继续？",
+      "confirm_live_apply_msg": "即将把槽位 {slot} 的配装应用到当前在线角色。\n\n装备：仅替换预设中列出的非空装备槽；保存时为空的槽位不会被清空或恢复，跨槽环形互换暂不支持，所有目标物品必须仍在背包内。\n技能：如果配装保存了技能，会先重置角色技能点和专精点，再按配装重新加点并装备行动技能、强化与终极技能，由游戏自己校验点数与前置条件。\n应用前会重新读取当前配装并校验，是否继续？",
       "live_apply_success": "在线配装 {slot} 已应用。\n已切换 {applied} 项，跳过 {skipped} 项。",
       "live_apply_cache_pending": "部分运行时模型或物品卡缓存仍在刷新。",
       "live_apply_fail_title": "在线换装失败",
@@ -1710,7 +1710,11 @@
       "live_recovery_none": "当前没有待确认的在线配装恢复记录。",
       "live_recovery_confirm": "检测到一次未完整确认的在线换装：\n{reason}\n\n请先在游戏内核对当前装备。解除恢复锁只允许后续换装，不会自动回滚或修复物品。是否基于最新配装快照解除？",
       "live_recovery_cleared": "恢复锁已基于最新配装快照解除。",
-      "live_recovery_fail": "在线配装恢复操作失败: {error}"
+      "live_recovery_fail": "在线配装恢复操作失败: {error}",
+      "live_skills_applied": "技能已按配装套用（{graphs} 棵技能树）。",
+      "live_skills_failed": "技能套用失败：{error}",
+      "live_skills_mismatch": "有 {count} 个技能节点没能达到配装中的状态（点数不足或前置条件未满足）",
+      "live_skills_unknown": "这套配装里的技能与当前角色不匹配（{names}），技能部分已跳过。"
     },
     "decode": {
       "unknown": "未知",

@@ -532,6 +532,15 @@ class _LiveLoadoutWorker(QThread):
         try:
             if self._operation == 'save':
                 result = self._bridge.loadout_snapshot()
+                if isinstance(result, dict):
+                    # Skill build alongside the equipment; an older mod without the
+                    # action answers ok=False and the loadout keeps equipment only.
+                    result['skills'] = self._skill_call('skill_snapshot', {})
+            elif self._operation == 'apply' and not self._context.get('entries'):
+                # Skills only: no inventory transaction, so no inventory preflight.
+                result = {'ok': True, 'action': 'apply_loadout', 'verified': True, 'applied': [],
+                          'skipped': [], 'skills_only': True}
+                result['skills'] = self._skill_call('skill_apply', self._context.get('skills') or {})
             elif self._operation == 'apply':
                 self.mutation_preflight = _live_inventory_mutation_preflight(self._bridge)
                 if self.mutation_preflight['blocked']:
@@ -561,6 +570,8 @@ class _LiveLoadoutWorker(QThread):
                         snapshot_hash=snapshot['snapshot_hash'],
                         entries=list(self._context.get('entries') or []),
                     )
+                if self._context.get('skills') and isinstance(result, dict) and result.get('ok'):
+                    result['skills'] = self._skill_call('skill_apply', self._context['skills'])
             elif self._operation == 'recovery':
                 result = self._bridge.loadout_recovery()
             elif self._operation == 'clear_recovery':
@@ -587,6 +598,13 @@ class _LiveLoadoutWorker(QThread):
         self.completed.emit(
             self._operation, self._slot, self._context, result, err,
         )
+
+
+    def _skill_call(self, action, params):
+        try:
+            return self._bridge.runtime_action(action, **params)
+        except Exception as exc:
+            return {'ok': False, 'action': action, 'error': f"{type(exc).__name__}: {exc}"}
 
 
 class _LiveBatchSpawnWorker(QThread):

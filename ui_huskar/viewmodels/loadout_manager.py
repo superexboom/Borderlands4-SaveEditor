@@ -15,7 +15,7 @@ import pandas as pd
 from PyQt6.QtCore import pyqtProperty, pyqtSignal, pyqtSlot
 
 from core import bl4_functions as bl4f, game_text
-from core import decoder_logic, item_display_resolver, lookup, resource_loader
+from core import decoder_logic, item_display_resolver, lookup, resource_loader, skill_graphs
 from core.unlock_data import CHARACTER_CLASSES
 
 from .base import PageViewModel, register
@@ -561,7 +561,12 @@ class LoadoutManagerViewModel(PageViewModel):
                 self.app.toast(self._t("dialogs", "no_saved_config", slot=idx), "warning")
                 return
             payload = self._live_apply_payload(saved)
-            if not payload.get("entries"):
+            if payload.get("skill_errors"):
+                # Names this build uses that the catalog does not know (another class,
+                # an older save): applying would reset the skill points for nothing.
+                self.app.toast(self._t("dialogs", "live_skills_unknown",
+                                       names=", ".join(payload["skill_errors"][:6])), "warning")
+            if not payload.get("entries") and not payload.get("skills"):
                 self.app.toast(self._t("dialogs", "live_no_entries"), "warning")
                 return
 
@@ -677,8 +682,24 @@ class LoadoutManagerViewModel(PageViewModel):
         self.app.toast(self._t("dialogs", "live_save_success", slot=slot, path=str(filepath)),
                        "success")
 
+    def _skill_result_text(self, result: dict) -> str:
+        skills = result.get("skills")
+        if not isinstance(skills, dict):
+            return ""
+        if skills.get("ok"):
+            return self._t("dialogs", "live_skills_applied", graphs=int(skills.get("applied") or 0))
+        detail = str(skills.get("error") or "")
+        if skills.get("mismatches"):
+            detail = detail or self._t("dialogs", "live_skills_mismatch", count=len(skills["mismatches"]))
+        return self._t("dialogs", "live_skills_failed", error=detail or "?")
+
     def finish_live_apply(self, slot: int, result: dict | None, error: str | None = None) -> None:
         result = result if isinstance(result, dict) else {}
+        skill_text = self._skill_result_text(result)
+        if not error and result.get("skills_only"):
+            skills_ok = bool((result.get("skills") or {}).get("ok"))
+            self.app.toast(skill_text, "success" if skills_ok else "error")
+            return
         if not error and result.get("ok") and result.get("verified"):
             message = self._t(
                 "dialogs", "live_apply_success", slot=slot,
@@ -687,7 +708,10 @@ class LoadoutManagerViewModel(PageViewModel):
             )
             if result.get("cache_pending"):
                 message += "\n" + self._t("dialogs", "live_apply_cache_pending")
-            self.app.toast(message, "success")
+            if skill_text:
+                message += "\n" + skill_text
+            skills_failed = isinstance(result.get("skills"), dict) and not result["skills"].get("ok")
+            self.app.toast(message, "warning" if skills_failed else "success")
             return
         detail = error or str(result.get("error") or "invalid response")
         if result.get("rollback_complete") is False:
@@ -756,7 +780,9 @@ class LoadoutManagerViewModel(PageViewModel):
                 "serial_sha256": fingerprint,
                 "occurrence": occurrence,
             })
-        if not equipped_items:
+        skills = snapshot.get("skills") if isinstance(snapshot.get("skills"), dict) else {}
+        skill_rows = skill_graphs.snapshot_to_save_graphs(skills) if skills.get("ok") else []
+        if not equipped_items and not skill_rows:
             raise ValueError(self._t("dialogs", "live_no_entries"))
         return {
             "save_name": self.save_name,
@@ -765,7 +791,7 @@ class LoadoutManagerViewModel(PageViewModel):
             "timestamp": datetime.now().isoformat(timespec="seconds"),
             "source": "live",
             "equipped_items": equipped_items,
-            "skill_graphs": [],
+            "skill_graphs": skill_rows,
         }
 
     def _live_apply_payload(self, saved: dict) -> dict:
@@ -790,7 +816,13 @@ class LoadoutManagerViewModel(PageViewModel):
             if isinstance(occurrence, int) and not isinstance(occurrence, bool):
                 entry["occurrence"] = occurrence
             entries.append(entry)
-        return {"entries": entries}
+        payload = {"entries": entries}
+        skills, unknown = skill_graphs.save_graphs_to_apply(saved.get("skill_graphs") or [])
+        if skills["graphs"] and not unknown:
+            payload["skills"] = skills
+        elif unknown:
+            payload["skill_errors"] = unknown
+        return payload
 
     # ------------------------------------------------------------------ #
     # 显示构建

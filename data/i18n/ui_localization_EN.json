@@ -1693,11 +1693,11 @@
       "name_prompt_title": "Name This Loadout",
       "name_prompt_msg": "Enter a name for this loadout (Cancel for default name):",
       "live_unavailable": "Live mode is currently unavailable.",
-      "live_no_entries": "This loadout contains no equipment that can be applied.",
+      "live_no_entries": "This loadout contains no equipment or skills that can be applied.",
       "live_save_success": "Live loadout {slot} saved to:\n{path}",
       "live_save_fail": "Failed to save live loadout: {error}",
       "confirm_live_apply_title": "Confirm Live Loadout",
-      "confirm_live_apply_msg": "Apply the equipment from Slot {slot} to the current live character?\n\nOnly listed non-empty equipment slots are replaced; skills are not modified. Slots saved as empty are not cleared or restored, and cross-slot cycles are not supported. Every target item must still be in the backpack.\nThe current loadout will be read and verified again before applying.",
+      "confirm_live_apply_msg": "Apply the loadout from Slot {slot} to the current live character?\n\nEquipment: only listed non-empty equipment slots are replaced; slots saved as empty are not cleared or restored, cross-slot cycles are not supported, and every target item must still be in the backpack.\nSkills: if the loadout stored skills, the character's skill and specialization points are reset and spent again as saved, and the action skill, augments and capstones are equipped; the game validates points and prerequisites itself.\nThe current loadout will be read and verified again before applying.",
       "live_apply_success": "Live loadout {slot} applied.\nChanged {applied} item(s); skipped {skipped} item(s).",
       "live_apply_cache_pending": "Some runtime models or item-card caches are still refreshing.",
       "live_apply_fail_title": "Live Loadout Failed",
@@ -1708,7 +1708,11 @@
       "live_recovery_none": "There is no pending live loadout recovery record.",
       "live_recovery_confirm": "An online loadout transaction was not fully confirmed:\n{reason}\n\nCheck the current equipment in game first. Clearing this lock only permits future loadout writes; it does not roll back or repair items. Clear it against a fresh loadout snapshot?",
       "live_recovery_cleared": "The recovery lock was cleared against a fresh loadout snapshot.",
-      "live_recovery_fail": "Live loadout recovery failed: {error}"
+      "live_recovery_fail": "Live loadout recovery failed: {error}",
+      "live_skills_applied": "Skills applied from the loadout ({graphs} skill trees).",
+      "live_skills_failed": "Applying skills failed: {error}",
+      "live_skills_mismatch": "{count} skill node(s) could not reach the saved state (not enough points or a prerequisite is missing)",
+      "live_skills_unknown": "This loadout's skills do not match the current character ({names}); the skills were skipped."
     },
     "decode": {
       "unknown": "Unknown",

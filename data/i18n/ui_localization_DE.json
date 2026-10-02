@@ -1693,11 +1693,11 @@
       "name_prompt_title": "Loadout benennen",
       "name_prompt_msg": "Gib einen Namen für dieses Loadout ein (Abbrechen = Standardname):",
       "live_unavailable": "Der Live-Modus ist derzeit nicht verfügbar.",
-      "live_no_entries": "Dieses Loadout enthält keine anwendbare Ausrüstung.",
+      "live_no_entries": "Diese Ausrüstung enthält keine anwendbaren Gegenstände oder Fertigkeiten.",
       "live_save_success": "Live-Loadout {slot} gespeichert unter:\n{path}",
       "live_save_fail": "Live-Loadout konnte nicht gespeichert werden: {error}",
       "confirm_live_apply_title": "Live-Loadout bestätigen",
-      "confirm_live_apply_msg": "Ausrüstung aus Platz {slot} auf den aktuellen Live-Charakter anwenden?\n\nNur die aufgeführten, nicht leeren Ausrüstungsplätze werden ersetzt; Skills werden nicht geändert. Leer gespeicherte Plätze werden weder geleert noch wiederhergestellt, und platzübergreifende Ringtausche werden nicht unterstützt. Jeder Zielgegenstand muss sich noch im Rucksack befinden.\nDas aktuelle Loadout wird vor dem Anwenden erneut gelesen und geprüft.",
+      "confirm_live_apply_msg": "Die Ausrüstung aus Platz {slot} auf den aktuellen Live-Charakter anwenden?\n\nAusrüstung: Nur aufgeführte, nicht leere Plätze werden ersetzt; leer gespeicherte Plätze werden weder geleert noch wiederhergestellt, Ringtausch zwischen Plätzen wird nicht unterstützt, und jeder Zielgegenstand muss noch im Rucksack sein.\nFertigkeiten: Wenn die Ausrüstung Fertigkeiten gespeichert hat, werden Fertigkeits- und Spezialisierungspunkte zurückgesetzt und wie gespeichert neu verteilt; Aktionsfertigkeit, Augments und Capstones werden ausgerüstet. Das Spiel prüft Punkte und Voraussetzungen selbst.\nVor dem Anwenden wird die aktuelle Ausrüstung erneut gelesen und geprüft.",
       "live_apply_success": "Live-Loadout {slot} angewendet.\n{applied} Gegenstand/Gegenstände gewechselt; {skipped} übersprungen.",
       "live_apply_cache_pending": "Einige Laufzeitmodelle oder Gegenstandskarten-Caches werden noch aktualisiert.",
       "live_apply_fail_title": "Live-Loadout fehlgeschlagen",
@@ -1708,7 +1708,11 @@
       "live_recovery_none": "Es gibt keinen offenen Eintrag zur Live-Loadout-Wiederherstellung.",
       "live_recovery_confirm": "Eine Live-Loadout-Transaktion wurde nicht vollständig bestätigt:\n{reason}\n\nPrüfe zuerst die aktuelle Ausrüstung im Spiel. Das Aufheben der Sperre erlaubt nur weitere Loadout-Schreibvorgänge; Gegenstände werden weder zurückgesetzt noch repariert. Sperre anhand eines neuen Loadout-Snapshots aufheben?",
       "live_recovery_cleared": "Die Wiederherstellungssperre wurde anhand eines neuen Loadout-Snapshots aufgehoben.",
-      "live_recovery_fail": "Live-Loadout-Wiederherstellung fehlgeschlagen: {error}"
+      "live_recovery_fail": "Live-Loadout-Wiederherstellung fehlgeschlagen: {error}",
+      "live_skills_applied": "Fertigkeiten aus der Ausrüstung übernommen ({graphs} Fertigkeitsbäume).",
+      "live_skills_failed": "Fertigkeiten konnten nicht übernommen werden: {error}",
+      "live_skills_mismatch": "{count} Fertigkeitsknoten haben den gespeicherten Zustand nicht erreicht (zu wenige Punkte oder fehlende Voraussetzung)",
+      "live_skills_unknown": "Die Fertigkeiten dieser Ausrüstung passen nicht zum aktuellen Charakter ({names}); sie wurden übersprungen."
     },
     "decode": {
       "unknown": "Unbekannt",
