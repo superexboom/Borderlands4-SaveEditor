@@ -27,7 +27,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-REVISION = "progress-probe-20260925.6"
+REVISION = "progress-probe-20261002.1"
 
 DEV_FLAG = Path(__file__).with_name("progress_dev.flag")
 
@@ -47,7 +47,7 @@ _CACHE: dict[str, Any] = {}
 
 RELEASE_ACTIONS = ("progress_capabilities", "progress_facts", "progress_increment_challenges")
 DEV_ACTIONS = ("progress_reload", "progress_classes", "progress_functions", "progress_find_functions",
-               "progress_objects", "progress_inspect", "progress_call", "progress_handle")
+               "progress_objects", "progress_inspect", "progress_call", "progress_handle", "progress_lab")
 
 
 def dev_enabled() -> bool:
@@ -288,6 +288,17 @@ def _reload(m: Any, params: dict[str, Any]) -> dict[str, Any]:
     return {"ok": True, "installed": fresh.REVISION}
 
 
+def _lab(m: Any, params: dict[str, Any]) -> dict[str, Any]:
+    """Development experiments: ``progress_lab.py`` next to this file (never shipped),
+    re-imported from disk on request.  Like ``progress_reload`` it only runs files on
+    disk; nothing sent over the bridge is executed."""
+    package = __name__.rpartition(".")[0]
+    name = f"{package}.progress_lab" if package else "progress_lab"
+    lab = sys.modules.get(name)
+    lab = importlib.reload(lab) if lab is not None and params.get("reload") else importlib.import_module(name)
+    return lab.run(m, str(params.get("test") or ""), dict(params.get("args") or {}))
+
+
 def _names(kind: str) -> list[tuple[str, str]]:
     """(lower name, path) of every loaded UClass / UFunction; built once per probe revision."""
     key = f"names:{kind}"
@@ -468,4 +479,5 @@ _HANDLERS = {
     "progress_inspect": _inspect,
     "progress_call": _call,
     "progress_handle": _handle,
+    "progress_lab": _lab,
 }
