@@ -12,7 +12,7 @@ from typing import Any, Optional
 
 from PyQt6.QtCore import QObject, QThread, QTimer, pyqtSignal, pyqtSlot
 
-from core import b_encoder, bl4_functions as bl4f, resource_loader
+from core import b_encoder, bl4_functions as bl4f
 from ui_huskar.live_workers import (
     _LIVE_INVENTORY_MUTATION_ACTIONS,
     _LiveBatchSpawnWorker,
@@ -713,19 +713,6 @@ class LiveManager(QObject):
         if action in _LIVE_INVENTORY_MUTATION_ACTIONS and not self._guard_mutation(
             lambda message: vm.set_runtime_result(message, False) if vm is not None else None
         ):
-            return
-
-        label = action
-        try:
-            if action == "toggle_dedicated_drop_100" and request_params.get("enabled"):
-                catalog = resource_loader.load_json_resource("core/data/dedicated_drop_pools.json")
-                if not catalog:
-                    raise RuntimeError("dedicated_drop_pools.json missing or invalid")
-                request_params["catalog"] = catalog
-        except Exception as exc:
-            if not quiet and vm is not None:
-                vm.set_runtime_result(f"{label}: {exc}", False)
-            self.runtime_action("state", {"_quiet": True})
             return
 
         if vm is not None:

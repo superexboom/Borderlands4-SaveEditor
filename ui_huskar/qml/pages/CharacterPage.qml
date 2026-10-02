@@ -328,10 +328,8 @@ LockedFlickable {
                                     checkable: modelData.checkable
                                     checked: modelData.checkable && modelData.checked
                                     enabled: !vmCharacter.runtimeBusy
-                                    contentDescription: modelData.action === "toggle_dedicated_drop_100"
-                                        ? (page.labels.live_dedicated_drop_hint || "")
-                                        : (modelData.action === "max_sdu_tokens"
-                                           ? (page.labels.live_max_sdu_tokens_hint || "") : "")
+                                    contentDescription: modelData.action === "max_sdu_tokens"
+                                        ? (page.labels.live_max_sdu_tokens_hint || "") : ""
                                     onClicked: {
                                         if (modelData.checkable)
                                             vmCharacter.runToggle(modelData.action, checked);

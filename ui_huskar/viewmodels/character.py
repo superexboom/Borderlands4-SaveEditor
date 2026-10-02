@@ -25,7 +25,6 @@ TOGGLE_FEATURES = {
     "toggle_repairkit_no_cd": "repairkit_no_cd", "toggle_skill_no_cd": "skill_no_cd",
     "toggle_gadget_no_cd": "gadget_no_cd", "toggle_stamina_lock": "stamina_lock",
     "toggle_guaranteed_crit": "guaranteed_crit",
-    "toggle_dedicated_drop_100": "dedicated_drop_100",
     "toggle_infinite_jump": "infinite_jump",
 }
 
@@ -83,7 +82,6 @@ LIVE_SECTIONS = (
         ("toggle_infinite_jump", "toggle_infinite_jump"),
     )),
     ("live_loot", (
-        ("toggle_dedicated_drop_100", "toggle_dedicated_drop_100"),
         ("rarity_legendary", "rarity_legendary"),
         ("rarity_pearlescent", "rarity_pearlescent"),
         ("rarity_reset", "rarity_reset"),
@@ -99,7 +97,6 @@ LIVE_TUNING = (
     ("experience_reward_scale", "set_experience_multiplier", (1, 2, 3, 5, 10)),
     ("cash_reward_scale", "set_cash_multiplier", (1, 2, 3, 5, 10)),
     ("eridium_reward_scale", "set_eridium_multiplier", (1, 2, 3, 5, 10)),
-    ("dedicated_drop_multiplier", "set_dedicated_drop_multiplier", tuple(range(1, 11))),
 )
 
 
@@ -419,7 +416,7 @@ class CharacterViewModel(PageViewModel):
         if action in ("set_fire_rate", "set_movement_speed", "set_jump_height",
                       "set_critical_damage", "set_experience_multiplier",
                       "set_cash_multiplier", "set_eridium_multiplier",
-                      "set_dedicated_drop_multiplier", "set_backpack_size",
+                      "set_backpack_size",
                       "set_bank_size", "set_magazine_capacity_scale",
                       "set_projectile_speed_scale"):
             self.app.runtime_action(action, {"value": value})
