@@ -7,7 +7,7 @@ Enumerate equipped slots, never the global UObject array, in the hot path.
 import math
 import time
 
-VERSION = '0.10.28'
+VERSION = '0.10.29'
 REVISION = 'slot-maintenance-20261002.20'
 
 # Weapon values, movement, crit, stamina and cooldown features change only when the
