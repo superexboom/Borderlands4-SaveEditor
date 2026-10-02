@@ -113,6 +113,12 @@ class ClassModViewModel(PageViewModel):
         self._flag_labels = [self._flags[k] for k in _FLAG_CODE_ORDER if k in self._flags]
         self._flag_index = self._default_flag_index()
         self._backpack_items: list[dict[str, str]] = []
+        # Legit 提示可关：关闭时目录行不上色、不按合法性排序，也不算候选状态
+        self._legit_hints = bool(self.app._settings.value("class_mod/legit_hints", True, type=bool))
+        # 目录行顺序在改点数时保持不变（只变颜色），换职业/稀有度/清空/导入时才重排
+        self._row_order: dict[str, dict[str, int]] = {}
+        self._options_memo: dict[str, tuple[Any, list[dict[str, Any]]]] = {}
+        self._context_serial = 0
         self._load_csv_data()
         self._load_lang_data()
         self._rebuild()
@@ -264,9 +270,53 @@ class ClassModViewModel(PageViewModel):
     def legitBadge(self) -> dict[str, Any]:
         return self._legit_status
 
+    @pyqtProperty(bool, notify=dataChanged)
+    def legitHints(self) -> bool:
+        return self._legit_hints
+
+    @pyqtSlot(bool)
+    def setLegitHints(self, enabled: bool) -> None:
+        if bool(enabled) == self._legit_hints:
+            return
+        self._legit_hints = bool(enabled)
+        self.app._settings.setValue("class_mod/legit_hints", self._legit_hints)
+        self._rebuild()
+
     def _candidate(self, ref: str, label: str = "") -> dict[str, Any]:
+        if not self._legit_hints:
+            return {"kind": "", "marker": "", "badge": "", "hint": ""}
         return candidate_state(self._generation_context, ref, self.current_lang, label=label,
                                decoded=self._raw_output)
+
+    def _category_state(self, rows: list[dict[str, Any]]) -> str:
+        return _category_state(rows) if self._legit_hints else ""
+
+    def _memo(self, name: str, build) -> list[dict[str, Any]]:
+        """One build per state: QML and the category chips read the same option list."""
+        key = (self._context_serial, self.current_lang, self._class_index, self._rarity_index,
+               self._name_index, self._legit_hints,
+               tuple((e["key"], e.get("count")) for e in self._skill_entries),
+               tuple((e["key"], e.get("count")) for e in self._perk_entries),
+               tuple(e["key"] for e in self._leg_entries))
+        cached = self._options_memo.get(name)
+        if cached is not None and cached[0] == key:
+            return cached[1]
+        value = build()
+        self._options_memo[name] = (key, value)
+        return value
+
+    def _ordered(self, name: str, items: list[dict[str, Any]], legal_key, plain_key) -> list[dict[str, Any]]:
+        """Rows keep their place while points are added or removed: clicking a skill
+        that turns yellow must not move it away from the cursor. The legit ranking
+        is taken once, after a change of class, rarity, name, a clear or an import."""
+        if not self._legit_hints:
+            return sorted(items, key=plain_key)
+        order = self._row_order.get(name)
+        if order is None or len(order) != len(items) or any(row["key"] not in order for row in items):
+            items = sorted(items, key=legal_key)
+            self._row_order[name] = {row["key"]: index for index, row in enumerate(items)}
+            return items
+        return sorted(items, key=lambda row: order[row["key"]])
 
     def _group_progress(self, group_names: tuple[str, ...]) -> str:
         specs = [self._generation_context.get("groups", {}).get(name) for name in group_names]
@@ -400,18 +450,21 @@ class ClassModViewModel(PageViewModel):
         }
         options = self.skillOptions
         categories = [{"key": "all", "label": self._loc("skill_trees", "all_skills", "All Skills"),
-                       "candidateState": _category_state(options)}]
+                       "candidateState": self._category_state(options)}]
         for color in ("red", "green", "blue"):
             name = tree_names.get(color, color_labels[color])
             categories.append({
                 "key": color,
                 "label": f"{color_labels[color]} · {name}",
-                "candidateState": _category_state([row for row in options if row.get("category") == color]),
+                "candidateState": self._category_state([row for row in options if row.get("category") == color]),
             })
         return categories
 
     @pyqtProperty(list, notify=dataChanged)
     def skillOptions(self) -> list[dict[str, Any]]:
+        return self._memo("skill", self._build_skill_options)
+
+    def _build_skill_options(self) -> list[dict[str, Any]]:
         current_class_en = self._current_class_en()
         current_class_id = str(self.CLASS_IDS.get(current_class_en, 0))
         skills_list = self.skills_by_class.get(current_class_id, [])
@@ -447,11 +500,11 @@ class ClassModViewModel(PageViewModel):
                 "data": {"codes": codes, "skill_key": stable_key},
                 **state,
             })
-        return sorted(items, key=lambda row: (
-            _CANDIDATE_ORDER.get(str(row.get("kind") or "unknown"), 3),
-            color_order.get(str(row.get("category") or ""), 9),
-            str(row.get("label") or "").casefold(),
-        ))
+        def plain_key(row):
+            return color_order.get(str(row.get("category") or ""), 9), str(row.get("label") or "").casefold()
+
+        return self._ordered("skill", items, lambda row: (
+            _CANDIDATE_ORDER.get(str(row.get("kind") or "unknown"), 3), *plain_key(row)), plain_key)
 
     @pyqtProperty(list, notify=dataChanged)
     def skillEntries(self) -> list[dict[str, Any]]:
@@ -482,11 +535,14 @@ class ClassModViewModel(PageViewModel):
         for category in categories:
             rows = options if category["key"] == "all" else [
                 row for row in options if row.get("category") == category["key"]]
-            category["candidateState"] = _category_state(rows)
+            category["candidateState"] = self._category_state(rows)
         return categories
 
     @pyqtProperty(list, notify=dataChanged)
     def perkOptions(self) -> list[dict[str, Any]]:
+        return self._memo("perk", self._build_perk_options)
+
+    def _build_perk_options(self) -> list[dict[str, Any]]:
         counts = {e["key"]: int(e.get("count", 0)) for e in self._perk_entries}
         items = []
         for perk_row in self.perks_data:
@@ -527,7 +583,7 @@ class ClassModViewModel(PageViewModel):
                 "data": {"perk_id": perk_id},
                 **state,
             })
-        return sorted(items, key=_candidate_sort_key)
+        return self._ordered("perk", items, _candidate_sort_key, lambda row: 0)
 
     @pyqtProperty(list, notify=dataChanged)
     def perkEntries(self) -> list[dict[str, Any]]:
@@ -615,17 +671,17 @@ class ClassModViewModel(PageViewModel):
     @pyqtSlot(str)
     def setLevel(self, text: str) -> None:
         self._level = text
-        self._rebuild()
+        self._rebuild(reorder=False)
 
     @pyqtSlot(str)
     def setSeed(self, text: str) -> None:
         self._seed = text
-        self._rebuild()
+        self._rebuild(reorder=False)
 
     @pyqtSlot()
     def randomizeSeed(self) -> None:
         self._seed = str(random.randint(1, 9999))
-        self._rebuild()
+        self._rebuild(reorder=False)
 
     def _build_lucky_current(self) -> bool:
         """Fill the current class/rarity/name template with one natural build."""
@@ -1228,7 +1284,7 @@ class ClassModViewModel(PageViewModel):
     @pyqtSlot(str)
     def addLegItem(self, key: str) -> None:
         if self._add_leg_key(key):
-            self._rebuild()
+            self._rebuild(reorder=False)
 
     @pyqtSlot(list)
     def addLegItems(self, keys: list) -> None:
@@ -1236,13 +1292,13 @@ class ClassModViewModel(PageViewModel):
         for key in keys or []:
             changed = self._add_leg_key(str(key)) or changed
         if changed:
-            self._rebuild()
+            self._rebuild(reorder=False)
 
     @pyqtSlot(int)
     def removeLegItem(self, index: int) -> None:
         if 0 <= index < len(self._leg_entries):
             self._leg_entries.pop(index)
-            self._rebuild()
+            self._rebuild(reorder=False)
 
     @pyqtSlot()
     def clearLeg(self) -> None:
@@ -1268,7 +1324,7 @@ class ClassModViewModel(PageViewModel):
     @pyqtSlot(str)
     def addSkillItem(self, key: str) -> None:
         if self._add_skill_key(key):
-            self._rebuild()
+            self._rebuild(reorder=False)
 
     @pyqtSlot(list)
     def addSkillItems(self, keys: list) -> None:
@@ -1276,20 +1332,20 @@ class ClassModViewModel(PageViewModel):
         for key in keys or []:
             changed = self._add_skill_key(str(key)) or changed
         if changed:
-            self._rebuild()
+            self._rebuild(reorder=False)
 
     @pyqtSlot(int)
     def removeSkillItem(self, index: int) -> None:
         if 0 <= index < len(self._skill_entries):
             self._skill_entries.pop(index)
-            self._rebuild()
+            self._rebuild(reorder=False)
 
     @pyqtSlot(int, int)
     def setSkillItemCount(self, index: int, count: int) -> None:
         if 0 <= index < len(self._skill_entries):
             entry = self._skill_entries[index]
             entry["count"] = max(1, min(int(count), int(entry.get("maxCount") or 1)))
-            self._rebuild()
+            self._rebuild(reorder=False)
 
     @pyqtSlot(list, int)
     def setSkillItemsCount(self, indices: list, count: int) -> None:
@@ -1303,7 +1359,7 @@ class ClassModViewModel(PageViewModel):
                     entry["count"] = new_count
                     changed = True
         if changed:
-            self._rebuild()
+            self._rebuild(reorder=False)
 
     @pyqtSlot(list, int)
     def setSkillCounts(self, keys: list, count: int) -> None:
@@ -1337,7 +1393,7 @@ class ClassModViewModel(PageViewModel):
                     "maxCount": cap})
                 changed = True
         if changed:
-            self._rebuild()
+            self._rebuild(reorder=False)
 
     @pyqtSlot(list, int)
     def stepSkillCounts(self, keys: list, delta: int) -> None:
@@ -1368,7 +1424,30 @@ class ClassModViewModel(PageViewModel):
                         "maxCount": int(option.get("maxCount") or 1)})
                     changed = True
         if changed:
-            self._rebuild()
+            self._rebuild(reorder=False)
+
+    @pyqtSlot(str)
+    def maxSkillCategory(self, category: str) -> None:
+        """把一个色系（"all" = 全部）的技能全部点满，一次重建（魔改用）。"""
+        entries = {e["key"]: e for e in self._skill_entries}
+        changed = False
+        for option in self.skillOptions:
+            if category not in ("", "all") and option.get("category") != category:
+                continue
+            cap = int(option.get("maxCount") or 1)
+            entry = entries.get(option["key"])
+            if entry is None:
+                self._skill_entries.append({
+                    "key": option["key"], "label": option["label"],
+                    "detail": option.get("detail", ""),
+                    "iconUrl": option.get("iconUrl", ""),
+                    "data": option["data"], "count": cap, "maxCount": cap})
+                changed = True
+            elif entry["count"] != cap:
+                entry["count"] = cap
+                changed = True
+        if changed:
+            self._rebuild(reorder=False)
 
     @pyqtSlot()
     def clearSkill(self) -> None:
@@ -1391,7 +1470,7 @@ class ClassModViewModel(PageViewModel):
     @pyqtSlot(str)
     def addPerkItem(self, key: str) -> None:
         if self._add_perk_key(key):
-            self._rebuild()
+            self._rebuild(reorder=False)
 
     @pyqtSlot(list)
     def addPerkItems(self, keys: list) -> None:
@@ -1399,19 +1478,19 @@ class ClassModViewModel(PageViewModel):
         for key in keys or []:
             changed = self._add_perk_key(str(key)) or changed
         if changed:
-            self._rebuild()
+            self._rebuild(reorder=False)
 
     @pyqtSlot(int)
     def removePerkItem(self, index: int) -> None:
         if 0 <= index < len(self._perk_entries):
             self._perk_entries.pop(index)
-            self._rebuild()
+            self._rebuild(reorder=False)
 
     @pyqtSlot(int, int)
     def setPerkItemCount(self, index: int, count: int) -> None:
         if 0 <= index < len(self._perk_entries):
             self._perk_entries[index]["count"] = max(1, int(count))
-            self._rebuild()
+            self._rebuild(reorder=False)
 
     @pyqtSlot(list, int)
     def setPerkItemsCount(self, indices: list, count: int) -> None:
@@ -1424,7 +1503,7 @@ class ClassModViewModel(PageViewModel):
                     self._perk_entries[index]["count"] = new_count
                     changed = True
         if changed:
-            self._rebuild()
+            self._rebuild(reorder=False)
 
     @pyqtSlot(list, int)
     def setPerkCounts(self, keys: list, count: int) -> None:
@@ -1455,7 +1534,7 @@ class ClassModViewModel(PageViewModel):
                     "data": option["data"], "count": new_count})
                 changed = True
         if changed:
-            self._rebuild()
+            self._rebuild(reorder=False)
 
     @pyqtSlot(list, int)
     def stepPerkCounts(self, keys: list, delta: int) -> None:
@@ -1483,7 +1562,7 @@ class ClassModViewModel(PageViewModel):
                         "data": option["data"], "count": 1})
                     changed = True
         if changed:
-            self._rebuild()
+            self._rebuild(reorder=False)
 
     @pyqtSlot()
     def clearPerk(self) -> None:
@@ -1831,7 +1910,9 @@ class ClassModViewModel(PageViewModel):
         self._rebuild()
         return True
 
-    def _rebuild(self, *, emit: bool = True) -> None:
+    def _rebuild(self, *, emit: bool = True, reorder: bool = True) -> None:
+        if reorder:
+            self._row_order.clear()
         if self._loading_import:
             return
         if not self.names_data or not self._current_name_display():
@@ -1901,6 +1982,7 @@ class ClassModViewModel(PageViewModel):
             self._raw_output = " ".join(p for p in parts if p).replace("  ", " ").strip() + "|"
 
             self._generation_context = item_display_resolver.weapon_generation_context(self._raw_output)
+            self._context_serial += 1
 
             encoded_serial, error = b_encoder.encode_to_base85(self._raw_output)
             self._encode_error = bool(error)
@@ -1912,6 +1994,7 @@ class ClassModViewModel(PageViewModel):
             self._raw_output = self._loc("dialogs", "gen_error", "Error: {error}").format(error=exc)
             self._b85_output = "..."
             self._generation_context = {}
+            self._context_serial += 1
             self._legit_status = evaluate_legit("", self.current_lang)
         if emit:
             self.dataChanged.emit()

@@ -814,7 +814,9 @@
       "rarity": "稀有度",
       "name": "名称",
       "level": "等级",
-      "seed": "随机种子 (1–9999)"
+      "seed": "随机种子 (1–9999)",
+      "legit_hints": "Legit 提示",
+      "legit_hints_tip": "开启：按能否合法加入给技能和 Perk 上色。点数变化时列表顺序保持不变，只改颜色。关闭：不上色，按技能树排序。"
     },
     "legendary": {
       "title": "传奇名称",
@@ -833,7 +835,8 @@
       "header_icon": "图标",
       "header_skill": "技能",
       "header_codes": "代码 (顺序)",
-      "header_points": "+点数"
+      "header_points": "+点数",
+      "max_category": "本类全部满级"
     },
     "perks": {
       "title": "通用专长",

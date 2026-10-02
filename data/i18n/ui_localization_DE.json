@@ -814,7 +814,9 @@
       "rarity": "Seltenheit",
       "name": "Name",
       "level": "Level",
-      "seed": "Zufalls-Seed (1–9999)"
+      "seed": "Zufalls-Seed (1–9999)",
+      "legit_hints": "Legit-Hinweise",
+      "legit_hints_tip": "An: Fertigkeiten und Perks danach färben, ob sie legitim hinzugefügt werden können. Die Liste behält ihre Reihenfolge, während du Punkte änderst; nur die Farben ändern sich. Aus: keine Farben, nach Baum sortiert."
     },
     "legendary": {
       "title": "Legendäre Namen",
@@ -833,7 +835,8 @@
       "header_icon": "Symbol",
       "header_skill": "Skill",
       "header_codes": "Code (Reihenfolge)",
-      "header_points": "+Punkte"
+      "header_points": "+Punkte",
+      "max_category": "Alle in Kategorie maximieren"
     },
     "perks": {
       "title": "Allgemeine Perks",

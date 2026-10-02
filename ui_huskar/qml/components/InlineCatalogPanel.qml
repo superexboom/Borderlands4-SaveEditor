@@ -19,11 +19,13 @@ ColumnLayout {
     property bool editableCount: true  // false=计数只读标签（对齐主线技能不可手输）
     property bool multiSelect: false
     property int listHeight: 300
+    property string fillText: ""       // 非空时显示"当前分类全部满级"按钮
 
     // keys 批量语义：被编辑行在多选集（≥2）时 keys 为整个选区
     signal countChanged(var keys, int value)
     signal countStepped(var keys, int delta)
     signal clearRequested()
+    signal fillRequested(string category)
 
     property string searchText: ""
     property string category: "all"
@@ -151,6 +153,11 @@ ColumnLayout {
             font.bold: true
         }
         HusButton {
+            visible: panel.fillText !== ""
+            text: panel.fillText
+            onClicked: panel.fillRequested(panel.category)
+        }
+        HusButton {
             visible: panel.selectedTotal() > 0
             text: panel.clearText
             onClicked: panel.clearRequested()
@@ -174,6 +181,7 @@ ColumnLayout {
             delegate: Row {
                 spacing: 4
                 Rectangle {
+                    visible: (modelData.candidateState || "") !== ""
                     width: 7; height: 7; radius: 2
                     anchors.verticalCenter: parent.verticalCenter
                     color: panel.stateColor(modelData.candidateState)

@@ -814,7 +814,9 @@
       "rarity": "Rarity",
       "name": "Name",
       "level": "Level",
-      "seed": "Random Seed (1–9999)"
+      "seed": "Random Seed (1–9999)",
+      "legit_hints": "Legit hints",
+      "legit_hints_tip": "On: color skills and perks by whether they can be added legitimately. The list keeps its order while you change points; only the colors change. Off: no colors, sorted by tree."
     },
     "legendary": {
       "title": "Legendary names",
@@ -833,7 +835,8 @@
       "header_icon": "Icon",
       "header_skill": "Skill",
       "header_codes": "Code (Order)",
-      "header_points": "+Points"
+      "header_points": "+Points",
+      "max_category": "Max all in category"
     },
     "perks": {
       "title": "General Perks",

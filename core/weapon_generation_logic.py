@@ -245,73 +245,88 @@ def evaluate_group_selection(
             blocked |= excluded_by.get(tag, 0)
         pick_block.append(blocked)
         pick_rules.append(tuple(index for index, (bucket, _limit) in enumerate(normalized_rules) if adds & bucket))
-    rule_limits = [limit for _bucket, limit in normalized_rules]
+    rule_limits = [limit - base for (_bucket, limit), base in zip(normalized_rules, base_counts)]
 
     targets = _target_counts(minimum, maximum, additional_chance)
     largest = max(targets)
-    # One search up to the largest target: a mask is reachable for target t when
-    # it is reachable at all and no larger than t, and terminal for t when it has
-    # exactly t picks or fewer with an empty pool.
-    reachable_masks: set[int] = {0}
-    emptied_masks: set[int] = set()
-    stack = [(0, initial_pool, 0, base_counts)] if largest > 0 else []
-    if initial_pool == 0:
-        emptied_masks.add(0)
-    while stack:
-        mask, pool, blocked, counts = stack.pop()
-        next_size = mask.bit_count() + 1
-        remaining = pool
+
+    # Whether a set of picks can come out of the loop needs no search: the picks
+    # must all be in the initial pool, no more than the largest target, within
+    # every tag rule's remaining room, and orderable so that no pick removes a
+    # later one from the pool (a pick only removes what its tags exclude, so the
+    # picks it would remove must come first). Enumerating every reachable set
+    # instead grows combinatorially: a class mod's skill pool widens with every
+    # point spent, and 30 points took seconds per check.
+    def reachable(mask: int) -> bool:
+        if mask & ~initial_pool or mask.bit_count() > largest:
+            return False
+        for members, room in zip(rule_members, rule_limits):
+            picked = (mask & members).bit_count()
+            if picked and picked > room:
+                return False
+        remaining = mask
         while remaining:
-            bit = remaining & -remaining
-            remaining ^= bit
-            next_mask = mask | bit
-            if next_mask in reachable_masks:
-                continue
-            reachable_masks.add(next_mask)
-            if next_size >= largest:
-                continue
-            index = bit.bit_length() - 1
-            next_blocked = blocked | pick_block[index]
-            next_counts = counts
-            if pick_rules[index]:
-                next_counts = list(counts)
-                for rule_index in pick_rules[index]:
-                    next_counts[rule_index] += 1
-                next_counts = tuple(next_counts)
-            limited = 0
-            for rule_index, count in enumerate(next_counts):
-                if count >= rule_limits[rule_index]:
-                    limited |= rule_members[rule_index]
-            next_pool = pool & ~bit & ~next_blocked & ~limited
-            if next_pool:
-                stack.append((next_mask, next_pool, next_blocked, next_counts))
+            rest = remaining
+            while rest:
+                bit = rest & -rest
+                rest ^= bit
+                if not pick_block[bit.bit_length() - 1] & remaining & ~bit:
+                    remaining ^= bit
+                    break
             else:
-                emptied_masks.add(next_mask)
+                return False  # every pick left would remove another: no order works
+        return True
+
+    def pool_after(mask: int) -> int:
+        blocked = 0
+        bits = mask
+        while bits:
+            bit = bits & -bits
+            bits ^= bit
+            blocked |= pick_block[bit.bit_length() - 1]
+        for members, room in zip(rule_members, rule_limits):
+            if (mask & members).bit_count() >= room:
+                blocked |= members
+        return initial_pool & ~mask & ~blocked
+
     target_set = set(targets)
 
     def terminal(mask: int) -> bool:
         size = mask.bit_count()
-        return size in target_set or (size < largest and mask in emptied_masks)
+        return size in target_set or (size < largest and not pool_after(mask))
 
     selected_valid = len(selected) == len(selected_unique) and all(ref in ref_indexes for ref in selected_unique)
     selected_set = set(selected_unique)
     selected_mask = sum(1 << ref_indexes[ref] for ref in selected_unique if ref in ref_indexes)
-    selected_reachable = selected_valid and selected_mask in reachable_masks
+    selected_reachable = selected_valid and reachable(selected_mask)
     selected_terminal = selected_reachable and terminal(selected_mask)
+
+    eligible_refs: list[str] = []
     terminal_sizes: set[int] = set()
     if selected_reachable:
-        for mask in reachable_masks:
-            if mask & selected_mask == selected_mask and terminal(mask):
+        extensions = [1 << index for index in range(len(allowed))
+                      if not selected_mask & (1 << index) and reachable(selected_mask | (1 << index))]
+        extension_bits = sum(extensions)
+        for index, ref in enumerate(allowed):
+            if ref in selected_set or extension_bits & (1 << index):
+                eligible_refs.append(ref)
+        # Sizes of the complete selections that keep the current picks. Reachable
+        # sets are closed under removal, so an unreachable set ends its branch.
+        possible = {size for size in range(selected_mask.bit_count(), largest + 1)}
+        stack = [(selected_mask, 0)]
+        while stack and terminal_sizes != possible:
+            mask, start = stack.pop()
+            if terminal(mask):
                 terminal_sizes.add(mask.bit_count())
+            if mask.bit_count() >= largest:
+                continue
+            for position in range(start, len(extensions)):
+                next_mask = mask | extensions[position]
+                if reachable(next_mask):
+                    stack.append((next_mask, position + 1))
     terminal_counts = sorted(terminal_sizes)
     effective_min = terminal_counts[0] if terminal_counts else int(minimum)
     effective_max = terminal_counts[-1] if terminal_counts else int(maximum)
-
-    eligible_refs: list[str] = []
-    if selected_reachable:
-        for index, ref in enumerate(allowed):
-            if ref in selected_set or selected_mask | (1 << index) in reachable_masks:
-                eligible_refs.append(ref)
     remaining_eligible = [ref for ref in eligible_refs if ref not in selected_set]
 
     _, selected_counts = state(selected_mask)

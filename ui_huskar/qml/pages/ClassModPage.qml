@@ -168,6 +168,25 @@ LockedFlickable {
                     wrapMode: Text.Wrap
                     textFormat: Text.PlainText
                 }
+                // Legit 提示开关：关掉后技能/Perk 目录不上色、按技能树排序（做魔改时用）
+                RowLayout {
+                    spacing: 6
+                    HusText {
+                        text: topLoc.legit_hints || ""
+                        color: HusTheme.Primary.colorTextSecondary
+                    }
+                    HusSwitch {
+                        id: legitHintsSwitch
+                        objectName: "classModLegitHints"
+                        checked: vmClassMod.legitHints
+                        onToggled: vmClassMod.setLegitHints(checked)
+                        HoverHandler {
+                            onHoveredChanged: hovered
+                                ? HoverTip.showFor(legitHintsSwitch, topLoc.legit_hints_tip || "", point.position.x, point.position.y)
+                                : HoverTip.hideFor(legitHintsSwitch)
+                        }
+                    }
+                }
                 RowLayout {
                     spacing: 4
                     HusButton {
@@ -294,9 +313,11 @@ LockedFlickable {
                 editableCount: false
                 multiSelect: false
                 listHeight: 420
+                fillText: (vmLoc.skills || ({})).max_category || ""
                 onCountChanged: function(keys, value) { vmClassMod.setSkillCounts(keys, value); }
                 onCountStepped: function(keys, delta) { vmClassMod.stepSkillCounts(keys, delta); }
                 onClearRequested: vmClassMod.clearSkill()
+                onFillRequested: function(category) { vmClassMod.maxSkillCategory(category); }
             }
         }
 
