@@ -569,6 +569,10 @@ class _LiveLoadoutWorker(QThread):
                     result = self._apply_entries(snapshot)
                 if self._context.get('skills') and isinstance(result, dict) and result.get('ok'):
                     result['skills'] = self._skill_call('skill_apply', self._context['skills'])
+            elif self._operation == 'skill_read':
+                result = self._bridge.runtime_action('skill_snapshot')
+            elif self._operation == 'skill_write':
+                result = self._bridge.runtime_action('skill_apply', **self._context)
             elif self._operation == 'recovery':
                 result = self._bridge.loadout_recovery()
             elif self._operation == 'clear_recovery':

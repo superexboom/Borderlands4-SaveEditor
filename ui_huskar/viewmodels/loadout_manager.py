@@ -15,7 +15,7 @@ import pandas as pd
 from PyQt6.QtCore import pyqtProperty, pyqtSignal, pyqtSlot
 
 from core import bl4_functions as bl4f, game_text
-from core import decoder_logic, item_display_resolver, lookup, resource_loader, skill_graphs
+from core import decoder_logic, item_display_resolver, lookup, resource_loader, skill_editor, skill_graphs
 from core.unlock_data import CHARACTER_CLASSES
 
 from .base import PageViewModel, register
@@ -254,6 +254,16 @@ class LoadoutManagerViewModel(PageViewModel):
 
     def _get_skill_display_info(self, skill_name_en: str, class_name: str,
                                 class_id: str, graph_name: str = "") -> tuple:
+        name, icon = self._get_skill_display_info_csv(skill_name_en, class_name, class_id, graph_name)
+        if graph_name:
+            # the game's own names (skill_layout.json) cover augments, capstones and specializations too
+            names, _desc = skill_editor.node_text(graph_name, skill_name_en)
+            code = game_text.text_lang(self.current_lang).upper()
+            name = names.get(code) or names.get("EN") or name
+        return name, icon
+
+    def _get_skill_display_info_csv(self, skill_name_en: str, class_name: str,
+                                    class_id: str, graph_name: str = "") -> tuple:
         class_name = CLASS_NAME_ALIASES.get(class_name, class_name)
         mapping_row = self._find_loadout_skill_mapping(class_id, graph_name, skill_name_en)
         if mapping_row:
@@ -464,7 +474,8 @@ class LoadoutManagerViewModel(PageViewModel):
 
     @pyqtProperty(bool, notify=dataChanged)
     def skillsVisible(self) -> bool:
-        return not self.liveMode
+        # also live: a quick preview of the slot's saved build (editing is the skill tree page)
+        return True
 
     # ------------------------------------------------------------------ #
     # QML 槽
@@ -831,7 +842,9 @@ class LoadoutManagerViewModel(PageViewModel):
                                              and not isinstance(s, bool) and s not in seen_slots})
         elif entries and saved.get("source") == "live":
             payload["clear_unlisted"] = True
-        skills, unknown = skill_graphs.save_graphs_to_apply(saved.get("skill_graphs") or [])
+        # live saves carry overlimit (bonus) points: restore them exactly; offline builds leave them alone
+        skills, unknown = skill_graphs.save_graphs_to_apply(saved.get("skill_graphs") or [],
+                                                            bonus=saved.get("source") == "live")
         if skills["graphs"] and not unknown:
             payload["skills"] = skills
         elif unknown:
@@ -963,6 +976,12 @@ class LoadoutManagerViewModel(PageViewModel):
     def _build_skill_rows(self, skill_graphs: list) -> list[dict[str, str]]:
         class_name = self._get_character_class_name()
         class_id = str(self.class_ids.get(class_name, 0))
+        if class_id == "0":
+            # live data carries no class: the build's own graphs tell (Skills.csv graph_name)
+            graphs = {str(g.get("name", "")).casefold() for g in skill_graphs}
+            row = next((r for r in self.skills_data if str(r.get("graph_name", "")).casefold() in graphs), None)
+            if row:
+                class_name, class_id = row.get("class_name", ""), str(row.get("class_ID", "0"))
         rows = [{"kind": "header", "text": self._t("labels", "activated_skills")}]
         pts_suffix = self._t("labels", "points_suffix")
         activated_text = self._t("labels", "activated")

@@ -89,7 +89,8 @@
       "shield": "护盾",
       "repkit": "修复套件",
       "heavy_weapon": "重武器",
-      "loadout_manager": "配置管理"
+      "loadout_manager": "配置管理",
+      "skill_tree": "技能树"
     },
     "dialogs": {
       "success": "成功",
@@ -1722,5 +1723,40 @@
       "unknown_item": "未知物品",
       "decode_error": "解码错误"
     }
+  },
+  "skill_tree_tab": {
+    "live_required": "技能树编辑需要在线模式：进入游戏并连接 BL4Live 后再打开本页。",
+    "read_hint": "读取当前角色的技能后即可编辑：加点、超限、动作技能、增强与终极、专精。",
+    "read": "读取技能",
+    "reload": "重新读取",
+    "revert": "撤销修改",
+    "apply": "应用到游戏",
+    "max_trees": "技能全部满点",
+    "clear_points": "清空技能点",
+    "bonus_invested": "已加点技能超限",
+    "bonus_set": "设置",
+    "clear_bonus": "清除超限",
+    "mouse_hint": "左键加点 / 切换，右键减点",
+    "specializations": "专精",
+    "spec_slots": "专精技能栏位在专精等级 {levels} 时解锁",
+    "summary": "技能点 {spent}/{total}（剩余 {left}）　专精点 {spec_spent}/{spec_total}　超限 +{bonus}",
+    "select_hint": "点击一个技能查看说明并调整点数。",
+    "points": "加点",
+    "bonus": "超限",
+    "active_on": "已启用（点击关闭）",
+    "active_off": "未启用（点击启用）",
+    "kind_passive": "被动技能",
+    "kind_augment": "增强",
+    "kind_capstone": "终极",
+    "kind_action": "动作技能",
+    "kind_spec": "专精",
+    "kind_perk": "专精技能",
+    "no_invested": "还没有已加点的技能可以设置超限。",
+    "confirm_title": "应用技能",
+    "confirm_msg": "将重置角色的技能点和专精点，再按本页重新加点、设置超限并装备动作技能、增强、终极与专精技能。点数与前置条件由游戏自己校验，未生效的部分会在完成后提示。是否继续？",
+    "applied": "技能已应用到游戏。",
+    "apply_failed": "技能应用未完全成功：{error}",
+    "mismatch": "有 {count} 个节点没有达到设定（点数不足、层级未解锁或前置条件未满足），页面已显示游戏里的实际结果",
+    "read_failed": "读取技能失败：{error}"
   }
 }

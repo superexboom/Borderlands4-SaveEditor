@@ -72,6 +72,11 @@ def save_graphs_to_apply(skill_graphs: list[dict[str, Any]], *, bonus: bool = Fa
             if bonus:
                 row["bonus"] = int(node.get("bonus_points") or 0)
             nodes.append(row)
+        if bonus:
+            # exact rebuild: nodes the save does not list have no points and no bonus
+            listed = {row["i"] for row in nodes}
+            nodes += [{"i": i, "spent": 0, "active": False, "bonus": 0}
+                      for i in range(len(names)) if i not in listed]
         graphs.append({"graph": name, "nodes": nodes})
     payload = {"graphs": graphs, "reset_pools": list(SKILL_POOLS)}
     if bonus:

@@ -89,7 +89,8 @@
       "shield": "Shield",
       "repkit": "Repkit",
       "heavy_weapon": "Heavies",
-      "loadout_manager": "Loadout"
+      "loadout_manager": "Loadout",
+      "skill_tree": "Skill Tree"
     },
     "dialogs": {
       "success": "Success",
@@ -1720,5 +1721,40 @@
       "unknown_item": "Unknown item",
       "decode_error": "Decode error"
     }
+  },
+  "skill_tree_tab": {
+    "live_required": "Editing the skill tree needs live mode: start the game, connect BL4Live, then open this page.",
+    "read_hint": "Read the current character's skills to edit points, overlimit, action skill, augments, capstones and specializations.",
+    "read": "Read skills",
+    "reload": "Reload",
+    "revert": "Undo changes",
+    "apply": "Apply to game",
+    "max_trees": "Max all skills",
+    "clear_points": "Clear skill points",
+    "bonus_invested": "Overlimit on invested skills",
+    "bonus_set": "Set",
+    "clear_bonus": "Clear overlimit",
+    "mouse_hint": "Left click: add / toggle, right click: remove",
+    "specializations": "Specializations",
+    "spec_slots": "Specialization skill slots unlock at specialization levels {levels}",
+    "summary": "Skill points {spent}/{total} ({left} left)   Specialization {spec_spent}/{spec_total}   Overlimit +{bonus}",
+    "select_hint": "Click a skill to see its description and adjust its points.",
+    "points": "Points",
+    "bonus": "Overlimit",
+    "active_on": "Enabled (click to disable)",
+    "active_off": "Disabled (click to enable)",
+    "kind_passive": "Passive skill",
+    "kind_augment": "Augment",
+    "kind_capstone": "Capstone",
+    "kind_action": "Action skill",
+    "kind_spec": "Specialization",
+    "kind_perk": "Specialization skill",
+    "no_invested": "No skill has points yet to put overlimit on.",
+    "confirm_title": "Apply skills",
+    "confirm_msg": "The character's skill and specialization points are reset, then spent as on this page; overlimit is set and the action skill, augments, capstones and specialization skills are equipped. The game validates points and prerequisites itself; anything that did not take is reported afterwards. Continue?",
+    "applied": "Skills applied to the game.",
+    "apply_failed": "Skills were not fully applied: {error}",
+    "mismatch": "{count} node(s) did not reach the setting (not enough points, tier locked or a prerequisite missing); the page now shows the game's actual result",
+    "read_failed": "Reading skills failed: {error}"
   }
 }

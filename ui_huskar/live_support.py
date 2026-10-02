@@ -349,6 +349,9 @@ class LiveManager(QObject):
         if loadout is not None:
             loadout.set_live_mode(self.active)
             loadout.set_inventory_mutation_blocked(self.recovery_pending is True)
+        skills = self.app.vm("skill_tree")
+        if skills is not None:
+            skills.on_live_changed()
         self._sync_vms()
 
     # ------------------------------------------------------------------ #
@@ -874,6 +877,30 @@ class LiveManager(QObject):
         self._track(worker)
         self._sync_vms()
         worker.start()
+
+    def start_skill_worker(self, operation: str, context: dict) -> None:
+        """skill_read / skill_write for the skill tree page (no inventory mutation)."""
+        skills = self.app.vm("skill_tree")
+        if not self.active or self.bridge is None or self.any_busy():
+            if skills is not None:
+                error = ("live mode is unavailable" if not self.active or self.bridge is None
+                         else self._text("runtime_busy", "Another live action is still running."))
+                skills.finish_skill(operation, None, error)
+            return
+        worker = _LiveLoadoutWorker(self.bridge, operation, 0, context, parent=self)
+        worker.completed.connect(self._on_skill_finished)
+        self._runtime_worker = worker
+        self._track(worker)
+        self._sync_vms()
+        worker.start()
+
+    def _on_skill_finished(self, operation, _slot, _context, result, err) -> None:
+        if self.sender() is self._runtime_worker:
+            self._runtime_worker = None
+        self._sync_vms()
+        skills = self.app.vm("skill_tree")
+        if skills is not None:
+            skills.finish_skill(operation, result, err)
 
     def _on_loadout_finished(self, operation, slot, context, result, err) -> None:
         worker = self.sender()

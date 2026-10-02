@@ -24,7 +24,7 @@ from .i18n import DEFAULT_LANGUAGE, LANGUAGES, Localizer, normalize_language
 PAGE_KEYS = (
     "select_save", "character", "game_progress", "items", "serial_inspector", "yaml_editor",
     "class_mod", "enhancement", "weapon_editor", "weapon_generator", "god_roll",
-    "grenade", "shield", "repkit", "heavy_weapon", "loadout_manager", "converter",
+    "grenade", "shield", "repkit", "heavy_weapon", "loadout_manager", "skill_tree", "converter",
 )
 # HuskarUI HusIcon 字体码点（与主线 nav 按钮一一对应）
 PAGE_ICONS = {
@@ -32,14 +32,14 @@ PAGE_ICONS = {
     "serial_inspector": 0xEAB8, "yaml_editor": 0xE9BF, "class_mod": 0xEA52,
     "enhancement": 0xECFB, "weapon_editor": 0xE966, "weapon_generator": 0xEC64,
     "god_roll": 0xEC8D, "grenade": 0xE9A6, "shield": 0xED65,
-    "repkit": 0xECFB, "heavy_weapon": 0xEC64, "loadout_manager": 0xEC88,
+    "repkit": 0xECFB, "heavy_weapon": 0xEC64, "loadout_manager": 0xEC88, "skill_tree": 0xE91D,
     "converter": 0xE9BF,
 }
 # 主线导航在这两组之间有分隔线
 PAGE_GROUPS = (("select_save", "character", "game_progress", "items", "serial_inspector", "yaml_editor"),
                ("class_mod", "enhancement", "weapon_editor", "weapon_generator", "god_roll",
                 "grenade", "shield", "repkit", "heavy_weapon"),
-               ("loadout_manager", "converter"))
+               ("loadout_manager", "skill_tree", "converter"))
 
 
 class AppBridge(QObject):
