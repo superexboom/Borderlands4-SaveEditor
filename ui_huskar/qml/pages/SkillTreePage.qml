@@ -72,7 +72,13 @@ Item {
                         visible: vmSkillTree.poolNote !== ""
                         text: vmSkillTree.poolNote
                         font.pixelSize: 12
-                        color: "#e6a439"
+                        color: vmSkillTree.allowOverPool ? "#e6a439" : "#e05a4f"
+                    }
+                    HusCheckBox {
+                        visible: vmSkillTree.poolNote !== ""
+                        checked: vmSkillTree.allowOverPool
+                        text: page.loc.allow_over_pool || ""
+                        onToggled: vmSkillTree.setAllowOverPool(checked)
                     }
                     HusButton {
                         text: page.loc.reload || ""
@@ -121,6 +127,12 @@ Item {
                     HusButton {
                         text: page.loc.clear_bonus || ""
                         onClicked: vmSkillTree.bulk("clear_bonus")
+                    }
+                    HusText {
+                        visible: vmSkillTree.invalidNote !== ""
+                        text: vmSkillTree.invalidNote
+                        font.pixelSize: 12
+                        color: "#e05a4f"
                     }
                     Item { Layout.fillWidth: true }
                     HusText {
@@ -343,6 +355,14 @@ Item {
                         text: page.kindLabel(page.sel.kind)
                         font.pixelSize: 12
                         color: HusTheme.Primary.colorTextTertiary
+                    }
+                    HusText {
+                        Layout.fillWidth: true
+                        visible: vmSkillTree.selectedRequirement !== ""
+                        text: (page.loc.locked_title || "") + "\n" + vmSkillTree.selectedRequirement
+                        font.pixelSize: 12
+                        color: "#e05a4f"
+                        wrapMode: Text.Wrap
                     }
                     GridLayout {
                         visible: page.sel.kind === "passive" || page.sel.kind === "spec"

@@ -262,3 +262,66 @@ def node_text(graph: str, node: str | int) -> tuple[dict[str, str], dict[str, st
     """Localized (name, description) of a node, by index or by its save name; ({}, {}) if unknown."""
     cell = layout_cell(graph, node)
     return dict(cell.get("name") or {}), dict(cell.get("desc") or {})
+
+
+# ---------------------------------------------------------------------------
+# Unlock checks (skill_layout.json "requirements", pipeline skill_requirements.py)
+# ---------------------------------------------------------------------------
+# A tier / branch / augment / capstone / prerequisite unlocks on points spent plus bonus
+# points (Class Mod ranks and the editor's extra points count, as in the game).
+
+
+def _requirements() -> dict[str, Any]:
+    return layout().get("requirements") or {}
+
+
+def _nodes_of(state: dict[str, Any], graph: str) -> dict[int, dict[str, Any]]:
+    for entry in state.get("graphs") or []:
+        if entry["graph"].casefold() == graph.casefold():
+            return {node["i"]: node for node in entry["nodes"]}
+    return {}
+
+
+def _rule_points(state: dict[str, Any], rule: dict[str, Any]) -> int:
+    nodes = _nodes_of(state, rule["graph"])
+    if rule["type"] == "groups":
+        groups = (_requirements().get(rule["graph"].casefold()) or {}).get("groups") or {}
+        members = {i for name in rule["groups"] for i in (groups.get(name) or {}).get("nodes") or []}
+    else:
+        members = set(rule.get("nodes") or [])
+    return sum(nodes[i]["spent"] + nodes[i]["bonus"] for i in members if i in nodes)
+
+
+def unmet_rules(state: dict[str, Any], rule: dict[str, Any] | None) -> list[dict[str, Any]]:
+    """The parts of a rule the state does not satisfy, with what they need and have."""
+    if not rule:
+        return []
+    if rule["type"] == "and":
+        return [miss for part in rule["all"] for miss in unmet_rules(state, part)]
+    if rule["type"] == "active":
+        node = _nodes_of(state, rule["graph"]).get(rule["node"])
+        return [] if node and node["active"] else [dict(rule)]
+    have = _rule_points(state, rule)
+    return [] if have >= rule["points"] else [{**rule, "have": have}]
+
+
+def node_unmet(state: dict[str, Any], graph: str, index: int) -> list[dict[str, Any]]:
+    """Unmet unlock rules of one node: its graph's, its tier group's and its own."""
+    req = _requirements().get(graph.casefold())
+    if not req:
+        return []
+    rules = [req.get("condition")]
+    rules += [group.get("rule") for group in (req.get("groups") or {}).values() if index in group.get("nodes") or []]
+    rules.append((req.get("nodes") or {}).get(str(index)))
+    return [miss for rule in rules for miss in unmet_rules(state, rule)]
+
+
+def invalid_nodes(state: dict[str, Any]) -> list[tuple[str, int]]:
+    """Nodes with points or an activation whose unlock rules are not met (the game would refuse them)."""
+    out = []
+    for entry in state.get("graphs") or []:
+        for node in entry["nodes"]:
+            used = node["spent"] > 0 or (entry["type"] == 1 and node["active"] and not node["fixed"])
+            if used and node_unmet(state, entry["graph"], node["i"]):
+                out.append((entry["graph"], node["i"]))
+    return out

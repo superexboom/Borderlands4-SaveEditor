@@ -20,6 +20,8 @@ Item {
     readonly property int bonus: { revision; return empty || choice || !vm ? 0 : vm.value(cell.graph, cell.i, "bonus"); }
     readonly property bool active: { revision; return choice && vm ? vm.value(cell.graph, cell.i, "active") === 1 : false; }
     readonly property bool lit: choice ? active : spent > 0
+    // 0 解锁，1 未解锁（层级 / 前置点数不够），2 未解锁却已加点或启用（游戏会拒绝）
+    readonly property int lockState: { revision; return empty || !vm ? 0 : vm.unlockState(cell.graph, cell.i); }
     readonly property bool isSelected: vm && vm.selected && vm.selected.graph === cell.graph && vm.selected.i === cell.i
     readonly property color accent: cell.color || "#9e9e9e"
 
@@ -30,13 +32,14 @@ Item {
 
     // 有图标：游戏图标本身带节点框，只在外面画选中 / 启用的光圈
     Rectangle {
-        visible: !cellItem.empty && cellItem.hasIcon && (cellItem.isSelected || (cellItem.choice && cellItem.active))
+        visible: !cellItem.empty && cellItem.hasIcon
+                 && (cellItem.isSelected || cellItem.lockState === 2 || (cellItem.choice && cellItem.active))
         anchors.fill: parent
         anchors.margins: 1
         radius: 10
         color: "transparent"
-        border.width: cellItem.isSelected ? 3 : 2
-        border.color: cellItem.isSelected ? "#ffd166" : cellItem.accent
+        border.width: cellItem.isSelected || cellItem.lockState === 2 ? 3 : 2
+        border.color: cellItem.lockState === 2 ? "#e05a4f" : cellItem.isSelected ? "#ffd166" : cellItem.accent
     }
     Image {
         id: icon
@@ -47,7 +50,7 @@ Item {
         fillMode: Image.PreserveAspectFit
         smooth: true
         mipmap: true
-        opacity: cellItem.lit ? 1.0 : 0.38
+        opacity: cellItem.lit ? 1.0 : cellItem.lockState ? 0.18 : 0.45
         Behavior on opacity { NumberAnimation { duration: 120 } }
     }
 
@@ -77,6 +80,24 @@ Item {
         }
     }
 
+    // 未解锁
+    Rectangle {
+        visible: cellItem.lockState !== 0
+        anchors.left: parent.left
+        anchors.top: parent.top
+        width: 18
+        height: 18
+        radius: 9
+        color: cellItem.lockState === 2 ? "#e05a4f" : (HusTheme.isDark ? "#cc2b2f36" : "#ccffffff")
+        border.color: cellItem.lockState === 2 ? "#e05a4f" : "#8a919c"
+        HusIconText {
+            anchors.centerIn: parent
+            iconSource: HusIcon.LockOutlined
+            iconSize: 11
+            colorIcon: cellItem.lockState === 2 ? "#ffffff" : "#8a919c"
+        }
+    }
+
     // 已加 / 上限
     Rectangle {
         visible: !cellItem.empty && !cellItem.choice
@@ -96,7 +117,7 @@ Item {
             color: cellItem.spent > 0 ? HusTheme.Primary.colorTextBase : HusTheme.Primary.colorTextTertiary
         }
     }
-    // 超限
+    // 额外加点
     Rectangle {
         visible: cellItem.bonus > 0
         anchors.right: parent.right

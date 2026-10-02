@@ -83,6 +83,8 @@ class SkillTreeViewModel(PageViewModel):
         self._busy = False
         self._selected: tuple[str, int] | None = None
         self._cells: dict[tuple[str, int], dict[str, Any]] = {}
+        self._graph_titles: dict[str, str] = {}
+        self._allow_over_pool = False
 
     # ------------------------------------------------------------------ #
     # i18n
@@ -160,6 +162,41 @@ class SkillTreeViewModel(PageViewModel):
         return self._t("summary", spent=spent, total=total, left=total - spent,
                        spec_spent=spec_spent, spec_total=spec_total, bonus=bonus)
 
+    @pyqtProperty(bool, notify=valuesChanged)
+    def allowOverPool(self) -> bool:
+        return self._allow_over_pool
+
+    @pyqtSlot(bool)
+    def setAllowOverPool(self, allowed: bool) -> None:
+        self._allow_over_pool = bool(allowed)
+        self.valuesChanged.emit()
+
+    @pyqtProperty(int, notify=valuesChanged)
+    def invalidCount(self) -> int:
+        return len(skill_editor.invalid_nodes(self._state)) if self._state is not None else 0
+
+    @pyqtProperty(str, notify=valuesChanged)
+    def invalidNote(self) -> str:
+        count = self.invalidCount
+        return self._t("invalid_note", count=count) if count else ""
+
+    @pyqtProperty(str, notify=valuesChanged)
+    def selectedRequirement(self) -> str:
+        """Unmet unlock rules of the selected node, one per line ("" when it is unlocked)."""
+        if self._selected is None or self._state is None:
+            return ""
+        return "\n".join(self._rule_text(rule, self._selected[0])
+                         for rule in skill_editor.node_unmet(self._state, *self._selected))
+
+    @pyqtSlot(str, int, result=int)
+    def unlockState(self, graph: str, index: int) -> int:
+        """0 unlocked, 1 locked, 2 locked but used (points or activation the game would refuse)."""
+        if self._state is None or not skill_editor.node_unmet(self._state, graph, index):
+            return 0
+        node = self._node(graph, index) or {}
+        return 2 if node.get("spent") or (node.get("active") and not node.get("fixed") and self._cells.get(
+            (graph, index), {}).get("kind") != "passive") else 1
+
     @pyqtProperty(str, notify=valuesChanged)
     def poolNote(self) -> str:
         """Pools the apply will raise (the build spends more than the character has)."""
@@ -167,8 +204,10 @@ class SkillTreeViewModel(PageViewModel):
             return ""
         points = skill_editor.apply_payload(self._state).get("points") or {}
         parts = [self._t("pool_" + pool.lower(), total=total) for pool, total in points.items()]
-        return self._t("pool_raise", pools="、".join(parts) if game_text.is_chinese(self.app.language)
-                       else ", ".join(parts)) if parts else ""
+        if not parts:
+            return ""
+        joined = "、".join(parts) if game_text.is_chinese(self.app.language) else ", ".join(parts)
+        return self._t("pool_raise" if self._allow_over_pool else "pool_over", pools=joined)
 
     @pyqtProperty(bool, notify=valuesChanged)
     def overBudget(self) -> bool:
@@ -194,6 +233,7 @@ class SkillTreeViewModel(PageViewModel):
     def select(self, graph: str, index: int) -> None:
         self._selected = (graph, int(index))
         self.selectionChanged.emit()
+        self.valuesChanged.emit()  # selectedRequirement
 
     @pyqtSlot(str, int, str, int)
     def setValue(self, graph: str, index: int, field: str, value: int) -> None:
@@ -205,13 +245,59 @@ class SkillTreeViewModel(PageViewModel):
 
     @pyqtSlot(str, int, str, int)
     def step(self, graph: str, index: int, field: str, delta: int) -> None:
+        if field == "spent" and delta > 0 and not self._unlocked_or_toast(graph, index):
+            return
         self.setValue(graph, index, field, self.value(graph, index, field) + int(delta))
 
     @pyqtSlot(str, int)
     def toggle(self, graph: str, index: int) -> None:
         node = self._node(graph, index)
+        if node and not node["active"] and not self._unlocked_or_toast(graph, index):
+            return
         if node and skill_editor.set_active(self._state, graph, index, not node["active"]):
             self._touched()
+
+    def _unlocked_or_toast(self, graph: str, index: int) -> bool:
+        """The game only lets a node be raised / enabled once its tier and prerequisites are met."""
+        unmet = skill_editor.node_unmet(self._state, graph, index) if self._state is not None else []
+        if unmet:
+            self.app.toast(self._t("locked_toast", reason=self._rule_text(unmet[0], graph)), "warning")
+            return False
+        return True
+
+    def _rule_text(self, rule: dict, graph: str) -> str:
+        if rule["type"] == "active":
+            name = (self._cells.get(self._cell_key(rule["graph"], rule["node"])) or {}).get("name", "?")
+            return self._t("req_active", target=name)
+        need, have = rule.get("points", 0), rule.get("have", 0)
+        if rule["type"] == "nodes":
+            names = [(self._cells.get(self._cell_key(rule["graph"], i)) or {}).get("name", "?") for i in rule["nodes"]]
+            return self._t("req_nodes", target=" / ".join(names), need=need, have=have)
+        if rule["graph"].casefold() == graph.casefold():
+            spec = self._spec_group_name(rule)
+            if spec:
+                return self._t("req_groups_other", target=spec, need=need, have=have)
+            return self._t("req_groups_same", need=need, have=have)
+        target = self._spec_group_name(rule) or self._graph_titles.get(rule["graph"].casefold(), rule["graph"])
+        return self._t("req_groups_other", target=target, need=need, have=have)
+
+    def _spec_group_name(self, rule: dict) -> str:
+        """Specialization tiers are one group per specialization: name them by it."""
+        trees = (_layout().get("specializations") or {}).get("trees_graph", "")
+        if rule["graph"].casefold() != str(trees).casefold():
+            return ""
+        req = (_layout().get("requirements") or {}).get(rule["graph"].casefold()) or {}
+        names = []
+        for group in rule.get("groups") or []:
+            for i in (req.get("groups") or {}).get(group, {}).get("nodes") or []:
+                names.append((self._cells.get(self._cell_key(rule["graph"], i)) or {}).get("name", "?"))
+        return " / ".join(names)
+
+    def _cell_key(self, graph: str, index: int) -> tuple[str, int]:
+        for key in self._cells:
+            if key[1] == index and key[0].casefold() == graph.casefold():
+                return key
+        return (graph, index)
 
     @pyqtSlot(int)
     def bonusInvested(self, value: int) -> None:
@@ -255,13 +341,22 @@ class SkillTreeViewModel(PageViewModel):
         if self._state is None or self._busy or not self.app.liveActive:
             return
         payload = skill_editor.apply_payload(self._state)
+        if payload.get("points") and not self._allow_over_pool:
+            # beyond the level's points: applies, but the game resets every skill when it saves
+            self.app.toast(self._t("over_pool_blocked"), "warning")
+            return
+        message = self._t("confirm_msg")
+        if self.invalidCount:
+            message += "\n\n" + self._t("invalid_note", count=self.invalidCount)
+        if payload.get("points"):
+            message += "\n\n" + self._t("over_pool_confirm")
 
         def _apply(accepted: bool) -> None:
             if accepted:
                 self._set_busy(True)
                 self.app.live.start_skill_worker("skill_write", payload)
 
-        self.app._request_confirm(self._t("confirm_title"), self._t("confirm_msg"), _apply, warning=True)
+        self.app._request_confirm(self._t("confirm_title"), message, _apply, warning=True)
 
     def finish_skill(self, operation: str, result: dict | None, error: str | None = None) -> None:
         self._set_busy(False)
@@ -353,6 +448,7 @@ class SkillTreeViewModel(PageViewModel):
 
     def _build_structure(self) -> None:
         self._cells = {}
+        self._graph_titles = {}
         self._trees, self._specs, self._class = [], [], None
         if self._state is None:
             return
@@ -365,7 +461,10 @@ class SkillTreeViewModel(PageViewModel):
             for tree in layout.get("trees") or []:
                 color = TREE_COLORS.get(tree.get("color", ""), "#9e9e9e")
                 segments = []
-                for segment in tree.get("segments") or []:
+                tree_name = self._text(tree.get("name"))
+                for position, segment in enumerate(tree.get("segments") or []):
+                    part = self._t("trunk") if position == 0 else self._t("branch", n=position)
+                    self._graph_titles[str(segment.get("graph", "")).casefold()] = f"{tree_name} · {part}"
                     # tier 0 on top, as in the game (trunk above the branches, capstones last)
                     rows = [[self._cell(cell, color) for cell in row] for row in segment.get("rows") or []]
                     segments.append({"graph": segment.get("graph", ""), "rows": rows})
