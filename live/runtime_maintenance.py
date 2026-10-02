@@ -8,7 +8,7 @@ import math
 import time
 
 VERSION = '0.10.28'
-REVISION = 'slot-maintenance-20261002.13'
+REVISION = 'slot-maintenance-20261002.14'
 
 # Weapon values, movement, crit, stamina and cooldown features change only when the
 # game rebuilds them (equip, reload, buffs): refresh them at 5 Hz.  Health and shield
@@ -529,6 +529,7 @@ def install(m):
     install_xp_guard(m)
     install_drop_replay(m)
     install_skill_builds(m)
+    install_empty_slot_equip(m)
     m.__version__ = VERSION
     if getattr(m, 'mod', None) is not None:
         m._safe(lambda: setattr(m.mod, 'version', VERSION))
@@ -847,6 +848,145 @@ def install_skill_builds(m):
                 return dict(action=name, **apply(params or {}))
             except Exception as exc:
                 return dict(ok=False, action=name, error=f'{type(exc).__name__}: {exc}')
+        return base_action(name, params)
+
+    m._runtime_action = action
+
+
+def install_empty_slot_equip(m):
+    """``equip_empty_slot``: equip a backpack item into an empty equipment slot.
+
+    The base loadout path only submits type-2 transactions (swap the item in a slot
+    for a backpack item), which need an item in the slot; a slot the player emptied
+    failed with "equipment slot N has no stable source item identity".  Read from
+    the game build 25372571 executor (2026-10-02): type 4 unequips item [+4] from
+    slot [+0x160]; type 5 equips backpack item [+4] into slot [+0x160] (after
+    checking it is not equipped and fits the slot, and unequipping whatever is
+    there).  This action submits type 5 for an empty slot through the same gates
+    and host/server implementation as the base swap.  The caller verifies the
+    result from the next loadout snapshots (the game applies it on a later tick).
+    """
+    import ctypes
+    import struct
+    base_action = m._runtime_action
+
+    def fail(error, **extra):
+        return dict(ok=False, action='equip_empty_slot', error=error, **extra)
+
+    def equip(params):
+        epoch = str(params.get('epoch') or '').strip()
+        slot_index = m._live_int(params.get('slot_index'))
+        fingerprint = str(params.get('serial_sha256') or '').strip().lower()
+        occurrence = m._live_int(params.get('occurrence')) if params.get('occurrence') is not None else None
+        if not epoch or slot_index is None or not fingerprint:
+            return fail('epoch, slot_index and serial_sha256 are required')
+        if not 0 <= slot_index < 0x80:
+            return fail('slot_index is out of native range')
+        if m._RUNTIME_REGISTRY.get('loadout_recovery'):
+            return fail('unresolved loadout recovery requires review')
+        capabilities = m._runtime_loadout_capabilities()
+        if not capabilities.get('native_equip_swap'):
+            return fail(str(capabilities.get('reason') or 'native equipment transactions are unavailable'))
+        before = m._runtime_loadout_snapshot()
+        slots = before.get('slots') if isinstance(before.get('slots'), list) else []
+        if not before.get('ok') or before.get('epoch') != epoch:
+            return fail('inventory epoch changed', expected_epoch=epoch, actual_epoch=before.get('epoch'))
+        slot = next((s for s in slots if s.get('slot_index') == slot_index), None)
+        if slot is None:
+            return fail('slot_index is out of range')
+        if slot.get('locked'):
+            return fail(f'equipment slot {slot_index} is locked')
+        if m._live_int(slot.get('source_handle')) != -1:
+            return fail(f'equipment slot {slot_index} is not empty')
+        records, records_epoch = m._live_inventory_records()
+        if records_epoch != epoch:
+            return fail('inventory epoch changed during resolution')
+        candidates = [r for r in records if r.get('container') == 'BackpackItems'
+                      and str(r.get('serial_sha256') or '').lower() == fingerprint
+                      and (occurrence is None or r.get('occurrence') == occurrence)]
+        if len(candidates) != 1:
+            return fail(f"target resolution is {'missing' if not candidates else 'ambiguous'}",
+                        candidate_count=len(candidates))
+        target = candidates[0]
+        target_handle = m._live_int(target.get('handle'))
+        target_instance_id = m._live_int(target.get('instance_id'))
+        if target_handle is None or target_handle < 0 or target_instance_id is None:
+            return fail('target has no stable live identity')
+        if any(m._live_int(s.get('source_handle')) == target_handle for s in slots):
+            return fail('target item is still equipped in another slot')
+
+        pc, pawn = m._player_controller(), m._runtime_pawn()
+        pc_addr, pawn_addr = m._addr(pc), m._addr(pawn)
+        if not pc_addr or not pawn_addr:
+            return fail('active player objects are unavailable')
+        if m._safe(lambda: bool(pc.HasAuthority())) is not True:
+            return fail('native equipment transactions are host/standalone only')
+        container_iface, _ = m._interface_pointer(pc, 'GbxItemContainerOwner')
+        equipped_iface, _ = m._interface_pointer(pawn, 'GbxEquippedInventorySlotOwner')
+        if not container_iface or not equipped_iface:
+            return fail('inventory transaction interfaces are unavailable')
+        if not m._native_interface_method_gate(container_iface, (0x20,))[0] or not m._native_interface_method_gate(
+                equipped_iface, (0x10, 0x30, 0x38, 0x48, 0x50, 0xA0))[0]:
+            return fail('inventory transaction interface method gate failed')
+        executor = m._u64(m._rd(pc_addr + 0xC38, 8) or b'', 0)
+        if not m._looks_ptr(executor) or not m._readable(executor, 0x238):
+            return fail('inventory transaction executor is unavailable')
+        vtable = m._u64(m._rd(pc_addr, 8) or b'', 0)
+        submit = m._u64(m._rd(vtable + m._INVENTORY_SERVER_IMPLEMENTATION_VTABLE_OFFSET, 8) or b'', 0)
+        if submit != m._INVENTORY_SERVER_IMPLEMENTATION_EXPECTED or not m._is_executable(submit):
+            return fail('server transaction implementation pointer changed')
+        if m._inventory_native_gate():
+            return fail('inventory native code gate failed')
+        backpack_name, _ = m._native_item_container_fname(container_iface, 'BackpackContainer')
+        if not backpack_name or not any(backpack_name):
+            return fail('BackpackContainer FName is empty')
+        readiness = m._native_equip_readiness(container_iface, equipped_iface, backpack_name,
+                                              slot_index, -1, target_handle)
+        checks = dict(readiness.get('checks') or {})
+        checks.pop('source_entry', None)  # the slot is empty: there is no source item
+        if not checks or not all(checks.values()):
+            return fail('native equipment readiness gate failed', readiness=readiness)
+
+        transaction = ctypes.create_string_buffer(m._INVENTORY_TRANSACTION_SIZE)
+        address = ctypes.addressof(transaction)
+        if address & 0xF:
+            return fail('transaction buffer is not 16-byte aligned')
+        ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_void_p)(m._INVENTORY_TRANSACTION_CTOR)(address)
+        consumed = False
+        try:
+            struct.pack_into('<B', transaction, 0x00, 5)
+            struct.pack_into('<i', transaction, 0x04, target_handle)
+            for offset, value in ((0x10, pc_addr), (0x18, container_iface), (0x20, pc_addr),
+                                  (0x28, container_iface), (0x30, pawn_addr), (0x38, equipped_iface),
+                                  (0x40, pawn_addr), (0x48, equipped_iface)):
+                struct.pack_into('<Q', transaction, offset, value)
+            ctypes.memmove(address + 0x128, backpack_name, len(backpack_name))
+            ctypes.memmove(address + 0x130, backpack_name, len(backpack_name))
+            struct.pack_into('<B', transaction, 0x160, slot_index)
+            struct.pack_into('<B', transaction, 0x161, 0xFF)
+            if not ctypes.CFUNCTYPE(ctypes.c_bool, ctypes.c_void_p)(m._INVENTORY_TRANSACTION_VALIDATE)(address):
+                return fail('native transaction validation failed')
+            if params.get('dry_run') is True:
+                return dict(ok=True, action='equip_empty_slot', dry_run=True, slot_index=slot_index,
+                            target_handle=target_handle, readiness=readiness)
+            consumed = True  # the server implementation owns (and destroys) it from here
+            ctypes.CFUNCTYPE(None, ctypes.c_void_p, ctypes.c_void_p)(submit)(pc_addr, address)
+        except Exception as exc:
+            return fail(f'native transaction failed: {type(exc).__name__}: {exc}', submitted=consumed,
+                        uncertain=consumed)
+        finally:
+            if not consumed:
+                m._destroy_native_inventory_transaction(address)
+        return dict(ok=True, action='equip_empty_slot', submitted=True, slot_index=slot_index,
+                    target_handle=target_handle, target_instance_id=target_instance_id,
+                    target_serial_sha256=fingerprint, before_epoch=epoch)
+
+    def action(name, params=None):
+        if name == 'equip_empty_slot':
+            try:
+                return equip(dict(params or {}))
+            except Exception as exc:
+                return fail(f'{type(exc).__name__}: {exc}')
         return base_action(name, params)
 
     m._runtime_action = action

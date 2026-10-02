@@ -4,6 +4,7 @@ Used by ``ui_huskar.live_support.LiveManager``.
 """
 
 import hashlib
+import time
 
 from PyQt6.QtCore import QThread, pyqtSignal
 
@@ -565,11 +566,27 @@ class _LiveLoadoutWorker(QThread):
                         'error': 'fresh loadout snapshot is missing epoch or snapshot_hash',
                     }
                 else:
-                    result = self._bridge.apply_loadout(
-                        epoch=snapshot['epoch'],
-                        snapshot_hash=snapshot['snapshot_hash'],
-                        entries=list(self._context.get('entries') or []),
-                    )
+                    # The mod's verified swap needs an item in the slot; slots the
+                    # player emptied are filled afterwards with equip_empty_slot
+                    # (their targets may only be freed by the swaps).
+                    empty = {
+                        slot.get('slot_index') for slot in snapshot.get('slots') or []
+                        if isinstance(slot, dict) and slot.get('source_handle') == -1
+                    }
+                    entries = list(self._context.get('entries') or [])
+                    swaps = [e for e in entries if e.get('slot_index') not in empty]
+                    fills = [e for e in entries if e.get('slot_index') in empty]
+                    if swaps:
+                        result = self._bridge.apply_loadout(
+                            epoch=snapshot['epoch'],
+                            snapshot_hash=snapshot['snapshot_hash'],
+                            entries=swaps,
+                        )
+                    else:
+                        result = {'ok': True, 'action': 'apply_loadout', 'verified': True,
+                                  'applied': [], 'skipped': []}
+                    if fills and isinstance(result, dict) and result.get('ok') and result.get('verified'):
+                        self._fill_empty_slots(fills, result)
                 if self._context.get('skills') and isinstance(result, dict) and result.get('ok'):
                     result['skills'] = self._skill_call('skill_apply', self._context['skills'])
             elif self._operation == 'recovery':
@@ -599,6 +616,36 @@ class _LiveLoadoutWorker(QThread):
             self._operation, self._slot, self._context, result, err,
         )
 
+
+    def _fill_empty_slots(self, entries, result):
+        """Equip each entry into its (empty) slot and wait for the game to show it."""
+        applied = result.setdefault('applied', [])
+        for entry in entries:
+            slot_index = entry.get('slot_index')
+            snapshot = self._bridge.loadout_snapshot()
+            reply = self._bridge.runtime_action(
+                'equip_empty_slot', epoch=snapshot.get('epoch'), slot_index=slot_index,
+                serial_sha256=entry.get('serial_sha256'), occurrence=entry.get('occurrence'),
+            ) if snapshot.get('ok') else snapshot
+            if not reply.get('ok') or not reply.get('submitted'):
+                result.update(ok=False, verified=False, uncertain=bool(reply.get('uncertain')),
+                              error=f"slot {slot_index}: {reply.get('error') or 'equip rejected'}")
+                return
+            deadline = time.monotonic() + 3.0
+            while True:
+                current = self._bridge.loadout_snapshot()
+                slot = next((s for s in current.get('slots') or []
+                             if isinstance(s, dict) and s.get('slot_index') == slot_index), {})
+                if (slot.get('source_handle') == reply.get('target_handle')
+                        and str(slot.get('serial_sha256') or '').lower() == reply.get('target_serial_sha256')):
+                    applied.append({'slot_index': slot_index, 'before_handle': -1,
+                                    'target_handle': reply.get('target_handle'), 'filled_empty_slot': True})
+                    break
+                if time.monotonic() >= deadline:
+                    result.update(ok=False, verified=False, uncertain=True,
+                                  error=f'slot {slot_index}: the game did not equip the item in time')
+                    return
+                time.sleep(0.1)
 
     def _skill_call(self, action, params):
         try:
