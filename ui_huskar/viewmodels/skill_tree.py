@@ -1,7 +1,7 @@
 """技能树页：在线读取 / 编辑 / 应用角色技能（加点、超限、动作技能、增强与终极、专精）。
 
 布局来自 core/data/skill_layout.json（pipeline ``export-skill-layout``，与游戏技能界面
-同构：三棵树，每棵树 = 动作技能 + 主干 3×5 + 三个分支 3×3，增强 / 终极嵌在格子里），
+同构：三棵树，每棵树 = 动作技能 + 主干 3×5 + 下方三个分支 3×3，增强 / 终极嵌在格子里），
 数值来自在线 ``skill_snapshot``，编辑逻辑在 core/skill_editor.py。
 
 QML 侧的结构（trees / specs）只在读取或切换语言时重建；格子里的数值通过
@@ -45,6 +45,14 @@ def _passive_icons() -> dict[tuple[str, str], tuple[str, str]]:
     """(graph, node coordinate) lower case -> (class folder, icon file) from Skills.csv."""
     return {(row.get("graph_name", "").casefold(), row.get("node_name", "").casefold()):
             (row.get("class_name", ""), row["icon_file"]) for row in _skills_csv() if row.get("icon_file")}
+
+
+def skill_icon_url(icon_file: str) -> str:
+    """data/skill_icons/<file> (pipeline build-skill-tree-icons) as a file URL, or ""."""
+    if not icon_file:
+        return ""
+    path = resource_loader.get_resource_path(Path("data") / "skill_icons" / icon_file)
+    return path.as_uri() if path and path.exists() else ""
 
 
 def _class_name(graphs: set[str]) -> str:
@@ -151,6 +159,16 @@ class SkillTreeViewModel(PageViewModel):
         bonus = sum(node["bonus"] for entry in self._state["graphs"] for node in entry["nodes"])
         return self._t("summary", spent=spent, total=total, left=total - spent,
                        spec_spent=spec_spent, spec_total=spec_total, bonus=bonus)
+
+    @pyqtProperty(str, notify=valuesChanged)
+    def poolNote(self) -> str:
+        """Pools the apply will raise (the build spends more than the character has)."""
+        if self._state is None:
+            return ""
+        points = skill_editor.apply_payload(self._state).get("points") or {}
+        parts = [self._t("pool_" + pool.lower(), total=total) for pool, total in points.items()]
+        return self._t("pool_raise", pools="、".join(parts) if game_text.is_chinese(self.app.language)
+                       else ", ".join(parts)) if parts else ""
 
     @pyqtProperty(bool, notify=valuesChanged)
     def overBudget(self) -> bool:
@@ -322,7 +340,8 @@ class SkillTreeViewModel(PageViewModel):
             "kind": cell["kind"], "graph": cell["graph"], "i": int(cell["index"]),
             "name": name, "initials": "".join(w[:1] for w in name.split()[:2]).upper(),
             "descHtml": render_skill_markup(self._text(cell.get("desc"))),
-            "icon": self._icon(cell["graph"], cell.get("coord", "")) if cell["kind"] == "passive" else "",
+            "icon": skill_icon_url(cell.get("icon_file", "")) or (
+                self._icon(cell["graph"], cell.get("coord", "")) if cell["kind"] == "passive" else ""),
             "max": node["max"], "color": color, "group": node["group"],
         }
         # the live graph name (case as the game reports it) is what edits address
@@ -347,8 +366,8 @@ class SkillTreeViewModel(PageViewModel):
                 color = TREE_COLORS.get(tree.get("color", ""), "#9e9e9e")
                 segments = []
                 for segment in tree.get("segments") or []:
-                    # tier 0 is drawn at the bottom, as in the game
-                    rows = [[self._cell(cell, color) for cell in row] for row in reversed(segment.get("rows") or [])]
+                    # tier 0 on top, as in the game (trunk above the branches, capstones last)
+                    rows = [[self._cell(cell, color) for cell in row] for row in segment.get("rows") or []]
                     segments.append({"graph": segment.get("graph", ""), "rows": rows})
                 action = tree.get("action") or {}
                 action_row = self._cell({**action, "kind": "action"}, color) if action else {"kind": "empty"}

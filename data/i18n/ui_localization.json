@@ -1753,10 +1753,13 @@
     "kind_perk": "专精技能",
     "no_invested": "还没有已加点的技能可以设置超限。",
     "confirm_title": "应用技能",
-    "confirm_msg": "将重置角色的技能点和专精点，再按本页重新加点、设置超限并装备动作技能、增强、终极与专精技能。点数与前置条件由游戏自己校验，未生效的部分会在完成后提示。是否继续？",
+    "confirm_msg": "将重置角色的技能点和专精点，再按本页重新加点、设置超限并装备动作技能、增强、终极与专精技能。点数与前置条件由游戏自己校验，未生效的部分会在完成后提示。如果加点超过角色拥有的点数，会先提高点数上限（只增不减）。是否继续？",
     "applied": "技能已应用到游戏。",
     "apply_failed": "技能应用未完全成功：{error}",
     "mismatch": "有 {count} 个节点没有达到设定（点数不足、层级未解锁或前置条件未满足），页面已显示游戏里的实际结果",
-    "read_failed": "读取技能失败：{error}"
+    "read_failed": "读取技能失败：{error}",
+    "pool_raise": "应用时会提高点数上限：{pools}",
+    "pool_characterprogresspoints": "技能点 → {total}",
+    "pool_specializationtokenpool": "专精点 → {total}"
   }
 }

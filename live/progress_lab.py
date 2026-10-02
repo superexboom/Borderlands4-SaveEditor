@@ -945,6 +945,17 @@ def native_gates(m: Any, args: dict[str, Any]) -> dict[str, Any]:
             "mismatches": m._inventory_native_gate()[:4]}
 
 
+def set_pool(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    """Set PointsAcquiredPerPool[index] (restores a pool after experiments)."""
+    manager = m._get_field(m._runtime_pawn(), "GbxProgressionManager")
+    pools = m._get_field(m._get_field(manager, "ProgressPointsContainer"), "PointsAcquiredPerPool")
+    index, before = int(args["index"]), None
+    before = int(pools[index])
+    pools[index] = int(args["value"])
+    setattr(manager, "ProgressGraphsArrayDirty", 3)
+    return {"ok": True, "before": before, "after": int(pools[index])}
+
+
 TESTS = {name: fn for name, fn in globals().items() if callable(fn) and not name.startswith("_")
          and name not in {"run", "annotations"}}
 

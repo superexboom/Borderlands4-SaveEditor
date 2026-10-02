@@ -256,10 +256,14 @@ class LoadoutManagerViewModel(PageViewModel):
                                 class_id: str, graph_name: str = "") -> tuple:
         name, icon = self._get_skill_display_info_csv(skill_name_en, class_name, class_id, graph_name)
         if graph_name:
-            # the game's own names (skill_layout.json) cover augments, capstones and specializations too
-            names, _desc = skill_editor.node_text(graph_name, skill_name_en)
+            # the game's own names and icons (skill_layout.json + data/skill_icons) cover every
+            # class, action skills, augments, capstones and specializations too
+            from ui_huskar.viewmodels.skill_tree import skill_icon_url
+            cell = skill_editor.layout_cell(graph_name, skill_name_en)
+            names = cell.get("name") or {}
             code = game_text.text_lang(self.current_lang).upper()
             name = names.get(code) or names.get("EN") or name
+            icon = skill_icon_url(cell.get("icon_file", "")) or icon
         return name, icon
 
     def _get_skill_display_info_csv(self, skill_name_en: str, class_name: str,
@@ -990,6 +994,8 @@ class LoadoutManagerViewModel(PageViewModel):
             graph_name = graph.get("name", "")
             for node in graph.get("nodes", []):
                 name = node.get("name") or self._t("decode", "unknown")
+                if name.casefold() == "shared vault hunter skill":
+                    continue  # always on for every character: noise in a build preview
                 pts = node.get("points_spent", 0)
                 is_activated = node.get("is_activated", False)
                 if pts and pts > 0:

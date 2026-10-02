@@ -42,7 +42,8 @@ def snapshot_to_save_graphs(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
             node = {"name": names[index]}
             if row.get("spent"):
                 node["points_spent"] = int(row["spent"])
-            if graph.get("type") == 1 and row.get("active"):
+            # an activated but locked node is a leftover the game ignores (not part of the build)
+            if graph.get("type") == 1 and row.get("active") and row.get("unlocked", True):
                 node["is_activated"] = True
             if row.get("bonus"):
                 node["bonus_points"] = int(row["bonus"])

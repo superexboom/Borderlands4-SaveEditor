@@ -65,8 +65,14 @@ Item {
                     HusText {
                         Layout.fillWidth: true
                         text: vmSkillTree.summary
-                        color: vmSkillTree.overBudget ? "#e05a4f" : HusTheme.Primary.colorTextSecondary
+                        color: vmSkillTree.overBudget ? "#e6a439" : HusTheme.Primary.colorTextSecondary
                         elide: Text.ElideRight
+                    }
+                    HusText {
+                        visible: vmSkillTree.poolNote !== ""
+                        text: vmSkillTree.poolNote
+                        font.pixelSize: 12
+                        color: "#e6a439"
                     }
                     HusButton {
                         text: page.loc.reload || ""
@@ -188,7 +194,7 @@ Item {
                             implicitWidth: page.treeIndex < 3 ? treeView.implicitWidth : specView.implicitWidth
                             implicitHeight: page.treeIndex < 3 ? treeView.implicitHeight : specView.implicitHeight
 
-                            // 一棵树：分支在上（三个 3×3 并排），主干在下（3×5），最底下是动作技能
+                            // 一棵树（与游戏一致）：动作技能在上，主干（3×5）居中，三个分支（3×3）并排在下方
                             ColumnLayout {
                                 id: treeView
                                 visible: page.treeIndex < 3 && page.treeIndex < page.trees.length
@@ -196,27 +202,6 @@ Item {
                                 spacing: 18
                                 readonly property var tree: page.trees[Math.min(page.treeIndex, page.trees.length - 1)] || ({})
 
-                                RowLayout {
-                                    Layout.alignment: Qt.AlignHCenter
-                                    spacing: 26
-                                    Repeater {
-                                        model: treeView.tree.branches || []
-                                        delegate: SegmentGrid { segment: modelData; columns: 3 }
-                                    }
-                                }
-                                Rectangle {
-                                    Layout.alignment: Qt.AlignHCenter
-                                    Layout.preferredWidth: trunkGrid.implicitWidth
-                                    Layout.preferredHeight: 2
-                                    color: treeView.tree.color || "#888888"
-                                    opacity: 0.5
-                                }
-                                SegmentGrid {
-                                    id: trunkGrid
-                                    Layout.alignment: Qt.AlignHCenter
-                                    segment: treeView.tree.trunk || ({})
-                                    columns: 5
-                                }
                                 ColumnLayout {
                                     Layout.alignment: Qt.AlignHCenter
                                     spacing: 2
@@ -232,6 +217,27 @@ Item {
                                         text: (treeView.tree.action || {}).name || ""
                                         font.bold: true
                                         color: treeView.tree.color || HusTheme.Primary.colorTextBase
+                                    }
+                                }
+                                SegmentGrid {
+                                    id: trunkGrid
+                                    Layout.alignment: Qt.AlignHCenter
+                                    segment: treeView.tree.trunk || ({})
+                                    columns: 5
+                                }
+                                Rectangle {
+                                    Layout.alignment: Qt.AlignHCenter
+                                    Layout.preferredWidth: trunkGrid.implicitWidth
+                                    Layout.preferredHeight: 2
+                                    color: treeView.tree.color || "#888888"
+                                    opacity: 0.5
+                                }
+                                RowLayout {
+                                    Layout.alignment: Qt.AlignHCenter
+                                    spacing: 26
+                                    Repeater {
+                                        model: treeView.tree.branches || []
+                                        delegate: SegmentGrid { segment: modelData; columns: 3 }
                                     }
                                 }
                             }
@@ -251,6 +257,15 @@ Item {
                                     delegate: RowLayout {
                                         required property var modelData
                                         spacing: 12
+                                        Image {
+                                            Layout.preferredWidth: 72
+                                            Layout.preferredHeight: 46
+                                            source: modelData.icon || ""
+                                            fillMode: Image.PreserveAspectFit
+                                            smooth: true
+                                            mipmap: true
+                                            opacity: { page.rev; return vmSkillTree.value(modelData.graph, modelData.i, "spent") > 0 ? 1.0 : 0.45; }
+                                        }
                                         HusText {
                                             Layout.preferredWidth: 140
                                             text: modelData.name

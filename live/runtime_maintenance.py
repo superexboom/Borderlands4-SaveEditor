@@ -8,7 +8,7 @@ import math
 import time
 
 VERSION = '0.10.28'
-REVISION = 'slot-maintenance-20261002.15'
+REVISION = 'slot-maintenance-20261002.18'
 
 # Weapon values, movement, crit, stamina and cooldown features change only when the
 # game rebuilds them (equip, reload, buffs): refresh them at 5 Hz.  Health and shield
@@ -720,6 +720,11 @@ def install_drop_replay(m):
         m._RUNTIME_STATE['dedicated_drop_100'] = False
 
 
+# PointsAcquiredPerPool order (verified live: 69 character points at level 70, then
+# specialization tokens, then the account-wide ECHO / SDU pool the base mod tops up).
+POOL_INDEX = {'characterprogresspoints': 0, 'specializationtokenpool': 1}
+
+
 def install_skill_builds(m):
     """Live skill builds through the game's own progress graph server functions.
 
@@ -771,6 +776,32 @@ def install_skill_builds(m):
                 return True
         return False
 
+    def raise_pools(wanted):
+        """{pool name: points} -> pools whose PointsAcquiredPerPool was raised (never lowered).
+
+        Same write as the base mod's SDU top-up: the array element, then the manager's
+        ProgressGraphsArrayDirty so the change replicates and saves.
+        """
+        if not wanted:
+            return {}
+        manager = m._get_field(m._runtime_pawn(), 'GbxProgressionManager')
+        container = m._get_field(manager, 'ProgressPointsContainer') if manager is not None else None
+        pools = m._get_field(container, 'PointsAcquiredPerPool') if container is not None else None
+        if pools is None:
+            return {}
+        raised = {}
+        for name, target in wanted.items():
+            index = POOL_INDEX.get(str(name).lower())
+            if index is None or index >= len(pools):
+                continue
+            before = int(pools[index])
+            if int(target) > before:
+                pools[index] = int(target)
+                raised[name] = dict(before=before, after=int(pools[index]))
+        if raised:
+            setattr(manager, 'ProgressGraphsArrayDirty', 3)
+        return raised
+
     def apply(params):
         _, rows = graphs()
         by_name = {graph_name(graph).lower(): graph for graph in rows}
@@ -786,6 +817,10 @@ def install_skill_builds(m):
             # Another class's build (or a stale catalog): refuse before anything is reset.
             return dict(ok=False, error='build does not match this character', unknown_graphs=unknown,
                         bad_nodes=bad_nodes[:20], applied=0)
+        # 0. raise point pools first when the build spends more than the character has
+        #    (skill trees beyond the level's points, more specialization tokens): spending in
+        #    passes would otherwise stop at the pool and leave later trees empty.
+        raised = raise_pools(params.get('points') or {})
         reset_pools = {str(p).lower() for p in params.get('reset_pools') or []}
         # 1. reset every graph of the requested pools (and every target point graph)
         for graph in rows:
@@ -804,12 +839,21 @@ def install_skill_builds(m):
                         progress += int(graph.nodes[index].ProgressPointsSpent) - have
             if not progress:
                 break
-        # 3. activations that still differ (activation graphs; only nodes the build lists)
-        for graph, nodes in targets.values():
+        # 3. activations that still differ (activation graphs; only nodes the build lists).
+        # A locked node (its tree tier lacks points) is ignored by the game, and so is any
+        # Server_ActivateNodeInGroup on it: switching builds can leave an old augment with
+        # bIsActivated set while locked (the game shows the new one).  Locked nodes are
+        # neither activated nor deactivated, and count as inactive everywhere.
+        locked_wanted = []
+        for name, (graph, nodes) in targets.items():
             if describe(graph)['type'] != 1:
                 continue
-            current = {row['i'] for row in node_rows(graph) if row['active']}
+            rows = node_rows(graph)
+            locked = {row['i'] for row in rows if not row['unlocked']}
+            current = {row['i'] for row in rows if row['active']} - locked
             wanted = {i for i, node in nodes.items() if node.get('active')}
+            locked_wanted += [dict(graph=name, i=i, reason='locked') for i in sorted(wanted & locked)]
+            wanted -= locked
             for index in sorted(current - wanted):
                 set_activation(graph, index, False)
             for index in sorted(wanted - current):
@@ -822,7 +866,10 @@ def install_skill_builds(m):
                     if delta:
                         graph.Server_AddBonusPoints(index, delta)
         # 5. verify
-        mismatches = []
+        mismatches = list(locked_wanted)
+        skip = {(m['graph'], m['i']) for m in locked_wanted}
+        for name, (graph, nodes) in targets.items():
+            skip |= {(name, row['i']) for row in node_rows(graph) if not row['unlocked']}
         for name, (graph, nodes) in targets.items():
             live = node_rows(graph)
             graph_type = describe(graph)['type']
@@ -833,12 +880,12 @@ def install_skill_builds(m):
                     continue
                 if int(node.get('spent') or 0) != row['spent']:
                     mismatches.append(dict(graph=name, i=index, want=node.get('spent'), have=row['spent']))
-                if graph_type == 1 and bool(node.get('active')) != row['active']:
+                if graph_type == 1 and (name, index) not in skip and bool(node.get('active')) != row['active']:
                     mismatches.append(dict(graph=name, i=index, want_active=bool(node.get('active')), active=row['active']))
                 if params.get('bonus') and int(node.get('bonus') or 0) != row['bonus']:
                     mismatches.append(dict(graph=name, i=index, want_bonus=node.get('bonus'), bonus=row['bonus']))
         return dict(ok=not mismatches and not unknown, applied=len(targets), unknown_graphs=unknown,
-                    mismatches=mismatches[:40], snapshot=snapshot())
+                    mismatches=mismatches[:40], raised_pools=raised, snapshot=snapshot())
 
     def action(name, params=None):
         if name == 'skill_snapshot':

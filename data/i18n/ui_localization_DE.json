@@ -1751,10 +1751,13 @@
     "kind_perk": "Spezialisierungsfertigkeit",
     "no_invested": "Noch keine Fertigkeit hat Punkte, auf die Überlimit gesetzt werden kann.",
     "confirm_title": "Fertigkeiten anwenden",
-    "confirm_msg": "Fertigkeits- und Spezialisierungspunkte des Charakters werden zurückgesetzt und wie auf dieser Seite neu verteilt; Überlimit wird gesetzt und Aktionsfertigkeit, Augments, Capstones und Spezialisierungsfertigkeiten werden ausgerüstet. Das Spiel prüft Punkte und Voraussetzungen selbst; was nicht übernommen wurde, wird danach gemeldet. Fortfahren?",
+    "confirm_msg": "Fertigkeits- und Spezialisierungspunkte des Charakters werden zurückgesetzt und wie auf dieser Seite neu verteilt; Überlimit wird gesetzt und Aktionsfertigkeit, Augments, Capstones und Spezialisierungsfertigkeiten werden ausgerüstet. Das Spiel prüft Punkte und Voraussetzungen selbst; was nicht übernommen wurde, wird danach gemeldet. Verteilt der Build mehr Punkte als vorhanden, wird der Punktepool zuerst erhöht (nie gesenkt). Fortfahren?",
     "applied": "Fertigkeiten im Spiel angewendet.",
     "apply_failed": "Fertigkeiten wurden nicht vollständig angewendet: {error}",
     "mismatch": "{count} Knoten haben die Einstellung nicht erreicht (zu wenige Punkte, Stufe gesperrt oder Voraussetzung fehlt); die Seite zeigt jetzt den tatsächlichen Stand im Spiel",
-    "read_failed": "Lesen der Fertigkeiten fehlgeschlagen: {error}"
+    "read_failed": "Lesen der Fertigkeiten fehlgeschlagen: {error}",
+    "pool_raise": "Beim Anwenden wird der Punktepool erhöht: {pools}",
+    "pool_characterprogresspoints": "Fertigkeitspunkte → {total}",
+    "pool_specializationtokenpool": "Spezialisierungspunkte → {total}"
   }
 }

@@ -84,7 +84,9 @@ def build_state(snapshot: dict[str, Any]) -> dict[str, Any]:
                 "max": limit,
                 "spent": int(row.get("spent") or 0),
                 "bonus": int(row.get("bonus") or 0),
-                "active": bool(row.get("active")),
+                # activated but locked: a leftover the game ignores, so not "enabled"
+                "active": bool(row.get("active")) and (int(graph.get("type") or 0) == 0
+                                                       or bool(row.get("unlocked", True))),
                 "level": int(row.get("level") or 0),
                 "group": group,
                 # trait / shared skill: always on, never part of a choice
@@ -197,7 +199,12 @@ def apply_payload(state: dict[str, Any]) -> dict[str, Any]:
                "nodes": [{"i": node["i"], "spent": node["spent"], "active": node["active"],
                           "level": node["level"], "bonus": node["bonus"]} for node in entry["nodes"]]}
               for entry in state.get("graphs") or []]
-    return {"graphs": graphs, "reset_pools": list(SKILL_POOLS), "bonus": True}
+    # a build that spends more than the character has raises the pool first (never lowers it)
+    points = {pool: spent for pool, (spent, total) in pool_usage(state).items() if spent > total}
+    payload = {"graphs": graphs, "reset_pools": list(SKILL_POOLS), "bonus": True}
+    if points:
+        payload["points"] = points
+    return payload
 
 
 def differs(a: dict[str, Any] | None, b: dict[str, Any] | None) -> bool:
@@ -224,6 +231,10 @@ def _layout_cells() -> dict[tuple[str, int], dict[str, Any]]:
             cells.setdefault((cell["graph"].casefold(), int(cell["index"])), cell)
 
     for entry in (layout().get("classes") or {}).values():
+        trait = entry.get("trait") or {}
+        if trait.get("name") and entry.get("action_graph"):
+            # the class trait is node 3 of the action skill graph (template order)
+            add({**trait, "graph": entry["action_graph"], "index": ACTION_SKILL_COUNT})
         for tree in entry.get("trees") or []:
             add(tree.get("action") or {})
             for segment in tree.get("segments") or []:
@@ -237,12 +248,17 @@ def _layout_cells() -> dict[tuple[str, int], dict[str, Any]]:
     return cells
 
 
-def node_text(graph: str, node: str | int) -> tuple[dict[str, str], dict[str, str]]:
-    """Localized (name, description) of a node, by index or by its save name; ({}, {}) if unknown."""
+def layout_cell(graph: str, node: str | int) -> dict[str, Any]:
+    """The skill screen cell of a node (name / desc / icon_file), by index or by its save name."""
     if isinstance(node, str):
         names = [name.casefold() for name in node_names(graph)]
         if node.casefold() not in names:
-            return {}, {}
+            return {}
         node = names.index(node.casefold())
-    cell = _layout_cells().get((str(graph or "").casefold(), int(node))) or {}
+    return dict(_layout_cells().get((str(graph or "").casefold(), int(node))) or {})
+
+
+def node_text(graph: str, node: str | int) -> tuple[dict[str, str], dict[str, str]]:
+    """Localized (name, description) of a node, by index or by its save name; ({}, {}) if unknown."""
+    cell = layout_cell(graph, node)
     return dict(cell.get("name") or {}), dict(cell.get("desc") or {})

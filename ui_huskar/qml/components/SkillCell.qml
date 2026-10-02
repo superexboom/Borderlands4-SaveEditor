@@ -23,16 +23,41 @@ Item {
     readonly property bool isSelected: vm && vm.selected && vm.selected.graph === cell.graph && vm.selected.i === cell.i
     readonly property color accent: cell.color || "#9e9e9e"
 
-    implicitWidth: size
+    readonly property bool hasIcon: (cell.icon || "") !== ""
+    // 动作技能是宽幅插画
+    implicitWidth: kind === "action" ? Math.round(size * 1.75) : size
     implicitHeight: size
 
+    // 有图标：游戏图标本身带节点框，只在外面画选中 / 启用的光圈
+    Rectangle {
+        visible: !cellItem.empty && cellItem.hasIcon && (cellItem.isSelected || (cellItem.choice && cellItem.active))
+        anchors.fill: parent
+        anchors.margins: 1
+        radius: 10
+        color: "transparent"
+        border.width: cellItem.isSelected ? 3 : 2
+        border.color: cellItem.isSelected ? "#ffd166" : cellItem.accent
+    }
+    Image {
+        id: icon
+        visible: !cellItem.empty && cellItem.hasIcon
+        anchors.fill: parent
+        anchors.margins: cellItem.kind === "passive" || cellItem.kind === "perk" ? 6 : 4
+        source: cellItem.cell.icon || ""
+        fillMode: Image.PreserveAspectFit
+        smooth: true
+        mipmap: true
+        opacity: cellItem.lit ? 1.0 : 0.38
+        Behavior on opacity { NumberAnimation { duration: 120 } }
+    }
+
+    // 没有图标：自绘格子（菱形 = 增强 / 终极，圆 = 动作技能 / 专精技能）
     Rectangle {
         id: face
-        visible: !cellItem.empty
+        visible: !cellItem.empty && !cellItem.hasIcon
         anchors.centerIn: parent
         width: cellItem.size - 8
         height: width
-        // 增强 / 终极画成菱形，和游戏里一样
         rotation: cellItem.kind === "augment" || cellItem.kind === "capstone" ? 45 : 0
         scale: rotation ? 0.78 : 1.0
         radius: cellItem.kind === "action" || cellItem.kind === "perk" ? width / 2 : 8
@@ -42,23 +67,9 @@ Item {
         border.color: cellItem.isSelected ? "#ffd166"
                       : cellItem.lit ? cellItem.accent : (HusTheme.isDark ? "#4a505a" : "#b8bec8")
         Behavior on color { ColorAnimation { duration: 120 } }
-
-        Image {
-            id: icon
-            anchors.fill: parent
-            anchors.margins: 6
-            rotation: -face.rotation
-            source: cellItem.cell.icon || ""
-            visible: source != ""
-            fillMode: Image.PreserveAspectFit
-            sourceSize.width: 96
-            sourceSize.height: 96
-            opacity: cellItem.lit ? 1.0 : 0.55
-        }
         HusText {
             anchors.centerIn: parent
             rotation: -face.rotation
-            visible: !icon.visible
             text: cellItem.cell.initials || ""
             font.bold: true
             font.pixelSize: 17
