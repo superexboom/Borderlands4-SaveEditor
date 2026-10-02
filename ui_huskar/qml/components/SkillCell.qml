@@ -17,7 +17,9 @@ Item {
     readonly property bool empty: kind === "empty"
     readonly property bool choice: kind === "augment" || kind === "capstone" || kind === "action" || kind === "perk"
     readonly property int spent: { revision; return empty || choice || !vm ? 0 : vm.value(cell.graph, cell.i, "spent"); }
-    readonly property int bonus: { revision; return empty || choice || !vm ? 0 : vm.value(cell.graph, cell.i, "bonus"); }
+    // 加成分两种：装备（职业模组）给的，和 SE 的额外加点
+    readonly property int gear: { revision; return empty || choice || !vm ? 0 : vm.value(cell.graph, cell.i, "gear"); }
+    readonly property int extra: { revision; return empty || choice || !vm ? 0 : vm.value(cell.graph, cell.i, "extra"); }
     readonly property bool active: { revision; return choice && vm ? vm.value(cell.graph, cell.i, "active") === 1 : false; }
     readonly property bool lit: choice ? active : spent > 0
     // 0 解锁，1 未解锁（层级 / 前置点数不够），2 未解锁却已加点或启用（游戏会拒绝）
@@ -117,22 +119,40 @@ Item {
             color: cellItem.spent > 0 ? HusTheme.Primary.colorTextBase : HusTheme.Primary.colorTextTertiary
         }
     }
-    // 额外加点
-    Rectangle {
-        visible: cellItem.bonus > 0
+    // 加成角标：青 = 职业模组等装备，橙 = SE 额外加点
+    Row {
         anchors.right: parent.right
         anchors.top: parent.top
-        width: bonusText.implicitWidth + 8
-        height: 16
-        radius: 8
-        color: "#e67e22"
-        HusText {
-            id: bonusText
-            anchors.centerIn: parent
-            text: "+" + cellItem.bonus
-            font.pixelSize: 11
-            font.bold: true
-            color: "#ffffff"
+        spacing: 2
+        Rectangle {
+            visible: cellItem.gear > 0
+            width: gearText.implicitWidth + 8
+            height: 16
+            radius: 8
+            color: "#2a9d8f"
+            HusText {
+                id: gearText
+                anchors.centerIn: parent
+                text: "+" + cellItem.gear
+                font.pixelSize: 11
+                font.bold: true
+                color: "#ffffff"
+            }
+        }
+        Rectangle {
+            visible: cellItem.extra > 0
+            width: extraText.implicitWidth + 8
+            height: 16
+            radius: 8
+            color: "#e67e22"
+            HusText {
+                id: extraText
+                anchors.centerIn: parent
+                text: "+" + cellItem.extra
+                font.pixelSize: 11
+                font.bold: true
+                color: "#ffffff"
+            }
         }
     }
 

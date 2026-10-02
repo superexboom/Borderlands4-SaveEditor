@@ -45,8 +45,9 @@ def snapshot_to_save_graphs(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
             # an activated but locked node is a leftover the game ignores (not part of the build)
             if graph.get("type") == 1 and row.get("active") and row.get("unlocked", True):
                 node["is_activated"] = True
-            if row.get("bonus"):
-                node["bonus_points"] = int(row["bonus"])
+            if row.get("extra"):
+                # the editor's extra points only: the gear's ranks follow the equipped Class Mod
+                node["extra_points"] = int(row["extra"])
             if len(node) > 1:
                 nodes.append(node)
         out.append({"name": graph.get("graph"), "nodes": nodes})
@@ -54,7 +55,11 @@ def snapshot_to_save_graphs(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def save_graphs_to_apply(skill_graphs: list[dict[str, Any]], *, bonus: bool = False) -> tuple[dict[str, Any], list[str]]:
-    """Save-format skill graphs -> ``skill_apply`` payload, plus the names that did not resolve."""
+    """Save-format skill graphs -> ``skill_apply`` payload, plus the names that did not resolve.
+
+    ``bonus``: a live-saved build, applied exactly: extra points (``extra_points``) are
+    restored and the point pools raised when the build spent more than the level gives.
+    """
     graphs, unknown = [], []
     for graph in skill_graphs or []:
         name = str(graph.get("name") or "")
@@ -71,15 +76,16 @@ def save_graphs_to_apply(skill_graphs: list[dict[str, Any]], *, bonus: bool = Fa
             row = {"i": names.index(key), "spent": int(node.get("points_spent") or 0),
                    "active": bool(node.get("is_activated"))}
             if bonus:
-                row["bonus"] = int(node.get("bonus_points") or 0)
+                row["extra"] = int(node.get("extra_points") or 0)
             nodes.append(row)
         if bonus:
             # exact rebuild: nodes the save does not list have no points and no bonus
             listed = {row["i"] for row in nodes}
-            nodes += [{"i": i, "spent": 0, "active": False, "bonus": 0}
+            nodes += [{"i": i, "spent": 0, "active": False, "extra": 0}
                       for i in range(len(names)) if i not in listed]
         graphs.append({"graph": name, "nodes": nodes})
     payload = {"graphs": graphs, "reset_pools": list(SKILL_POOLS)}
     if bonus:
-        payload["bonus"] = True
+        payload["extra"] = True
+        payload["fit_pools"] = True
     return payload, unknown

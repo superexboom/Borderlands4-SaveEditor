@@ -1698,7 +1698,7 @@
       "live_save_success": "Live loadout {slot} saved to:\n{path}",
       "live_save_fail": "Failed to save live loadout: {error}",
       "confirm_live_apply_title": "Confirm Live Loadout",
-      "confirm_live_apply_msg": "Apply the loadout from Slot {slot} to the current live character?\n\nEquipment: slots are set as saved; slots that were empty in a live-saved loadout are unequipped (the items stay in the backpack), while loadouts from a save file never empty slots. Cross-slot cycles are not supported, and every target item must still be in the backpack.\nSkills: if the loadout stored skills, the character's skill and specialization points are reset and spent again as saved, and the action skill, augments and capstones are equipped; the game validates points and prerequisites itself.\nThe current loadout will be read and verified again before applying.",
+      "confirm_live_apply_msg": "Apply the loadout from Slot {slot} to the current live character?\n\nEquipment: slots are set as saved; slots that were empty in a live-saved loadout are unequipped (the items stay in the backpack), while loadouts from a save file never empty slots. Cross-slot cycles are not supported, and every target item must still be in the backpack.\nSkills: if the loadout stored skills, the character's skill and specialization points are reset and spent again as saved, and the action skill, augments and capstones are equipped; the game validates points and prerequisites itself.\nLive-saved loadouts are restored exactly: a build beyond the point limit raises the pool first and extra points are restored too (the game resets an over-limit build when it saves; extra points do not survive quitting to the menu).\nThe current loadout will be read and verified again before applying.",
       "live_apply_success": "Live loadout {slot} applied.\nChanged {applied} item(s); skipped {skipped} item(s).",
       "live_apply_cache_pending": "Some runtime models or item-card caches are still refreshing.",
       "live_apply_fail_title": "Live Loadout Failed",
@@ -1732,15 +1732,15 @@
     "max_trees": "Max all skills",
     "clear_points": "Clear skill points",
     "bonus_invested": "Extra points on invested skills",
-    "bonus_set": "Set",
+    "bonus_set": "Extra +5 on invested skills",
     "clear_bonus": "Clear extra points",
-    "mouse_hint": "Left click: add / toggle, right click: remove",
+    "mouse_hint": "Left click: add / toggle (past the maximum: extra points, up to +5); right click: remove",
     "specializations": "Specializations",
     "spec_slots": "Specialization skill slots unlock at specialization levels {levels}",
-    "summary": "Skill points {spent}/{total} ({left} left)   Specialization {spec_spent}/{spec_total}   Extra +{bonus}",
+    "summary": "Skill points {spent}/{total} ({left} left)   Specialization {spec_spent}/{spec_total}   Bonus: Class Mod +{gear}   Extra +{bonus}",
     "select_hint": "Click a skill to see its description and adjust its points.",
     "points": "Points",
-    "bonus": "Extra points",
+    "bonus": "Bonus",
     "active_on": "Enabled (click to disable)",
     "active_off": "Disabled (click to enable)",
     "kind_passive": "Passive skill",
@@ -1771,6 +1771,7 @@
     "req_nodes": "needs {need} point(s) in \"{target}\" (has {have})",
     "req_active": "needs \"{target}\" enabled first",
     "trunk": "Trunk",
-    "branch": "Branch {n}"
+    "branch": "Branch {n}",
+    "bonus_split": "Class Mod +{gear}   Extra +{extra}"
   }
 }

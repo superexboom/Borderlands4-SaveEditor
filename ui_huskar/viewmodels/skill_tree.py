@@ -158,9 +158,11 @@ class SkillTreeViewModel(PageViewModel):
         usage = skill_editor.pool_usage(self._state)
         spent, total = usage.get(skill_graphs.SKILL_POOLS[0], (0, 0))
         spec_spent, spec_total = usage.get(skill_graphs.SKILL_POOLS[1], (0, 0))
-        bonus = sum(node["bonus"] for entry in self._state["graphs"] for node in entry["nodes"])
+        nodes = [node for entry in self._state["graphs"] for node in entry["nodes"]]
+        extra = sum(node["extra"] for node in nodes)
+        gear = sum(skill_editor.gear_bonus(node) for node in nodes)
         return self._t("summary", spent=spent, total=total, left=total - spent,
-                       spec_spent=spec_spent, spec_total=spec_total, bonus=bonus)
+                       spec_spent=spec_spent, spec_total=spec_total, bonus=extra, gear=gear)
 
     @pyqtProperty(bool, notify=valuesChanged)
     def allowOverPool(self) -> bool:
@@ -227,7 +229,11 @@ class SkillTreeViewModel(PageViewModel):
     @pyqtSlot(str, int, str, result=int)
     def value(self, graph: str, index: int, field: str) -> int:
         node = self._node(graph, index)
-        return int(node.get(field) or 0) if node else 0
+        if not node:
+            return 0
+        if field == "gear":
+            return skill_editor.gear_bonus(node)
+        return int(node.get(field) or 0)
 
     @pyqtSlot(str, int)
     def select(self, graph: str, index: int) -> None:
@@ -239,14 +245,25 @@ class SkillTreeViewModel(PageViewModel):
     def setValue(self, graph: str, index: int, field: str, value: int) -> None:
         if self._state is None:
             return
-        setter = {"spent": skill_editor.set_spent, "bonus": skill_editor.set_bonus}.get(field)
+        setter = {"spent": skill_editor.set_spent, "extra": skill_editor.set_extra,
+                  "bonus": skill_editor.set_extra}.get(field)
         if setter is not None and setter(self._state, graph, index, value):
             self._touched()
 
     @pyqtSlot(str, int, str, int)
     def step(self, graph: str, index: int, field: str, delta: int) -> None:
-        if field == "spent" and delta > 0 and not self._unlocked_or_toast(graph, index):
+        node = self._node(graph, index)
+        if node is None:
             return
+        if field == "spent":
+            # on the skill itself: past the maximum a click adds extra points (up to 5);
+            # removing takes the extra points off first
+            if delta > 0 and node["max"] and node["spent"] >= node["max"]:
+                field = "extra"
+            elif delta < 0 and node.get("extra"):
+                field = "extra"
+            elif delta > 0 and not self._unlocked_or_toast(graph, index):
+                return
         self.setValue(graph, index, field, self.value(graph, index, field) + int(delta))
 
     @pyqtSlot(str, int)

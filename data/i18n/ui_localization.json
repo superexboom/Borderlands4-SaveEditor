@@ -1700,7 +1700,7 @@
       "live_save_success": "在线配装 {slot} 已保存至:\n{path}",
       "live_save_fail": "保存在线配装失败: {error}",
       "confirm_live_apply_title": "确认在线换装",
-      "confirm_live_apply_msg": "即将把槽位 {slot} 的配装应用到当前在线角色。\n\n装备：按配装替换各槽位；在线保存的配装里为空的槽位会被卸下（物品留在背包），离线来源的配装不会清空槽位。跨槽环形互换暂不支持，所有目标物品必须仍在背包内。\n技能：如果配装保存了技能，会先重置角色技能点和专精点，再按配装重新加点并装备行动技能、强化与终极技能，由游戏自己校验点数与前置条件。\n应用前会重新读取当前配装并校验，是否继续？",
+      "confirm_live_apply_msg": "即将把槽位 {slot} 的配装应用到当前在线角色。\n\n装备：按配装替换各槽位；在线保存的配装里为空的槽位会被卸下（物品留在背包），离线来源的配装不会清空槽位。跨槽环形互换暂不支持，所有目标物品必须仍在背包内。\n技能：如果配装保存了技能，会先重置角色技能点和专精点，再按配装重新加点并装备行动技能、强化与终极技能，由游戏自己校验点数与前置条件。\n在线保存的配装会原样恢复：超出点数上限的配置会先提高点数上限，额外加点也一并恢复（存档后游戏会重置超出上限的技能，额外加点小退后不保留）。\n应用前会重新读取当前配装并校验，是否继续？",
       "live_apply_success": "在线配装 {slot} 已应用。\n已切换 {applied} 项，跳过 {skipped} 项。",
       "live_apply_cache_pending": "部分运行时模型或物品卡缓存仍在刷新。",
       "live_apply_fail_title": "在线换装失败",
@@ -1734,15 +1734,15 @@
     "max_trees": "技能全部满点",
     "clear_points": "清空技能点",
     "bonus_invested": "已加点技能额外加点",
-    "bonus_set": "设置",
+    "bonus_set": "已加点技能额外加点 +5",
     "clear_bonus": "清除额外加点",
-    "mouse_hint": "左键加点 / 切换，右键减点",
+    "mouse_hint": "左键加点 / 切换（满点后继续左键为额外加点，最多 +5），右键减点",
     "specializations": "专精",
     "spec_slots": "专精技能栏位在专精等级 {levels} 时解锁",
-    "summary": "技能点 {spent}/{total}（剩余 {left}）　专精点 {spec_spent}/{spec_total}　额外加点 +{bonus}",
+    "summary": "技能点 {spent}/{total}（剩余 {left}）　专精点 {spec_spent}/{spec_total}　加成：职业模组 +{gear}　额外加点 +{bonus}",
     "select_hint": "点击一个技能查看说明并调整点数。",
     "points": "加点",
-    "bonus": "额外加点",
+    "bonus": "加成",
     "active_on": "已启用（点击关闭）",
     "active_off": "未启用（点击启用）",
     "kind_passive": "被动技能",
@@ -1773,6 +1773,7 @@
     "req_nodes": "需要「{target}」至少 {need} 点（当前 {have}）",
     "req_active": "需要先启用「{target}」",
     "trunk": "主干",
-    "branch": "分支 {n}"
+    "branch": "分支 {n}",
+    "bonus_split": "职业模组 +{gear}　额外加点 +{extra}"
   }
 }

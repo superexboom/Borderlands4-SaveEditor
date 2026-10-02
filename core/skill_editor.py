@@ -11,8 +11,11 @@ the progress_graph template each graph inherits from (core/data/skill_graphs.jso
   (one of each per action skill).
 
 The game validates points, tiers and prerequisites itself when the payload is
-applied; ``skill_apply`` reports what did not take.  Bonus points (overlimit) cost
-no pool points.
+applied; ``skill_apply`` reports what did not take.
+
+Bonus ranks: ``bonus`` is what the game reports (gear such as Class Mods plus the
+editor's extra points), ``extra`` the editor's share (the mod's session ledger), ``gear``
+the rest.  Only ``extra`` is edited (0-5).  Neither counts toward unlock requirements.
 """
 
 from __future__ import annotations
@@ -28,7 +31,8 @@ ACTION_TEMPLATE = "progress_graph_action_skills_template"
 MODIFIER_TEMPLATE = "progress_graph_askill_modifiers_template"
 ACTION_SKILL_COUNT = 3
 AUGMENT_COUNT = 5
-BONUS_MAX = 99
+EXTRA_MAX = 5  # more extra ranks on one skill change nothing in game
+BONUS_MAX = EXTRA_MAX
 SPECIALIZATION_MAX = 100
 
 
@@ -84,6 +88,7 @@ def build_state(snapshot: dict[str, Any]) -> dict[str, Any]:
                 "max": limit,
                 "spent": int(row.get("spent") or 0),
                 "bonus": int(row.get("bonus") or 0),
+                "extra": max(0, min(int(row.get("bonus") or 0), int(row.get("extra") or 0))),
                 # activated but locked: a leftover the game ignores, so not "enabled"
                 "active": bool(row.get("active")) and (int(graph.get("type") or 0) == 0
                                                        or bool(row.get("unlocked", True))),
@@ -117,15 +122,26 @@ def set_spent(state: dict[str, Any], graph: str, index: int, value: int) -> bool
     return changed
 
 
-def set_bonus(state: dict[str, Any], graph: str, index: int, value: int) -> bool:
+def gear_bonus(node: dict[str, Any]) -> int:
+    """Bonus ranks from gear (Class Mods): what the game reports minus the editor's extra."""
+    return max(0, int(node.get("bonus") or 0) - int(node.get("extra") or 0))
+
+
+def set_extra(state: dict[str, Any], graph: str, index: int, value: int) -> bool:
+    """The editor's extra points on a skill (0-5); the gear's ranks stay as they are."""
     found = _node(state, graph, index)
     if found is None or found[0]["type"] != 0:
         return False
     node = found[1]
-    value = max(0, min(BONUS_MAX, int(value)))
-    changed = value != node["bonus"]
-    node["bonus"] = value
-    return changed
+    value = max(0, min(EXTRA_MAX, int(value)))
+    if value == node["extra"]:
+        return False
+    node["bonus"] = gear_bonus(node) + value
+    node["extra"] = value
+    return True
+
+
+set_bonus = set_extra  # older name
 
 
 def set_active(state: dict[str, Any], graph: str, index: int, on: bool) -> bool:
@@ -150,22 +166,24 @@ def set_active(state: dict[str, Any], graph: str, index: int, on: bool) -> bool:
 
 
 def bonus_invested(state: dict[str, Any], value: int) -> int:
-    """Set the bonus of every skill-tree node that has points (character pool); returns the count."""
+    """Set the extra points of every skill-tree node that has points (character pool); returns the count."""
     count = 0
     for entry in state.get("graphs") or []:
         if entry["kind"] != "points" or entry["pool"] != SKILL_POOLS[0]:
             continue
         for node in entry["nodes"]:
             if node["spent"] > 0:
-                set_bonus(state, entry["graph"], node["i"], value)
+                set_extra(state, entry["graph"], node["i"], value)
                 count += 1
     return count
 
 
 def clear_bonus(state: dict[str, Any]) -> None:
+    """Remove the editor's extra points (the gear's ranks stay)."""
     for entry in state.get("graphs") or []:
         for node in entry["nodes"]:
-            node["bonus"] = 0
+            node["bonus"] = gear_bonus(node)
+            node["extra"] = 0
 
 
 def max_trees(state: dict[str, Any]) -> None:
@@ -194,14 +212,14 @@ def pool_usage(state: dict[str, Any]) -> dict[str, tuple[int, int]]:
 
 
 def apply_payload(state: dict[str, Any]) -> dict[str, Any]:
-    """``skill_apply`` params that rebuild exactly this state (every node, bonus included)."""
+    """``skill_apply`` params that rebuild exactly this state (every node, extra points included)."""
     graphs = [{"graph": entry["graph"],
                "nodes": [{"i": node["i"], "spent": node["spent"], "active": node["active"],
-                          "level": node["level"], "bonus": node["bonus"]} for node in entry["nodes"]]}
+                          "level": node["level"], "extra": node["extra"]} for node in entry["nodes"]]}
               for entry in state.get("graphs") or []]
     # a build that spends more than the character has raises the pool first (never lowers it)
     points = {pool: spent for pool, (spent, total) in pool_usage(state).items() if spent > total}
-    payload = {"graphs": graphs, "reset_pools": list(SKILL_POOLS), "bonus": True}
+    payload = {"graphs": graphs, "reset_pools": list(SKILL_POOLS), "extra": True}
     if points:
         payload["points"] = points
     return payload
@@ -267,8 +285,8 @@ def node_text(graph: str, node: str | int) -> tuple[dict[str, str], dict[str, st
 # ---------------------------------------------------------------------------
 # Unlock checks (skill_layout.json "requirements", pipeline skill_requirements.py)
 # ---------------------------------------------------------------------------
-# A tier / branch / augment / capstone / prerequisite unlocks on points spent plus bonus
-# points (Class Mod ranks and the editor's extra points count, as in the game).
+# A tier / branch / augment / capstone / prerequisite unlocks on points spent only: bonus
+# ranks (Class Mods, the editor's extra points) do not count, as in the game.
 
 
 def _requirements() -> dict[str, Any]:
@@ -289,7 +307,7 @@ def _rule_points(state: dict[str, Any], rule: dict[str, Any]) -> int:
         members = {i for name in rule["groups"] for i in (groups.get(name) or {}).get("nodes") or []}
     else:
         members = set(rule.get("nodes") or [])
-    return sum(nodes[i]["spent"] + nodes[i]["bonus"] for i in members if i in nodes)
+    return sum(nodes[i]["spent"] for i in members if i in nodes)
 
 
 def unmet_rules(state: dict[str, Any], rule: dict[str, Any] | None) -> list[dict[str, Any]]:

@@ -15,7 +15,6 @@ Item {
     readonly property var trees: vmSkillTree.trees
     readonly property var sel: vmSkillTree.selected
     property int treeIndex: 0          // 0..2 = 技能树，3 = 专精
-    property int bonusValue: 5
 
     function kindLabel(kind) {
         return (page.loc["kind_" + kind] || "");
@@ -109,20 +108,9 @@ Item {
                         onClicked: vmSkillTree.bulk("clear_points")
                     }
                     Rectangle { width: 1; height: 24; color: HusTheme.Primary.colorTextQuaternary }
-                    HusText {
-                        text: page.loc.bonus_invested || ""
-                        color: HusTheme.Primary.colorTextSecondary
-                    }
-                    CountStepper {
-                        value: page.bonusValue
-                        min: 0
-                        max: 99
-                        onStepped: function(delta) { page.bonusValue = Math.max(0, Math.min(99, page.bonusValue + delta)); }
-                        onValueCommitted: function(v) { page.bonusValue = v; }
-                    }
                     HusButton {
                         text: page.loc.bonus_set || ""
-                        onClicked: vmSkillTree.bonusInvested(page.bonusValue)
+                        onClicked: vmSkillTree.bonusInvested(5)
                     }
                     HusButton {
                         text: page.loc.clear_bonus || ""
@@ -378,12 +366,16 @@ Item {
                             onValueCommitted: function(v) { vmSkillTree.setValue(page.sel.graph, page.sel.i, "spent", v); }
                         }
                         HusText { text: page.loc.bonus || ""; color: "#e67e22" }
-                        CountStepper {
-                            value: { page.rev; return page.sel.graph ? vmSkillTree.value(page.sel.graph, page.sel.i, "bonus") : 0; }
-                            min: 0
-                            max: 99
-                            onStepped: function(delta) { vmSkillTree.step(page.sel.graph, page.sel.i, "bonus", delta); }
-                            onValueCommitted: function(v) { vmSkillTree.setValue(page.sel.graph, page.sel.i, "bonus", v); }
+                        HusText {
+                            // 额外加点在技能格子上操作（满点后继续左键 / 右键），这里只显示来源
+                            text: {
+                                page.rev;
+                                if (!page.sel.graph) return "";
+                                return (page.loc.bonus_split || "{gear} / {extra}")
+                                    .replace("{gear}", vmSkillTree.value(page.sel.graph, page.sel.i, "gear"))
+                                    .replace("{extra}", vmSkillTree.value(page.sel.graph, page.sel.i, "extra"));
+                            }
+                            color: HusTheme.Primary.colorTextSecondary
                         }
                     }
                     HusButton {

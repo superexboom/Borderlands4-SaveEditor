@@ -8,7 +8,7 @@ import math
 import time
 
 VERSION = '0.10.28'
-REVISION = 'slot-maintenance-20261002.18'
+REVISION = 'slot-maintenance-20261002.20'
 
 # Weapon values, movement, crit, stamina and cooldown features change only when the
 # game rebuilds them (equip, reload, buffs): refresh them at 5 Hz.  Health and shield
@@ -525,6 +525,7 @@ def install(m):
     # Snapshot polling must not revive the removed global camera enumeration.
     m._runtime_camera_readback = lambda: {'available': False, 'removed': True}
     install_native_rebase(m)
+    install_crash_trace(m)
     install_player_selection(m)
     install_xp_guard(m)
     install_drop_replay(m)
@@ -535,6 +536,29 @@ def install(m):
         m._safe(lambda: setattr(m.mod, 'version', VERSION))
     m._maintenance_revision = REVISION
     m._log('Installed '+REVISION+'; equipped-slot maintenance, FOV disabled.')
+
+
+def install_crash_trace(m):
+    """Python stacks of every thread on a fatal crash, in bl4_live/crash_python_stacks.log.
+
+    A crash on 2026-10-02 (quitting to the menu) died inside pyunrealsdk while a
+    Python hook callback formatted a freed UObject (null + 0x18, its FName); the
+    Python traceback was lost because unrealsdk.log is rewritten on the next start.
+    faulthandler appends each fatal error's Python stacks to its own file.
+    """
+    import faulthandler
+    import os
+    if getattr(m, '_CRASH_TRACE_FILE', None) is not None or not getattr(m, '__file__', None):
+        return
+    try:
+        path = os.path.join(os.path.dirname(os.path.abspath(m.__file__)), 'crash_python_stacks.log')
+        handle = open(path, 'a', encoding='utf-8')
+        handle.write(f"\n=== session {time.strftime('%Y-%m-%d %H:%M:%S')} ===\n")
+        handle.flush()
+        faulthandler.enable(file=handle, all_threads=True)
+        m._CRASH_TRACE_FILE = handle  # must stay open for faulthandler
+    except Exception as exc:
+        getattr(m, '_warn', print)(f'crash trace unavailable: {exc}')
 
 
 def install_native_rebase(m):
@@ -723,6 +747,8 @@ def install_drop_replay(m):
 # PointsAcquiredPerPool order (verified live: 69 character points at level 70, then
 # specialization tokens, then the account-wide ECHO / SDU pool the base mod tops up).
 POOL_INDEX = {'characterprogresspoints': 0, 'specializationtokenpool': 1}
+# Extra points the editor puts on one skill (more than 5 bonus ranks change nothing).
+EXTRA_MAX = 5
 
 
 def install_skill_builds(m):
@@ -749,10 +775,29 @@ def install_skill_builds(m):
     def graph_name(graph):
         return str(m._safe(lambda: graph.ProgressGraphDef._name, '') or '')
 
+    def ledger():
+        """Extra points the editor added this session: {"graph#index": n}.
+
+        BonusPoints holds the gear's ranks (Class Mods) plus whatever was added with
+        Server_AddBonusPoints; the game keeps the latter for the session only (gone after
+        quitting to the menu).  The ledger tells the two apart: gear = BonusPoints - extra.
+        It lives on the module, so a new game session starts empty, like the game.
+        """
+        if not isinstance(getattr(m, '_SKILL_EXTRA', None), dict):
+            m._SKILL_EXTRA = {}
+        return m._SKILL_EXTRA
+
     def node_rows(graph):
-        return [dict(i=i, spent=int(n.ProgressPointsSpent), bonus=int(n.BonusPoints), active=bool(n.bIsActivated),
-                     level=int(n.ActivationLevel), unlocked=bool(n.bIsUnlocked))
-                for i, n in enumerate(list(graph.nodes))]
+        name = graph_name(graph).lower()
+        extras = ledger()
+        rows = []
+        for i, n in enumerate(list(graph.nodes)):
+            bonus = int(n.BonusPoints)
+            rows.append(dict(i=i, spent=int(n.ProgressPointsSpent), bonus=bonus,
+                             extra=max(0, min(bonus, int(extras.get(f'{name}#{i}', 0)))),
+                             active=bool(n.bIsActivated), level=int(n.ActivationLevel),
+                             unlocked=bool(n.bIsUnlocked)))
+        return rows
 
     def describe(graph):
         definition = graph.ProgressGraphDef
@@ -820,7 +865,15 @@ def install_skill_builds(m):
         # 0. raise point pools first when the build spends more than the character has
         #    (skill trees beyond the level's points, more specialization tokens): spending in
         #    passes would otherwise stop at the pool and leave later trees empty.
-        raised = raise_pools(params.get('points') or {})
+        wanted_pools = dict(params.get('points') or {})
+        if params.get('fit_pools'):
+            # a saved build that spent more than the level gives: whatever its trees need
+            for graph, nodes in targets.values():
+                info = describe(graph)
+                if info['type'] == 0 and info['pool']:
+                    total = sum(int(n.get('spent') or 0) for n in nodes.values())
+                    wanted_pools[info['pool']] = wanted_pools.get(info['pool'], 0) + total
+        raised = raise_pools(wanted_pools)
         reset_pools = {str(p).lower() for p in params.get('reset_pools') or []}
         # 1. reset every graph of the requested pools (and every target point graph)
         for graph in rows:
@@ -858,13 +911,23 @@ def install_skill_builds(m):
                 set_activation(graph, index, False)
             for index in sorted(wanted - current):
                 set_activation(graph, index, True, int(nodes[index].get('level') or 0))
-        # 4. bonus points (overlimit) only on request
-        if params.get('bonus'):
-            for graph, nodes in targets.values():
+        # 4. extra points (on top of the gear's bonus ranks) only on request
+        extras = ledger()
+        extra_targets = {}
+        if params.get('extra'):
+            for name, (graph, nodes) in targets.items():
                 for index, node in nodes.items():
-                    delta = int(node.get('bonus') or 0) - int(graph.nodes[index].BonusPoints)
-                    if delta:
-                        graph.Server_AddBonusPoints(index, delta)
+                    key = f'{name}#{index}'
+                    bonus = int(graph.nodes[index].BonusPoints)
+                    gear = bonus - max(0, min(bonus, int(extras.get(key, 0))))
+                    want = max(0, min(EXTRA_MAX, int(node.get('extra') or 0)))
+                    if gear + want != bonus:
+                        graph.Server_AddBonusPoints(index, gear + want - bonus)
+                    extra_targets[(name, index)] = gear + want
+                    if want:
+                        extras[key] = want
+                    else:
+                        extras.pop(key, None)
         # 5. verify
         mismatches = list(locked_wanted)
         skip = {(m['graph'], m['i']) for m in locked_wanted}
@@ -882,8 +945,9 @@ def install_skill_builds(m):
                     mismatches.append(dict(graph=name, i=index, want=node.get('spent'), have=row['spent']))
                 if graph_type == 1 and (name, index) not in skip and bool(node.get('active')) != row['active']:
                     mismatches.append(dict(graph=name, i=index, want_active=bool(node.get('active')), active=row['active']))
-                if params.get('bonus') and int(node.get('bonus') or 0) != row['bonus']:
-                    mismatches.append(dict(graph=name, i=index, want_bonus=node.get('bonus'), bonus=row['bonus']))
+                if (name, index) in extra_targets and extra_targets[(name, index)] != row['bonus']:
+                    mismatches.append(dict(graph=name, i=index, want_bonus=extra_targets[(name, index)],
+                                           bonus=row['bonus']))
         return dict(ok=not mismatches and not unknown, applied=len(targets), unknown_graphs=unknown,
                     mismatches=mismatches[:40], raised_pools=raised, snapshot=snapshot())
 
