@@ -7,8 +7,8 @@ Enumerate equipped slots, never the global UObject array, in the hot path.
 import math
 import time
 
-VERSION = '0.10.29'
-REVISION = 'slot-maintenance-20261002.20'
+VERSION = '0.10.30'
+REVISION = 'slot-maintenance-20261006.21'
 
 # Weapon values, movement, crit, stamina and cooldown features change only when the
 # game rebuilds them (equip, reload, buffs): refresh them at 5 Hz.  Health and shield
@@ -58,6 +58,14 @@ NATIVE_BUILDS = {
     },
 }
 NATIVE_PREFIX_TABLES = ('_INVENTORY_NATIVE_PREFIXES', '_IDENTITY_MATERIALIZE_PREFIXES', '_IDENTITY_DIRTY_PREFIXES')
+# Vtables the base code compares against, per build: name -> RVA.  On build 25372571
+# FInventoryPartDef's vtable moved by 0x1000, so _is_partdef rejected every entry of
+# the type definitions' part maps and a part could only be written when an owned item
+# already carried it ("definition(s) not resolvable to live defs").  Read from the
+# running game: every part pointer of live items and of the type maps used this value.
+NATIVE_VTABLES = {
+    1789399121: {'PARTDEF_VTBL': 0xB304C60},
+}
 
 
 class ValueBindings:
@@ -561,6 +569,31 @@ def install_crash_trace(m):
         getattr(m, '_warn', print)(f'crash trace unavailable: {exc}')
 
 
+def _rebase_vtables(m, base, size, stamp, status):
+    """Move the vtable constants for this build; each must look like a vtable
+    (its first slot points into the image) or nothing is changed."""
+    table = NATIVE_VTABLES.get(stamp) or {}
+    moved = {}
+    for name, rva in table.items():
+        slot = int.from_bytes(m._rd(base + rva, 8) or b'', 'little')
+        if not isinstance(getattr(m, name, None), int) or not base <= slot < base + size:
+            status['vtable_error'] = f'{name} does not match build {stamp}'
+            return
+        moved[name] = base + rva
+    changed = False
+    for name, value in moved.items():
+        changed |= getattr(m, name) != value
+        setattr(m, name, value)
+    if changed:
+        # roots indexed with the old value mapped no part at all: index them again
+        game = getattr(m, 'GAME', None)
+        roots = getattr(game, 'part_roots_built', None)
+        if isinstance(roots, set):
+            roots.clear()
+    if moved:
+        status['vtables'] = {name: hex(value) for name, value in moved.items()}
+
+
 def install_native_rebase(m):
     """Point the base code's fixed native addresses at the running game build.
 
@@ -587,6 +620,7 @@ def install_native_rebase(m):
     status.update(pe_timestamp=stamp, image_size=hex(size))
     if size > getattr(m, 'IMAGE_SIZE', 0):
         m.IMAGE_SIZE = size  # vtable / method range checks
+    _rebase_vtables(m, base, size, stamp, status)
     table = NATIVE_BUILDS.get(stamp)
     if not table:
         status['build'] = 'base'

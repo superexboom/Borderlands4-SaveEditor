@@ -956,6 +956,73 @@ def set_pool(m: Any, args: dict[str, Any]) -> dict[str, Any]:
     return {"ok": True, "before": before, "after": int(pools[index])}
 
 
+def resolve_defs(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    """Read-only: how each serial's parts resolve to live definitions (no item is written)."""
+    out = []
+    for serial in args.get("serials") or []:
+        res = m._resolve_serial_definitions(serial)
+        refs = res.get("refs") or {}
+        out.append({
+            "ok": res.get("ok"), "root": res.get("root"), "error": res.get("error"),
+            "parts": [[r["owner"], r["id"], r["name"]] for r in refs.get("parts") or []],
+            "comp": refs.get("comp") and [refs["comp"]["owner"], refs["comp"]["id"]],
+            "missing": [{k: r.get(k) for k in ("kind", "owner", "id", "name")} for r in res.get("missing") or []],
+        })
+    roots = {}
+    for root in args.get("roots") or []:
+        root = int(root)
+        type_ptr = m.GAME.type_index.get(root, 0)
+        mapped, stats = m._parts_from_type_def(root, type_ptr) if type_ptr else ({}, {})
+        ids = sorted(pid for (owner, pid) in mapped if owner == root)
+        bucket = m._bucket_for_root(root) or {}
+        bucket_parts = sorted(int(k) for k, v in bucket.items()
+                              if str(k).isdigit() and m._definition_kind(str(v)) == "part")
+        roots[str(root)] = {
+            "type_ptr": hex(type_ptr), "stats": stats, "mapped_ids": ids,
+            "owners_in_map": sorted({owner for (owner, _pid) in mapped}),
+            "bucket_parts_missing_live": [pid for pid in bucket_parts if pid not in ids],
+            "probe": {str(pid): bucket.get(str(pid)) for pid in args.get("probe_ids") or []},
+            "probe_live": {str(pid): hex(m.GAME.part_index.get((root, int(pid)), 0)) for pid in args.get("probe_ids") or []},
+        }
+    return {"ok": True, "serials": out, "roots": roots}
+
+
+def partdef_vtables(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    """Read-only: vtables of live items' part definitions and of a type map's entries vs PARTDEF_VTBL."""
+    from collections import Counter
+    items = Counter()
+    for c in ("BackpackItems", "BankItems"):
+        arr = m.GAME.items_array(c)
+        n = (m._safe(lambda: len(arr), 0) or 0) if arr is not None else 0
+        for i in range(min(n, int(args.get("items", 20)))):
+            ident = m.GAME.identity_at(c, i)
+            addr = m._addr(ident) if ident is not None else 0
+            for ptr in m._read_part_ptrs(addr) if addr else []:
+                items[hex(m._u64(m._rd(ptr, 8) or b"", 0))] += 1
+    maps = Counter()
+    root = int(args.get("root", 20))
+    type_ptr = m.GAME.type_index.get(root, 0)
+    header = m._rd(type_ptr + m.OFF_TYPE_ALL_PART_DEFS, 16) if type_ptr else None
+    if header:
+        outer_data, outer_cap = m._u64(header, 0), m._u32(header, 12)
+        for oi in range(min(outer_cap, 64)):
+            hdr = m._rd(outer_data + oi * m.TYPE_PART_OUTER_STRIDE + m.TYPE_PART_INNER_OFFSET, 16)
+            if not hdr:
+                continue
+            data, num, cap = m._u64(hdr, 0), m._u32(hdr, 8), m._u32(hdr, 12)
+            if not m._looks_ptr(data) or not (0 < num <= cap <= 4096):
+                continue
+            for ii in range(cap):
+                entry = m._rd(data + ii * m.TYPE_PART_INNER_STRIDE, m.TYPE_PART_INNER_STRIDE)
+                ptr = m._u64(entry, m.TYPE_PART_INNER_VALUE_OFFSET) if entry else 0
+                if m._looks_ptr(ptr):
+                    maps[hex(m._u64(m._rd(ptr, 8) or b"", 0))] += 1
+    module = m._safe(lambda: m._module_base(), None) if hasattr(m, "_module_base") else None
+    return {"ok": True, "PARTDEF_VTBL": hex(m.PARTDEF_VTBL), "IMAGE_BASE": hex(m.IMAGE_BASE),
+            "module_base": hex(module) if module else None,
+            "item_part_vtables": items.most_common(5), "type_map_vtables": maps.most_common(5)}
+
+
 TESTS = {name: fn for name, fn in globals().items() if callable(fn) and not name.startswith("_")
          and name not in {"run", "annotations"}}
 
