@@ -91,7 +91,11 @@
         "duration": "持续时间",
         "accuracy": "精准度",
         "magazine": "弹容"
-      }
+      },
+      "ted_throw": "泰迪尔投掷：{name}",
+      "ted_throw_homing": "追踪",
+      "ted_throw_javelin": "标枪",
+      "ted_throw_legs": "腿部"
     },
     "item_card": {
       "cryo_efficiency": "{value}%冰冻效率",
@@ -433,7 +437,11 @@
         "duration": "Duration",
         "accuracy": "Accuracy",
         "magazine": "Magazine"
-      }
+      },
+      "ted_throw": "Tediore throw: {name}",
+      "ted_throw_homing": "Homing",
+      "ted_throw_javelin": "Javelin",
+      "ted_throw_legs": "Legs"
     },
     "item_card": {
       "cryo_efficiency": "{value}% Cryo Efficiency",
@@ -775,7 +783,11 @@
         "duration": "Длительность",
         "accuracy": "Точность",
         "magazine": "Магазин"
-      }
+      },
+      "ted_throw": "Бросок \"Тедиор\": {name}",
+      "ted_throw_homing": "самонаведение",
+      "ted_throw_javelin": "копье",
+      "ted_throw_legs": "ноги"
     },
     "item_card": {
       "cryo_efficiency": "Эффективность холода {value}%",
@@ -1117,7 +1129,11 @@
         "duration": "Тривалість",
         "accuracy": "Точність",
         "magazine": "Магазин"
-      }
+      },
+      "ted_throw": "Кидок \"Тедіор\": {name}",
+      "ted_throw_homing": "самонаведення",
+      "ted_throw_javelin": "спис",
+      "ted_throw_legs": "ноги"
     },
     "item_card": {
       "cryo_efficiency": "Ефективність холоду {value}%",
@@ -1459,7 +1475,11 @@
         "duration": "Dauer",
         "accuracy": "Zielgenauigkeit",
         "magazine": "Magazin"
-      }
+      },
+      "ted_throw": "Tediore-Wurf: {name}",
+      "ted_throw_homing": "Zielsucher",
+      "ted_throw_javelin": "Speer",
+      "ted_throw_legs": "Beine"
     },
     "item_card": {
       "cryo_efficiency": "{value} % Kryo-Effizienz",

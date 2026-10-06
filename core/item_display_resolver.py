@@ -1217,6 +1217,51 @@ def _part_behavior_text(ref: dict[str, Any], index: dict[str, Any], lang: str) -
     return ""
 
 
+_TED_MODES = ("shooting", "mirv", "combo", "replicator")
+_TED_THROWS = ("homing", "javelin", "legs")
+_TED_PART_RE = re.compile(r"part_(?:barrel_licensed|multi)_ted_(shooting|mirv|combo|replicator)(?:_atlien)?$")
+
+
+def _tediore_throw(tags: set[str]) -> str:
+    """Throw style a Tediore grip gives the thrown gun ("" = plain throw)."""
+    return next((name for name in _TED_THROWS if f"ted_{name}" in tags), "")
+
+
+def _tediore_behavior_text(ref: dict[str, Any], index: dict[str, Any], lang: str, decoded_full: str) -> str:
+    """Card text of a Tediore payload in the build it is shown for.
+
+    The game words a payload by the build: the grip picks the throw (Replicator
+    Homing = Replicator payload + homing grip) and a second payload joins the
+    first (Combo Replicator). Taking the first of the part's uistats instead gave
+    every second payload the same "Combo Replicator" text.
+    """
+    match = _TED_PART_RE.match(str(ref.get("part") or "").casefold())
+    if not match:
+        return ""
+    mode = match.group(1)
+    root = (re.match(r"\s*(\d+)", decoded_full or "") or [None, ""])[1]
+    refs = index.get("part_refs") or {}
+    throw, primary = "", ""
+    for key in weapon_display_stats._serial_part_keys(decoded_full or "", root) if root else []:
+        other = refs.get(key) or {}
+        tags = {str(tag).casefold() for tag in other.get("weapon_tags", [])}
+        if other.get("category") == "grip":
+            throw = _tediore_throw(tags) or throw
+        elif other.get("category") == "tediore_acc":
+            primary = next((name for name in _TED_MODES if f"ted_{name}" in tags), primary)
+    uistats = index.get("uistats") or {}
+    candidates = []
+    if ref.get("category") == "tediore_secondary_acc" and primary and primary != mode:
+        first, second = sorted((primary, mode), key=_TED_MODES.index)
+        candidates.append(f"uistat_manu_ted_{first}_{second}_{throw or 'default'}")
+    candidates.append(f"uistat_manu_ted_{mode}" + (f"_{throw}" if throw else ""))
+    for uistat_id in candidates:
+        entry = uistats.get(uistat_id)
+        if entry:
+            return _part_behavior_text({"uistats": [uistat_id]}, index, lang)
+    return ""
+
+
 def _serial_with_weapon_part(decoded_full: str, item_id: int, part_id: str, category: str) -> str:
     if not decoded_full or "||" not in decoded_full:
         return decoded_full
@@ -1390,7 +1435,14 @@ def format_weapon_part_description(
     elif "part_underbarrel_06_malswitch" in part_name:
         lines.insert(0, _t("element_switch", lang))
 
-    behavior = _part_behavior_text(ref, index, lang)
+    if ref.get("category") == "grip":
+        # Tediore grips decide how the gun is thrown; without the name nothing
+        # tells the homing grip from the javelin one (only thruster numbers).
+        throw = _tediore_throw({str(tag).casefold() for tag in ref.get("weapon_tags", [])})
+        if throw:
+            lines.insert(0, _t("ted_throw", lang, name=_t(f"ted_throw_{throw}", lang)))
+
+    behavior = _tediore_behavior_text(ref, index, lang, decoded_full) or _part_behavior_text(ref, index, lang)
     suppress_behavior = ref.get("category") == "barrel" or (ref.get("category") == "magazine" and bool(tags & {"cov_mag", "borg_mag"}))
     if behavior and not suppress_behavior and (not lines or "licensed" in tags or any("ted_" in tag for tag in tags)):
         lines.append(behavior)
