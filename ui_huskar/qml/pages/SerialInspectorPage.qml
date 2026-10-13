@@ -63,14 +63,19 @@ ColumnLayout {
         padding: 16
         anchors.centerIn: Overlay.overlay
         background: Item { }
-        // 放大到窗口放得下的最大尺寸（卡片高度与 rem 成正比，打开时算一次）
-        onAboutToShow: zoomCard.rem = Math.min(12, (page.height - 60) / Math.max(1, zoomCard.implicitHeight / zoomCard.rem))
+        // 放大查看：按 rem 11 排版，再整体缩小到窗口放得下（宽、高都不超出）
+        readonly property real cardScale: Math.min(
+            1,
+            Math.max(160, page.height - 2 * padding - 24) / Math.max(1, zoomCard.implicitHeight),
+            Math.max(160, page.width - 2 * padding - 24) / Math.max(1, zoomCard.width))
         contentItem: Item {
-            implicitWidth: zoomCard.width
-            implicitHeight: zoomCard.implicitHeight
+            implicitWidth: zoomCard.width * cardZoom.cardScale
+            implicitHeight: zoomCard.implicitHeight * cardZoom.cardScale
             ItemCard {
                 id: zoomCard
-                rem: 12
+                rem: 11
+                transformOrigin: Item.TopLeft
+                scale: cardZoom.cardScale
                 model: page.cardFromModel ? vmSerialInspector.cardModel : ({})
             }
             MouseArea { anchors.fill: parent; onClicked: cardZoom.close() }
@@ -302,10 +307,12 @@ ColumnLayout {
         }
 
         GlassPanel {
+            id: cardPanel
             Layout.preferredWidth: 340
             Layout.fillHeight: true
 
             Column {
+                id: cardColumn
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
@@ -313,6 +320,7 @@ ColumnLayout {
                 spacing: 6
 
                 HusText {
+                    id: cardTitle
                     text: page.loc.labels ? page.loc.labels.card : "Item card"
                     font.bold: true
                     color: HusTheme.Primary.colorTextBase
@@ -324,15 +332,20 @@ ColumnLayout {
                     wrapMode: Text.WordWrap
                     width: parent.width
                 }
-                Item {   // 游戏样式卡片（缩放到面板宽度，点击放大）
+                Item {   // 游戏样式卡片（缩放到面板宽度，过长时再整体缩小到面板高度内；点击放大）
                     visible: page.cardFromModel
                     width: parent.width
-                    height: visible ? panelCard.implicitHeight + 8 : 0
+                    height: visible ? panelCard.implicitHeight * panelCard.scale + 8 : 0
+                    readonly property real maxCardHeight: Math.max(
+                        120, cardPanel.height - 2 * cardColumn.anchors.margins - cardTitle.height
+                             - zoomHint.height - 2 * cardColumn.spacing - 8)
                     ItemCard {
                         id: panelCard
                         objectName: "panelCard"
-                        x: 4; y: 4
+                        x: Math.max(4, (parent.width - width * scale) / 2); y: 4
                         rem: (parent.width - 8) / 54.6
+                        transformOrigin: Item.TopLeft
+                        scale: Math.min(1, parent.maxCardHeight / Math.max(1, implicitHeight))
                         model: page.cardFromModel ? vmSerialInspector.cardModel : ({})
                     }
                     MouseArea {
@@ -342,6 +355,7 @@ ColumnLayout {
                     }
                 }
                 HusText {
+                    id: zoomHint
                     visible: vmSerialInspector.hasCard
                     text: page.loc.labels ? page.loc.labels.zoom_hint : ""
                     color: HusTheme.Primary.colorTextSecondary

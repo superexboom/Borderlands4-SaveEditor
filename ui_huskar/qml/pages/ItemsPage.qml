@@ -300,8 +300,6 @@ ColumnLayout {
         target: vmItems
         function onHoverCardRequested(row, info) {
             hoverItemCard.model = info.card;
-            hoverCard.cardWidth = hoverItemCard.width;
-            hoverCard.cardHeight = hoverItemCard.implicitHeight;
             hoverCard.open();
         }
         function onHoverCardDismissed() {
@@ -316,8 +314,10 @@ ColumnLayout {
         closePolicy: Popup.NoAutoClose
         property int lastX: 0
         property int lastY: 0
-        property real cardWidth: 0
-        property real cardHeight: 0
+        // 卡片按 rem 9 排版（略小于游戏 1:1 的 10），过长的物品再整体缩小到页面内放得下
+        readonly property real cardScale: Math.min(1, Math.max(120, page.height - 28) / Math.max(1, hoverItemCard.implicitHeight))
+        readonly property real cardWidth: hoverItemCard.width * cardScale
+        readonly property real cardHeight: hoverItemCard.implicitHeight * cardScale
         background: Item { }
         contentItem: Item {
             implicitWidth: hoverCard.cardWidth
@@ -325,9 +325,9 @@ ColumnLayout {
             ItemCard {
                 id: hoverItemCard
                 objectName: "hoverItemCard"
-                rem: 10
-                // 文本换行等在绑定后才定高：跟随实际高度调整弹层
-                onImplicitHeightChanged: hoverCard.cardHeight = implicitHeight
+                rem: 9
+                transformOrigin: Item.TopLeft
+                scale: hoverCard.cardScale
             }
         }
         x: Math.min(Math.max(0, page.width - cardWidth - 14), Math.max(0, lastX + 30))
