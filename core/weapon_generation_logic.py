@@ -167,6 +167,9 @@ def evaluate_group_selection(
     so that a dependency chain contained within a single slot (class mod skill
     tiers) is accepted. It never widens ``excludes``: the native loop shrinks the
     pool after every pick, so mutually exclusive siblings must still be rejected.
+    The tags a pick really adds do exclude the siblings picked after it (two
+    licensed top accessories, two Gun Damage rolls); only tags that are merely
+    *expected* from the widening are ignored for ``excludes``.
     """
     allowed = list(dict.fromkeys(map(str, allowed_refs)))
     selected = list(map(str, selected_refs))
@@ -241,7 +244,7 @@ def evaluate_group_selection(
     for ref in allowed:
         adds = candidate_tags[ref]["adds"]
         blocked = 0
-        for tag in adds - widened_only:
+        for tag in adds:
             blocked |= excluded_by.get(tag, 0)
         pick_block.append(blocked)
         pick_rules.append(tuple(index for index, (bucket, _limit) in enumerate(normalized_rules) if adds & bucket))
