@@ -6,7 +6,7 @@ Used by the card model (``core.item_card_model``) and the roll result views.
 import re
 from typing import Any, Dict, List
 
-from core import game_text, item_display_resolver, resource_loader, ui_text, weapon_display_stats
+from core import game_text, item_display_resolver, resource_loader, scaled_stats, ui_text, weapon_display_stats
 
 
 WEAPON_CARD_TYPE_ICONS = {
@@ -302,7 +302,9 @@ def _format_weapon_arg(raw: Any) -> str:
 
 
 def _render_weapon_uistat(entry: Dict[str, Any], stats: Dict[str, Any], current_lang: str,
-                          keep_markup: bool = False) -> str:
+                          keep_markup: bool = False, scaled: Dict[str, Any] | None = None) -> str:
+    """``scaled`` = {"level": item level, "secondary_damage": mode-2 damage} for
+    the level formulas of underbarrels (their damage is not the gun's damage)."""
     text = game_text.pick(entry, current_lang)
     args = ((entry.get("statvalue") or {}).get("args") or {})
 
@@ -310,7 +312,10 @@ def _render_weapon_uistat(entry: Dict[str, Any], stats: Dict[str, Any], current_
         arg = args.get(match.group(1)) or {}
         template = arg.get("formattext") or {}
         template_text = game_text.pick(template, current_lang)
-        value = _format_weapon_arg(_weapon_stat_arg_value(arg.get("attribute", ""), stats))
+        raw = _scaled_weapon_arg(arg, scaled)
+        if raw is None:
+            raw = _weapon_stat_arg_value(arg.get("attribute", ""), stats)
+        value = _format_weapon_arg(raw)
         if template_text and "$VALUE$" not in template_text:
             return _clean_card_markup(template_text)
         return template_text.replace("$VALUE$", value) if template_text else value
@@ -318,6 +323,43 @@ def _render_weapon_uistat(entry: Dict[str, Any], stats: Dict[str, Any], current_
     rendered = _CARD_PLACEHOLDER_RE.sub(replacement, text)
     # keep_markup: the item card colours [secondary]/[rarity_*] spans and draws icon tags.
     return " ".join(rendered.split()) if keep_markup else _clean_card_markup(rendered)
+
+
+def _scaled_weapon_arg(arg: Dict[str, Any], scaled: Dict[str, Any] | None) -> Any:
+    """Level formula value of a weapon UIStat argument, or None to use the card stats."""
+    if not scaled or scaled.get("level") is None:
+        return None
+    attribute = str(arg.get("attribute") or "").casefold()
+    if attribute == "weapon_damage" and int(arg.get("attributeindex") or 0) == 1:
+        damage = scaled.get("secondary_damage")
+        return round(damage) if damage is not None else None
+    if not attribute or attribute.startswith("weapon_"):
+        return None
+    value = scaled_stats.attribute_value(attribute, scaled["level"])
+    if value is None:
+        return None
+    return round(value) if abs(value) >= 100 else value
+
+
+def _secondary_damage(parts: List[tuple[str, Dict[str, Any]]], level: int | None) -> float | None:
+    """Damage of the secondary fire mode: the last mode-2 override of weapon_damage."""
+    if level is None:
+        return None
+    value = None
+    for _, ref in parts:
+        for effect in ref.get("weapon_attribute_effects", []):
+            mode = str(effect.get("use_mode_bitmask") or "1")
+            if (effect.get("attribute") == "weapon_damage" and effect.get("modifier_type") == "OverrideBaseValue"
+                    and mode.isdigit() and int(mode) & 2 and not int(mode) & 1 and effect.get("value_attribute")):
+                value = scaled_stats.attribute_value(str(effect["value_attribute"]), level) or value
+    return value
+
+
+def _uistat_priority(ui: Dict[str, Any]) -> float:
+    try:
+        return float(ui.get("sorting_priority") or 0.0)
+    except (TypeError, ValueError):
+        return 0.0
 
 
 def _select_tediore_uistat(ids: List[str], context: str) -> List[str]:
@@ -337,6 +379,8 @@ def _weapon_card_details(decoded_full: str, stats: Dict[str, Any], current_lang:
     index = item_display_resolver._item_index()
     uistats = index.get("uistats") or {}
     parts = _weapon_card_parts(decoded_full)
+    level = item_display_resolver._decoded_item_level(decoded_full)
+    scaled = {"level": level, "secondary_damage": _secondary_damage(parts, level)}
     context = " ".join(
         [str(ref.get("part") or "") for _, ref in parts]
         + [str(tag) for _, ref in parts for tag in ref.get("weapon_tags", [])]
@@ -347,6 +391,30 @@ def _weapon_card_details(decoded_full: str, stats: Dict[str, Any], current_lang:
     element = ""
     elements: List[str] = []
     pearl_element = ""
+    # A part's uistatstoexclude hides that UIStat for the whole item, wherever it
+    # comes from (a legendary barrel hides the root's manufacturer line, an Order
+    # licensed magazine the Order charge line).
+    excluded = {str(ui_id).casefold() for _, ref in parts for ui_id in ref.get("uistats_exclude") or ()}
+    root = re.match(r"\s*(\d+)", decoded_full or "")
+    root_ids = [
+        ui_id for ui_id in ((index.get("root_uistats") or {}).get(root.group(1) if root else "") or ())
+        if ui_id.casefold().startswith("uistat_manu_") and ui_id.casefold() not in excluded
+    ]
+    for ui_id in root_ids:
+        # Every Ripper / Jakobs / Order gun: declared on the item root, not on a part.
+        ui = uistats.get(ui_id.casefold(), {})
+        text = _render_weapon_uistat(ui, stats, current_lang, scaled=scaled)
+        if text and text not in rows:
+            rows.append(text)
+            entries.append({
+                "text": text,
+                "markup": _render_weapon_uistat(ui, stats, current_lang, keep_markup=True, scaled=scaled),
+                "category": "manufacturer",
+                "source": root.group(1),
+                "display_kind": "normal",
+                "icon_asset": str(ui.get("icon_asset") or ""),
+                "priority": _uistat_priority(ui),
+            })
     for ref_key, ref in parts:
         part_name = str(ref.get("part") or "").casefold()
         category = str(ref.get("category") or "")
@@ -363,24 +431,27 @@ def _weapon_card_details(decoded_full: str, stats: Dict[str, Any], current_lang:
                 if category == "body_ele" and keys:
                     element = keys[0]
 
-        ids = list(dict.fromkeys([*ref.get("uistats_include", []), *ref.get("uistats", [])]))
+        ids = [
+            ui_id for ui_id in dict.fromkeys([*ref.get("uistats_include", []), *ref.get("uistats", [])])
+            if ui_id.casefold() not in excluded
+        ]
         red_ids = [item for item in ids if "redtext" in item.casefold() or "red_text" in item.casefold()]
         effect_ids = [item for item in ids if item not in red_ids]
         effect_ids = _select_tediore_uistat(effect_ids, context)
         for ui_id in red_ids:
-            text = _render_weapon_uistat(uistats.get(ui_id.casefold(), {}), stats, current_lang)
+            text = _render_weapon_uistat(uistats.get(ui_id.casefold(), {}), stats, current_lang, scaled=scaled)
             if text and text not in red_texts:
                 red_texts.append(text)
         for effect_index, ui_id in enumerate(effect_ids):
             if ui_id.casefold().startswith(_GENERIC_WEAPON_UISTAT_PREFIXES):
                 continue
             ui = uistats.get(ui_id.casefold(), {})
-            text = _render_weapon_uistat(ui, stats, current_lang)
+            text = _render_weapon_uistat(ui, stats, current_lang, scaled=scaled)
             if text and text not in rows:
                 rows.append(text)
                 entries.append({
                     "text": text,
-                    "markup": _render_weapon_uistat(ui, stats, current_lang, keep_markup=True),
+                    "markup": _render_weapon_uistat(ui, stats, current_lang, keep_markup=True, scaled=scaled),
                     "category": category,
                     "source": ref_key,
                     "display_kind": (
@@ -394,8 +465,11 @@ def _weapon_card_details(decoded_full: str, stats: Dict[str, Any], current_lang:
                         or ref.get("icon_asset")
                         or ""
                     ),
+                    "priority": _uistat_priority(ui),
                 })
 
+    # The game lists UIStats by ascending sorting priority (stable for equal ones).
+    entries.sort(key=lambda entry: entry.get("priority", 0.0))
     if pearl_element:
         elements = [pearl_element, *(key for key in elements if key not in {element, pearl_element})]
         element = pearl_element

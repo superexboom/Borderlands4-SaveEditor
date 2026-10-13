@@ -15,7 +15,7 @@ from typing import Any
 from PyQt6.QtCore import pyqtProperty, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import QApplication
 
-from core import b_encoder, game_text, item_display_resolver, resource_loader
+from core import b_encoder, game_text, item_display_resolver, resource_loader, scaled_stats
 from core.legit_status import candidate_state, evaluate as evaluate_legit
 from core.serial_import import (
     build_header,
@@ -294,7 +294,7 @@ class ClassModViewModel(PageViewModel):
     def _memo(self, name: str, build) -> list[dict[str, Any]]:
         """One build per state: QML and the category chips read the same option list."""
         key = (self._context_serial, self.current_lang, self._class_index, self._rarity_index,
-               self._name_index, self._legit_hints,
+               self._name_index, self._legit_hints, self._level or self._character_level,
                tuple((e["key"], e.get("count")) for e in self._skill_entries),
                tuple((e["key"], e.get("count")) for e in self._perk_entries),
                tuple(e["key"] for e in self._leg_entries))
@@ -564,7 +564,10 @@ class ClassModViewModel(PageViewModel):
                 search_text = " ".join((perk_id, internal, display_name, *descs))
                 tooltip = "\n".join(tooltip_lines)
             else:
-                display_name = self._col(perk_row, "perk_name") or perk_en
+                # The CSV number is one level's roll; show the editor level's value.
+                display_name = scaled_stats.scale_label(
+                    self._col(perk_row, "perk_name") or perk_en, f"234:{perk_id}",
+                    self._level or self._character_level)
                 detail = f"{internal}  ·  ID {perk_id}" if internal else f"ID {perk_id}"
                 search_text = f"{perk_id} {internal} {self._search_cols(perk_row, 'perk_name')}"
                 tooltip = detail
@@ -671,6 +674,9 @@ class ClassModViewModel(PageViewModel):
     @pyqtSlot(str)
     def setLevel(self, text: str) -> None:
         self._level = text
+        labels = {option["key"]: option["label"] for option in self.perkOptions}
+        for entry in self._perk_entries:
+            entry["label"] = labels.get(entry["key"], entry["label"])
         self._rebuild(reorder=False)
 
     @pyqtSlot(str)

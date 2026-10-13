@@ -12,7 +12,7 @@ from typing import Any
 from PyQt6.QtCore import pyqtProperty, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import QApplication
 
-from core import b_encoder, game_text, item_display_resolver, resource_loader
+from core import b_encoder, game_text, item_display_resolver, resource_loader, scaled_stats
 from core.legit_status import candidate_state, evaluate as evaluate_legit
 from core.weapon_generation_logic import sample_composition_parts
 from core.serial_import import (
@@ -327,7 +327,9 @@ class EnhancementViewModel(PageViewModel):
                 tooltip = "\n".join(f"L{level}: {text}" for level, text in enumerate(descs, 1) if text)
                 search_text = " ".join((str(code), firmware.get("internal", ""), name, *descs))
             else:
-                name = self._perk_text(stat)
+                # The CSV number is one level's roll; show the editor level's value.
+                name = scaled_stats.scale_label(
+                    self._perk_text(stat), f"247:{code}", self._level or self._character_level)
                 cat, sub = self._classify_247(name_en)
                 tooltip = name
                 search_text = f"{code} {self._search_names(stat)}"
@@ -448,6 +450,9 @@ class EnhancementViewModel(PageViewModel):
     @pyqtSlot(str)
     def setLevel(self, text: str) -> None:
         self._level = text
+        labels = {option["key"]: option["label"] for option in self.statOptions}
+        for entry in self._stat_entries:
+            entry["label"] = labels.get(entry["key"], entry["label"])
         self._rebuild()
 
     @pyqtSlot(int)

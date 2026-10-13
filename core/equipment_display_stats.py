@@ -1218,7 +1218,8 @@ def _display_uistat_number(value: float, attribute: str, template: str, arg: dic
         rendered = f"{sign}{abs(_round_int(value * 100.0)) if reduced or resistance else _round_int(value * 100.0)}%"
     elif any(marker in attr for marker in ("damage", "dmg", "dps")) and abs(value) >= 1.0:
         rendered = f"{round(value):,}"
-    elif abs(value - round(value)) < 0.0001:
+    elif abs(value - round(value)) < 0.0001 or abs(value) >= 100.0:
+        # Large amounts (overshield, healing) are whole numbers on the card: 13,477 not 13477.1
         rendered = f"{round(value):,}"
     else:
         rendered = f"{value:.2f}".rstrip("0").rstrip(".")
@@ -1248,8 +1249,21 @@ def equipment_part_uistat_descriptions(
     lang: str = "zh-CN",
     *,
     with_ids: bool = False,
+    own_slot: bool = False,
+    skip_uistats: Iterable[str] = (),
+    ui_ids: Iterable[str] | None = None,
 ) -> list[Any]:
-    """Render official non-weapon part UIStats against the candidate serial; empty means CSV fallback."""
+    """Render official non-weapon part UIStats against the candidate serial; empty means CSV fallback.
+
+    A primary and a secondary augment of one kind share a single UIStat whose value
+    depends on which slots are filled (Siphon: 10% / 5% / 25% for both). The card
+    shows that one line with the combined value. ``own_slot`` renders a part's own
+    slot instead, for part lists where two rows both reading 25% suggest 50%.
+
+    ``skip_uistats`` holds the UIStats another part of the build excludes
+    (``uistatstoexclude``); ``ui_ids`` renders given UIStats instead of the part's
+    own, e.g. those declared on the item root.
+    """
     root_id, level = _header(decoded)
     candidate = _candidate_serial(decoded, index, root_id, ref_key)
     family, model, _root = _family_model(index, root_id, item_type)
@@ -1390,7 +1404,10 @@ def equipment_part_uistat_descriptions(
                 scalar = atom(value.get("scalar"))
                 result = multiplier * (balance_level**power) * (1.0 if scalar is None else scalar)
         elif "inventoryaugmentattributevalueresolver" in kind:
-            result = _augment_value(model, parts, str(value.get("augmenttag") or ""), int(value.get("augmentindex") or 0))
+            result = _augment_value(
+                model, [target] if own_slot else parts,
+                str(value.get("augmenttag") or ""), int(value.get("augmentindex") or 0),
+            )
             if result is not None and any(
                 _ref_name(effect.get("value_attribute")) == name
                 and str(effect.get("modifier_type") or "ScaleSimple") == "ScaleMultiply"
@@ -1416,13 +1433,23 @@ def equipment_part_uistat_descriptions(
         return result
 
     part = (index.get("part_refs") or {}).get(ref_key) or {}
-    ui_ids = list(dict.fromkeys(part.get("uistats_include") or part.get("uistats", [])))
+    if ui_ids is None:
+        ui_ids = part.get("uistats_include") or part.get("uistats", [])
+    skipped = {str(value).casefold() for value in skip_uistats}
+    skipped.update(str(value).casefold() for value in part.get("uistats_exclude") or ())
     output: list[Any] = []
-    for ui_id in ui_ids:
+    for ui_id in dict.fromkeys(ui_ids):
         ui_key = str(ui_id).casefold()
-        if any(marker in ui_key for marker in ("redtext", "red_text", "typeline")):
+        if ui_key in skipped or any(marker in ui_key for marker in ("redtext", "red_text", "typeline")):
             continue
         ui = (model.get("ui_stats") or {}).get(ui_key) or (index.get("uistats") or {}).get(ui_key) or {}
+        condition = ui.get("displaycondition") or {}
+        if condition.get("attribute"):
+            # e.g. the Order charges line shows only from 2 charges on
+            current = resolve_attribute(_ref_name(condition["attribute"]))
+            threshold = _number(condition.get("compare_value"))
+            if current is not None and threshold is not None and current < threshold:
+                continue
         text = game_text.pick(ui, lang)
         # The number format (percent, sign) is read from the English template: the
         # heuristics look for words such as "chance" or "resistance".

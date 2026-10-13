@@ -80,7 +80,7 @@ manufacturers_ID,perk_ID,perk_name_EN,perk_name_ZH,perk_name_RU,perk_name_DE
 247,84,Gun Status Effect DMG +25%,枪械状态效果伤害 +25%,Временной стихийный урон от стрельбы повышается на +25%,Schusswaffen-Statuseffekt-Schaden wird um +25% erhöht.
 247,85,Gun ADS +50%,枪械开镜瞄准速度 +50%,Навык прицеливания повышается на +50%,Schusswaffen-ZV-Kenntnisse werden um +50% erhöht.
 247,86,Gun Splash Radius +50%,枪械溅射半径 +50%,Радиус урона по площади от пушек повышается на +50%,Indirekter Schusswaffen-Schadensradius wird um +50% erhöht.
-247,87,Gun Splash Radius +25%,枪械溅射半径 +25%,Урон от стрельбы по площади повышается на +25%,Indirekter Schusswaffen-Schaden wird um +25% erhöht.
+247,87,Gun Splash DMG +25%,枪械溅射伤害 +25%,Урон от стрельбы по площади повышается на +25%,Indirekter Schusswaffen-Schaden wird um +25% erhöht.
 247,88,Gun Crit DMG +25%,枪械暴击伤害 +25%,Критический урон от стрельбы повышается на +25%,Kritischer Schusswaffen-Schaden wird um +25% erhöht.
 247,89,Gun Acc +50%,枪械精准度 +50%,Точность оружия повышается на +50%,Schusswaffen-Zielgenauigkeit wird um +50% erhöht.
 247,90,Gun Fire Rate +25%,枪械射速 +25%,Скорострельность повышается на +25%,Schusswaffen-Feuerrate wird um +25% erhöht.
@@ -94,7 +94,7 @@ manufacturers_ID,perk_ID,perk_name_EN,perk_name_ZH,perk_name_RU,perk_name_DE
 247,104,Sniper Status Effect DMG +38%,狙击枪状态效果伤害 +38%,Временной стихийный урон от снайперской винтовки повышается на +38%,Sniper-Rifle-Statuseffekt-Schaden wird um +38% erhöht.
 247,105,Sniper Status Effect Chance +38%,狙击枪状态效果率 +38%,Шанс временного стихийного урона от снайперской винтовки повышается на +38%,Sniper-Rifle-Statuseffekt-Chance wird um +38% erhöht.
 247,106,Sniper Splash Radius +75%,狙击枪溅射半径 +75%,Радиус урона по площади от снайперских винтовок повышается на +75%,Indirekter Sniper-Rifle-Schadensradius wird um +75% erhöht.
-247,107,Sniper Status Effect DMG +38%,狙击枪状态效果伤害 +38%,Урон по площади от снайперских винтовок повышается на +38%,Indirekter Sniper-Rifle-Schaden wird um +38% erhöht.
+247,107,Sniper Splash DMG +38%,狙击枪溅射伤害 +38%,Урон по площади от снайперских винтовок повышается на +38%,Indirekter Sniper-Rifle-Schaden wird um +38% erhöht.
 247,108,Sniper Reload +38%,狙击枪装填速度 +38%,Скорость перезарядки снайперских винтовок повышается на +38%,Sniper-Rifle-Nachladegeschwindigkeit wird um +38% erhöht.
 247,109,Sniper Mag +75%,狙击枪弹匣容量 +75%,Размер магазина снайперских винтовок повышается на +75%,Sniper-Rifle-Magazingröße wird um +75% erhöht.
 247,110,Sniper Fire Rate +38%,狙击枪射速 +38%,Скорострельность снайперских винтовок повышается на +38%,Sniper-Rifle-Feuerrate wird um +38% erhöht.

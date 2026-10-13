@@ -7,7 +7,7 @@ from functools import lru_cache
 from html import escape
 from typing import Any
 
-from . import equipment_display_stats, game_text, resource_loader, ui_text, weapon_display_stats
+from . import equipment_display_stats, game_text, resource_loader, scaled_stats, ui_text, weapon_display_stats
 from .weapon_generation_logic import evaluate_group_selection
 
 
@@ -794,6 +794,8 @@ def _uistat_arg_number(value: float, arg: dict[str, Any]) -> str:
     """
     if arg.get("bdisplayaspercentage"):
         text = _part_number(value * 100.0, 2) + "%"
+    elif abs(value) >= 100.0:
+        text = f"{round(value):,}"  # damage and other amounts: 50,008 not 50007.61
     else:
         text = _part_number(value)
     if arg.get("bdisplayplussign") and value > 0:
@@ -858,9 +860,11 @@ def _part_effect_value(effect: dict[str, Any], index: dict[str, Any]) -> float |
     defaults = (index.get("weapon_native_model") or {}).get("attribute_defaults") or {}
     value: Any = defaults.get(effect.get("value_attribute")) if effect.get("value_attribute") else None
     if value is None:
-        value = effect.get("constant")
-    if value is None:
+        # A behavior value with both reads the table; its constant is only the
+        # fallback (JAK_Vial radius: constant 0.2, table 500 cm).
         value = next((ref.get("value") for ref in effect.get("datatable_refs", []) if ref.get("value") is not None), None)
+    if value is None:
+        value = effect.get("constant")
     if value is None:
         value = defaults.get(effect.get("attribute"))
     try:
@@ -1165,7 +1169,9 @@ def _all_attribute_defaults() -> dict[str, float]:
     return merged
 
 
-def _fill_uistat_args(text: str, entry: dict[str, Any], index: dict[str, Any]) -> str:
+def _fill_uistat_args(
+    text: str, entry: dict[str, Any], index: dict[str, Any], scaled: dict[str, Any] | None = None
+) -> str:
     """Substitute {token} slots from the uistat's own args when a value is known.
 
     statvalue.args maps each token to an attribute name; when that attribute has a
@@ -1190,7 +1196,11 @@ def _fill_uistat_args(text: str, entry: dict[str, Any], index: dict[str, Any]) -
         attribute = str(arg.get("attribute") or "")
         if not attribute:
             continue
-        value = defaults.get(attribute.casefold())
+        # Level formulas (underbarrel damage): the default is only the table
+        # multiplier, e.g. a Sticky Mine "120" at every level.
+        value = _scaled_arg_value(attribute, arg, scaled)
+        if value is None:
+            value = defaults.get(attribute.casefold())
         if value is None:
             continue
         try:
@@ -1200,7 +1210,33 @@ def _fill_uistat_args(text: str, entry: dict[str, Any], index: dict[str, Any]) -
     return text
 
 
-def _part_behavior_text(ref: dict[str, Any], index: dict[str, Any], lang: str) -> str:
+def _scaled_arg_value(attribute: str, arg: dict[str, Any], scaled: dict[str, Any] | None) -> float | None:
+    if not scaled or scaled.get("level") is None:
+        return None
+    attribute = attribute.casefold()
+    if attribute == "weapon_damage" and int(arg.get("attributeindex") or 0) == 1:
+        return scaled.get("secondary_damage")
+    if attribute.startswith("weapon_"):
+        return None
+    return scaled_stats.attribute_value(attribute, scaled["level"])
+
+
+def _part_scaled_context(ref: dict[str, Any], decoded_full: str) -> dict[str, Any] | None:
+    level = _decoded_item_level(decoded_full) if decoded_full else None
+    if level is None:
+        return None
+    damage = None
+    for effect in ref.get("weapon_attribute_effects", []):
+        mode = str(effect.get("use_mode_bitmask") or "1")
+        if (effect.get("attribute") == "weapon_damage" and effect.get("modifier_type") == "OverrideBaseValue"
+                and mode.isdigit() and int(mode) & 2 and not int(mode) & 1 and effect.get("value_attribute")):
+            damage = scaled_stats.attribute_value(str(effect["value_attribute"]), level) or damage
+    return {"level": level, "secondary_damage": damage}
+
+
+def _part_behavior_text(
+    ref: dict[str, Any], index: dict[str, Any], lang: str, decoded_full: str = ""
+) -> str:
     key = game_text.text_lang(lang)
     for uistat_id in [*ref.get("uistats_include", []), *ref.get("uistats", [])]:
         entry = (index.get("uistats") or {}).get(str(uistat_id).lower(), {})
@@ -1211,7 +1247,7 @@ def _part_behavior_text(ref: dict[str, Any], index: dict[str, Any], lang: str) -
             if separator in text:
                 text = text.split(separator, maxsplit=1)[1].strip()
                 break
-        text = _fill_uistat_args(text, entry, index)
+        text = _fill_uistat_args(text, entry, index, _part_scaled_context(ref, decoded_full))
         text = _UNFILLED_VALUE_SLOT.sub(_UNKNOWN_VALUE_MARK, text)
         return text
     return ""
@@ -1442,7 +1478,7 @@ def format_weapon_part_description(
         if throw:
             lines.insert(0, _t("ted_throw", lang, name=_t(f"ted_throw_{throw}", lang)))
 
-    behavior = _tediore_behavior_text(ref, index, lang, decoded_full) or _part_behavior_text(ref, index, lang)
+    behavior = _tediore_behavior_text(ref, index, lang, decoded_full) or _part_behavior_text(ref, index, lang, decoded_full)
     suppress_behavior = ref.get("category") == "barrel" or (ref.get("category") == "magazine" and bool(tags & {"cov_mag", "borg_mag"}))
     if behavior and not suppress_behavior and (not lines or "licensed" in tags or any("ted_" in tag for tag in tags)):
         lines.append(behavior)
@@ -2968,6 +3004,14 @@ def equipment_part_name(ref_key: str, lang: str = "zh-CN", fallback: str = "") -
     return re.split(r"\s+[-–—]\s+", fallback, maxsplit=1)[0].strip()
 
 
+def _decoded_item_level(decoded_full: str) -> int | None:
+    """Item level from a decoded serial header (``None`` when it cannot be read)."""
+    try:
+        return equipment_display_stats._header(decoded_full)[1]
+    except (ValueError, IndexError):
+        return None
+
+
 def _serial_without_equipment_part(decoded: str, root_id: str, ref_key: str) -> str:
     owner_wanted, part_wanted = ref_key.split(":", 1)
     removed = False
@@ -2995,6 +3039,11 @@ def _serial_without_equipment_part(decoded: str, root_id: str, ref_key: str) -> 
     return re.sub(r"\{([^{}]+)\}", remove, decoded)
 
 
+# Root-level UIStats the equipment card lists as an effect line. The others on
+# the shared family roots (capacity, healing, cooldown ...) are primary stats.
+_EQUIPMENT_ROOT_UISTATS = frozenset({"uistat_repkit_charges"})
+
+
 @lru_cache(maxsize=4096)
 def format_equipment_part_description(
     decoded_full: str,
@@ -3014,8 +3063,9 @@ def format_equipment_part_description(
     index = _item_index()
     lines = []
     try:
+        # A part row shows its own augment slot; the card shows the combined line.
         official = equipment_display_stats.equipment_part_uistat_descriptions(
-            decoded_full, index, item_type, ref_key, lang
+            decoded_full, index, item_type, ref_key, lang, own_slot=True
         )
     except (KeyError, TypeError, ValueError, OverflowError, ZeroDivisionError):
         official = []
@@ -3185,6 +3235,46 @@ def resolve_equipment_card_details(
     firmware: list[dict[str, Any]] = []
     element = ""
     element_text = ""
+    part_refs = index.get("part_refs") or {}
+    # A part's uistatstoexclude hides that UIStat for the whole item (a legendary
+    # payload hides the body's manufacturer line, Triple Bypass the Order charges).
+    excluded = sorted({
+        str(ui_id).casefold()
+        for ref_key in ref_keys
+        for ui_id in (part_refs.get(ref_key) or {}).get("uistats_exclude") or ()
+    })
+    # Root-level lines such as "Order - This Repkit has 2 Charges"; the shared
+    # family roots (243, 245, 246 ...) only declare the primary stats.
+    root_ids = [
+        ui_id for ui_id in ((index.get("root_uistats") or {}).get(root_id) or ())
+        if ui_id.casefold() not in excluded and ui_id.casefold() in _EQUIPMENT_ROOT_UISTATS
+    ]
+    body_ref = next(
+        (key for key in ref_keys if (part_refs.get(key) or {}).get("category") == "body"),
+        ref_keys[0] if ref_keys else "",
+    )
+    if root_ids and body_ref:
+        try:
+            official = equipment_display_stats.equipment_part_uistat_descriptions(
+                decoded_full, index, item_type, body_ref, lang, with_ids=True, ui_ids=root_ids
+            )
+        except (KeyError, TypeError, ValueError, OverflowError, ZeroDivisionError):
+            official = []
+        for entry in official:
+            text = str(entry.get("text") or "")
+            ui_key = str(entry.get("uistat") or "").casefold()
+            ui = (index.get("uistats") or {}).get(ui_key) or {}
+            if text and text not in rows:
+                rows.append(text)
+                entries.append({
+                    "text": text,
+                    "markup": str(entry.get("markup") or text),
+                    "icon_asset": str(ui.get("icon_asset") or ""),
+                    "ref_key": root_id,
+                    "uistat": ui_key,
+                    "category": "manufacturer",
+                    "display_kind": "normal",
+                })
     for ref_key in ref_keys:
         ref = (index.get("part_refs") or {}).get(ref_key) or {}
         category = str(ref.get("category") or "")
@@ -3205,7 +3295,7 @@ def resolve_equipment_card_details(
 
         try:
             official = equipment_display_stats.equipment_part_uistat_descriptions(
-                decoded_full, index, item_type, ref_key, lang, with_ids=True
+                decoded_full, index, item_type, ref_key, lang, with_ids=True, skip_uistats=excluded
             )
         except (KeyError, TypeError, ValueError, OverflowError, ZeroDivisionError):
             official = []
@@ -3545,6 +3635,7 @@ def resolve_classmod_card_details(
             "stat_lines": _classmod_skill_stat_lines(key, level, ranks, lang),
         })
 
+    item_level = _decoded_item_level(decoded_full)
     perk_rows = {row.get("perk_ID", "").strip(): row for row in _rows_by_file("data/class_mods/Class_perk.csv")}
     # quoted perks: the game writes "ClassMod.x", the table CLASSMOD.x
     named_perks = {key.casefold(): key for key in perk_rows if not key.isdigit()}
@@ -3579,7 +3670,7 @@ def resolve_classmod_card_details(
             continue
         entry = {
             "id": perk_id,
-            "name": game_text.csv_text(row, "perk_name", lang),
+            "name": scaled_stats.scale_label(game_text.csv_text(row, "perk_name", lang), ref_key, item_level),
             "count": perk_counts[perk_id],
             "category": row.get("perk_category", ""),
             "internal": row.get("perk_internal", ""),
@@ -3682,6 +3773,7 @@ def resolve_enhancement_card_details(decoded_full: str, lang: str = "zh-CN") -> 
 
     stats = []
     firmware = []
+    item_level = _decoded_item_level(decoded_full)
     for part_id in shared_ids:
         ref = _part_ref(247, part_id)
         category = ref.get("category")
@@ -3706,7 +3798,7 @@ def resolve_enhancement_card_details(decoded_full: str, lang: str = "zh-CN") -> 
         row = shared_rows.get(part_id)
         if not row:
             continue
-        text = game_text.csv_text(row, "perk_name", lang)
+        text = scaled_stats.scale_label(game_text.csv_text(row, "perk_name", lang), f"247:{part_id}", item_level)
         entry = {"id": part_id, "text": text}
         if category in {"stat_group1", "stat_group2", "stat_group3"}:
             entry["group"] = category
