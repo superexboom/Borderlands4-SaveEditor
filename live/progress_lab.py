@@ -1023,6 +1023,187 @@ def partdef_vtables(m: Any, args: dict[str, Any]) -> dict[str, Any]:
             "item_part_vtables": items.most_common(5), "type_map_vtables": maps.most_common(5)}
 
 
+def _find_identity(m: Any, obj: Any, depth: int = 4, seen: set | None = None) -> Any:
+    """First InventoryIdentity struct reachable from a pickup (reflected fields only)."""
+    from unrealsdk.unreal import UObject, WrappedArray, WrappedStruct
+    seen = set() if seen is None else seen
+    if depth < 0 or obj is None:
+        return None
+    if isinstance(obj, WrappedStruct):
+        if obj._type.Name == "InventoryIdentity":
+            return obj
+        props = obj._type._properties()
+    elif isinstance(obj, UObject):
+        if m._addr(obj) in seen:
+            return None
+        seen.add(m._addr(obj))
+        props = obj.Class._properties()
+    elif isinstance(obj, WrappedArray):
+        for i in range(min(len(obj), 2)):
+            hit = _find_identity(m, obj[i], depth - 1, seen)
+            if hit is not None:
+                return hit
+        return None
+    else:
+        return None
+    for prop in props:
+        if prop.Class.Name not in ("StructProperty", "ObjectProperty", "ArrayProperty"):
+            continue
+        if prop.Class.Name == "ObjectProperty" and depth < 3:
+            continue
+        hit = _find_identity(m, m._safe(lambda prop=prop: obj._get_field(prop)), depth - 1, seen)
+        if hit is not None:
+            return hit
+    return None
+
+
+def _pickup_serials(m: Any, pickups: list[Any]) -> list[dict[str, Any]]:
+    rows = []
+    for obj in pickups:
+        ident = _find_identity(m, obj)
+        info = m._read_identity(ident) if ident is not None else {"ok": False, "why": "no identity"}
+        loc = m._safe(lambda obj=obj: obj.K2_GetActorLocation())
+        item = m._safe(lambda obj=obj: obj.Item)
+        data = m._safe(lambda: item.data) if item is not None else None
+        rows.append({"id": m._safe(lambda: int(data.InstanceId)) if data is not None else None,
+                     "obj": m._path(obj).rsplit("_", 1)[-1],
+                     "serial": info.get("serial"), "why": info.get("why"),
+                     "pos": [round(loc.X), round(loc.Y), round(loc.Z)] if loc is not None else None})
+    return rows
+
+
+def spawn_comp(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    """Roll items natively from one composition (OakInventoryStatics.SpawnInventoryFromCharacter) and
+    report the new pickups' serials. args: type, comp, times (<=30), policy, owner_only."""
+    pawn = m._runtime_pawn()
+    statics = m._runtime_static("OakInventoryStatics")
+    inv_type = str(args.get("type") or "ted_repair_kit")
+    comp = str(args.get("comp") or "comp_05_legendary_font")
+    times = max(1, min(30, int(args.get("times") or 1)))
+    before = {m._addr(obj) for obj in _pickups(m)}
+    errors = []
+    started = time.perf_counter()
+    for _ in range(times):
+        try:
+            statics.SpawnInventoryFromCharacter(
+                OwnerContext=pawn, InventoryType=inv_type, InventoryComp=comp,
+                InstancingPolicy=int(args.get("policy") or 0), bOwnerOnly=bool(args.get("owner_only", False)),
+                owner=pawn)
+        except Exception as exc:
+            errors.append(f"{type(exc).__name__}: {exc}"[:240])
+            break
+    elapsed = round((time.perf_counter() - started) * 1000, 1)
+    new = [obj for obj in _pickups(m) if m._addr(obj) not in before]
+    return {"ok": not errors, "type": inv_type, "comp": comp, "times": times, "elapsed_ms": elapsed,
+            "errors": errors, "new_pickups": len(new), "items": _pickup_serials(m, new[:60])}
+
+
+def pickup_parts(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    """Read-only: root / composition / part ids of pickups straight from their identities
+    (fresh drops carry no serial text yet). args: roots=[290, 243], min_id=0, radius."""
+    roots = {int(r) for r in args.get("roots") or [290, 243]}
+    m._ensure_part_index(roots, roots)
+    part_by_ptr = {ptr: f"{k[0]}:{k[1]}" for k, ptr in m.GAME.part_index.items() if k[0] in roots}
+    comp_by_ptr = {ptr: f"{k[0]}:{k[1]}" for k, ptr in m.GAME.comp_index.items() if k[0] in roots}
+    type_by_ptr = {ptr: root for root, ptr in m.GAME.type_index.items()}
+    pawn = m._runtime_pawn()
+    here = pawn.K2_GetActorLocation()
+    radius = float(args.get("radius") or 100000)
+    min_id = int(args.get("min_id") or 0)
+    rows = []
+    for obj in _pickups(m):
+        item = m._safe(lambda obj=obj: obj.Item)
+        data = m._safe(lambda: item.data) if item is not None else None
+        pid = m._safe(lambda: int(data.InstanceId)) if data is not None else None
+        loc = m._safe(lambda obj=obj: obj.K2_GetActorLocation())
+        if pid is None or pid < min_id or loc is None:
+            continue
+        if ((loc.X - here.X) ** 2 + (loc.Y - here.Y) ** 2 + (loc.Z - here.Z) ** 2) ** 0.5 > radius:
+            continue
+        ident = _find_identity(m, obj)
+        addr = m._addr(ident) if ident is not None else 0
+        raw = m._rd(addr, m.IDENTITY_SIZE) if addr else None
+        if not raw:
+            rows.append({"id": pid, "why": "no identity"})
+            continue
+        type_ptr, comp_ptr = m._u64(raw, m.OFF_TYPE_PTR), m._u64(raw, m.OFF_COMP_PTR)
+        info = m._read_identity_address(addr)
+        rows.append({"id": pid, "root": type_by_ptr.get(type_ptr, hex(type_ptr)),
+                     "comp": comp_by_ptr.get(comp_ptr, hex(comp_ptr)),
+                     "parts": [part_by_ptr.get(p, hex(p)) for p in m._read_part_ptrs(addr)],
+                     "serial": info.get("serial")})
+    rows.sort(key=lambda row: row["id"])
+    return {"ok": True, "count": len(rows), "items": rows[: int(args.get("limit") or 80)]}
+
+
+def clear_ids(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    """Destroy test drops by InstanceId with a small DestroyJunkWithinBounds box around each one.
+    args: ids=[...], size=15. Reports which of the ids are still there afterwards."""
+    pawn = m._runtime_pawn()
+    junk = m._runtime_static("JunkSystemFunctionLibrary")
+    wanted = {int(x) for x in args.get("ids") or []}
+    size = float(args.get("size") or 15)
+
+    def by_id():
+        out = {}
+        for obj in _pickups(m):
+            item = m._safe(lambda obj=obj: obj.Item)
+            data = m._safe(lambda: item.data) if item is not None else None
+            pid = m._safe(lambda: int(data.InstanceId)) if data is not None else None
+            if pid in wanted:
+                out[pid] = obj
+        return out
+
+    targets = by_id()
+    for pid, obj in targets.items():
+        loc = m._safe(lambda obj=obj: obj.K2_GetActorLocation())
+        if loc is None:
+            continue
+        box = _sdk().make_struct("Box", Min=_sdk().make_struct("Vector", X=loc.X - size, Y=loc.Y - size, Z=loc.Z - size),
+                                 Max=_sdk().make_struct("Vector", X=loc.X + size, Y=loc.Y + size, Z=loc.Z + size),
+                                 IsValid=True)
+        junk.DestroyJunkWithinBounds(pawn, box)
+    return {"ok": True, "found": sorted(targets), "left": sorted(by_id())}
+
+
+def backpack_serials(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    """Read-only: serials of the backpack entries (last `n`, default 10), with their index."""
+    m.GAME.refresh_containers()
+    arr = m.GAME.items_array("BackpackItems")
+    total = (m._safe(lambda: len(arr), 0) or 0) if arr is not None else 0
+    rows = []
+    for i in range(max(0, total - int(args.get("n") or 10)), total):
+        ident = m.GAME.identity_at("BackpackItems", i)
+        info = m._read_identity(ident) if ident is not None else {"ok": False, "why": "empty"}
+        row = {"index": i, "serial": info.get("serial"), "why": info.get("why")}
+        addr = m._addr(ident) if ident is not None else 0
+        raw = m._rd(addr, m.IDENTITY_SIZE) if addr else None
+        if raw and args.get("roots"):
+            roots = {int(r) for r in args["roots"]}
+            m._ensure_part_index(roots, roots)
+            part_by_ptr = {ptr: f"{k[0]}:{k[1]}" for k, ptr in m.GAME.part_index.items() if k[0] in roots}
+            comp_by_ptr = {ptr: f"{k[0]}:{k[1]}" for k, ptr in m.GAME.comp_index.items() if k[0] in roots}
+            type_by_ptr = {ptr: root for root, ptr in m.GAME.type_index.items()}
+            row.update({"root": type_by_ptr.get(m._u64(raw, m.OFF_TYPE_PTR)),
+                        "comp": comp_by_ptr.get(m._u64(raw, m.OFF_COMP_PTR)),
+                        "parts": [part_by_ptr.get(p, hex(p)) for p in m._read_part_ptrs(addr)]})
+        rows.append(row)
+    return {"ok": True, "total": total, "items": rows}
+
+
+def pickup_serials(m: Any, args: dict[str, Any]) -> dict[str, Any]:
+    """Serials of the pickups within `radius` (default 3000) of the player."""
+    pawn = m._runtime_pawn()
+    here = pawn.K2_GetActorLocation()
+    radius = float(args.get("radius") or 3000)
+    near = []
+    for obj in _pickups(m):
+        loc = m._safe(lambda obj=obj: obj.K2_GetActorLocation())
+        if loc is not None and ((loc.X - here.X) ** 2 + (loc.Y - here.Y) ** 2 + (loc.Z - here.Z) ** 2) ** 0.5 <= radius:
+            near.append(obj)
+    return {"ok": True, "count": len(near), "items": _pickup_serials(m, near[: int(args.get("limit") or 80)])}
+
+
 TESTS = {name: fn for name, fn in globals().items() if callable(fn) and not name.startswith("_")
          and name not in {"run", "annotations"}}
 
