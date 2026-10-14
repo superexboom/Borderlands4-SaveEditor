@@ -467,6 +467,18 @@ class EnhancementViewModel(PageViewModel):
         self._rebuild()
 
     @staticmethod
+    def _body_code(mfg_code: int, rarity_code: int, rarity_en: str) -> int:
+        """The 247 body the rarity's composition names. Vladof's rare composition uses the
+        epic body (247:77), so the per-rarity table is only the fallback."""
+        rules = item_display_resolver._item_index().get("weapon_generation_rules") or {}
+        composition = (((rules.get("weapons") or {}).get(str(mfg_code)) or {}).get("compositions") or {}).get(
+            f"{mfg_code}:{rarity_code}") or {}
+        allowed = ((composition.get("groups") or {}).get("body") or {}).get("allowed_part_refs") or []
+        if len(allowed) == 1 and str(allowed[0]).startswith("247:") and str(allowed[0])[4:].isdigit():
+            return int(str(allowed[0])[4:])
+        return enhancement_data["rarity_map_247"][rarity_en]
+
+    @staticmethod
     def _roll_part_tags(ref: str) -> dict[str, Any]:
         index = item_display_resolver._item_index()
         rules = index.get("weapon_generation_rules") or {}
@@ -1188,7 +1200,7 @@ class EnhancementViewModel(PageViewModel):
             return
         rarity_code = enhancement_data["manufacturers"][mfg_en]["rarities"][rarity_en]
         parts.append(f"{{{rarity_code}}}")
-        rarity_247_code = enhancement_data["rarity_map_247"][rarity_en]
+        rarity_247_code = self._body_code(mfg_code, rarity_code, rarity_en)
         parts.append(f"{{247:{rarity_247_code}}}")
         for index in _PERK_ORDER:
             if self._perk_checked.get(index):

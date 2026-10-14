@@ -386889,7 +386889,7 @@
             "id": "pair2189756482",
             "group": "body",
             "parts": [
-              "Part_Body_03_Rare"
+              "Part_Body_04_Epic"
             ]
           },
           {
@@ -941185,10 +941185,10 @@
                 "max": 1,
                 "source": "local",
                 "allowed_part_refs": [
-                  "247:78"
+                  "247:77"
                 ],
                 "allowed_parts": [
-                  "Part_Body_03_Rare"
+                  "Part_Body_04_Epic"
                 ]
               },
               "core_augment": {
