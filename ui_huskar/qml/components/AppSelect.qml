@@ -15,28 +15,51 @@ HusSelect {
     clearEnabled: false
     implicitWidth: 160
     showToolTip: true
+    // Tooltip text of one model row. Empty when it would only repeat the row's own
+    // label (the "None" entries carry their label as tooltip).
+    function rowTip(row) {
+        if (!row || typeof row !== "object") return "";
+        var text = String(row.tooltip || row.hint || row.detail || "").trim();
+        var label = String(row[select.textRole] || "").trim();
+        var plain = row.marker ? label.replace(String(row.marker), "").trim() : label;
+        return text === label || text === plain ? "" : text;
+    }
+    // The row the closed box shows. Pages that drive displayText from the VM leave
+    // currentIndex stale, so match the shown text first.
+    function shownRow() {
+        var rows = select.model;
+        if (!rows || rows.length === undefined) return null;
+        var shown = String(select.displayText || "");
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i] && typeof rows[i] === "object" && String(rows[i][select.textRole] || "") === shown)
+                return rows[i];
+        }
+        return select.currentIndex >= 0 ? rows[select.currentIndex] : null;
+    }
     toolTipDelegate: Item {
         id: entryTip
-        readonly property string tipText: {
-            var row = select.model && index >= 0 ? select.model[index] : null;
-            // Do not repeat a short field's selected label in a huge tooltip.
-            return row ? String(row.tooltip || row.hint || row.detail || "") : "";
-        }
+        readonly property string tipText: select.model && index >= 0 ? select.rowTip(select.model[index]) : ""
         property bool rowHovered: hovered
+        // HusSelect patch: pointer position in this item's coordinates, so the tip
+        // opens next to the mouse instead of under the middle of the row
+        property point rowPoint: hoverPosition
         onRowHoveredChanged: {
-            if (rowHovered) HoverTip.showFor(entryTip, tipText, 12, 0);
+            if (rowHovered) HoverTip.showFor(entryTip, tipText, rowPoint.x, rowPoint.y);
             else HoverTip.hideFor(entryTip);
         }
+        onRowPointChanged: if (rowHovered) HoverTip.showFor(entryTip, tipText, rowPoint.x, rowPoint.y)
         Component.onDestruction: HoverTip.hideFor(entryTip)
     }
     HoverHandler {
         id: controlHover
         onHoveredChanged: {
             if (!hovered || select.popup.visible) HoverTip.hideFor(select);
-            else {
-                var row = select.model && select.currentIndex >= 0 ? select.model[select.currentIndex] : null;
-                HoverTip.showFor(select, row ? row.tooltip || row.hint || row.detail || "" : "", point.position.x, point.position.y);
-            }
+            else HoverTip.showFor(select, select.rowTip(select.shownRow()), point.position.x, point.position.y);
         }
+    }
+    // A click inside the hover delay used to open the box's tip on top of the list
+    Connections {
+        target: select.popup
+        function onAboutToShow() { HoverTip.hideFor(select); }
     }
 }

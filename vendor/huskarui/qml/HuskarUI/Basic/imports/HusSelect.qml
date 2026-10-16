@@ -269,17 +269,36 @@ T.ComboBox {
             currentIndex: control.highlightedIndex
             boundsBehavior: Flickable.StopAtBounds
             // [BL4 patch] 弹层列表滚轮滚动（Flickable 本身不处理滚轮，须显式 WheelHandler；
-            // 注意 handler 内 parent 解析不到本视图，必须用 id 引用）
+            // 注意 handler 内 parent 解析不到本视图，必须用 id 引用）。
+            // 每格约 3 行并平滑动画（同 LockedListView）：原先每格 240px 恰好约等于弹层高度，
+            // 一滚整页瞬切，页边界上的行（如固件下拉的"神枪手"）会被跳过，看起来像缺项。
+            // 边界以 originY 为基准，行高估算变化时不会滚出空白或够不到首行。
+            readonly property real minContentY: originY - topMargin
+            readonly property real maxContentY: Math.max(minContentY, originY + contentHeight + bottomMargin - height)
+            NumberAnimation {
+                id: __popupWheelAnim
+                target: __popupListView
+                property: "contentY"
+                duration: 200
+                easing.type: Easing.OutCubic
+            }
+            onDragStarted: __popupWheelAnim.stop()
             WheelHandler {
                 acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
                 onWheel: function(event) {
-                    var maxY = Math.max(0, __popupListView.contentHeight - __popupListView.height);
                     var dy = event.angleDelta.y;
-                    if (maxY > 0 && dy !== 0) {
-                        var newY = __popupListView.contentY - dy * 2;
-                        var clamped = Math.max(0, Math.min(maxY, newY));
-                        if (clamped !== __popupListView.contentY)
-                            __popupListView.contentY = clamped;
+                    if (dy !== 0) {
+                        var view = __popupListView;
+                        var rowH = view.count > 0 ? view.contentHeight / view.count : 32;
+                        var step = (dy / 120) * Math.max(48, rowH * 3);
+                        // 连续滚动时从上一格的终点累加，快速滚轮不会丢距离
+                        var from = __popupWheelAnim.running ? __popupWheelAnim.to : view.contentY;
+                        var target = Math.max(view.minContentY, Math.min(view.maxContentY, from - step));
+                        if (Math.abs(target - view.contentY) > 0.5) {
+                            __popupWheelAnim.stop();
+                            __popupWheelAnim.to = target;
+                            __popupWheelAnim.start();
+                        }
                     }
                     event.accepted = true;
                 }
@@ -345,6 +364,7 @@ T.ComboBox {
                 }
 
                 HoverHandler {
+                    id: __popupRowHover
                     cursorShape: control.hoverCursorShape
                 }
 
@@ -357,6 +377,9 @@ T.ComboBox {
                     property alias model: __popupDelegate.model
                     property alias hovered: __popupDelegate.hovered
                     property alias pressed: __popupDelegate.pressed
+                    // [BL4 patch] 鼠标在行内的位置（换算到本 Loader 坐标），提示框据此贴着鼠标
+                    readonly property point hoverPosition: Qt.point(__popupRowHover.point.position.x - x,
+                                                                    __popupRowHover.point.position.y - y)
                 }
             }
             T.ScrollBar.vertical: HusScrollBar {
