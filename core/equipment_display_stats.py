@@ -7,7 +7,7 @@ from math import ceil, floor
 import re
 from typing import Any, Iterable
 
-from . import game_text, weapon_display_stats as weapon
+from . import game_text, scaled_stats, weapon_display_stats as weapon
 
 
 FAMILY_BY_ITEM_TYPE = {
@@ -1193,8 +1193,10 @@ def _display_uistat_number(value: float, attribute: str, template: str, arg: dic
     lower = template.casefold()
     if arg.get("bcalculatewithreductionmath") and value < 0:
         value = 1.0 - (1.0 / (1.0 - value))
+    # OppositeSign is left out: display_modifier already turns the mapped stats into the
+    # shown delta (Lethal's "+40% Grenade Damage" is OppositeSign in the data).
     if str(arg.get("signstyle") or "").casefold() in {"negative", "positive"}:
-        value = abs(value)
+        value = scaled_stats.apply_sign_style(value, arg)
     if arg.get("bdisplayaspercentage"):
         rendered = f"{_round_int(value * 100.0)}%"
         if arg.get("bdisplayplussign") and value > 0:

@@ -792,6 +792,7 @@ def _uistat_arg_number(value: float, arg: dict[str, Any]) -> str:
     bDisplayPlusSign prefixes gains with '+'. Without the flags the number is a plain
     count (seconds, stacks, ammo) and must stay as-is.
     """
+    value = scaled_stats.apply_sign_style(value, arg)
     if arg.get("bdisplayaspercentage"):
         text = _part_number(value * 100.0, 2) + "%"
     elif abs(value) >= 100.0:
@@ -3498,8 +3499,7 @@ def _classmod_skill_stat_lines(
         value = resolve_attribute(str(arg.get("attribute") or ""))
         if value is None:
             return None
-        if str(arg.get("signstyle") or "").casefold() == "negative":
-            value = -abs(value)
+        value = scaled_stats.apply_sign_style(value, arg)
         percentage = bool(arg.get("bdisplayaspercentage"))
         if percentage:
             value *= 100.0

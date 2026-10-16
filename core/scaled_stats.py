@@ -88,15 +88,26 @@ def _attribute_value(name: str, level: int, stack: frozenset[str]) -> float | No
     return None
 
 
+def apply_sign_style(value: float, arg: dict[str, Any]) -> float:
+    """Apply a NumericDisplayValue's SignStyle, as the game's UI does.
+
+    Positive/Negative force the shown sign (Deadeye's -0.3 accuracy reads +30%),
+    OppositeSign flips it. Every uistat formatter must go through this.
+    """
+    style = str(arg.get("signstyle") or "").casefold()
+    if style == "oppositesign":
+        return -value
+    if style == "positive":
+        return abs(value)
+    if style == "negative":
+        return -abs(value)
+    return value
+
+
 def _display_value(value: float, arg: dict[str, Any]) -> float:
     if arg.get("bcalculatewithreductionmath") and value < 0:
         value = -(1.0 - 1.0 / (1.0 - value))
-    style = str(arg.get("signstyle") or "").casefold()
-    if style == "oppositesign":
-        value = -value
-    elif style in {"positive", "negative"}:
-        value = abs(value) if style == "positive" else -abs(value)
-    return value
+    return apply_sign_style(value, arg)
 
 
 def _format(value: float, arg: dict[str, Any]) -> str:
