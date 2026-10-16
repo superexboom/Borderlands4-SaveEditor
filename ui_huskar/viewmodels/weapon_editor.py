@@ -111,7 +111,7 @@ class WeaponEditorViewModel(PageViewModel):
         self._seed = ""
         self._weapon_name = ""
         self._stats: list[dict[str, str]] = []
-        self._legality = {"text": "—", "status": "unknown", "tooltip": ""}
+        self._legality = {"text": "—", "status": "unknown", "tooltip": "", "reasons": []}
         self._part_rows: list[dict[str, Any]] = []
         self._group_collapsed: set[int] = set()
         self._browser_items: list[dict[str, Any]] = []
@@ -514,7 +514,7 @@ class WeaponEditorViewModel(PageViewModel):
         self._seed = ""
         self._weapon_name = self.get_localized_string("weapon_name_label")
         self._stats = []
-        self._legality = {"text": "—", "status": "unknown", "tooltip": ""}
+        self._legality = {"text": "—", "status": "unknown", "tooltip": "", "reasons": []}
         self._part_rows = []
         self.selected_weapon_path = None
         self.parts_data = []
@@ -591,11 +591,13 @@ class WeaponEditorViewModel(PageViewModel):
             else:
                 outer_id, inner = int(match.group(1)), match.group(2)
                 if inner:
+                    # {X:Y} with X != 1 is one part of another weapon, the same as {X:[Y]};
+                    # only root 1 holds elements
                     part_data.update(
+                        {"type": "elemental", "id": outer_id, "sub_id": int(inner)}
+                        if outer_id == 1 and "[" not in inner else
                         {"type": "group", "id": outer_id,
-                         "sub_ids": [int(sid) for sid in inner.strip("[]").split()]}
-                        if "[" in inner else
-                        {"type": "elemental", "id": outer_id, "sub_id": int(inner)})
+                         "sub_ids": [int(sid) for sid in inner.strip("[]").split()]})
                 else:
                     part_data.update({"type": "simple", "id": outer_id})
             components.append(part_data)
@@ -732,19 +734,18 @@ class WeaponEditorViewModel(PageViewModel):
         }
         label = self._rule_message(*labels.get(status, labels["unknown"]))
         reasons = self._legality_reason_lines(result)
-        short = reasons[0] if reasons else ""
-        if len(short) > 36:
-            short = short[:35] + "…"
         tooltip = [label]
         tooltip.extend(f"• {line}" for line in reasons)
         if not reasons:
             tooltip.append(self._rule_message(
                 "matches_rules" if status == "legal" else "no_weapon",
                 "Matches the current generation rules" if status == "legal" else "No verifiable weapon loaded"))
+        # the page lists every reason under the badge, so the badge only names the status
         self._legality = {
-            "text": f"{label} · {short}" if short else label,
+            "text": label,
             "status": status,
             "tooltip": "\n".join(tooltip),
+            "reasons": reasons,
         }
 
     def _generation_group_text(self, group):
@@ -1033,6 +1034,8 @@ class WeaponEditorViewModel(PageViewModel):
                     "index": index, "kind": "group", "title": title,
                     "expanded": index not in self._group_collapsed,
                     "subs": subs, "isSkin": False,
+                    # the shared delegate binds the simple-row fields too
+                    "typeText": "", "idText": "", "name": "", "internal": "", "stat": "", "color": "",
                 })
             else:
                 info = self._simple_part_info(part_info, m_id, index)

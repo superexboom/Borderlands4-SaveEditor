@@ -19,6 +19,8 @@ RowLayout {
 
     // 部件列表选中项（Ctrl+C 复制目标，-1 表示无）
     property int selectedPartIndex: -1
+    readonly property var legalityReasons: vmWeaponEditor.legalityBadge.reasons || []
+    property bool legalityExpanded: false
 
     SelectionStyle { id: selStyle }
 
@@ -384,6 +386,35 @@ RowLayout {
                             onClicked: {
                                 if (vmWeaponEditor.prepareSkinOptions() > 0)
                                     skinDialog.open();
+                            }
+                        }
+                    }
+
+                    // 合法性原因：逐条完整显示，超过 5 条时折叠（可展开）
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 2
+                        visible: page.legalityReasons.length > 0
+                        Repeater {
+                            model: page.legalityExpanded ? page.legalityReasons : page.legalityReasons.slice(0, 5)
+                            delegate: HusText {
+                                Layout.fillWidth: true
+                                text: "• " + modelData
+                                color: HusTheme.Primary.colorTextBase
+                                font.pixelSize: 12
+                                wrapMode: Text.Wrap
+                            }
+                        }
+                        HusText {
+                            visible: page.legalityReasons.length > 5
+                            text: page.legalityExpanded ? (labelsLoc.legality_show_less || "")
+                                  : (labelsLoc.legality_show_all || "").replace("{n}", page.legalityReasons.length)
+                            color: HusTheme.Primary.colorPrimary
+                            font.pixelSize: 12
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: page.legalityExpanded = !page.legalityExpanded
                             }
                         }
                     }

@@ -967,6 +967,8 @@
       "seed": "Сід",
       "weapon_name_label": "Назва зброї: ",
       "weapon_parts": "Частини зброї",
+      "legality_show_all": "Показати всі причини ({n})",
+      "legality_show_less": "Згорнути",
       "parts_list": "Список частин",
       "parse_serial_to_show_parts": "Частини з'являться тут після парсингу серійного номера...",
       "level_label": "Рівень",

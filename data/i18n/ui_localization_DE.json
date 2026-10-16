@@ -1044,6 +1044,8 @@
       "seed": "Seed",
       "weapon_name_label": "Waffenname: ",
       "weapon_parts": "Waffenteile",
+      "legality_show_all": "Alle {n} Gründe anzeigen",
+      "legality_show_less": "Weniger anzeigen",
       "parts_list": "Teileliste",
       "parse_serial_to_show_parts": "Nach dem Parsen der Seriennummer erscheinen hier die Teile …",
       "level_label": "Level",

@@ -1044,6 +1044,8 @@
       "seed": "种子",
       "weapon_name_label": "武器名称: ",
       "weapon_parts": "武器部件",
+      "legality_show_all": "显示全部 {n} 条原因",
+      "legality_show_less": "收起",
       "parts_list": "部件列表",
       "parse_serial_to_show_parts": "解析武器序列后将在此处显示部件...",
       "level_label": "等级",

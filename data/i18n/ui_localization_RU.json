@@ -1044,6 +1044,8 @@
       "seed": "Сид",
       "weapon_name_label": "Название оружия: ",
       "weapon_parts": "Части оружия",
+      "legality_show_all": "Показать все причины ({n})",
+      "legality_show_less": "Свернуть",
       "parts_list": "Список частей",
       "parse_serial_to_show_parts": "Части появятся здесь после парсинга серийного номера...",
       "level_label": "Уровень",
