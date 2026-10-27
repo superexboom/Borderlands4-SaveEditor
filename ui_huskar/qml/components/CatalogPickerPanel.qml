@@ -519,7 +519,7 @@ ColumnLayout {
                             CountStepper {
                                 visible: panel.stackable
                                 min: 1
-                                max: modelData.maxCount !== undefined ? Math.max(999999, modelData.maxCount) : 999999
+                                max: modelData.maxCount !== undefined ? Math.max(999, modelData.maxCount) : 999
                                 value: modelData.count
                                 Layout.alignment: Qt.AlignVCenter
                                 onStepped: function(delta) { panel.entryCountStepped(index, delta); }

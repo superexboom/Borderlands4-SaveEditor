@@ -23,7 +23,7 @@ from core.serial_import import (
     split_decoded,
 )
 
-from .base import PageViewModel, register
+from .base import PageViewModel, clamp_stack_count, register
 
 enhancement_data = resource_loader.get_enhancement_data()
 
@@ -432,6 +432,9 @@ class EnhancementViewModel(PageViewModel):
         self._mfg_index = index
         self._rarity_index = 0
         self._perk_checked = {}
+        # 堆叠只能来自其他厂商（stackOptions 不列本厂）；新厂商的旧堆叠项去掉
+        new_mfg = self._current_mfg_en()
+        self._stack_entries = [e for e in self._stack_entries if e["data"]["mfg"] != new_mfg]
         if self._roll_constraints.get("manufacturer") == old_mfg:
             self._roll_constraints["manufacturer"] = self._current_mfg_en()
             self._roll_constraints["rarity"] = self._current_rarity_en()
@@ -880,7 +883,7 @@ class EnhancementViewModel(PageViewModel):
     @pyqtSlot(int, int)
     def setStatItemCount(self, index: int, count: int) -> None:
         if 0 <= index < len(self._stat_entries):
-            self._stat_entries[index]["count"] = max(1, int(count))
+            self._stat_entries[index]["count"] = clamp_stack_count(count)
             self._rebuild()
 
     @pyqtSlot(list, int)
@@ -889,7 +892,7 @@ class EnhancementViewModel(PageViewModel):
         for index in indices or []:
             index = int(index)
             if 0 <= index < len(self._stat_entries):
-                new_count = max(1, int(count))
+                new_count = clamp_stack_count(count)
                 if new_count != self._stat_entries[index]["count"]:
                     self._stat_entries[index]["count"] = new_count
                     changed = True
@@ -903,7 +906,7 @@ class EnhancementViewModel(PageViewModel):
         for index in indices or []:
             index = int(index)
             if 0 <= index < len(self._stat_entries):
-                new_count = max(1, int(self._stat_entries[index].get("count", 1)) + int(delta))
+                new_count = clamp_stack_count(int(self._stat_entries[index].get("count", 1)) + int(delta))
                 if new_count != self._stat_entries[index]["count"]:
                     self._stat_entries[index]["count"] = new_count
                     changed = True

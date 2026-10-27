@@ -65,7 +65,13 @@ class HeavyWeaponViewModel(EquipmentBaseViewModel):
             value.get("type_en") == "Heavy Weapon" or value.get("id") in self.mfg_ids)
 
     def _default_new_header(self, mfg_id, level):
-        return f"{mfg_id}, 0, 1, {level}| 2, {random.randint(100, 9999)}"
+        # 一次新构建只取一个随机种子；每次重建都换会让 Base85 随点击变化
+        if getattr(self, "_new_seed", None) is None:
+            self._new_seed = random.randint(100, 9999)
+        return f"{mfg_id}, 0, 1, {level}| 2, {self._new_seed}"
+
+    def _extra_reset_state(self):
+        self._new_seed = None
 
     def _declare_perk_groups(self):
         return [

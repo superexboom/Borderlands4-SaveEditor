@@ -202,7 +202,14 @@ class CharacterViewModel(PageViewModel):
     def applyChanges(self) -> None:
         if not self.controller.yaml_obj:
             return
-        data = {k: v for k, v in self._fields.items()}
+        # 只写改过的字段：其他页面（YAML 编辑器等）改过的值不会被本页旧缓存覆盖
+        data = {k: v for k, v in self._fields.items()
+                if str(v or "").strip() != str(self._loaded.get(k, "") or "").strip()}
+        invalid = self._invalid_numbers(data)
+        if invalid:
+            self.app.toast(self.tr("main_window.dialogs.char_invalid_number",
+                                   fields=self.tr("main_window.dialogs.change_separator").join(invalid)), "error")
+            return
         changes = self._field_changes(data)
         if not changes:
             self.app.toast(self.tr("main_window.dialogs.char_no_changes"), "info")
@@ -216,11 +223,31 @@ class CharacterViewModel(PageViewModel):
         else:
             self.app.toast(self.tr("main_window.dialogs.char_apply_error"), "error")
 
-    def _field_changes(self, data: dict[str, Any]) -> list[str]:
-        """``Level: 50 → 60`` for every field that differs from the loaded save."""
+    def _field_labels(self) -> dict[str, str]:
         labels = self.strings.get("labels", {})
         field_labels = {key: str(labels.get(label_key) or key) for key, label_key in FIELD_LABEL_KEYS.items()}
         field_labels.update({row["key"]: row["label"] for row in self.vaultCurrencies})
+        return field_labels
+
+    def _invalid_numbers(self, data: dict[str, Any]) -> list[str]:
+        """Numeric fields that are not integers; a field may stay empty only if it was empty."""
+        field_labels = self._field_labels()
+        invalid = []
+        for key, value in data.items():
+            if key in ("名称", "难度"):
+                continue
+            new = str(value or "").strip()
+            if not new and not str(self._loaded.get(key, "") or "").strip():
+                continue
+            try:
+                int(new)
+            except ValueError:
+                invalid.append(field_labels.get(key, key).rstrip(":： "))
+        return invalid
+
+    def _field_changes(self, data: dict[str, Any]) -> list[str]:
+        """``Level: 50 → 60`` for every field that differs from the loaded save."""
+        field_labels = self._field_labels()
         changes = []
         for key, value in data.items():
             old = str(self._loaded.get(key, "") or "").strip()
@@ -326,6 +353,10 @@ class CharacterViewModel(PageViewModel):
     # ------------------------------------------------------------------
     # 数据填充
     # ------------------------------------------------------------------
+    def on_language_changed(self) -> None:
+        super().on_language_changed()
+        self.runtimeStateChanged.emit()  # live 面板的文案也挂在这个信号上
+
     def refresh(self) -> None:
         data = self.controller.get_character_data() or {}
         self._is_profile = bool(data.get("is_profile_save", False))
@@ -519,7 +550,7 @@ class CharacterViewModel(PageViewModel):
                 })
             except (TypeError, ValueError):
                 continue
-        return result[:100]
+        return result
 
     def _store_bookmarks(self) -> None:
         self.app._settings.setValue(

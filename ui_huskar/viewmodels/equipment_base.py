@@ -35,7 +35,7 @@ from core.serial_import import (
 )
 from core import item_card_data
 
-from .base import PageViewModel
+from .base import PageViewModel, clamp_stack_count
 
 RARITY_ORDER = {"common": 0, "uncommon": 1, "rare": 2, "epic": 3, "legendary": 4, "pearl": 5}
 
@@ -369,8 +369,31 @@ class EquipmentBaseViewModel(PageViewModel):
             return
         if index == self._mfg_index:
             return
+        self._drop_manufacturer_picks()
         self._mfg_index = index
         self._on_mfg_change()
+
+    def _drop_manufacturer_picks(self) -> None:
+        """换厂商前丢掉旧厂商自己的部件：同一个 ID 在新厂商下是别的部件或根本不存在。"""
+        mfg_id = self._current_mfg_id()
+        if mfg_id is None:
+            return
+        prefix = f"{mfg_id}:"
+
+        def own(key: str, data: Any) -> bool:
+            # (pid, owner) 形式的部件序列化时自带所属厂商，换厂商后仍然有效
+            if data is None or isinstance(data, (tuple, list)):
+                return False
+            try:
+                return self._generation_ref_for_option(key, data).startswith(prefix)
+            except (TypeError, ValueError):
+                return False
+
+        for key, pid in self._chip_sel.items():
+            if own(key, pid):
+                self._chip_sel[key] = None
+        for key, entries in self._picker_sel.items():
+            self._picker_sel[key] = [entry for entry in entries if not own(key, entry.get("data"))]
 
     @pyqtSlot(int)
     def setRarityIndex(self, index: int) -> None:
@@ -417,7 +440,7 @@ class EquipmentBaseViewModel(PageViewModel):
     def setPickerItemCount(self, key: str, index: int, count: int) -> None:
         entries = self._picker_sel.get(key)
         if entries and 0 <= index < len(entries):
-            entries[index]["count"] = max(1, int(count))
+            entries[index]["count"] = clamp_stack_count(count)
             self._rebuild()
 
     @pyqtSlot(str, "QVariantList")
@@ -447,7 +470,7 @@ class EquipmentBaseViewModel(PageViewModel):
             except (TypeError, ValueError):
                 continue
             if 0 <= i < len(entries):
-                entries[i]["count"] = max(1, int(count))
+                entries[i]["count"] = clamp_stack_count(count)
                 changed = True
         if changed:
             self._rebuild()
@@ -471,7 +494,7 @@ class EquipmentBaseViewModel(PageViewModel):
             except (TypeError, ValueError):
                 continue
             if 0 <= i < len(entries):
-                new_count = max(1, int(entries[i].get("count", 1)) + int(delta))
+                new_count = clamp_stack_count(int(entries[i].get("count", 1)) + int(delta))
                 if new_count != entries[i].get("count", 1):
                     entries[i]["count"] = new_count
                     changed = True
@@ -679,6 +702,10 @@ class EquipmentBaseViewModel(PageViewModel):
             return
         self._rebuild_rarity_options(mfg_id)
         self._on_mfg_changed_extra(mfg_id)
+        if self._loading_import:
+            # 导入时 _rebuild 不执行：候选表要先换成新厂商的，否则导入的枪管、
+            # 配件匹配不上，只能当作删不掉的保留部件
+            self._refresh_group_options()
         self._rebuild()
 
     def _is_gold_skin_selected(self) -> bool:
@@ -874,7 +901,7 @@ class EquipmentBaseViewModel(PageViewModel):
         for entry in entries:
             if entry["key"] == it["key"]:
                 if self._group_cfg(key).get("stackable"):
-                    entry["count"] = int(entry.get("count", 1)) + count
+                    entry["count"] = clamp_stack_count(int(entry.get("count", 1)) + count)
                 return
         entries.append({"key": it["key"], "label": it["label"],
                         "data": it.get("data"), "count": count})

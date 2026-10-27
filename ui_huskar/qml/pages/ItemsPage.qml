@@ -50,6 +50,17 @@ ColumnLayout {
         return { x: rowContentMargin, width: columnModel[0].width };
     }
 
+    // 筛选框跟随 VM（清除筛选、YAML 跳转清筛选后要复位显示）
+    function filterIndex(key) {
+        var options = vmItems.filterOptions[key] || [];
+        var value = vmItems.filterValues[key];
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].value === value)
+                return i;
+        }
+        return 0;
+    }
+
     SelectionStyle { id: selStyle }
 
     Component.onCompleted: vmItems.forceRefresh()
@@ -85,6 +96,7 @@ ColumnLayout {
     // ---- 搜索 ----
     HusInput {
         Layout.fillWidth: true
+        text: vmItems.searchText
         placeholderText: loc.search_placeholder || ""
         onTextChanged: vmItems.setSearchText(text)
     }
@@ -111,31 +123,31 @@ ColumnLayout {
         AppSelect {
             Layout.fillWidth: true
             model: vmItems.filterOptions.container || []
-            currentIndex: 0
+            currentIndex: page.filterIndex("container")
             onActivated: function(index) { vmItems.setFilter("container", model[index].value); }
         }
         AppSelect {
             Layout.fillWidth: true
             model: vmItems.filterOptions.type || []
-            currentIndex: 0
+            currentIndex: page.filterIndex("type")
             onActivated: function(index) { vmItems.setFilter("type", model[index].value); }
         }
         AppSelect {
             Layout.fillWidth: true
             model: vmItems.filterOptions.manufacturer || []
-            currentIndex: 0
+            currentIndex: page.filterIndex("manufacturer")
             onActivated: function(index) { vmItems.setFilter("manufacturer", model[index].value); }
         }
         AppSelect {
             Layout.fillWidth: true
             model: vmItems.filterOptions.rarity || []
-            currentIndex: 0
+            currentIndex: page.filterIndex("rarity")
             onActivated: function(index) { vmItems.setFilter("rarity", model[index].value); }
         }
         AppSelect {
             Layout.fillWidth: true
             model: vmItems.filterOptions.flags || []
-            currentIndex: 0
+            currentIndex: page.filterIndex("flags")
             onActivated: function(index) { vmItems.setFilter("flags", model[index].value); }
         }
         RowLayout {
@@ -191,7 +203,8 @@ ColumnLayout {
                 target: vmItems
                 function onSelectedRowChanged(row) {
                     treeList.currentIndex = row;
-                    treeList.positionViewAtIndex(row, ListView.Center);
+                    if (row >= 0)
+                        treeList.positionViewAtIndex(row, ListView.Center);
                 }
             }
 

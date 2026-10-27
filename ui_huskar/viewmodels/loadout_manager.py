@@ -694,8 +694,14 @@ class LoadoutManagerViewModel(PageViewModel):
         self._manual_read_active = False
         if self.current_loadout_index == slot:
             self._display_slot_content(slot)
-        self.app.toast(self._t("dialogs", "live_save_success", slot=slot, path=str(filepath)),
-                       "success")
+        message = self._t("dialogs", "live_save_success", slot=slot, path=str(filepath))
+        skills = (snapshot or {}).get("skills")
+        if isinstance(skills, dict) and not skills.get("ok"):
+            # 技能没读到时方案只有装备，读取时也只会套用装备：要说清楚
+            message += "\n" + self._t("dialogs", "live_save_no_skills", error=str(skills.get("error") or "?"))
+            self.app.toast(message, "warning")
+            return
+        self.app.toast(message, "success")
 
     def _skill_result_text(self, result: dict) -> str:
         skills = result.get("skills")
@@ -794,11 +800,14 @@ class LoadoutManagerViewModel(PageViewModel):
                     or not re.fullmatch(r"[0-9a-f]{64}", fingerprint)
                     or isinstance(occurrence, bool) or not isinstance(occurrence, int)):
                 continue
-            equipped_items.append({
+            entry = {
                 "slot_index": slot_index,
                 "serial_sha256": fingerprint,
                 "occurrence": occurrence,
-            })
+            }
+            if serial.startswith("@U"):
+                entry["serial"] = serial  # 只用于显示物品名；应用时仍按指纹匹配
+            equipped_items.append(entry)
         skills = snapshot.get("skills") if isinstance(snapshot.get("skills"), dict) else {}
         skill_rows = skill_graphs.snapshot_to_save_graphs(skills) if skills.get("ok") else []
         if not equipped_items and not skill_rows:

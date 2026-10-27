@@ -690,9 +690,11 @@ class GameProgressViewModel(PageViewModel):
 
     @pyqtSlot(str, bool)
     def setLayerGroupVisible(self, group: str, visible: bool) -> None:
-        for layer in self.mapLayers:
-            if layer["group"] == group:
-                self._layer_overrides[layer["key"]] = bool(visible)
+        # 整组开关对所有地图生效：只改当前地图出现过的类型的话，换张地图同组的其他类型还是旧状态
+        keys = logic.layer_keys_in_group(group)
+        keys.update(layer["key"] for layer in self.mapLayers if layer["group"] == group)
+        for key in keys:
+            self._layer_overrides[key] = bool(visible)
         self._store_layer_overrides()
         self._map_moved()
 
@@ -994,6 +996,13 @@ class GameProgressViewModel(PageViewModel):
                 if logic.mission_state(data, key) != "done"]
         if not keys:
             return
+        # 和单个任务的"完成到这里"一致：别的类别里没完成的主线前置也一起完成，
+        # 否则后面的主线已完成、前面的却还开着
+        pending: list[str] = []
+        for key in keys:
+            pending.extend(item for item in self._pending_prerequisites(data, key)
+                           if item not in keys and item not in pending)
+        keys = pending + keys
         what = self._category_title()
         self._confirm("complete_all_missions", lambda: self._write(lambda d: self._complete_missions(d, keys), what),
                       what=what, count=len(keys))

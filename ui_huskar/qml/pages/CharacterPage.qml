@@ -362,7 +362,7 @@ LockedFlickable {
                     }
                     HusButton {
                         text: page.buttons.set_vault_card_level || "Set"
-                        enabled: vaultCardSelect.count > 0 && vaultCardLevel.text.trim() !== "" && !vmCharacter.runtimeBusy
+                        enabled: vaultCardSelect.count > 0 && vaultCardLevel.acceptableInput && !vmCharacter.runtimeBusy
                         onClicked: vmCharacter.setVaultCardLevel(vaultCardSelect.currentIndex, parseInt(vaultCardLevel.text))
                     }
                     HusText { text: page.labels.live_currency || ""; color: HusTheme.Primary.colorTextSecondary }
@@ -380,7 +380,7 @@ LockedFlickable {
                     }
                     HusButton {
                         text: page.buttons.give_currency || "Add"
-                        enabled: currencySelect.count > 0 && currencyAmount.text.trim() !== "" && !vmCharacter.runtimeBusy
+                        enabled: currencySelect.count > 0 && currencyAmount.acceptableInput && !vmCharacter.runtimeBusy
                         onClicked: vmCharacter.giveCurrency(currencySelect.currentIndex, parseInt(currencyAmount.text))
                     }
                     HusText { text: page.labels.bank_size || ""; color: HusTheme.Primary.colorTextSecondary }
@@ -392,7 +392,7 @@ LockedFlickable {
                     }
                     HusButton {
                         text: page.buttons.apply_bank_size || "Apply"
-                        enabled: bankSize.text.trim() !== "" && !vmCharacter.runtimeBusy
+                        enabled: bankSize.acceptableInput && !vmCharacter.runtimeBusy
                         onClicked: vmCharacter.runActionWithValue("set_bank_size", parseInt(bankSize.text))
                     }
                 }
@@ -429,7 +429,8 @@ LockedFlickable {
                     }
                     HusButton {
                         text: page.buttons.apply_backpack_size || "Apply"
-                        enabled: !vmCharacter.runtimeBusy
+                        // 校验器允许中间态（空、低于下限）：只在输入合法时可点，避免把 NaN 发给游戏
+                        enabled: backpackSize.acceptableInput && !vmCharacter.runtimeBusy
                         onClicked: vmCharacter.runActionWithValue("set_backpack_size", parseInt(backpackSize.text))
                     }
                 }
@@ -440,10 +441,10 @@ LockedFlickable {
                     rowSpacing: 8
                     HusText { text: page.labels.magazine_capacity_scale || ""; color: HusTheme.Primary.colorTextSecondary }
                     HusInput { id: magCap; Layout.fillWidth: true; text: "1"; validator: DoubleValidator { bottom: 0.1; top: 100; decimals: 2 } }
-                    HusButton { text: page.buttons.apply_magazine_capacity || "Apply"; onClicked: vmCharacter.runActionWithValue("set_magazine_capacity_scale", parseFloat(magCap.text)) }
+                    HusButton { text: page.buttons.apply_magazine_capacity || "Apply"; enabled: magCap.acceptableInput && !vmCharacter.runtimeBusy; onClicked: vmCharacter.runActionWithValue("set_magazine_capacity_scale", parseFloat(magCap.text)) }
                     HusText { text: page.labels.projectile_speed_scale || ""; color: HusTheme.Primary.colorTextSecondary }
                     HusInput { id: projSpeed; Layout.fillWidth: true; text: "1"; validator: DoubleValidator { bottom: 0.1; top: 100; decimals: 2 } }
-                    HusButton { text: page.buttons.apply_projectile_speed || "Apply"; onClicked: vmCharacter.runActionWithValue("set_projectile_speed_scale", parseFloat(projSpeed.text)) }
+                    HusButton { text: page.buttons.apply_projectile_speed || "Apply"; enabled: projSpeed.acceptableInput && !vmCharacter.runtimeBusy; onClicked: vmCharacter.runActionWithValue("set_projectile_speed_scale", parseFloat(projSpeed.text)) }
                 }
 
                 // 位置书签

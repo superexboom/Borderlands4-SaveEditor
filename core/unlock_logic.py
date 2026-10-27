@@ -82,6 +82,8 @@ def apply_stat_targets(data, targets):
         for part in parts[:-1]:
             node = get_or_create_dict(node, part)
         previous = node.get(parts[-1])
+        if isinstance(previous, dict):
+            continue  # a parent challenge's table of child stats; never replace it by a count
         if not isinstance(previous, (int, float)) or value > previous:
             node[parts[-1]] = value
 

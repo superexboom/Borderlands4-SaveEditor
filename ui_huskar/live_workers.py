@@ -594,8 +594,11 @@ class _LiveLoadoutWorker(QThread):
                 raise ValueError(f'unsupported live loadout operation: {self._operation}')
             err = None
         except Exception as exc:
-            result = None
             err = f"{type(exc).__name__}: {exc}"
+            # A timeout part way through an apply can leave slots changed: mark it
+            # uncertain so the page points at the recovery check, not a bare error.
+            result = ({'ok': False, 'action': 'apply_loadout', 'uncertain': True, 'error': err}
+                      if self._operation == 'apply' and self._context.get('entries') else None)
         self.completed.emit(
             self._operation, self._slot, self._context, result, err,
         )
@@ -609,6 +612,11 @@ class _LiveLoadoutWorker(QThread):
         and slots that are empty after the swaps get equip_empty_slot.
         """
         entries = list(self._context.get('entries') or [])
+        # Unequipping is not rolled back: check every target first, so a loadout
+        # whose item was sold or banked fails before any slot is emptied.
+        unresolved = self._unresolved_target(entries)
+        if unresolved:
+            return {'ok': False, 'action': 'apply_loadout', 'applied': [], **unresolved}
         listed = {e.get('slot_index') for e in entries}
         rows = [s for s in snapshot.get('slots') or [] if isinstance(s, dict) and not s.get('locked')]
         if self._context.get('clear_unlisted'):
@@ -646,6 +654,25 @@ class _LiveLoadoutWorker(QThread):
             self._fill_empty_slots(fills, result)
         result['applied'] = cleared + list(result.get('applied') or [])
         return result
+
+    def _unresolved_target(self, entries):
+        """A failure dict for the first entry the backpack no longer holds exactly once, else None.
+
+        Same matching as the mod's apply_loadout and equip_empty_slot: BackpackItems
+        (equipped items included) by fingerprint and, when given, occurrence.
+        """
+        for entry in entries:
+            criteria = {'container': 'BackpackItems', 'serial_sha256': entry.get('serial_sha256')}
+            if entry.get('occurrence') is not None:
+                criteria['occurrence'] = entry.get('occurrence')
+            reply = self._bridge.resolve_live_item(**criteria)
+            if not isinstance(reply, dict) or not reply.get('ok'):
+                return {'error': f"slot {entry.get('slot_index')}: "
+                                 f"{(reply or {}).get('error') or 'target check failed'}"}
+            if reply.get('status') != 'unique':
+                return {'error': f"slot {entry.get('slot_index')}: target resolution is {reply.get('status')}",
+                        'candidate_count': reply.get('candidate_count')}
+        return None
 
     def _clear_slot(self, row, cleared):
         """Unequip one slot (the item stays in the backpack); a failure dict or None."""
@@ -722,6 +749,7 @@ class _LiveBatchSpawnWorker(QThread):
         self.mutation_results = []
         self.blocked_reason = ''
         self.last_error = ''
+        self.sent = False  # at least one chunk reached the game (its outcome may be unknown)
 
     def run(self):
         success = 0
@@ -770,6 +798,7 @@ class _LiveBatchSpawnWorker(QThread):
         for chunk_index, chunk in enumerate(chunks):
             result = None
             try:
+                self.sent = True
                 result = self._bridge.spawn_many(chunk, "BackpackItems")
                 self.mutation_results.append(result)
                 if _spawn_delivered(result, len(chunk)):

@@ -71,7 +71,8 @@
       "autosaved": "Auto-saved at {time}",
       "autosave_failed": "Auto-save failed, please save manually",
       "recovered": "Unsaved changes restored (not written yet)",
-      "item_not_found": "Item not found"
+      "item_not_found": "Item not found",
+      "autosave_disk_changed": "Save changed on disk; auto-save paused, please save manually"
     },
     "tabs": {
       "select_save": "Select Save",
@@ -145,7 +146,12 @@
       "save_saved": "Save file saved to:\n{path}",
       "encrypt_failed": "Encryption Failed",
       "recover_title": "Recover unsaved changes",
-      "recover_msg": "Unsaved changes from a previous session were detected (possibly left by an unexpected exit). Restore them?"
+      "recover_msg": "Unsaved changes from a previous session were detected (possibly left by an unexpected exit). Restore them?",
+      "unsaved_open_title": "Discard unsaved changes?",
+      "unsaved_open_msg": "The current save has unsaved changes. Opening another save will discard them.\nOpen anyway?",
+      "char_invalid_number": "Not applied. These fields need a whole number: {fields}",
+      "disk_changed_title": "Save file changed on disk",
+      "disk_changed_msg": "The game or another program wrote this save file after it was opened here. Overwriting loses that progress (the old file is kept as .prev.bak).\nOverwrite anyway?"
     },
     "worker": {
       "no_data": "No data generated.",
@@ -502,7 +508,9 @@
       "special_combo_input": "Combo Input:",
       "status_generating": "Status: Generating...",
       "status_gen_complete": "Status: Generation complete!",
-      "status_message": "Status: {message}"
+      "status_message": "Status: {message}",
+      "status_cancelled": "Status: Cancelled. Processed {current}/{total}.",
+      "status_batch_add_cancelled": "Status: Cancelled. Success: {success}, Fail: {fail}."
     },
     "placeholders": {
       "base85": "Enter Base85 code, e.g.: @Ug#2fK2...",
@@ -1202,6 +1210,21 @@
       "available_parts_hint": "Available Parts (click to preview, double-click to add)",
       "no_matches": "No matches",
       "search_skin": "Search skin name…"
+    },
+    "browser": {
+      "all_manufacturer": "All manufacturers",
+      "all_type": "All types",
+      "all_rarity": "All rarities",
+      "sort_label": "Sort",
+      "sort_slot": "Order obtained",
+      "sort_level": "Level",
+      "sort_rarity": "Rarity",
+      "sort_name": "Name",
+      "sort_manufacturer": "Manufacturer",
+      "order_desc": "Now: high to low / newest first (click to switch)",
+      "order_asc": "Now: low to high / oldest first (click to switch)",
+      "clear": "Clear search and filters",
+      "count": "Showing {shown} of {total}"
     }
   },
   "equipment_roll": {
@@ -1718,7 +1741,8 @@
       "live_skills_applied": "Skills applied from the loadout ({graphs} skill trees).",
       "live_skills_failed": "Applying skills failed: {error}",
       "live_skills_mismatch": "{count} skill node(s) could not reach the saved state (not enough points or a prerequisite is missing)",
-      "live_skills_unknown": "This loadout's skills do not match the current character ({names}); the skills were skipped."
+      "live_skills_unknown": "This loadout's skills do not match the current character ({names}); the skills were skipped.",
+      "live_save_no_skills": "Skills could not be read ({error}); this loadout holds equipment only."
     },
     "decode": {
       "unknown": "Unknown",
@@ -1777,6 +1801,8 @@
     "req_active": "needs \"{target}\" enabled first",
     "trunk": "Trunk",
     "branch": "Branch {n}",
-    "bonus_split": "Class Mod +{gear}   Extra +{extra}"
+    "bonus_split": "Class Mod +{gear}   Extra +{extra}",
+    "reload_title": "Reload skills",
+    "reload_discard": "There are changes you have not applied. Reloading replaces them with the build the game has now.\nReload anyway?"
   }
 }

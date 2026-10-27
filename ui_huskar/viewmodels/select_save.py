@@ -26,9 +26,11 @@ class SelectSaveViewModel(PageViewModel):
 
     dataChanged = pyqtSignal()
 
-    def __init__(self, app, parent=None, config_file: str = CONFIG_FILE):
+    def __init__(self, app, parent=None, config_file: str | None = None):
         super().__init__(app, parent)
-        self._config_file = config_file
+        # 固定放在程序目录：相对路径会随启动时的工作目录变（快捷方式“起始位置”不同就读不到）
+        from .loadout_manager import _get_editor_root
+        self._config_file = config_file or str(_get_editor_root() / CONFIG_FILE)
         self._saves: list[dict[str, Any]] = []
         self._selected_row = -1
         self._user_id = ""

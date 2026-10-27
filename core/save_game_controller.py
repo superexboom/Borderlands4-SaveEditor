@@ -58,6 +58,14 @@ def infer_user_id_from_save_path(save_path: Union[str, Path]) -> str:
     return ""
 
 
+def _file_stamp(path: Union[str, Path]) -> Optional[Tuple[int, int]]:
+    try:
+        stat = Path(path).stat()
+    except OSError:
+        return None
+    return stat.st_mtime_ns, stat.st_size
+
+
 class SaveGameController:
     """
     处理所有与存档文件相关的业务逻辑，独立于UI框架。
@@ -79,6 +87,8 @@ class SaveGameController:
         self._snapshot: Optional[Any] = None
         # 上次成功写盘内容的摘要（对 get_yaml_string() 的结果取 sha1），避免无变化重复写盘
         self._last_saved_digest: Optional[str] = None
+        # 打开/保存时存档文件的 (mtime_ns, size)：用来发现游戏在这之后又写过这个文件
+        self._disk_stamp: Optional[Tuple[int, int]] = None
 
     def _adler32(self, b: bytes) -> int:
         return zlib.adler32(b) & 0xFFFFFFFF
@@ -433,7 +443,15 @@ class SaveGameController:
                     except OSError:
                         pass
             self.mark_clean(digest=hashlib.sha1(yaml_string.encode("utf-8")).hexdigest())
+            self._disk_stamp = _file_stamp(target)
             return target
+
+    def disk_changed(self) -> bool:
+        """The save file was rewritten (e.g. by the game) after it was opened or last saved here."""
+        if self.save_path is None or self._disk_stamp is None:
+            return False
+        current = _file_stamp(self.save_path)
+        return current is not None and current != self._disk_stamp
 
     def decrypt_save(self, file_path: Path, user_id: str, custom_backup_dir: Optional[str] = None) -> Tuple[str, str, str]:
         file_path = Path(file_path)
@@ -443,6 +461,7 @@ class SaveGameController:
         if not is_valid:
             raise ValueError(validation_msg)
 
+        disk_stamp = _file_stamp(file_path)
         enc_data = file_path.read_bytes()
 
         # 尝试解密
@@ -480,6 +499,7 @@ class SaveGameController:
             self.save_path = file_path
             self.platform = platform_id
             self.yaml_obj = yaml_obj
+            self._disk_stamp = disk_stamp
             # 加载成功：记录快照与内容摘要，重置脏标记
             with self._lock:
                 self._snapshot = copy.deepcopy(yaml_obj)
@@ -530,12 +550,34 @@ class SaveGameController:
             return []
         print("[CONTROLLER_LOG] get_all_items: YAML object found, calling bl4f.process_and_load_items.")
         try:
-            items = bl4f.process_and_load_items(self.yaml_obj)
+            # 批量添加的 worker 会在锁内往背包里插物品：不加锁遍历会撞上
+            # "dictionary changed size during iteration"，页面就显示成空背包
+            with self._lock:
+                items = bl4f.process_and_load_items(self.yaml_obj)
             print(f"[CONTROLLER_LOG] get_all_items: Successfully processed {len(items)} items.")
             return items
         except Exception as e:
             print(f"[CONTROLLER_LOG] CRITICAL: Exception in bl4f.process_and_load_items: {e}")
             return []
+
+    def warm_item_cache(self) -> None:
+        """后台线程预先解析全部物品：打开大背包后第一次进物品页 / 武器编辑器不用再等。
+
+        只在锁内取一份序列号快照；解析是序列号的纯函数，不碰 yaml_obj。
+        """
+        with self._lock:
+            serials = bl4f.item_serials(self.yaml_obj)
+        if not serials:
+            return
+        lang = bl4f.current_localization_lang
+
+        def run() -> None:
+            try:
+                bl4f.warm_item_cache(serials, lang)
+            except Exception:
+                pass  # 预热失败只是少了缓存，页面打开时照常解析
+
+        threading.Thread(target=run, name="item-cache-warmup", daemon=True).start()
 
     def add_item_to_backpack(self, serial: str, flag: str) -> Optional[List[Union[str, int]]]:
         return self.add_items_to_backpack([serial], flag)[0]
@@ -645,9 +687,12 @@ class SaveGameController:
                 return []
 
             for full_path in target_path.rglob('*'):
-                if not full_path.is_file() or full_path.suffix.lower() != '.sav':
+                if full_path.suffix.lower() != '.sav':
                     continue
                 try:
+                    # 读不了的条目只跳过它自己，不能让整个扫描提前结束
+                    if not full_path.is_file():
+                        continue
                     stat = full_path.stat()
                     found_files.append({
                         "name": full_path.name,
@@ -656,7 +701,7 @@ class SaveGameController:
                         "size_kb": stat.st_size / 1024,
                         "full_path": str(full_path),
                     })
-                except FileNotFoundError:
+                except OSError:
                     continue
         except Exception as e:
             print(f"扫描存档文件夹时出错: {e}")

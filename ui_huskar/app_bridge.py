@@ -133,6 +133,12 @@ class AppBridge(QObject):
         for vm in self._vms.values():
             vm.mark_stale()
 
+    def mark_other_pages_stale(self, source: Any) -> None:
+        """整份存档都可能被改（YAML 编辑器）：除来源页外全部标记过期。"""
+        for vm in self._vms.values():
+            if vm is not source:
+                vm.mark_stale()
+
     # ------------------------------------------------------------------
     # 本地化
     # ------------------------------------------------------------------
@@ -188,6 +194,8 @@ class AppBridge(QObject):
         self._settings.setValue("language", lang)
         self.localizer.set_language(lang)
         bl4f.set_language(lang)
+        if self.controller.yaml_obj is not None:
+            self.controller.warm_item_cache()  # 物品名按语言缓存，新语言重新预解析
         for vm in self._vms.values():
             vm.on_language_changed()
         self._status = self.tr("main_window.status.welcome") if not self.saveLoaded else self._status
@@ -403,6 +411,19 @@ class AppBridge(QObject):
         if self.live.active:
             self.toast(self.tr("main_window.dialogs.live_mode_active"), "warning")
             return
+        if self.controller.dirty and self.controller.yaml_obj is not None:
+            # decrypt_save 会直接替换当前存档；关着自动保存时连 .recover 都没有
+            self._request_confirm(
+                self.tr("main_window.dialogs.unsaved_open_title"),
+                self.tr("main_window.dialogs.unsaved_open_msg"),
+                lambda accepted: self._open_save(file_path, user_id, discard=True) if accepted else None,
+                warning=True,
+            )
+            return
+        self._open_save(file_path, user_id)
+
+    def _open_save(self, file_path: str, user_id: str, discard: bool = False) -> None:
+        previous_path = self.controller.save_path
         backup_dir = None
         selector = self._vms.get("select_save")
         if selector is not None:
@@ -418,6 +439,11 @@ class AppBridge(QObject):
             return
         self.toast(self.tr("main_window.dialogs.decrypt_success",
                            platform=platform, backup_name=backup_name), "success")
+        self._autosave_timer.stop()
+        self._recover_timer.stop()
+        if discard:
+            self._remove_recovery(previous_path)
+        self.controller.warm_item_cache()
         self._set_autosave_indicator("", False)
         self._mark_all_stale()
         self.saveStateChanged.emit()
@@ -450,6 +476,20 @@ class AppBridge(QObject):
             if not picked:
                 return
             path_to_save = picked
+        elif self.controller.disk_changed():
+            # 游戏（或别的程序）在打开之后又写过这个存档：直接覆盖会丢掉那部分进度
+            self._request_confirm(
+                self.tr("main_window.dialogs.disk_changed_title"),
+                self.tr("main_window.dialogs.disk_changed_msg"),
+                lambda accepted: self._write_save(path_to_save) if accepted else None,
+                warning=True,
+            )
+            return
+        self._write_save(path_to_save)
+
+    def _write_save(self, path_to_save) -> None:
+        if self.controller.yaml_obj is None or self.live.active:
+            return
         try:
             saved = self.controller.save_to_disk(path_to_save)
         except Exception as exc:
@@ -458,6 +498,8 @@ class AppBridge(QObject):
         self._autosave_timer.stop()
         self._recover_timer.stop()
         self._remove_recovery()
+        # 另存为之后的保存、自动保存和 .recover 都跟随新文件
+        self.controller.save_path = saved
         self._set_autosave_indicator("", False)
         self.toast(f"{self.tr('main_window.dialogs.success')}: {saved.name}", "success")
         self.saveStateChanged.emit()
@@ -550,6 +592,11 @@ class AppBridge(QObject):
             self.controller.mark_clean()
             self._remove_recovery()
             self._set_autosave_indicator("", False)
+            return
+        if self.controller.disk_changed():
+            # 不能悄悄覆盖游戏新写的进度：停下来，手动保存时再让用户决定
+            self._set_autosave_indicator(self.tr("main_window.status.autosave_disk_changed"), True)
+            self._write_recovery()
             return
         try:
             target = self.controller.save_to_disk()

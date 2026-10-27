@@ -646,9 +646,23 @@ class GodRollViewModel(PageViewModel):
     def setBarrelIndex(self, index: int) -> None:
         if not 0 <= index < len(self.barrelOptions):
             return
+        base_value = self._option_value(self.baseElementOptions, self._base_element_index)
+        torgue_value = self._option_value(self.torgueOptions, self._torgue_index)
         self._barrel_index = index
+        # 主元素与 Torgue 的可选项都按固定枪管算：换枪管后重算，并按值保留原来的选择
+        self._option_cache.pop("element:body_elements", None)
         self._refresh_dependent_elements()
+        self._base_element_index = self._option_index(self.baseElementOptions, base_value)
+        self._torgue_index = self._option_index(self.torgueOptions, torgue_value)
         self.dataChanged.emit()
+
+    @staticmethod
+    def _option_value(options: list[dict[str, Any]], index: int) -> Any:
+        return options[index]["value"] if 0 <= index < len(options) else None
+
+    @staticmethod
+    def _option_index(options: list[dict[str, Any]], value: Any) -> int:
+        return next((i for i, option in enumerate(options) if option["value"] == value), 0)
 
     @pyqtSlot(int)
     def setTorgueIndex(self, index: int) -> None:
@@ -679,7 +693,17 @@ class GodRollViewModel(PageViewModel):
     @pyqtSlot(bool)
     def setForceElement(self, checked: bool) -> None:
         self._force_element = bool(checked)
-        self._refresh_options()
+        # 只改变元素选项能不能选：枪管、Torgue 等选择保留，只把变得不可选的元素退回自动
+        for key in ("element:body_elements", "element:secondary_elements", "element:pearl_elements",
+                    "secondary_element", "pearl_element"):
+            self._option_cache.pop(key, None)
+        for attr, options in (("_base_element_index", self.baseElementOptions),
+                              ("_secondary_index", self.secondaryElementOptions),
+                              ("_pearl_index", self.pearlElementOptions)):
+            index = getattr(self, attr)
+            if not 0 <= index < len(options) or not options[index].get("enabled", True):
+                setattr(self, attr, 0)
+        self.dataChanged.emit()
 
     @pyqtSlot(int)
     def setEffortIndex(self, index: int) -> None:
@@ -1124,7 +1148,8 @@ class GodRollViewModel(PageViewModel):
         try:
             data = self.controller.get_character_data() or {}
             level = int(data.get("角色等级") or 0)
-            if level > 0:
+            # 只在角色等级变了时跟随；页面过期刷新不能覆盖用户自己选的等级
+            if level > 0 and level != self._character_level:
                 self._character_level = level
                 self._level = level
         except (TypeError, ValueError):

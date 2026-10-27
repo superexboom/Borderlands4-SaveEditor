@@ -33,7 +33,7 @@ def _split_lines(text: str) -> list[str]:
     return [line.strip() for line in text.split("\n") if line.strip()]
 
 
-def _extract_yaml_serials(text: str) -> list[str]:
+def _extract_yaml_serials(text: str, strict: bool = False) -> list[str]:
     """Extract serial values from a save/backpack-shaped YAML document.
 
     Batch add historically accepted one decoded serial per line.  Keep that
@@ -41,10 +41,15 @@ def _extract_yaml_serials(text: str) -> list[str]:
     produced by the save editor (including tagged Game YAML scalars).  We
     intentionally walk every mapping rather than assuming one fixed save
     root, so exported backpack snippets and full saves both work.
+
+    strict=True (a file the user picked as YAML) lets parse errors propagate
+    instead of looking like a file without serials.
     """
     try:
         parsed_documents = list(yaml.load_all(text, Loader=get_yaml_loader()))
     except Exception:
+        if strict:
+            raise
         return []
     found: list[str] = []
 
@@ -53,8 +58,9 @@ def _extract_yaml_serials(text: str) -> list[str]:
             serial = node.get("serial")
             if isinstance(serial, str) and serial.strip():
                 found.append(serial.strip())
-            for value in node.values():
-                walk(value)
+            for key, value in node.items():
+                if key != "unknown_items":  # the item loader skips these too
+                    walk(value)
         elif isinstance(node, (list, tuple)):
             for value in node:
                 walk(value)
@@ -337,6 +343,7 @@ class ConverterViewModel(PageViewModel):
         self._iter_status = ""
         self._iter_running = False
         self._iter_percent = 0.0
+        self._iter_total = 0
         self._iter_thread: QThread | None = None
         self._iter_worker: _IteratorWorker | None = None
 
@@ -552,12 +559,21 @@ class ConverterViewModel(PageViewModel):
         self.dataChanged.emit()
 
     def _on_batch_finished(self, results: list[str]) -> None:
+        worker = self._batch_worker
+        cancelled = worker is not None and worker._cancelled
+        total = len(worker.lines) if worker is not None else len(results)
         self._batch_running = False
         self._batch_worker = None
         self._batch_thread = None
-        self._batch_percent = 100.0
         self._batch_output = "\n".join(results)
-        self._batch_status = self._labels().get("status_complete", "Complete!")
+        if cancelled:
+            # 取消只是提前停下：进度和状态要如实反映只处理了一部分
+            self._batch_status = self._labels().get(
+                "status_cancelled", "Cancelled: {current}/{total} processed.").format(
+                    current=len(results), total=total)
+        else:
+            self._batch_percent = 100.0
+            self._batch_status = self._labels().get("status_complete", "Complete!")
         self.dataChanged.emit()
 
     @pyqtSlot()
@@ -624,7 +640,7 @@ class ConverterViewModel(PageViewModel):
             return
         try:
             text = Path(path).read_text(encoding="utf-8-sig")
-            serials = _extract_yaml_serials(text)
+            serials = _extract_yaml_serials(text, strict=True)
         except Exception as exc:
             self.app.toast(
                 self._dialogs().get("import_yaml_failed", "YAML import failed: {error}").format(error=exc),
@@ -689,6 +705,7 @@ class ConverterViewModel(PageViewModel):
         self.dataChanged.emit()
 
     def _on_batch_add_finished(self, success: int, fail: int) -> None:
+        cancelled = self._batch_add_worker is not None and self._batch_add_worker._cancelled
         self._batch_add_running = False
         self._batch_add_worker = None
         self._batch_add_thread = None
@@ -704,9 +721,11 @@ class ConverterViewModel(PageViewModel):
             self.app.toast(dialogs.get(
                 "batch_fail_msg", "Failed to add {count} items.").format(count=fail),
                 "warning")
-        self._batch_add_percent = 100.0
+        if not cancelled:
+            self._batch_add_percent = 100.0
         self._batch_add_status = labels.get(
-            "status_batch_add_complete", "Complete").format(success=success, fail=fail)
+            "status_batch_add_cancelled" if cancelled else "status_batch_add_complete",
+            "Complete").format(success=success, fail=fail)
         self.dataChanged.emit()
 
     @pyqtSlot()
@@ -942,6 +961,7 @@ class ConverterViewModel(PageViewModel):
             return
 
         self._iter_running = True
+        self._iter_total = 0
         self._iter_percent = 0.0
         self._iter_output = ""
         self._iter_status = (labels.get("status_prepare", "Preparing...")
@@ -977,20 +997,28 @@ class ConverterViewModel(PageViewModel):
         self.dataChanged.emit()
 
     def _on_iter_progress(self, current: int, total: int) -> None:
+        self._iter_total = total
         self._iter_percent = (current / total * 100.0) if total else 0.0
         self.dataChanged.emit()
 
     def _on_iter_gen_finished(self, text: str) -> None:
+        cancelled = self._iter_worker is not None and self._iter_worker._cancelled
         self._iter_running = False
         self._iter_worker = None
         self._iter_thread = None
-        self._iter_percent = 100.0
         self._iter_output = text
-        self._iter_status = self._labels().get(
-            "status_gen_complete", "Generation Complete!")
+        if cancelled:
+            self._iter_status = self._labels().get(
+                "status_cancelled", "Cancelled: {current}/{total} processed.").format(
+                    current=len(text.splitlines()) if text else 0, total=self._iter_total or "?")
+        else:
+            self._iter_percent = 100.0
+            self._iter_status = self._labels().get(
+                "status_gen_complete", "Generation Complete!")
         self.dataChanged.emit()
 
     def _on_iter_add_finished(self, success: int, fail: int) -> None:
+        cancelled = self._iter_worker is not None and self._iter_worker._cancelled
         self._iter_running = False
         self._iter_worker = None
         self._iter_thread = None
@@ -1006,9 +1034,11 @@ class ConverterViewModel(PageViewModel):
             self.app.toast(dialogs.get(
                 "iter_fail_msg", "Failed to generate {count} items.").format(count=fail),
                 "warning")
-        self._iter_percent = 100.0
+        if not cancelled:
+            self._iter_percent = 100.0
         self._iter_status = labels.get(
-            "status_batch_add_complete", "Complete").format(success=success, fail=fail)
+            "status_batch_add_cancelled" if cancelled else "status_batch_add_complete",
+            "Complete").format(success=success, fail=fail)
         self.dataChanged.emit()
 
     @pyqtSlot()

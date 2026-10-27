@@ -277,8 +277,10 @@ class LiveManager(QObject):
         controller.yaml_obj = yaml_like
         controller.save_path = None
         controller.mark_clean()
+        controller.warm_item_cache()
         self.app.set_status(self._text("synced", "Live backpack and bank items synchronized."))
         self._refresh_all()
+        self._apply_ui_state()
         self.runtime_action("state", {"_quiet": True})
 
     def refresh(self) -> None:
@@ -334,6 +336,7 @@ class LiveManager(QObject):
             loadout.set_data(None, None)
         self.app.set_status(self._text("exited", "Live mode exited."))
         self._refresh_all()
+        self._apply_ui_state()
         self.app.navigate("select_save")
 
     def _clear_editor_selection(self) -> None:
@@ -426,6 +429,8 @@ class LiveManager(QObject):
         worker = self._batch_spawn_worker
         if worker is None:
             return
+        # 结果已经到了，线程可能还在收尾：先释放占用，下面的 refresh 才不会被 any_busy 挡掉
+        self._batch_spawn_worker = None
         self._remember_recovery(worker.mutation_preflight)
         self._remember_recovery(worker.mutation_results)
         if worker.blocked_reason:
@@ -448,6 +453,11 @@ class LiveManager(QObject):
                 self._commit_inventory_patch(worker.spawned_records)
             else:
                 self.refresh()
+        elif worker.sent:
+            # 判失败也可能是游戏已经收下、只是确认超时或校验没过：重读背包，免得重试时重复添加
+            self.refresh()
+        else:
+            self._sync_vms()
 
     # ------------------------------------------------------------------ #
     # 写操作：更新物品
@@ -642,6 +652,8 @@ class LiveManager(QObject):
     # 游戏进度（游戏进度页只读展示）
     # ------------------------------------------------------------------ #
     def _reset_progress(self) -> None:
+        # 还在路上的读取属于上一位玩家 / 上一次会话：丢掉它的结果（_on_progress_read 按 sender 过滤）
+        self._progress_worker = None
         self.progress_snapshot = None
         self.progress_meta = {}
         self.progress_error = ""
@@ -696,6 +708,8 @@ class LiveManager(QObject):
             return
         self.app.liveChallengesSent.emit(results, "" if err is None else str(err))
         # Collectibles are stat facts, which the game updates at once: re-read now.
+        # A read already in flight may predate the increment, so its result is dropped.
+        self._progress_worker = None
         self.fetch_progress()
 
     # ------------------------------------------------------------------ #
@@ -832,11 +846,17 @@ class LiveManager(QObject):
             # A lost reply can hide a switch that did happen: re-read whoever
             # the game now targets (the refresh also brings back the player list).
             self._reset_progress()
+            skills = self.app.vm("skill_tree")
+            if skills is not None:
+                skills.clear_build()
             self.refresh()
             return
         if result.get("changed"):
-            # 进度快照属于上一位玩家；背包由通用的 changed → refresh() 重新读取
+            # 进度快照和技能构筑属于上一位玩家；背包由通用的 changed → refresh() 重新读取
             self._reset_progress()
+            skills = self.app.vm("skill_tree")
+            if skills is not None:
+                skills.clear_build()
         selected = result.get("selected") or {}
         name = str(selected.get("name") or "")
         self._toast(self._text("player_switched", "Now reading: {name}", name=name or "?"), "success")

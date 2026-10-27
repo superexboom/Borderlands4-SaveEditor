@@ -69,6 +69,8 @@ def _clean_markup(text: str) -> str:
 
 
 _PLACEHOLDER_RE = re.compile(r"\{[^}]*\}")
+# Cosmetic skin: ``"c", "Cosmetics_..."`` or ``"c", 123``; neither token is a part.
+_SKIN_TOKEN_RE = re.compile(r'"c"\s*,\s*(?:"[^"]*"|\d+)', re.IGNORECASE)
 _MARKUP_SPAN_RE = re.compile(r"\[(?!/)([^\]]+)\]([^\[]*)\[/\1\]")
 
 
@@ -229,8 +231,11 @@ def canonicalize_decoded_serial(
         # Cosmetic skin syntax is already canonical and deliberately string-based:
         # ``"c", "Cosmetics_..."``. Leave both tokens untouched and do not report
         # them as unresolved inventory parts.
-        if token.casefold() == "c" and index + 1 < len(matches):
-            index += 2
+        if token.casefold() == "c":
+            # A numeric skin id is not quoted, so only skip the next match when it
+            # directly follows the marker.
+            following = matches[index + 1] if index + 1 < len(matches) else None
+            index += 2 if following is not None and not component[end:following.start()].strip(" ,") else 1
             continue
         if token.endswith(".") and index + 1 < len(matches):
             next_match = matches[index + 1]
@@ -1524,9 +1529,8 @@ def _weapon_generation_refs(decoded: str, root_ref: str, named_refs: dict[str, s
             refs.extend(f"{component.get('id')}:{part_id}" for part_id in component.get("sub_ids", []))
         elif component.get("type") == "elemental":
             refs.append(f"{component.get('id')}:{component.get('sub_id')}")
-    for name in re.findall(r'"([^"\\]+)"', component_text):
-        if name != 'c':
-            refs.append((named_refs or {}).get(name.casefold(), f'{root_ref}:{name}'))
+    for name in re.findall(r'"([^"\\]+)"', _SKIN_TOKEN_RE.sub(" ", component_text)):
+        refs.append((named_refs or {}).get(name.casefold(), f'{root_ref}:{name}'))
     return sorted(ref for ref in refs if not ref.endswith(":None"))
 
 
@@ -3505,8 +3509,9 @@ def _classmod_skill_stat_lines(
             value *= 100.0
         precision = int(number(arg.get("floatprecision")) or 0)
         if str(arg.get("roundingmode") or "").casefold() == "roundtoint":
-            precision = 0
-        if precision:
+            # FMath::RoundToInt (half up); it overrides floatprecision
+            rendered = f"{equipment_display_stats._round_int(value):,}"
+        elif precision:
             rendered = f"{value:,.{precision}f}"
         elif abs(value) >= 100 or abs(value - round(value)) < 0.0001:
             rendered = f"{round(value):,}"
@@ -3641,7 +3646,7 @@ def resolve_classmod_card_details(
     named_perks = {key.casefold(): key for key in perk_rows if not key.isdigit()}
     perk_ids = _group_sub_ids(components, "234")
     perk_ids.extend(named_perks.get(value.casefold(), value)
-                    for value in re.findall(r'"([^"]+)"', decoded_full.split("||", 1)[-1]) if value != "c")
+                    for value in re.findall(r'"([^"]+)"', _SKIN_TOKEN_RE.sub(" ", decoded_full.split("||", 1)[-1])))
     perk_counts = Counter(perk_ids)
     perks = []
     firmware = []

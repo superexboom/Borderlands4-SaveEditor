@@ -25,6 +25,17 @@ RowLayout {
     SelectionStyle { id: selStyle }
 
     // ---- 左：背包武器浏览 ----
+    readonly property var browserLoc: loc.browser || ({})
+
+    function optionIndex(options, value) {
+        var rows = options || [];
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].value === value)
+                return i;
+        }
+        return 0;
+    }
+
     GlassPanel {
         Layout.preferredWidth: 330
         Layout.fillHeight: true
@@ -40,8 +51,74 @@ RowLayout {
             }
             HusInput {
                 Layout.fillWidth: true
+                text: vmWeaponEditor.browserSearch
                 placeholderText: labelsLoc.search_weapon_placeholder || ""
                 onTextChanged: vmWeaponEditor.setBrowserSearch(text)
+            }
+            // 厂商 / 类型 / 稀有度筛选
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 6
+                Repeater {
+                    model: ["manufacturer", "type", "rarity"]
+                    delegate: AppSelect {
+                        required property string modelData
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        model: vmWeaponEditor.browserFilterOptions[modelData] || []
+                        currentIndex: page.optionIndex(vmWeaponEditor.browserFilterOptions[modelData],
+                                                       vmWeaponEditor.browserFilterValues[modelData] || "")
+                        onActivated: function(index) { vmWeaponEditor.setBrowserFilter(modelData, model[index].value); }
+                    }
+                }
+            }
+            // 排序 + 正倒序 + 清除筛选
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 6
+                HusText {
+                    text: browserLoc.sort_label || ""
+                    color: HusTheme.Primary.colorTextSecondary
+                    font.pixelSize: 12
+                }
+                AppSelect {
+                    Layout.fillWidth: true
+                    model: vmWeaponEditor.browserSortOptions
+                    currentIndex: page.optionIndex(vmWeaponEditor.browserSortOptions, vmWeaponEditor.browserSort)
+                    onActivated: function(index) { vmWeaponEditor.setBrowserSort(model[index].value); }
+                }
+                HusIconButton {
+                    id: orderButton
+                    iconSource: vmWeaponEditor.browserDescending ? HusIcon.SortDescendingOutlined
+                                                                 : HusIcon.SortAscendingOutlined
+                    contentDescription: vmWeaponEditor.browserDescending ? (browserLoc.order_desc || "")
+                                                                         : (browserLoc.order_asc || "")
+                    HoverHandler {
+                        onHoveredChanged: if (hovered) HoverTip.showFor(orderButton, orderButton.contentDescription, orderButton.width / 2, orderButton.height)
+                                          else HoverTip.hideFor(orderButton)
+                    }
+                    onClicked: {
+                        vmWeaponEditor.toggleBrowserOrder();
+                        HoverTip.showFor(orderButton, orderButton.contentDescription, orderButton.width / 2, orderButton.height);
+                    }
+                }
+                HusIconButton {
+                    id: clearButton
+                    iconSource: HusIcon.ClearOutlined
+                    enabled: vmWeaponEditor.browserFiltered
+                    contentDescription: browserLoc.clear || ""
+                    HoverHandler {
+                        onHoveredChanged: if (hovered) HoverTip.showFor(clearButton, clearButton.contentDescription, clearButton.width / 2, clearButton.height)
+                                          else HoverTip.hideFor(clearButton)
+                    }
+                    onClicked: vmWeaponEditor.clearBrowserFilters()
+                }
+            }
+            HusText {
+                Layout.fillWidth: true
+                text: vmWeaponEditor.browserCountText
+                color: HusTheme.Primary.colorTextTertiary
+                font.pixelSize: 11
             }
             LockedListView {
                 id: browserList
@@ -53,13 +130,20 @@ RowLayout {
                 ScrollBar.vertical: HusScrollBar { }
                 model: vmWeaponEditor.browserRows
                 activeFocusOnTab: true
-                // Selecting a row republishes browserRows (the "selected" flag), which
-                // rebuilds the model and resets the view to the top: keep the position
-                // unless the rows themselves changed (search, other save).
+                // The model only changes on search / filter / sort / refresh (selection has its
+                // own signal). A refresh after saving keeps the row count: keep the position then.
                 property real savedOffset: 0
                 property int savedRows: -1
                 onContentYChanged: if (contentY - minContentY > 1) savedOffset = contentY - minContentY
                 onMovementEnded: savedOffset = contentY - minContentY
+                function syncCurrent() {
+                    var rows = model || [];
+                    var key = vmWeaponEditor.browserSelectedKey;
+                    browserList.currentIndex = -1;
+                    for (var i = 0; key && i < rows.length; i++) {
+                        if (rows[i].key === key) { browserList.currentIndex = i; break; }
+                    }
+                }
                 onModelChanged: {
                     var rows = model || [];
                     var keep = rows.length === savedRows;
@@ -67,11 +151,13 @@ RowLayout {
                     savedRows = rows.length;
                     if (!keep) savedOffset = 0;
                     Qt.callLater(function() {
-                        for (var i = 0; i < rows.length; i++) {
-                            if (rows[i].selected) { browserList.currentIndex = i; break; }
-                        }
+                        browserList.syncCurrent();
                         if (keep && offset > 1) browserList.scrollToContentY(browserList.minContentY + offset);
                     });
+                }
+                Connections {
+                    target: vmWeaponEditor
+                    function onBrowserSelectionChanged() { browserList.syncCurrent(); }
                 }
 
                 // Ctrl+C 复制选中武器的 Base85 序列
@@ -81,14 +167,16 @@ RowLayout {
                 }
 
                 delegate: Item {
+                    id: browserRow
                     width: ListView.view.width
                     height: 96
+                    readonly property string rowKey: modelData.key
+                    readonly property bool selected: rowKey === vmWeaponEditor.browserSelectedKey
                     Rectangle {
                         anchors.fill: parent
                         anchors.margins: 2
                         radius: 6
-                        property bool selected: modelData.selected
-                        color: selected ? selStyle.bg
+                        color: browserRow.selected ? selStyle.bg
                              : (HusTheme.isDark ? "#1AFFFFFF" : "#0D000000")
                     }
                     ColumnLayout {
@@ -98,21 +186,22 @@ RowLayout {
                         HusText {
                             Layout.fillWidth: true
                             text: modelData.title
-                            color: modelData.selected ? selStyle.text : HusTheme.Primary.colorTextBase
+                            color: browserRow.selected ? selStyle.text : HusTheme.Primary.colorTextBase
                             font.bold: true
                             elide: Text.ElideRight
                         }
                         HusText {
                             Layout.fillWidth: true
-                            text: modelData.detail
-                            color: modelData.selected ? selStyle.secondaryText : HusTheme.Primary.colorTextSecondary
+                            text: modelData.rarity ? modelData.rarity + "  ·  " + modelData.detail : modelData.detail
+                            color: browserRow.selected ? selStyle.secondaryText : HusTheme.Primary.colorTextSecondary
                             font.pixelSize: 11
                             elide: Text.ElideRight
                         }
                         RowLayout {
                             spacing: 6
                             Repeater {
-                                model: modelData.stats
+                                // 属性只给创建出来（可见）的行计算
+                                model: vmWeaponEditor.browserStats(browserRow.rowKey)
                                 delegate: Column {
                                     spacing: 0
                                     HusText {

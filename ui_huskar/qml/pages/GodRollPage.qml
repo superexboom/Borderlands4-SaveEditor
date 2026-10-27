@@ -334,7 +334,8 @@ Item {
                 enabled: appBridge.saveLoaded && vmGodRoll.results.length > 0
                 onClicked: {
                     var indices = [];
-                    for (var i = 0; i < vmGodRoll.results.length; i++) indices.push(i);
+                    var count = vmGodRoll.results.length;  // 每次读属性都会把整张结果表转换一遍
+                    for (var i = 0; i < count; i++) indices.push(i);
                     vmGodRoll.addResults(indices);
                 }
             }

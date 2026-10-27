@@ -1,5 +1,6 @@
 # bl4_functions.py
 
+import threading
 from typing import Any, Dict, List, Optional, Tuple, Union
 from . import b_encoder, lookup
 from .unlock_data import VAULT_CARD_TOKENS
@@ -67,11 +68,12 @@ def apply_character_and_currency_changes(data: Dict[str, Any], yaml_data: Dict[s
     if not isinstance(yaml_data, dict):
         return False
 
-    def maybe_int(x: str) -> int:
+    def maybe_int(x: str) -> Optional[int]:
+        # 空或非法输入返回 None，调用处保留原值，不能写成 0
         try:
             return int(str(x).strip())
         except (ValueError, TypeError):
-            return 0
+            return None
 
     local = yaml_data.get("domains", {}).get("local", {})
     if isinstance(local, dict) and "shared" in local:
@@ -97,38 +99,36 @@ def apply_character_and_currency_changes(data: Dict[str, Any], yaml_data: Dict[s
             return False
     
     try:
-        # Apply name and difficulty
-        char_name = data.get("名称", "")
-        difficulty = data.get("难度", "")
-        
+        # Apply name and difficulty; keys missing from data stay unchanged
         root_node = yaml_data.get("state", yaml_data)
         if not isinstance(root_node, dict):
              root_node = yaml_data
 
-        if "char_name" in root_node: root_node["char_name"] = char_name
-        if "player_difficulty" in root_node: root_node["player_difficulty"] = difficulty
+        if "名称" in data and "char_name" in root_node: root_node["char_name"] = data["名称"]
+        if "难度" in data and "player_difficulty" in root_node: root_node["player_difficulty"] = data["难度"]
 
         # Experience and levels
-        exp_list = root_node.setdefault("experience", [])
-        if not isinstance(exp_list, list): exp_list = []
-        
-        char_exp = next((item for item in exp_list if isinstance(item, dict) and item.get("type") == "Character"), None)
-        spec_exp = next((item for item in exp_list if isinstance(item, dict) and item.get("type") == "Specialization"), None)
+        exp_values = {
+            ("Character", "level"): maybe_int(data.get("角色等级")),
+            ("Character", "points"): maybe_int(data.get("角色经验值")),
+            ("Specialization", "level"): maybe_int(data.get("专精等级")),
+            ("Specialization", "points"): maybe_int(data.get("专精点数")),
+        }
+        if any(value is not None for value in exp_values.values()):
+            exp_list = root_node.setdefault("experience", [])
+            if not isinstance(exp_list, list): exp_list = []
+            for (exp_type, key), value in exp_values.items():
+                if value is None:
+                    continue
+                entry = next((item for item in exp_list
+                              if isinstance(item, dict) and item.get("type") == exp_type), None)
+                if entry is None:
+                    entry = {"type": exp_type}
+                    exp_list.append(entry)
+                entry[key] = value
 
-        if char_exp is None:
-            char_exp = {"type": "Character"}
-            exp_list.append(char_exp)
-        if spec_exp is None:
-            spec_exp = {"type": "Specialization"}
-            exp_list.append(spec_exp)
-            
-        char_level = maybe_int(data.get("角色等级", 0))
-        char_exp["level"] = char_level
-        char_exp["points"] = maybe_int(data.get("角色经验值", 0))
-        spec_exp["level"] = maybe_int(data.get("专精等级", 0))
-        spec_exp["points"] = maybe_int(data.get("专精点数", 0))
-
-        if char_level > 0:
+        char_level = exp_values[("Character", "level")]
+        if char_level is not None and char_level > 0:
             progression = yaml_data.setdefault("progression", {})
             if isinstance(progression, dict):
                 point_pools = progression.setdefault("point_pools", {})
@@ -138,9 +138,9 @@ def apply_character_and_currency_changes(data: Dict[str, Any], yaml_data: Dict[s
         # Apply currencies
         for key, label in [("cash", "金钱"), ("eridium", "镒矿")]:
             path = current_paths.get(key)
-            val_str = data.get(label, "").strip()
-            if path and val_str:
-                _set_by_path(yaml_data, path, maybe_int(val_str))
+            value = maybe_int(data.get(label, ""))
+            if path and value is not None:
+                _set_by_path(yaml_data, path, value)
         
         return True
 
@@ -311,47 +311,60 @@ def parse_decoded_item_header(decoded_full: str) -> Optional[Dict[str, Any]]:
         return None
 
 
-def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
+class _ProcessedItemDict(dict):
+    """A processed item whose card stats are computed on first use.
+
+    Only item cards read ``weapon_stats`` / ``equipment_stats``; computing them
+    for every item made opening a large backpack about twice as slow.
     """
-    Scans the YAML data for all items using a recursive walk, decodes their serials,
-    and returns a structured list of processed item data.
-    """
-    if not isinstance(yaml_data, dict):
-        return []
 
-    all_items: List[ProcessedItem] = []
-    
-    discovered_items = _walk_for_serials(yaml_data, [])
+    _LAZY = ("weapon_stats", "equipment_stats")
 
-    for path, item_data in discovered_items:
-        # Rule: Ignore items under 'unknown_items'
-        if "unknown_items" in path:
-            continue
+    def __missing__(self, key):
+        if key not in self._LAZY:
+            raise KeyError(key)
+        canonical = dict.get(self, "canonical_decoded", "")
+        item_type = dict.get(self, "type_en", "")
+        if key == "weapon_stats":
+            value = (item_display_resolver.resolve_weapon_stats(canonical)
+                     if item_type in item_display_resolver.WEAPON_TYPES else {})
+        else:
+            value = item_display_resolver.resolve_equipment_stats(canonical, item_type)
+        self[key] = value
+        return value
 
-        serial = item_data.get("serial", "")
-        if not serial:
-            continue
+    def get(self, key, default=None):
+        if key in self._LAZY and not dict.__contains__(self, key):
+            return self[key]
+        return dict.get(self, key, default)
 
-        try:
-            formatted_str, _, err = decoder_logic.decode_serial_to_string(serial)
-            if err:
-                continue
-        except Exception as e:
-            # This is a hard guard against a C-level crash in the decoder
-            # We log it and move on, preventing a full application crash.
-            print(f"严重解码错误，序列号: {serial}, 错误: {e}")
-            continue
-        
-        split_marker = "||"
-        if split_marker not in formatted_str:
-            continue
-        
-        header = parse_decoded_item_header(formatted_str)
-        if not header:
-            continue
+
+# (serial, language) -> the serial-derived fields of a processed item, or None when
+# the serial does not decode.  Every page lists items through process_and_load_items;
+# without this a large backpack was decoded again on each page and after each edit.
+_SERIAL_INFO_CACHE: Dict[Tuple[str, str], Optional[Dict[str, Any]]] = {}
+_SERIAL_INFO_CACHE_MAX = 20000
+# Held while items are processed, so the background warm-up and a page that needs
+# the list at the same time do not decode the same serials twice.
+_PROCESS_LOCK = threading.Lock()
+
+
+def _serial_info(serial: str, lang: str) -> Optional[Dict[str, Any]]:
+    key = (serial, lang)
+    if key in _SERIAL_INFO_CACHE:
+        return _SERIAL_INFO_CACHE[key]
+    info = None
+    try:
+        formatted_str, _, err = decoder_logic.decode_serial_to_string(serial)
+    except Exception as e:
+        # This is a hard guard against a C-level crash in the decoder
+        # We log it and move on, preventing a full application crash.
+        print(f"严重解码错误，序列号: {serial}, 错误: {e}")
+        formatted_str, err = "", e
+    header = parse_decoded_item_header(formatted_str) if not err and "||" in formatted_str else None
+    if header:
         try:
             item_id = header["mfg_id"]
-            item_level = header["level"]
             canonical_str, _unresolved = item_display_resolver.canonicalize_decoded_serial(
                 formatted_str, item_id
             )
@@ -361,21 +374,87 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
                 manufacturer, item_type = item_display_resolver.dynamic_item_kind(item_id) or ("Unknown", "Unknown")
 
             # 应用本地化
-            localized_manufacturer = get_localized_string(manufacturer)
-            localized_item_type = get_localized_string(item_type)
-            
+            localized_manufacturer = game_text.localize_label(manufacturer, lang)
+            localized_item_type = game_text.localize_label(item_type, lang)
+
             base_item_name = f"{localized_manufacturer} {localized_item_type}"
             display_info = item_display_resolver.resolve_item_display(
                 item_id,
                 localized_manufacturer,
                 item_type,
                 canonical_str,
-                current_localization_lang,
+                lang,
             )
             item_name = display_info.get("display_name") or base_item_name
             if display_info.get("display_source") == "fallback":
                 item_name = base_item_name
-            display_parts = canonical_str.split("||", 1)[1].strip()
+            info = {
+                "name": item_name,
+                "base_name": base_item_name,
+                "type": localized_item_type,
+                "type_en": item_type,
+                "manufacturer": localized_manufacturer,
+                "manufacturer_en": manufacturer,
+                "id": item_id,
+                "level": header["level"],
+                "rarity": display_info.get("rarity", ""),
+                "rarity_en": display_info.get("rarity_en") or display_info.get("rarity", ""),
+                "display_source": display_info.get("display_source", ""),
+                "parts_summary": display_info.get("parts_summary", ""),
+                "decoded_full": formatted_str,
+                "canonical_decoded": canonical_str,
+                "decoded_parts": canonical_str.split("||", 1)[1].strip(),
+            }
+        except (ValueError, IndexError):
+            info = None
+    if len(_SERIAL_INFO_CACHE) >= _SERIAL_INFO_CACHE_MAX:
+        _SERIAL_INFO_CACHE.clear()
+    _SERIAL_INFO_CACHE[key] = info
+    return info
+
+
+def item_serials(yaml_data: Dict[str, Any]) -> List[str]:
+    """Every listed item serial (what process_and_load_items would decode)."""
+    if not isinstance(yaml_data, dict):
+        return []
+    return [str(node.get("serial")) for path, node in _walk_for_serials(yaml_data, [])
+            if "unknown_items" not in path]
+
+
+def warm_item_cache(serials: List[str], lang: Optional[str] = None) -> None:
+    """Decode serials ahead of time (runs in a background thread after a save opens)."""
+    lang = lang or current_localization_lang
+    with _PROCESS_LOCK:
+        for serial in serials:
+            if serial:
+                _serial_info(serial, lang)
+
+
+def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
+    """
+    Scans the YAML data for all items using a recursive walk, decodes their serials,
+    and returns a structured list of processed item data.
+    """
+    if not isinstance(yaml_data, dict):
+        return []
+
+    all_items: List[ProcessedItem] = []
+    lang = current_localization_lang
+
+    discovered_items = _walk_for_serials(yaml_data, [])
+
+    with _PROCESS_LOCK:
+        for path, item_data in discovered_items:
+            # Rule: Ignore items under 'unknown_items'
+            if "unknown_items" in path:
+                continue
+
+            serial = item_data.get("serial", "")
+            if not serial:
+                continue
+            info = _serial_info(serial, lang)
+            if info is None:
+                continue
 
             # Determine container and slot from the path
             container_name = "Unknown"
@@ -395,39 +474,16 @@ def process_and_load_items(yaml_data: Dict[str, Any]) -> List[ProcessedItem]:
                         slot_key = p_part
                         break
 
-            processed_item: ProcessedItem = {
+            processed_item = _ProcessedItemDict(info)
+            processed_item.update({
                 "original_path": path,
-                "name": item_name,
-                "base_name": base_item_name,
-                "type": localized_item_type,
-                "type_en": item_type,
                 "container": container_name,
                 "slot": slot_key,
-                "manufacturer": localized_manufacturer,
-                "manufacturer_en": manufacturer,
-                "id": item_id,
-                "level": item_level,
-                "rarity": display_info.get("rarity", ""),
-                "rarity_en": display_info.get("rarity_en") or display_info.get("rarity", ""),
-                "display_source": display_info.get("display_source", ""),
-                "parts_summary": display_info.get("parts_summary", ""),
                 "state_flags": str(item_data.get("state_flags", "")),
                 "serial": serial,
-                "decoded_full": formatted_str,
-                "canonical_decoded": canonical_str,
-                "decoded_parts": display_parts,
-                "weapon_stats": (
-                    item_display_resolver.resolve_weapon_stats(canonical_str)
-                    if item_type in item_display_resolver.WEAPON_TYPES
-                    else {}
-                ),
-                "equipment_stats": item_display_resolver.resolve_equipment_stats(canonical_str, item_type),
-            }
+            })
             all_items.append(processed_item)
 
-        except (ValueError, IndexError):
-            continue
-            
     return all_items
 
 def add_item_to_backpack(yaml_data: Dict[str, Any], serial: str, state_flags: str) -> Optional[List[Union[str, int]]]:

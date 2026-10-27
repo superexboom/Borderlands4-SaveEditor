@@ -71,7 +71,8 @@
       "autosaved": "已自动保存 {time}",
       "autosave_failed": "自动保存失败，请手动保存",
       "recovered": "已恢复未保存的修改（尚未写盘）",
-      "item_not_found": "未找到对应物品"
+      "item_not_found": "未找到对应物品",
+      "autosave_disk_changed": "存档已被外部修改，自动保存已暂停，请手动保存"
     },
     "tabs": {
       "select_save": "选择存档",
@@ -145,7 +146,12 @@
       "save_saved": "存档已保存到:\n{path}",
       "encrypt_failed": "加密失败",
       "recover_title": "恢复未保存的修改",
-      "recover_msg": "检测到上次有未保存的修改（可能因意外退出残留）。是否恢复？"
+      "recover_msg": "检测到上次有未保存的修改（可能因意外退出残留）。是否恢复？",
+      "unsaved_open_title": "放弃未保存的修改？",
+      "unsaved_open_msg": "当前存档还有未保存的修改，打开其他存档会丢弃这些修改。\n仍要打开吗？",
+      "char_invalid_number": "以下字段不是有效的整数，未应用：{fields}",
+      "disk_changed_title": "存档已被外部修改",
+      "disk_changed_msg": "打开之后，游戏或其他程序又写入过这个存档文件。覆盖会丢掉那次写入的进度（旧文件会留在 .prev.bak）。\n仍要覆盖吗？"
     },
     "worker": {
       "no_data": "未生成任何数据。",
@@ -502,7 +508,9 @@
       "special_combo_input": "组合输入:",
       "status_generating": "状态: 正在生成...",
       "status_gen_complete": "状态: 生成完成!",
-      "status_message": "状态：{message}"
+      "status_message": "状态：{message}",
+      "status_cancelled": "状态: 已取消，已处理 {current}/{total}。",
+      "status_batch_add_cancelled": "状态: 已取消。成功: {success}, 失败: {fail}."
     },
     "placeholders": {
       "base85": "输入Base85编码，例如: @Ug#2fK2...",
@@ -1202,6 +1210,21 @@
       "available_parts_hint": "可用部件（单击预览，双击添加）",
       "no_matches": "无匹配项",
       "search_skin": "搜索皮肤名称…"
+    },
+    "browser": {
+      "all_manufacturer": "全部厂商",
+      "all_type": "全部类型",
+      "all_rarity": "全部稀有度",
+      "sort_label": "排序",
+      "sort_slot": "获得顺序",
+      "sort_level": "等级",
+      "sort_rarity": "稀有度",
+      "sort_name": "名称",
+      "sort_manufacturer": "厂商",
+      "order_desc": "当前：从高到低 / 新的在前（点击切换）",
+      "order_asc": "当前：从低到高 / 旧的在前（点击切换）",
+      "clear": "清除搜索和筛选",
+      "count": "显示 {shown} / 共 {total} 把"
     }
   },
   "equipment_roll": {
@@ -1720,7 +1743,8 @@
       "live_skills_applied": "技能已按配装套用（{graphs} 棵技能树）。",
       "live_skills_failed": "技能套用失败：{error}",
       "live_skills_mismatch": "有 {count} 个技能节点没能达到配装中的状态（点数不足或前置条件未满足）",
-      "live_skills_unknown": "这套配装里的技能与当前角色不匹配（{names}），技能部分已跳过。"
+      "live_skills_unknown": "这套配装里的技能与当前角色不匹配（{names}），技能部分已跳过。",
+      "live_save_no_skills": "技能没有读取成功（{error}），这个方案只保存了装备。"
     },
     "decode": {
       "unknown": "未知",
@@ -1779,6 +1803,8 @@
     "req_active": "需要先启用「{target}」",
     "trunk": "主干",
     "branch": "分支 {n}",
-    "bonus_split": "职业模组 +{gear}　额外加点 +{extra}"
+    "bonus_split": "职业模组 +{gear}　额外加点 +{extra}",
+    "reload_title": "重新读取技能",
+    "reload_discard": "还有未应用的修改。重新读取会用游戏里当前的构筑替换它们。\n仍要重新读取吗？"
   }
 }

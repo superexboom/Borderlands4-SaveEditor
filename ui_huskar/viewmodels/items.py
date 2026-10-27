@@ -59,6 +59,7 @@ class ItemsViewModel(PageViewModel):
         self._flags = resource_loader.get_flag_labels(self.current_lang)
         self._flag_labels = [self._flags[k] for k in _FLAG_CODE_ORDER if k in self._flags]
         self._flag_index = self._default_flag_index()
+        self._filter_options: dict[str, list] | None = None
         self._search_timer = QTimer(self)
         self._search_timer.setSingleShot(True)
         self._search_timer.setInterval(100)
@@ -82,6 +83,7 @@ class ItemsViewModel(PageViewModel):
         except Exception:
             self._all_items = []
         self._card_model_cache.clear()
+        self._filter_options = None
         self.hoverCanceled()
         self._defaults_collapsed = False
         self._rebuild_rows()
@@ -142,6 +144,12 @@ class ItemsViewModel(PageViewModel):
 
     @pyqtProperty("QVariantMap", notify=dataChanged)
     def filterOptions(self) -> dict[str, list]:
+        # 只随物品列表变：页面上 10 个绑定每次 dataChanged 都会读它，每次重算要把物品遍历 4 遍
+        if self._filter_options is None:
+            self._filter_options = self._build_filter_options()
+        return self._filter_options
+
+    def _build_filter_options(self) -> dict[str, list]:
         all_text = self.strings.get("filters", {}).get("all", "All")
         options: dict[str, list] = {}
         for key in ("container", "type", "manufacturer", "rarity"):
@@ -348,31 +356,30 @@ class ItemsViewModel(PageViewModel):
         target = tuple(str(p) for p in (original_path or []))
         if not target:
             return False
-        for index, row in enumerate(self._rows):
-            if row["rowType"] != "item":
-                continue
-            item = self._all_items[row["itemIndex"]]
-            if tuple(str(p) for p in (item.get("original_path") or [])) == target:
-                # 确保祖先组展开
-                changed = False
-                for key in (row["containerKey"], row["typeKey"]):
-                    if key in self._collapsed:
-                        self._collapsed.discard(key)
-                        changed = True
-                if changed:
-                    self._rebuild_rows()
-                    for new_index, new_row in enumerate(self._rows):
-                        if new_row["rowType"] == "item" and new_row["itemIndex"] == row["itemIndex"]:
-                            index = new_index
-                            break
-                self.selectedRowChanged.emit(index)
-                return True
-        # 物品存在但被筛选隐藏：清筛选后重试一次
-        if any(tuple(str(p) for p in (item.get("original_path") or [])) == target
-               for item in self._all_items):
+        item_index = next((index for index, item in enumerate(self._all_items)
+                           if tuple(str(p) for p in (item.get("original_path") or [])) == target), None)
+        if item_index is None:
+            return False
+        # 折叠组里的物品不在 _rows 里：先展开它的容器和类型组
+        item = self._all_items[item_index]
+        container_name = self._container_display(item.get("container"))
+        item_type = str(item.get("type") or self.strings.get("defaults", {}).get("unknown_type", "Unknown"))
+        self._collapsed.discard(f"c:{container_name}")
+        self._collapsed.discard(f"t:{container_name}/{item_type}")
+        self._rebuild_rows()
+        row = self._row_of_item(item_index)
+        if row is None:
+            # 被筛选隐藏：清筛选后再找
             self.clearFilters()
-            return self.selectByPath(original_path)
-        return False
+            row = self._row_of_item(item_index)
+        if row is None:
+            return False
+        self.selectedRowChanged.emit(row)
+        return True
+
+    def _row_of_item(self, item_index: int) -> int | None:
+        return next((index for index, row in enumerate(self._rows)
+                     if row["rowType"] == "item" and row["itemIndex"] == item_index), None)
 
     selectedRowChanged = pyqtSignal(int)
 
@@ -477,4 +484,8 @@ class ItemsViewModel(PageViewModel):
                 if container_key not in self._collapsed:
                     rows.extend(container_rows)
         self._rows = rows
+        # 行号只对旧行表有效：选中行和悬停卡都作废，否则高亮和 Ctrl+C 会落到别的物品上
+        if self._hover_pending_row >= 0 or self._hover_shown_row >= 0:
+            self.hoverCanceled()
+        self.selectedRowChanged.emit(-1)
         self.dataChanged.emit()

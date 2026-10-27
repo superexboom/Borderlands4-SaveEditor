@@ -25,7 +25,7 @@ from core.serial_import import (
     split_decoded,
 )
 
-from .base import PageViewModel, register
+from .base import PageViewModel, clamp_stack_count, register
 
 _FLAG_CODE_ORDER = ("1", "3", "5", "17", "33", "65", "129")
 _RARITIES = ("Common", "Uncommon", "Rare", "Epic", "Legendary")
@@ -1495,7 +1495,7 @@ class ClassModViewModel(PageViewModel):
     @pyqtSlot(int, int)
     def setPerkItemCount(self, index: int, count: int) -> None:
         if 0 <= index < len(self._perk_entries):
-            self._perk_entries[index]["count"] = max(1, int(count))
+            self._perk_entries[index]["count"] = clamp_stack_count(count)
             self._rebuild(reorder=False)
 
     @pyqtSlot(list, int)
@@ -1504,7 +1504,7 @@ class ClassModViewModel(PageViewModel):
         for index in indices or []:
             index = int(index)
             if 0 <= index < len(self._perk_entries):
-                new_count = max(1, int(count))
+                new_count = clamp_stack_count(count)
                 if new_count != self._perk_entries[index]["count"]:
                     self._perk_entries[index]["count"] = new_count
                     changed = True

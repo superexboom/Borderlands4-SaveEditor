@@ -103,6 +103,7 @@ class WeaponGeneratorViewModel(PageViewModel):
         self._wt_index = 0
         self._level = self._character_level
         self._seed = str(random.randint(100, 9999))
+        self._last_seed = self._seed  # 种子框内容无效（清空、输入中）时沿用
         self._flag_index = 0
         self._decoded = ""
         self._decoded_header = ""
@@ -444,7 +445,10 @@ class WeaponGeneratorViewModel(PageViewModel):
         if selected != "Legendary":
             self._special_index["Legendary Type"] = 0
         if selected != "Pearl":
+            # 珍珠行隐藏后选择也要清掉，否则 {1:…} 仍会写进序列号
             self._special_index["Pearl Type"] = 0
+            self._pearl_stat_index = 0
+            self._pearl_element_index = 0
         self._generate()
 
     @pyqtSlot(int)
@@ -897,7 +901,9 @@ class WeaponGeneratorViewModel(PageViewModel):
                 self.dataChanged.emit()
                 return
             level = self._level if str(self._level).isdigit() else self._character_level
-            seed = self._seed if str(self._seed).isdigit() else str(random.randint(100, 9999))
+            if str(self._seed).isdigit():
+                self._last_seed = str(self._seed)
+            seed = self._last_seed
             header = f"{m_id}, 0, 1, {level}| 2, {seed}||"
             self._decoded_header = header
             component_str = " ".join(self._component_tokens(m_id))

@@ -565,7 +565,8 @@ LockedFlickable {
                         enabled: appBridge.saveLoaded
                         onClicked: {
                             var indices = [];
-                            for (var i = 0; i < vm.rollResults.length; i++) indices.push(i);
+                            var count = vm.rollResults.length;  // 每次读属性都会把整张结果表转换一遍
+                            for (var i = 0; i < count; i++) indices.push(i);
                             vm.addRollToBackpack(indices);
                         }
                     }

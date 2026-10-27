@@ -83,6 +83,10 @@ INTERNAL_NAME_SKIP_TYPES = {
 }
 
 _WEAPON_TYPES = {"Pistol", "Shotgun", "SMG", "Assault Rifle", "Sniper"}
+# 背包武器列表的排序方式（默认按获得顺序，新的在前）
+_BROWSER_SORTS = ("slot", "level", "rarity", "name", "manufacturer")
+_BROWSER_FILTERS = ("manufacturer", "type", "rarity")
+_RARITY_RANK = {"common": 0, "uncommon": 1, "rare": 2, "epic": 3, "legendary": 4, "pearl": 5}
 _RARITY_UI = ("Common", "Uncommon", "Rare", "Epic")
 
 
@@ -91,6 +95,9 @@ class WeaponEditorViewModel(PageViewModel):
     STRINGS_SECTION = "weapon_editor_tab"
 
     dataChanged = pyqtSignal()
+    # 背包列表单独通知：编辑部件、等级时发的 dataChanged 不能让上千行的列表重建
+    browserChanged = pyqtSignal()
+    browserSelectionChanged = pyqtSignal()
 
     def __init__(self, app, parent=None):
         super().__init__(app, parent)
@@ -113,9 +120,17 @@ class WeaponEditorViewModel(PageViewModel):
         self._stats: list[dict[str, str]] = []
         self._legality = {"text": "—", "status": "unknown", "tooltip": "", "reasons": []}
         self._part_rows: list[dict[str, Any]] = []
-        self._group_collapsed: set[int] = set()
+        # 折叠状态按分组原文记：按序号记的话上移、删除部件后会错位
+        self._group_collapsed: set[str] = set()
         self._browser_items: list[dict[str, Any]] = []
+        self._browser_sources: dict[str, dict] = {}   # 行 key -> 物品（不交给 QML）
+        self._browser_view: list[dict[str, Any]] | None = None
+        self._browser_stats: dict[str, list[dict[str, str]]] = {}
         self._browser_search = ""
+        self._browser_filters: dict[str, str] = {key: "" for key in _BROWSER_FILTERS}
+        sort = str(self.app._settings.value("weapon_editor/browser_sort", "slot") or "slot")
+        self._browser_sort = sort if sort in _BROWSER_SORTS else "slot"
+        self._browser_desc = self.app._settings.value("weapon_editor/browser_desc", True, type=bool)
         self._summary = ""
         self._flag_index = 0
         self._skin_options: list[dict[str, str]] = []
@@ -131,6 +146,8 @@ class WeaponEditorViewModel(PageViewModel):
     # ------------------------------------------------------------------ #
     def _load_data(self, lang: str) -> None:
         self.current_lang = lang
+        self._skin_options = []  # 皮肤名按语言缓存
+        self._browser_stats = {}
         self.ui_localization = self.app.localizer.section("weapon_editor_tab")
         self.weapon_rule_loc = self.app.localizer.section("weapon_rules")
         try:
@@ -175,6 +192,8 @@ class WeaponEditorViewModel(PageViewModel):
             return
         self._refresh_browser()
         self.dataChanged.emit()
+        self.browserChanged.emit()
+        self.browserSelectionChanged.emit()
 
     # ------------------------------------------------------------------ #
     # 本地化
@@ -223,11 +242,11 @@ class WeaponEditorViewModel(PageViewModel):
     def loadErrorText(self) -> str:
         return getattr(self, "_data_error", "")
 
-    @pyqtProperty(list, notify=dataChanged)
+    @pyqtProperty(list, notify=browserChanged)
     def browserItems(self) -> list[dict[str, Any]]:
         return self._browser_items
 
-    @pyqtProperty(str, notify=dataChanged)
+    @pyqtProperty(str, notify=browserChanged)
     def browserSearch(self) -> str:
         return self._browser_search
 
@@ -339,62 +358,186 @@ class WeaponEditorViewModel(PageViewModel):
             items = []
         weapons = [i for i in items if i.get("type_en") in _WEAPON_TYPES and "Backpack" in i.get("container", "")]
         rows = []
+        sources = {}
         unknown = self._loc("parts", "unknown", "Unknown")
+        unknown_names = {"N/A", "Unknown", unknown, *(
+            ui_text.tr("weapon_editor_tab.parts.unknown", code) for code in ui_text.UI_LANGUAGES)}
+        level_label = self.get_localized_string("level_label")
+        slot_label = self.get_localized_string("slot_label")
         for weapon in weapons:
             try:
-                header, component = weapon.get("decoded_full", "").split("||", 1)
-                m_id = int(header.strip().split("|")[0].strip().split(",")[0])
-                parsed = self._parse_component_string(component)
-                _, name, _, _ = self._get_rarity_and_weapon_name(parsed, m_id, weapon.get("decoded_full", ""))
+                # 物品处理已经用规范化序列号解出了名字（与物品页一致）；只有回退名才查枪管
+                if weapon.get("display_source") != "fallback" and weapon.get("name"):
+                    name = str(weapon["name"])
+                else:
+                    header, component = weapon.get("decoded_full", "").split("||", 1)
+                    m_id = int(header.strip().split("|")[0].strip().split(",")[0])
+                    parsed = self._parse_component_string(component)
+                    _, name, _, _ = self._get_rarity_and_weapon_name(parsed, m_id, weapon.get("decoded_full", ""))
                 w_name = self.get_localized_string(name, name)
                 manufacturer = weapon.get("manufacturer") or unknown
                 weapon_type = weapon.get("type") or self._loc("parts", "unknown_item", "Unknown Item")
-                unknown_names = {"N/A", "Unknown", unknown, *(
-                    ui_text.tr("weapon_editor_tab.parts.unknown", code) for code in ui_text.UI_LANGUAGES)}
                 disp_name = (f"{manufacturer} {weapon_type} ({w_name})"
                              if w_name not in unknown_names else f"{manufacturer} {weapon_type}")
-                detail = (f"{self.get_localized_string('level_label')} {weapon.get('level', 'N/A')}  ·  "
-                          f"{self.get_localized_string('slot_label')} {weapon.get('slot', 'N/A').replace('slot_', '')}")
-                stats = item_display_resolver.resolve_weapon_stats(weapon.get("decoded_full", "") or "")
-                stat_titles = self.ui_localization.get("stats", {})
+                slot = str(weapon.get("slot", "N/A"))
+                detail = f"{level_label} {weapon.get('level', 'N/A')}  ·  {slot_label} {slot.replace('slot_', '')}"
+                key = "/".join(str(p) for p in (weapon.get("original_path") or []))
+                rarity = str(weapon.get("rarity") or "")
+                sources[key] = weapon
                 rows.append({
+                    "key": key,
                     "title": disp_name,
                     "detail": detail,
                     "level": str(weapon.get("level", "")),
-                    "searchText": f"{weapon.get('name', '')} {disp_name} {detail}".casefold(),
-                    "stats": [{
-                        "label": stat_titles.get(key, key.replace("_", " ").title()),
-                        "value": str(item_display_resolver.format_weapon_stat(
-                            key, stats.get(key), self.current_lang) or "—"),
-                    } for key in ("damage", "accuracy", "fire_rate", "reload_time", "magazine")],
+                    "rarity": rarity,
+                    "rarityKey": str(weapon.get("rarity_en") or rarity).casefold(),
+                    "manufacturerKey": str(weapon.get("manufacturer_en") or manufacturer),
+                    "manufacturer": manufacturer,
+                    "typeKey": str(weapon.get("type_en") or weapon_type),
+                    "type": weapon_type,
+                    "searchText": f"{weapon.get('name', '')} {disp_name} {detail} {rarity}".casefold(),
                     "original_path": [str(p) for p in (weapon.get("original_path") or [])],
-                    "selected": weapon.get("original_path") == self.selected_weapon_path,
-                    "_item": weapon,
+                    "_slot": int(slot[5:]) if slot.startswith("slot_") and slot[5:].isdigit() else -1,
+                    "_level": int(weapon.get("level") or 0) if str(weapon.get("level") or "").isdigit() else 0,
                 })
             except Exception:
                 continue
         self._browser_items = rows
+        self._browser_sources = sources
+        self._browser_view = None
+        for key, value in list(self._browser_filters.items()):
+            # 存档里已经没有的筛选值（换存档、卖掉了）不能留着把列表筛空
+            if value and not any(row[f"{key}Key"] == value for row in rows):
+                self._browser_filters[key] = ""
         self._update_summary()
+
+    def _browser_changed(self) -> None:
+        self._browser_view = None
+        self.browserChanged.emit()
 
     @pyqtSlot(str)
     def setBrowserSearch(self, text: str) -> None:
+        if text == self._browser_search:
+            return
         self._browser_search = text
-        self.dataChanged.emit()
+        self._browser_changed()
 
-    @pyqtProperty(list, notify=dataChanged)
+    @pyqtSlot(str, str)
+    def setBrowserFilter(self, key: str, value: str) -> None:
+        if key not in self._browser_filters or self._browser_filters[key] == (value or ""):
+            return
+        self._browser_filters[key] = value or ""
+        self._browser_changed()
+
+    @pyqtSlot(str)
+    def setBrowserSort(self, sort: str) -> None:
+        if sort not in _BROWSER_SORTS or sort == self._browser_sort:
+            return
+        self._browser_sort = sort
+        self.app._settings.setValue("weapon_editor/browser_sort", sort)
+        self._browser_changed()
+
+    @pyqtSlot()
+    def toggleBrowserOrder(self) -> None:
+        self._browser_desc = not self._browser_desc
+        self.app._settings.setValue("weapon_editor/browser_desc", self._browser_desc)
+        self._browser_changed()
+
+    @pyqtSlot()
+    def clearBrowserFilters(self) -> None:
+        self._browser_search = ""
+        self._browser_filters = {key: "" for key in _BROWSER_FILTERS}
+        self._browser_changed()
+
+    @pyqtProperty(list, notify=browserChanged)
     def browserRows(self) -> list[dict[str, Any]]:
-        query = self._browser_search.strip().casefold()
-        if not query:
-            return self._browser_items
-        return [row for row in self._browser_items if query in row["searchText"]]
+        if self._browser_view is None:
+            query = self._browser_search.strip().casefold()
+            rows = [row for row in self._browser_items
+                    if (not query or query in row["searchText"])
+                    and all(not value or row[f"{key}Key"] == value
+                            for key, value in self._browser_filters.items())]
+            sort_key = {
+                "slot": lambda row: row["_slot"],
+                "level": lambda row: (row["_level"], row["_slot"]),
+                "rarity": lambda row: (_RARITY_RANK.get(row["rarityKey"], -1), row["_slot"]),
+                "name": lambda row: (row["title"].casefold(), row["_slot"]),
+                "manufacturer": lambda row: (row["manufacturer"].casefold(), row["type"].casefold(), row["_slot"]),
+            }[self._browser_sort]
+            self._browser_view = sorted(rows, key=sort_key, reverse=self._browser_desc)
+        return self._browser_view
+
+    @pyqtProperty("QVariantMap", notify=browserChanged)
+    def browserFilterOptions(self) -> dict[str, list[dict[str, str]]]:
+        labels = self.ui_localization.get("browser", {})
+        options = {}
+        for key in _BROWSER_FILTERS:
+            values = {}
+            for row in self._browser_items:
+                values.setdefault(row[f"{key}Key"], row[key] or row[f"{key}Key"])
+            ordered = sorted(values, key=lambda value: (_RARITY_RANK.get(value, 99), values[value].casefold())
+                             if key == "rarity" else values[value].casefold())
+            options[key] = [{"label": labels.get(f"all_{key}", "All"), "value": ""}] + [
+                {"label": values[value], "value": value} for value in ordered]
+        return options
+
+    @pyqtProperty("QVariantMap", notify=browserChanged)
+    def browserFilterValues(self) -> dict[str, str]:
+        return dict(self._browser_filters)
+
+    @pyqtProperty(list, notify=browserChanged)
+    def browserSortOptions(self) -> list[dict[str, str]]:
+        labels = self.ui_localization.get("browser", {})
+        return [{"label": labels.get(f"sort_{key}", key), "value": key} for key in _BROWSER_SORTS]
+
+    @pyqtProperty(str, notify=browserChanged)
+    def browserSort(self) -> str:
+        return self._browser_sort
+
+    @pyqtProperty(bool, notify=browserChanged)
+    def browserDescending(self) -> bool:
+        return self._browser_desc
+
+    @pyqtProperty(bool, notify=browserChanged)
+    def browserFiltered(self) -> bool:
+        return bool(self._browser_search.strip()) or any(self._browser_filters.values())
+
+    @pyqtProperty(str, notify=browserChanged)
+    def browserCountText(self) -> str:
+        return self.ui_localization.get("browser", {}).get("count", "{shown} / {total}").format(
+            shown=len(self.browserRows), total=len(self._browser_items))
+
+    @pyqtProperty(str, notify=browserSelectionChanged)
+    def browserSelectedKey(self) -> str:
+        return "/".join(str(p) for p in (self.selected_weapon_path or []))
+
+    @pyqtSlot(str, result=list)
+    def browserStats(self, key: str) -> list[dict[str, str]]:
+        """列表行的五项属性：只有滚到可见的行才算，算过的按序列号缓存。"""
+        weapon = self._browser_sources.get(key)
+        if weapon is None:
+            return []
+        serial = str(weapon.get("serial") or "")
+        cached = self._browser_stats.get(serial)
+        if cached is None:
+            stats = weapon.get("weapon_stats") or {}
+            stat_titles = self.ui_localization.get("stats", {})
+            cached = [{
+                "label": stat_titles.get(stat, stat.replace("_", " ").title()),
+                "value": str(item_display_resolver.format_weapon_stat(
+                    stat, stats.get(stat), self.current_lang) or "—"),
+            } for stat in ("damage", "accuracy", "fire_rate", "reload_time", "magazine")]
+            self._browser_stats[serial] = cached
+        return cached
 
     @pyqtSlot(int)
     def loadBrowserItem(self, row: int) -> None:
         rows = self.browserRows
         if not 0 <= row < len(rows):
             return
-        weapon = rows[row]["_item"]
-        self.load_weapon_data(weapon)
+        weapon = self._browser_sources.get(rows[row]["key"])
+        if weapon is not None:
+            self.load_weapon_data(weapon)
 
     @pyqtSlot(int)
     def copyBrowserSerial(self, row: int) -> None:
@@ -402,7 +545,7 @@ class WeaponEditorViewModel(PageViewModel):
         rows = self.browserRows
         if not 0 <= row < len(rows):
             return
-        serial = str(rows[row]["_item"].get("serial", "") or "")
+        serial = str((self._browser_sources.get(rows[row]["key"]) or {}).get("serial", "") or "")
         if serial:
             self.app.copy_text(serial)
 
@@ -435,8 +578,10 @@ class WeaponEditorViewModel(PageViewModel):
             return
         self.parse_and_display(decoded_str)
         self._b85_readonly = True
-        self._refresh_browser()
+        # 只换选中项：重读整个背包（每件物品重新解析）在几百件武器时要好几秒
+        self._update_summary()
         self.dataChanged.emit()
+        self.browserSelectionChanged.emit()
 
     def open_roll_result(self, result: dict) -> None:
         """God Roll「在武器编辑器打开」：按生成结果载入（对齐 handle_open_generated_weapon）。"""
@@ -450,8 +595,9 @@ class WeaponEditorViewModel(PageViewModel):
         self.is_handling_change = False
         self.parse_and_display(decoded)
         self._b85_readonly = True
-        self._refresh_browser()
+        self._update_summary()
         self.dataChanged.emit()
+        self.browserSelectionChanged.emit()
 
     def parse_and_display(self, decoded_str: str) -> None:
         try:
@@ -522,6 +668,7 @@ class WeaponEditorViewModel(PageViewModel):
         self.is_handling_change = False
         self._update_summary()
         self.dataChanged.emit()
+        self.browserSelectionChanged.emit()
 
     def _get_rarity_and_weapon_name(self, parts, m_id, decoded_str=""):
         rarity, weapon_name, rarity_part, display_rarity, remaining_parts = (
@@ -572,9 +719,11 @@ class WeaponEditorViewModel(PageViewModel):
                 self.all_weapon_parts_df["Manufacturer & Weapon Type ID"] == m_id]
             if not m_rows.empty:
                 m_info = m_rows.iloc[0]
+                # 和物品页一样先规范化：字符串形式的部件不解析的话，传奇名只剩前缀
+                canonical, _unresolved = item_display_resolver.canonicalize_decoded_serial(decoded_str, m_id)
                 display = item_display_resolver.resolve_item_display(
                     m_id, str(m_info["Manufacturer"]), str(m_info["Weapon Type"]),
-                    decoded_str, self.current_lang)
+                    canonical, self.current_lang)
                 if display.get("display_source") != "fallback" and display.get("display_name"):
                     weapon_name = display["display_name"]
         return display_rarity, weapon_name, rarity_part, remaining_parts
@@ -669,10 +818,16 @@ class WeaponEditorViewModel(PageViewModel):
     def _update_decoded_from_ui(self) -> None:
         if self.is_handling_change or not self._decoded:
             return
+        # 输入到一半（清空、非数字）时保持上一个有效序列号：否则反序列化文本已改，
+        # Base85 却因编码失败留在旧值，两边对不上
+        if not str(self._level).strip().isdigit():
+            return
         try:
             updated_str = bl4f.update_level_in_decoded_str(self._decoded, self._level)
             parts = updated_str.split("|")
             if len(parts) > 1 and len(parts[1].split(",")) > 1:
+                if not str(self._seed).strip().isdigit():
+                    return
                 seed_parts = parts[1].split(",")
                 seed_parts[1] = f" {self._seed}"
                 parts[1] = ",".join(seed_parts)
@@ -1032,7 +1187,7 @@ class WeaponEditorViewModel(PageViewModel):
                     })
                 rows.append({
                     "index": index, "kind": "group", "title": title,
-                    "expanded": index not in self._group_collapsed,
+                    "expanded": part_info.get("raw") not in self._group_collapsed,
                     "subs": subs, "isSkin": False,
                     # the shared delegate binds the simple-row fields too
                     "typeText": "", "idText": "", "name": "", "internal": "", "stat": "", "color": "",
@@ -1096,10 +1251,17 @@ class WeaponEditorViewModel(PageViewModel):
 
     @pyqtSlot(int)
     def toggleGroup(self, index: int) -> None:
-        if index in self._group_collapsed:
-            self._group_collapsed.discard(index)
+        if not (0 <= index < len(self.parts_data)) or not isinstance(self.parts_data[index], dict):
+            return
+        raw = self.parts_data[index].get("raw")
+        if raw in self._group_collapsed:
+            self._group_collapsed.discard(raw)
         else:
-            self._group_collapsed.add(index)
+            self._group_collapsed.add(raw)
+        # 只改这一行的展开标记，不重算整张部件表
+        for row in self._part_rows:
+            if row["kind"] == "group" and row["index"] == index:
+                row["expanded"] = raw not in self._group_collapsed
         self.dataChanged.emit()
 
     @pyqtSlot(bool)
@@ -1259,9 +1421,11 @@ class WeaponEditorViewModel(PageViewModel):
                 return label.split("-", 1)[0]
         return ""
 
-    def _model_context(self, model, current=""):
+    def _model_context(self, model, current=None):
         family = str(model or "").split("-", 1)[0]
-        current = current or self._current_barrel_family()
+        # "" 表示当前没有可识别的枪管：不能再算一遍（目录有两千多项，每项都要重算生成上下文）
+        if current is None:
+            current = self._current_barrel_family()
         if not family or not current:
             return "", ""
         if family == current:
@@ -1706,12 +1870,7 @@ class WeaponEditorViewModel(PageViewModel):
     # 汇总
     # ------------------------------------------------------------------ #
     def _update_summary(self) -> None:
-        weapon = None
-        for row in self._browser_items:
-            if row["original_path"] and self.selected_weapon_path is not None and \
-                    list(row["original_path"]) == list(self.selected_weapon_path):
-                weapon = row["_item"]
-                break
+        weapon = self._browser_sources.get(self.browserSelectedKey) if self.selected_weapon_path else None
         if not weapon:
             self._summary = self._loc("summary", "none_selected", "No backpack weapon selected")
             return

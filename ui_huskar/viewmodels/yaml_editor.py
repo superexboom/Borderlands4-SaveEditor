@@ -136,17 +136,26 @@ class YamlEditorViewModel(PageViewModel):
         """版本号不一致才重建（与主线一致）。"""
         if self.controller.yaml_obj is None:
             self._rows = []
+            self._selected_row = -1
+            self._multi_selected = set()
             self.rowsChanged.emit()
             self.dataChanged.emit()
             return
-        if self._synced_version == self.controller.version:
+        # live 刷新直接替换 yaml_obj 而不升版本号，所以连同对象一起比较
+        if self._synced_version == self._sync_key():
             return
         self._source_text = self.controller.get_yaml_string()
-        self._synced_version = self.controller.version
+        self._synced_version = self._sync_key()
         self._serial_info_map = None
         self.undo_stack.clear()
+        # 行号只对旧数据有效：留着的话"删除"会删掉新数据里同一行号的节点
+        self._selected_row = -1
+        self._multi_selected = set()
         self._refresh_rows()
         self.dataChanged.emit()
+
+    def _sync_key(self) -> tuple:
+        return id(self.controller.yaml_obj), self.controller.version
 
     def on_language_changed(self) -> None:
         super().on_language_changed()
@@ -536,6 +545,10 @@ class YamlEditorViewModel(PageViewModel):
         self._source_valid = True
         self._source_error = ""
         if self.controller.update_yaml_object(text):
+            # 整份文档被替换：旧撤销命令和行号都指向旧路径
+            self.undo_stack.clear()
+            self._selected_row = -1
+            self._multi_selected = set()
             self._after_mutation(source_edit=True)
         self.dataChanged.emit()
 
@@ -612,12 +625,13 @@ class YamlEditorViewModel(PageViewModel):
         return result
 
     def _after_mutation(self, source_edit: bool = False) -> None:
-        self._synced_version = self.controller.version
+        self._synced_version = self._sync_key()
         self._serial_info_map = None
         if not source_edit:
             self._source_text = self.controller.get_yaml_string()
         self._refresh_rows()
-        self.app._mark_items_stale()
+        # 任意节点都可能被改：角色页、游戏进度页等也要重读，否则会用旧缓存写回
+        self.app.mark_other_pages_stale(self)
         self.dataChanged.emit()
 
     def _recompute_diff(self) -> None:

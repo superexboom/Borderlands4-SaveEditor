@@ -71,7 +71,8 @@
       "autosaved": "Automatisch gespeichert um {time}",
       "autosave_failed": "Automatisches Speichern fehlgeschlagen – bitte manuell speichern",
       "recovered": "Ungespeicherte Änderungen wiederhergestellt (noch nicht geschrieben)",
-      "item_not_found": "Gegenstand nicht gefunden"
+      "item_not_found": "Gegenstand nicht gefunden",
+      "autosave_disk_changed": "Spielstand extern geändert; automatisches Speichern pausiert – bitte manuell speichern"
     },
     "tabs": {
       "select_save": "Spielstand wählen",
@@ -145,7 +146,12 @@
       "save_saved": "Spielstand gespeichert unter:\n{path}",
       "encrypt_failed": "Verschlüsselung fehlgeschlagen",
       "recover_title": "Ungespeicherte Änderungen wiederherstellen",
-      "recover_msg": "Es wurden ungespeicherte Änderungen aus einer früheren Sitzung gefunden (möglicherweise nach einem unerwarteten Beenden). Wiederherstellen?"
+      "recover_msg": "Es wurden ungespeicherte Änderungen aus einer früheren Sitzung gefunden (möglicherweise nach einem unerwarteten Beenden). Wiederherstellen?",
+      "unsaved_open_title": "Ungespeicherte Änderungen verwerfen?",
+      "unsaved_open_msg": "Der aktuelle Spielstand hat ungespeicherte Änderungen. Beim Öffnen eines anderen Spielstands gehen sie verloren.\nTrotzdem öffnen?",
+      "char_invalid_number": "Nicht übernommen. Diese Felder benötigen eine ganze Zahl: {fields}",
+      "disk_changed_title": "Spielstand wurde extern geändert",
+      "disk_changed_msg": "Das Spiel oder ein anderes Programm hat diesen Spielstand geschrieben, nachdem er hier geöffnet wurde. Beim Überschreiben geht dieser Fortschritt verloren (die alte Datei bleibt als .prev.bak erhalten).\nTrotzdem überschreiben?"
     },
     "worker": {
       "no_data": "Es wurden keine Daten erzeugt.",
@@ -502,7 +508,9 @@
       "special_combo_input": "Kombinationseingabe:",
       "status_generating": "Status: Wird erzeugt …",
       "status_gen_complete": "Status: Erzeugung abgeschlossen!",
-      "status_message": "Status: {message}"
+      "status_message": "Status: {message}",
+      "status_cancelled": "Status: Abgebrochen. Verarbeitet: {current}/{total}.",
+      "status_batch_add_cancelled": "Status: Abgebrochen. Erfolgreich: {success}, fehlgeschlagen: {fail}."
     },
     "placeholders": {
       "base85": "Base85-Code eingeben, z. B.: @Ug#2fK2...",
@@ -1202,6 +1210,21 @@
       "available_parts_hint": "Verfügbare Teile (Klick: Vorschau, Doppelklick: hinzufügen)",
       "no_matches": "Keine Treffer",
       "search_skin": "Skin-Name suchen …"
+    },
+    "browser": {
+      "all_manufacturer": "Alle Hersteller",
+      "all_type": "Alle Typen",
+      "all_rarity": "Alle Seltenheiten",
+      "sort_label": "Sortieren",
+      "sort_slot": "Erhalten",
+      "sort_level": "Stufe",
+      "sort_rarity": "Seltenheit",
+      "sort_name": "Name",
+      "sort_manufacturer": "Hersteller",
+      "order_desc": "Aktuell: absteigend / Neueste zuerst (zum Umschalten klicken)",
+      "order_asc": "Aktuell: aufsteigend / Älteste zuerst (zum Umschalten klicken)",
+      "clear": "Suche und Filter zurücksetzen",
+      "count": "{shown} von {total} angezeigt"
     }
   },
   "equipment_roll": {
@@ -1718,7 +1741,8 @@
       "live_skills_applied": "Fertigkeiten aus der Ausrüstung übernommen ({graphs} Fertigkeitsbäume).",
       "live_skills_failed": "Fertigkeiten konnten nicht übernommen werden: {error}",
       "live_skills_mismatch": "{count} Fertigkeitsknoten haben den gespeicherten Zustand nicht erreicht (zu wenige Punkte oder fehlende Voraussetzung)",
-      "live_skills_unknown": "Die Fertigkeiten dieser Ausrüstung passen nicht zum aktuellen Charakter ({names}); sie wurden übersprungen."
+      "live_skills_unknown": "Die Fertigkeiten dieser Ausrüstung passen nicht zum aktuellen Charakter ({names}); sie wurden übersprungen.",
+      "live_save_no_skills": "Die Fertigkeiten konnten nicht gelesen werden ({error}); diese Ausrüstung enthält nur Gegenstände."
     },
     "decode": {
       "unknown": "Unbekannt",
@@ -1777,6 +1801,8 @@
     "req_active": "„{target}“ muss zuerst aktiv sein",
     "trunk": "Stamm",
     "branch": "Zweig {n}",
-    "bonus_split": "Klassenmod +{gear}   Zusatz +{extra}"
+    "bonus_split": "Klassenmod +{gear}   Zusatz +{extra}",
+    "reload_title": "Fertigkeiten neu laden",
+    "reload_discard": "Es gibt noch nicht übernommene Änderungen. Neu laden ersetzt sie durch den aktuellen Build im Spiel.\nTrotzdem neu laden?"
   }
 }

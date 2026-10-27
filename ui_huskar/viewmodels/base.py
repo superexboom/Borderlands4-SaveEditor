@@ -16,6 +16,14 @@ from PyQt6.QtCore import QObject, pyqtProperty, pyqtSignal, pyqtSlot
 #: __main__.create_bridges 自动发现并实例化，避免并发修改共享文件。
 REGISTRY: dict[str, tuple[type, str]] = {}
 
+#: Upper bound for a stacked part count: every unit is one serial token, so a
+#: typed 999999 would rebuild a million tokens on the GUI thread per click.
+MAX_STACK_COUNT = 999
+
+
+def clamp_stack_count(count) -> int:
+    return max(1, min(MAX_STACK_COUNT, int(count)))
+
 
 def register(key: str, qml: str):
     def wrap(cls):

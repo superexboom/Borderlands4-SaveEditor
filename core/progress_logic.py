@@ -603,6 +603,12 @@ def layer_key(type_key: str) -> str:
     return _layer_keys().get(type_key, type_key)
 
 
+def layer_keys_in_group(group: str) -> set[str]:
+    """Every layer key of one group across all maps (not only the map on screen)."""
+    return {layer_key(type_key) for type_key in cat.section("location_types")
+            if layer_group(layer_key(type_key)) == group}
+
+
 def _type_title(type_key: str, lang: str) -> str:
     row = cat.section("location_types").get(type_key) or {}
     title = cat.text(row.get("title"), lang)

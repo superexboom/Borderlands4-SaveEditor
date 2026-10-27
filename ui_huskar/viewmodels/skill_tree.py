@@ -243,7 +243,13 @@ class SkillTreeViewModel(PageViewModel):
 
     @pyqtSlot(str, int, str, int)
     def setValue(self, graph: str, index: int, field: str, value: int) -> None:
-        if self._state is None:
+        # 写入进行中改的点会被游戏回读的快照覆盖，干脆不让改
+        if self._state is None or self._busy:
+            return
+        # 手输的点数和 step() 一样要过解锁检查，否则游戏会拒绝
+        if (field == "spent" and int(value) > self.value(graph, index, "spent")
+                and not self._unlocked_or_toast(graph, index)):
+            self.valuesChanged.emit()  # 输入框回到原值
             return
         setter = {"spent": skill_editor.set_spent, "extra": skill_editor.set_extra,
                   "bonus": skill_editor.set_extra}.get(field)
@@ -268,6 +274,8 @@ class SkillTreeViewModel(PageViewModel):
 
     @pyqtSlot(str, int)
     def toggle(self, graph: str, index: int) -> None:
+        if self._busy:
+            return
         node = self._node(graph, index)
         if node and not node["active"] and not self._unlocked_or_toast(graph, index):
             return
@@ -318,7 +326,7 @@ class SkillTreeViewModel(PageViewModel):
 
     @pyqtSlot(int)
     def bonusInvested(self, value: int) -> None:
-        if self._state is None:
+        if self._state is None or self._busy:
             return
         if not skill_editor.bonus_invested(self._state, value):
             self.app.toast(self._t("no_invested"), "warning")
@@ -326,7 +334,7 @@ class SkillTreeViewModel(PageViewModel):
 
     @pyqtSlot(str)
     def bulk(self, operation: str) -> None:
-        if self._state is None:
+        if self._state is None or self._busy:
             return
         if operation == "clear_bonus":
             skill_editor.clear_bonus(self._state)
@@ -349,6 +357,17 @@ class SkillTreeViewModel(PageViewModel):
             self.app.toast(self._t("live_required"), "warning")
             return
         if self._busy:
+            return
+        if self.dirty:
+            # 重新读取会用游戏里的构筑替换掉还没应用的修改
+            self.app._request_confirm(self._t("reload_title"), self._t("reload_discard"),
+                                      lambda accepted: self._start_read() if accepted else None,
+                                      warning=True)
+            return
+        self._start_read()
+
+    def _start_read(self) -> None:
+        if self._busy or not self.app.liveActive:
             return
         self._set_busy(True)
         self.app.live.start_skill_worker("skill_read", {})
@@ -407,9 +426,17 @@ class SkillTreeViewModel(PageViewModel):
     def on_live_changed(self) -> None:
         """Live mode switched: a build read from another session is no longer valid."""
         if not self.app.liveActive:
-            self._base = self._state = None
-            self._trees, self._specs, self._cells = [], [], {}
-            self._selected = None
+            self.clear_build()
+            return
+        self.structureChanged.emit()
+        self.valuesChanged.emit()
+        self.selectionChanged.emit()
+
+    def clear_build(self) -> None:
+        """Forget the build (live exit, or the game now reads another player)."""
+        self._base = self._state = None
+        self._trees, self._specs, self._cells = [], [], {}
+        self._selected = None
         self.structureChanged.emit()
         self.valuesChanged.emit()
         self.selectionChanged.emit()
