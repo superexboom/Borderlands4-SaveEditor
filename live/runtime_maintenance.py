@@ -7,8 +7,8 @@ Enumerate equipped slots, never the global UObject array, in the hot path.
 import math
 import time
 
-VERSION = '0.10.30'
-REVISION = 'slot-maintenance-20261006.21'
+VERSION = '0.10.31'
+REVISION = 'slot-maintenance-20261027.22'
 
 # Weapon values, movement, crit, stamina and cooldown features change only when the
 # game rebuilds them (equip, reload, buffs): refresh them at 5 Hz.  Health and shield
@@ -23,6 +23,10 @@ HEALTH_LAYER_TTL = 2.0
 # written for an August build; build 25372571 (Steam, 2026-09-18) moved them.  Found by
 # searching the exe for the base code's prefixes with rel32 operands masked; every
 # match below has the same masked bytes and a consistent shift with its neighbours.
+# Build 26007962 (2026-10-26, Denuvo removed) moved 15 of the 16; its stamp is a hash.
+# The ambiguous prefixes were settled by their callers: 20 of the 21 callers of
+# IDENTITY_FROM_SERIAL also call IDENTITY_DTOR, SLOT_COMPATIBILITY's callers build
+# transactions, and the other prefix matches have no callers.
 NATIVE_BUILDS = {
     1789399121: {
         '_INVENTORY_IDENTITY_DTOR': (0x369D14, '56574883ec284889cee8a2020000488d8ea0000000'),
@@ -56,8 +60,60 @@ NATIVE_BUILDS = {
         '_INVENTORY_TRANSACTION_CTOR': (0x5E09686, '564883ec300f297424204889ce48c74104ffffffff'),
         '_INVENTORY_TRANSACTION_VALIDATE': (0x5E09814, '0fb61183fa077575837908ff0f8474030000'),
     },
+    4086165580: {
+        '_INVENTORY_IDENTITY_DTOR': (0x368B56, '56574883ec284889cee8a2020000488d8ea0000000'),
+        '_INVENTORY_IDENTITY_COPY': (
+            0x6FD608, '415741565657534883ec204889d74889ce488b02488901488b42084889410848c741100000000048'),
+        '_INVENTORY_MARK_ITEM_DIRTY': (
+            0x705884,
+            '564883ec204889ce833aff7424ff42044889f1e8320000004889f1e87000000048c78604010000ffffffff4883c4205e'
+            'c3'),
+        '_INVENTORY_IDENTITY_COPY_ASSIGN': (
+            0x7B25F0,
+            '5657534883ec204889d74889ce488b02488901488b4208488941084883c2104883c110e8b8000000488d5720488d4e20'
+            'e803010000488d5730488d4e30e84e010000488b8790000000488b8f980000004885c97566488b9e9800000048898690'
+            '00000048898e980000004885db75528a87c10000008886c1000000488d564048'),
+        '_INVENTORY_IDENTITY_FROM_SERIAL': (
+            0x88C870, '4157415641554154565755534881ece80000004889d34889ce488b05b0b0e70b'),
+        '_INVENTORY_LOCAL_ITEM_CHANGED': (
+            0x1069CE4,
+            '5657534883ec304889d64889cf488b0548dc690b4831e048894424288b82080100008b924001000083f8ff7460488d5e'
+            '108b8ef800000039d00f8480000000898640010000898e48010000488d4f184889dae8990000008a860d010000888644'
+            '0100004889f94889dae882000000'),
+        '_INVENTORY_OWNER_ADD_EXPECTED': (0x1337700, '80b940f3ffff03750c4881c1c8f1ffffe901000000c3'),
+        '_INVENTORY_TYPE6_COUNT_LOGIC': (
+            0x156F4B7, '438b8435f80000008b8ec401000039c189c50f42e985c90f44e883bec801000000746785ed7463'),
+        '_INVENTORY_TYPE6_REMOVE_TAIL': (
+            0x156F541,
+            '4885ff0f84fcfdffff488b074889f94889daff50204885c00f84e7fdffff4889c1488b5424204989f84189e94883c428'
+            '5b5d5f5e415c415d415e415fe94af2c2ff'),
+        '_INVENTORY_ITEM_SLOT_COMPATIBILITY': (0x3DB65C0, '415741565657534883ec30488b056e139508'),
+        '_FNAME_FIND_OR_STORE_WSTRING': (0x56EB9FE, '5657534881ec400400004889ce'),
+        '_INVENTORY_SERVER_IMPLEMENTATION_EXPECTED': (
+            0x5DAA0E8,
+            '564883ec204889d6488b89380c00004885c974084889f2e824000000488b8e500100004885c975114883c6504889f148'
+            '83c4205ee935ea5bfae8827f25faebe8'),
+        '_INVENTORY_TRANSACTION_COPY_ASSIGN': (
+            0x5DD7080,
+            '56574883ec284889d74889ce8b4208894108488b024889018a058b9bb706488b4a103c010f84a400000048894e10488b'
+            '4f1848894e18488b4f20a8010f859800000048894e20488b4f2848894e28488b4f30a8010f858c00000048894e30488b'
+            '4f3848894e38488b4f40a8010f858000000048894e40488b474848894648488d4e50488d5750e8e5b49dfa0f10872801'
+            '00000f118628010000ba38010000488d0c164801fae8c2a499fe0f1087600100000f1186600100008b87700100008986'
+            '700100004889f04883c4285f5ec3'),
+        '_INVENTORY_TRANSACTION_CTOR': (0x5E36B1E, '564883ec300f297424204889ce48c74104ffffffff'),
+        '_INVENTORY_TRANSACTION_VALIDATE': (0x5E36CAC, '0fb61183fa077575837908ff0f8474030000'),
+    },
 }
 NATIVE_PREFIX_TABLES = ('_INVENTORY_NATIVE_PREFIXES', '_IDENTITY_MATERIALIZE_PREFIXES', '_IDENTITY_DIRTY_PREFIXES')
+# Every base-code constant holding an absolute address inside Borderlands4.exe.
+NATIVE_ADDRESS_NAMES = (
+    '_INVENTORY_TRANSACTION_CTOR', '_INVENTORY_TRANSACTION_VALIDATE', '_INVENTORY_IDENTITY_DTOR',
+    '_INVENTORY_IDENTITY_COPY', '_INVENTORY_IDENTITY_COPY_ASSIGN', '_INVENTORY_IDENTITY_FROM_SERIAL',
+    '_INVENTORY_MARK_ITEM_DIRTY', '_INVENTORY_LOCAL_ITEM_CHANGED', '_INVENTORY_SELECTION_FREE',
+    '_INVENTORY_ITEM_SLOT_COMPATIBILITY', '_INVENTORY_OWNER_ADD_EXPECTED', '_INVENTORY_TYPE6_COUNT_LOGIC',
+    '_INVENTORY_TYPE6_REMOVE_TAIL', '_INVENTORY_TRANSACTION_COPY_ASSIGN',
+    '_INVENTORY_SERVER_IMPLEMENTATION_EXPECTED', '_FNAME_FIND_OR_STORE_WSTRING', 'PARTDEF_VTBL',
+)
 # Vtables the base code compares against, per build: name -> RVA.  On build 25372571
 # FInventoryPartDef's vtable moved by 0x1000, so _is_partdef rejected every entry of
 # the type definitions' part maps and a part could only be written when an owned item
@@ -65,6 +121,8 @@ NATIVE_PREFIX_TABLES = ('_INVENTORY_NATIVE_PREFIXES', '_IDENTITY_MATERIALIZE_PRE
 # running game: every part pointer of live items and of the type maps used this value.
 NATIVE_VTABLES = {
     1789399121: {'PARTDEF_VTBL': 0xB304C60},
+    # TCppStructOps<FInventoryPartDef>::Construct stores it; every live part pointer agrees.
+    4086165580: {'PARTDEF_VTBL': 0xB30C7A0},
 }
 
 
@@ -594,20 +652,68 @@ def _rebase_vtables(m, base, size, stamp, status):
         status['vtables'] = {name: hex(value) for name, value in moved.items()}
 
 
+def _main_module_base():
+    """Address Windows loaded Borderlands4.exe at, 0 when unknown."""
+    try:
+        import ctypes
+        kernel32 = ctypes.WinDLL('kernel32')
+        kernel32.GetModuleHandleW.restype = ctypes.c_void_p
+        kernel32.GetModuleHandleW.argtypes = [ctypes.c_wchar_p]
+        return int(kernel32.GetModuleHandleW(None) or 0)
+    except Exception:
+        return 0
+
+
+def _follow_load_address(m, status):
+    """Move the base code's absolute addresses to where the exe really is.
+
+    The base code adds RVAs to a fixed IMAGE_BASE of 0x140000000.  Build 26007962
+    (2026-10-26, Denuvo removed) is relocatable, so Windows maps it at a random
+    address: every native gate read unmapped memory and refused, and every vtable
+    range check failed.  Moves only when the loaded address holds a PE header;
+    afterwards IMAGE_BASE is the load address, so hot reinstalls move nothing.
+    """
+    old = getattr(m, 'IMAGE_BASE', 0)
+    loaded = _main_module_base()
+    if not old or not loaded or loaded == old:
+        return
+    header = m._rd(loaded, 0x40) or b''
+    pe = int.from_bytes(header[0x3C:0x40], 'little') if len(header) == 0x40 else 0
+    if not 0 < pe <= 0x300 or (m._rd(loaded + pe, 4) or b'') != b'PE\0\0':
+        return
+    shift, limit = loaded - old, old + getattr(m, 'IMAGE_SIZE', 0)
+
+    def moved(address):
+        return address + shift if isinstance(address, int) and old <= address < limit else address
+
+    for name in NATIVE_ADDRESS_NAMES:
+        if isinstance(getattr(m, name, None), int):
+            setattr(m, name, moved(getattr(m, name)))
+    for table_name in NATIVE_PREFIX_TABLES:
+        prefixes = getattr(m, table_name, None)
+        if isinstance(prefixes, dict):
+            setattr(m, table_name, {moved(address): code for address, code in prefixes.items()})
+    m.IMAGE_BASE = loaded
+    status['load_address'] = hex(loaded)
+
+
 def install_native_rebase(m):
     """Point the base code's fixed native addresses at the running game build.
 
     Live loadout apply and backpack publish refuse to run unless the code at each
     address starts with the expected bytes; on build 25372571 every inventory gate
-    failed ("server transaction implementation pointer changed").  The build is read
-    from the loaded image's PE header; the move happens only when every listed
-    prefix matches at its new address, so an unknown build keeps the base values
-    and the gates keep refusing.  Idempotent (hot reinstalls see the moved values).
+    failed ("server transaction implementation pointer changed").  The addresses
+    first follow the exe's load address, then the build is read from the loaded
+    image's PE header; the move happens only when every listed prefix matches at
+    its new address, so an unknown build keeps the base values and the gates keep
+    refusing.  Idempotent (hot reinstalls see the moved values).
     """
-    base = getattr(m, 'IMAGE_BASE', 0)
-    header = m._rd(base, 0x400) if base else None
     status = {}
     m._NATIVE_REBASE = status
+    m._module_base = _main_module_base
+    _follow_load_address(m, status)
+    base = getattr(m, 'IMAGE_BASE', 0)
+    header = m._rd(base, 0x400) if base else None
     if not header or len(header) < 0x200:
         status['error'] = 'image header unreadable'
         return
@@ -618,8 +724,7 @@ def install_native_rebase(m):
     stamp = int.from_bytes(header[pe + 8:pe + 12], 'little')
     size = int.from_bytes(header[pe + 80:pe + 84], 'little')
     status.update(pe_timestamp=stamp, image_size=hex(size))
-    if size > getattr(m, 'IMAGE_SIZE', 0):
-        m.IMAGE_SIZE = size  # vtable / method range checks
+    m.IMAGE_SIZE = size  # vtable / method range checks
     _rebase_vtables(m, base, size, stamp, status)
     table = NATIVE_BUILDS.get(stamp)
     if not table:
