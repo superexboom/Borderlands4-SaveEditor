@@ -100,7 +100,7 @@
 104,,,,,part_firmware_active_fire,firmware
 CLASSMOD.statspecial_gliding_damage,+105% Damage while Gliding,滑翔时造成+105%伤害,Урон при планировании: +105%,+105% Schaden beim Gleiten,statspecial_gliding_damage,utility
 CLASSMOD.statspecial_ricochet_damage,+30% Ricochet Damage,+30% 跳弹伤害,Урон от рикошета: +30%,+30% Abprallschaden,statspecial_ricochet_damage,utility
-CLASSMOD.statspecial_executable_damage,+20% Executable Damage,+20% 可执行文件伤害,Урон от исполняемого файла: +20%,+20% Programm-Schaden,statspecial_executable_damage,utility
-CLASSMOD.statspecial_function_damage,+20% Function Damage,+20% 函数功能伤害,Урон от функции: +20%,+20% Funktions-Schaden,statspecial_function_damage,utility
+CLASSMOD.statspecial_executable_damage,+20% Executable Damage,+20% 可执行文件伤害,Урон от исполняемого файла: +20%,+20% Programm-Schaden,statspecial_executable_damage,other
+CLASSMOD.statspecial_function_damage,+20% Function Damage,+20% 函数功能伤害,Урон от функции: +20%,+20% Funktions-Schaden,statspecial_function_damage,other
 106,,,,,part_firmware_bruiser,firmware
 105,+20% Movement Speed,+20% 移动速度,Скорость перемещения: +20%,+20% Bewegungsgeschwindigkeit,statspecial_movementspeed,utility

@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "source_folder": "2026-09-11",
+  "source_folder": "2026-10-26",
   "profile_unlockables": {
     "echo_log_challenges": [
       "echo_log_challenges.Collect_EchoLog_ARJ_CITY_01",
@@ -924,6 +924,7 @@
       "Unlockable_ExoSoldier.Head41_StarAlien",
       "Unlockable_ExoSoldier.Head42_SpaceDog",
       "Unlockable_ExoSoldier.Head43_Warrior",
+      "Unlockable_ExoSoldier.Head44_FishBowl",
       "Unlockable_ExoSoldier.Skin01_Prison",
       "Unlockable_ExoSoldier.Skin02_Order",
       "Unlockable_ExoSoldier.Skin03_Ghost",
@@ -1906,6 +1907,7 @@
       "Unlockable_CorpoHacker.Head43_Warrior",
       "Unlockable_CorpoHacker.Head44_FishBowl",
       "Unlockable_CorpoHacker.Skin46_RipWrappings",
+      "Unlockable_CorpoHacker.Skin47_HangingLights",
       "Unlockable_CorpoHacker.Skin48_KrampusClaus",
       "Unlockable_CorpoHacker.Skin49_MidCentury",
       "Unlockable_CorpoHacker.Skin57_MechaRecruit",
@@ -2959,7 +2961,8 @@
       "stats.cowbell_openworld.cowbell_misc.clots.clot_7": 1,
       "stats.cowbell_openworld.cowbell_misc.clots.clot_8": 1,
       "stats.cowbell_openworld.cowbell_misc.clots.clot_9": 1,
-      "stats.cowbell_openworld.cowbell_misc.kickdowns.wsw_bridge_parent": 2,
+      "stats.cowbell_openworld.cowbell_misc.kickdowns.wsw_bridge_parent.wsw_bridge_left": 1,
+      "stats.cowbell_openworld.cowbell_misc.kickdowns.wsw_bridge_parent.wsw_bridge_right": 1,
       "stats.cowbell_openworld.cowbell_misc.shuggurathtanks.shuggurathtank_1": 1,
       "stats.cowbell_openworld.cowbell_misc.shuggurathtanks.shuggurathtank_2": 1,
       "stats.cowbell_openworld.cowbell_misc.shuggurathtanks.shuggurathtank_3": 1,
@@ -3897,6 +3900,7 @@
       "DLMD_Harp_P_OakVendingMachine_UAID_C43D1A6B70050BE502_1321638281",
       "DLMD_Intro_P_IO_VendingMachine_ResupplyStation_UAID_94F6D6F414DEB85B02_1588122976",
       "DLMD_Intro_P_LevelTravelStation_UAID_02504100000136FB01_1371254719",
+      "DLMD_LI_TedioreDryDocks_IO_EchoLog_Harmony_DLC2_UAID_047BCBA5A6486BE302_2069737052",
       "DLMD_LI_VolcanoGrotto_IO_VendingMachine_Health_UAID_B04F130B780589E702_1635482744",
       "DLMD_LI_VolcanoGrotto_IO_VendingMachine_ResupplyStation_UAID_B04F130B780589E702_1796318751",
       "DLMD_Mandolin1_P_FastTravelStationObject_UAID_08BFB89AE7C801E402_1373073439",
@@ -5051,15 +5055,15 @@
     }
   },
   "counts": {
-    "profile_unlockables": 1779,
+    "profile_unlockables": 1780,
     "character_unlockables": 40,
-    "stat_targets": 1027,
-    "locations": 1410,
+    "stat_targets": 1028,
+    "locations": 1411,
     "worlds": 26,
     "regions": 64,
     "uvhm_stat_targets": 26,
     "vault_card_tokens": 5,
-    "vault_card_purchases": 299
+    "vault_card_purchases": 300
   },
   "omitted": [
     "mission_completion",

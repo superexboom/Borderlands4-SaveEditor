@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "source_folder": "2026-09-11",
+  "source_folder": "2026-10-26",
   "scope": "dedicated_itempoollist_only",
   "spawn_pattern": "SpawnPattern_Enemies_Named",
   "source_files": [
-    "pakchunk0-Windows_20_P-Nexus-Data-gbx_ue_data_table0.json",
-    "pakchunk4-Windows_20_P-Nexus-Data-gbx_ue_data_table4.json",
-    "pakchunk6-Windows_20_P-Nexus-Data-gbx_ue_data_table6.json"
+    "pakchunk0-Windows_23_P-Nexus-Data-gbx_ue_data_table0.json",
+    "pakchunk4-Windows_23_P-Nexus-Data-gbx_ue_data_table4.json",
+    "pakchunk6-Windows_23_P-Nexus-Data-gbx_ue_data_table6.json"
   ],
   "tables": [
     "Table_BP5_DedicatedDrops",

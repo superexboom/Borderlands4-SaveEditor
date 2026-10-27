@@ -630,8 +630,11 @@ def _compare_reload_time_value_from_serial(decoded: str, index: dict[str, Any]) 
     behavior_parts = _serial_behavior_parts(decoded, index, header.group(1))
     feed = _last_override(behavior_parts, "weapon_single_feed_increment", model.get("attribute_defaults", {})) or 1.0
     max_ammo = _magazine_capacity_value_from_serial(decoded, index)
-    loops = f32(f32(loop) * f32(max_ammo - 2))
-    return f32(f32(value * f32(1.0 + loops)) / f32(feed))
+    # weapon_reload_time_single_load since build 26007962 (2026-10-26):
+    # ReloadTime*(1+LoopPercent*((MaxAmmo/FeedIncrement)-2)); it used to divide the
+    # whole time by FeedIncrement.  Equal for one round per loop.
+    loops = f32(f32(loop) * f32(f32(f32(max_ammo) / f32(feed)) - 2.0))
+    return f32(value * f32(1.0 + loops))
 
 
 def reload_time_from_serial(decoded: str, index: dict[str, Any]) -> float:
